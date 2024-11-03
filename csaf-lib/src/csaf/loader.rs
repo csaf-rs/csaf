@@ -1,11 +1,11 @@
+use std::{fs::File, io::BufReader};
+
 use chrono::DateTime;
-use crate::codegen::{builder, CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentCategory, Publisher, Revision, Tracking};
-use crate::codegen::DocumentLevelMetaData;
 
-mod codegen;
+use super::schema::CommonSecurityAdvisoryFramework;
 
-fn load_document() -> String {
-    let metadata: DocumentLevelMetaData = DocumentLevelMetaData::builder()
+pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {
+    /*let metadata: DocumentLevelMetaData = DocumentLevelMetaData::builder()
         .title("Test")
         .category("csaf_base")
         .csaf_version("2.0")
@@ -33,16 +33,13 @@ fn load_document() -> String {
         )
         .try_into()
         .unwrap();
-    String::from(doc.document.title)
-}
+    String::from(doc.document.title)*/
+    println!("Trying to load document {}", path);
 
-#[cfg(test)]
-mod tests {
-    use crate::load_document;
+    let f = File::open(path)?;
+    let reader = BufReader::new(f);
+    let doc: CommonSecurityAdvisoryFramework = serde_json::from_reader(reader)?;
+    println!("Successfully parsed document '{}'", doc.document.title.to_string());
 
-    #[test]
-    fn it_works() {
-        let result = load_document();
-        assert_eq!(result, "Test")
-    }
+    Ok(doc)
 }

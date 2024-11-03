@@ -12,6 +12,6 @@ fn main() {
     let content = prettyplease::unparse(&syn::parse2::<syn::File>(type_space.to_stream()).unwrap());
 
     let mut out_file = Path::new("src").to_path_buf();
-    out_file.push("codegen.rs");
+    out_file.push("csaf/schema.rs");
     fs::write(out_file, content).unwrap();
 }

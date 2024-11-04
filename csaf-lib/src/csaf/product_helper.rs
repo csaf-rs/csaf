@@ -94,8 +94,8 @@ pub fn gather_product_definitions(doc: &CommonSecurityAdvisoryFramework) -> Vec<
         // /product_tree/full_product_names[]/product_id
         ids.extend(x.full_product_names.iter().map(|x|&x.product_id));
 
-        // /product_tree/relationships[]/relates_to_product_reference
-        ids.extend(x.relationships.iter().map(|x| &x.product_reference));
+        // /product_tree/relationships[]/full_product_name/product_id
+        ids.extend(x.relationships.iter().map(|x| &x.full_product_name.product_id));
     }
 
     ids

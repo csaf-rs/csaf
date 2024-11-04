@@ -50,7 +50,7 @@ mod tests {
             )
             .try_into()
             .unwrap();
-        return CommonSecurityAdvisoryFramework::builder()
+        CommonSecurityAdvisoryFramework::builder()
             .document(metadata)
             .try_into()
             .unwrap()

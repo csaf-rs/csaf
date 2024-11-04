@@ -1,6 +1,6 @@
 use crate::csaf::product_helper::*;
 use crate::csaf::schema::CommonSecurityAdvisoryFramework;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 pub fn validate_document(doc: &CommonSecurityAdvisoryFramework) {
     println!("Validating document... \n");
@@ -8,6 +8,13 @@ pub fn validate_document(doc: &CommonSecurityAdvisoryFramework) {
     println!("Executing Test 6.1.1... ");
 
     let _ = match test_6_01_01_missing_definition_of_product_id(doc) {
+        Ok(()) => println!("> Test Success"),
+        Err(e) => println!("> Error: {}", e)
+    };
+
+    println!("Executing Test 6.1.2... ");
+
+    let _ = match test_6_01_02_multiple_definition_of_product_id(doc) {
         Ok(()) => println!("> Test Success"),
         Err(e) => println!("> Error: {}", e)
     };
@@ -26,17 +33,34 @@ pub fn test_6_01_01_missing_definition_of_product_id(doc: &CommonSecurityAdvisor
 }
 
 pub fn test_6_01_02_multiple_definition_of_product_id(doc: &CommonSecurityAdvisoryFramework) -> Result<(), String> {
-    let mut definitions = gather_product_definitions(doc);
+    let definitions = gather_product_definitions(doc);
+    let duplicates = find_duplicates(definitions);
 
-    definitions.sort_unstable();
-    definitions.dedup();
-
-    if definitions.is_empty() {
+    if duplicates.is_empty() {
         Ok(())
     } else {
-        Err(format!("Duplicate definitions: {:?}", definitions))
+        Err(format!("Duplicate definitions: {:?}", duplicates))
     }
 }
+
+fn find_duplicates<T: std::hash::Hash + Eq + Clone>(vec: Vec<T>) -> Vec<T> {
+    let mut occurrences = HashMap::new();
+    let mut duplicates = Vec::new();
+
+    for item in vec.iter() {
+        let count = occurrences.entry(item.clone()).or_insert(0);
+        *count += 1;
+    }
+
+    for (item, count) in occurrences {
+        if count > 1 {
+            duplicates.push(item);
+        }
+    }
+
+    duplicates
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -48,7 +72,7 @@ mod tests {
         let doc = load_document("../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-01.json").unwrap();
         assert_eq!(
             test_6_01_01_missing_definition_of_product_id(&doc),
-            Err(String::from("Missing definitions: [ProductIdT(\"CSAFPID-9080700\"), ProductIdT(\"CSAFPID-9080701\")]"))
+            Err(String::from("Missing definitions: [ProductIdT(\"CSAFPID-9080701\"), ProductIdT(\"CSAFPID-9080700\")]"))
         )
     }
 

@@ -1,4 +1,3 @@
-pub mod loader;
-pub mod schema;
+pub mod csaf2_0;
+pub mod csaf2_1;
 pub mod validation;
-mod product_helper;

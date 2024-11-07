@@ -18,7 +18,7 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::schema::{
+    use crate::csaf::csaf2_0::schema::{
         CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, Publisher,
         Revision, Tracking,
     };

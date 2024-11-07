@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use crate::csaf::schema::{Branch, CommonSecurityAdvisoryFramework, ProductIdT};
+use crate::csaf::csaf2_0::schema::{Branch, CommonSecurityAdvisoryFramework, ProductIdT};
 
 pub fn gather_product_references(doc: &CommonSecurityAdvisoryFramework) -> HashSet<&ProductIdT> {
     let mut ids = HashSet::<&ProductIdT>::new();
@@ -49,10 +49,15 @@ pub fn gather_product_references(doc: &CommonSecurityAdvisoryFramework) -> HashS
         }
 
         // /vulnerabilities[]/remediations[]/product_ids[]
+        for rem in vuln.remediations.iter() {
+            if let Some(x) = rem.product_ids.as_ref() {
+                ids.extend(x.iter());
+            }
+        }
 
         // /vulnerabilities[]/scores[]/products[]
-        for threat in vuln.scores.iter() {
-            ids.extend(threat.products.iter());
+        for score in vuln.scores.iter() {
+            ids.extend(score.products.iter());
         }
 
         // /vulnerabilities[]/threats[]/product_ids[]

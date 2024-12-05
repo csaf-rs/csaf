@@ -14,7 +14,7 @@ fn main() -> Result<()> {
         Some(v) => v,
     };
 
-    let version = args.get(1).cloned().unwrap_or("2.0".to_string());
+    let version = args.get(2).cloned().unwrap_or("2.0".to_string());
     let v: Box<dyn Validate> = match version.as_str() {
         "2.0" => {
             Box::new(load_document_2_0(path)?)

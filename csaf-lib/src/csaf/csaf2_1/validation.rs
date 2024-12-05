@@ -1,29 +1,48 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
+use crate::csaf::validation::{Validate, ValidationProfile};
 use std::collections::{HashMap, HashSet};
-use crate::csaf::validation::Validate;
+
+type Test = fn(&CommonSecurityAdvisoryFramework) -> Result<(), String>;
+
+static PROFILES: HashMap<ValidationProfile, Vec<&str>> = HashMap::from([
+    (ValidationProfile::Basic, vec!["6.1.1", "6.1.2"]),
+    (ValidationProfile::Extended, vec!["6.1.1", "6.1.2"]),
+    (ValidationProfile::Full, vec!["6.1.1", "6.1.2"]),
+]);
+
+static TESTS: HashMap<&str, Test> = HashMap::<&str, Test>::from([
+    ("6.1.1", test_6_01_01_missing_definition_of_product_id),
+    ("6.1.2", test_6_01_02_multiple_definition_of_product_id),
+] as [(&str, Test); 2]);
 
 impl Validate for CommonSecurityAdvisoryFramework {
-    fn validate(&self) {
+    fn validate_profile(&self, profile: &ValidationProfile) {
         println!("Validating document... \n");
 
         println!("Executing Test 6.1.1... ");
 
         let _ = match test_6_01_01_missing_definition_of_product_id(self) {
             Ok(()) => println!("> Test Success"),
-            Err(e) => println!("> Error: {}", e)
+            Err(e) => println!("> Error: {}", e),
         };
 
         println!("Executing Test 6.1.2... ");
 
         let _ = match test_6_01_02_multiple_definition_of_product_id(self) {
             Ok(()) => println!("> Test Success"),
-            Err(e) => println!("> Error: {}", e)
+            Err(e) => println!("> Error: {}", e),
         };
+    }
+
+    fn validate_by_test(&self, version: &str) {
+        todo!()
     }
 }
 
-pub fn test_6_01_01_missing_definition_of_product_id(doc: &CommonSecurityAdvisoryFramework) -> Result<(), String> {
+pub fn test_6_01_01_missing_definition_of_product_id(
+    doc: &CommonSecurityAdvisoryFramework,
+) -> Result<(), String> {
     let definitions = HashSet::from_iter(gather_product_definitions(doc).iter().copied());
     let references = gather_product_references(&doc);
 
@@ -37,7 +56,13 @@ pub fn test_6_01_01_missing_definition_of_product_id(doc: &CommonSecurityAdvisor
     }
 }
 
-pub fn test_6_01_02_multiple_definition_of_product_id(doc: &CommonSecurityAdvisoryFramework) -> Result<(), String> {
+pub fn testbla(doc: &CommonSecurityAdvisoryFramework) -> Result<(), String> {
+    Ok(())
+}
+
+pub fn test_6_01_02_multiple_definition_of_product_id(
+    doc: &CommonSecurityAdvisoryFramework,
+) -> Result<(), String> {
     let definitions = gather_product_definitions(doc);
     let duplicates = find_duplicates(definitions);
 
@@ -68,8 +93,10 @@ fn find_duplicates<T: std::hash::Hash + Eq + Clone>(vec: Vec<T>) -> Vec<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_0::{loader::load_document, validation::test_6_01_01_missing_definition_of_product_id};
     use crate::csaf::csaf2_0::validation::test_6_01_02_multiple_definition_of_product_id;
+    use crate::csaf::csaf2_0::{
+        loader::load_document, validation::test_6_01_01_missing_definition_of_product_id,
+    };
 
     #[test]
     fn test_test_6_01_01() {
@@ -85,7 +112,9 @@ mod tests {
         let doc = load_document("../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-02-01.json").unwrap();
         assert_eq!(
             test_6_01_02_multiple_definition_of_product_id(&doc),
-            Err(String::from("Duplicate definitions: [ProductIdT(\"CSAFPID-9080700\")]"))
+            Err(String::from(
+                "Duplicate definitions: [ProductIdT(\"CSAFPID-9080700\")]"
+            ))
         )
     }
 }

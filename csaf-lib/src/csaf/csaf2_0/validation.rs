@@ -1,7 +1,7 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
-use std::collections::{HashMap, HashSet};
 use crate::csaf::validation::Validate;
+use std::collections::{HashMap, HashSet};
 
 impl Validate for CommonSecurityAdvisoryFramework {
     fn validate(&self) {
@@ -11,19 +11,21 @@ impl Validate for CommonSecurityAdvisoryFramework {
 
         let _ = match test_6_01_01_missing_definition_of_product_id(self) {
             Ok(()) => println!("> Test Success"),
-            Err(e) => println!("> Error: {}", e)
+            Err(e) => println!("> Error: {}", e),
         };
 
         println!("Executing Test 6.1.2... ");
 
         let _ = match test_6_01_02_multiple_definition_of_product_id(self) {
             Ok(()) => println!("> Test Success"),
-            Err(e) => println!("> Error: {}", e)
+            Err(e) => println!("> Error: {}", e),
         };
     }
 }
 
-pub fn test_6_01_01_missing_definition_of_product_id(doc: &CommonSecurityAdvisoryFramework) -> Result<(), String> {
+pub fn test_6_01_01_missing_definition_of_product_id(
+    doc: &CommonSecurityAdvisoryFramework,
+) -> Result<(), String> {
     let definitions = HashSet::from_iter(gather_product_definitions(doc).iter().copied());
     let references = gather_product_references(&doc);
 
@@ -37,7 +39,9 @@ pub fn test_6_01_01_missing_definition_of_product_id(doc: &CommonSecurityAdvisor
     }
 }
 
-pub fn test_6_01_02_multiple_definition_of_product_id(doc: &CommonSecurityAdvisoryFramework) -> Result<(), String> {
+pub fn test_6_01_02_multiple_definition_of_product_id(
+    doc: &CommonSecurityAdvisoryFramework,
+) -> Result<(), String> {
     let definitions = gather_product_definitions(doc);
     let duplicates = find_duplicates(definitions);
 
@@ -68,8 +72,10 @@ fn find_duplicates<T: std::hash::Hash + Eq + Clone>(vec: Vec<T>) -> Vec<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_0::{loader::load_document, validation::test_6_01_01_missing_definition_of_product_id};
     use crate::csaf::csaf2_0::validation::test_6_01_02_multiple_definition_of_product_id;
+    use crate::csaf::csaf2_0::{
+        loader::load_document, validation::test_6_01_01_missing_definition_of_product_id,
+    };
 
     #[test]
     fn test_test_6_01_01() {
@@ -85,7 +91,9 @@ mod tests {
         let doc = load_document("../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-02-01.json").unwrap();
         assert_eq!(
             test_6_01_02_multiple_definition_of_product_id(&doc),
-            Err(String::from("Duplicate definitions: [ProductIdT(\"CSAFPID-9080700\")]"))
+            Err(String::from(
+                "Duplicate definitions: [ProductIdT(\"CSAFPID-9080700\")]"
+            ))
         )
     }
 }

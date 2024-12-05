@@ -1,7 +1,7 @@
 use std::path::Path;
 use std::{fs, io};
-use typify::{TypeSpace, TypeSpaceSettings};
 use thiserror::Error;
+use typify::{TypeSpace, TypeSpaceSettings};
 
 #[derive(Error, Debug)]
 pub enum BuildError {
@@ -14,12 +14,18 @@ pub enum BuildError {
     #[error("JSON parsing error")]
     JsonError(#[from] serde_json::Error),
     #[error("other error")]
-    Other
+    Other,
 }
 
 fn main() -> Result<(), BuildError> {
-    build("./src/csaf/csaf2_0/csaf_json_schema.json", "csaf/csaf2_0/schema.rs")?;
-    build("./src/csaf/csaf2_1/csaf_json_schema.json", "csaf/csaf2_1/schema.rs")?;
+    build(
+        "./src/csaf/csaf2_0/csaf_json_schema.json",
+        "csaf/csaf2_0/schema.rs",
+    )?;
+    build(
+        "./src/csaf/csaf2_1/csaf_json_schema.json",
+        "csaf/csaf2_1/schema.rs",
+    )?;
 
     Ok(())
 }

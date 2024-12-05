@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use super::schema::{Branch, CommonSecurityAdvisoryFramework, ProductIdT};
+use std::collections::HashSet;
 
 pub fn gather_product_references(doc: &CommonSecurityAdvisoryFramework) -> HashSet<&ProductIdT> {
     let mut ids = HashSet::<&ProductIdT>::new();
@@ -83,7 +83,10 @@ pub fn gather_product_definitions_from_branch(branch: &Branch) -> Vec<&ProductId
 
     // Go into the branch
     if let Some(x) = branch.branches.as_ref() {
-        ids.extend(x.iter().flat_map(|x| gather_product_definitions_from_branch(x)))
+        ids.extend(
+            x.iter()
+                .flat_map(|x| gather_product_definitions_from_branch(x)),
+        )
     }
 
     ids
@@ -95,14 +98,22 @@ pub fn gather_product_definitions(doc: &CommonSecurityAdvisoryFramework) -> Vec<
     if let Some(x) = doc.product_tree.as_ref() {
         // /product_tree/branches[](/branches[])*/product/product_id
         if let Some(branch) = x.branches.as_ref() {
-            ids.extend(branch.iter().flat_map(|x| gather_product_definitions_from_branch(x)));
+            ids.extend(
+                branch
+                    .iter()
+                    .flat_map(|x| gather_product_definitions_from_branch(x)),
+            );
         }
 
         // /product_tree/full_product_names[]/product_id
-        ids.extend(x.full_product_names.iter().map(|x|&x.product_id));
+        ids.extend(x.full_product_names.iter().map(|x| &x.product_id));
 
         // /product_tree/relationships[]/full_product_name/product_id
-        ids.extend(x.relationships.iter().map(|x| &x.full_product_name.product_id));
+        ids.extend(
+            x.relationships
+                .iter()
+                .map(|x| &x.full_product_name.product_id),
+        );
     }
 
     ids

@@ -23,7 +23,7 @@ mod tests {
         Revision, Tracking,
     };
 
-    fn mock_document() ->  CommonSecurityAdvisoryFramework {
+    fn mock_document() -> CommonSecurityAdvisoryFramework {
         let metadata: DocumentLevelMetaData = DocumentLevelMetaData::builder()
             .title("Test")
             .category("csaf_base")
@@ -60,5 +60,4 @@ mod tests {
     fn it_works() {
         mock_document();
     }
-
 }

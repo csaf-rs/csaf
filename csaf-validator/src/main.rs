@@ -8,21 +8,15 @@ fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
 
     let path = match args.get(1) {
-        None => {
-            return Err(anyhow!("Please specify a file to validate"))
-        }
+        None => return Err(anyhow!("Please specify a file to validate")),
         Some(v) => v,
     };
 
     let version = args.get(2).cloned().unwrap_or("2.0".to_string());
     let v: Box<dyn Validate> = match version.as_str() {
-        "2.0" => {
-            Box::new(load_document_2_0(path)?)
-        }
-        "2.1" => {
-            Box::new(load_document_2_1(path)?)
-        }
-        _ => bail!("invalid version")
+        "2.0" => Box::new(load_document_2_0(path)?),
+        "2.1" => Box::new(load_document_2_1(path)?),
+        _ => bail!("invalid version"),
     };
 
     v.validate();

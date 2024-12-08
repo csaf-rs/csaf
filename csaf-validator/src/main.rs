@@ -1,7 +1,7 @@
 use anyhow::{anyhow, bail, Result};
 use csaf_lib::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_lib::csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf_lib::csaf::validation::Validate;
+use csaf_lib::csaf::validation::{Validate, ValidationProfile};
 use std::env;
 
 fn main() -> Result<()> {
@@ -19,7 +19,7 @@ fn main() -> Result<()> {
         _ => bail!("invalid version"),
     };
 
-    v.validate();
+    v.validate_profile(ValidationProfile::Basic);
 
     Ok(())
 }

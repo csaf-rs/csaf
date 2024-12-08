@@ -1,23 +1,29 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
 use crate::csaf::validation::{Validate, ValidationProfile};
+use lazy_static::lazy_static;
 use std::collections::{HashMap, HashSet};
 
 type Test = fn(&CommonSecurityAdvisoryFramework) -> Result<(), String>;
 
-static PROFILES: HashMap<ValidationProfile, Vec<&str>> = HashMap::from([
-    (ValidationProfile::Basic, vec!["6.1.1", "6.1.2"]),
-    (ValidationProfile::Extended, vec!["6.1.1", "6.1.2"]),
-    (ValidationProfile::Full, vec!["6.1.1", "6.1.2"]),
-]);
-
-static TESTS: HashMap<&str, Test> = HashMap::<&str, Test>::from([
-    ("6.1.1", test_6_01_01_missing_definition_of_product_id),
-    ("6.1.2", test_6_01_02_multiple_definition_of_product_id),
-] as [(&str, Test); 2]);
+// TODO: convert this to code using std::sync::OnceLock
+lazy_static! {
+    static ref PROFILES: HashMap<ValidationProfile, Vec<&'static str>> = HashMap::from([
+        (
+            ValidationProfile::Basic,
+            Vec::from(["6.1.1", "6.1.2", "6.1.34"])
+        ),
+        (ValidationProfile::Extended, Vec::from(["6.1.1", "6.1.2"])),
+        (ValidationProfile::Full, Vec::from(["6.1.1", "6.1.2"])),
+    ]);
+    static ref TESTS: HashMap<&'static str, Test> = HashMap::<&str, Test>::from([
+        ("6.1.1", test_6_01_01_missing_definition_of_product_id),
+        ("6.1.2", test_6_01_02_multiple_definition_of_product_id),
+    ] as [(&str, Test); 2]);
+}
 
 impl Validate for CommonSecurityAdvisoryFramework {
-    fn validate_profile(&self, profile: &ValidationProfile) {
+    fn validate_profile(&self, profile: ValidationProfile) {
         println!("Validating document... \n");
 
         println!("Executing Test 6.1.1... ");
@@ -70,6 +76,22 @@ pub fn test_6_01_02_multiple_definition_of_product_id(
         Ok(())
     } else {
         Err(format!("Duplicate definitions: {:?}", duplicates))
+    }
+}
+
+pub fn test_6_01_34_branches_recursion_depth(
+    doc: &CommonSecurityAdvisoryFramework,
+) -> Result<(), String> {
+    let depth = if let Some(x) = doc.product_tree.as_ref() {
+        count_branch_depth_tree(x)
+    } else {
+        0
+    };
+
+    if depth < 30 {
+        Ok(())
+    } else {
+        Err(format!("Recursion depth too big: {:?}", depth))
     }
 }
 

@@ -1,10 +1,10 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
-use crate::csaf::validation::Validate;
+use crate::csaf::validation::{Validate, ValidationProfile};
 use std::collections::{HashMap, HashSet};
 
 impl Validate for CommonSecurityAdvisoryFramework {
-    fn validate(&self) {
+    fn validate_profile(&self, profile: ValidationProfile) {
         println!("Validating document... \n");
 
         println!("Executing Test 6.1.1... ");
@@ -20,6 +20,10 @@ impl Validate for CommonSecurityAdvisoryFramework {
             Ok(()) => println!("> Test Success"),
             Err(e) => println!("> Error: {}", e),
         };
+    }
+
+    fn validate_by_test(&self, version: &str) {
+        todo!()
     }
 }
 

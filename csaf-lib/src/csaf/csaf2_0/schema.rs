@@ -4,12 +4,18 @@ pub mod error {
     pub struct ConversionError(::std::borrow::Cow<'static, str>);
     impl ::std::error::Error for ConversionError {}
     impl ::std::fmt::Display for ConversionError {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
+        fn fmt(
+            &self,
+            f: &mut ::std::fmt::Formatter<'_>,
+        ) -> Result<(), ::std::fmt::Error> {
             ::std::fmt::Display::fmt(&self.0, f)
         }
     }
     impl ::std::fmt::Debug for ConversionError {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
+        fn fmt(
+            &self,
+            f: &mut ::std::fmt::Formatter<'_>,
+        ) -> Result<(), ::std::fmt::Error> {
             ::std::fmt::Debug::fmt(&self.0, f)
         }
     }
@@ -760,7 +766,7 @@ impl From<Vec<Branch>> for BranchesT {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum CategoryOfPublisher {
     #[serde(rename = "coordinator")]
@@ -852,7 +858,7 @@ impl std::convert::TryFrom<String> for CategoryOfPublisher {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum CategoryOfReference {
     #[serde(rename = "external")]
@@ -939,7 +945,7 @@ impl Default for CategoryOfReference {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum CategoryOfRestart {
     #[serde(rename = "connected")]
@@ -1052,7 +1058,7 @@ impl std::convert::TryFrom<String> for CategoryOfRestart {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum CategoryOfTheBranch {
     #[serde(rename = "architecture")]
@@ -1170,7 +1176,7 @@ impl std::convert::TryFrom<String> for CategoryOfTheBranch {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum CategoryOfTheRemediation {
     #[serde(rename = "mitigation")]
@@ -1258,7 +1264,7 @@ impl std::convert::TryFrom<String> for CategoryOfTheRemediation {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum CategoryOfTheThreat {
     #[serde(rename = "exploit_status")]
@@ -1338,7 +1344,8 @@ impl From<CommonPlatformEnumerationRepresentation> for String {
         value.0
     }
 }
-impl From<&CommonPlatformEnumerationRepresentation> for CommonPlatformEnumerationRepresentation {
+impl From<&CommonPlatformEnumerationRepresentation>
+for CommonPlatformEnumerationRepresentation {
     fn from(value: &CommonPlatformEnumerationRepresentation) -> Self {
         value.clone()
     }
@@ -2600,7 +2607,7 @@ impl CryptographicHashes {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum CsafVersion {
     #[serde(rename = "2.0")]
@@ -2679,10 +2686,7 @@ impl From<&Cve> for Cve {
 impl ::std::str::FromStr for Cve {
     type Err = self::error::ConversionError;
     fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^CVE-[0-9]{4}-[0-9]{4,}$")
-            .unwrap()
-            .find(value)
-            .is_none()
+        if regress::Regex::new("^CVE-[0-9]{4}-[0-9]{4,}$").unwrap().find(value).is_none()
         {
             return Err("doesn't match pattern \"^CVE-[0-9]{4}-[0-9]{4,}$\"".into());
         }
@@ -2965,7 +2969,9 @@ impl ::std::str::FromStr for DocumentCategory {
             .find(value)
             .is_none()
         {
-            return Err("doesn't match pattern \"^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$\"".into());
+            return Err(
+                "doesn't match pattern \"^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$\"".into(),
+            );
         }
         Ok(Self(value.to_string()))
     }
@@ -3513,7 +3519,7 @@ impl DocumentLevelMetaData {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum DocumentStatus {
     #[serde(rename = "draft")]
@@ -4760,7 +4766,7 @@ impl<'de> ::serde::Deserialize<'de> for IssuingAuthority {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum LabelOfTheFlag {
     #[serde(rename = "component_not_present")]
@@ -4805,7 +4811,9 @@ impl std::str::FromStr for LabelOfTheFlag {
             "vulnerable_code_cannot_be_controlled_by_adversary" => {
                 Ok(Self::VulnerableCodeCannotBeControlledByAdversary)
             }
-            "vulnerable_code_not_in_execute_path" => Ok(Self::VulnerableCodeNotInExecutePath),
+            "vulnerable_code_not_in_execute_path" => {
+                Ok(Self::VulnerableCodeNotInExecutePath)
+            }
             "vulnerable_code_not_present" => Ok(Self::VulnerableCodeNotPresent),
             _ => Err("invalid value".into()),
         }
@@ -4857,7 +4865,7 @@ impl std::convert::TryFrom<String> for LabelOfTheFlag {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum LabelOfTlp {
     #[serde(rename = "AMBER")]
@@ -5485,7 +5493,7 @@ impl Note {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum NoteCategory {
     #[serde(rename = "description")]
@@ -5744,7 +5752,7 @@ impl From<Vec<Note>> for NotesT {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum PartyCategory {
     #[serde(rename = "coordinator")]
@@ -5835,7 +5843,7 @@ impl std::convert::TryFrom<String> for PartyCategory {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum PartyStatus {
     #[serde(rename = "completed")]
@@ -6732,7 +6740,7 @@ impl Relationship {
     Hash,
     Ord,
     PartialEq,
-    PartialOrd,
+    PartialOrd
 )]
 pub enum RelationshipCategory {
     #[serde(rename = "default_component_of")]
@@ -8621,11 +8629,7 @@ impl ::std::str::FromStr for UniqueIdentifierForTheDocument {
         if value.len() < 1usize {
             return Err("shorter than 1 characters".into());
         }
-        if regress::Regex::new("^[\\S](.*[\\S])?$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        if regress::Regex::new("^[\\S](.*[\\S])?$").unwrap().find(value).is_none() {
             return Err("doesn't match pattern \"^[\\S](.*[\\S])?$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -8704,11 +8708,7 @@ impl ::std::str::FromStr for ValueOfTheCryptographicHash {
         if value.len() < 32usize {
             return Err("shorter than 32 characters".into());
         }
-        if regress::Regex::new("^[0-9a-fA-F]{32,}$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        if regress::Regex::new("^[0-9a-fA-F]{32,}$").unwrap().find(value).is_none() {
             return Err("doesn't match pattern \"^[0-9a-fA-F]{32,}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -9362,11 +9362,7 @@ impl From<&WeaknessId> for WeaknessId {
 impl ::std::str::FromStr for WeaknessId {
     type Err = self::error::ConversionError;
     fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^CWE-[1-9]\\d{0,5}$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        if regress::Regex::new("^CWE-[1-9]\\d{0,5}$").unwrap().find(value).is_none() {
             return Err("doesn't match pattern \"^CWE-[1-9]\\d{0,5}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -9504,7 +9500,9 @@ pub mod builder {
         {
             self.names = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for names: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for names: {}", e)
+                });
             self
         }
         pub fn organization<T>(mut self, value: T) -> Self
@@ -9514,7 +9512,9 @@ pub mod builder {
         {
             self.organization = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for organization: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for organization: {}", e)
+                });
             self
         }
         pub fn summary<T>(mut self, value: T) -> Self
@@ -9524,7 +9524,9 @@ pub mod builder {
         {
             self.summary = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for summary: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {}", e)
+                });
             self
         }
         pub fn urls<T>(mut self, value: T) -> Self
@@ -9540,7 +9542,9 @@ pub mod builder {
     }
     impl std::convert::TryFrom<Acknowledgment> for super::Acknowledgment {
         type Error = super::error::ConversionError;
-        fn try_from(value: Acknowledgment) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: Acknowledgment,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 names: value.names?,
                 organization: value.organization?,
@@ -9580,7 +9584,9 @@ pub mod builder {
         {
             self.namespace = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for namespace: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for namespace: {}", e)
+                });
             self
         }
         pub fn text<T>(mut self, value: T) -> Self
@@ -9596,7 +9602,9 @@ pub mod builder {
     }
     impl std::convert::TryFrom<AggregateSeverity> for super::AggregateSeverity {
         type Error = super::error::ConversionError;
-        fn try_from(value: AggregateSeverity) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: AggregateSeverity,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 namespace: value.namespace?,
                 text: value.text?,
@@ -9636,7 +9644,9 @@ pub mod builder {
         {
             self.branches = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for branches: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for branches: {}", e)
+                });
             self
         }
         pub fn category<T>(mut self, value: T) -> Self
@@ -9646,7 +9656,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn name<T>(mut self, value: T) -> Self
@@ -9666,7 +9678,9 @@ pub mod builder {
         {
             self.product = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product: {}", e)
+                });
             self
         }
     }
@@ -9714,7 +9728,9 @@ pub mod builder {
         {
             self.document = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for document: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for document: {}", e)
+                });
             self
         }
         pub fn product_tree<T>(mut self, value: T) -> Self
@@ -9724,7 +9740,9 @@ pub mod builder {
         {
             self.product_tree = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_tree: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_tree: {}", e)
+                });
             self
         }
         pub fn vulnerabilities<T>(mut self, value: T) -> Self
@@ -9734,13 +9752,14 @@ pub mod builder {
         {
             self.vulnerabilities = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for vulnerabilities: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for vulnerabilities: {}", e)
+                });
             self
         }
     }
     impl std::convert::TryFrom<CommonSecurityAdvisoryFramework>
-        for super::CommonSecurityAdvisoryFramework
-    {
+    for super::CommonSecurityAdvisoryFramework {
         type Error = super::error::ConversionError;
         fn try_from(
             value: CommonSecurityAdvisoryFramework,
@@ -9752,7 +9771,8 @@ pub mod builder {
             })
         }
     }
-    impl From<super::CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
+    impl From<super::CommonSecurityAdvisoryFramework>
+    for CommonSecurityAdvisoryFramework {
         fn from(value: super::CommonSecurityAdvisoryFramework) -> Self {
             Self {
                 document: Ok(value.document),
@@ -9782,7 +9802,9 @@ pub mod builder {
         {
             self.file_hashes = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for file_hashes: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for file_hashes: {}", e)
+                });
             self
         }
         pub fn filename<T>(mut self, value: T) -> Self
@@ -9792,13 +9814,17 @@ pub mod builder {
         {
             self.filename = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for filename: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for filename: {}", e)
+                });
             self
         }
     }
     impl std::convert::TryFrom<CryptographicHashes> for super::CryptographicHashes {
         type Error = super::error::ConversionError;
-        fn try_from(value: CryptographicHashes) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: CryptographicHashes,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 file_hashes: value.file_hashes?,
                 filename: value.filename?,
@@ -9896,13 +9922,17 @@ pub mod builder {
         {
             self.engine = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for engine: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for engine: {}", e)
+                });
             self
         }
     }
     impl std::convert::TryFrom<DocumentGenerator> for super::DocumentGenerator {
         type Error = super::error::ConversionError;
-        fn try_from(value: DocumentGenerator) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: DocumentGenerator,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 date: value.date?,
                 engine: value.engine?,
@@ -9958,7 +9988,9 @@ pub mod builder {
         {
             self.acknowledgments = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for acknowledgments: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for acknowledgments: {}", e)
+                });
             self
         }
         pub fn aggregate_severity<T>(mut self, value: T) -> Self
@@ -9966,12 +9998,13 @@ pub mod builder {
             T: std::convert::TryInto<Option<super::AggregateSeverity>>,
             T::Error: std::fmt::Display,
         {
-            self.aggregate_severity = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for aggregate_severity: {}",
-                    e
-                )
-            });
+            self.aggregate_severity = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for aggregate_severity: {}", e
+                    )
+                });
             self
         }
         pub fn category<T>(mut self, value: T) -> Self
@@ -9981,7 +10014,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn csaf_version<T>(mut self, value: T) -> Self
@@ -9991,7 +10026,9 @@ pub mod builder {
         {
             self.csaf_version = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for csaf_version: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for csaf_version: {}", e)
+                });
             self
         }
         pub fn distribution<T>(mut self, value: T) -> Self
@@ -10001,7 +10038,9 @@ pub mod builder {
         {
             self.distribution = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for distribution: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for distribution: {}", e)
+                });
             self
         }
         pub fn lang<T>(mut self, value: T) -> Self
@@ -10021,7 +10060,9 @@ pub mod builder {
         {
             self.notes = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for notes: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for notes: {}", e)
+                });
             self
         }
         pub fn publisher<T>(mut self, value: T) -> Self
@@ -10031,7 +10072,9 @@ pub mod builder {
         {
             self.publisher = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for publisher: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for publisher: {}", e)
+                });
             self
         }
         pub fn references<T>(mut self, value: T) -> Self
@@ -10041,7 +10084,9 @@ pub mod builder {
         {
             self.references = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for references: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for references: {}", e)
+                });
             self
         }
         pub fn source_lang<T>(mut self, value: T) -> Self
@@ -10051,7 +10096,9 @@ pub mod builder {
         {
             self.source_lang = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for source_lang: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for source_lang: {}", e)
+                });
             self
         }
         pub fn title<T>(mut self, value: T) -> Self
@@ -10061,7 +10108,9 @@ pub mod builder {
         {
             self.title = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for title: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for title: {}", e)
+                });
             self
         }
         pub fn tracking<T>(mut self, value: T) -> Self
@@ -10071,13 +10120,17 @@ pub mod builder {
         {
             self.tracking = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for tracking: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for tracking: {}", e)
+                });
             self
         }
     }
     impl std::convert::TryFrom<DocumentLevelMetaData> for super::DocumentLevelMetaData {
         type Error = super::error::ConversionError;
-        fn try_from(value: DocumentLevelMetaData) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: DocumentLevelMetaData,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 acknowledgments: value.acknowledgments?,
                 aggregate_severity: value.aggregate_severity?,
@@ -10143,11 +10196,14 @@ pub mod builder {
         {
             self.version = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for version: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for version: {}", e)
+                });
             self
         }
     }
-    impl std::convert::TryFrom<EngineOfDocumentGeneration> for super::EngineOfDocumentGeneration {
+    impl std::convert::TryFrom<EngineOfDocumentGeneration>
+    for super::EngineOfDocumentGeneration {
         type Error = super::error::ConversionError;
         fn try_from(
             value: EngineOfDocumentGeneration,
@@ -10187,7 +10243,9 @@ pub mod builder {
         {
             self.algorithm = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for algorithm: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for algorithm: {}", e)
+                });
             self
         }
         pub fn value<T>(mut self, value: T) -> Self
@@ -10197,7 +10255,9 @@ pub mod builder {
         {
             self.value = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for value: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for value: {}", e)
+                });
             self
         }
     }
@@ -10253,7 +10313,9 @@ pub mod builder {
         {
             self.group_ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for group_ids: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {}", e)
+                });
             self
         }
         pub fn label<T>(mut self, value: T) -> Self
@@ -10263,7 +10325,9 @@ pub mod builder {
         {
             self.label = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for label: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for label: {}", e)
+                });
             self
         }
         pub fn product_ids<T>(mut self, value: T) -> Self
@@ -10273,7 +10337,9 @@ pub mod builder {
         {
             self.product_ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_ids: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {}", e)
+                });
             self
         }
     }
@@ -10302,7 +10368,10 @@ pub mod builder {
     pub struct FullProductNameT {
         name: Result<super::TextualDescriptionOfTheProduct, String>,
         product_id: Result<super::ProductIdT, String>,
-        product_identification_helper: Result<Option<super::HelperToIdentifyTheProduct>, String>,
+        product_identification_helper: Result<
+            Option<super::HelperToIdentifyTheProduct>,
+            String,
+        >,
     }
     impl Default for FullProductNameT {
         fn default() -> Self {
@@ -10331,7 +10400,9 @@ pub mod builder {
         {
             self.product_id = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_id: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_id: {}", e)
+                });
             self
         }
         pub fn product_identification_helper<T>(mut self, value: T) -> Self
@@ -10339,18 +10410,22 @@ pub mod builder {
             T: std::convert::TryInto<Option<super::HelperToIdentifyTheProduct>>,
             T::Error: std::fmt::Display,
         {
-            self.product_identification_helper = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for product_identification_helper: {}",
-                    e
-                )
-            });
+            self.product_identification_helper = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for product_identification_helper: {}",
+                        e
+                    )
+                });
             self
         }
     }
     impl std::convert::TryFrom<FullProductNameT> for super::FullProductNameT {
         type Error = super::error::ConversionError;
-        fn try_from(value: FullProductNameT) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: FullProductNameT,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 name: value.name?,
                 product_id: value.product_id?,
@@ -10388,7 +10463,9 @@ pub mod builder {
         {
             self.namespace = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for namespace: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for namespace: {}", e)
+                });
             self
         }
         pub fn uri<T>(mut self, value: T) -> Self
@@ -10447,7 +10524,9 @@ pub mod builder {
     impl HelperToIdentifyTheProduct {
         pub fn cpe<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<super::CommonPlatformEnumerationRepresentation>>,
+            T: std::convert::TryInto<
+                Option<super::CommonPlatformEnumerationRepresentation>,
+            >,
             T::Error: std::fmt::Display,
         {
             self.cpe = value
@@ -10462,7 +10541,9 @@ pub mod builder {
         {
             self.hashes = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for hashes: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for hashes: {}", e)
+                });
             self
         }
         pub fn model_numbers<T>(mut self, value: T) -> Self
@@ -10472,7 +10553,9 @@ pub mod builder {
         {
             self.model_numbers = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for model_numbers: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for model_numbers: {}", e)
+                });
             self
         }
         pub fn purl<T>(mut self, value: T) -> Self
@@ -10492,7 +10575,9 @@ pub mod builder {
         {
             self.sbom_urls = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for sbom_urls: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for sbom_urls: {}", e)
+                });
             self
         }
         pub fn serial_numbers<T>(mut self, value: T) -> Self
@@ -10502,7 +10587,9 @@ pub mod builder {
         {
             self.serial_numbers = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for serial_numbers: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for serial_numbers: {}", e)
+                });
             self
         }
         pub fn skus<T>(mut self, value: T) -> Self
@@ -10522,11 +10609,14 @@ pub mod builder {
         {
             self.x_generic_uris = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for x_generic_uris: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for x_generic_uris: {}", e)
+                });
             self
         }
     }
-    impl std::convert::TryFrom<HelperToIdentifyTheProduct> for super::HelperToIdentifyTheProduct {
+    impl std::convert::TryFrom<HelperToIdentifyTheProduct>
+    for super::HelperToIdentifyTheProduct {
         type Error = super::error::ConversionError;
         fn try_from(
             value: HelperToIdentifyTheProduct,
@@ -10578,7 +10668,9 @@ pub mod builder {
         {
             self.system_name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for system_name: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for system_name: {}", e)
+                });
             self
         }
         pub fn text<T>(mut self, value: T) -> Self
@@ -10644,7 +10736,9 @@ pub mod builder {
         {
             self.party = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for party: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for party: {}", e)
+                });
             self
         }
         pub fn status<T>(mut self, value: T) -> Self
@@ -10654,7 +10748,9 @@ pub mod builder {
         {
             self.status = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for status: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for status: {}", e)
+                });
             self
         }
         pub fn summary<T>(mut self, value: T) -> Self
@@ -10664,7 +10760,9 @@ pub mod builder {
         {
             self.summary = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for summary: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {}", e)
+                });
             self
         }
     }
@@ -10714,7 +10812,9 @@ pub mod builder {
         {
             self.audience = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for audience: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for audience: {}", e)
+                });
             self
         }
         pub fn category<T>(mut self, value: T) -> Self
@@ -10724,7 +10824,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn text<T>(mut self, value: T) -> Self
@@ -10744,7 +10846,9 @@ pub mod builder {
         {
             self.title = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for title: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for title: {}", e)
+                });
             self
         }
     }
@@ -10792,7 +10896,9 @@ pub mod builder {
         {
             self.group_id = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for group_id: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for group_id: {}", e)
+                });
             self
         }
         pub fn product_ids<T>(mut self, value: T) -> Self
@@ -10802,7 +10908,9 @@ pub mod builder {
         {
             self.product_ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_ids: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {}", e)
+                });
             self
         }
         pub fn summary<T>(mut self, value: T) -> Self
@@ -10812,7 +10920,9 @@ pub mod builder {
         {
             self.summary = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for summary: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {}", e)
+                });
             self
         }
     }
@@ -10868,7 +10978,9 @@ pub mod builder {
         {
             self.first_affected = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for first_affected: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for first_affected: {}", e)
+                });
             self
         }
         pub fn first_fixed<T>(mut self, value: T) -> Self
@@ -10878,7 +10990,9 @@ pub mod builder {
         {
             self.first_fixed = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for first_fixed: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for first_fixed: {}", e)
+                });
             self
         }
         pub fn fixed<T>(mut self, value: T) -> Self
@@ -10888,7 +11002,9 @@ pub mod builder {
         {
             self.fixed = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for fixed: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for fixed: {}", e)
+                });
             self
         }
         pub fn known_affected<T>(mut self, value: T) -> Self
@@ -10898,7 +11014,9 @@ pub mod builder {
         {
             self.known_affected = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for known_affected: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for known_affected: {}", e)
+                });
             self
         }
         pub fn known_not_affected<T>(mut self, value: T) -> Self
@@ -10906,12 +11024,13 @@ pub mod builder {
             T: std::convert::TryInto<Option<super::ProductsT>>,
             T::Error: std::fmt::Display,
         {
-            self.known_not_affected = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for known_not_affected: {}",
-                    e
-                )
-            });
+            self.known_not_affected = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for known_not_affected: {}", e
+                    )
+                });
             self
         }
         pub fn last_affected<T>(mut self, value: T) -> Self
@@ -10921,7 +11040,9 @@ pub mod builder {
         {
             self.last_affected = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for last_affected: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for last_affected: {}", e)
+                });
             self
         }
         pub fn recommended<T>(mut self, value: T) -> Self
@@ -10931,7 +11052,9 @@ pub mod builder {
         {
             self.recommended = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for recommended: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for recommended: {}", e)
+                });
             self
         }
         pub fn under_investigation<T>(mut self, value: T) -> Self
@@ -10939,18 +11062,21 @@ pub mod builder {
             T: std::convert::TryInto<Option<super::ProductsT>>,
             T::Error: std::fmt::Display,
         {
-            self.under_investigation = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for under_investigation: {}",
-                    e
-                )
-            });
+            self.under_investigation = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for under_investigation: {}", e
+                    )
+                });
             self
         }
     }
     impl std::convert::TryFrom<ProductStatus> for super::ProductStatus {
         type Error = super::error::ConversionError;
-        fn try_from(value: ProductStatus) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: ProductStatus,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 first_affected: value.first_affected?,
                 first_fixed: value.first_fixed?,
@@ -11002,7 +11128,9 @@ pub mod builder {
         {
             self.branches = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for branches: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for branches: {}", e)
+                });
             self
         }
         pub fn full_product_names<T>(mut self, value: T) -> Self
@@ -11010,12 +11138,13 @@ pub mod builder {
             T: std::convert::TryInto<Vec<super::FullProductNameT>>,
             T::Error: std::fmt::Display,
         {
-            self.full_product_names = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for full_product_names: {}",
-                    e
-                )
-            });
+            self.full_product_names = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for full_product_names: {}", e
+                    )
+                });
             self
         }
         pub fn product_groups<T>(mut self, value: T) -> Self
@@ -11025,7 +11154,9 @@ pub mod builder {
         {
             self.product_groups = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_groups: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_groups: {}", e)
+                });
             self
         }
         pub fn relationships<T>(mut self, value: T) -> Self
@@ -11035,7 +11166,9 @@ pub mod builder {
         {
             self.relationships = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for relationships: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for relationships: {}", e)
+                });
             self
         }
     }
@@ -11087,7 +11220,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn contact_details<T>(mut self, value: T) -> Self
@@ -11097,7 +11232,9 @@ pub mod builder {
         {
             self.contact_details = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for contact_details: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for contact_details: {}", e)
+                });
             self
         }
         pub fn issuing_authority<T>(mut self, value: T) -> Self
@@ -11105,12 +11242,13 @@ pub mod builder {
             T: std::convert::TryInto<Option<super::IssuingAuthority>>,
             T::Error: std::fmt::Display,
         {
-            self.issuing_authority = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for issuing_authority: {}",
-                    e
-                )
-            });
+            self.issuing_authority = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for issuing_authority: {}", e
+                    )
+                });
             self
         }
         pub fn name<T>(mut self, value: T) -> Self
@@ -11130,7 +11268,9 @@ pub mod builder {
         {
             self.namespace = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for namespace: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for namespace: {}", e)
+                });
             self
         }
     }
@@ -11180,7 +11320,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn summary<T>(mut self, value: T) -> Self
@@ -11190,7 +11332,9 @@ pub mod builder {
         {
             self.summary = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for summary: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {}", e)
+                });
             self
         }
         pub fn url<T>(mut self, value: T) -> Self
@@ -11234,8 +11378,12 @@ pub mod builder {
         fn default() -> Self {
             Self {
                 category: Err("no value supplied for category".to_string()),
-                full_product_name: Err("no value supplied for full_product_name".to_string()),
-                product_reference: Err("no value supplied for product_reference".to_string()),
+                full_product_name: Err(
+                    "no value supplied for full_product_name".to_string(),
+                ),
+                product_reference: Err(
+                    "no value supplied for product_reference".to_string(),
+                ),
                 relates_to_product_reference: Err(
                     "no value supplied for relates_to_product_reference".to_string(),
                 ),
@@ -11250,7 +11398,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn full_product_name<T>(mut self, value: T) -> Self
@@ -11258,12 +11408,13 @@ pub mod builder {
             T: std::convert::TryInto<super::FullProductNameT>,
             T::Error: std::fmt::Display,
         {
-            self.full_product_name = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for full_product_name: {}",
-                    e
-                )
-            });
+            self.full_product_name = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for full_product_name: {}", e
+                    )
+                });
             self
         }
         pub fn product_reference<T>(mut self, value: T) -> Self
@@ -11271,12 +11422,13 @@ pub mod builder {
             T: std::convert::TryInto<super::ProductIdT>,
             T::Error: std::fmt::Display,
         {
-            self.product_reference = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for product_reference: {}",
-                    e
-                )
-            });
+            self.product_reference = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for product_reference: {}", e
+                    )
+                });
             self
         }
         pub fn relates_to_product_reference<T>(mut self, value: T) -> Self
@@ -11284,12 +11436,14 @@ pub mod builder {
             T: std::convert::TryInto<super::ProductIdT>,
             T::Error: std::fmt::Display,
         {
-            self.relates_to_product_reference = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for relates_to_product_reference: {}",
-                    e
-                )
-            });
+            self.relates_to_product_reference = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for relates_to_product_reference: {}",
+                        e
+                    )
+                });
             self
         }
     }
@@ -11347,7 +11501,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn date<T>(mut self, value: T) -> Self
@@ -11367,7 +11523,9 @@ pub mod builder {
         {
             self.details = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for details: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for details: {}", e)
+                });
             self
         }
         pub fn entitlements<T>(mut self, value: T) -> Self
@@ -11377,7 +11535,9 @@ pub mod builder {
         {
             self.entitlements = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for entitlements: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for entitlements: {}", e)
+                });
             self
         }
         pub fn group_ids<T>(mut self, value: T) -> Self
@@ -11387,7 +11547,9 @@ pub mod builder {
         {
             self.group_ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for group_ids: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {}", e)
+                });
             self
         }
         pub fn product_ids<T>(mut self, value: T) -> Self
@@ -11397,7 +11559,9 @@ pub mod builder {
         {
             self.product_ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_ids: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {}", e)
+                });
             self
         }
         pub fn restart_required<T>(mut self, value: T) -> Self
@@ -11405,12 +11569,13 @@ pub mod builder {
             T: std::convert::TryInto<Option<super::RestartRequiredByRemediation>>,
             T::Error: std::fmt::Display,
         {
-            self.restart_required = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for restart_required: {}",
-                    e
-                )
-            });
+            self.restart_required = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for restart_required: {}", e
+                    )
+                });
             self
         }
         pub fn url<T>(mut self, value: T) -> Self
@@ -11474,7 +11639,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn details<T>(mut self, value: T) -> Self
@@ -11484,11 +11651,14 @@ pub mod builder {
         {
             self.details = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for details: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for details: {}", e)
+                });
             self
         }
     }
-    impl std::convert::TryFrom<RestartRequiredByRemediation> for super::RestartRequiredByRemediation {
+    impl std::convert::TryFrom<RestartRequiredByRemediation>
+    for super::RestartRequiredByRemediation {
         type Error = super::error::ConversionError;
         fn try_from(
             value: RestartRequiredByRemediation,
@@ -11542,7 +11712,9 @@ pub mod builder {
         {
             self.legacy_version = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for legacy_version: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for legacy_version: {}", e)
+                });
             self
         }
         pub fn number<T>(mut self, value: T) -> Self
@@ -11552,7 +11724,9 @@ pub mod builder {
         {
             self.number = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for number: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for number: {}", e)
+                });
             self
         }
         pub fn summary<T>(mut self, value: T) -> Self
@@ -11562,7 +11736,9 @@ pub mod builder {
         {
             self.summary = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for summary: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {}", e)
+                });
             self
         }
     }
@@ -11622,9 +11798,12 @@ pub mod builder {
             self
         }
     }
-    impl std::convert::TryFrom<RulesForSharingDocument> for super::RulesForSharingDocument {
+    impl std::convert::TryFrom<RulesForSharingDocument>
+    for super::RulesForSharingDocument {
         type Error = super::error::ConversionError;
-        fn try_from(value: RulesForSharingDocument) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: RulesForSharingDocument,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 text: value.text?,
                 tlp: value.tlp?,
@@ -11662,7 +11841,9 @@ pub mod builder {
         {
             self.cvss_v2 = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for cvss_v2: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for cvss_v2: {}", e)
+                });
             self
         }
         pub fn cvss_v3<T>(mut self, value: T) -> Self
@@ -11672,7 +11853,9 @@ pub mod builder {
         {
             self.cvss_v3 = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for cvss_v3: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for cvss_v3: {}", e)
+                });
             self
         }
         pub fn products<T>(mut self, value: T) -> Self
@@ -11682,7 +11865,9 @@ pub mod builder {
         {
             self.products = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for products: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for products: {}", e)
+                });
             self
         }
     }
@@ -11732,7 +11917,9 @@ pub mod builder {
         {
             self.category = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for category: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {}", e)
+                });
             self
         }
         pub fn date<T>(mut self, value: T) -> Self
@@ -11752,7 +11939,9 @@ pub mod builder {
         {
             self.details = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for details: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for details: {}", e)
+                });
             self
         }
         pub fn group_ids<T>(mut self, value: T) -> Self
@@ -11762,7 +11951,9 @@ pub mod builder {
         {
             self.group_ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for group_ids: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {}", e)
+                });
             self
         }
         pub fn product_ids<T>(mut self, value: T) -> Self
@@ -11772,7 +11963,9 @@ pub mod builder {
         {
             self.product_ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_ids: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {}", e)
+                });
             self
         }
     }
@@ -11814,11 +12007,17 @@ pub mod builder {
         fn default() -> Self {
             Self {
                 aliases: Ok(Default::default()),
-                current_release_date: Err("no value supplied for current_release_date".to_string()),
+                current_release_date: Err(
+                    "no value supplied for current_release_date".to_string(),
+                ),
                 generator: Ok(Default::default()),
                 id: Err("no value supplied for id".to_string()),
-                initial_release_date: Err("no value supplied for initial_release_date".to_string()),
-                revision_history: Err("no value supplied for revision_history".to_string()),
+                initial_release_date: Err(
+                    "no value supplied for initial_release_date".to_string(),
+                ),
+                revision_history: Err(
+                    "no value supplied for revision_history".to_string(),
+                ),
                 status: Err("no value supplied for status".to_string()),
                 version: Err("no value supplied for version".to_string()),
             }
@@ -11832,7 +12031,9 @@ pub mod builder {
         {
             self.aliases = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for aliases: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for aliases: {}", e)
+                });
             self
         }
         pub fn current_release_date<T>(mut self, value: T) -> Self
@@ -11840,12 +12041,13 @@ pub mod builder {
             T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
             T::Error: std::fmt::Display,
         {
-            self.current_release_date = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for current_release_date: {}",
-                    e
-                )
-            });
+            self.current_release_date = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for current_release_date: {}", e
+                    )
+                });
             self
         }
         pub fn generator<T>(mut self, value: T) -> Self
@@ -11855,7 +12057,9 @@ pub mod builder {
         {
             self.generator = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for generator: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for generator: {}", e)
+                });
             self
         }
         pub fn id<T>(mut self, value: T) -> Self
@@ -11873,12 +12077,13 @@ pub mod builder {
             T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
             T::Error: std::fmt::Display,
         {
-            self.initial_release_date = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for initial_release_date: {}",
-                    e
-                )
-            });
+            self.initial_release_date = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for initial_release_date: {}", e
+                    )
+                });
             self
         }
         pub fn revision_history<T>(mut self, value: T) -> Self
@@ -11886,12 +12091,13 @@ pub mod builder {
             T: std::convert::TryInto<Vec<super::Revision>>,
             T::Error: std::fmt::Display,
         {
-            self.revision_history = value.try_into().map_err(|e| {
-                format!(
-                    "error converting supplied value for revision_history: {}",
-                    e
-                )
-            });
+            self.revision_history = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for revision_history: {}", e
+                    )
+                });
             self
         }
         pub fn status<T>(mut self, value: T) -> Self
@@ -11901,7 +12107,9 @@ pub mod builder {
         {
             self.status = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for status: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for status: {}", e)
+                });
             self
         }
         pub fn version<T>(mut self, value: T) -> Self
@@ -11911,7 +12119,9 @@ pub mod builder {
         {
             self.version = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for version: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for version: {}", e)
+                });
             self
         }
     }
@@ -11965,7 +12175,9 @@ pub mod builder {
         {
             self.label = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for label: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for label: {}", e)
+                });
             self
         }
         pub fn url<T>(mut self, value: T) -> Self
@@ -11979,9 +12191,12 @@ pub mod builder {
             self
         }
     }
-    impl std::convert::TryFrom<TrafficLightProtocolTlp> for super::TrafficLightProtocolTlp {
+    impl std::convert::TryFrom<TrafficLightProtocolTlp>
+    for super::TrafficLightProtocolTlp {
         type Error = super::error::ConversionError;
-        fn try_from(value: TrafficLightProtocolTlp) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: TrafficLightProtocolTlp,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 label: value.label?,
                 url: value.url?,
@@ -12043,7 +12258,9 @@ pub mod builder {
         {
             self.acknowledgments = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for acknowledgments: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for acknowledgments: {}", e)
+                });
             self
         }
         pub fn cve<T>(mut self, value: T) -> Self
@@ -12073,7 +12290,9 @@ pub mod builder {
         {
             self.discovery_date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for discovery_date: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for discovery_date: {}", e)
+                });
             self
         }
         pub fn flags<T>(mut self, value: T) -> Self
@@ -12083,7 +12302,9 @@ pub mod builder {
         {
             self.flags = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for flags: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for flags: {}", e)
+                });
             self
         }
         pub fn ids<T>(mut self, value: T) -> Self
@@ -12103,7 +12324,9 @@ pub mod builder {
         {
             self.involvements = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for involvements: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for involvements: {}", e)
+                });
             self
         }
         pub fn notes<T>(mut self, value: T) -> Self
@@ -12113,7 +12336,9 @@ pub mod builder {
         {
             self.notes = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for notes: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for notes: {}", e)
+                });
             self
         }
         pub fn product_status<T>(mut self, value: T) -> Self
@@ -12123,7 +12348,9 @@ pub mod builder {
         {
             self.product_status = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for product_status: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for product_status: {}", e)
+                });
             self
         }
         pub fn references<T>(mut self, value: T) -> Self
@@ -12133,7 +12360,9 @@ pub mod builder {
         {
             self.references = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for references: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for references: {}", e)
+                });
             self
         }
         pub fn release_date<T>(mut self, value: T) -> Self
@@ -12143,7 +12372,9 @@ pub mod builder {
         {
             self.release_date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for release_date: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for release_date: {}", e)
+                });
             self
         }
         pub fn remediations<T>(mut self, value: T) -> Self
@@ -12153,7 +12384,9 @@ pub mod builder {
         {
             self.remediations = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for remediations: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for remediations: {}", e)
+                });
             self
         }
         pub fn scores<T>(mut self, value: T) -> Self
@@ -12163,7 +12396,9 @@ pub mod builder {
         {
             self.scores = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for scores: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for scores: {}", e)
+                });
             self
         }
         pub fn threats<T>(mut self, value: T) -> Self
@@ -12173,7 +12408,9 @@ pub mod builder {
         {
             self.threats = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for threats: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for threats: {}", e)
+                });
             self
         }
         pub fn title<T>(mut self, value: T) -> Self
@@ -12183,13 +12420,17 @@ pub mod builder {
         {
             self.title = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for title: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for title: {}", e)
+                });
             self
         }
     }
     impl std::convert::TryFrom<Vulnerability> for super::Vulnerability {
         type Error = super::error::ConversionError;
-        fn try_from(value: Vulnerability) -> Result<Self, super::error::ConversionError> {
+        fn try_from(
+            value: Vulnerability,
+        ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
                 acknowledgments: value.acknowledgments?,
                 cve: value.cve?,

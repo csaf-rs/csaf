@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 pub enum ValidationError {}
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum ValidationProfile {
     Basic,
     Extended,
@@ -24,7 +24,7 @@ impl FromStr for ValidationProfile {
 
 pub trait Validate {
     /// Validates this object according to a validation profile
-    fn validate_profile(&self, profile: &ValidationProfile);
+    fn validate_profile(&self, profile: ValidationProfile);
 
     /// Validates this object according to a specific test ID.
     fn validate_by_test(&self, version: &str);

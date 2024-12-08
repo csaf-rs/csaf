@@ -1,4 +1,4 @@
-use super::schema::{Branch, CommonSecurityAdvisoryFramework, ProductIdT};
+use super::schema::{Branch, BranchesT, CommonSecurityAdvisoryFramework, ProductIdT, ProductTree};
 use std::collections::HashSet;
 
 pub fn gather_product_references(doc: &CommonSecurityAdvisoryFramework) -> HashSet<&ProductIdT> {
@@ -90,6 +90,34 @@ pub fn gather_product_definitions_from_branch(branch: &Branch) -> Vec<&ProductId
     }
 
     ids
+}
+
+pub fn count_branch_depth(branch: &Branch) -> u32 {
+    let mut i = 0;
+
+    // Go into the branch, calculate the depth and take the maximum value
+    if let Some(x) = branch.branches.as_ref() {
+        let values = x.iter().map(|x| count_branch_depth(x)).collect::<Vec<_>>();
+
+        // Add the maximum value to the branch depth
+        i += values.iter().cloned().fold(0, u32::max)
+    }
+
+    i
+}
+
+pub fn count_branch_depth_tree(tree: &ProductTree) -> u32 {
+    let mut i = 0;
+
+    // Go into the branch, calculate the depth and take the maximum value
+    if let Some(x) = tree.branches.as_ref() {
+        let values = x.iter().map(|x| count_branch_depth(x)).collect::<Vec<_>>();
+
+        // Add the maximum value to the branch depth
+        i += values.iter().cloned().fold(0, u32::max)
+    }
+
+    i
 }
 
 pub fn gather_product_definitions(doc: &CommonSecurityAdvisoryFramework) -> Vec<&ProductIdT> {

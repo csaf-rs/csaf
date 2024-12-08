@@ -1,5 +1,4 @@
 use super::schema::CommonSecurityAdvisoryFramework;
-use crate::csaf::validation::Validatable;
 use std::{fs::File, io::BufReader};
 
 pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {

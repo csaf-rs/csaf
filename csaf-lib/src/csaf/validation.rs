@@ -31,7 +31,7 @@ pub trait Validate {
     fn validate_by_test(&self, version: &str);
 }
 
-pub type Test<VersionedDocument: Validatable<VersionedDocument>> =
+pub type Test<VersionedDocument> =
     fn(&VersionedDocument) -> Result<(), String>;
 
 /// Represents something which is validatable according to the CSAF standard.

@@ -1,6 +1,6 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
-use crate::csaf::validation::{Test, Validatable, Validate, ValidationProfile};
+use crate::csaf::validation::{Test, Validatable, ValidationProfile};
 use std::collections::{HashMap, HashSet};
 use crate::csaf::helpers::find_duplicates;
 

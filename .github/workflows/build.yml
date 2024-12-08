@@ -74,7 +74,9 @@ jobs:
           name: csaf-validator-macos-arm64
           path: csaf-validator-macos-arm64
       - run: |
-          ls -R
+          # just some magic to make the released files work with multiple platforms
+          mv csaf-validator-linux-amd64/csaf-validator csaf-validator-linux-amd64/csaf-validator-linux-amd64
+          mv csaf-validator-macos-arm64/csaf-validator csaf-validator-macos-arm64/csaf-validator-macos-arm64
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
@@ -83,6 +85,6 @@ jobs:
           name: ${{ env.version }}
           draft: false
           prerelease: false
+          fail_on_unmatched_files: true
           files: |
-            csaf-validator-linux-amd64/csaf-validator
-            csaf-validator-macos-arm64/csaf-validator
+            csaf-validator-*/csaf-validator-*

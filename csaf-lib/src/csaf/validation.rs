@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 pub enum ValidationError {}
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum ValidationProfile {
     Basic,
     Extended,
@@ -78,8 +78,8 @@ pub fn validate_by_profile<VersionedDocument>(
     }
 }
 
-fn validate_by_test<VersionedDocument>(
-    target: Box<dyn Validatable<VersionedDocument>>,
+pub fn validate_by_test<VersionedDocument>(
+    target: impl Validatable<VersionedDocument>,
     test_id: &str,
 ) {
     todo!()

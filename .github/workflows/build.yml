@@ -33,7 +33,7 @@ jobs:
         run: cargo build --release --verbose
       - name: Run tests
         run: cargo test --verbose
-      - name: Archive csaf-validator (linux amd64)
+      - name: Archive csaf-validator (${{ matrix.arch }})
         uses: actions/upload-artifact@v4
         with:
           name: csaf-validator-${{ matrix.arch }}
@@ -61,12 +61,10 @@ jobs:
         with:
           path: csaf-validator
           pattern: csaf-validator-*
-          merge-multiple: true
       - run: |
-          ls -R
-          # just some magic to make the released files work with multiple platforms
-          mv csaf-validator-linux-amd64/csaf-validator csaf-validator-linux-amd64/csaf-validator-linux-amd64
-          mv csaf-validator-macos-arm64/csaf-validator csaf-validator-macos-arm64/csaf-validator-macos-arm64
+          # zip each folder
+          ls | xargs -I {} zip {}.zip -rj {}
+          ls csaf-validator-*.zip
       #- name: Create Release
       #  id: create_release
       #  uses: softprops/action-gh-release@v2
@@ -77,4 +75,4 @@ jobs:
       #    prerelease: false
       #    fail_on_unmatched_files: true
       #    files: |
-      #      csaf-validator-*/csaf-validator-*
+      #      csaf-validator-*.zip

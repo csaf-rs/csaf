@@ -68,11 +68,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: csaf-validator-linux-amd64
-          path: .
+          path: csaf-validator-linux-amd64
       - uses: actions/download-artifact@v4
         with:
           name: csaf-validator-macos-arm64
-          path: .
+          path: csaf-validator-macos-arm64
+      - run: |
+          ls -R
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
@@ -82,5 +84,5 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            csaf-validator-linux-amd64
-            csaf-validator-macos-arm64
+            csaf-validator-linux-amd64/csaf-validator
+            csaf-validator-macos-arm64/csaf-validator

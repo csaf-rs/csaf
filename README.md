@@ -43,7 +43,7 @@ Options:
 
 Some examples to use are included below. Please note that the validation is not yet fully implemented!
 
-```
+```bash
 # validate a CSAF 2.0 document with profile basic (the default)
 csaf-validator --csaf-version 2.0 my-csaf-2-0-document.json
 

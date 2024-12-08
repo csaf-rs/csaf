@@ -1,8 +1,7 @@
-use anyhow::{anyhow, bail, Result};
+use anyhow::{bail, Result};
 use csaf_lib::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_lib::csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf_lib::csaf::validation::{validate_by_profile, validate_by_test, Validatable, ValidationProfile};
-use std::env;
+use csaf_lib::csaf::validation::{validate_by_profile, validate_by_test, ValidationProfile};
 use clap::Parser;
 
 /// A validator for CSAF documents
@@ -34,10 +33,10 @@ fn main() -> Result<()> {
     if let Some(test_id) = args.only_test {
         let result = match args.csaf_version.as_str() {
             "2.0" => {
-                validate_by_test(load_document_2_0(args.path.as_str())?, test_id.as_str())
+                validate_by_test(&load_document_2_0(args.path.as_str())?, test_id.as_str())
             }
             "2.1" => {
-                validate_by_test(load_document_2_1(args.path.as_str())?, test_id.as_str())
+                validate_by_test(&load_document_2_1(args.path.as_str())?, test_id.as_str())
             }
             _ => bail!("invalid version"),
         };
@@ -46,10 +45,10 @@ fn main() -> Result<()> {
     } else {
         let result = match args.csaf_version.as_str() {
             "2.0" => {
-                validate_by_profile(load_document_2_0(args.path.as_str())?, profile)
+                validate_by_profile(&load_document_2_0(args.path.as_str())?, profile)
             }
             "2.1" => {
-                validate_by_profile(load_document_2_1(args.path.as_str())?, profile)
+                validate_by_profile(&load_document_2_1(args.path.as_str())?, profile)
             }
             _ => bail!("invalid version"),
         };

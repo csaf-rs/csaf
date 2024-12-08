@@ -52,7 +52,7 @@ pub trait Validatable<VersionedDocument> {
 /// Executes all tests of the specified [profile] against the [target]
 /// (which is of type [VersionedDocument], e.g. a CSAF 2.0 document).
 pub fn validate_by_profile<VersionedDocument>(
-    target: impl Validatable<VersionedDocument>,
+    target: &impl Validatable<VersionedDocument>,
     profile: ValidationProfile,
 ) {
     println!("Validating document with {:?} profile... \n", profile);
@@ -61,15 +61,7 @@ pub fn validate_by_profile<VersionedDocument>(
     if let Some(tests) = target.profiles().get(&profile) {
         for test_id in tests {
             println!("Executing Test {}... ", test_id);
-
-            if let Some(test_fn) = target.tests().get(test_id) {
-                let _ = match test_fn(target.doc()) {
-                    Ok(()) => println!("> Test Success"),
-                    Err(e) => println!("> Error: {}", e),
-                };
-            } else {
-                println!("Test with ID {} is missing implementation", test_id);
-            }
+            validate_by_test(target, test_id);
 
             println!()
         }
@@ -79,8 +71,15 @@ pub fn validate_by_profile<VersionedDocument>(
 }
 
 pub fn validate_by_test<VersionedDocument>(
-    target: impl Validatable<VersionedDocument>,
+    target: &impl Validatable<VersionedDocument>,
     test_id: &str,
 ) {
-    todo!()
+    if let Some(test_fn) = target.tests().get(test_id) {
+        let _ = match test_fn(target.doc()) {
+            Ok(()) => println!("> Test Success"),
+            Err(e) => println!("> Error: {}", e),
+        };
+    } else {
+        println!("Test with ID {} is missing implementation", test_id);
+    }
 }

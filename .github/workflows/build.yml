@@ -1,10 +1,15 @@
 name: build
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+    tags:
+      - v*.**
+  merge_group:
   pull_request:
-    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
 
 env:
   CARGO_TERM_COLOR: always

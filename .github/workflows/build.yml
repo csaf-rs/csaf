@@ -18,28 +18,29 @@ jobs:
   build:
     strategy:
       matrix:
-        runs-on: [ubuntu-latest, macos-latest]
-        include:
-          - arch: "x86_64-unknown-linux-gnu"
-            runs-on: "ubuntu-latest"
-          - arch: "aarch64-apple-darwin"
-            runs-on: "macos-latest"
-          - arch: "x86_64-apple-darwin"
-            runs-on: "macos-latest"
-    runs-on: ${{ matrix.runs-on }}
+        target:
+          - arch: x86_64-unknown-linux-gnu
+            runs-on: ubuntu-latest
+          - arch: aarch64-apple-darwin
+            runs-on: macos-latest
+          - arch: x86_64-apple-darwin
+            runs-on: macos-latest
+    runs-on: ${{ matrix.target.runs-on }}
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
+      - name: Prepare target
+        run: rustup target add ${{ matrix.target.arch }}
       - name: Build
-        run: cargo build --target=${{ matrix.arch }} --release --verbose
+        run: cargo build --target=${{ matrix.target.arch }} --release --verbose
       - name: Run tests
-        run: cargo test --target=${{ matrix.arch }} --verbose
-      - name: Archive csaf-validator (${{ matrix.arch }})
+        run: cargo test --target=${{ matrix.target.arch }} --verbose
+      - name: Archive csaf-validator (${{ matrix.target.arch }})
         uses: actions/upload-artifact@v4
         with:
-          name: csaf-validator-${{ matrix.arch }}
-          path: target/release/${{ matrix.arch }}/csaf-validator
+          name: csaf-validator-${{ matrix.target.arch }}
+          path: target/release/${{ matrix.target.arch }}/csaf-validator
   publish:
     runs-on: ubuntu-latest
     needs:

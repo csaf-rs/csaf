@@ -1,29 +1,28 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
-use crate::csaf::validation::{Validate, ValidationProfile};
+use crate::csaf::validation::{Test, Validatable, Validate, ValidationProfile};
 use std::collections::{HashMap, HashSet};
+use crate::csaf::helpers::find_duplicates;
 
-impl Validate for CommonSecurityAdvisoryFramework {
-    fn validate_profile(&self, profile: ValidationProfile) {
-        println!("Validating document... \n");
-
-        println!("Executing Test 6.1.1... ");
-
-        let _ = match test_6_01_01_missing_definition_of_product_id(self) {
-            Ok(()) => println!("> Test Success"),
-            Err(e) => println!("> Error: {}", e),
-        };
-
-        println!("Executing Test 6.1.2... ");
-
-        let _ = match test_6_01_02_multiple_definition_of_product_id(self) {
-            Ok(()) => println!("> Test Success"),
-            Err(e) => println!("> Error: {}", e),
-        };
+impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
+    fn profiles(&self) -> HashMap<ValidationProfile, Vec<&str>> {
+        HashMap::from([
+            (ValidationProfile::Basic, Vec::from(["6.1.1", "6.1.2"])),
+            (ValidationProfile::Extended, Vec::from(["6.1.1", "6.1.2"])),
+            (ValidationProfile::Full, Vec::from(["6.1.1", "6.1.2"])),
+        ])
     }
 
-    fn validate_by_test(&self, version: &str) {
-        todo!()
+    fn tests(&self) -> HashMap<&str, Test<CommonSecurityAdvisoryFramework>> {
+        HashMap::<&str, Test<CommonSecurityAdvisoryFramework>>::from([
+            ("6.1.1", test_6_01_01_missing_definition_of_product_id),
+            ("6.1.2", test_6_01_02_multiple_definition_of_product_id),
+        ]
+            as [(&str, Test<CommonSecurityAdvisoryFramework>); 2])
+    }
+
+    fn doc(&self) -> &CommonSecurityAdvisoryFramework {
+        self
     }
 }
 
@@ -54,24 +53,6 @@ pub fn test_6_01_02_multiple_definition_of_product_id(
     } else {
         Err(format!("Duplicate definitions: {:?}", duplicates))
     }
-}
-
-fn find_duplicates<T: std::hash::Hash + Eq + Clone>(vec: Vec<T>) -> Vec<T> {
-    let mut occurrences = HashMap::new();
-    let mut duplicates = Vec::new();
-
-    for item in vec.iter() {
-        let count = occurrences.entry(item.clone()).or_insert(0);
-        *count += 1;
-    }
-
-    for (item, count) in occurrences {
-        if count > 1 {
-            duplicates.push(item);
-        }
-    }
-
-    duplicates
 }
 
 #[cfg(test)]

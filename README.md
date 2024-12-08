@@ -9,6 +9,13 @@ This is work-in-progress.
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run
 
 ```bash
+# make sure, submodules are up-to-date
+git submodule update --remote
+
+# run the tests
+cargo test
+
+# build for release
 cargo build --release
 ```
 

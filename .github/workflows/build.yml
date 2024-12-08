@@ -15,41 +15,41 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        target:
+          - arch: x86_64-unknown-linux-gnu
+            runs-on: ubuntu-latest
+          - arch: aarch64-apple-darwin
+            runs-on: macos-latest
+          - arch: x86_64-apple-darwin
+            runs-on: macos-latest
+          - arch: wasm32-wasip2
+            runs-on: macos-latest
+            skip-test: true
+            ext: .wasm
+    runs-on: ${{ matrix.target.runs-on }}
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
+      - name: Prepare target
+        run: rustup target add ${{ matrix.target.arch }}
       - name: Build
-        run: cargo build --release --verbose
+        run: cargo build --target=${{ matrix.target.arch }} --release --verbose
       - name: Run tests
-        run: cargo test --verbose
-      - name: Archive csaf-validator (linux amd64)
+        run: cargo test --target=${{ matrix.target.arch }} --verbose
+        if: ${{ matrix.target.skip-test != true }}
+      - name: Archive csaf-validator (${{ matrix.target.arch }})
         uses: actions/upload-artifact@v4
         with:
-          name: csaf-validator-linux-amd64
-          path: target/release/csaf-validator
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-      - name: Build
-        run: cargo build --release --verbose
-      - name: Run tests
-        run: cargo test --verbose
-      - name: Archive csaf-validator (macos arm64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: csaf-validator-macos-arm64
-          path: target/release/csaf-validator
+          name: csaf-validator-${{ matrix.target.arch }}
+          path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
   publish:
     runs-on: ubuntu-latest
     needs:
-      - build-macos
-      - build-linux
+      - build
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
       - name: Determine Version
@@ -67,16 +67,12 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_ENV
       - uses: actions/download-artifact@v4
         with:
-          name: csaf-validator-linux-amd64
-          path: csaf-validator-linux-amd64
-      - uses: actions/download-artifact@v4
-        with:
-          name: csaf-validator-macos-arm64
-          path: csaf-validator-macos-arm64
+          path: csaf-validator
+          pattern: csaf-validator-*
       - run: |
-          # just some magic to make the released files work with multiple platforms
-          mv csaf-validator-linux-amd64/csaf-validator csaf-validator-linux-amd64/csaf-validator-linux-amd64
-          mv csaf-validator-macos-arm64/csaf-validator csaf-validator-macos-arm64/csaf-validator-macos-arm64
+          # zip each folder
+          ls csaf-validator | xargs -I {} zip {}.zip -rj csaf-validator/{}
+          ls csaf-validator-*.zip
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
@@ -87,4 +83,4 @@ jobs:
           prerelease: false
           fail_on_unmatched_files: true
           files: |
-            csaf-validator-*/csaf-validator-*
+            csaf-validator-*.zip

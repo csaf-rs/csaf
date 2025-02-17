@@ -1,18 +1,18 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
 use crate::csaf::helpers::find_duplicates;
-use crate::csaf::validation::{Test, Validatable, ValidationProfile};
+use crate::csaf::validation::{Test, Validatable, ValidationPreset};
 use std::collections::{HashMap, HashSet};
 
 impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
-    fn profiles(&self) -> HashMap<ValidationProfile, Vec<&str>> {
+    fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>> {
         HashMap::from([
             (
-                ValidationProfile::Basic,
+                ValidationPreset::Basic,
                 Vec::from(["6.1.1", "6.1.2", "6.1.34"]),
             ),
-            (ValidationProfile::Extended, Vec::from(["6.1.1", "6.1.2"])),
-            (ValidationProfile::Full, Vec::from(["6.1.1", "6.1.2"])),
+            (ValidationPreset::Extended, Vec::from(["6.1.1", "6.1.2"])),
+            (ValidationPreset::Full, Vec::from(["6.1.1", "6.1.2"])),
         ])
     }
 

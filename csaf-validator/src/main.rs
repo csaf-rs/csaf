@@ -1,7 +1,8 @@
+use std::str::FromStr;
 use anyhow::{bail, Result};
 use csaf_lib::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_lib::csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf_lib::csaf::validation::{validate_by_profile, validate_by_test, ValidationProfile};
+use csaf_lib::csaf::validation::{validate_by_preset, validate_by_test, ValidationPreset};
 use clap::Parser;
 
 /// A validator for CSAF documents
@@ -15,9 +16,9 @@ struct Args {
     #[arg(short, long, default_value = "2.0")]
     csaf_version: String,
 
-    /// The profile to use
+    /// The validation preset (formerly known as "profile") to use
     #[arg(short, long, default_value = "basic")]
-    profile: String,
+    preset: String,
 
     /// Run only the selected test
     #[arg(short, long)]
@@ -26,7 +27,10 @@ struct Args {
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    let profile = ValidationProfile::Basic;
+    let preset = match ValidationPreset::from_str(args.preset.as_str()) {
+        Ok(preset) => preset,
+        Err(_) => bail!(format!("Invalid validation preset: {}", args.preset)),
+    };
 
     // TODO: it would be nice to return the validatable from this match, but this is beyond my
     //  rust generics knowledge, so a little bit of duplicate code here
@@ -45,10 +49,10 @@ fn main() -> Result<()> {
     } else {
         let result = match args.csaf_version.as_str() {
             "2.0" => {
-                validate_by_profile(&load_document_2_0(args.path.as_str())?, profile)
+                validate_by_preset(&load_document_2_0(args.path.as_str())?, preset)
             }
             "2.1" => {
-                validate_by_profile(&load_document_2_1(args.path.as_str())?, profile)
+                validate_by_preset(&load_document_2_1(args.path.as_str())?, preset)
             }
             _ => bail!("invalid version"),
         };

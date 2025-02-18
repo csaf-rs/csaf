@@ -16,7 +16,7 @@ struct Args {
     #[arg(short, long, default_value = "2.0")]
     csaf_version: String,
 
-    /// The validation preset (formerly known as "profile") to use
+    /// The validation preset to use
     #[arg(short, long, default_value = "basic")]
     preset: String,
 

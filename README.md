@@ -36,7 +36,7 @@ Arguments:
 
 Options:
   -c, --csaf-version <CSAF_VERSION>  Version of CSAF to use [default: 2.0]
-  -p, --preset <PRESET>              The validation preset (formerly known as "profile") to use [default: basic]
+  -p, --preset <PRESET>              The validation preset to use [default: basic]
   -o, --only-test <ONLY_TEST>        Run only the selected test
   -h, --help                         Print help
   -V, --version                      Print version

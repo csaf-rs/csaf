@@ -2,7 +2,7 @@ use std::str::FromStr;
 use anyhow::{bail, Result};
 use csaf_lib::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_lib::csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf_lib::csaf::validation::{validate_by_preset, validate_by_test, ValidationPreset};
+use csaf_lib::csaf::validation::{validate_by_preset, validate_by_test, Validatable, ValidationPreset};
 use clap::Parser;
 
 /// A validator for CSAF documents
@@ -20,43 +20,41 @@ struct Args {
     #[arg(short, long, default_value = "basic")]
     preset: String,
 
-    /// Run only the selected test
-    #[arg(short, long)]
-    only_test: Option<String>,
+    /// Run only the selected tests, may be specified multiple times
+    #[arg(short, long, action = clap::ArgAction::Append)]
+    test_id: Vec<String>,
 }
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    let preset = match ValidationPreset::from_str(args.preset.as_str()) {
-        Ok(preset) => preset,
-        Err(_) => bail!(format!("Invalid validation preset: {}", args.preset)),
-    };
 
-    // TODO: it would be nice to return the validatable from this match, but this is beyond my
-    //  rust generics knowledge, so a little bit of duplicate code here
-    if let Some(test_id) = args.only_test {
-        let result = match args.csaf_version.as_str() {
-            "2.0" => {
-                validate_by_test(&load_document_2_0(args.path.as_str())?, test_id.as_str())
-            }
-            "2.1" => {
-                validate_by_test(&load_document_2_1(args.path.as_str())?, test_id.as_str())
-            }
-            _ => bail!("invalid version"),
-        };
+    match args.csaf_version.as_str() {
+        "2.0" => {
+            process_document(load_document_2_0(args.path.as_str())?, &args)
+        }
+        "2.1" => {
+            process_document(load_document_2_1(args.path.as_str())?, &args)
+        }
+        _ => bail!(format!("Invalid CSAF version: {}", args.csaf_version)),
+    }
+}
 
-        Ok(result)
+fn process_document<T>(document: T, args: &Args) -> Result<()>
+where
+    T: Validatable<T>,
+{
+    if !args.test_id.is_empty() {
+        for test_id in &args.test_id {
+            println!("\nExecuting Test {}... ", test_id);
+            validate_by_test(&document, test_id.as_str());
+        }
+        Ok(())
     } else {
-        let result = match args.csaf_version.as_str() {
-            "2.0" => {
-                validate_by_preset(&load_document_2_0(args.path.as_str())?, preset)
-            }
-            "2.1" => {
-                validate_by_preset(&load_document_2_1(args.path.as_str())?, preset)
-            }
-            _ => bail!("invalid version"),
+        let preset = match ValidationPreset::from_str(args.preset.as_str()) {
+            Ok(preset) => preset,
+            Err(_) => bail!(format!("Invalid validation preset: {}", args.preset)),
         };
-
-        Ok(result)
+        validate_by_preset(&document, preset);
+        Ok(())
     }
 }

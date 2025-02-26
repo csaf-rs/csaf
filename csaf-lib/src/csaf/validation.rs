@@ -4,28 +4,28 @@ use std::str::FromStr;
 pub enum ValidationError {}
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub enum ValidationProfile {
+pub enum ValidationPreset {
     Basic,
     Extended,
     Full,
 }
 
-impl FromStr for ValidationProfile {
+impl FromStr for ValidationPreset {
     type Err = ();
 
-    fn from_str(input: &str) -> Result<ValidationProfile, Self::Err> {
+    fn from_str(input: &str) -> Result<ValidationPreset, Self::Err> {
         match input {
-            "basic" => Ok(ValidationProfile::Basic),
-            "extended" => Ok(ValidationProfile::Extended),
-            "full" => Ok(ValidationProfile::Full),
+            "basic" => Ok(ValidationPreset::Basic),
+            "extended" => Ok(ValidationPreset::Extended),
+            "full" => Ok(ValidationPreset::Full),
             _ => Err(()),
         }
     }
 }
 
 pub trait Validate {
-    /// Validates this object according to a validation profile
-    fn validate_profile(&'static self, profile: ValidationProfile);
+    /// Validates this object according to a validation preset
+    fn validate_preset(&'static self, preset: ValidationPreset);
 
     /// Validates this object according to a specific test ID.
     fn validate_by_test(&self, version: &str);
@@ -38,10 +38,10 @@ pub type Test<VersionedDocument> =
 /// This trait MUST be implemented by the struct that represents a CSAF document
 /// in the respective version.
 ///
-/// It can then be used to validate documents with either [validate_by_profile] or [validate_by_test].
+/// It can then be used to validate documents with either [validate_by_preset] or [validate_by_test].
 pub trait Validatable<VersionedDocument> {
-    /// Returns a hashmap containing the test ID per profile
-    fn profiles(&self) -> HashMap<ValidationProfile, Vec<&str>>;
+    /// Returns a hashmap containing the test ID per preset
+    fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>>;
 
     /// Returns a hashmap containing the test function per test ID
     fn tests(&self) -> HashMap<&str, Test<VersionedDocument>>;
@@ -49,16 +49,16 @@ pub trait Validatable<VersionedDocument> {
     fn doc(&self) -> &VersionedDocument;
 }
 
-/// Executes all tests of the specified [profile] against the [target]
+/// Executes all tests of the specified [preset] against the [target]
 /// (which is of type [VersionedDocument], e.g. a CSAF 2.0 document).
-pub fn validate_by_profile<VersionedDocument>(
+pub fn validate_by_preset<VersionedDocument>(
     target: &impl Validatable<VersionedDocument>,
-    profile: ValidationProfile,
+    preset: ValidationPreset,
 ) {
-    println!("Validating document with {:?} profile... \n", profile);
+    println!("Validating document with {:?} preset... \n", preset);
 
     // Loop through tests
-    if let Some(tests) = target.profiles().get(&profile) {
+    if let Some(tests) = target.presets().get(&preset) {
         for test_id in tests {
             println!("Executing Test {}... ", test_id);
             validate_by_test(target, test_id);
@@ -66,7 +66,7 @@ pub fn validate_by_profile<VersionedDocument>(
             println!()
         }
     } else {
-        println!("No tests found for profile")
+        println!("No tests found for preset")
     }
 }
 

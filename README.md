@@ -9,7 +9,8 @@ This is work-in-progress.
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run
 
 ```bash
-# make sure, submodules are up-to-date
+# make sure submodules are up-to-date
+git submodule init
 git submodule update --remote
 
 # run the tests
@@ -35,8 +36,8 @@ Arguments:
 
 Options:
   -c, --csaf-version <CSAF_VERSION>  Version of CSAF to use [default: 2.0]
-  -p, --profile <PROFILE>            The profile to use [default: basic]
-  -o, --only-test <ONLY_TEST>        Run only the selected test
+  -p, --preset <PRESET>              The validation preset to use [default: basic]
+  -t, --test-id <TEST_ID>            Run only the selected tests, may be specified multiple times
   -h, --help                         Print help
   -V, --version                      Print version
 ```
@@ -48,8 +49,8 @@ Some examples to use are included below. Please note that the validation is not 
 csaf-validator --csaf-version 2.0 my-csaf-2-0-document.json
 
 # validate a CSAF 2.0 document with profile full
-csaf-validator --csaf-version 2.0 --profile full my-csaf-2-0-document.json
+csaf-validator --csaf-version 2.0 --preset full my-csaf-2-0-document.json
 
-# validate a CSAF 2.1 document with a specific test
-csaf-validator --csaf-version 2.1 --only-test 6.1.34 my-csaf-2-1-document.json
+# validate a CSAF 2.1 document with one specific test
+csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 ```

@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
+use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
+use crate::csaf::getter_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
 
 pub enum ValidationError {}
 
@@ -83,3 +85,29 @@ pub fn validate_by_test<VersionedDocument>(
         println!("Test with ID {} is missing implementation", test_id);
     }
 }
+
+pub fn test_6_01_35_contradicting_remediations(
+    target: &impl CsafTrait,
+) -> Result<(), String> {
+    for v in target.get_vulnerabilities().iter() {
+        let mut product_categories: HashMap<String, CategoryOfTheRemediation> = HashMap::new();
+        for r in v.get_remediations().iter() {
+            if let Some(product_ids) = r.get_product_ids() {
+                let category = r.get_category();
+                for p in product_ids.iter() {
+                    if let Some(existing_category) = product_categories.get(p) {
+                        if existing_category != &category {
+                            return Err(format!(
+                                "Product {} has contradicting remediations: {} and {}",
+                                p, existing_category, category
+                            ));
+                        }
+                    }
+                    product_categories.insert(p.clone(), category.clone());
+                }
+            }
+        }
+    }
+    Ok(())
+}
+

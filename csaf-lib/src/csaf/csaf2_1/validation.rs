@@ -1,28 +1,32 @@
 use super::product_helper::*;
 use super::schema::CommonSecurityAdvisoryFramework;
 use crate::csaf::helpers::find_duplicates;
-use crate::csaf::validation::{Test, Validatable, ValidationPreset};
+use crate::csaf::validation::{test_6_01_35_contradicting_remediations, Test, Validatable, ValidationPreset};
 use std::collections::{HashMap, HashSet};
 
 impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
     fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>> {
+        let basic_tests = Vec::from(["6.1.1", "6.1.2", "6.1.34", "6.1.35"]);
+        // More tests may be added in extend() here later
+        let extended_tests: Vec<&str> = basic_tests.clone();
+        // extended_tests.extend(["foo"].iter());
+        let full_tests: Vec<&str> = extended_tests.clone();
+        // full_tests.extend(["bar"].iter());
         HashMap::from([
-            (
-                ValidationPreset::Basic,
-                Vec::from(["6.1.1", "6.1.2", "6.1.34"]),
-            ),
-            (ValidationPreset::Extended, Vec::from(["6.1.1", "6.1.2"])),
-            (ValidationPreset::Full, Vec::from(["6.1.1", "6.1.2"])),
+            (ValidationPreset::Basic, basic_tests),
+            (ValidationPreset::Extended, extended_tests),
+            (ValidationPreset::Full, full_tests),
         ])
     }
 
     fn tests(&self) -> HashMap<&str, Test<CommonSecurityAdvisoryFramework>> {
-        HashMap::<&str, Test<CommonSecurityAdvisoryFramework>>::from([
-            ("6.1.1", test_6_01_01_missing_definition_of_product_id),
-            ("6.1.2", test_6_01_02_multiple_definition_of_product_id),
-            ("6.1.34", test_6_01_34_branches_recursion_depth),
-        ]
-            as [(&str, Test<CommonSecurityAdvisoryFramework>); 3])
+        type CsafTest = Test<CommonSecurityAdvisoryFramework>;
+        HashMap::from([
+            ("6.1.1", test_6_01_01_missing_definition_of_product_id as CsafTest),
+            ("6.1.2", test_6_01_02_multiple_definition_of_product_id as CsafTest),
+            ("6.1.34", test_6_01_34_branches_recursion_depth as CsafTest),
+            ("6.1.35", test_6_01_35_contradicting_remediations as CsafTest),
+        ])
     }
 
     fn doc(&self) -> &CommonSecurityAdvisoryFramework {
@@ -82,6 +86,7 @@ mod tests {
         validation::test_6_01_02_multiple_definition_of_product_id,
         validation::test_6_01_34_branches_recursion_depth,
     };
+    use crate::csaf::validation::test_6_01_35_contradicting_remediations;
 
     #[test]
     fn test_test_6_01_01() {
@@ -109,6 +114,15 @@ mod tests {
         assert_eq!(
             test_6_01_34_branches_recursion_depth(&doc),
             Err(String::from("Recursion depth too big: 31"))
+        )
+    }
+
+    #[test]
+    fn test_test_6_01_35() {
+        let doc = load_document("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-35-01.json").unwrap();
+        assert_eq!(
+            test_6_01_35_contradicting_remediations(&doc),
+            Err(String::from("Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix"))
         )
     }
 }

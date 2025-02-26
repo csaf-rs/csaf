@@ -6,19 +6,25 @@ use crate::csaf::helpers::find_duplicates;
 
 impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
     fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>> {
+        let basic_tests = Vec::from(["6.1.1", "6.1.2"]);
+        // More tests may be added in extend() here later
+        let extended_tests: Vec<&str> = basic_tests.clone();
+        // extended_tests.extend(["foo"].iter());
+        let full_tests: Vec<&str> = extended_tests.clone();
+        // full_tests.extend(["bar"].iter());
         HashMap::from([
-            (ValidationPreset::Basic, Vec::from(["6.1.1", "6.1.2"])),
-            (ValidationPreset::Extended, Vec::from(["6.1.1", "6.1.2"])),
-            (ValidationPreset::Full, Vec::from(["6.1.1", "6.1.2"])),
+            (ValidationPreset::Basic, basic_tests),
+            (ValidationPreset::Extended, extended_tests),
+            (ValidationPreset::Full, full_tests),
         ])
     }
 
     fn tests(&self) -> HashMap<&str, Test<CommonSecurityAdvisoryFramework>> {
-        HashMap::<&str, Test<CommonSecurityAdvisoryFramework>>::from([
-            ("6.1.1", test_6_01_01_missing_definition_of_product_id),
-            ("6.1.2", test_6_01_02_multiple_definition_of_product_id),
-        ]
-            as [(&str, Test<CommonSecurityAdvisoryFramework>); 2])
+        type CsafTest = Test<CommonSecurityAdvisoryFramework>;
+        HashMap::from([
+            ("6.1.1", test_6_01_01_missing_definition_of_product_id as CsafTest),
+            ("6.1.2", test_6_01_02_multiple_definition_of_product_id as CsafTest),
+        ])
     }
 
     fn doc(&self) -> &CommonSecurityAdvisoryFramework {

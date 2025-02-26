@@ -81,6 +81,7 @@ pub fn test_6_01_34_branches_recursion_depth(
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
     use crate::csaf::csaf2_1::{
         loader::load_document, validation::test_6_01_01_missing_definition_of_product_id,
         validation::test_6_01_02_multiple_definition_of_product_id,
@@ -119,10 +120,24 @@ mod tests {
 
     #[test]
     fn test_test_6_01_35() {
-        let doc = load_document("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-35-01.json").unwrap();
-        assert_eq!(
-            test_6_01_35_contradicting_remediations(&doc),
-            Err(String::from("Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix"))
-        )
+        for x in ["11", "12", "13", "14"].iter() {
+            let doc = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-35-{}.json", x).as_str()).unwrap();
+            assert_eq!(
+                test_6_01_35_contradicting_remediations(&doc),
+                Ok(())
+            )
+        }
+        HashMap::from([
+            ("01", "Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix"),
+            ("02", "Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix"),
+            ("03", "Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix"),
+            ("04", "Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix"),
+        ]).iter().for_each(|(x, err)| {
+            let doc = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-35-{}.json", x).as_str()).unwrap();
+            assert_eq!(
+                test_6_01_35_contradicting_remediations(&doc),
+                Err(format!("{}", err))
+            )
+        });
     }
 }

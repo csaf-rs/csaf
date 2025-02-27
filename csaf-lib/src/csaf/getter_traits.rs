@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
+use std::collections::BTreeSet;
 
 pub trait CsafTrait {
     type VulnerabilityType: VulnerabilityTrait;
@@ -19,7 +19,7 @@ pub trait RemediationTrait {
     fn get_category(&self) -> CategoryOfTheRemediation;
     fn get_product_ids(&self) -> Option<Vec<&String>>;
     fn get_group_ids(&self) -> Option<Vec<&String>>;
-    fn get_all_product_ids(&self, doc: &impl CsafTrait) -> Option<HashSet<String>>;
+    fn get_all_product_ids(&self, doc: &impl CsafTrait) -> Option<BTreeSet<String>>;
 }
 
 pub trait ProductTreeTrait {

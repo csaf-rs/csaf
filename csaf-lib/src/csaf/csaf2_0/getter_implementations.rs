@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 use std::ops::Deref;
 use std::str::FromStr;
 use crate::csaf::csaf2_0::schema::{CommonSecurityAdvisoryFramework, ProductGroup, ProductTree, Remediation, Vulnerability};
@@ -20,13 +20,13 @@ impl RemediationTrait for Remediation {
         self.group_ids.as_ref().map(|group_ids| group_ids.deref().iter().map(|x| x.deref()).collect())
     }
 
-    fn get_all_product_ids(&self, doc: &impl CsafTrait) -> Option<HashSet<String>> {
+    fn get_all_product_ids(&self, doc: &impl CsafTrait) -> Option<BTreeSet<String>> {
         if self.get_product_ids().is_none() && self.get_group_ids().is_none() {
             None
         } else {
-            let mut product_set: HashSet<String> = match self.get_product_ids() {
+            let mut product_set: BTreeSet<String> = match self.get_product_ids() {
                 Some(product_ids) => product_ids.iter().map(|p| p.to_string()).collect(),
-                None => HashSet::new()
+                None => BTreeSet::new()
             };
             if let Some(product_groups) = self.get_group_ids() {
                 if let Some(product_ids) = resolve_product_groups(doc, product_groups) {

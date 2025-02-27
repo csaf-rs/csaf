@@ -130,7 +130,7 @@ mod tests {
             ("01", "Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix"),
             ("02", "Product CSAFPID-9080700 has contradicting remediations: none_available and mitigation"),
             ("03", "Product CSAFPID-9080702 has contradicting remediations: workaround, fix_planned and optional_patch"),
-            ("04", "Product CSAFPID-9080702 has contradicting remediations: mitigation, fix_planned and optional_patch"),
+            ("04", "Product CSAFPID-9080701 has contradicting remediations: mitigation, fix_planned and optional_patch"),
         ].iter() {
             let doc = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-35-{}.json", x).as_str()).unwrap();
             assert_eq!(

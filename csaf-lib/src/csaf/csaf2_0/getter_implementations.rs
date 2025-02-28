@@ -1,10 +1,8 @@
-use std::collections::BTreeSet;
-use std::ops::Deref;
-use std::str::FromStr;
 use crate::csaf::csaf2_0::schema::{CommonSecurityAdvisoryFramework, ProductGroup, ProductTree, Remediation, Vulnerability};
 use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation as Remediation21;
 use crate::csaf::getter_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait, RemediationTrait, VulnerabilityTrait};
-use crate::csaf::helpers::resolve_product_groups;
+use std::ops::Deref;
+use std::str::FromStr;
 
 impl RemediationTrait for Remediation {
     fn get_category(&self) -> Remediation21 {
@@ -13,28 +11,11 @@ impl RemediationTrait for Remediation {
     }
 
     fn get_product_ids(&self) -> Option<Vec<&String>> {
-        self.product_ids.as_ref().map(|product_ids| product_ids.deref().iter().map(|x| x.deref()).collect())
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
     }
 
     fn get_group_ids(&self) -> Option<Vec<&String>> {
-        self.group_ids.as_ref().map(|group_ids| group_ids.deref().iter().map(|x| x.deref()).collect())
-    }
-
-    fn get_all_product_ids(&self, doc: &impl CsafTrait) -> Option<BTreeSet<String>> {
-        if self.get_product_ids().is_none() && self.get_group_ids().is_none() {
-            None
-        } else {
-            let mut product_set: BTreeSet<String> = match self.get_product_ids() {
-                Some(product_ids) => product_ids.iter().map(|p| p.to_string()).collect(),
-                None => BTreeSet::new()
-            };
-            if let Some(product_groups) = self.get_group_ids() {
-                if let Some(product_ids) = resolve_product_groups(doc, product_groups) {
-                    product_set.extend(product_ids.iter().map(|p| p.to_string()));
-                }
-            }
-            Some(product_set)
-        }
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()).collect())
     }
 }
 

@@ -1,8 +1,7 @@
-use crate::csaf::csaf2_0::schema::{CommonSecurityAdvisoryFramework, ProductGroup, ProductTree, Remediation, Vulnerability};
+use crate::csaf::csaf2_0::schema::{CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, ProductGroup, ProductTree, Remediation, Vulnerability};
 use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation as Remediation21;
 use crate::csaf::getter_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait, RemediationTrait, VulnerabilityTrait};
 use std::ops::Deref;
-use std::str::FromStr;
 
 impl RemediationTrait for Remediation {
 
@@ -11,20 +10,19 @@ impl RemediationTrait for Remediation {
     /// # Explanation
     /// In CSAF 2.1, the list of remediation categories was expanded, making it a superset of those
     /// in CSAF 2.0. This function ensures that the remediation category from a CSAF 2.0 remediation
-    /// object is converted into the corresponding category defined in CSAF 2.1. Due to the
-    /// superset relationship between the category sets, this conversion can safely be performed
-    /// without failures.
-    ///
-    /// # Panics
-    /// This function assumes that every CSAF 2.0 category is valid within the CSAF 2.1 superset.
-    /// If, for any reason, `from_str` fails to match a valid category, the function will panic.
-    /// However, this situation should never occur due to the aforementioned superset relationship.
+    /// object is converted into the corresponding category defined in CSAF 2.1.
     ///
     /// # Returns
     /// A CSAF 2.1 `CategoryOfTheRemediation` that corresponds to the remediation category of the
     /// current object.
     fn get_category(&self) -> Remediation21 {
-        Remediation21::from_str(self.category.to_string().as_str()).unwrap()
+        match self.category {
+            CategoryOfTheRemediation::Workaround => Remediation21::Workaround,
+            CategoryOfTheRemediation::Mitigation => Remediation21::Mitigation,
+            CategoryOfTheRemediation::VendorFix => Remediation21::VendorFix,
+            CategoryOfTheRemediation::NoFixPlanned => Remediation21::NoFixPlanned,
+            CategoryOfTheRemediation::NoneAvailable => Remediation21::NoneAvailable,
+        }
     }
 
     fn get_product_ids(&self) -> Option<Vec<&String>> {

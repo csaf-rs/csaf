@@ -1,3 +1,5 @@
+use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
+use crate::csaf::getter_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -83,3 +85,56 @@ pub fn validate_by_test<VersionedDocument>(
         println!("Test with ID {} is missing implementation", test_id);
     }
 }
+
+static MUT_EX_MEASURES: &[CategoryOfTheRemediation] = &[
+    CategoryOfTheRemediation::NoneAvailable,
+    CategoryOfTheRemediation::Workaround,
+    CategoryOfTheRemediation::Mitigation,
+];
+
+static MUT_EX_FIX_STATES: &[CategoryOfTheRemediation] = &[
+    CategoryOfTheRemediation::NoneAvailable,
+    CategoryOfTheRemediation::NoFixPlanned,
+    CategoryOfTheRemediation::FixPlanned,
+    CategoryOfTheRemediation::OptionalPatch,
+    CategoryOfTheRemediation::VendorFix,
+];
+
+pub fn test_6_01_35_contradicting_remediations(
+    target: &impl CsafTrait,
+) -> Result<(), String> {
+    for v in target.get_vulnerabilities().iter() {
+        // Data struct to store observed remediation categories per product IT
+        let mut product_categories: HashMap<String, Vec<CategoryOfTheRemediation>> = HashMap::new();
+        for r in v.get_remediations().iter() {
+            // Only handle Remediations having product IDs associated
+            if let Some(product_ids) = r.get_all_product_ids(target) {
+                // Category of current remediation
+                let cat = r.get_category();
+                // Iterate over product IDs
+                for p in product_ids {
+                    // Check if product ID has categories associated
+                    if let Some(exist_cat_set) = product_categories.get(&p) {
+                        // Check if any seen category conflicts with the current one
+                        if exist_cat_set.iter().any(|e_cat| {
+                            MUT_EX_MEASURES.contains(e_cat) && MUT_EX_MEASURES.contains(&cat)
+                            || MUT_EX_FIX_STATES.contains(e_cat) && MUT_EX_FIX_STATES.contains(&cat)
+                        }) {
+                            return Err(format!(
+                                "Product {} has contradicting remediations: {} and {}",
+                                p, exist_cat_set.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(", "), cat
+                            ));
+                        }
+                        let mut new_cat_vec = exist_cat_set.clone();
+                        new_cat_vec.push(cat.clone());
+                        product_categories.insert(p, new_cat_vec);
+                    } else {
+                        product_categories.insert(p, Vec::from([cat.clone()]));
+                    }
+                }
+            }
+        }
+    }
+    Ok(())
+}
+

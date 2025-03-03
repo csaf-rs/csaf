@@ -1169,9 +1169,11 @@ impl std::convert::TryFrom<String> for CategoryOfTheBranch {
 ///  "description": "Specifies the category which this remediation belongs to.",
 ///  "type": "string",
 ///  "enum": [
+///    "fix_planned",
 ///    "mitigation",
 ///    "no_fix_planned",
 ///    "none_available",
+///    "optional_patch",
 ///    "vendor_fix",
 ///    "workaround"
 ///  ]
@@ -1191,12 +1193,16 @@ impl std::convert::TryFrom<String> for CategoryOfTheBranch {
     PartialOrd
 )]
 pub enum CategoryOfTheRemediation {
+    #[serde(rename = "fix_planned")]
+    FixPlanned,
     #[serde(rename = "mitigation")]
     Mitigation,
     #[serde(rename = "no_fix_planned")]
     NoFixPlanned,
     #[serde(rename = "none_available")]
     NoneAvailable,
+    #[serde(rename = "optional_patch")]
+    OptionalPatch,
     #[serde(rename = "vendor_fix")]
     VendorFix,
     #[serde(rename = "workaround")]
@@ -1210,9 +1216,11 @@ impl From<&CategoryOfTheRemediation> for CategoryOfTheRemediation {
 impl ::std::fmt::Display for CategoryOfTheRemediation {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
+            Self::FixPlanned => write!(f, "fix_planned"),
             Self::Mitigation => write!(f, "mitigation"),
             Self::NoFixPlanned => write!(f, "no_fix_planned"),
             Self::NoneAvailable => write!(f, "none_available"),
+            Self::OptionalPatch => write!(f, "optional_patch"),
             Self::VendorFix => write!(f, "vendor_fix"),
             Self::Workaround => write!(f, "workaround"),
         }
@@ -1222,9 +1230,11 @@ impl std::str::FromStr for CategoryOfTheRemediation {
     type Err = self::error::ConversionError;
     fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
         match value {
+            "fix_planned" => Ok(Self::FixPlanned),
             "mitigation" => Ok(Self::Mitigation),
             "no_fix_planned" => Ok(Self::NoFixPlanned),
             "none_available" => Ok(Self::NoneAvailable),
+            "optional_patch" => Ok(Self::OptionalPatch),
             "vendor_fix" => Ok(Self::VendorFix),
             "workaround" => Ok(Self::Workaround),
             _ => Err("invalid value".into()),
@@ -1511,6 +1521,36 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "tlp"
 ///          ],
 ///          "properties": {
+///            "sharing_group": {
+///              "title": "Sharing Group",
+///              "description": "Contains information about the group this document is intended to be shared with.",
+///              "type": "object",
+///              "required": [
+///                "id"
+///              ],
+///              "properties": {
+///                "id": {
+///                  "title": "Sharing Group ID",
+///                  "description": "Provides the unique ID for the sharing group.",
+///                  "type": "string",
+///                  "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
+///                },
+///                "name": {
+///                  "title": "Sharing Group Name",
+///                  "description": "Contains a human-readable name for the sharing group.",
+///                  "examples": [
+///                    "Customer A",
+///                    "ISAC members",
+///                    "NIS2 regulated important entities in Germany, sector water",
+///                    "Pre-Sharing group for advisory discussion",
+///                    "Users of Product A",
+///                    "US Federal Civilian Authorities"
+///                  ],
+///                  "type": "string",
+///                  "minLength": 1
+///                }
+///              }
+///            },
 ///            "text": {
 ///              "title": "Textual description",
 ///              "description": "Provides a textual description of additional constraints.",
@@ -2256,9 +2296,11 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "description": "Specifies the category which this remediation belongs to.",
 ///                  "type": "string",
 ///                  "enum": [
+///                    "fix_planned",
 ///                    "mitigation",
 ///                    "no_fix_planned",
 ///                    "none_available",
+///                    "optional_patch",
 ///                    "vendor_fix",
 ///                    "workaround"
 ///                  ]
@@ -3376,6 +3418,36 @@ impl DocumentGenerator {
 ///        "tlp"
 ///      ],
 ///      "properties": {
+///        "sharing_group": {
+///          "title": "Sharing Group",
+///          "description": "Contains information about the group this document is intended to be shared with.",
+///          "type": "object",
+///          "required": [
+///            "id"
+///          ],
+///          "properties": {
+///            "id": {
+///              "title": "Sharing Group ID",
+///              "description": "Provides the unique ID for the sharing group.",
+///              "type": "string",
+///              "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
+///            },
+///            "name": {
+///              "title": "Sharing Group Name",
+///              "description": "Contains a human-readable name for the sharing group.",
+///              "examples": [
+///                "Customer A",
+///                "ISAC members",
+///                "NIS2 regulated important entities in Germany, sector water",
+///                "Pre-Sharing group for advisory discussion",
+///                "Users of Product A",
+///                "US Federal Civilian Authorities"
+///              ],
+///              "type": "string",
+///              "minLength": 1
+///            }
+///          }
+///        },
 ///        "text": {
 ///          "title": "Textual description",
 ///          "description": "Provides a textual description of additional constraints.",
@@ -4396,13 +4468,20 @@ impl Flag {
 ///          "minItems": 1,
 ///          "uniqueItems": true
 ///        },
-///        "purl": {
-///          "title": "package URL representation",
-///          "description": "The package URL (purl) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
-///          "type": "string",
-///          "format": "uri",
-///          "minLength": 7,
-///          "pattern": "^pkg:[A-Za-z\\.\\-\\+][A-Za-z0-9\\.\\-\\+]*\\/.+"
+///        "purls": {
+///          "title": "List of package URLs",
+///          "description": "Contains a list of package URLs (purl).",
+///          "type": "array",
+///          "items": {
+///            "title": "package URL representation",
+///            "description": "The package URL (purl) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
+///            "type": "string",
+///            "format": "uri",
+///            "minLength": 7,
+///            "pattern": "^pkg:[A-Za-z\\.\\-\\+][A-Za-z0-9\\.\\-\\+]*\\/.+"
+///          },
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        },
 ///        "sbom_urls": {
 ///          "title": "List of SBOM URLs",
@@ -4643,13 +4722,20 @@ impl GenericUri {
 ///      "minItems": 1,
 ///      "uniqueItems": true
 ///    },
-///    "purl": {
-///      "title": "package URL representation",
-///      "description": "The package URL (purl) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
-///      "type": "string",
-///      "format": "uri",
-///      "minLength": 7,
-///      "pattern": "^pkg:[A-Za-z\\.\\-\\+][A-Za-z0-9\\.\\-\\+]*\\/.+"
+///    "purls": {
+///      "title": "List of package URLs",
+///      "description": "Contains a list of package URLs (purl).",
+///      "type": "array",
+///      "items": {
+///        "title": "package URL representation",
+///        "description": "The package URL (purl) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
+///        "type": "string",
+///        "format": "uri",
+///        "minLength": 7,
+///        "pattern": "^pkg:[A-Za-z\\.\\-\\+][A-Za-z0-9\\.\\-\\+]*\\/.+"
+///      },
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "sbom_urls": {
 ///      "title": "List of SBOM URLs",
@@ -4732,9 +4818,9 @@ pub struct HelperToIdentifyTheProduct {
     ///Contains a list of full or abbreviated (partial) model numbers.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub model_numbers: Option<Vec<ModelNumber>>,
-    ///The package URL (purl) attribute refers to a method for reliably identifying and locating software packages external to this specification.
+    ///Contains a list of package URLs (purl).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub purl: Option<String>,
+    pub purls: Option<Vec<String>>,
     ///Contains a list of URLs where SBOMs for this product can be retrieved.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sbom_urls: Vec<String>,
@@ -7195,9 +7281,11 @@ impl std::convert::TryFrom<String> for RelationshipCategory {
 ///      "description": "Specifies the category which this remediation belongs to.",
 ///      "type": "string",
 ///      "enum": [
+///        "fix_planned",
 ///        "mitigation",
 ///        "no_fix_planned",
 ///        "none_available",
+///        "optional_patch",
 ///        "vendor_fix",
 ///        "workaround"
 ///      ]
@@ -7440,6 +7528,36 @@ impl Revision {
 ///    "tlp"
 ///  ],
 ///  "properties": {
+///    "sharing_group": {
+///      "title": "Sharing Group",
+///      "description": "Contains information about the group this document is intended to be shared with.",
+///      "type": "object",
+///      "required": [
+///        "id"
+///      ],
+///      "properties": {
+///        "id": {
+///          "title": "Sharing Group ID",
+///          "description": "Provides the unique ID for the sharing group.",
+///          "type": "string",
+///          "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
+///        },
+///        "name": {
+///          "title": "Sharing Group Name",
+///          "description": "Contains a human-readable name for the sharing group.",
+///          "examples": [
+///            "Customer A",
+///            "ISAC members",
+///            "NIS2 regulated important entities in Germany, sector water",
+///            "Pre-Sharing group for advisory discussion",
+///            "Users of Product A",
+///            "US Federal Civilian Authorities"
+///          ],
+///          "type": "string",
+///          "minLength": 1
+///        }
+///      }
+///    },
 ///    "text": {
 ///      "title": "Textual description",
 ///      "description": "Provides a textual description of additional constraints.",
@@ -7491,6 +7609,8 @@ impl Revision {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct RulesForSharingDocument {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sharing_group: Option<SharingGroup>,
     ///Provides a textual description of additional constraints.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text: Option<TextualDescription>,
@@ -7565,6 +7685,218 @@ impl ::std::convert::TryFrom<String> for SerialNumber {
     }
 }
 impl<'de> ::serde::Deserialize<'de> for SerialNumber {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains information about the group this document is intended to be shared with.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Sharing Group",
+///  "description": "Contains information about the group this document is intended to be shared with.",
+///  "type": "object",
+///  "required": [
+///    "id"
+///  ],
+///  "properties": {
+///    "id": {
+///      "title": "Sharing Group ID",
+///      "description": "Provides the unique ID for the sharing group.",
+///      "type": "string",
+///      "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
+///    },
+///    "name": {
+///      "title": "Sharing Group Name",
+///      "description": "Contains a human-readable name for the sharing group.",
+///      "examples": [
+///        "Customer A",
+///        "ISAC members",
+///        "NIS2 regulated important entities in Germany, sector water",
+///        "Pre-Sharing group for advisory discussion",
+///        "Users of Product A",
+///        "US Federal Civilian Authorities"
+///      ],
+///      "type": "string",
+///      "minLength": 1
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct SharingGroup {
+    ///Provides the unique ID for the sharing group.
+    pub id: SharingGroupId,
+    ///Contains a human-readable name for the sharing group.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<SharingGroupName>,
+}
+impl From<&SharingGroup> for SharingGroup {
+    fn from(value: &SharingGroup) -> Self {
+        value.clone()
+    }
+}
+impl SharingGroup {
+    pub fn builder() -> builder::SharingGroup {
+        Default::default()
+    }
+}
+///Provides the unique ID for the sharing group.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Sharing Group ID",
+///  "description": "Provides the unique ID for the sharing group.",
+///  "type": "string",
+///  "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct SharingGroupId(String);
+impl ::std::ops::Deref for SharingGroupId {
+    type Target = String;
+    fn deref(&self) -> &String {
+        &self.0
+    }
+}
+impl From<SharingGroupId> for String {
+    fn from(value: SharingGroupId) -> Self {
+        value.0
+    }
+}
+impl From<&SharingGroupId> for SharingGroupId {
+    fn from(value: &SharingGroupId) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for SharingGroupId {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        if regress::Regex::new(
+                "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$",
+            )
+            .unwrap()
+            .find(value)
+            .is_none()
+        {
+            return Err(
+                "doesn't match pattern \"^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$\""
+                    .into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for SharingGroupId {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&String> for SharingGroupId {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<String> for SharingGroupId {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for SharingGroupId {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains a human-readable name for the sharing group.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Sharing Group Name",
+///  "description": "Contains a human-readable name for the sharing group.",
+///  "examples": [
+///    "Customer A",
+///    "ISAC members",
+///    "NIS2 regulated important entities in Germany, sector water",
+///    "Pre-Sharing group for advisory discussion",
+///    "Users of Product A",
+///    "US Federal Civilian Authorities"
+///  ],
+///  "type": "string",
+///  "minLength": 1
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct SharingGroupName(String);
+impl ::std::ops::Deref for SharingGroupName {
+    type Target = String;
+    fn deref(&self) -> &String {
+        &self.0
+    }
+}
+impl From<SharingGroupName> for String {
+    fn from(value: SharingGroupName) -> Self {
+        value.0
+    }
+}
+impl From<&SharingGroupName> for SharingGroupName {
+    fn from(value: &SharingGroupName) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for SharingGroupName {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        if value.len() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for SharingGroupName {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&String> for SharingGroupName {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<String> for SharingGroupName {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for SharingGroupName {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: ::serde::Deserializer<'de>,
@@ -9508,9 +9840,11 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///            "description": "Specifies the category which this remediation belongs to.",
 ///            "type": "string",
 ///            "enum": [
+///              "fix_planned",
 ///              "mitigation",
 ///              "no_fix_planned",
 ///              "none_available",
+///              "optional_patch",
 ///              "vendor_fix",
 ///              "workaround"
 ///            ]
@@ -10981,7 +11315,7 @@ pub mod builder {
         cpe: Result<Option<super::CommonPlatformEnumerationRepresentation>, String>,
         hashes: Result<Vec<super::CryptographicHashes>, String>,
         model_numbers: Result<Option<Vec<super::ModelNumber>>, String>,
-        purl: Result<Option<String>, String>,
+        purls: Result<Option<Vec<String>>, String>,
         sbom_urls: Result<Vec<String>, String>,
         serial_numbers: Result<Option<Vec<super::SerialNumber>>, String>,
         skus: Result<Vec<super::StockKeepingUnit>, String>,
@@ -10993,7 +11327,7 @@ pub mod builder {
                 cpe: Ok(Default::default()),
                 hashes: Ok(Default::default()),
                 model_numbers: Ok(Default::default()),
-                purl: Ok(Default::default()),
+                purls: Ok(Default::default()),
                 sbom_urls: Ok(Default::default()),
                 serial_numbers: Ok(Default::default()),
                 skus: Ok(Default::default()),
@@ -11038,14 +11372,16 @@ pub mod builder {
                 });
             self
         }
-        pub fn purl<T>(mut self, value: T) -> Self
+        pub fn purls<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<String>>,
+            T: std::convert::TryInto<Option<Vec<String>>>,
             T::Error: std::fmt::Display,
         {
-            self.purl = value
+            self.purls = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for purl: {}", e));
+                .map_err(|e| {
+                    format!("error converting supplied value for purls: {}", e)
+                });
             self
         }
         pub fn sbom_urls<T>(mut self, value: T) -> Self
@@ -11105,7 +11441,7 @@ pub mod builder {
                 cpe: value.cpe?,
                 hashes: value.hashes?,
                 model_numbers: value.model_numbers?,
-                purl: value.purl?,
+                purls: value.purls?,
                 sbom_urls: value.sbom_urls?,
                 serial_numbers: value.serial_numbers?,
                 skus: value.skus?,
@@ -11119,7 +11455,7 @@ pub mod builder {
                 cpe: Ok(value.cpe),
                 hashes: Ok(value.hashes),
                 model_numbers: Ok(value.model_numbers),
-                purl: Ok(value.purl),
+                purls: Ok(value.purls),
                 sbom_urls: Ok(value.sbom_urls),
                 serial_numbers: Ok(value.serial_numbers),
                 skus: Ok(value.skus),
@@ -12317,18 +12653,32 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct RulesForSharingDocument {
+        sharing_group: Result<Option<super::SharingGroup>, String>,
         text: Result<Option<super::TextualDescription>, String>,
         tlp: Result<super::TrafficLightProtocolTlp, String>,
     }
     impl Default for RulesForSharingDocument {
         fn default() -> Self {
             Self {
+                sharing_group: Ok(Default::default()),
                 text: Ok(Default::default()),
                 tlp: Err("no value supplied for tlp".to_string()),
             }
         }
     }
     impl RulesForSharingDocument {
+        pub fn sharing_group<T>(mut self, value: T) -> Self
+        where
+            T: std::convert::TryInto<Option<super::SharingGroup>>,
+            T::Error: std::fmt::Display,
+        {
+            self.sharing_group = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for sharing_group: {}", e)
+                });
+            self
+        }
         pub fn text<T>(mut self, value: T) -> Self
         where
             T: std::convert::TryInto<Option<super::TextualDescription>>,
@@ -12357,6 +12707,7 @@ pub mod builder {
             value: RulesForSharingDocument,
         ) -> Result<Self, super::error::ConversionError> {
             Ok(Self {
+                sharing_group: value.sharing_group?,
                 text: value.text?,
                 tlp: value.tlp?,
             })
@@ -12365,8 +12716,61 @@ pub mod builder {
     impl From<super::RulesForSharingDocument> for RulesForSharingDocument {
         fn from(value: super::RulesForSharingDocument) -> Self {
             Self {
+                sharing_group: Ok(value.sharing_group),
                 text: Ok(value.text),
                 tlp: Ok(value.tlp),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct SharingGroup {
+        id: Result<super::SharingGroupId, String>,
+        name: Result<Option<super::SharingGroupName>, String>,
+    }
+    impl Default for SharingGroup {
+        fn default() -> Self {
+            Self {
+                id: Err("no value supplied for id".to_string()),
+                name: Ok(Default::default()),
+            }
+        }
+    }
+    impl SharingGroup {
+        pub fn id<T>(mut self, value: T) -> Self
+        where
+            T: std::convert::TryInto<super::SharingGroupId>,
+            T::Error: std::fmt::Display,
+        {
+            self.id = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for id: {}", e));
+            self
+        }
+        pub fn name<T>(mut self, value: T) -> Self
+        where
+            T: std::convert::TryInto<Option<super::SharingGroupName>>,
+            T::Error: std::fmt::Display,
+        {
+            self.name = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for name: {}", e));
+            self
+        }
+    }
+    impl std::convert::TryFrom<SharingGroup> for super::SharingGroup {
+        type Error = super::error::ConversionError;
+        fn try_from(value: SharingGroup) -> Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                id: value.id?,
+                name: value.name?,
+            })
+        }
+    }
+    impl From<super::SharingGroup> for SharingGroup {
+        fn from(value: super::SharingGroup) -> Self {
+            Self {
+                id: Ok(value.id),
+                name: Ok(value.name),
             }
         }
     }

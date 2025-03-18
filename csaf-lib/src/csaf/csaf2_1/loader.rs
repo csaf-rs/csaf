@@ -17,7 +17,7 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_0::schema::{
+    use crate::csaf::csaf2_1::schema::{
         CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, Publisher,
         Revision, Tracking,
     };
@@ -26,7 +26,7 @@ mod tests {
         let metadata: DocumentLevelMetaData = DocumentLevelMetaData::builder()
             .title("Test")
             .category("csaf_base")
-            .csaf_version("2.0")
+            .csaf_version("2.1")
             .publisher(
                 Publisher::builder()
                     .category(CategoryOfPublisher::Coordinator)

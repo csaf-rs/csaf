@@ -17,16 +17,21 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_1::schema::{
-        CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, Publisher,
-        Revision, Tracking,
-    };
+    use crate::csaf::csaf2_1::schema::{CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, JsonSchema, LabelOfTlp, Publisher, Revision, RulesForSharingDocument, Tracking, TrafficLightProtocolTlp};
 
     fn mock_document() -> CommonSecurityAdvisoryFramework {
         let metadata: DocumentLevelMetaData = DocumentLevelMetaData::builder()
             .title("Test")
             .category("csaf_base")
             .csaf_version("2.1")
+            .distribution(
+                RulesForSharingDocument::builder()
+                    .tlp(
+                        TrafficLightProtocolTlp::builder()
+                            .label(LabelOfTlp::Clear)
+                    )
+            )
+
             .publisher(
                 Publisher::builder()
                     .category(CategoryOfPublisher::Coordinator)
@@ -51,6 +56,7 @@ mod tests {
             .unwrap();
         CommonSecurityAdvisoryFramework::builder()
             .document(metadata)
+            .schema(JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21CsafJsonSchemaJson)
             .try_into()
             .unwrap()
     }

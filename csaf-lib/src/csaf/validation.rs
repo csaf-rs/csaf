@@ -1,7 +1,9 @@
 use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::csaf::getter_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::str::FromStr;
+use crate::csaf::helpers::find_duplicates;
+use crate::csaf::product_helpers::{check_branch_depth_tree, gather_product_definitions, gather_product_references};
 
 pub enum ValidationError {}
 
@@ -86,6 +88,47 @@ pub fn validate_by_test<VersionedDocument>(
     }
 }
 
+pub fn test_6_01_01_missing_definition_of_product_id(
+    doc: &impl CsafTrait,
+) -> Result<(), String> {
+    let definitions = gather_product_definitions(doc);
+    let definitions_set = HashSet::<String>::from_iter(definitions.iter().map(|x| x.clone().clone()));
+    let references = gather_product_references(doc);
+
+    let mut missing = references.difference(&definitions_set).collect::<Vec<_>>();
+    missing.sort();
+
+    if missing.is_empty() {
+        Ok(())
+    } else {
+        Err(format!("Missing definitions: {:?}", missing))
+    }
+}
+
+pub fn test_6_01_02_multiple_definition_of_product_id(
+    doc: &impl CsafTrait,
+) -> Result<(), String> {
+    let definitions = gather_product_definitions(doc);
+    let duplicates = find_duplicates(definitions);
+
+    if duplicates.is_empty() {
+        Ok(())
+    } else {
+        Err(format!("Duplicate definitions: {:?}", duplicates))
+    }
+}
+
+pub fn test_6_01_34_branches_recursion_depth(
+    doc: &impl CsafTrait,
+) -> Result<(), String> {
+    if let Some(x) = doc.get_product_tree().as_ref() {
+        if !check_branch_depth_tree(x, 30) {
+            return Err(format!("Branches recursion depth too big (> {:?})", 30));
+        }
+    }
+    Ok(())
+}
+
 static MUT_EX_MEASURES: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::NoneAvailable,
     CategoryOfTheRemediation::Workaround,
@@ -137,4 +180,3 @@ pub fn test_6_01_35_contradicting_remediations(
     }
     Ok(())
 }
-

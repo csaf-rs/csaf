@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::csaf::helpers::resolve_product_groups;
 
@@ -120,6 +120,59 @@ pub trait ProductStatusTrait {
 
     /// Returns a reference to the list of product IDs currently under investigation.
     fn get_under_investigation(&self) -> Option<Vec<&String>>;
+
+    /// Combines all affected product IDs into a `HashSet`.
+    ///
+    /// This method aggregates product IDs from these lists:
+    /// - First affected product IDs
+    /// - Last affected product IDs
+    /// - Known affected product IDs
+    ///
+    /// # Returns
+    ///
+    /// A `HashSet` containing all aggregated product IDs. If none of these lists are
+    /// populated, the returned `HashSet` will be empty.
+    fn get_all_affected(&self) -> HashSet<&String> {
+        let mut result = HashSet::new();
+
+        if let Some(first_affected) = self.get_first_affected() {
+            result.extend(first_affected);
+        }
+
+        if let Some(last_affected) = self.get_last_affected() {
+            result.extend(last_affected);
+        }
+
+        if let Some(known_affected) = self.get_known_affected() {
+            result.extend(known_affected);
+        }
+
+        result
+    }
+
+    /// Combines all fixed product IDs into a `HashSet`.
+    ///
+    /// This method aggregates product IDs from these lists:
+    /// - First fixed product IDs
+    /// - Fixed product IDs
+    ///
+    /// # Returns
+    ///
+    /// A `HashSet` containing all aggregated product IDs. If none of these lists are
+    /// populated, the returned `HashSet` will be empty.
+    fn get_all_fixed(&self) -> HashSet<&String> {
+        let mut result = HashSet::new();
+
+        if let Some(first_fixed) = self.get_first_fixed() {
+            result.extend(first_fixed);
+        }
+
+        if let Some(fixed) = self.get_fixed() {
+            result.extend(fixed);
+        }
+
+        result
+    }
 }
 
 /// Trait representing an abstract metric in a CSAF document.

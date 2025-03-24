@@ -3,17 +3,16 @@ use crate::csaf::getter_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait
 use std::collections::BTreeMap;
 use crate::csaf::validation::ValidationError;
 
-static MUT_EX_MEASURES: &[CategoryOfTheRemediation] = &[
+/// Totally exclusive categories that cannot be combined with any other category.
+static EX_STATES: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::NoneAvailable,
-    CategoryOfTheRemediation::Workaround,
-    CategoryOfTheRemediation::Mitigation,
+    CategoryOfTheRemediation::OptionalPatch,
 ];
 
-static MUT_EX_FIX_STATES: &[CategoryOfTheRemediation] = &[
-    CategoryOfTheRemediation::NoneAvailable,
+/// Mutually exclusive states that cannot apply at the same time.
+static MUT_EX_STATES: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::NoFixPlanned,
     CategoryOfTheRemediation::FixPlanned,
-    CategoryOfTheRemediation::OptionalPatch,
     CategoryOfTheRemediation::VendorFix,
 ];
 
@@ -32,11 +31,13 @@ pub fn test_6_1_35_contradicting_remediations(
                 for p in product_ids {
                     // Check if product ID has categories associated
                     if let Some(exist_cat_set) = product_categories.get_mut(&p) {
-                        // Check if any seen category conflicts with the current one
-                        if exist_cat_set.iter().any(|e_cat| {
-                            MUT_EX_MEASURES.contains(e_cat) && MUT_EX_MEASURES.contains(&cat)
-                                || MUT_EX_FIX_STATES.contains(e_cat) && MUT_EX_FIX_STATES.contains(&cat)
-                        }) {
+                        // Checks if current category is exclusive and a non-equal previous category was found.
+                        if EX_STATES.contains(&cat) && exist_cat_set.first().is_some_and(|e_cat| e_cat != &cat)
+                            // Checks if the (only) previous category is exclusive.
+                            || exist_cat_set.first().is_some_and(|e_cat| EX_STATES.contains(e_cat))
+                            // Checks if the current category conflicts with any other in the group of mutually exclusive ones.
+                            || MUT_EX_STATES.contains(&cat) && exist_cat_set.iter().any(|e_cat| MUT_EX_STATES.contains(e_cat))
+                        {
                             return Err(ValidationError {
                                 message: format!(
                                     "Product {} has contradicting remediations: {} and {}",
@@ -92,6 +93,7 @@ mod tests {
             }),
         ].iter() {
             let doc = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-35-{}.json", x).as_str()).unwrap();
+
             assert_eq!(
                 Err(err.clone()),
                 test_6_1_35_contradicting_remediations(&doc)

@@ -1722,8 +1722,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "current_release_date": {
 ///              "title": "Current release date",
 ///              "description": "The date when the current revision of this document was released",
-///              "type": "string",
-///              "format": "date-time"
+///              "type": "string"
 ///            },
 ///            "generator": {
 ///              "title": "Document generator",
@@ -1736,8 +1735,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "date": {
 ///                  "title": "Date of document generation",
 ///                  "description": "This SHOULD be the current date that the document was generated. Because documents are often generated internally by a document producer and exist for a nonzero amount of time before being released, this field MAY be different from the Initial Release Date and Current Release Date.",
-///                  "type": "string",
-///                  "format": "date-time"
+///                  "type": "string"
 ///                },
 ///                "engine": {
 ///                  "title": "Engine of document generation",
@@ -1788,8 +1786,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "initial_release_date": {
 ///              "title": "Initial release date",
 ///              "description": "The date when this document was first published.",
-///              "type": "string",
-///              "format": "date-time"
+///              "type": "string"
 ///            },
 ///            "revision_history": {
 ///              "title": "Revision history",
@@ -1808,8 +1805,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "date": {
 ///                    "title": "Date of the revision",
 ///                    "description": "The date of the revision entry",
-///                    "type": "string",
-///                    "format": "date-time"
+///                    "type": "string"
 ///                  },
 ///                  "legacy_version": {
 ///                    "title": "Legacy version of the revision",
@@ -2033,8 +2029,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///          "discovery_date": {
 ///            "title": "Discovery date",
 ///            "description": "Holds the date and time the vulnerability was originally discovered.",
-///            "type": "string",
-///            "format": "date-time"
+///            "type": "string"
 ///          },
 ///          "flags": {
 ///            "title": "List of flags",
@@ -2051,8 +2046,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "date": {
 ///                  "title": "Date of the flag",
 ///                  "description": "Contains the date when assessment was done or the flag was assigned.",
-///                  "type": "string",
-///                  "format": "date-time"
+///                  "type": "string"
 ///                },
 ///                "group_ids": {
 ///                  "$ref": "#/$defs/product_groups_t"
@@ -2131,8 +2125,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "date": {
 ///                  "title": "Date of involvement",
 ///                  "description": "Holds the date and time of the involvement entry.",
-///                  "type": "string",
-///                  "format": "date-time"
+///                  "type": "string"
 ///                },
 ///                "party": {
 ///                  "title": "Party category",
@@ -2275,8 +2268,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///          "release_date": {
 ///            "title": "Release date",
 ///            "description": "Holds the date and time the vulnerability was originally released into the wild.",
-///            "type": "string",
-///            "format": "date-time"
+///            "type": "string"
 ///          },
 ///          "remediations": {
 ///            "title": "List of remediations",
@@ -2308,8 +2300,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "date": {
 ///                  "title": "Date of the remediation",
 ///                  "description": "Contains the date from which the remediation is available.",
-///                  "type": "string",
-///                  "format": "date-time"
+///                  "type": "string"
 ///                },
 ///                "details": {
 ///                  "title": "Details of the remediation",
@@ -2403,8 +2394,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "date": {
 ///                  "title": "Date of the threat",
 ///                  "description": "Contains the date when the assessment was done or the threat appeared.",
-///                  "type": "string",
-///                  "format": "date-time"
+///                  "type": "string"
 ///                },
 ///                "details": {
 ///                  "title": "Details of the threat",
@@ -3283,8 +3273,7 @@ impl<'de> ::serde::Deserialize<'de> for DocumentCategory {
 ///    "date": {
 ///      "title": "Date of document generation",
 ///      "description": "This SHOULD be the current date that the document was generated. Because documents are often generated internally by a document producer and exist for a nonzero amount of time before being released, this field MAY be different from the Initial Release Date and Current Release Date.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "engine": {
 ///      "title": "Engine of document generation",
@@ -3326,7 +3315,7 @@ impl<'de> ::serde::Deserialize<'de> for DocumentCategory {
 pub struct DocumentGenerator {
     ///This SHOULD be the current date that the document was generated. Because documents are often generated internally by a document producer and exist for a nonzero amount of time before being released, this field MAY be different from the Initial Release Date and Current Release Date.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub date: Option<chrono::DateTime<chrono::offset::Utc>>,
+    pub date: Option<String>,
     pub engine: EngineOfDocumentGeneration,
 }
 impl From<&DocumentGenerator> for DocumentGenerator {
@@ -3619,8 +3608,7 @@ impl DocumentGenerator {
 ///        "current_release_date": {
 ///          "title": "Current release date",
 ///          "description": "The date when the current revision of this document was released",
-///          "type": "string",
-///          "format": "date-time"
+///          "type": "string"
 ///        },
 ///        "generator": {
 ///          "title": "Document generator",
@@ -3633,8 +3621,7 @@ impl DocumentGenerator {
 ///            "date": {
 ///              "title": "Date of document generation",
 ///              "description": "This SHOULD be the current date that the document was generated. Because documents are often generated internally by a document producer and exist for a nonzero amount of time before being released, this field MAY be different from the Initial Release Date and Current Release Date.",
-///              "type": "string",
-///              "format": "date-time"
+///              "type": "string"
 ///            },
 ///            "engine": {
 ///              "title": "Engine of document generation",
@@ -3685,8 +3672,7 @@ impl DocumentGenerator {
 ///        "initial_release_date": {
 ///          "title": "Initial release date",
 ///          "description": "The date when this document was first published.",
-///          "type": "string",
-///          "format": "date-time"
+///          "type": "string"
 ///        },
 ///        "revision_history": {
 ///          "title": "Revision history",
@@ -3705,8 +3691,7 @@ impl DocumentGenerator {
 ///              "date": {
 ///                "title": "Date of the revision",
 ///                "description": "The date of the revision entry",
-///                "type": "string",
-///                "format": "date-time"
+///                "type": "string"
 ///              },
 ///              "legacy_version": {
 ///                "title": "Legacy version of the revision",
@@ -4297,8 +4282,7 @@ impl<'de> ::serde::Deserialize<'de> for Filename {
 ///    "date": {
 ///      "title": "Date of the flag",
 ///      "description": "Contains the date when assessment was done or the flag was assigned.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "group_ids": {
 ///      "$ref": "#/$defs/product_groups_t"
@@ -4326,7 +4310,7 @@ impl<'de> ::serde::Deserialize<'de> for Filename {
 pub struct Flag {
     ///Contains the date when assessment was done or the flag was assigned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub date: Option<chrono::DateTime<chrono::offset::Utc>>,
+    pub date: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group_ids: Option<ProductGroupsT>,
     ///Specifies the machine readable label.
@@ -4916,8 +4900,7 @@ impl Id {
 ///    "date": {
 ///      "title": "Date of involvement",
 ///      "description": "Holds the date and time of the involvement entry.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "party": {
 ///      "title": "Party category",
@@ -4958,7 +4941,7 @@ impl Id {
 pub struct Involvement {
     ///Holds the date and time of the involvement entry.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub date: Option<chrono::DateTime<chrono::offset::Utc>>,
+    pub date: Option<String>,
     ///Defines the category of the involved party.
     pub party: PartyCategory,
     ///Defines contact status of the involved party.
@@ -7293,8 +7276,7 @@ impl std::convert::TryFrom<String> for RelationshipCategory {
 ///    "date": {
 ///      "title": "Date of the remediation",
 ///      "description": "Contains the date from which the remediation is available.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "details": {
 ///      "title": "Details of the remediation",
@@ -7368,7 +7350,7 @@ pub struct Remediation {
     pub category: CategoryOfTheRemediation,
     ///Contains the date from which the remediation is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub date: Option<chrono::DateTime<chrono::offset::Utc>>,
+    pub date: Option<String>,
     ///Contains a thorough human-readable discussion of the remediation.
     pub details: DetailsOfTheRemediation,
     ///Contains a list of entitlements.
@@ -7469,8 +7451,7 @@ impl RestartRequiredByRemediation {
 ///    "date": {
 ///      "title": "Date of the revision",
 ///      "description": "The date of the revision entry",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "legacy_version": {
 ///      "title": "Legacy version of the revision",
@@ -7497,7 +7478,7 @@ impl RestartRequiredByRemediation {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct Revision {
     ///The date of the revision entry
-    pub date: chrono::DateTime<chrono::offset::Utc>,
+    pub date: String,
     ///Contains the version string used in an existing document with the same content.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_version: Option<LegacyVersionOfTheRevision>,
@@ -8737,8 +8718,7 @@ impl<'de> ::serde::Deserialize<'de> for TextualDescriptionOfTheProduct {
 ///    "date": {
 ///      "title": "Date of the threat",
 ///      "description": "Contains the date when the assessment was done or the threat appeared.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "details": {
 ///      "title": "Details of the threat",
@@ -8762,7 +8742,7 @@ pub struct Threat {
     pub category: CategoryOfTheThreat,
     ///Contains the date when the assessment was done or the threat appeared.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub date: Option<chrono::DateTime<chrono::offset::Utc>>,
+    pub date: Option<String>,
     ///Represents a thorough human-readable discussion of the threat.
     pub details: DetailsOfTheThreat,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9037,8 +9017,7 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///    "current_release_date": {
 ///      "title": "Current release date",
 ///      "description": "The date when the current revision of this document was released",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "generator": {
 ///      "title": "Document generator",
@@ -9051,8 +9030,7 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///        "date": {
 ///          "title": "Date of document generation",
 ///          "description": "This SHOULD be the current date that the document was generated. Because documents are often generated internally by a document producer and exist for a nonzero amount of time before being released, this field MAY be different from the Initial Release Date and Current Release Date.",
-///          "type": "string",
-///          "format": "date-time"
+///          "type": "string"
 ///        },
 ///        "engine": {
 ///          "title": "Engine of document generation",
@@ -9103,8 +9081,7 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///    "initial_release_date": {
 ///      "title": "Initial release date",
 ///      "description": "The date when this document was first published.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "revision_history": {
 ///      "title": "Revision history",
@@ -9123,8 +9100,7 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///          "date": {
 ///            "title": "Date of the revision",
 ///            "description": "The date of the revision entry",
-///            "type": "string",
-///            "format": "date-time"
+///            "type": "string"
 ///          },
 ///          "legacy_version": {
 ///            "title": "Legacy version of the revision",
@@ -9171,13 +9147,13 @@ pub struct Tracking {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub aliases: Option<Vec<AlternateName>>,
     ///The date when the current revision of this document was released
-    pub current_release_date: chrono::DateTime<chrono::offset::Utc>,
+    pub current_release_date: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub generator: Option<DocumentGenerator>,
     ///The ID is a simple label that provides for a wide range of numbering values, types, and schemes. Its value SHOULD be assigned and maintained by the original document issuing authority.
     pub id: UniqueIdentifierForTheDocument,
     ///The date when this document was first published.
-    pub initial_release_date: chrono::DateTime<chrono::offset::Utc>,
+    pub initial_release_date: String,
     ///Holds one revision item for each version of the CSAF document, including the initial one.
     pub revision_history: Vec<Revision>,
     ///Defines the draft status of the document.
@@ -9577,8 +9553,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///    "discovery_date": {
 ///      "title": "Discovery date",
 ///      "description": "Holds the date and time the vulnerability was originally discovered.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "flags": {
 ///      "title": "List of flags",
@@ -9595,8 +9570,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "date": {
 ///            "title": "Date of the flag",
 ///            "description": "Contains the date when assessment was done or the flag was assigned.",
-///            "type": "string",
-///            "format": "date-time"
+///            "type": "string"
 ///          },
 ///          "group_ids": {
 ///            "$ref": "#/$defs/product_groups_t"
@@ -9675,8 +9649,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "date": {
 ///            "title": "Date of involvement",
 ///            "description": "Holds the date and time of the involvement entry.",
-///            "type": "string",
-///            "format": "date-time"
+///            "type": "string"
 ///          },
 ///          "party": {
 ///            "title": "Party category",
@@ -9819,8 +9792,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///    "release_date": {
 ///      "title": "Release date",
 ///      "description": "Holds the date and time the vulnerability was originally released into the wild.",
-///      "type": "string",
-///      "format": "date-time"
+///      "type": "string"
 ///    },
 ///    "remediations": {
 ///      "title": "List of remediations",
@@ -9852,8 +9824,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "date": {
 ///            "title": "Date of the remediation",
 ///            "description": "Contains the date from which the remediation is available.",
-///            "type": "string",
-///            "format": "date-time"
+///            "type": "string"
 ///          },
 ///          "details": {
 ///            "title": "Details of the remediation",
@@ -9947,8 +9918,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "date": {
 ///            "title": "Date of the threat",
 ///            "description": "Contains the date when the assessment was done or the threat appeared.",
-///            "type": "string",
-///            "format": "date-time"
+///            "type": "string"
 ///          },
 ///          "details": {
 ///            "title": "Details of the threat",
@@ -9989,7 +9959,7 @@ pub struct Vulnerability {
     pub cwes: Option<Vec<Cwe>>,
     ///Holds the date and time the vulnerability was originally discovered.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub discovery_date: Option<chrono::DateTime<chrono::offset::Utc>>,
+    pub discovery_date: Option<String>,
     ///Contains a list of machine readable flags.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub flags: Option<Vec<Flag>>,
@@ -10012,7 +9982,7 @@ pub struct Vulnerability {
     pub references: Option<ReferencesT>,
     ///Holds the date and time the vulnerability was originally released into the wild.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub release_date: Option<chrono::DateTime<chrono::offset::Utc>>,
+    pub release_date: Option<String>,
     ///Contains a list of remediations.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub remediations: Vec<Remediation>,
@@ -10707,7 +10677,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct DocumentGenerator {
-        date: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+        date: Result<Option<String>, String>,
         engine: Result<super::EngineOfDocumentGeneration, String>,
     }
     impl Default for DocumentGenerator {
@@ -10721,7 +10691,7 @@ pub mod builder {
     impl DocumentGenerator {
         pub fn date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+            T: std::convert::TryInto<Option<String>>,
             T::Error: std::fmt::Display,
         {
             self.date = value
@@ -11094,7 +11064,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Flag {
-        date: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+        date: Result<Option<String>, String>,
         group_ids: Result<Option<super::ProductGroupsT>, String>,
         label: Result<super::LabelOfTheFlag, String>,
         product_ids: Result<Option<super::ProductsT>, String>,
@@ -11112,7 +11082,7 @@ pub mod builder {
     impl Flag {
         pub fn date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+            T: std::convert::TryInto<Option<String>>,
             T::Error: std::fmt::Display,
         {
             self.date = value
@@ -11519,7 +11489,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Involvement {
-        date: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+        date: Result<Option<String>, String>,
         party: Result<super::PartyCategory, String>,
         status: Result<super::PartyStatus, String>,
         summary: Result<Option<super::SummaryOfTheInvolvement>, String>,
@@ -11537,7 +11507,7 @@ pub mod builder {
     impl Involvement {
         pub fn date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+            T: std::convert::TryInto<Option<String>>,
             T::Error: std::fmt::Display,
         {
             self.date = value
@@ -12359,7 +12329,7 @@ pub mod builder {
     #[derive(Clone, Debug)]
     pub struct Remediation {
         category: Result<super::CategoryOfTheRemediation, String>,
-        date: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+        date: Result<Option<String>, String>,
         details: Result<super::DetailsOfTheRemediation, String>,
         entitlements: Result<Vec<super::EntitlementOfTheRemediation>, String>,
         group_ids: Result<Option<super::ProductGroupsT>, String>,
@@ -12396,7 +12366,7 @@ pub mod builder {
         }
         pub fn date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+            T: std::convert::TryInto<Option<String>>,
             T::Error: std::fmt::Display,
         {
             self.date = value
@@ -12567,7 +12537,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Revision {
-        date: Result<chrono::DateTime<chrono::offset::Utc>, String>,
+        date: Result<String, String>,
         legacy_version: Result<Option<super::LegacyVersionOfTheRevision>, String>,
         number: Result<super::VersionT, String>,
         summary: Result<super::SummaryOfTheRevision, String>,
@@ -12585,7 +12555,7 @@ pub mod builder {
     impl Revision {
         pub fn date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+            T: std::convert::TryInto<String>,
             T::Error: std::fmt::Display,
         {
             self.date = value
@@ -12777,7 +12747,7 @@ pub mod builder {
     #[derive(Clone, Debug)]
     pub struct Threat {
         category: Result<super::CategoryOfTheThreat, String>,
-        date: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+        date: Result<Option<String>, String>,
         details: Result<super::DetailsOfTheThreat, String>,
         group_ids: Result<Option<super::ProductGroupsT>, String>,
         product_ids: Result<Option<super::ProductsT>, String>,
@@ -12808,7 +12778,7 @@ pub mod builder {
         }
         pub fn date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+            T: std::convert::TryInto<Option<String>>,
             T::Error: std::fmt::Display,
         {
             self.date = value
@@ -12879,10 +12849,10 @@ pub mod builder {
     #[derive(Clone, Debug)]
     pub struct Tracking {
         aliases: Result<Option<Vec<super::AlternateName>>, String>,
-        current_release_date: Result<chrono::DateTime<chrono::offset::Utc>, String>,
+        current_release_date: Result<String, String>,
         generator: Result<Option<super::DocumentGenerator>, String>,
         id: Result<super::UniqueIdentifierForTheDocument, String>,
-        initial_release_date: Result<chrono::DateTime<chrono::offset::Utc>, String>,
+        initial_release_date: Result<String, String>,
         revision_history: Result<Vec<super::Revision>, String>,
         status: Result<super::DocumentStatus, String>,
         version: Result<super::VersionT, String>,
@@ -12922,7 +12892,7 @@ pub mod builder {
         }
         pub fn current_release_date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+            T: std::convert::TryInto<String>,
             T::Error: std::fmt::Display,
         {
             self.current_release_date = value
@@ -12958,7 +12928,7 @@ pub mod builder {
         }
         pub fn initial_release_date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+            T: std::convert::TryInto<String>,
             T::Error: std::fmt::Display,
         {
             self.initial_release_date = value
@@ -13100,7 +13070,7 @@ pub mod builder {
         acknowledgments: Result<Option<super::AcknowledgmentsT>, String>,
         cve: Result<Option<super::Cve>, String>,
         cwes: Result<Option<Vec<super::Cwe>>, String>,
-        discovery_date: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+        discovery_date: Result<Option<String>, String>,
         flags: Result<Option<Vec<super::Flag>>, String>,
         ids: Result<Option<Vec<super::Id>>, String>,
         involvements: Result<Option<Vec<super::Involvement>>, String>,
@@ -13108,7 +13078,7 @@ pub mod builder {
         notes: Result<Option<super::NotesT>, String>,
         product_status: Result<Option<super::ProductStatus>, String>,
         references: Result<Option<super::ReferencesT>, String>,
-        release_date: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+        release_date: Result<Option<String>, String>,
         remediations: Result<Vec<super::Remediation>, String>,
         threats: Result<Vec<super::Threat>, String>,
         title: Result<Option<super::Title>, String>,
@@ -13169,7 +13139,7 @@ pub mod builder {
         }
         pub fn discovery_date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+            T: std::convert::TryInto<Option<String>>,
             T::Error: std::fmt::Display,
         {
             self.discovery_date = value
@@ -13263,7 +13233,7 @@ pub mod builder {
         }
         pub fn release_date<T>(mut self, value: T) -> Self
         where
-            T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+            T: std::convert::TryInto<Option<String>>,
             T::Error: std::fmt::Display,
         {
             self.release_date = value

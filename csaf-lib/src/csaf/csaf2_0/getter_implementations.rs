@@ -1,10 +1,9 @@
-use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, FullProductNameT, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Threat, Vulnerability};
-use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation as Remediation21;
-use crate::csaf::getter_traits::{BranchTrait, CsafTrait, FullProductNameTrait, MetricTrait, ProductGroupTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, ThreatTrait, VulnerabilityTrait};
+use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, Flag, FullProductNameT, Involvement, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, Threat, Tracking, Vulnerability};
+use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21};
+use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DocumentTrait, FlagTrait, FullProductNameTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, ThreatTrait, TrackingTrait, VulnerabilityTrait};
 use std::ops::Deref;
 
 impl RemediationTrait for Remediation {
-
     /// Normalizes the remediation categories from CSAF 2.0 to those of CSAF 2.1.
     ///
     /// # Explanation
@@ -31,6 +30,10 @@ impl RemediationTrait for Remediation {
 
     fn get_group_ids(&self) -> Option<Vec<&String>> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()).collect())
+    }
+
+    fn get_date(&self) -> &Option<String> {
+        &self.date
     }
 }
 
@@ -78,6 +81,10 @@ impl ThreatTrait for Threat {
     fn get_product_ids(&self) -> Option<Vec<&String>> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
     }
+
+    fn get_date(&self) -> &Option<String> {
+        &self.date
+    }
 }
 
 impl VulnerabilityTrait for Vulnerability {
@@ -86,6 +93,8 @@ impl VulnerabilityTrait for Vulnerability {
     // Metrics are not implemented in CSAF 2.0
     type MetricType = ();
     type ThreatType = Threat;
+    type FlagType = Flag;
+    type InvolvementType = Involvement;
 
     fn get_remediations(&self) -> Vec<Self::RemediationType> {
         self.remediations.clone()
@@ -103,11 +112,40 @@ impl VulnerabilityTrait for Vulnerability {
     fn get_threats(&self) -> Vec<Self::ThreatType> {
         self.threats.clone()
     }
+
+    fn get_release_date(&self) -> &Option<String> {
+        &self.release_date
+    }
+
+    fn get_discovery_date(&self) -> &Option<String> {
+        &self.discovery_date
+    }
+
+    fn get_flags(&self) -> &Option<Vec<Self::FlagType>> {
+        &self.flags
+    }
+
+    fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>> {
+        &self.involvements
+    }
+}
+
+impl FlagTrait for Flag {
+    fn get_date(&self) -> &Option<String> {
+        &self.date
+    }
+}
+
+impl InvolvementTrait for Involvement {
+    fn get_date(&self) -> &Option<String> {
+        &self.date
+    }
 }
 
 impl CsafTrait for CommonSecurityAdvisoryFramework {
     type VulnerabilityType = Vulnerability;
     type ProductTreeType = ProductTree;
+    type DocumentType = DocumentLevelMetaData;
 
     fn get_product_tree(&self) -> Option<Self::ProductTreeType> {
         self.product_tree.clone()
@@ -115,6 +153,57 @@ impl CsafTrait for CommonSecurityAdvisoryFramework {
 
     fn get_vulnerabilities(&self) -> Vec<Self::VulnerabilityType> {
         self.vulnerabilities.clone()
+    }
+
+    fn get_document(&self) -> Self::DocumentType {
+        self.document.clone()
+    }
+}
+
+impl DocumentTrait for DocumentLevelMetaData {
+    type TrackingType = Tracking;
+
+    fn get_tracking(&self) -> Self::TrackingType {
+        self.tracking.clone()
+    }
+}
+
+impl TrackingTrait for Tracking {
+    type GeneratorType = DocumentGenerator;
+    type RevisionType = Revision;
+
+    fn get_current_release_date(&self) -> &String {
+        &self.current_release_date
+    }
+
+    fn get_initial_release_date(&self) -> &String {
+        &self.initial_release_date
+    }
+
+    fn get_generator(&self) -> &Option<Self::GeneratorType> {
+        &self.generator
+    }
+
+    fn get_revision_history(&self) -> &Vec<Self::RevisionType> {
+        &self.revision_history
+    }
+}
+
+impl GeneratorTrait for DocumentGenerator {
+    fn get_date(&self) -> &Option<String> {
+        &self.date
+    }
+}
+
+impl RevisionTrait for Revision {
+    fn get_date(&self) -> &String {
+        &self.date
+    }
+    fn get_number(&self) -> &String {
+        &self.number
+    }
+    fn get_summary(&self) -> &String {
+        &self.summary
     }
 }
 

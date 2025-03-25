@@ -20,6 +20,7 @@ mod tests {
     use crate::csaf::csaf2_1::schema::{CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, JsonSchema, LabelOfTlp, Publisher, Revision, RulesForSharingDocument, Tracking, TrafficLightProtocolTlp};
 
     fn mock_document() -> CommonSecurityAdvisoryFramework {
+        let now = chrono::Utc::now().to_string();
         let metadata: DocumentLevelMetaData = DocumentLevelMetaData::builder()
             .title("Test")
             .category("csaf_base")
@@ -41,13 +42,13 @@ mod tests {
             .tracking(
                 Tracking::builder()
                     .id("test")
-                    .current_release_date(chrono::Utc::now())
-                    .initial_release_date(chrono::Utc::now())
+                    .current_release_date(now.clone())
+                    .initial_release_date(now.clone())
                     .status("final")
                     .version("1")
                     .revision_history(vec![Revision::builder()
                         .number("1")
-                        .date(chrono::Utc::now())
+                        .date(now.clone())
                         .summary("test")
                         .try_into()
                         .unwrap()]),

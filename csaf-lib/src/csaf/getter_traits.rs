@@ -14,12 +14,63 @@ pub trait CsafTrait {
     /// The associated type representing the type of product tree in this CSAF structure.
     type ProductTreeType: ProductTreeTrait;
 
+    /// The associated type representing the type of document meta in this CSAF structure.
+    type DocumentType: DocumentTrait;
+
     /// Returns the product tree of the CSAF document, if available.
     fn get_product_tree(&self) -> Option<Self::ProductTreeType>;
 
     /// Retrieves all vulnerabilities present in the CSAF document.
     fn get_vulnerabilities(&self) -> Vec<Self::VulnerabilityType>;
+
+    /// Retrieves the document meta present in the CSAF document.
+    fn get_document(&self) -> Self::DocumentType;
 }
+
+pub trait DocumentTrait {
+    type TrackingType: TrackingTrait;
+
+    fn get_tracking(&self) -> Self::TrackingType;
+}
+
+pub trait TrackingTrait {
+    /// Type representing document generator information
+    type GeneratorType: GeneratorTrait;
+
+    /// Type representing revision history entries
+    type RevisionType: RevisionTrait;
+
+    /// The release date of the latest version of this document
+    fn get_current_release_date(&self) -> &String;
+
+    /// The initial release date of this document
+    fn get_initial_release_date(&self) -> &String;
+
+    /// Returns the generator information for this document
+    fn get_generator(&self) -> &Option<Self::GeneratorType>;
+
+    /// Returns the revision history for this document
+    fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
+}
+
+/// Trait for accessing document generator information
+pub trait GeneratorTrait {
+    /// Returns the date when this document was generated
+    fn get_date(&self) -> &Option<String>;
+}
+
+/// Trait for accessing revision history entry information
+pub trait RevisionTrait {
+    /// Returns the date associated with this revision entry
+    fn get_date(&self) -> &String;
+
+    /// Returns the number/identifier of this revision
+    fn get_number(&self) -> &String;
+
+    /// Returns the summary of changes in this revision
+    fn get_summary(&self) -> &String;
+}
+
 
 /// Trait representing an abstract vulnerability in a CSAF document.
 ///
@@ -38,6 +89,12 @@ pub trait VulnerabilityTrait {
     /// The associated type representing the threat information.
     type ThreatType: ThreatTrait;
 
+    /// The type representing a vulnerability flag
+    type FlagType: FlagTrait;
+
+    /// The type representing a vulnerability involvement
+    type InvolvementType: InvolvementTrait;
+
     /// Retrieves a list of remediations associated with the vulnerability.
     fn get_remediations(&self) -> Vec<Self::RemediationType>;
 
@@ -49,6 +106,30 @@ pub trait VulnerabilityTrait {
 
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> Vec<Self::ThreatType>;
+
+    /// Returns the date when this vulnerability was initially disclosed
+    fn get_release_date(&self) -> &Option<String>;
+
+    /// Returns the date when this vulnerability was initially discovered
+    fn get_discovery_date(&self) -> &Option<String>;
+
+    /// Returns all flags associated with this vulnerability
+    fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
+
+    /// Returns all involvements associated with this vulnerability
+    fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>>;
+}
+
+/// Trait for accessing vulnerability flags information
+pub trait FlagTrait {
+    /// Returns the date associated with this vulnerability flag
+    fn get_date(&self) -> &Option<String>;
+}
+
+/// Trait for accessing vulnerability involvement information
+pub trait InvolvementTrait {
+    /// Returns the date associated with this vulnerability involvement
+    fn get_date(&self) -> &Option<String>;
 }
 
 /// Trait representing an abstract remediation in a CSAF document.
@@ -93,6 +174,9 @@ pub trait RemediationTrait {
             Some(product_set)
         }
     }
+
+    /// Returns the date associated with this remediation
+    fn get_date(&self) -> &Option<String>;
 }
 
 /// Trait representing an abstract product status in a CSAF document.
@@ -185,6 +269,9 @@ pub trait MetricTrait {
 pub trait ThreatTrait {
     /// Retrieves a list of product IDs associated with this threat, if any.
     fn get_product_ids(&self) -> Option<Vec<&String>>;
+
+    /// Returns the date associated with this threat
+    fn get_date(&self) -> &Option<String>;
 }
 
 /// Trait representing an abstract product tree in a CSAF document.

@@ -24,12 +24,12 @@ impl RemediationTrait for Remediation {
         }
     }
 
-    fn get_product_ids(&self) -> Option<Vec<&String>> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_group_ids(&self) -> Option<Vec<&String>> {
-        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()).collect())
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 
     fn get_date(&self) -> &Option<String> {
@@ -38,48 +38,54 @@ impl RemediationTrait for Remediation {
 }
 
 impl ProductStatusTrait for ProductStatus {
-    fn get_first_affected(&self) -> Option<Vec<&String>> {
-        self.first_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_first_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.first_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_first_fixed(&self) -> Option<Vec<&String>> {
-        self.first_fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_first_fixed(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.first_fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_fixed(&self) -> Option<Vec<&String>> {
-        self.fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_fixed(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_known_affected(&self) -> Option<Vec<&String>> {
-        self.known_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_known_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.known_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_known_not_affected(&self) -> Option<Vec<&String>> {
-        self.known_not_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_known_not_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.known_not_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_last_affected(&self) -> Option<Vec<&String>> {
-        self.last_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_last_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.last_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_recommended(&self) -> Option<Vec<&String>> {
-        self.recommended.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_recommended(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.recommended.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_under_investigation(&self) -> Option<Vec<&String>> {
-        self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
 impl MetricTrait for () {
-    fn get_products(&self) -> Vec<&String> {
-        panic!("Metrics are not implemented in CSAF 2.0")
+    //noinspection RsConstantConditionIf
+    fn get_products(&self) -> impl Iterator<Item = &String> + '_ {
+        // This construction is required to satisfy compiler checks
+        // and still panic if this is ever called (as this would be a clear error!).
+        if true {
+            panic!("Metrics are not implemented in CSAF 2.0");
+        }
+        std::iter::empty()
     }
 }
 
 impl ThreatTrait for Threat {
-    fn get_product_ids(&self) -> Option<Vec<&String>> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()).collect())
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
     fn get_date(&self) -> &Option<String> {
@@ -96,21 +102,21 @@ impl VulnerabilityTrait for Vulnerability {
     type FlagType = Flag;
     type InvolvementType = Involvement;
 
-    fn get_remediations(&self) -> Vec<Self::RemediationType> {
-        self.remediations.clone()
+    fn get_remediations(&self) -> &Vec<Self::RemediationType> {
+        &self.remediations
     }
 
-    fn get_product_status(&self) -> Option<Self::ProductStatusType> {
-        self.product_status.clone()
+    fn get_product_status(&self) -> &Option<Self::ProductStatusType> {
+        &self.product_status
     }
 
-    fn get_metrics(&self) -> Option<Vec<Self::MetricType>> {
+    fn get_metrics(&self) -> &Option<Vec<Self::MetricType>> {
         // Metrics are not implemented in CSAF 2.0
-        None
+        &None
     }
 
-    fn get_threats(&self) -> Vec<Self::ThreatType> {
-        self.threats.clone()
+    fn get_threats(&self) -> &Vec<Self::ThreatType> {
+        &self.threats
     }
 
     fn get_release_date(&self) -> &Option<String> {
@@ -147,24 +153,24 @@ impl CsafTrait for CommonSecurityAdvisoryFramework {
     type ProductTreeType = ProductTree;
     type DocumentType = DocumentLevelMetaData;
 
-    fn get_product_tree(&self) -> Option<Self::ProductTreeType> {
-        self.product_tree.clone()
+    fn get_product_tree(&self) -> &Option<Self::ProductTreeType> {
+        &self.product_tree
     }
 
-    fn get_vulnerabilities(&self) -> Vec<Self::VulnerabilityType> {
-        self.vulnerabilities.clone()
+    fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType> {
+        &self.vulnerabilities
     }
 
-    fn get_document(&self) -> Self::DocumentType {
-        self.document.clone()
+    fn get_document(&self) -> &Self::DocumentType {
+        &self.document
     }
 }
 
 impl DocumentTrait for DocumentLevelMetaData {
     type TrackingType = Tracking;
 
-    fn get_tracking(&self) -> Self::TrackingType {
-        self.tracking.clone()
+    fn get_tracking(&self) -> &Self::TrackingType {
+        &self.tracking
     }
 }
 
@@ -238,8 +244,8 @@ impl BranchTrait for Branch {
         self.branches.as_ref().map(|branches| branches.deref())
     }
 
-    fn get_product(&self) -> Option<&Self::FullProductNameType> {
-        self.product.as_ref()
+    fn get_product(&self) -> &Option<Self::FullProductNameType> {
+        &self.product
     }
 }
 
@@ -248,8 +254,8 @@ impl ProductGroupTrait for ProductGroup {
         self.group_id.deref()
     }
 
-    fn get_product_ids(&self) -> Vec<&String> {
-        self.product_ids.iter().map(|x| x.deref()).collect()
+    fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_ {
+        self.product_ids.iter().map(|x| x.deref())
     }
 }
 

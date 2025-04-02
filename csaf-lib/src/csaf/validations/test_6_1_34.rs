@@ -44,42 +44,34 @@ fn find_excessive_branch_depth_rec(branch: &impl BranchTrait, remaining_depth: u
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_1::loader::load_document;
+    use crate::csaf::test_helper::run_csaf21_tests;
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_34::test_6_1_34_branches_recursion_depth;
+    use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_34() {
-        for x in ["11"].iter() {
-            let doc = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-34-{}.json", x).as_str()).unwrap();
-            assert_eq!(
-                Ok(()),
-                test_6_1_34_branches_recursion_depth(&doc)
-            )
-        }
-        for (x, err) in [
-            ("01", ValidationError {
-                message: "Branches recursion depth too big (> 30)".to_string(),
-                instance_path: "/product_tree/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string()
-            }),
-            ("02", ValidationError {
-                message: "Branches recursion depth too big (> 30)".to_string(),
-                instance_path: "/product_tree/branches/0/branches/0/branches/1/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string()
-            }),
-        ].iter() {
-            let doc = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-34-{}.json", x).as_str()).unwrap();
-            assert_eq!(
-                Err(err.to_owned()),
-                test_6_1_34_branches_recursion_depth(&doc)
-            )
-        }
+        run_csaf21_tests(
+            "34",
+            test_6_1_34_branches_recursion_depth,
+            HashMap::from([
+                ("01", &ValidationError {
+                    message: "Branches recursion depth too big (> 30)".to_string(),
+                    instance_path: "/product_tree/branches/0/branches/0/branches/0/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string(),
+                }),
+                ("02", &ValidationError {
+                    message: "Branches recursion depth too big (> 30)".to_string(),
+                    instance_path: "/product_tree/branches/0/branches/0/branches/1/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string(),
+                }),
+            ]),
+        );
     }
 }

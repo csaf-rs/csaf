@@ -5,3 +5,4 @@ pub mod product_helpers;
 pub mod validation;
 pub mod getter_traits;
 pub mod validations;
+pub mod test_helper;

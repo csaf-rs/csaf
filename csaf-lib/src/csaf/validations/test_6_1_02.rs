@@ -36,8 +36,9 @@ fn find_duplicates(vec: Vec<(String, String)>) -> Vec<(String, Vec<String>)> {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
     use crate::csaf::csaf2_0::loader::load_document as load_20;
-    use crate::csaf::csaf2_1::loader::load_document as load_21;
+    use crate::csaf::test_helper::run_csaf21_tests;
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
 
@@ -58,13 +59,11 @@ mod tests {
 
     #[test]
     fn test_test_6_1_02_csaf_2_1() {
-        let doc = load_21("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-02-01.json").unwrap();
-        assert_eq!(
-            test_6_1_02_multiple_definition_of_product_id(&doc),
-            Err(ValidationError {
+        run_csaf21_tests("02", test_6_1_02_multiple_definition_of_product_id, HashMap::from([
+            ("01", &ValidationError {
                 message: EXPECTED_ERROR.to_string(),
                 instance_path: EXPECTED_INSTANCE_PATH.to_string(),
             })
-        )
+        ]));
     }
 }

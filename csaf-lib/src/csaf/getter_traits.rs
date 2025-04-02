@@ -1,6 +1,7 @@
 use std::collections::{BTreeSet, HashSet};
-use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
+use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, LabelOfTlp};
 use crate::csaf::helpers::resolve_product_groups;
+use crate::csaf::validation::ValidationError;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -32,8 +33,50 @@ pub trait DocumentTrait {
     /// Type representing document tracking information
     type TrackingType: TrackingTrait;
 
+    /// Type representing document distribution information
+    type DistributionType: DistributionTrait;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
+
+    /// Returns the distribution information for this document with CSAF 2.1 semantics
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError>;
+
+    /// Returns the distribution information for this document with CSAF 2.0 semantics
+    fn get_distribution_20(&self) -> Option<&Self::DistributionType>;
+}
+
+/// Trait representing distribution information for a document
+pub trait DistributionTrait {
+    /// Type representing sharing group information
+    type SharingGroupType: SharingGroupTrait;
+
+    /// Type representing TLP (Traffic Light Protocol) information
+    type TlpType: TlpTrait;
+
+    /// Returns the sharing group for this distribution
+    fn get_sharing_group(&self) -> &Option<Self::SharingGroupType>;
+
+    /// Returns the TLP information for this distribution with CSAF 2.0 semantics
+    fn get_tlp_20(&self) -> Option<&Self::TlpType>;
+
+    /// Returns the TLP information for this distribution with CSAF 2.1 semantics
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
+}
+
+/// Trait representing sharing group information
+pub trait SharingGroupTrait {
+    /// Returns the ID of the sharing group
+    fn get_id(&self) -> &String;
+
+    /// Returns the optional name of the sharing group
+    fn get_name(&self) -> Option<&String>;
+}
+
+/// Trait representing TLP (Traffic Light Protocol) information
+pub trait TlpTrait {
+    /// Returns the TLP label
+    fn get_label(&self) -> LabelOfTlp;
 }
 
 pub trait TrackingTrait {
@@ -54,6 +97,9 @@ pub trait TrackingTrait {
 
     /// Returns the revision history for this document
     fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
+
+    /// Returns the status of this document
+    fn get_status(&self) -> DocumentStatus;
 }
 
 /// Trait for accessing document generator information
@@ -351,6 +397,18 @@ pub trait RelationshipTrait {
 
 /// Trait representing an abstract full product name in a CSAF document.
 pub trait FullProductNameTrait {
+    /// The associated type representing a product identification helper.
+    type ProductIdentificationHelperType: ProductIdentificationHelperTrait;
+
     /// Returns the product ID from the full product name.
     fn get_product_id(&self) -> &String;
+
+    /// Returns the product identification helper associated with the full product name.
+    fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType>;
+}
+
+/// Trait representing an abstract product identification helper of a full product name.
+pub trait ProductIdentificationHelperTrait {
+    /// Returns the PURLs identifying the associated product.
+    fn get_purls(&self) -> Option<&[String]>;
 }

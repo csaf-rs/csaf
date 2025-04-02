@@ -106,33 +106,21 @@ fn check_datetime(date_time: &String, instance_path: &str) -> Result<(), Validat
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_1::loader::load_document;
+    use crate::csaf::test_helper::run_csaf21_tests;
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_37::test_6_1_37_date_and_time;
+    use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_37() {
-        for x in ["11"].iter() {
-            let doc = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-37-{}.json", x).as_str()).unwrap();
-            assert_eq!(
-                Ok(()),
-                test_6_1_37_date_and_time(&doc)
-            )
-        }
-        for (x, err) in [
-            ("01", ValidationError {
-                message: "Invalid date-time string 2024-01-24 10:00:00.000Z, expected RFC3339-compliant format with non-empty timezone".to_string(),
-                instance_path: "/document/tracking/initial_release_date".to_string()
-            }),
-        ].iter() {
-            let doc_result = load_document(format!("../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-37-{}.json", x).as_str());
-            match doc_result {
-                Ok(doc) => {
-                    let result = test_6_1_37_date_and_time(&doc);
-                    assert_eq!(result, Err(err.clone()));
-                },
-                Err(error) => panic!("Unexpected error: {:?}", error),
-            }
-        }
+        run_csaf21_tests(
+            "37",
+            test_6_1_37_date_and_time, HashMap::from([
+                ("01", &ValidationError {
+                    message: "Invalid date-time string 2024-01-24 10:00:00.000Z, expected RFC3339-compliant format with non-empty timezone".to_string(),
+                    instance_path: "/document/tracking/initial_release_date".to_string(),
+                }),
+            ])
+        );
     }
 }

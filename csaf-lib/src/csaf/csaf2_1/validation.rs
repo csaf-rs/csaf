@@ -1,4 +1,4 @@
-use super::schema::CommonSecurityAdvisoryFramework;
+use super::schema::{CommonSecurityAdvisoryFramework};
 use crate::csaf::validation::{Test, Validatable, ValidationPreset};
 use crate::csaf::validations::test_6_1_01::test_6_1_01_missing_definition_of_product_id;
 use crate::csaf::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;

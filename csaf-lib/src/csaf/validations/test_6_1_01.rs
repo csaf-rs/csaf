@@ -1,13 +1,18 @@
-use crate::csaf::getter_traits::CsafTrait;
-use crate::csaf::product_helpers::{gather_product_definitions, gather_product_references};
+use crate::csaf::getter_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
+use crate::csaf::product_helpers::gather_product_references;
 use std::collections::HashSet;
 use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_01_missing_definition_of_product_id(
     doc: &impl CsafTrait,
 ) -> Result<(), ValidationError> {
-    let definitions = gather_product_definitions(doc);
-    let definitions_set = HashSet::<String>::from_iter(definitions.iter().map(|x| x.1.to_owned()));
+    let mut definitions_set = HashSet::<String>::new();
+    if let Some(tree) = doc.get_product_tree().as_ref() {
+        _ = tree.visit_all_products(&mut |fpn, _path| {
+            definitions_set.insert(fpn.get_product_id().to_owned());
+            Ok(())
+        });
+    }
     let references = gather_product_references(doc);
 
     for (ref_id, ref_path) in references.iter() {

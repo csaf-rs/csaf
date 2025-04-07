@@ -1,37 +1,28 @@
-use crate::csaf::getter_traits::CsafTrait;
-use crate::csaf::product_helpers::gather_product_definitions;
+use crate::csaf::getter_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 pub fn test_6_1_02_multiple_definition_of_product_id(
     doc: &impl CsafTrait,
 ) -> Result<(), ValidationError> {
-    let definitions: Vec<_> = gather_product_definitions(doc);
-    let duplicates = find_duplicates(definitions);
-
-    if let Some(duplicate) = duplicates.first() {
-        Err(ValidationError {
-            message: format!("Duplicate definition for product ID {}", duplicate.0),
-            instance_path: duplicate.1[1].to_owned(),
-        })
-    } else {
-        Ok(())
-    }
-}
-
-fn find_duplicates(vec: Vec<(String, String)>) -> Vec<(String, Vec<String>)> {
     // Map to store each key with all of its paths
-    let mut conflicts = HashMap::new();
+    let mut conflicts = HashSet::<String>::new();
 
-    for (key, path) in vec {
-        // Add this path to the list for this key
-        conflicts.entry(key).or_insert_with(Vec::new).push(path);
+    if let Some(tree) = doc.get_product_tree().as_ref() {
+        tree.visit_all_products(&mut |product, path| {
+            if conflicts.contains(product.get_product_id()) {
+                Err(ValidationError {
+                    message: format!("Duplicate definition for product ID {}", product.get_product_id()),
+                    instance_path: format!("{}/product_id", path),
+                })
+            } else {
+                conflicts.insert(product.get_product_id().to_owned());
+                Ok(())
+            }
+        })?;
     }
 
-    // Filter to keep only entries with multiple paths (actual duplicates)
-    conflicts.into_iter()
-        .filter(|(_, paths)| paths.len() > 1)
-        .collect()
+    Ok(())
 }
 
 #[cfg(test)]

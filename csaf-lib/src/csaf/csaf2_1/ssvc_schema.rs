@@ -273,6 +273,71 @@ impl ::std::convert::TryFrom<::std::string::String> for SchemaVersion {
         value.parse()
     }
 }
+///This schema defines the structure for selecting SSVC Decision Points and their evaluated values for a given vulnerability. Each vulnerability can have multiple Decision Points, and each Decision Point can have multiple selected values when full certainty is not available.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "$id": "https://certcc.github.io/SSVC/data/schema/v1/Decision_Point_Value_Selection-1-0-1.schema.json",
+///  "title": "SSVC_v1",
+///  "description": "This schema defines the structure for selecting SSVC Decision Points and their evaluated values for a given vulnerability. Each vulnerability can have multiple Decision Points, and each Decision Point can have multiple selected values when full certainty is not available.",
+///  "type": "object",
+///  "required": [
+///    "id",
+///    "schemaVersion",
+///    "selections",
+///    "timestamp"
+///  ],
+///  "properties": {
+///    "id": {
+///      "$ref": "#/$defs/id"
+///    },
+///    "role": {
+///      "$ref": "#/$defs/role"
+///    },
+///    "schemaVersion": {
+///      "$ref": "#/$defs/schemaVersion"
+///    },
+///    "selections": {
+///      "title": "selections",
+///      "description": "An array of Decision Points and their selected values for the identified Vulnerability.  If a clear evaluation is uncertain, multiple values may be listed for a Decision Point instead of waiting for perfect clarity.",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/SsvcdecisionpointselectionSchema"
+///      },
+///      "minItems": 1
+///    },
+///    "timestamp": {
+///      "$ref": "#/$defs/timestamp"
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
+pub struct SsvcV1 {
+    pub id: Id,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub role: ::std::option::Option<Role>,
+    #[serde(rename = "schemaVersion")]
+    pub schema_version: SchemaVersion,
+    ///An array of Decision Points and their selected values for the identified Vulnerability.  If a clear evaluation is uncertain, multiple values may be listed for a Decision Point instead of waiting for perfect clarity.
+    pub selections: ::std::vec::Vec<SsvcdecisionpointselectionSchema>,
+    pub timestamp: Timestamp,
+}
+impl ::std::convert::From<&SsvcV1> for SsvcV1 {
+    fn from(value: &SsvcV1) -> Self {
+        value.clone()
+    }
+}
+impl SsvcV1 {
+    pub fn builder() -> builder::SsvcV1 {
+        Default::default()
+    }
+}
 ///A down-selection of SSVC Decision Points that represent an evaluation at a specific time of a Vulnerability evaluation.
 ///
 /// <details><summary>JSON schema</summary>
@@ -785,6 +850,119 @@ impl<'de> ::serde::Deserialize<'de> for ValuesItem {
 }
 /// Types for composing complex structures.
 pub mod builder {
+    #[derive(Clone, Debug)]
+    pub struct SsvcV1 {
+        id: ::std::result::Result<super::Id, ::std::string::String>,
+        role: ::std::result::Result<
+            ::std::option::Option<super::Role>,
+            ::std::string::String,
+        >,
+        schema_version: ::std::result::Result<
+            super::SchemaVersion,
+            ::std::string::String,
+        >,
+        selections: ::std::result::Result<
+            ::std::vec::Vec<super::SsvcdecisionpointselectionSchema>,
+            ::std::string::String,
+        >,
+        timestamp: ::std::result::Result<super::Timestamp, ::std::string::String>,
+    }
+    impl ::std::default::Default for SsvcV1 {
+        fn default() -> Self {
+            Self {
+                id: Err("no value supplied for id".to_string()),
+                role: Ok(Default::default()),
+                schema_version: Err("no value supplied for schema_version".to_string()),
+                selections: Err("no value supplied for selections".to_string()),
+                timestamp: Err("no value supplied for timestamp".to_string()),
+            }
+        }
+    }
+    impl SsvcV1 {
+        pub fn id<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Id>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.id = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for id: {}", e));
+            self
+        }
+        pub fn role<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::Role>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.role = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for role: {}", e));
+            self
+        }
+        pub fn schema_version<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::SchemaVersion>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.schema_version = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for schema_version: {}", e)
+                });
+            self
+        }
+        pub fn selections<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::vec::Vec<super::SsvcdecisionpointselectionSchema>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.selections = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for selections: {}", e)
+                });
+            self
+        }
+        pub fn timestamp<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Timestamp>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.timestamp = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for timestamp: {}", e)
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<SsvcV1> for super::SsvcV1 {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: SsvcV1,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                id: value.id?,
+                role: value.role?,
+                schema_version: value.schema_version?,
+                selections: value.selections?,
+                timestamp: value.timestamp?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::SsvcV1> for SsvcV1 {
+        fn from(value: super::SsvcV1) -> Self {
+            Self {
+                id: Ok(value.id),
+                role: Ok(value.role),
+                schema_version: Ok(value.schema_version),
+                selections: Ok(value.selections),
+                timestamp: Ok(value.timestamp),
+            }
+        }
+    }
     #[derive(Clone, Debug)]
     pub struct SsvcdecisionpointselectionSchema {
         name: ::std::result::Result<

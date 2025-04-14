@@ -1,5 +1,6 @@
 use std::collections::{BTreeSet, HashSet};
 use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, LabelOfTlp};
+use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::helpers::resolve_product_groups;
 use crate::csaf::validation::ValidationError;
 
@@ -310,8 +311,16 @@ pub trait ProductStatusTrait {
 
 /// Trait representing an abstract metric in a CSAF document.
 pub trait MetricTrait {
+    type ContentType: ContentTrait;
+
     /// Retrieves a vector of product IDs associated with this metric.
     fn get_products(&self) -> impl Iterator<Item = &String> + '_;
+
+    fn get_content(&self) -> &Self::ContentType;
+}
+
+pub trait ContentTrait {
+    fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error>;
 }
 
 /// Trait representing an abstract threat in a CSAF document.

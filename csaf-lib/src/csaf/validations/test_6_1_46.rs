@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, MetricTrait, RevisionTrait, TlpTrait, TrackingTrait, VulnerabilityTrait};
+use crate::csaf::getter_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_46_invalid_ssvc(

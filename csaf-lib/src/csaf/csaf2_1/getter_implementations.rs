@@ -1,5 +1,5 @@
-use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Involvement, LabelOfTlp, Metric, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
-use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait};
+use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
+use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait};
 use std::ops::Deref;
 use serde_json::Value;
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
@@ -93,6 +93,7 @@ impl VulnerabilityTrait for Vulnerability {
     type ThreatType = Threat;
     type FlagType = Flag;
     type InvolvementType = Involvement;
+    type VulnerabilityIdType = Id;
 
     fn get_remediations(&self) -> &Vec<Self::RemediationType> {
         &self.remediations
@@ -124,6 +125,24 @@ impl VulnerabilityTrait for Vulnerability {
 
     fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>> {
         &self.involvements
+    }
+
+    fn get_cve(&self) -> Option<&String> {
+        self.cve.as_ref().map(|x| x.deref())
+    }
+
+    fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
+        &self.ids
+    }
+}
+
+impl VulnerabilityIdTrait for Id {
+    fn get_system_name(&self) -> &String {
+        self.system_name.deref()
+    }
+
+    fn get_text(&self) -> &String {
+        self.text.deref()
     }
 }
 
@@ -233,6 +252,10 @@ impl TrackingTrait for Tracking {
 
     fn get_status(&self) -> DocumentStatus {
         self.status
+    }
+
+    fn get_id(&self) -> &String {
+        self.id.deref()
     }
 }
 

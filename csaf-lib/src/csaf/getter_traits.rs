@@ -101,6 +101,9 @@ pub trait TrackingTrait {
 
     /// Returns the status of this document
     fn get_status(&self) -> DocumentStatus;
+
+    /// Returns the tracking ID of this document
+    fn get_id(&self) -> &String;
 }
 
 /// Trait for accessing document generator information
@@ -139,11 +142,14 @@ pub trait VulnerabilityTrait {
     /// The associated type representing the threat information.
     type ThreatType: ThreatTrait;
 
-    /// The type representing a vulnerability flag
+    /// The associated type representing a vulnerability flag
     type FlagType: FlagTrait;
 
-    /// The type representing a vulnerability involvement
+    /// The associated type representing a vulnerability involvement
     type InvolvementType: InvolvementTrait;
+
+    /// The associated type representing the vulnerability ID information.
+    type VulnerabilityIdType: VulnerabilityIdTrait;
 
     /// Retrieves a list of remediations associated with the vulnerability.
     fn get_remediations(&self) -> &Vec<Self::RemediationType>;
@@ -168,6 +174,18 @@ pub trait VulnerabilityTrait {
 
     /// Returns all involvements associated with this vulnerability
     fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>>;
+
+    /// Returns the CVE associated with the vulnerability
+    fn get_cve(&self) -> Option<&String>;
+
+    /// Returns the vulnerability IDs associated with this vulnerability
+    fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>>;
+}
+
+pub trait VulnerabilityIdTrait {
+    fn get_system_name(&self) -> &String;
+
+    fn get_text(&self) -> &String;
 }
 
 /// Trait for accessing vulnerability flags information

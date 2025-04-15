@@ -25,13 +25,14 @@ pub fn test_6_1_47_inconsistent_ssvc_id(
                                     instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1/id", i_v, i_m),
                                 });
                             }
-                            // Go to next metrics object
+                            // SSVC ID is valid, go to next metrics object
                             continue;
                         }
 
                         // Check if it matches CVE
                         if let Some(cve) = v.get_cve() {
                             if ssvc_id == cve {
+                                // SSVC ID is valid, go to next metrics object
                                 continue;
                             }
                         }
@@ -39,6 +40,7 @@ pub fn test_6_1_47_inconsistent_ssvc_id(
                         // Check if it matches any ID in ids array
                         if let Some(ids) = v.get_ids() {
                             if ids.iter().any(|id| id.get_text() == ssvc_id) {
+                                // SSVC ID is valid, go to next metrics object
                                 continue;
                             }
                         }

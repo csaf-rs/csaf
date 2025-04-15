@@ -33,6 +33,11 @@ fn main() -> Result<(), BuildError> {
         "csaf/csaf2_1/schema.rs",
         true,
     )?;
+    build(
+        "../ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json",
+        "csaf/csaf2_1/ssvc_dp_schema.rs",
+        false,
+    )?;
 
     Ok(())
 }

@@ -1,5 +1,5 @@
 use crate::csaf::getter_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fs;
 use std::ops::Deref;
 use std::sync::LazyLock;
@@ -101,4 +101,16 @@ pub static DP_VAL_LOOKUP: LazyLock<HashMap<(String, String, String), HashMap<Str
     }
 
     lookups
+});
+
+/// Collects all "registered" namespaces from known decision points. We assume that each namespace
+/// that occurs in at least one decision point in the SSVC repository is a "registered" namespace.
+pub static REGISTERED_SSVC_NAMESPACES: LazyLock<HashSet<String>> = LazyLock::new(|| {
+    let mut namespaces = HashSet::new();
+
+    for (namespace, _, _) in SSVC_DECISION_POINTS.keys() {
+        namespaces.insert(namespace.to_owned());
+    }
+
+    namespaces
 });

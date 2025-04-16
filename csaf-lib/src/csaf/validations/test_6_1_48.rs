@@ -1,7 +1,7 @@
 use crate::csaf::getter_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use std::ops::Deref;
-use crate::csaf::helpers::{SSVC_DECISION_POINTS, DP_VAL_LOOKUP};
+use crate::csaf::helpers::{SSVC_DECISION_POINTS, DP_VAL_LOOKUP, REGISTERED_SSVC_NAMESPACES};
 
 pub fn test_6_1_48_ssvc_decision_points(
     doc: &impl CsafTrait,
@@ -14,6 +14,11 @@ pub fn test_6_1_48_ssvc_decision_points(
                 match m.get_content().get_ssvc_v1() {
                     Ok(ssvc) => {
                         for (i_s, selection) in ssvc.selections.iter().enumerate() {
+                            // Skip this test for unregistered namespaces
+                            if !REGISTERED_SSVC_NAMESPACES.contains(selection.namespace.deref()) {
+                                continue;
+                            }
+
                             // Create the key for lookup in CSAF_SSVC_DECISION_POINTS
                             let (namespace, name, version) = (
                                 selection.namespace.deref().to_owned(),

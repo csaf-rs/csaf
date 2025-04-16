@@ -1,47 +1,7 @@
-use crate::csaf::csaf2_1::ssvc_dp_schema::DecisionPoint;
-use crate::csaf::getter_traits::{ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait};
+use crate::csaf::getter_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
-use glob::glob;
-use std::collections::HashMap;
-use std::fs;
 use std::ops::Deref;
-use std::sync::LazyLock;
-
-/// Recursively loads all decision point JSON descriptions from ../ssvc/data/json/decision_points.
-/// Entries are stored in a `HashMap` indexed by their respective (name, version) tuple for lookup.
-static CSAF_SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String), DecisionPoint>> = LazyLock::new(|| {
-    let mut decision_points = HashMap::new();
-
-    // Use glob to find all JSON files that might contain decision point data
-    if let Ok(paths) = glob("../ssvc/data/json/decision_points/**/*.json") {
-        for path in paths.filter_map(Result::ok) {
-            if let Ok(content) = fs::read_to_string(&path) {
-                if let Ok(dp) = serde_json::from_str::<DecisionPoint>(&content) {
-                    println!("Loaded SSVC decision point '{}' (version {})", dp.name.deref(), dp.version.deref());
-                    // Insert using (name, key) tuple as the key
-                    let key = (dp.name.deref().to_owned(), dp.version.deref().to_owned());
-                    decision_points.insert(key, dp);
-                }
-            }
-        }
-    }
-
-    decision_points
-});
-
-static DP_VAL_LOOKUP: LazyLock<HashMap<(String, String), HashMap<String, i32>>> = LazyLock::new(|| {
-    let mut lookups = HashMap::new();
-
-    for (key, dp) in CSAF_SSVC_DECISION_POINTS.iter() {
-        let mut lookup_map = HashMap::new();
-        for (i, v) in dp.values.iter().enumerate() {
-            lookup_map.insert(v.name.deref().to_owned(), i as i32);
-        }
-        lookups.insert(key.clone(), lookup_map);
-    }
-
-    lookups
-});
+use crate::csaf::helpers::{CSAF_SSVC_DECISION_POINTS, DP_VAL_LOOKUP};
 
 pub fn test_6_1_48_ssvc_decision_points(
     doc: &impl CsafTrait,

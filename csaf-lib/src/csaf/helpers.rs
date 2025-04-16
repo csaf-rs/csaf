@@ -49,26 +49,35 @@ pub fn count_unescaped_stars(s: &str) -> u32 {
 
 /// Recursively loads all decision point JSON descriptions from ../ssvc/data/json/decision_points.
 /// Entries are stored in a `HashMap` indexed by their respective (name, version) tuple for lookup.
-pub static CSAF_SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String), DecisionPoint>> = LazyLock::new(|| {
+pub static SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String, String), DecisionPoint>> = LazyLock::new(|| {
     let mut decision_points = HashMap::new();
 
     // Use glob to find all JSON files that might contain decision point data
     match glob("../ssvc/data/json/decision_points/**/*.json") {
         Ok(paths) => {
-            for path in paths.filter_map(Result::ok) {
-                match fs::read_to_string(&path) {
-                    Ok(content) => {
-                        match serde_json::from_str::<DecisionPoint>(&content) {
-                            Ok(dp) => {
-                                println!("Loaded SSVC decision point '{}' (version {})", dp.name.deref(), dp.version.deref());
-                                // Insert using (name, key) tuple as the key
-                                let key = (dp.name.deref().to_owned(), dp.version.deref().to_owned());
-                                decision_points.insert(key, dp);
+            for path_res in paths {
+                match path_res {
+                    Ok(path) => {
+                        match fs::read_to_string(&path) {
+                            Ok(content) => {
+                                match serde_json::from_str::<DecisionPoint>(&content) {
+                                    Ok(dp) => {
+                                        println!("Loaded SSVC decision point '{}' (version {})", dp.name.deref(), dp.version.deref());
+                                        // Insert using (name, key) tuple as the key
+                                        let key = (
+                                            dp.namespace.deref().to_owned(),
+                                            dp.name.deref().to_owned(),
+                                            dp.version.deref().to_owned(),
+                                        );
+                                        decision_points.insert(key, dp);
+                                    },
+                                    Err(err) => eprintln!("Warning: Failed to parse decision point from file {:?}: {}", path, err),
+                                }
                             },
-                            Err(err) => eprintln!("Warning: Failed to parse decision point from file {:?}: {}", path, err),
+                            Err(err) => eprintln!("Warning: Failed to read file {:?}: {}", path, err),
                         }
                     },
-                    Err(err) => eprintln!("Warning: Failed to read file {:?}: {}", path, err),
+                    Err(ref err) => eprintln!("Warning: Failed to read glob result {:?}: {}", path_res, err),
                 }
             }
         },
@@ -80,10 +89,10 @@ pub static CSAF_SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String), Decisio
 
 /// Derives lookup maps for all observed SSVC decision points that can be used
 /// to verify the order of values within the respective decision points.
-pub static DP_VAL_LOOKUP: LazyLock<HashMap<(String, String), HashMap<String, i32>>> = LazyLock::new(|| {
+pub static DP_VAL_LOOKUP: LazyLock<HashMap<(String, String, String), HashMap<String, i32>>> = LazyLock::new(|| {
     let mut lookups = HashMap::new();
 
-    for (key, dp) in CSAF_SSVC_DECISION_POINTS.iter() {
+    for (key, dp) in SSVC_DECISION_POINTS.iter() {
         let mut lookup_map = HashMap::new();
         for (i, v) in dp.values.iter().enumerate() {
             lookup_map.insert(v.name.deref().to_owned(), i as i32);

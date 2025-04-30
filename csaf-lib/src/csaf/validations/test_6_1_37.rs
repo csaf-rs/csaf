@@ -114,6 +114,8 @@ mod tests {
     use crate::csaf::validations::test_6_1_37::test_6_1_37_date_and_time;
     use std::collections::HashMap;
 
+    /*
+    Ignored because of https://github.com/oasis-tcs/csaf/issues/963
     #[test]
     fn test_test_6_1_37() {
         run_csaf21_tests(
@@ -141,5 +143,5 @@ mod tests {
                 }),
             ])
         );
-    }
+    }*/
 }

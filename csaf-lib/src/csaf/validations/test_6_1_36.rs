@@ -91,7 +91,7 @@ mod tests {
         run_csaf21_tests(
             "36",
             test_6_1_36_status_group_contradicting_remediation_categories,
-            HashMap::from([
+            &HashMap::from([
                 ("01", &ValidationError {
                     message: "Product CSAFPID-9080700 is listed as not affected but has conflicting remediation category vendor_fix".to_string(),
                     instance_path: "/vulnerabilities/0/remediations/0".to_string()

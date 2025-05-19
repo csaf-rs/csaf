@@ -64,7 +64,7 @@ mod tests {
     fn test_test_6_1_40() {
         run_csaf21_tests(
             "40",
-            test_6_1_40_invalid_sharing_group_name, HashMap::from([
+            test_6_1_40_invalid_sharing_group_name, &HashMap::from([
                 ("01", &ValidationError {
                     message: format!("Sharing group name \"{}\" is prohibited without max UUID.", NAME_PUBLIC),
                     instance_path: "/document/distribution/sharing_group/name".to_string()

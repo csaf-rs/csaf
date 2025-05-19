@@ -67,7 +67,7 @@ mod tests {
     fn test_test_6_1_41() {
         run_csaf21_tests(
             "41",
-            test_6_1_41_missing_sharing_group_name, HashMap::from([
+            test_6_1_41_missing_sharing_group_name, &HashMap::from([
                 ("01", &ValidationError {
                     message: format!("Max UUID requires sharing group name to be \"{}\".", NAME_PUBLIC),
                     instance_path: "/document/distribution/sharing_group/name".to_string()

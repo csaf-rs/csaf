@@ -41,7 +41,7 @@ mod tests {
 
         run_csaf21_tests(
             "43",
-            test_6_1_43_multiple_stars_in_model_number, HashMap::from([
+            test_6_1_43_multiple_stars_in_model_number, &HashMap::from([
                 ("01", &expected_error),
                 ("02", &expected_error),
             ])

@@ -77,7 +77,7 @@ mod tests {
         run_csaf21_tests(
             "47",
             test_6_1_47_inconsistent_ssvc_id,
-            HashMap::from([
+            &HashMap::from([
                 ("01", &ValidationError {
                     message: "The SSVC ID 'CVE-1900-0002' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
                     instance_path: instance_path.clone(),

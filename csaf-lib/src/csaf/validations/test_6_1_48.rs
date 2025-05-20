@@ -113,11 +113,11 @@ mod tests {
                     instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v1/selections/0/values/1".to_string(),
                 }),
                 ("02", &ValidationError {
-                    message: "Unknown SSVC decision point 'ssvc::Safety Impacts' with version '1.0.0'".to_string(),
+                    message: "Unknown SSVC decision point 'ssvc::Safety Impacts' with version '2.0.0'".to_string(),
                     instance_path: instance_path.clone(),
                 }),
                 ("03", &ValidationError {
-                    message: "The SSVC decision point 'ssvc::Safety Impact' (version 1.0.0) doesn't have the value 'Critical'".to_string(),
+                    message: "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
                     instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v1/selections/0/values/1".to_string(),
                 }),
                 ("04", &ValidationError {

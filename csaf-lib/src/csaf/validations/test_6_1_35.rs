@@ -71,7 +71,7 @@ mod tests {
         run_csaf21_tests(
             "35",
             test_6_1_35_contradicting_remediations,
-            HashMap::from([
+            &HashMap::from([
                 ("01", &ValidationError {
                     message: "Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix".to_string(),
                     instance_path: "/vulnerabilities/0/remediations/1".to_string(),

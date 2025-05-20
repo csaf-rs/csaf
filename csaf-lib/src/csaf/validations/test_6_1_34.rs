@@ -33,7 +33,7 @@ mod tests {
         run_csaf21_tests(
             "34",
             test_6_1_34_branches_recursion_depth,
-            HashMap::from([
+            &HashMap::from([
                 ("01", &ValidationError {
                     message: "Branches recursion depth too big (> 30)".to_string(),
                     instance_path: "/product_tree/branches/0/branches/0/branches/0/branches/0\

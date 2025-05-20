@@ -60,7 +60,7 @@ mod tests {
             instance_path: "/document/distribution/sharing_group/id".to_string(),
         };
 
-        run_csaf21_tests("39", test_6_1_39_public_sharing_group_with_no_max_uuid, HashMap::from([
+        run_csaf21_tests("39", test_6_1_39_public_sharing_group_with_no_max_uuid, &HashMap::from([
             ("01", &expected_error),
             ("02", &expected_error),
         ]));

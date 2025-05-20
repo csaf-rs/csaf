@@ -51,7 +51,7 @@ mod tests {
             instance_path: "/document/distribution/sharing_group/tlp/label".to_string(),
         };
 
-        run_csaf21_tests("38", test_6_1_38_non_public_sharing_group_max_uuid, HashMap::from([
+        run_csaf21_tests("38", test_6_1_38_non_public_sharing_group_max_uuid, &HashMap::from([
             ("01", &expected_error),
             ("02", &expected_error),
             ("03", &expected_error),

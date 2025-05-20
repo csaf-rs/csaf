@@ -30,7 +30,7 @@ pub fn test_6_1_48_ssvc_decision_points(
                                 Some(_) => {
                                     // Get value indices of decision point
                                     let reference_indices = DP_VAL_LOOKUP.get(&dp_key).unwrap();
-                                    // Index of last seen value
+                                    // Index of last-seen value
                                     let mut last_index: i32 = -1;
                                     // Check if all values exist and are correctly ordered
                                     for (i_val, value) in selection.values.iter().map(|v| v.deref()).enumerate() {
@@ -107,7 +107,7 @@ mod tests {
         run_csaf21_tests(
             "48",
             test_6_1_48_ssvc_decision_points,
-            HashMap::from([
+            &HashMap::from([
                 ("01", &ValidationError {
                     message: "The SSVC decision point 'ssvc::Mission Impact' (version 1.0.0) doesn't have the value 'Degraded'".to_string(),
                     instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v1/selections/0/values/1".to_string(),

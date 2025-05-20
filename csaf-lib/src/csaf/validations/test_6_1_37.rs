@@ -120,7 +120,7 @@ mod tests {
     fn test_test_6_1_37() {
         run_csaf21_tests(
             "37",
-            test_6_1_37_date_and_time, HashMap::from([
+            test_6_1_37_date_and_time, &HashMap::from([
                 ("01", &ValidationError {
                     message: "Invalid date-time string 2024-01-24 10:00:00.000Z, expected RFC3339-compliant format with non-empty timezone".to_string(),
                     instance_path: "/document/tracking/initial_release_date".to_string(),

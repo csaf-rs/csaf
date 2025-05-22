@@ -109,13 +109,14 @@ fn check_datetime(date_time: &String, instance_path: &str) -> Result<(), Validat
 
 #[cfg(test)]
 mod tests {
+    /*
+    Ignored because of https://github.com/oasis-tcs/csaf/issues/963
+    
     use crate::csaf::test_helper::run_csaf21_tests;
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_37::test_6_1_37_date_and_time;
     use std::collections::HashMap;
-
-    /*
-    Ignored because of https://github.com/oasis-tcs/csaf/issues/963
+    
     #[test]
     fn test_test_6_1_37() {
         run_csaf21_tests(

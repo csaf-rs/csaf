@@ -2307,6 +2307,35 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                    "cvss_v4": {
 ///                      "type": "object"
 ///                    },
+///                    "epss": {
+///                      "title": "EPSS",
+///                      "description": "Contains the EPSS data.",
+///                      "type": "object",
+///                      "required": [
+///                        "percentile",
+///                        "probability",
+///                        "timestamp"
+///                      ],
+///                      "properties": {
+///                        "percentile": {
+///                          "title": "Percentile",
+///                          "description": "Contains the rank ordering of probabilities from highest to lowest.",
+///                          "type": "string",
+///                          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///                        },
+///                        "probability": {
+///                          "title": "Probability",
+///                          "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+///                          "type": "string",
+///                          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///                        },
+///                        "timestamp": {
+///                          "title": "EPSS timestamp",
+///                          "description": "Holds the date and time the EPSS value was recorded.",
+///                          "type": "string"
+///                        }
+///                      }
+///                    },
 ///                    "ssvc_v1": {
 ///                      "type": "object"
 ///                    }
@@ -2375,6 +2404,11 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///              "under_investigation": {
 ///                "title": "Under investigation",
 ///                "description": "It is not known yet whether these versions are or are not affected by the vulnerability. However, it is still under investigation - the result will be provided in a later release of the document.",
+///                "$ref": "#/$defs/products_t"
+///              },
+///              "unknown": {
+///                "title": "Unknown",
+///                "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
 ///                "$ref": "#/$defs/products_t"
 ///              }
 ///            }
@@ -2665,6 +2699,35 @@ impl<'de> ::serde::Deserialize<'de> for ContactDetails {
 ///    "cvss_v4": {
 ///      "type": "object"
 ///    },
+///    "epss": {
+///      "title": "EPSS",
+///      "description": "Contains the EPSS data.",
+///      "type": "object",
+///      "required": [
+///        "percentile",
+///        "probability",
+///        "timestamp"
+///      ],
+///      "properties": {
+///        "percentile": {
+///          "title": "Percentile",
+///          "description": "Contains the rank ordering of probabilities from highest to lowest.",
+///          "type": "string",
+///          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///        },
+///        "probability": {
+///          "title": "Probability",
+///          "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+///          "type": "string",
+///          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///        },
+///        "timestamp": {
+///          "title": "EPSS timestamp",
+///          "description": "Holds the date and time the EPSS value was recorded.",
+///          "type": "string"
+///        }
+///      }
+///    },
 ///    "ssvc_v1": {
 ///      "type": "object"
 ///    }
@@ -2680,6 +2743,8 @@ pub struct Content {
     pub cvss_v3: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub cvss_v4: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub epss: ::std::option::Option<Epss>,
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub ssvc_v1: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
 }
@@ -2694,6 +2759,7 @@ impl ::std::default::Default for Content {
             cvss_v2: Default::default(),
             cvss_v3: Default::default(),
             cvss_v4: Default::default(),
+            epss: Default::default(),
             ssvc_v1: Default::default(),
         }
     }
@@ -4366,6 +4432,61 @@ impl<'de> ::serde::Deserialize<'de> for EntitlementOfTheRemediation {
             })
     }
 }
+///Contains the EPSS data.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "EPSS",
+///  "description": "Contains the EPSS data.",
+///  "type": "object",
+///  "required": [
+///    "percentile",
+///    "probability",
+///    "timestamp"
+///  ],
+///  "properties": {
+///    "percentile": {
+///      "title": "Percentile",
+///      "description": "Contains the rank ordering of probabilities from highest to lowest.",
+///      "type": "string",
+///      "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///    },
+///    "probability": {
+///      "title": "Probability",
+///      "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+///      "type": "string",
+///      "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///    },
+///    "timestamp": {
+///      "title": "EPSS timestamp",
+///      "description": "Holds the date and time the EPSS value was recorded.",
+///      "type": "string"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct Epss {
+    ///Contains the rank ordering of probabilities from highest to lowest.
+    pub percentile: Percentile,
+    ///Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.
+    pub probability: Probability,
+    ///Holds the date and time the EPSS value was recorded.
+    pub timestamp: ::std::string::String,
+}
+impl ::std::convert::From<&Epss> for Epss {
+    fn from(value: &Epss) -> Self {
+        value.clone()
+    }
+}
+impl Epss {
+    pub fn builder() -> builder::Epss {
+        Default::default()
+    }
+}
 ///Contains one hash value and algorithm of the file to be identified.
 ///
 /// <details><summary>JSON schema</summary>
@@ -4686,11 +4807,11 @@ impl Flag {
 ///        },
 ///        "model_numbers": {
 ///          "title": "List of models",
-///          "description": "Contains a list of full or abbreviated (partial) model numbers.",
+///          "description": "Contains a list of model numbers.",
 ///          "type": "array",
 ///          "items": {
 ///            "title": "Model number",
-///            "description": "Contains a full or abbreviated (partial) model number of the component to identify.",
+///            "description": "Contains a model number of the component to identify - possibly with placeholders.",
 ///            "type": "string",
 ///            "minLength": 1
 ///          },
@@ -4726,11 +4847,11 @@ impl Flag {
 ///        },
 ///        "serial_numbers": {
 ///          "title": "List of serial numbers",
-///          "description": "Contains a list of full or abbreviated (partial) serial numbers.",
+///          "description": "Contains a list of serial numbers.",
 ///          "type": "array",
 ///          "items": {
 ///            "title": "Serial number",
-///            "description": "Contains a full or abbreviated (partial) serial number of the component to identify.",
+///            "description": "Contains a serial number of the component to identify - possibly with placeholders.",
 ///            "type": "string",
 ///            "minLength": 1
 ///          },
@@ -4940,11 +5061,11 @@ impl GenericUri {
 ///    },
 ///    "model_numbers": {
 ///      "title": "List of models",
-///      "description": "Contains a list of full or abbreviated (partial) model numbers.",
+///      "description": "Contains a list of model numbers.",
 ///      "type": "array",
 ///      "items": {
 ///        "title": "Model number",
-///        "description": "Contains a full or abbreviated (partial) model number of the component to identify.",
+///        "description": "Contains a model number of the component to identify - possibly with placeholders.",
 ///        "type": "string",
 ///        "minLength": 1
 ///      },
@@ -4980,11 +5101,11 @@ impl GenericUri {
 ///    },
 ///    "serial_numbers": {
 ///      "title": "List of serial numbers",
-///      "description": "Contains a list of full or abbreviated (partial) serial numbers.",
+///      "description": "Contains a list of serial numbers.",
 ///      "type": "array",
 ///      "items": {
 ///        "title": "Serial number",
-///        "description": "Contains a full or abbreviated (partial) serial number of the component to identify.",
+///        "description": "Contains a serial number of the component to identify - possibly with placeholders.",
 ///        "type": "string",
 ///        "minLength": 1
 ///      },
@@ -5044,7 +5165,7 @@ pub struct HelperToIdentifyTheProduct {
     ///Contains a list of cryptographic hashes usable to identify files.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub hashes: ::std::vec::Vec<CryptographicHashes>,
-    ///Contains a list of full or abbreviated (partial) model numbers.
+    ///Contains a list of model numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub model_numbers: ::std::option::Option<Vec<ModelNumber>>,
     ///Contains a list of package URLs (purl).
@@ -5053,7 +5174,7 @@ pub struct HelperToIdentifyTheProduct {
     ///Contains a list of URLs where SBOMs for this product can be retrieved.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub sbom_urls: ::std::vec::Vec<::std::string::String>,
-    ///Contains a list of full or abbreviated (partial) serial numbers.
+    ///Contains a list of serial numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub serial_numbers: ::std::option::Option<Vec<SerialNumber>>,
     ///Contains a list of full or abbreviated (partial) stock keeping units.
@@ -5798,6 +5919,35 @@ impl<'de> ::serde::Deserialize<'de> for LegacyVersionOfTheRevision {
 ///        "cvss_v4": {
 ///          "type": "object"
 ///        },
+///        "epss": {
+///          "title": "EPSS",
+///          "description": "Contains the EPSS data.",
+///          "type": "object",
+///          "required": [
+///            "percentile",
+///            "probability",
+///            "timestamp"
+///          ],
+///          "properties": {
+///            "percentile": {
+///              "title": "Percentile",
+///              "description": "Contains the rank ordering of probabilities from highest to lowest.",
+///              "type": "string",
+///              "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///            },
+///            "probability": {
+///              "title": "Probability",
+///              "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+///              "type": "string",
+///              "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///            },
+///            "timestamp": {
+///              "title": "EPSS timestamp",
+///              "description": "Holds the date and time the EPSS value was recorded.",
+///              "type": "string"
+///            }
+///          }
+///        },
 ///        "ssvc_v1": {
 ///          "type": "object"
 ///        }
@@ -5834,14 +5984,14 @@ impl Metric {
         Default::default()
     }
 }
-///Contains a full or abbreviated (partial) model number of the component to identify.
+///Contains a model number of the component to identify - possibly with placeholders.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
 ///  "title": "Model number",
-///  "description": "Contains a full or abbreviated (partial) model number of the component to identify.",
+///  "description": "Contains a model number of the component to identify - possibly with placeholders.",
 ///  "type": "string",
 ///  "minLength": 1
 ///}
@@ -6209,6 +6359,12 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheContributor {
 ///        "summary"
 ///      ]
 ///    },
+///    "group_ids": {
+///      "$ref": "#/$defs/product_groups_t"
+///    },
+///    "product_ids": {
+///      "$ref": "#/$defs/products_t"
+///    },
 ///    "text": {
 ///      "title": "Note content",
 ///      "description": "Holds the content of the note. Content varies depending on type.",
@@ -6238,6 +6394,10 @@ pub struct Note {
     pub audience: ::std::option::Option<AudienceOfNote>,
     ///Contains the information of what kind of note this is.
     pub category: NoteCategory,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub group_ids: ::std::option::Option<ProductGroupsT>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub product_ids: ::std::option::Option<ProductsT>,
     ///Holds the content of the note. Content varies depending on type.
     pub text: NoteContent,
     ///Provides a concise description of what is contained in the text of the note.
@@ -6484,6 +6644,12 @@ impl<'de> ::serde::Deserialize<'de> for NoteContent {
 ///          "other",
 ///          "summary"
 ///        ]
+///      },
+///      "group_ids": {
+///        "$ref": "#/$defs/product_groups_t"
+///      },
+///      "product_ids": {
+///        "$ref": "#/$defs/products_t"
 ///      },
 ///      "text": {
 ///        "title": "Note content",
@@ -6732,6 +6898,176 @@ impl ::std::convert::TryFrom<::std::string::String> for PartyStatus {
         value: ::std::string::String,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         value.parse()
+    }
+}
+///Contains the rank ordering of probabilities from highest to lowest.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Percentile",
+///  "description": "Contains the rank ordering of probabilities from highest to lowest.",
+///  "type": "string",
+///  "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Percentile(::std::string::String);
+impl ::std::ops::Deref for Percentile {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<Percentile> for ::std::string::String {
+    fn from(value: Percentile) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&Percentile> for Percentile {
+    fn from(value: &Percentile) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for Percentile {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if regress::Regex::new("^(([0]\\.([0-9])+)|([1]\\.[0]+))$")
+            .unwrap()
+            .find(value)
+            .is_none()
+        {
+            return Err(
+                "doesn't match pattern \"^(([0]\\.([0-9])+)|([1]\\.[0]+))$\"".into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Percentile {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for Percentile {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Percentile {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Percentile {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Probability",
+///  "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+///  "type": "string",
+///  "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Probability(::std::string::String);
+impl ::std::ops::Deref for Probability {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<Probability> for ::std::string::String {
+    fn from(value: Probability) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&Probability> for Probability {
+    fn from(value: &Probability) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for Probability {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if regress::Regex::new("^(([0]\\.([0-9])+)|([1]\\.[0]+))$")
+            .unwrap()
+            .find(value)
+            .is_none()
+        {
+            return Err(
+                "doesn't match pattern \"^(([0]\\.([0-9])+)|([1]\\.[0]+))$\"".into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Probability {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for Probability {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Probability {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Probability {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
     }
 }
 ///Defines a new logical group of products that can then be referred to in other parts of the document to address a group of products with a single identifier.
@@ -7052,6 +7388,11 @@ impl<'de> ::serde::Deserialize<'de> for ProductIdT {
 ///      "title": "Under investigation",
 ///      "description": "It is not known yet whether these versions are or are not affected by the vulnerability. However, it is still under investigation - the result will be provided in a later release of the document.",
 ///      "$ref": "#/$defs/products_t"
+///    },
+///    "unknown": {
+///      "title": "Unknown",
+///      "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
+///      "$ref": "#/$defs/products_t"
 ///    }
 ///  }
 ///}
@@ -7083,6 +7424,9 @@ pub struct ProductStatus {
     ///It is not known yet whether these versions are or are not affected by the vulnerability. However, it is still under investigation - the result will be provided in a later release of the document.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub under_investigation: ::std::option::Option<ProductsT>,
+    ///It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub unknown: ::std::option::Option<ProductsT>,
 }
 impl ::std::convert::From<&ProductStatus> for ProductStatus {
     fn from(value: &ProductStatus) -> Self {
@@ -7100,6 +7444,7 @@ impl ::std::default::Default for ProductStatus {
             last_affected: Default::default(),
             recommended: Default::default(),
             under_investigation: Default::default(),
+            unknown: Default::default(),
         }
     }
 }
@@ -8044,14 +8389,14 @@ impl RulesForSharingDocument {
         Default::default()
     }
 }
-///Contains a full or abbreviated (partial) serial number of the component to identify.
+///Contains a serial number of the component to identify - possibly with placeholders.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
 ///  "title": "Serial number",
-///  "description": "Contains a full or abbreviated (partial) serial number of the component to identify.",
+///  "description": "Contains a serial number of the component to identify - possibly with placeholders.",
 ///  "type": "string",
 ///  "minLength": 1
 ///}
@@ -10339,6 +10684,35 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///              "cvss_v4": {
 ///                "type": "object"
 ///              },
+///              "epss": {
+///                "title": "EPSS",
+///                "description": "Contains the EPSS data.",
+///                "type": "object",
+///                "required": [
+///                  "percentile",
+///                  "probability",
+///                  "timestamp"
+///                ],
+///                "properties": {
+///                  "percentile": {
+///                    "title": "Percentile",
+///                    "description": "Contains the rank ordering of probabilities from highest to lowest.",
+///                    "type": "string",
+///                    "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///                  },
+///                  "probability": {
+///                    "title": "Probability",
+///                    "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+///                    "type": "string",
+///                    "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+///                  },
+///                  "timestamp": {
+///                    "title": "EPSS timestamp",
+///                    "description": "Holds the date and time the EPSS value was recorded.",
+///                    "type": "string"
+///                  }
+///                }
+///              },
 ///              "ssvc_v1": {
 ///                "type": "object"
 ///              }
@@ -10407,6 +10781,11 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///        "under_investigation": {
 ///          "title": "Under investigation",
 ///          "description": "It is not known yet whether these versions are or are not affected by the vulnerability. However, it is still under investigation - the result will be provided in a later release of the document.",
+///          "$ref": "#/$defs/products_t"
+///        },
+///        "unknown": {
+///          "title": "Unknown",
+///          "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
 ///          "$ref": "#/$defs/products_t"
 ///        }
 ///      }
@@ -11194,6 +11573,10 @@ pub mod builder {
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             ::std::string::String,
         >,
+        epss: ::std::result::Result<
+            ::std::option::Option<super::Epss>,
+            ::std::string::String,
+        >,
         ssvc_v1: ::std::result::Result<
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             ::std::string::String,
@@ -11205,6 +11588,7 @@ pub mod builder {
                 cvss_v2: Ok(Default::default()),
                 cvss_v3: Ok(Default::default()),
                 cvss_v4: Ok(Default::default()),
+                epss: Ok(Default::default()),
                 ssvc_v1: Ok(Default::default()),
             }
         }
@@ -11252,6 +11636,16 @@ pub mod builder {
                 });
             self
         }
+        pub fn epss<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::Epss>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.epss = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for epss: {}", e));
+            self
+        }
         pub fn ssvc_v1<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<
@@ -11276,6 +11670,7 @@ pub mod builder {
                 cvss_v2: value.cvss_v2?,
                 cvss_v3: value.cvss_v3?,
                 cvss_v4: value.cvss_v4?,
+                epss: value.epss?,
                 ssvc_v1: value.ssvc_v1?,
             })
         }
@@ -11286,6 +11681,7 @@ pub mod builder {
                 cvss_v2: Ok(value.cvss_v2),
                 cvss_v3: Ok(value.cvss_v3),
                 cvss_v4: Ok(value.cvss_v4),
+                epss: Ok(value.epss),
                 ssvc_v1: Ok(value.ssvc_v1),
             }
         }
@@ -11781,6 +12177,80 @@ pub mod builder {
             Self {
                 name: Ok(value.name),
                 version: Ok(value.version),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct Epss {
+        percentile: ::std::result::Result<super::Percentile, ::std::string::String>,
+        probability: ::std::result::Result<super::Probability, ::std::string::String>,
+        timestamp: ::std::result::Result<::std::string::String, ::std::string::String>,
+    }
+    impl ::std::default::Default for Epss {
+        fn default() -> Self {
+            Self {
+                percentile: Err("no value supplied for percentile".to_string()),
+                probability: Err("no value supplied for probability".to_string()),
+                timestamp: Err("no value supplied for timestamp".to_string()),
+            }
+        }
+    }
+    impl Epss {
+        pub fn percentile<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Percentile>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.percentile = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for percentile: {}", e)
+                });
+            self
+        }
+        pub fn probability<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Probability>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.probability = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for probability: {}", e)
+                });
+            self
+        }
+        pub fn timestamp<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.timestamp = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for timestamp: {}", e)
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<Epss> for super::Epss {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: Epss,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                percentile: value.percentile?,
+                probability: value.probability?,
+                timestamp: value.timestamp?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::Epss> for Epss {
+        fn from(value: super::Epss) -> Self {
+            Self {
+                percentile: Ok(value.percentile),
+                probability: Ok(value.probability),
+                timestamp: Ok(value.timestamp),
             }
         }
     }
@@ -12500,6 +12970,14 @@ pub mod builder {
             ::std::string::String,
         >,
         category: ::std::result::Result<super::NoteCategory, ::std::string::String>,
+        group_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductGroupsT>,
+            ::std::string::String,
+        >,
+        product_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductsT>,
+            ::std::string::String,
+        >,
         text: ::std::result::Result<super::NoteContent, ::std::string::String>,
         title: ::std::result::Result<
             ::std::option::Option<super::TitleOfNote>,
@@ -12511,6 +12989,8 @@ pub mod builder {
             Self {
                 audience: Ok(Default::default()),
                 category: Err("no value supplied for category".to_string()),
+                group_ids: Ok(Default::default()),
+                product_ids: Ok(Default::default()),
                 text: Err("no value supplied for text".to_string()),
                 title: Ok(Default::default()),
             }
@@ -12538,6 +13018,30 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!("error converting supplied value for category: {}", e)
+                });
+            self
+        }
+        pub fn group_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductGroupsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.group_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {}", e)
+                });
+            self
+        }
+        pub fn product_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.product_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {}", e)
                 });
             self
         }
@@ -12572,6 +13076,8 @@ pub mod builder {
             Ok(Self {
                 audience: value.audience?,
                 category: value.category?,
+                group_ids: value.group_ids?,
+                product_ids: value.product_ids?,
                 text: value.text?,
                 title: value.title?,
             })
@@ -12582,6 +13088,8 @@ pub mod builder {
             Self {
                 audience: Ok(value.audience),
                 category: Ok(value.category),
+                group_ids: Ok(value.group_ids),
+                product_ids: Ok(value.product_ids),
                 text: Ok(value.text),
                 title: Ok(value.title),
             }
@@ -12703,6 +13211,10 @@ pub mod builder {
             ::std::option::Option<super::ProductsT>,
             ::std::string::String,
         >,
+        unknown: ::std::result::Result<
+            ::std::option::Option<super::ProductsT>,
+            ::std::string::String,
+        >,
     }
     impl ::std::default::Default for ProductStatus {
         fn default() -> Self {
@@ -12715,6 +13227,7 @@ pub mod builder {
                 last_affected: Ok(Default::default()),
                 recommended: Ok(Default::default()),
                 under_investigation: Ok(Default::default()),
+                unknown: Ok(Default::default()),
             }
         }
     }
@@ -12819,6 +13332,18 @@ pub mod builder {
                 });
             self
         }
+        pub fn unknown<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.unknown = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for unknown: {}", e)
+                });
+            self
+        }
     }
     impl ::std::convert::TryFrom<ProductStatus> for super::ProductStatus {
         type Error = super::error::ConversionError;
@@ -12834,6 +13359,7 @@ pub mod builder {
                 last_affected: value.last_affected?,
                 recommended: value.recommended?,
                 under_investigation: value.under_investigation?,
+                unknown: value.unknown?,
             })
         }
     }
@@ -12848,6 +13374,7 @@ pub mod builder {
                 last_affected: Ok(value.last_affected),
                 recommended: Ok(value.recommended),
                 under_investigation: Ok(value.under_investigation),
+                unknown: Ok(value.unknown),
             }
         }
     }

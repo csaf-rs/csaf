@@ -236,13 +236,13 @@
             },
             "model_numbers": {
               "title": "List of models",
-              "description": "Contains a list of full or abbreviated (partial) model numbers.",
+              "description": "Contains a list of model numbers.",
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
               "items": {
                 "title": "Model number",
-                "description": "Contains a full or abbreviated (partial) model number of the component to identify.",
+                "description": "Contains a model number of the component to identify - possibly with placeholders.",
                 "type": "string",
                 "minLength": 1
               }
@@ -276,13 +276,13 @@
             },
             "serial_numbers": {
               "title": "List of serial numbers",
-              "description": "Contains a list of full or abbreviated (partial) serial numbers.",
+              "description": "Contains a list of serial numbers.",
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
               "items": {
                 "title": "Serial number",
-                "description": "Contains a full or abbreviated (partial) serial number of the component to identify.",
+                "description": "Contains a serial number of the component to identify - possibly with placeholders.",
                 "type": "string",
                 "minLength": 1
               }
@@ -384,6 +384,12 @@
               "other",
               "summary"
             ]
+          },
+          "group_ids": {
+            "$ref": "#/$defs/product_groups_t"
+          },
+          "product_ids": {
+            "$ref": "#/$defs/products_t"
           },
           "text": {
             "title": "Note content",
@@ -1274,6 +1280,36 @@
                     "cvss_v4": {
                       "type": "object"
                     },
+                    "epss": {
+                      "title": "EPSS",
+                      "description": "Contains the EPSS data.",
+                      "type": "object",
+                      "required": [
+                        "percentile",
+                        "probability",
+                        "timestamp"
+                      ],
+                      "properties": {
+                        "percentile": {
+                          "title": "Percentile",
+                          "description": "Contains the rank ordering of probabilities from highest to lowest.",
+                          "type": "string",
+                          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+                        },
+                        "probability": {
+                          "title": "Probability",
+                          "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+                          "type": "string",
+                          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+                        },
+                        "timestamp": {
+                          "title": "EPSS timestamp",
+                          "description": "Holds the date and time the EPSS value was recorded.",
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
                     "ssvc_v1": {
                       "type": "object"
                     }
@@ -1340,6 +1376,11 @@
               "under_investigation": {
                 "title": "Under investigation",
                 "description": "It is not known yet whether these versions are or are not affected by the vulnerability. However, it is still under investigation - the result will be provided in a later release of the document.",
+                "$ref": "#/$defs/products_t"
+              },
+              "unknown": {
+                "title": "Unknown",
+                "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
                 "$ref": "#/$defs/products_t"
               }
             }

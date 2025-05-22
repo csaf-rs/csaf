@@ -37,6 +37,9 @@ pub trait DocumentTrait {
     /// Type representing document distribution information
     type DistributionType: DistributionTrait;
 
+    /// Type representing document notes
+    type NoteType: NoteTrait;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
 
@@ -45,6 +48,9 @@ pub trait DocumentTrait {
 
     /// Returns the distribution information for this document with CSAF 2.0 semantics
     fn get_distribution_20(&self) -> Option<&Self::DistributionType>;
+
+    /// Returns the notes associtated with this document
+    fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 }
 
 /// Trait representing distribution information for a document
@@ -64,6 +70,8 @@ pub trait DistributionTrait {
     /// Returns the TLP information for this distribution with CSAF 2.1 semantics
     fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
 }
+
+pub trait NoteTrait: WithGroupIds {}
 
 /// Trait representing sharing group information
 pub trait SharingGroupTrait {
@@ -142,14 +150,17 @@ pub trait VulnerabilityTrait {
     /// The associated type representing the threat information.
     type ThreatType: ThreatTrait;
 
-    /// The associated type representing a vulnerability flag
+    /// The associated type representing a vulnerability flag.
     type FlagType: FlagTrait;
 
-    /// The associated type representing a vulnerability involvement
+    /// The associated type representing a vulnerability involvement.
     type InvolvementType: InvolvementTrait;
 
     /// The associated type representing the vulnerability ID information.
     type VulnerabilityIdType: VulnerabilityIdTrait;
+
+    /// The associated type representing vulnerability notes.
+    type NoteType: NoteTrait;
 
     /// Retrieves a list of remediations associated with the vulnerability.
     fn get_remediations(&self) -> &Vec<Self::RemediationType>;
@@ -163,23 +174,26 @@ pub trait VulnerabilityTrait {
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
 
-    /// Returns the date when this vulnerability was initially disclosed
+    /// Returns the date when this vulnerability was initially disclosed.
     fn get_disclosure_date(&self) -> &Option<String>;
 
-    /// Returns the date when this vulnerability was initially discovered
+    /// Returns the date when this vulnerability was initially discovered.
     fn get_discovery_date(&self) -> &Option<String>;
 
-    /// Returns all flags associated with this vulnerability
+    /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
 
-    /// Returns all involvements associated with this vulnerability
+    /// Returns all involvements associated with this vulnerability.
     fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>>;
 
-    /// Returns the CVE associated with the vulnerability
+    /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
 
-    /// Returns the vulnerability IDs associated with this vulnerability
+    /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>>;
+
+    /// Returns the notes associated with this vulnerability.
+    fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 }
 
 pub trait VulnerabilityIdTrait {
@@ -189,7 +203,7 @@ pub trait VulnerabilityIdTrait {
 }
 
 /// Trait for accessing vulnerability flags information
-pub trait FlagTrait {
+pub trait FlagTrait: WithGroupIds {
     /// Returns the date associated with this vulnerability flag
     fn get_date(&self) -> &Option<String>;
 }
@@ -204,7 +218,7 @@ pub trait InvolvementTrait {
 ///
 /// The `RemediationTrait` encapsulates the details of a remediation, such as its
 /// category and the affected products or groups.
-pub trait RemediationTrait {
+pub trait RemediationTrait: WithGroupIds {
     /// Returns the category of the remediation.
     ///
     /// Categories are defined by the CSAF schema.
@@ -212,9 +226,6 @@ pub trait RemediationTrait {
 
     /// Retrieves the product IDs directly affected by this remediation, if any.
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
-
-    /// Retrieves the product group IDs related to this remediation, if any.
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
     /// Computes a set of all product IDs affected by this remediation, either
     /// directly or through product groups.
@@ -342,7 +353,7 @@ pub trait ContentTrait {
 }
 
 /// Trait representing an abstract threat in a CSAF document.
-pub trait ThreatTrait {
+pub trait ThreatTrait: WithGroupIds {
     /// Retrieves a list of product IDs associated with this threat, if any.
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
@@ -561,4 +572,9 @@ pub trait ProductIdentificationHelperTrait {
     fn get_model_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
     fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
+}
+
+pub trait WithGroupIds {
+    /// Returns the product group IDs associated with this vulnerability flag
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }

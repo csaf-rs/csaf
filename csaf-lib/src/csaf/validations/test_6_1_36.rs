@@ -104,6 +104,10 @@ mod tests {
                     message: "Product CSAFPID-9080700 is listed as affected but has conflicting remediation category optional_patch".to_string(),
                     instance_path: "/vulnerabilities/0/remediations/0".to_string(),
                 }),
+                ("04", &ValidationError {
+                    message: "Product CSAFPID-9080700 is listed as fixed but has conflicting remediation category no_fix_planned".to_string(),
+                    instance_path: "/vulnerabilities/0/remediations/0".to_string(),
+                }),
             ]),
         );
     }

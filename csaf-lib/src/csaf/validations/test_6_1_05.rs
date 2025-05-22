@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, ProductGroupTrait, ProductTrait, ProductTreeTrait};
+use crate::csaf::getter_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
 use std::collections::HashSet;
 

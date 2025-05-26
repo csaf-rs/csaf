@@ -3,6 +3,7 @@ pub mod test_6_1_02;
 pub mod test_6_1_03;
 pub mod test_6_1_04;
 pub mod test_6_1_05;
+pub mod test_6_1_06;
 
 pub mod test_6_1_34;
 pub mod test_6_1_35;

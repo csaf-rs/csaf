@@ -74,6 +74,11 @@ impl ProductStatusTrait for ProductStatus {
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
+
+    /// Not specified for CSAF 2.0, so `None`
+    fn get_unknown(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
 }
 
 impl MetricTrait for () {

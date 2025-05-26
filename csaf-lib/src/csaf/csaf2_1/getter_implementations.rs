@@ -57,6 +57,10 @@ impl ProductStatusTrait for ProductStatus {
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
+
+    fn get_unknown(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        self.unknown.as_ref().map(|p| (*p).iter().map(|x| x.deref()))   
+    }
 }
 
 impl MetricTrait for Metric {

@@ -283,6 +283,9 @@ pub trait ProductStatusTrait {
 
     /// Returns a reference to the list of product IDs currently under investigation.
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    
+    /// Return a reference to the list of product IDs with unknown status.
+    fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
     /// Combines all affected product IDs into a `HashSet`.
     ///

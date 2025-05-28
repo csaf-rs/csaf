@@ -106,7 +106,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::test_helper::run_csaf21_tests;
+    use crate::csaf::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_07::test_6_1_07_multiple_same_scores_per_product;
     use std::collections::HashMap;
@@ -114,30 +114,41 @@ mod tests {
     #[test]
     fn test_test_6_1_07() {
         let cvss_v31_error_message = "Product CSAFPID-9080700 already has another metric \"CVSS-v3.1\" assigned.";
-        let cvss_v3_error_path = "/vulnerabilities/0/metrics/1/content/cvss_v3";
+        let csaf_20_path_prefix = "/vulnerabilities/0/scores/1";
+        let csaf_21_path_prefix = "/vulnerabilities/0/metrics/1/content";
+        run_csaf20_tests(
+            "07",
+            test_6_1_07_multiple_same_scores_per_product,
+            &HashMap::from([
+                ("01", &ValidationError {
+                    message: cvss_v31_error_message.to_string(),
+                    instance_path: format!("{}/cvss_v3", csaf_20_path_prefix),
+                }),
+            ]),
+        );
         run_csaf21_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,
             &HashMap::from([
                 ("01", &ValidationError {
                     message: cvss_v31_error_message.to_string(),
-                    instance_path: cvss_v3_error_path.to_string()
+                    instance_path: format!("{}/cvss_v3", csaf_21_path_prefix),
                 }),
                 ("02", &ValidationError {
                     message: "Product CSAFPID-9080700 already has another metric \"CVSS-v3.0\" assigned.".to_string(),
-                    instance_path: cvss_v3_error_path.to_string()
+                    instance_path: format!("{}/cvss_v3", csaf_21_path_prefix),
                 }),
                 ("03", &ValidationError {
                     message: "Product CSAFPID-9080700 already has another metric \"CVSS-v2\" assigned.".to_string(),
-                    instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v2".to_string()
+                    instance_path: format!("{}/cvss_v2", csaf_21_path_prefix),
                 }),
                 ("04", &ValidationError {
                     message: "Product CSAFPID-9080700 already has another metric \"CVSS-v4\" assigned.".to_string(),
-                    instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v4".to_string(),
+                    instance_path: format!("{}/cvss_v4", csaf_21_path_prefix),
                 }),
                 ("05", &ValidationError {
                     message: cvss_v31_error_message.to_string(),
-                    instance_path: cvss_v3_error_path.to_string(),
+                    instance_path: format!("{}/cvss_v3", csaf_21_path_prefix),
                 }),
             ]),
         );

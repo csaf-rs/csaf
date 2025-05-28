@@ -1,7 +1,7 @@
-use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
+use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
 use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds};
 use std::ops::Deref;
-use serde_json::Value;
+use serde_json::{Map, Value};
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::validation::ValidationError;
 
@@ -76,9 +76,49 @@ impl MetricTrait for Metric {
 }
 
 impl ContentTrait for Content {
+    fn has_ssvc_v1(&self) -> bool {
+        !self.ssvc_v1.is_empty()
+    }
+
     fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error> {
         let ssvc_value = Value::Object(self.ssvc_v1.clone());
         serde_json::from_value::<SsvcV1>(ssvc_value)
+    }
+
+    fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v2.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v2)
+        }
+    }
+
+    fn get_cvss_v3(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v3.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v3)
+        }
+    }
+
+    fn get_cvss_v4(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v4.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v4)
+        }
+    }
+
+    fn get_epss(&self) -> &Option<Epss> {
+        &self.epss
+    }
+
+    fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
+        format!(
+            "/vulnerabilities/{}/metrics/{}/content",
+            vulnerability_idx,
+            metric_idx,
+        )
     }
 }
 
@@ -116,8 +156,8 @@ impl VulnerabilityTrait for Vulnerability {
         &self.product_status
     }
 
-    fn get_metrics(&self) -> &Option<Vec<Self::MetricType>> {
-        &self.metrics
+    fn get_metrics(&self) -> Option<&Vec<Self::MetricType>> {
+        self.metrics.as_ref()
     }
 
     fn get_threats(&self) -> &Vec<Self::ThreatType> {

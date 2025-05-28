@@ -1,8 +1,9 @@
-use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
-use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, LabelOfTlp as Tlp21};
+use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
+use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21};
 use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds};
 use std::ops::Deref;
 use serde::de::Error;
+use serde_json::{Map, Value};
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::validation::ValidationError;
 
@@ -81,27 +82,56 @@ impl ProductStatusTrait for ProductStatus {
     }
 }
 
-impl MetricTrait for () {
-    type ContentType = ();
+impl MetricTrait for Score {
+    type ContentType = Score;
 
-    //noinspection RsConstantConditionIf
     fn get_products(&self) -> impl Iterator<Item = &String> + '_ {
-        // This construction is required to satisfy compiler checks
-        // and still panic if this is ever called (as this would be a clear error!).
-        if true {
-            panic!("Metrics are not implemented in CSAF 2.0");
-        }
-        std::iter::empty()
+        self.products.iter().map(|x| x.deref())
     }
 
     fn get_content(&self) -> &Self::ContentType {
-        panic!("Metrics are not implemented in CSAF 2.0");
+        self
     }
 }
 
-impl ContentTrait for () {
+impl ContentTrait for Score {
+    fn has_ssvc_v1(&self) -> bool {
+        false
+    }
+
     fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error> {
-        Err(serde_json::Error::custom("Metrics are not implemented in CSAF 2.0"))
+        Err(serde_json::Error::custom("SSVC metrics are not implemented in CSAF 2.0"))
+    }
+
+    fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v2.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v2)
+        }
+    }
+
+    fn get_cvss_v3(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v3.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v3)
+        }
+    }
+
+    fn get_cvss_v4(&self) -> Option<&Map<String, Value>> {
+        None
+    }
+
+    fn get_epss(&self) -> &Option<Epss> {
+        &None::<Epss>
+    }
+
+    fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
+        format!(
+            "/vulnerabilities/{}/scores/{}",
+            vulnerability_idx, metric_idx
+        )
     }
 }
 
@@ -125,7 +155,7 @@ impl VulnerabilityTrait for Vulnerability {
     type RemediationType = Remediation;
     type ProductStatusType = ProductStatus;
     // Metrics are not implemented in CSAF 2.0
-    type MetricType = ();
+    type MetricType = Score;
     type ThreatType = Threat;
     type FlagType = Flag;
     type InvolvementType = Involvement;
@@ -140,9 +170,8 @@ impl VulnerabilityTrait for Vulnerability {
         &self.product_status
     }
 
-    fn get_metrics(&self) -> &Option<Vec<Self::MetricType>> {
-        // Metrics are not implemented in CSAF 2.0
-        &None
+    fn get_metrics(&self) -> Option<&Vec<Self::MetricType>> {
+        Some(&self.scores)
     }
 
     fn get_threats(&self) -> &Vec<Self::ThreatType> {

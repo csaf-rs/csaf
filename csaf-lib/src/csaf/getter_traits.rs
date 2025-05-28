@@ -1,5 +1,5 @@
 use std::collections::{BTreeSet, HashSet};
-use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, LabelOfTlp};
+use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp};
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::helpers::resolve_product_groups;
 use crate::csaf::validation::ValidationError;
@@ -169,7 +169,7 @@ pub trait VulnerabilityTrait {
     fn get_product_status(&self) -> &Option<Self::ProductStatusType>;
 
     /// Returns an optional vector of metrics related to the vulnerability.
-    fn get_metrics(&self) -> &Option<Vec<Self::MetricType>>;
+    fn get_metrics(&self) -> Option<&Vec<Self::MetricType>>;
 
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
@@ -352,7 +352,19 @@ pub trait MetricTrait {
 }
 
 pub trait ContentTrait {
+    fn has_ssvc_v1(&self) -> bool;
+    
     fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error>;
+
+    fn get_cvss_v2(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
+
+    fn get_cvss_v3(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
+
+    fn get_cvss_v4(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
+
+    fn get_epss(&self) -> &Option<Epss>;
+
+    fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String;
 }
 
 /// Trait representing an abstract threat in a CSAF document.

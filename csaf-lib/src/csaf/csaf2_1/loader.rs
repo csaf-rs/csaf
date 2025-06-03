@@ -57,7 +57,7 @@ mod tests {
             .unwrap();
         CommonSecurityAdvisoryFramework::builder()
             .document(metadata)
-            .schema(JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21CsafJsonSchemaJson)
+            .schema(JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson)
             .try_into()
             .unwrap()
     }

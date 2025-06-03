@@ -89,11 +89,13 @@ pub mod error {
 ///      },
 ///      "minItems": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Acknowledgment {
     ///Contains the names of contributors being recognized.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
@@ -191,7 +193,8 @@ impl Acknowledgment {
 ///        },
 ///        "minItems": 1
 ///      }
-///    }
+///    },
+///    "additionalProperties": false
 ///  },
 ///  "minItems": 1
 ///}
@@ -331,11 +334,13 @@ impl<'de> ::serde::Deserialize<'de> for AdditionalRestartInformation {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct AggregateSeverity {
     ///Points to the namespace so referenced.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -672,11 +677,13 @@ impl<'de> ::serde::Deserialize<'de> for AudienceOfNote {
 ///    "product": {
 ///      "$ref": "#/$defs/full_product_name_t"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Branch {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub branches: ::std::option::Option<BranchesT>,
@@ -759,7 +766,8 @@ impl Branch {
 ///      "product": {
 ///        "$ref": "#/$defs/full_product_name_t"
 ///      }
-///    }
+///    },
+///    "additionalProperties": false
 ///  },
 ///  "minItems": 1
 ///}
@@ -1540,7 +1548,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///
 /// ```json
 ///{
-///  "$id": "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json",
+///  "$id": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
 ///  "title": "Common Security Advisory Framework",
 ///  "description": "Representation of security advisory information as a JSON document.",
 ///  "type": "object",
@@ -1555,7 +1563,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///      "type": "string",
 ///      "format": "uri",
 ///      "enum": [
-///        "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json"
+///        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json"
 ///      ]
 ///    },
 ///    "document": {
@@ -1601,7 +1609,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///              "type": "string",
 ///              "minLength": 1
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        },
 ///        "category": {
 ///          "title": "Document category",
@@ -1660,7 +1669,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "type": "string",
 ///                  "minLength": 1
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "text": {
 ///              "title": "Textual description",
@@ -1705,14 +1715,28 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "type": "string",
 ///                  "format": "uri"
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        },
 ///        "lang": {
 ///          "title": "Document language",
 ///          "description": "Identifies the language used by this document, corresponding to IETF BCP 47 / RFC 5646.",
 ///          "$ref": "#/$defs/lang_t"
+///        },
+///        "license_expression": {
+///          "title": "License expression",
+///          "description": "Contains the SPDX license expression for the CSAF document.",
+///          "examples": [
+///            "CC-BY-4.0",
+///            "LicenseRef-www.example.org-Example-CSAF-License-3.0+",
+///            "LicenseRef-scancode-public-domain",
+///            "MIT OR any-OSI"
+///          ],
+///          "type": "string",
+///          "minLength": 1
 ///        },
 ///        "notes": {
 ///          "title": "Document notes",
@@ -1779,7 +1803,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///              "type": "string",
 ///              "format": "uri"
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        },
 ///        "references": {
 ///          "title": "Document references",
@@ -1878,9 +1903,11 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                      "type": "string",
 ///                      "minLength": 1
 ///                    }
-///                  }
+///                  },
+///                  "additionalProperties": false
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "id": {
 ///              "title": "Unique identifier for the document",
@@ -1936,7 +1963,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                    "type": "string",
 ///                    "minLength": 1
 ///                  }
-///                }
+///                },
+///                "additionalProperties": false
 ///              },
 ///              "minItems": 1
 ///            },
@@ -1953,9 +1981,11 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "version": {
 ///              "$ref": "#/$defs/version_t"
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "product_tree": {
 ///      "title": "Product tree",
@@ -2011,7 +2041,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "type": "string",
 ///                "minLength": 1
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "minItems": 1
 ///        },
@@ -2055,11 +2086,13 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
 ///                "$ref": "#/$defs/product_id_t"
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "minItems": 1
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "vulnerabilities": {
 ///      "title": "Vulnerabilities",
@@ -2116,7 +2149,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                    "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
 ///                  ],
 ///                  "type": "string",
-///                  "minLength": 1
+///                  "minLength": 1,
+///                  "pattern": "^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$"
 ///                },
 ///                "version": {
 ///                  "title": "CWE version",
@@ -2129,10 +2163,10 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                    "4.12"
 ///                  ],
 ///                  "type": "string",
-///                  "minLength": 1,
 ///                  "pattern": "^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$"
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1,
 ///            "uniqueItems": true
@@ -2146,6 +2180,42 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "title": "Discovery date",
 ///            "description": "Holds the date and time the vulnerability was originally discovered.",
 ///            "type": "string"
+///          },
+///          "first_known_exploitation_dates": {
+///            "title": "List of first known exploitation dates",
+///            "description": "Contains a list of dates of first known exploitations.",
+///            "type": "array",
+///            "items": {
+///              "title": "First known exploitation date",
+///              "description": "Contains information on when this vulnerability was first known to be exploited in the wild in the products specified.",
+///              "type": "object",
+///              "minProperties": 3,
+///              "required": [
+///                "date",
+///                "exploitation_date"
+///              ],
+///              "properties": {
+///                "date": {
+///                  "title": "Date of the information",
+///                  "description": "Contains the date when the information was last updated.",
+///                  "type": "string"
+///                },
+///                "exploitation_date": {
+///                  "title": "Date of the exploitation",
+///                  "description": "Contains the date when the exploitation happened.",
+///                  "type": "string"
+///                },
+///                "group_ids": {
+///                  "$ref": "#/$defs/product_groups_t"
+///                },
+///                "product_ids": {
+///                  "$ref": "#/$defs/products_t"
+///                }
+///              },
+///              "additionalProperties": false
+///            },
+///            "minItems": 1,
+///            "uniqueItems": true
 ///          },
 ///          "flags": {
 ///            "title": "List of flags",
@@ -2182,7 +2252,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "product_ids": {
 ///                  "$ref": "#/$defs/products_t"
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1,
 ///            "uniqueItems": true
@@ -2220,7 +2291,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "type": "string",
 ///                  "minLength": 1
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1,
 ///            "uniqueItems": true
@@ -2238,10 +2310,19 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "status"
 ///              ],
 ///              "properties": {
+///                "contact": {
+///                  "title": "Party contact information",
+///                  "description": "Contains the contact information of the party that was used in this state.",
+///                  "type": "string",
+///                  "minLength": 1
+///                },
 ///                "date": {
 ///                  "title": "Date of involvement",
 ///                  "description": "Holds the date and time of the involvement entry.",
 ///                  "type": "string"
+///                },
+///                "group_ids": {
+///                  "$ref": "#/$defs/product_groups_t"
 ///                },
 ///                "party": {
 ///                  "title": "Party category",
@@ -2254,6 +2335,9 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                    "user",
 ///                    "vendor"
 ///                  ]
+///                },
+///                "product_ids": {
+///                  "$ref": "#/$defs/products_t"
 ///                },
 ///                "status": {
 ///                  "title": "Party status",
@@ -2274,7 +2358,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "type": "string",
 ///                  "minLength": 1
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1,
 ///            "uniqueItems": true
@@ -2334,12 +2419,14 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                          "description": "Holds the date and time the EPSS value was recorded.",
 ///                          "type": "string"
 ///                        }
-///                      }
+///                      },
+///                      "additionalProperties": false
 ///                    },
 ///                    "ssvc_v1": {
 ///                      "type": "object"
 ///                    }
-///                  }
+///                  },
+///                  "additionalProperties": false
 ///                },
 ///                "products": {
 ///                  "$ref": "#/$defs/products_t"
@@ -2350,7 +2437,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "type": "string",
 ///                  "format": "uri"
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1,
 ///            "uniqueItems": true
@@ -2411,7 +2499,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
 ///                "$ref": "#/$defs/products_t"
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "references": {
 ///            "title": "Vulnerability references",
@@ -2504,7 +2593,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                      "type": "string",
 ///                      "minLength": 1
 ///                    }
-///                  }
+///                  },
+///                  "additionalProperties": false
 ///                },
 ///                "url": {
 ///                  "title": "URL to the remediation",
@@ -2512,7 +2602,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "type": "string",
 ///                  "format": "uri"
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1
 ///          },
@@ -2556,7 +2647,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "product_ids": {
 ///                  "$ref": "#/$defs/products_t"
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1
 ///          },
@@ -2566,15 +2658,18 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "type": "string",
 ///            "minLength": 1
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct CommonSecurityAdvisoryFramework {
     pub document: DocumentLevelMetaData,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2726,16 +2821,19 @@ impl<'de> ::serde::Deserialize<'de> for ContactDetails {
 ///          "description": "Holds the date and time the EPSS value was recorded.",
 ///          "type": "string"
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "ssvc_v1": {
 ///      "type": "object"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Content {
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub cvss_v2: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
@@ -2906,7 +3004,8 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 ///            "minLength": 32,
 ///            "pattern": "^[0-9a-fA-F]{32,}$"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    },
@@ -2921,11 +3020,13 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct CryptographicHashes {
     ///Contains a list of cryptographic hashes for this file.
     pub file_hashes: ::std::vec::Vec<FileHash>,
@@ -3135,7 +3236,8 @@ impl<'de> ::serde::Deserialize<'de> for Cve {
 ///        "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
 ///      ],
 ///      "type": "string",
-///      "minLength": 1
+///      "minLength": 1,
+///      "pattern": "^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$"
 ///    },
 ///    "version": {
 ///      "title": "CWE version",
@@ -3148,14 +3250,15 @@ impl<'de> ::serde::Deserialize<'de> for Cve {
 ///        "4.12"
 ///      ],
 ///      "type": "string",
-///      "minLength": 1,
 ///      "pattern": "^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Cwe {
     ///Holds the ID for the weakness associated.
     pub id: WeaknessId,
@@ -3190,7 +3293,6 @@ impl Cwe {
 ///    "4.12"
 ///  ],
 ///  "type": "string",
-///  "minLength": 1,
 ///  "pattern": "^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$"
 ///}
 /// ```
@@ -3219,9 +3321,6 @@ impl ::std::str::FromStr for CweVersion {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
-            return Err("shorter than 1 characters".into());
-        }
         if regress::Regex::new("^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$")
             .unwrap()
             .find(value)
@@ -3572,13 +3671,16 @@ impl<'de> ::serde::Deserialize<'de> for DocumentCategory {
 ///          "type": "string",
 ///          "minLength": 1
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct DocumentGenerator {
     ///This SHOULD be the current date that the document was generated. Because documents are often generated internally by a document producer and exist for a nonzero amount of time before being released, this field MAY be different from the Initial Release Date and Current Release Date.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -3643,7 +3745,8 @@ impl DocumentGenerator {
 ///          "type": "string",
 ///          "minLength": 1
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "category": {
 ///      "title": "Document category",
@@ -3702,7 +3805,8 @@ impl DocumentGenerator {
 ///              "type": "string",
 ///              "minLength": 1
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        },
 ///        "text": {
 ///          "title": "Textual description",
@@ -3747,14 +3851,28 @@ impl DocumentGenerator {
 ///              "type": "string",
 ///              "format": "uri"
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "lang": {
 ///      "title": "Document language",
 ///      "description": "Identifies the language used by this document, corresponding to IETF BCP 47 / RFC 5646.",
 ///      "$ref": "#/$defs/lang_t"
+///    },
+///    "license_expression": {
+///      "title": "License expression",
+///      "description": "Contains the SPDX license expression for the CSAF document.",
+///      "examples": [
+///        "CC-BY-4.0",
+///        "LicenseRef-www.example.org-Example-CSAF-License-3.0+",
+///        "LicenseRef-scancode-public-domain",
+///        "MIT OR any-OSI"
+///      ],
+///      "type": "string",
+///      "minLength": 1
 ///    },
 ///    "notes": {
 ///      "title": "Document notes",
@@ -3821,7 +3939,8 @@ impl DocumentGenerator {
 ///          "type": "string",
 ///          "format": "uri"
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "references": {
 ///      "title": "Document references",
@@ -3920,9 +4039,11 @@ impl DocumentGenerator {
 ///                  "type": "string",
 ///                  "minLength": 1
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        },
 ///        "id": {
 ///          "title": "Unique identifier for the document",
@@ -3978,7 +4099,8 @@ impl DocumentGenerator {
 ///                "type": "string",
 ///                "minLength": 1
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "minItems": 1
 ///        },
@@ -3995,13 +4117,16 @@ impl DocumentGenerator {
 ///        "version": {
 ///          "$ref": "#/$defs/version_t"
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct DocumentLevelMetaData {
     ///Contains a list of acknowledgment elements associated with the whole document.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4016,6 +4141,9 @@ pub struct DocumentLevelMetaData {
     ///Identifies the language used by this document, corresponding to IETF BCP 47 / RFC 5646.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub lang: ::std::option::Option<LangT>,
+    ///Contains the SPDX license expression for the CSAF document.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub license_expression: ::std::option::Option<LicenseExpression>,
     ///Holds notes associated with the whole document.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub notes: ::std::option::Option<NotesT>,
@@ -4247,11 +4375,13 @@ impl<'de> ::serde::Deserialize<'de> for EngineName {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct EngineOfDocumentGeneration {
     ///Represents the name of the engine that generated the CSAF document.
     pub name: EngineName,
@@ -4464,11 +4594,13 @@ impl<'de> ::serde::Deserialize<'de> for EntitlementOfTheRemediation {
 ///      "description": "Holds the date and time the EPSS value was recorded.",
 ///      "type": "string"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Epss {
     ///Contains the rank ordering of probabilities from highest to lowest.
     pub percentile: Percentile,
@@ -4527,11 +4659,13 @@ impl Epss {
 ///      "minLength": 32,
 ///      "pattern": "^[0-9a-fA-F]{32,}$"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct FileHash {
     ///Contains the name of the cryptographic hash algorithm used to calculate the value.
     pub algorithm: AlgorithmOfTheCryptographicHash,
@@ -4632,6 +4766,64 @@ impl<'de> ::serde::Deserialize<'de> for Filename {
             })
     }
 }
+///Contains information on when this vulnerability was first known to be exploited in the wild in the products specified.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "First known exploitation date",
+///  "description": "Contains information on when this vulnerability was first known to be exploited in the wild in the products specified.",
+///  "type": "object",
+///  "minProperties": 3,
+///  "required": [
+///    "date",
+///    "exploitation_date"
+///  ],
+///  "properties": {
+///    "date": {
+///      "title": "Date of the information",
+///      "description": "Contains the date when the information was last updated.",
+///      "type": "string"
+///    },
+///    "exploitation_date": {
+///      "title": "Date of the exploitation",
+///      "description": "Contains the date when the exploitation happened.",
+///      "type": "string"
+///    },
+///    "group_ids": {
+///      "$ref": "#/$defs/product_groups_t"
+///    },
+///    "product_ids": {
+///      "$ref": "#/$defs/products_t"
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
+pub struct FirstKnownExploitationDate {
+    ///Contains the date when the information was last updated.
+    pub date: ::std::string::String,
+    ///Contains the date when the exploitation happened.
+    pub exploitation_date: ::std::string::String,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub group_ids: ::std::option::Option<ProductGroupsT>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub product_ids: ::std::option::Option<ProductsT>,
+}
+impl ::std::convert::From<&FirstKnownExploitationDate> for FirstKnownExploitationDate {
+    fn from(value: &FirstKnownExploitationDate) -> Self {
+        value.clone()
+    }
+}
+impl FirstKnownExploitationDate {
+    pub fn builder() -> builder::FirstKnownExploitationDate {
+        Default::default()
+    }
+}
 ///Contains product specific information in regard to this vulnerability as a single machine readable flag.
 ///
 /// <details><summary>JSON schema</summary>
@@ -4668,11 +4860,13 @@ impl<'de> ::serde::Deserialize<'de> for Filename {
 ///    "product_ids": {
 ///      "$ref": "#/$defs/products_t"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Flag {
     ///Contains the date when assessment was done or the flag was assigned.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4786,7 +4980,8 @@ impl Flag {
 ///                      "minLength": 32,
 ///                      "pattern": "^[0-9a-fA-F]{32,}$"
 ///                    }
-///                  }
+///                  },
+///                  "additionalProperties": false
 ///                },
 ///                "minItems": 1
 ///              },
@@ -4801,7 +4996,8 @@ impl Flag {
 ///                "type": "string",
 ///                "minLength": 1
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "minItems": 1
 ///        },
@@ -4895,17 +5091,21 @@ impl Flag {
 ///                "type": "string",
 ///                "format": "uri"
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "minItems": 1
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct FullProductNameT {
     ///The value should be the product’s full canonical name, including version number and other attributes, as it would be used in a human-friendly document.
     pub name: TextualDescriptionOfTheProduct,
@@ -4949,11 +5149,13 @@ impl FullProductNameT {
 ///      "type": "string",
 ///      "format": "uri"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct GenericUri {
     ///Refers to a URL which provides the name and knowledge about the specification used or is the namespace in which these values are valid.
     pub namespace: ::std::string::String,
@@ -5040,7 +5242,8 @@ impl GenericUri {
 ///                  "minLength": 32,
 ///                  "pattern": "^[0-9a-fA-F]{32,}$"
 ///                }
-///              }
+///              },
+///              "additionalProperties": false
 ///            },
 ///            "minItems": 1
 ///          },
@@ -5055,7 +5258,8 @@ impl GenericUri {
 ///            "type": "string",
 ///            "minLength": 1
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    },
@@ -5149,15 +5353,18 @@ impl GenericUri {
 ///            "type": "string",
 ///            "format": "uri"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct HelperToIdentifyTheProduct {
     ///The Common Platform Enumeration (CPE) attribute refers to a method for naming platforms external to this specification.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -5242,11 +5449,13 @@ impl HelperToIdentifyTheProduct {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Id {
     ///Indicates the name of the vulnerability tracking or numbering system.
     pub system_name: SystemName,
@@ -5277,10 +5486,19 @@ impl Id {
 ///    "status"
 ///  ],
 ///  "properties": {
+///    "contact": {
+///      "title": "Party contact information",
+///      "description": "Contains the contact information of the party that was used in this state.",
+///      "type": "string",
+///      "minLength": 1
+///    },
 ///    "date": {
 ///      "title": "Date of involvement",
 ///      "description": "Holds the date and time of the involvement entry.",
 ///      "type": "string"
+///    },
+///    "group_ids": {
+///      "$ref": "#/$defs/product_groups_t"
 ///    },
 ///    "party": {
 ///      "title": "Party category",
@@ -5293,6 +5511,9 @@ impl Id {
 ///        "user",
 ///        "vendor"
 ///      ]
+///    },
+///    "product_ids": {
+///      "$ref": "#/$defs/products_t"
 ///    },
 ///    "status": {
 ///      "title": "Party status",
@@ -5313,17 +5534,26 @@ impl Id {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Involvement {
+    ///Contains the contact information of the party that was used in this state.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub contact: ::std::option::Option<PartyContactInformation>,
     ///Holds the date and time of the involvement entry.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub date: ::std::option::Option<::std::string::String>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub group_ids: ::std::option::Option<ProductGroupsT>,
     ///Defines the category of the involved party.
     pub party: PartyCategory,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub product_ids: ::std::option::Option<ProductsT>,
     ///Defines contact status of the involved party.
     pub status: PartyStatus,
     ///Contains additional context regarding what is going on.
@@ -5430,7 +5660,7 @@ impl<'de> ::serde::Deserialize<'de> for IssuingAuthority {
 ///  "type": "string",
 ///  "format": "uri",
 ///  "enum": [
-///    "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json"
+///    "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json"
 ///  ]
 ///}
 /// ```
@@ -5448,8 +5678,8 @@ impl<'de> ::serde::Deserialize<'de> for IssuingAuthority {
     PartialOrd
 )]
 pub enum JsonSchema {
-    #[serde(rename = "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json")]
-    HttpsDocsOasisOpenOrgCsafCsafV21CsafJsonSchemaJson,
+    #[serde(rename = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json")]
+    HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
 }
 impl ::std::convert::From<&Self> for JsonSchema {
     fn from(value: &JsonSchema) -> Self {
@@ -5459,10 +5689,8 @@ impl ::std::convert::From<&Self> for JsonSchema {
 impl ::std::fmt::Display for JsonSchema {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::HttpsDocsOasisOpenOrgCsafCsafV21CsafJsonSchemaJson => {
-                write!(
-                    f, "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json"
-                )
+            Self::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson => {
+                write!(f, "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json")
             }
         }
     }
@@ -5473,8 +5701,8 @@ impl ::std::str::FromStr for JsonSchema {
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         match value {
-            "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json" => {
-                Ok(Self::HttpsDocsOasisOpenOrgCsafCsafV21CsafJsonSchemaJson)
+            "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json" => {
+                Ok(Self::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson)
             }
             _ => Err("invalid value".into()),
         }
@@ -5890,6 +6118,91 @@ impl<'de> ::serde::Deserialize<'de> for LegacyVersionOfTheRevision {
             })
     }
 }
+///Contains the SPDX license expression for the CSAF document.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "License expression",
+///  "description": "Contains the SPDX license expression for the CSAF document.",
+///  "examples": [
+///    "CC-BY-4.0",
+///    "LicenseRef-www.example.org-Example-CSAF-License-3.0+",
+///    "LicenseRef-scancode-public-domain",
+///    "MIT OR any-OSI"
+///  ],
+///  "type": "string",
+///  "minLength": 1
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct LicenseExpression(::std::string::String);
+impl ::std::ops::Deref for LicenseExpression {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<LicenseExpression> for ::std::string::String {
+    fn from(value: LicenseExpression) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&LicenseExpression> for LicenseExpression {
+    fn from(value: &LicenseExpression) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for LicenseExpression {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.len() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for LicenseExpression {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for LicenseExpression {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for LicenseExpression {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for LicenseExpression {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
 ///Contains all metadata about the metric including products it applies to and the source and the content itself.
 ///
 /// <details><summary>JSON schema</summary>
@@ -5946,12 +6259,14 @@ impl<'de> ::serde::Deserialize<'de> for LegacyVersionOfTheRevision {
 ///              "description": "Holds the date and time the EPSS value was recorded.",
 ///              "type": "string"
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        },
 ///        "ssvc_v1": {
 ///          "type": "object"
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "products": {
 ///      "$ref": "#/$defs/products_t"
@@ -5962,11 +6277,13 @@ impl<'de> ::serde::Deserialize<'de> for LegacyVersionOfTheRevision {
 ///      "type": "string",
 ///      "format": "uri"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Metric {
     pub content: Content,
     pub products: ProductsT,
@@ -6383,11 +6700,13 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheContributor {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Note {
     ///Indicates who is intended to read it.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -6669,7 +6988,8 @@ impl<'de> ::serde::Deserialize<'de> for NoteContent {
 ///        "type": "string",
 ///        "minLength": 1
 ///      }
-///    }
+///    },
+///    "additionalProperties": false
 ///  },
 ///  "minItems": 1
 ///}
@@ -6795,6 +7115,85 @@ impl ::std::convert::TryFrom<::std::string::String> for PartyCategory {
         value: ::std::string::String,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         value.parse()
+    }
+}
+///Contains the contact information of the party that was used in this state.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Party contact information",
+///  "description": "Contains the contact information of the party that was used in this state.",
+///  "type": "string",
+///  "minLength": 1
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct PartyContactInformation(::std::string::String);
+impl ::std::ops::Deref for PartyContactInformation {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<PartyContactInformation> for ::std::string::String {
+    fn from(value: PartyContactInformation) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&PartyContactInformation> for PartyContactInformation {
+    fn from(value: &PartyContactInformation) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for PartyContactInformation {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.len() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for PartyContactInformation {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for PartyContactInformation {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for PartyContactInformation {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for PartyContactInformation {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
     }
 }
 ///Defines contact status of the involved party.
@@ -7107,11 +7506,13 @@ impl<'de> ::serde::Deserialize<'de> for Probability {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct ProductGroup {
     pub group_id: ProductGroupIdT,
     ///Lists the product_ids of those products which known as one group in the document.
@@ -7394,11 +7795,13 @@ impl<'de> ::serde::Deserialize<'de> for ProductIdT {
 ///      "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
 ///      "$ref": "#/$defs/products_t"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct ProductStatus {
     ///These are the first versions of the releases known to be affected by the vulnerability.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -7512,7 +7915,8 @@ impl ProductStatus {
 ///            "type": "string",
 ///            "minLength": 1
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    },
@@ -7556,15 +7960,18 @@ impl ProductStatus {
 ///            "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
 ///            "$ref": "#/$defs/product_id_t"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct ProductTree {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub branches: ::std::option::Option<BranchesT>,
@@ -7704,11 +8111,13 @@ impl ::std::convert::From<Vec<ProductIdT>> for ProductsT {
 ///      "type": "string",
 ///      "format": "uri"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Publisher {
     ///Provides information about the category of publisher releasing the document.
     pub category: CategoryOfPublisher,
@@ -7769,11 +8178,13 @@ impl Publisher {
 ///      "type": "string",
 ///      "format": "uri"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Reference {
     ///Indicates whether the reference points to the same document or vulnerability in focus (depending on scope) or to an external resource.
     #[serde(default = "defaults::reference_category")]
@@ -7833,7 +8244,8 @@ impl Reference {
 ///        "type": "string",
 ///        "format": "uri"
 ///      }
-///    }
+///    },
+///    "additionalProperties": false
 ///  },
 ///  "minItems": 1
 ///}
@@ -7904,11 +8316,13 @@ impl ::std::convert::From<::std::vec::Vec<Reference>> for ReferencesT {
 ///      "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
 ///      "$ref": "#/$defs/product_id_t"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Relationship {
     ///Defines the category of relationship for the referenced component.
     pub category: RelationshipCategory,
@@ -8113,7 +8527,8 @@ impl ::std::convert::TryFrom<::std::string::String> for RelationshipCategory {
 ///          "type": "string",
 ///          "minLength": 1
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "url": {
 ///      "title": "URL to the remediation",
@@ -8121,11 +8536,13 @@ impl ::std::convert::TryFrom<::std::string::String> for RelationshipCategory {
 ///      "type": "string",
 ///      "format": "uri"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Remediation {
     ///Specifies the category which this remediation belongs to.
     pub category: CategoryOfTheRemediation,
@@ -8192,11 +8609,13 @@ impl Remediation {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct RestartRequiredByRemediation {
     ///Specifies what category of restart is required by this remediation to become effective.
     pub category: CategoryOfRestart,
@@ -8253,11 +8672,13 @@ impl RestartRequiredByRemediation {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Revision {
     ///The date of the revision entry
     pub date: ::std::string::String,
@@ -8319,7 +8740,8 @@ impl Revision {
 ///          "type": "string",
 ///          "minLength": 1
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "text": {
 ///      "title": "Textual description",
@@ -8364,13 +8786,16 @@ impl Revision {
 ///          "type": "string",
 ///          "format": "uri"
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct RulesForSharingDocument {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub sharing_group: ::std::option::Option<SharingGroup>,
@@ -8501,11 +8926,13 @@ impl<'de> ::serde::Deserialize<'de> for SerialNumber {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct SharingGroup {
     ///Provides the unique ID for the sharing group.
     pub id: SharingGroupId,
@@ -9641,11 +10068,13 @@ impl<'de> ::serde::Deserialize<'de> for TextualDescriptionOfTheProduct {
 ///    "product_ids": {
 ///      "$ref": "#/$defs/products_t"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Threat {
     ///Categorizes the threat according to the rules of the specification.
     pub category: CategoryOfTheThreat,
@@ -9998,9 +10427,11 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///              "type": "string",
 ///              "minLength": 1
 ///            }
-///          }
+///          },
+///          "additionalProperties": false
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "id": {
 ///      "title": "Unique identifier for the document",
@@ -10056,7 +10487,8 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///            "type": "string",
 ///            "minLength": 1
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    },
@@ -10073,11 +10505,13 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///    "version": {
 ///      "$ref": "#/$defs/version_t"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Tracking {
     ///Contains a list of alternate names for the same document.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -10143,11 +10577,13 @@ impl Tracking {
 ///      "type": "string",
 ///      "format": "uri"
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct TrafficLightProtocolTlp {
     ///Provides the TLP label of the document.
     pub label: LabelOfTlp,
@@ -10493,7 +10929,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///              "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
 ///            ],
 ///            "type": "string",
-///            "minLength": 1
+///            "minLength": 1,
+///            "pattern": "^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$"
 ///          },
 ///          "version": {
 ///            "title": "CWE version",
@@ -10506,10 +10943,10 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///              "4.12"
 ///            ],
 ///            "type": "string",
-///            "minLength": 1,
 ///            "pattern": "^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1,
 ///      "uniqueItems": true
@@ -10523,6 +10960,42 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///      "title": "Discovery date",
 ///      "description": "Holds the date and time the vulnerability was originally discovered.",
 ///      "type": "string"
+///    },
+///    "first_known_exploitation_dates": {
+///      "title": "List of first known exploitation dates",
+///      "description": "Contains a list of dates of first known exploitations.",
+///      "type": "array",
+///      "items": {
+///        "title": "First known exploitation date",
+///        "description": "Contains information on when this vulnerability was first known to be exploited in the wild in the products specified.",
+///        "type": "object",
+///        "minProperties": 3,
+///        "required": [
+///          "date",
+///          "exploitation_date"
+///        ],
+///        "properties": {
+///          "date": {
+///            "title": "Date of the information",
+///            "description": "Contains the date when the information was last updated.",
+///            "type": "string"
+///          },
+///          "exploitation_date": {
+///            "title": "Date of the exploitation",
+///            "description": "Contains the date when the exploitation happened.",
+///            "type": "string"
+///          },
+///          "group_ids": {
+///            "$ref": "#/$defs/product_groups_t"
+///          },
+///          "product_ids": {
+///            "$ref": "#/$defs/products_t"
+///          }
+///        },
+///        "additionalProperties": false
+///      },
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "flags": {
 ///      "title": "List of flags",
@@ -10559,7 +11032,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "product_ids": {
 ///            "$ref": "#/$defs/products_t"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1,
 ///      "uniqueItems": true
@@ -10597,7 +11071,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///            "type": "string",
 ///            "minLength": 1
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1,
 ///      "uniqueItems": true
@@ -10615,10 +11090,19 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "status"
 ///        ],
 ///        "properties": {
+///          "contact": {
+///            "title": "Party contact information",
+///            "description": "Contains the contact information of the party that was used in this state.",
+///            "type": "string",
+///            "minLength": 1
+///          },
 ///          "date": {
 ///            "title": "Date of involvement",
 ///            "description": "Holds the date and time of the involvement entry.",
 ///            "type": "string"
+///          },
+///          "group_ids": {
+///            "$ref": "#/$defs/product_groups_t"
 ///          },
 ///          "party": {
 ///            "title": "Party category",
@@ -10631,6 +11115,9 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///              "user",
 ///              "vendor"
 ///            ]
+///          },
+///          "product_ids": {
+///            "$ref": "#/$defs/products_t"
 ///          },
 ///          "status": {
 ///            "title": "Party status",
@@ -10651,7 +11138,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///            "type": "string",
 ///            "minLength": 1
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1,
 ///      "uniqueItems": true
@@ -10711,12 +11199,14 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///                    "description": "Holds the date and time the EPSS value was recorded.",
 ///                    "type": "string"
 ///                  }
-///                }
+///                },
+///                "additionalProperties": false
 ///              },
 ///              "ssvc_v1": {
 ///                "type": "object"
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "products": {
 ///            "$ref": "#/$defs/products_t"
@@ -10727,7 +11217,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///            "type": "string",
 ///            "format": "uri"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1,
 ///      "uniqueItems": true
@@ -10788,7 +11279,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
 ///          "$ref": "#/$defs/products_t"
 ///        }
-///      }
+///      },
+///      "additionalProperties": false
 ///    },
 ///    "references": {
 ///      "title": "Vulnerability references",
@@ -10881,7 +11373,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///                "type": "string",
 ///                "minLength": 1
 ///              }
-///            }
+///            },
+///            "additionalProperties": false
 ///          },
 ///          "url": {
 ///            "title": "URL to the remediation",
@@ -10889,7 +11382,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///            "type": "string",
 ///            "format": "uri"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    },
@@ -10933,7 +11427,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "product_ids": {
 ///            "$ref": "#/$defs/products_t"
 ///          }
-///        }
+///        },
+///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
 ///    },
@@ -10943,11 +11438,13 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///      "type": "string",
 ///      "minLength": 1
 ///    }
-///  }
+///  },
+///  "additionalProperties": false
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Vulnerability {
     ///Contains a list of acknowledgment elements associated with this vulnerability item.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -10964,6 +11461,11 @@ pub struct Vulnerability {
     ///Holds the date and time the vulnerability was originally discovered.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub discovery_date: ::std::option::Option<::std::string::String>,
+    ///Contains a list of dates of first known exploitations.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub first_known_exploitation_dates: ::std::option::Option<
+        Vec<FirstKnownExploitationDate>,
+    >,
     ///Contains a list of machine readable flags.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub flags: ::std::option::Option<Vec<Flag>>,
@@ -11007,6 +11509,7 @@ impl ::std::default::Default for Vulnerability {
             cwes: Default::default(),
             disclosure_date: Default::default(),
             discovery_date: Default::default(),
+            first_known_exploitation_dates: Default::default(),
             flags: Default::default(),
             ids: Default::default(),
             involvements: Default::default(),
@@ -11123,7 +11626,8 @@ impl<'de> ::serde::Deserialize<'de> for WeaknessId {
 ///    "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
 ///  ],
 ///  "type": "string",
-///  "minLength": 1
+///  "minLength": 1,
+///  "pattern": "^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$"
 ///}
 /// ```
 /// </details>
@@ -11153,6 +11657,15 @@ impl ::std::str::FromStr for WeaknessName {
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         if value.len() < 1usize {
             return Err("shorter than 1 characters".into());
+        }
+        if regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$")
+            .unwrap()
+            .find(value)
+            .is_none()
+        {
+            return Err(
+                "doesn't match pattern \"^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$\"".into(),
+            );
         }
         Ok(Self(value.to_string()))
     }
@@ -11899,6 +12412,10 @@ pub mod builder {
             ::std::option::Option<super::LangT>,
             ::std::string::String,
         >,
+        license_expression: ::std::result::Result<
+            ::std::option::Option<super::LicenseExpression>,
+            ::std::string::String,
+        >,
         notes: ::std::result::Result<
             ::std::option::Option<super::NotesT>,
             ::std::string::String,
@@ -11924,6 +12441,7 @@ pub mod builder {
                 csaf_version: Err("no value supplied for csaf_version".to_string()),
                 distribution: Err("no value supplied for distribution".to_string()),
                 lang: Ok(Default::default()),
+                license_expression: Ok(Default::default()),
                 notes: Ok(Default::default()),
                 publisher: Err("no value supplied for publisher".to_string()),
                 references: Ok(Default::default()),
@@ -12004,6 +12522,20 @@ pub mod builder {
             self.lang = value
                 .try_into()
                 .map_err(|e| format!("error converting supplied value for lang: {}", e));
+            self
+        }
+        pub fn license_expression<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::LicenseExpression>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.license_expression = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for license_expression: {}", e
+                    )
+                });
             self
         }
         pub fn notes<T>(mut self, value: T) -> Self
@@ -12092,6 +12624,7 @@ pub mod builder {
                 csaf_version: value.csaf_version?,
                 distribution: value.distribution?,
                 lang: value.lang?,
+                license_expression: value.license_expression?,
                 notes: value.notes?,
                 publisher: value.publisher?,
                 references: value.references?,
@@ -12110,6 +12643,7 @@ pub mod builder {
                 csaf_version: Ok(value.csaf_version),
                 distribution: Ok(value.distribution),
                 lang: Ok(value.lang),
+                license_expression: Ok(value.license_expression),
                 notes: Ok(value.notes),
                 publisher: Ok(value.publisher),
                 references: Ok(value.references),
@@ -12315,6 +12849,109 @@ pub mod builder {
             Self {
                 algorithm: Ok(value.algorithm),
                 value: Ok(value.value),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct FirstKnownExploitationDate {
+        date: ::std::result::Result<::std::string::String, ::std::string::String>,
+        exploitation_date: ::std::result::Result<
+            ::std::string::String,
+            ::std::string::String,
+        >,
+        group_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductGroupsT>,
+            ::std::string::String,
+        >,
+        product_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductsT>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for FirstKnownExploitationDate {
+        fn default() -> Self {
+            Self {
+                date: Err("no value supplied for date".to_string()),
+                exploitation_date: Err(
+                    "no value supplied for exploitation_date".to_string(),
+                ),
+                group_ids: Ok(Default::default()),
+                product_ids: Ok(Default::default()),
+            }
+        }
+    }
+    impl FirstKnownExploitationDate {
+        pub fn date<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.date = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for date: {}", e));
+            self
+        }
+        pub fn exploitation_date<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.exploitation_date = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for exploitation_date: {}", e
+                    )
+                });
+            self
+        }
+        pub fn group_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductGroupsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.group_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {}", e)
+                });
+            self
+        }
+        pub fn product_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.product_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {}", e)
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<FirstKnownExploitationDate>
+    for super::FirstKnownExploitationDate {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: FirstKnownExploitationDate,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                date: value.date?,
+                exploitation_date: value.exploitation_date?,
+                group_ids: value.group_ids?,
+                product_ids: value.product_ids?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::FirstKnownExploitationDate>
+    for FirstKnownExploitationDate {
+        fn from(value: super::FirstKnownExploitationDate) -> Self {
+            Self {
+                date: Ok(value.date),
+                exploitation_date: Ok(value.exploitation_date),
+                group_ids: Ok(value.group_ids),
+                product_ids: Ok(value.product_ids),
             }
         }
     }
@@ -12792,11 +13429,23 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Involvement {
+        contact: ::std::result::Result<
+            ::std::option::Option<super::PartyContactInformation>,
+            ::std::string::String,
+        >,
         date: ::std::result::Result<
             ::std::option::Option<::std::string::String>,
             ::std::string::String,
         >,
+        group_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductGroupsT>,
+            ::std::string::String,
+        >,
         party: ::std::result::Result<super::PartyCategory, ::std::string::String>,
+        product_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductsT>,
+            ::std::string::String,
+        >,
         status: ::std::result::Result<super::PartyStatus, ::std::string::String>,
         summary: ::std::result::Result<
             ::std::option::Option<super::SummaryOfTheInvolvement>,
@@ -12806,14 +13455,31 @@ pub mod builder {
     impl ::std::default::Default for Involvement {
         fn default() -> Self {
             Self {
+                contact: Ok(Default::default()),
                 date: Ok(Default::default()),
+                group_ids: Ok(Default::default()),
                 party: Err("no value supplied for party".to_string()),
+                product_ids: Ok(Default::default()),
                 status: Err("no value supplied for status".to_string()),
                 summary: Ok(Default::default()),
             }
         }
     }
     impl Involvement {
+        pub fn contact<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<super::PartyContactInformation>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.contact = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for contact: {}", e)
+                });
+            self
+        }
         pub fn date<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
@@ -12822,6 +13488,18 @@ pub mod builder {
             self.date = value
                 .try_into()
                 .map_err(|e| format!("error converting supplied value for date: {}", e));
+            self
+        }
+        pub fn group_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductGroupsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.group_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {}", e)
+                });
             self
         }
         pub fn party<T>(mut self, value: T) -> Self
@@ -12833,6 +13511,18 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!("error converting supplied value for party: {}", e)
+                });
+            self
+        }
+        pub fn product_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.product_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {}", e)
                 });
             self
         }
@@ -12869,8 +13559,11 @@ pub mod builder {
             value: Involvement,
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
+                contact: value.contact?,
                 date: value.date?,
+                group_ids: value.group_ids?,
                 party: value.party?,
+                product_ids: value.product_ids?,
                 status: value.status?,
                 summary: value.summary?,
             })
@@ -12879,8 +13572,11 @@ pub mod builder {
     impl ::std::convert::From<super::Involvement> for Involvement {
         fn from(value: super::Involvement) -> Self {
             Self {
+                contact: Ok(value.contact),
                 date: Ok(value.date),
+                group_ids: Ok(value.group_ids),
                 party: Ok(value.party),
+                product_ids: Ok(value.product_ids),
                 status: Ok(value.status),
                 summary: Ok(value.summary),
             }
@@ -14647,6 +15343,10 @@ pub mod builder {
             ::std::option::Option<::std::string::String>,
             ::std::string::String,
         >,
+        first_known_exploitation_dates: ::std::result::Result<
+            ::std::option::Option<Vec<super::FirstKnownExploitationDate>>,
+            ::std::string::String,
+        >,
         flags: ::std::result::Result<
             ::std::option::Option<Vec<super::Flag>>,
             ::std::string::String,
@@ -14696,6 +15396,7 @@ pub mod builder {
                 cwes: Ok(Default::default()),
                 disclosure_date: Ok(Default::default()),
                 discovery_date: Ok(Default::default()),
+                first_known_exploitation_dates: Ok(Default::default()),
                 flags: Ok(Default::default()),
                 ids: Ok(Default::default()),
                 involvements: Ok(Default::default()),
@@ -14763,6 +15464,23 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!("error converting supplied value for discovery_date: {}", e)
+                });
+            self
+        }
+        pub fn first_known_exploitation_dates<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<super::FirstKnownExploitationDate>>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.first_known_exploitation_dates = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for first_known_exploitation_dates: {}",
+                        e
+                    )
                 });
             self
         }
@@ -14896,6 +15614,7 @@ pub mod builder {
                 cwes: value.cwes?,
                 disclosure_date: value.disclosure_date?,
                 discovery_date: value.discovery_date?,
+                first_known_exploitation_dates: value.first_known_exploitation_dates?,
                 flags: value.flags?,
                 ids: value.ids?,
                 involvements: value.involvements?,
@@ -14917,6 +15636,7 @@ pub mod builder {
                 cwes: Ok(value.cwes),
                 disclosure_date: Ok(value.disclosure_date),
                 discovery_date: Ok(value.discovery_date),
+                first_known_exploitation_dates: Ok(value.first_known_exploitation_dates),
                 flags: Ok(value.flags),
                 ids: Ok(value.ids),
                 involvements: Ok(value.involvements),

@@ -92,6 +92,10 @@ impl MetricTrait for Score {
     fn get_content(&self) -> &Self::ContentType {
         self
     }
+
+    fn get_source(&self) -> &Option<String> {
+        &None
+    }
 }
 
 impl ContentTrait for Score {

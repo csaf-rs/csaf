@@ -73,6 +73,10 @@ impl MetricTrait for Metric {
     fn get_content(&self) -> &Self::ContentType {
         &self.content
     }
+
+    fn get_source(&self) -> &Option<String> {
+        &self.source
+    }
 }
 
 impl ContentTrait for Content {

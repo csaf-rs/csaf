@@ -349,6 +349,8 @@ pub trait MetricTrait {
     fn get_products(&self) -> impl Iterator<Item = &String> + '_;
 
     fn get_content(&self) -> &Self::ContentType;
+    
+    fn get_source(&self) -> &Option<String>;
 }
 
 pub trait ContentTrait {

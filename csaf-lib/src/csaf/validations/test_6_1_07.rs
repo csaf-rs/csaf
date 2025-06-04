@@ -15,6 +15,7 @@ enum VulnerabilityMetrics {
     Epss,
 }
 
+/// Display implementation for VulnerabilityMetrics.
 impl Display for VulnerabilityMetrics {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -28,6 +29,7 @@ impl Display for VulnerabilityMetrics {
     }
 }
 
+/// Returns the name of the metric property for the given metric type.
 fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
     match metric {
         SsvcV1 => "ssvc_v1",
@@ -39,6 +41,8 @@ fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
     }
 }
 
+/// Test 6.1.7: Check for multiple identical metric types (with an identical source) per
+/// vulnerability.
 pub fn test_6_1_07_multiple_same_scores_per_product(
     doc: &impl CsafTrait,
 ) -> Result<(), ValidationError> {

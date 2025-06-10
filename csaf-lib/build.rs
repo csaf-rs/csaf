@@ -29,7 +29,7 @@ fn main() -> Result<(), BuildError> {
         false,
     )?;
     build(
-        "./src/csaf/csaf2_1/csaf_json_schema.json",
+        "./src/csaf/csaf2_1/csaf.json",
         "csaf/csaf2_1/schema.rs",
         true,
     )?;

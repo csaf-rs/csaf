@@ -1,9 +1,15 @@
-use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
-use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait};
+use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
+use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds};
 use std::ops::Deref;
-use serde_json::Value;
+use serde_json::{Map, Value};
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::validation::ValidationError;
+
+impl WithGroupIds for Remediation {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
+    }
+}
 
 impl RemediationTrait for Remediation {
     fn get_category(&self) -> CategoryOfTheRemediation {
@@ -12,10 +18,6 @@ impl RemediationTrait for Remediation {
 
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 
     fn get_date(&self) -> &Option<String> {
@@ -55,6 +57,10 @@ impl ProductStatusTrait for ProductStatus {
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
+
+    fn get_unknown(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        self.unknown.as_ref().map(|p| (*p).iter().map(|x| x.deref()))   
+    }
 }
 
 impl MetricTrait for Metric {
@@ -67,12 +73,62 @@ impl MetricTrait for Metric {
     fn get_content(&self) -> &Self::ContentType {
         &self.content
     }
+
+    fn get_source(&self) -> &Option<String> {
+        &self.source
+    }
 }
 
 impl ContentTrait for Content {
+    fn has_ssvc_v1(&self) -> bool {
+        !self.ssvc_v1.is_empty()
+    }
+
     fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error> {
         let ssvc_value = Value::Object(self.ssvc_v1.clone());
         serde_json::from_value::<SsvcV1>(ssvc_value)
+    }
+
+    fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v2.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v2)
+        }
+    }
+
+    fn get_cvss_v3(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v3.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v3)
+        }
+    }
+
+    fn get_cvss_v4(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v4.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v4)
+        }
+    }
+
+    fn get_epss(&self) -> &Option<Epss> {
+        &self.epss
+    }
+
+    fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
+        format!(
+            "/vulnerabilities/{}/metrics/{}/content",
+            vulnerability_idx,
+            metric_idx,
+        )
+    }
+}
+
+impl WithGroupIds for Threat {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
@@ -94,6 +150,7 @@ impl VulnerabilityTrait for Vulnerability {
     type FlagType = Flag;
     type InvolvementType = Involvement;
     type VulnerabilityIdType = Id;
+    type NoteType = Note;
 
     fn get_remediations(&self) -> &Vec<Self::RemediationType> {
         &self.remediations
@@ -103,8 +160,8 @@ impl VulnerabilityTrait for Vulnerability {
         &self.product_status
     }
 
-    fn get_metrics(&self) -> &Option<Vec<Self::MetricType>> {
-        &self.metrics
+    fn get_metrics(&self) -> Option<&Vec<Self::MetricType>> {
+        self.metrics.as_ref()
     }
 
     fn get_threats(&self) -> &Vec<Self::ThreatType> {
@@ -134,6 +191,10 @@ impl VulnerabilityTrait for Vulnerability {
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
         &self.ids
     }
+
+    fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
+        self.notes.as_ref().map(|x| x.deref())
+    }
 }
 
 impl VulnerabilityIdTrait for Id {
@@ -143,6 +204,12 @@ impl VulnerabilityIdTrait for Id {
 
     fn get_text(&self) -> &String {
         self.text.deref()
+    }
+}
+
+impl WithGroupIds for Flag {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
@@ -179,6 +246,7 @@ impl CsafTrait for CommonSecurityAdvisoryFramework {
 impl DocumentTrait for DocumentLevelMetaData {
     type TrackingType = Tracking;
     type DistributionType = RulesForSharingDocument;
+    type NoteType = Note;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -192,6 +260,10 @@ impl DocumentTrait for DocumentLevelMetaData {
     /// Always return the value because it is mandatory
     fn get_distribution_20(&self) -> Option<&Self::DistributionType> {
         Some(&self.distribution)
+    }
+
+    fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
+        self.notes.as_ref().map(|x| x.deref())
     }
 }
 
@@ -213,6 +285,14 @@ impl DistributionTrait for RulesForSharingDocument {
         Ok(&self.tlp)
     }
 }
+
+impl WithGroupIds for Note {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    }
+}
+
+impl NoteTrait for Note {}
 
 impl SharingGroupTrait for SharingGroup {
     fn get_id(&self) -> &String {

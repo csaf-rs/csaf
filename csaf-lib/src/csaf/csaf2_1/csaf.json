@@ -1,6 +1,6 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json",
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/meta.json",
+  "$id": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
   "title": "Common Security Advisory Framework",
   "description": "Representation of security advisory information as a JSON document.",
   "type": "object",
@@ -64,7 +64,8 @@
               "format": "uri"
             }
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "branches_t": {
@@ -125,7 +126,8 @@
           "product": {
             "$ref": "#/$defs/full_product_name_t"
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "full_product_name_t": {
@@ -217,7 +219,8 @@
                             "9ea4c8200113d49d26505da0e02e2f49055dc078d1ad7a419b32e291c7afebbb84badfbd46dec42883bea0b2a1fa697c"
                           ]
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "filename": {
@@ -231,18 +234,19 @@
                       "sudoers.so"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               }
             },
             "model_numbers": {
               "title": "List of models",
-              "description": "Contains a list of full or abbreviated (partial) model numbers.",
+              "description": "Contains a list of model numbers.",
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
               "items": {
                 "title": "Model number",
-                "description": "Contains a full or abbreviated (partial) model number of the component to identify.",
+                "description": "Contains a model number of the component to identify - possibly with placeholders.",
                 "type": "string",
                 "minLength": 1
               }
@@ -276,13 +280,13 @@
             },
             "serial_numbers": {
               "title": "List of serial numbers",
-              "description": "Contains a list of full or abbreviated (partial) serial numbers.",
+              "description": "Contains a list of serial numbers.",
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
               "items": {
                 "title": "Serial number",
-                "description": "Contains a full or abbreviated (partial) serial number of the component to identify.",
+                "description": "Contains a serial number of the component to identify - possibly with placeholders.",
                 "type": "string",
                 "minLength": 1
               }
@@ -325,12 +329,15 @@
                     "type": "string",
                     "format": "uri"
                   }
-                }
+                },
+                "additionalProperties": false
               }
             }
-          }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     },
     "lang_t": {
       "title": "Language type",
@@ -385,6 +392,12 @@
               "summary"
             ]
           },
+          "group_ids": {
+            "$ref": "#/$defs/product_groups_t"
+          },
+          "product_ids": {
+            "$ref": "#/$defs/products_t"
+          },
           "text": {
             "title": "Note content",
             "description": "Holds the content of the note. Content varies depending on type.",
@@ -403,7 +416,8 @@
               "Impact on safety systems"
             ]
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "product_group_id_t": {
@@ -483,7 +497,8 @@
             "type": "string",
             "format": "uri"
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "version_t": {
@@ -510,7 +525,7 @@
       "description": "Contains the URL of the CSAF JSON schema which the document promises to be valid for.",
       "type": "string",
       "enum": [
-        "https://docs.oasis-open.org/csaf/csaf/v2.1/csaf_json_schema.json"
+        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json"
       ],
       "format": "uri"
     },
@@ -557,7 +572,8 @@
                 "Moderate"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         "category": {
           "title": "Document category",
@@ -616,7 +632,8 @@
                     "US Federal Civilian Authorities"
                   ]
                 }
-              }
+              },
+              "additionalProperties": false
             },
             "text": {
               "title": "Textual description",
@@ -661,14 +678,28 @@
                     "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Kritis/Merkblatt_TLP.pdf"
                   ]
                 }
-              }
+              },
+              "additionalProperties": false
             }
-          }
+          },
+          "additionalProperties": false
         },
         "lang": {
           "title": "Document language",
           "description": "Identifies the language used by this document, corresponding to IETF BCP 47 / RFC 5646.",
           "$ref": "#/$defs/lang_t"
+        },
+        "license_expression": {
+          "title": "License expression",
+          "description": "Contains the SPDX license expression for the CSAF document.",
+          "type": "string",
+          "minLength": 1,
+          "examples": [
+            "CC-BY-4.0",
+            "LicenseRef-www.example.org-Example-CSAF-License-3.0+",
+            "LicenseRef-scancode-public-domain",
+            "MIT OR any-OSI"
+          ]
         },
         "notes": {
           "title": "Document notes",
@@ -735,7 +766,8 @@
                 "https://www.example.com"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         "references": {
           "title": "Document references",
@@ -836,9 +868,11 @@
                         "2"
                       ]
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 }
-              }
+              },
+              "additionalProperties": false
             },
             "id": {
               "title": "Unique identifier for the document",
@@ -897,7 +931,8 @@
                       "Initial version."
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               }
             },
             "status": {
@@ -913,9 +948,11 @@
             "version": {
               "$ref": "#/$defs/version_t"
             }
-          }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     },
     "product_tree": {
       "title": "Product tree",
@@ -972,7 +1009,8 @@
                   "The x64 versions of the operating system."
                 ]
               }
-            }
+            },
+            "additionalProperties": false
           }
         },
         "relationships": {
@@ -1016,10 +1054,12 @@
                 "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
                 "$ref": "#/$defs/product_id_t"
               }
-            }
+            },
+            "additionalProperties": false
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "vulnerabilities": {
       "title": "Vulnerabilities",
@@ -1074,6 +1114,7 @@
                   "title": "Weakness name",
                   "description": "Holds the full name of the weakness as given in the CWE specification.",
                   "type": "string",
+                  "pattern": "^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$",
                   "minLength": 1,
                   "examples": [
                     "Cross-Site Request Forgery (CSRF)",
@@ -1085,7 +1126,6 @@
                   "title": "CWE version",
                   "description": "Holds the version string of the CWE specification this weakness was extracted from.",
                   "type": "string",
-                  "minLength": 1,
                   "pattern": "^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$",
                   "examples": [
                     "1.0",
@@ -1095,7 +1135,8 @@
                     "4.12"
                   ]
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "disclosure_date": {
@@ -1109,6 +1150,44 @@
             "description": "Holds the date and time the vulnerability was originally discovered.",
             "type": "string",
             "format": "date-time"
+          },
+          "first_known_exploitation_dates": {
+            "title": "List of first known exploitation dates",
+            "description": "Contains a list of dates of first known exploitations.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "title": "First known exploitation date",
+              "description": "Contains information on when this vulnerability was first known to be exploited in the wild in the products specified.",
+              "type": "object",
+              "minProperties": 3,
+              "required": [
+                "date",
+                "exploitation_date"
+              ],
+              "properties": {
+                "date": {
+                  "title": "Date of the information",
+                  "description": "Contains the date when the information was last updated.",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "exploitation_date": {
+                  "title": "Date of the exploitation",
+                  "description": "Contains the date when the exploitation happened.",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "group_ids": {
+                  "$ref": "#/$defs/product_groups_t"
+                },
+                "product_ids": {
+                  "$ref": "#/$defs/products_t"
+                }
+              },
+              "additionalProperties": false
+            }
           },
           "flags": {
             "title": "List of flags",
@@ -1148,7 +1227,8 @@
                 "product_ids": {
                   "$ref": "#/$defs/products_t"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "ids": {
@@ -1186,7 +1266,8 @@
                     "oasis-tcs/csaf#210"
                   ]
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "involvements": {
@@ -1204,11 +1285,20 @@
                 "status"
               ],
               "properties": {
+                "contact": {
+                  "title": "Party contact information",
+                  "description": "Contains the contact information of the party that was used in this state.",
+                  "type": "string",
+                  "minLength": 1
+                },
                 "date": {
                   "title": "Date of involvement",
                   "description": "Holds the date and time of the involvement entry.",
                   "type": "string",
                   "format": "date-time"
+                },
+                "group_ids": {
+                  "$ref": "#/$defs/product_groups_t"
                 },
                 "party": {
                   "title": "Party category",
@@ -1221,6 +1311,9 @@
                     "user",
                     "vendor"
                   ]
+                },
+                "product_ids": {
+                  "$ref": "#/$defs/products_t"
                 },
                 "status": {
                   "title": "Party status",
@@ -1241,7 +1334,8 @@
                   "type": "string",
                   "minLength": 1
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "metrics": {
@@ -1274,10 +1368,42 @@
                     "cvss_v4": {
                       "type": "object"
                     },
+                    "epss": {
+                      "title": "EPSS",
+                      "description": "Contains the EPSS data.",
+                      "type": "object",
+                      "required": [
+                        "percentile",
+                        "probability",
+                        "timestamp"
+                      ],
+                      "properties": {
+                        "percentile": {
+                          "title": "Percentile",
+                          "description": "Contains the rank ordering of probabilities from highest to lowest.",
+                          "type": "string",
+                          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+                        },
+                        "probability": {
+                          "title": "Probability",
+                          "description": "Contains the likelihood that any exploitation activity for this Vulnerability is being observed in the 30 days following the given timestamp.",
+                          "type": "string",
+                          "pattern": "^(([0]\\.([0-9])+)|([1]\\.[0]+))$"
+                        },
+                        "timestamp": {
+                          "title": "EPSS timestamp",
+                          "description": "Holds the date and time the EPSS value was recorded.",
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "ssvc_v1": {
                       "type": "object"
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 },
                 "products": {
                   "$ref": "#/$defs/products_t"
@@ -1288,7 +1414,8 @@
                   "type": "string",
                   "format": "uri"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "notes": {
@@ -1341,8 +1468,14 @@
                 "title": "Under investigation",
                 "description": "It is not known yet whether these versions are or are not affected by the vulnerability. However, it is still under investigation - the result will be provided in a later release of the document.",
                 "$ref": "#/$defs/products_t"
+              },
+              "unknown": {
+                "title": "Unknown",
+                "description": "It is not known whether these versions are or are not affected by the vulnerability. There is also no investigation and therefore the status might never be determined.",
+                "$ref": "#/$defs/products_t"
               }
-            }
+            },
+            "additionalProperties": false
           },
           "references": {
             "title": "Vulnerability references",
@@ -1437,7 +1570,8 @@
                       "type": "string",
                       "minLength": 1
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 },
                 "url": {
                   "title": "URL to the remediation",
@@ -1445,7 +1579,8 @@
                   "type": "string",
                   "format": "uri"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "threats": {
@@ -1490,7 +1625,8 @@
                 "product_ids": {
                   "$ref": "#/$defs/products_t"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "title": {
@@ -1499,8 +1635,10 @@
             "type": "string",
             "minLength": 1
           }
-        }
+        },
+        "additionalProperties": false
       }
     }
-  }
+  },
+  "additionalProperties": false
 }

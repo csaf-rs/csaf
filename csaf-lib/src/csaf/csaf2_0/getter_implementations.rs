@@ -1,10 +1,17 @@
-use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
-use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, LabelOfTlp as Tlp21};
-use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait};
+use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
+use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21};
+use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds};
 use std::ops::Deref;
 use serde::de::Error;
+use serde_json::{Map, Value};
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::validation::ValidationError;
+
+impl WithGroupIds for Remediation {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
+    }
+}
 
 impl RemediationTrait for Remediation {
     /// Normalizes the remediation categories from CSAF 2.0 to those of CSAF 2.1.
@@ -29,10 +36,6 @@ impl RemediationTrait for Remediation {
 
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 
     fn get_date(&self) -> &Option<String> {
@@ -72,29 +75,73 @@ impl ProductStatusTrait for ProductStatus {
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
+
+    /// Not specified for CSAF 2.0, so `None`
+    fn get_unknown(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
 }
 
-impl MetricTrait for () {
-    type ContentType = ();
+impl MetricTrait for Score {
+    type ContentType = Score;
 
-    //noinspection RsConstantConditionIf
     fn get_products(&self) -> impl Iterator<Item = &String> + '_ {
-        // This construction is required to satisfy compiler checks
-        // and still panic if this is ever called (as this would be a clear error!).
-        if true {
-            panic!("Metrics are not implemented in CSAF 2.0");
-        }
-        std::iter::empty()
+        self.products.iter().map(|x| x.deref())
     }
 
     fn get_content(&self) -> &Self::ContentType {
-        panic!("Metrics are not implemented in CSAF 2.0");
+        self
+    }
+
+    fn get_source(&self) -> &Option<String> {
+        &None
     }
 }
 
-impl ContentTrait for () {
+impl ContentTrait for Score {
+    fn has_ssvc_v1(&self) -> bool {
+        false
+    }
+
     fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error> {
-        Err(serde_json::Error::custom("Metrics are not implemented in CSAF 2.0"))
+        Err(serde_json::Error::custom("SSVC metrics are not implemented in CSAF 2.0"))
+    }
+
+    fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v2.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v2)
+        }
+    }
+
+    fn get_cvss_v3(&self) -> Option<&Map<String, Value>> {
+        if self.cvss_v3.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v3)
+        }
+    }
+
+    fn get_cvss_v4(&self) -> Option<&Map<String, Value>> {
+        None
+    }
+
+    fn get_epss(&self) -> &Option<Epss> {
+        &None::<Epss>
+    }
+
+    fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
+        format!(
+            "/vulnerabilities/{}/scores/{}",
+            vulnerability_idx, metric_idx
+        )
+    }
+}
+
+impl WithGroupIds for Threat {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
@@ -112,11 +159,12 @@ impl VulnerabilityTrait for Vulnerability {
     type RemediationType = Remediation;
     type ProductStatusType = ProductStatus;
     // Metrics are not implemented in CSAF 2.0
-    type MetricType = ();
+    type MetricType = Score;
     type ThreatType = Threat;
     type FlagType = Flag;
     type InvolvementType = Involvement;
     type VulnerabilityIdType = Id;
+    type NoteType = Note;
 
     fn get_remediations(&self) -> &Vec<Self::RemediationType> {
         &self.remediations
@@ -126,9 +174,8 @@ impl VulnerabilityTrait for Vulnerability {
         &self.product_status
     }
 
-    fn get_metrics(&self) -> &Option<Vec<Self::MetricType>> {
-        // Metrics are not implemented in CSAF 2.0
-        &None
+    fn get_metrics(&self) -> Option<&Vec<Self::MetricType>> {
+        Some(&self.scores)
     }
 
     fn get_threats(&self) -> &Vec<Self::ThreatType> {
@@ -154,8 +201,13 @@ impl VulnerabilityTrait for Vulnerability {
     fn get_cve(&self) -> Option<&String> {
         self.cve.as_ref().map(|x| x.deref())
     }
+    
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
         &self.ids
+    }
+
+    fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
+        self.notes.as_ref().map(|x| x.deref())
     }
 }
 
@@ -166,6 +218,12 @@ impl VulnerabilityIdTrait for Id {
 
     fn get_text(&self) -> &String {
         self.text.deref()
+    }
+}
+
+impl WithGroupIds for Flag {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
@@ -202,6 +260,7 @@ impl CsafTrait for CommonSecurityAdvisoryFramework {
 impl DocumentTrait for DocumentLevelMetaData {
     type TrackingType = Tracking;
     type DistributionType = RulesForSharingDocument;
+    type NoteType = Note;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -221,6 +280,10 @@ impl DocumentTrait for DocumentLevelMetaData {
             }),
             Some(distribution) => Ok(distribution)
         }
+    }
+
+    fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
+        self.notes.as_ref().map(|x| x.deref())
     }
 }
 
@@ -248,6 +311,14 @@ impl DistributionTrait for RulesForSharingDocument {
         }
     }
 }
+
+impl WithGroupIds for Note {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
+}
+
+impl NoteTrait for Note {}
 
 impl SharingGroupTrait for () {
     fn get_id(&self) -> &String {

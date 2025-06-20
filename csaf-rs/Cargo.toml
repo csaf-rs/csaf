@@ -1,6 +1,11 @@
 [package]
-name = "csaf-lib"
-version = "0.1.0"
+name = "csaf-rs"
+description = "A parser for the CSAF standard written in Rust"
+license = "Apache-2.0"
+repository = "http://github.com/csaf-poc/csaf-rust"
+keywords = ["csaf"]
+readme = "../README.md"
+version = "0.1.2"
 edition = "2021"
 
 [dependencies]

@@ -18,6 +18,21 @@ pub enum BuildError {
 }
 
 fn main() -> Result<(), BuildError> {
+    // We only need to generate these files as part of our cargo build process,
+    // not if we are publishing or getting built by cargo from a crates.io
+    // package. This is because the files are generated from the JSON schema
+    // files, which are not included in the published package.
+    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    if manifest_dir.to_string_lossy().contains("target/package") {
+        // If we're in target/package/<version>, we don't need to generate the files
+        // because they are already generated in the package.
+        return Ok(());
+    } else if manifest_dir.to_string_lossy().contains("crates.io") {
+        // If we're in a crates.io folder we don't need to generate the files
+        // because they are already generated in the debug build.
+        return Ok(());
+    }
+
     build(
         "./src/csaf/csaf2_0/csaf_json_schema.json",
         "csaf/csaf2_0/schema.rs",
@@ -42,8 +57,8 @@ fn main() -> Result<(), BuildError> {
     Ok(())
 }
 
-fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError> {
-    let content = fs::read_to_string(input)?;
+fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError> {    
+    let content = fs::read_to_string(&input)?;
     let mut schema_value = serde_json::from_str(&content)?;
     if no_date_time {
         // Recursively search for "format": "date-time" and remove this format

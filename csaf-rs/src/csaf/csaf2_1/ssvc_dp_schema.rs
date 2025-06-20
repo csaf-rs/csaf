@@ -107,7 +107,7 @@ pub mod error {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct DecisionPoint {
     ///A full description of the Decision Point, explaining what it represents and how it is used in SSVC.
@@ -481,7 +481,7 @@ impl<'de> ::serde::Deserialize<'de> for DecisionPointNamespace {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct DecisionPointSchemaDefinition(pub DecisionPoint);
 impl ::std::ops::Deref for DecisionPointSchemaDefinition {
@@ -551,7 +551,7 @@ impl ::std::convert::From<DecisionPoint> for DecisionPointSchemaDefinition {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct DecisionPointValue {
     ///A full description of the Decision Point Value.

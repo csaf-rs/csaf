@@ -57,7 +57,7 @@ fn main() -> Result<(), BuildError> {
     Ok(())
 }
 
-fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError> {    
+fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError> {
     let content = fs::read_to_string(&input)?;
     let mut schema_value = serde_json::from_str(&content)?;
     if no_date_time {
@@ -66,7 +66,12 @@ fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError
     }
     let schema: schemars::schema::RootSchema = serde_json::from_value(schema_value)?;
 
-    let mut type_space = TypeSpace::new(TypeSpaceSettings::default().with_struct_builder(true));
+    let mut type_space = TypeSpace::new(
+        TypeSpaceSettings::default()
+            .with_struct_builder(true)
+            .with_derive("PartialEq".into())
+            .with_derive("Eq".into()),
+    );
     type_space.add_root_schema(schema)?;
 
     let content = prettyplease::unparse(&syn::parse2::<syn::File>(type_space.to_stream())?);

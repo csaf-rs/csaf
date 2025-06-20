@@ -316,7 +316,7 @@ impl ::std::convert::TryFrom<::std::string::String> for SchemaVersion {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct SsvcV1 {
     pub id: Id,
@@ -402,7 +402,7 @@ impl SsvcV1 {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct SsvcdecisionpointselectionSchema {
     ///A short label that identifies a Decision Point.
@@ -713,7 +713,7 @@ impl<'de> ::serde::Deserialize<'de> for SsvcdecisionpointselectionSchemaVersion 
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct Timestamp(pub chrono::DateTime<chrono::offset::Utc>);
 impl ::std::ops::Deref for Timestamp {

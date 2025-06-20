@@ -41,6 +41,9 @@ jobs:
       - name: Run tests
         run: cargo test --target=${{ matrix.target.arch }} --verbose
         if: ${{ matrix.target.skip-test != true }}
+      - name: Publish dry-run
+        run: cargo publish --dry-run -p csaf-rs --target=${{ matrix.target.arch }} --verbose
+        if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         uses: actions/upload-artifact@v4
         with:

@@ -18,56 +18,47 @@ pub enum BuildError {
 }
 
 fn main() -> Result<(), BuildError> {
+    // We only need to generate these files as part of our cargo build process,
+    // not if we are publishing or getting built by cargo from a crates.io
+    // package. This is because the files are generated from the JSON schema
+    // files, which are not included in the published package.
+    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    if manifest_dir.to_string_lossy().contains("target/package") {
+        // If we're in target/package/<version>, we don't need to generate the files
+        // because they are already generated in the package.
+        return Ok(());
+    } else if manifest_dir.to_string_lossy().contains("crates.io") {
+        // If we're in a crates.io folder we don't need to generate the files
+        // because they are already generated in the debug build.
+        return Ok(());
+    }
+
     build(
         "./src/csaf/csaf2_0/csaf_json_schema.json",
         "csaf/csaf2_0/schema.rs",
-        false,
         true,
     )?;
     build(
         "./src/csaf/csaf2_1/ssvc-1-0-1-merged.schema.json",
         "csaf/csaf2_1/ssvc_schema.rs",
         false,
-        false,
     )?;
     build(
         "./src/csaf/csaf2_1/csaf.json",
         "csaf/csaf2_1/schema.rs",
-        false,
         true,
     )?;
     build(
-        "ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json",
+        "../ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json",
         "csaf/csaf2_1/ssvc_dp_schema.rs",
-        true,
         false,
     )?;
 
     Ok(())
 }
 
-fn build(input: &str, output: &str, from_root: bool, no_date_time: bool) -> Result<(), BuildError> {
-    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let input_path = if from_root {
-        let mut manifest_path = manifest_dir.to_path_buf();
-        
-        // Handle cargo publish case where we're in target/package/<version>
-        if manifest_path.to_string_lossy().contains("target/package") {
-            // Go up 3 levels: target/package/<version> -> project root
-            for _ in 0..3 {
-                manifest_path.pop();
-            }
-        } else {
-            // Go up 1 level: csaf-rs -> project root
-            manifest_path.pop();
-        }
-        
-        manifest_path.join(input)
-    } else {
-        manifest_dir.join(input)
-    };
-
-    let content = fs::read_to_string(&input_path)?;
+fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError> {    
+    let content = fs::read_to_string(&input)?;
     let mut schema_value = serde_json::from_str(&content)?;
     if no_date_time {
         // Recursively search for "format": "date-time" and remove this format

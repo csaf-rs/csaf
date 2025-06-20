@@ -1,8 +1,8 @@
 use std::str::FromStr;
 use anyhow::{bail, Result};
-use csaf_lib::csaf::csaf2_0::loader::load_document as load_document_2_0;
-use csaf_lib::csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf_lib::csaf::validation::{validate_by_preset, validate_by_test, Validatable, ValidationPreset};
+use csaf_rs::csaf::csaf2_0::loader::load_document as load_document_2_0;
+use csaf_rs::csaf::csaf2_1::loader::load_document as load_document_2_1;
+use csaf_rs::csaf::validation::{validate_by_preset, validate_by_test, Validatable, ValidationPreset};
 use clap::Parser;
 
 /// A validator for CSAF documents

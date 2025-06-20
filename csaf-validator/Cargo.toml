@@ -1,9 +1,13 @@
 [package]
 name = "csaf-validator"
+description = "A validator for the CSAF standard written in Rust"
+license = "Apache-2.0"
+repository = "http://github.com/csaf-poc/csaf-rust"
+keywords = ["csaf"]
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-csaf-lib = { path = "../csaf-lib" }
+csaf-rs = { path = "../csaf-rs" }
 anyhow = "1.0.93"
 clap = { version = "4.5.23", features = ["derive"] }

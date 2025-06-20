@@ -93,7 +93,7 @@ pub mod error {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Acknowledgment {
     ///Contains the names of contributors being recognized.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
@@ -197,7 +197,7 @@ impl Acknowledgment {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct AcknowledgmentsT(pub ::std::vec::Vec<Acknowledgment>);
 impl ::std::ops::Deref for AcknowledgmentsT {
@@ -335,7 +335,7 @@ impl<'de> ::serde::Deserialize<'de> for AdditionalRestartInformation {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct AggregateSeverity {
     ///Points to the namespace so referenced.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -675,7 +675,7 @@ impl<'de> ::serde::Deserialize<'de> for AudienceOfNote {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Branch {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub branches: ::std::option::Option<BranchesT>,
@@ -763,7 +763,7 @@ impl Branch {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct BranchesT(pub ::std::vec::Vec<Branch>);
 impl ::std::ops::Deref for BranchesT {
@@ -2427,7 +2427,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct CommonSecurityAdvisoryFramework {
     pub document: DocumentLevelMetaData,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2685,7 +2685,7 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct CryptographicHashes {
     ///Contains a list of cryptographic hashes for this file.
     pub file_hashes: ::std::vec::Vec<FileHash>,
@@ -2900,7 +2900,7 @@ impl<'de> ::serde::Deserialize<'de> for Cve {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Cwe {
     ///Holds the ID for the weakness associated.
     pub id: WeaknessId,
@@ -3224,7 +3224,7 @@ impl<'de> ::serde::Deserialize<'de> for DocumentCategory {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct DocumentGenerator {
     ///This SHOULD be the current date that the document was generated. Because documents are often generated internally by a document producer and exist for a nonzero amount of time before being released, this field MAY be different from the Initial Release Date and Current Release Date.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -3611,7 +3611,7 @@ impl DocumentGenerator {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct DocumentLevelMetaData {
     ///Contains a list of acknowledgment elements associated with the whole document.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -3862,7 +3862,7 @@ impl<'de> ::serde::Deserialize<'de> for EngineName {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct EngineOfDocumentGeneration {
     ///Represents the name of the engine that generated the CSAF document.
     pub name: EngineName,
@@ -4087,7 +4087,7 @@ impl<'de> ::serde::Deserialize<'de> for EntitlementOfTheRemediation {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct FileHash {
     ///Contains the name of the cryptographic hash algorithm used to calculate the value.
     pub algorithm: AlgorithmOfTheCryptographicHash,
@@ -4228,7 +4228,7 @@ impl<'de> ::serde::Deserialize<'de> for Filename {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Flag {
     ///Contains the date when assessment was done or the flag was assigned.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4454,7 +4454,7 @@ impl Flag {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct FullProductNameT {
     ///The value should be the product’s full canonical name, including version number and other attributes, as it would be used in a human-friendly document.
     pub name: TextualDescriptionOfTheProduct,
@@ -4502,7 +4502,7 @@ impl FullProductNameT {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct GenericUri {
     ///Refers to a URL which provides the name and knowledge about the specification used or is the namespace in which these values are valid.
     pub namespace: ::std::string::String,
@@ -4699,7 +4699,7 @@ impl GenericUri {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct HelperToIdentifyTheProduct {
     ///The Common Platform Enumeration (CPE) attribute refers to a method for naming platforms external to this specification.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4788,7 +4788,7 @@ impl HelperToIdentifyTheProduct {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Id {
     ///Indicates the name of the vulnerability tracking or numbering system.
     pub system_name: SystemName,
@@ -4859,7 +4859,7 @@ impl Id {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Involvement {
     ///Holds the date and time of the involvement entry.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -5733,7 +5733,7 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheContributor {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Note {
     ///Indicates who is intended to read it.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -6011,7 +6011,7 @@ impl<'de> ::serde::Deserialize<'de> for NoteContent {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct NotesT(pub ::std::vec::Vec<Note>);
 impl ::std::ops::Deref for NotesT {
@@ -6277,7 +6277,7 @@ impl ::std::convert::TryFrom<::std::string::String> for PartyStatus {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct ProductGroup {
     pub group_id: ProductGroupIdT,
     ///Lists the product_ids of those products which known as one group in the document.
@@ -6397,7 +6397,7 @@ impl<'de> ::serde::Deserialize<'de> for ProductGroupIdT {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct ProductGroupsT(pub Vec<ProductGroupIdT>);
 impl ::std::ops::Deref for ProductGroupsT {
@@ -6559,7 +6559,7 @@ impl<'de> ::serde::Deserialize<'de> for ProductIdT {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct ProductStatus {
     ///These are the first versions of the releases known to be affected by the vulnerability.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -6721,7 +6721,7 @@ impl ProductStatus {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct ProductTree {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub branches: ::std::option::Option<BranchesT>,
@@ -6772,7 +6772,7 @@ impl ProductTree {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct ProductsT(pub Vec<ProductIdT>);
 impl ::std::ops::Deref for ProductsT {
@@ -6864,7 +6864,7 @@ impl ::std::convert::From<Vec<ProductIdT>> for ProductsT {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Publisher {
     ///Provides information about the category of publisher releasing the document.
     pub category: CategoryOfPublisher,
@@ -6929,7 +6929,7 @@ impl Publisher {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Reference {
     ///Indicates whether the reference points to the same document or vulnerability in focus (depending on scope) or to an external resource.
     #[serde(default = "defaults::reference_category")]
@@ -6995,7 +6995,7 @@ impl Reference {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct ReferencesT(pub ::std::vec::Vec<Reference>);
 impl ::std::ops::Deref for ReferencesT {
@@ -7064,7 +7064,7 @@ impl ::std::convert::From<::std::vec::Vec<Reference>> for ReferencesT {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Relationship {
     ///Defines the category of relationship for the referenced component.
     pub category: RelationshipCategory,
@@ -7279,7 +7279,7 @@ impl ::std::convert::TryFrom<::std::string::String> for RelationshipCategory {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Remediation {
     ///Specifies the category which this remediation belongs to.
     pub category: CategoryOfTheRemediation,
@@ -7350,7 +7350,7 @@ impl Remediation {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct RestartRequiredByRemediation {
     ///Specifies what category of restart is required by this remediation to become effective.
     pub category: CategoryOfRestart,
@@ -7411,7 +7411,7 @@ impl RestartRequiredByRemediation {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Revision {
     ///The date of the revision entry
     pub date: ::std::string::String,
@@ -7490,7 +7490,7 @@ impl Revision {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct RulesForSharingDocument {
     ///Provides a textual description of additional constraints.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -7543,7 +7543,7 @@ impl RulesForSharingDocument {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Score {
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub cvss_v2: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
@@ -8587,7 +8587,7 @@ impl<'de> ::serde::Deserialize<'de> for TextualDescriptionOfTheProduct {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Threat {
     ///Categorizes the threat according to the rules of the specification.
     pub category: CategoryOfTheThreat,
@@ -9019,7 +9019,7 @@ impl<'de> ::serde::Deserialize<'de> for TitleOfThisDocument {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Tracking {
     ///Contains a list of alternate names for the same document.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -9087,7 +9087,7 @@ impl Tracking {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct TrafficLightProtocolTlp {
     ///Provides the TLP label of the document.
     pub label: LabelOfTlp,
@@ -9808,7 +9808,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Vulnerability {
     ///Contains a list of acknowledgment elements associated with this vulnerability item.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]

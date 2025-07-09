@@ -24,7 +24,7 @@ The final binary will be in `target/release` and can then installed for example 
 
 ## Usage
 
-After [building](README.md#build) or downloading `csaf-validator` from [the available releases](https://github.com/csaf-poc/csaf-rust/releases), the usage is quite simple and additional help can be display using `--help`.
+After [building](README.md#build) or downloading `csaf-validator` from [the available releases](https://github.com/csaf-rs/csaf/releases), the usage is quite simple and additional help can be display using `--help`.
 
 ```
 A validator for CSAF documents

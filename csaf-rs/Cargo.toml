@@ -5,7 +5,7 @@ license = "Apache-2.0"
 repository = "http://github.com/csaf-poc/csaf-rust"
 keywords = ["csaf"]
 readme = "../README.md"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]

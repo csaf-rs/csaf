@@ -22,6 +22,7 @@ fn run_csaf_tests<CsafType>(
     document_loader: fn(&str) -> std::io::Result<CsafType>,
     test_function: Test<CsafType>,
     expected_errors: &HashMap<&str, &ValidationError>,
+    skipped_tests: &[&str],
 ) {
     use glob::glob;
 
@@ -36,6 +37,11 @@ fn run_csaf_tests<CsafType>(
                 .unwrap()
                 .strip_suffix(".json")
                 .unwrap();
+
+            if skipped_tests.contains(&test_num) {
+                println!("Skipping test {}", test_num);
+                continue;
+            }
 
             // Load the document
             let doc = document_loader(path.to_string_lossy().as_ref()).unwrap();
@@ -65,26 +71,46 @@ fn run_csaf_tests<CsafType>(
     }
 }
 
-pub fn run_csaf20_tests(
+pub fn run_csaf20_tests_with_excludes(
     test_number: &str,
     test_function: Test<Csaf20>,
     expected_errors: &HashMap<&str, &ValidationError>,
+    skipped_tests: &[&str],
 ) {
     // Find all test files matching the pattern
     let file_prefix = &format!("oasis_csaf_tc-csaf_2_0-2021-6-1-{}-", test_number);
     let pattern = &format!("../csaf/csaf_2.0/test/validator/data/mandatory/{}*.json", file_prefix);
 
-    run_csaf_tests(pattern, file_prefix, load_document_20, test_function, expected_errors);
+    run_csaf_tests(pattern, file_prefix, load_document_20, test_function, expected_errors, skipped_tests);
 }
 
-pub fn run_csaf21_tests(
+pub fn run_csaf21_tests_with_excludes(
     test_number: &str,
     test_function: Test<Csaf21>,
     expected_errors: &HashMap<&str, &ValidationError>,
+    skipped_tests: &[&str],
 ) {
     // Find all test files matching the pattern
     let file_prefix = &format!("oasis_csaf_tc-csaf_2_1-2024-6-1-{}-", test_number);
     let pattern = &format!("../csaf/csaf_2.1/test/validator/data/mandatory/{}*.json", file_prefix);
 
-    run_csaf_tests(pattern, file_prefix, load_document_21, test_function, expected_errors);
+    run_csaf_tests(pattern, file_prefix, load_document_21, test_function, expected_errors, skipped_tests);
+}
+
+/// Overload for run_csaf20_tests without the skipped_tests parameter
+pub fn run_csaf20_tests(
+    test_number: &str,
+    test_function: Test<Csaf20>,
+    expected_errors: &HashMap<&str, &ValidationError>,
+) {
+    run_csaf20_tests_with_excludes(test_number, test_function, expected_errors, &[])
+}
+
+/// Overload for run_csaf21_tests without the skipped_tests parameter
+pub fn run_csaf21_tests(
+    test_number: &str,
+    test_function: Test<Csaf21>,
+    expected_errors: &HashMap<&str, &ValidationError>,
+) {
+    run_csaf21_tests_with_excludes(test_number, test_function, expected_errors, &[])
 }

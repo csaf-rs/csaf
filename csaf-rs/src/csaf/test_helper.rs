@@ -41,7 +41,7 @@ fn run_csaf_tests<CsafType>(
             let doc = document_loader(path.to_string_lossy().as_ref()).unwrap();
 
             // Check if this is expected to be a negative or positive test case
-            if test_num.starts_with('0') {
+            if test_num.starts_with('0') || test_num.starts_with('2') {
                 // Negative test case - should fail with a specific error
                 let expected_error = expected_errors.get(test_num).expect(
                     &format!("Missing expected error definition for negative test case {}", test_num)

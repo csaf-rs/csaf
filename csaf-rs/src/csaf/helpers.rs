@@ -47,7 +47,7 @@ pub fn count_unescaped_stars(s: &str) -> u32 {
 }
 
 #[derive(RustEmbed)]
-#[folder = "../ssvc/data/json/decision_points/"]
+#[folder = "assets/ssvc/data/json/decision_points/"]
 #[include = "*.json"]
 struct SsvcDecisionPointJsonFiles;
 

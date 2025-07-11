@@ -4,6 +4,7 @@ use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, Docu
 use std::ops::Deref;
 use serde::de::Error;
 use serde_json::{Map, Value};
+use uuid::Uuid;
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::validation::ValidationError;
 
@@ -345,7 +346,7 @@ impl WithGroupIds for Note {
 impl NoteTrait for Note {}
 
 impl SharingGroupTrait for () {
-    fn get_id(&self) -> &String {
+    fn get_id(&self) -> &Uuid {
         panic!("Sharing groups are not implemented in CSAF 2.0");
     }
 

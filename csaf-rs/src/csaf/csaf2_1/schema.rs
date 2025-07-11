@@ -1654,6 +1654,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "title": "Sharing Group ID",
 ///                  "description": "Provides the unique ID for the sharing group.",
 ///                  "type": "string",
+///                  "format": "uuid",
 ///                  "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///                },
 ///                "name": {
@@ -3789,6 +3790,7 @@ impl DocumentGenerator {
 ///              "title": "Sharing Group ID",
 ///              "description": "Provides the unique ID for the sharing group.",
 ///              "type": "string",
+///              "format": "uuid",
 ///              "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///            },
 ///            "name": {
@@ -8721,6 +8723,7 @@ impl Revision {
 ///          "title": "Sharing Group ID",
 ///          "description": "Provides the unique ID for the sharing group.",
 ///          "type": "string",
+///          "format": "uuid",
 ///          "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///        },
 ///        "name": {
@@ -8907,6 +8910,7 @@ impl<'de> ::serde::Deserialize<'de> for SerialNumber {
 ///      "title": "Sharing Group ID",
 ///      "description": "Provides the unique ID for the sharing group.",
 ///      "type": "string",
+///      "format": "uuid",
 ///      "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///    },
 ///    "name": {
@@ -8932,7 +8936,7 @@ impl<'de> ::serde::Deserialize<'de> for SerialNumber {
 #[serde(deny_unknown_fields)]
 pub struct SharingGroup {
     ///Provides the unique ID for the sharing group.
-    pub id: SharingGroupId,
+    pub id: ::uuid::Uuid,
     ///Contains a human-readable name for the sharing group.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub name: ::std::option::Option<SharingGroupName>,
@@ -8945,95 +8949,6 @@ impl ::std::convert::From<&SharingGroup> for SharingGroup {
 impl SharingGroup {
     pub fn builder() -> builder::SharingGroup {
         Default::default()
-    }
-}
-///Provides the unique ID for the sharing group.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Sharing Group ID",
-///  "description": "Provides the unique ID for the sharing group.",
-///  "type": "string",
-///  "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
-///}
-/// ```
-/// </details>
-#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[serde(transparent)]
-pub struct SharingGroupId(::std::string::String);
-impl ::std::ops::Deref for SharingGroupId {
-    type Target = ::std::string::String;
-    fn deref(&self) -> &::std::string::String {
-        &self.0
-    }
-}
-impl ::std::convert::From<SharingGroupId> for ::std::string::String {
-    fn from(value: SharingGroupId) -> Self {
-        value.0
-    }
-}
-impl ::std::convert::From<&SharingGroupId> for SharingGroupId {
-    fn from(value: &SharingGroupId) -> Self {
-        value.clone()
-    }
-}
-impl ::std::str::FromStr for SharingGroupId {
-    type Err = self::error::ConversionError;
-    fn from_str(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
-        {
-            ::regress::Regex::new(
-                    "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$",
-                )
-                .unwrap()
-        });
-        if (&*PATTERN).find(value).is_none() {
-            return Err(
-                "doesn't match pattern \"^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$\""
-                    .into(),
-            );
-        }
-        Ok(Self(value.to_string()))
-    }
-}
-impl ::std::convert::TryFrom<&str> for SharingGroupId {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl ::std::convert::TryFrom<&::std::string::String> for SharingGroupId {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl ::std::convert::TryFrom<::std::string::String> for SharingGroupId {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: ::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl<'de> ::serde::Deserialize<'de> for SharingGroupId {
-    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-    where
-        D: ::serde::Deserializer<'de>,
-    {
-        ::std::string::String::deserialize(deserializer)?
-            .parse()
-            .map_err(|e: self::error::ConversionError| {
-                <D::Error as ::serde::de::Error>::custom(e.to_string())
-            })
     }
 }
 ///Contains a human-readable name for the sharing group.
@@ -14913,7 +14828,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct SharingGroup {
-        id: ::std::result::Result<super::SharingGroupId, ::std::string::String>,
+        id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
         name: ::std::result::Result<
             ::std::option::Option<super::SharingGroupName>,
             ::std::string::String,
@@ -14930,7 +14845,7 @@ pub mod builder {
     impl SharingGroup {
         pub fn id<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<super::SharingGroupId>,
+            T: ::std::convert::TryInto<::uuid::Uuid>,
             T::Error: ::std::fmt::Display,
         {
             self.id = value

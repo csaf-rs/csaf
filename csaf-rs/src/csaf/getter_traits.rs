@@ -1,4 +1,5 @@
 use std::collections::{BTreeSet, HashSet};
+use uuid::Uuid;
 use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp};
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::helpers::resolve_product_groups;
@@ -82,7 +83,7 @@ pub trait NoteTrait: WithGroupIds {}
 /// Trait representing sharing group information
 pub trait SharingGroupTrait {
     /// Returns the ID of the sharing group
-    fn get_id(&self) -> &String;
+    fn get_id(&self) -> &Uuid;
 
     /// Returns the optional name of the sharing group
     fn get_name(&self) -> Option<&String>;

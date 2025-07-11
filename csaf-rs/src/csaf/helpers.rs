@@ -4,6 +4,17 @@ use rust_embed::RustEmbed;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::ops::Deref;
 use std::sync::LazyLock;
+use uuid::{uuid, Uuid};
+
+/// Special name for public sharing groups
+pub static SG_NAME_PUBLIC: &str = "Public";
+/// Special name for private sharing groups
+pub static SG_NAME_PRIVATE: &str = "No sharing allowed";
+
+/// Special "max" UUID value
+pub static MAX_UUID: &Uuid = &uuid!("ffffffff-ffff-ffff-ffff-ffffffffffff");
+/// Special "nil" UUID value
+pub static NIL_UUID: &Uuid = &uuid!("00000000-0000-0000-0000-000000000000");
 
 pub fn resolve_product_groups<'a, I>(doc: &impl CsafTrait, product_groups: I) -> Option<BTreeSet<String>>
 where

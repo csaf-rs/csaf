@@ -2,6 +2,7 @@ use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecur
 use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds, FirstKnownExploitationDatesTrait};
 use std::ops::Deref;
 use serde_json::{Map, Value};
+use uuid::Uuid;
 use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
 use crate::csaf::validation::ValidationError;
 
@@ -318,7 +319,7 @@ impl WithGroupIds for Note {
 impl NoteTrait for Note {}
 
 impl SharingGroupTrait for SharingGroup {
-    fn get_id(&self) -> &String {
+    fn get_id(&self) -> &Uuid {
         &self.id
     }
 

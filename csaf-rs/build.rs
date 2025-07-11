@@ -3,6 +3,8 @@ use std::{fs, io};
 use std::string::ToString;
 use thiserror::Error;
 use typify::{TypeSpace, TypeSpaceSettings};
+use json_dotpath::DotPaths;
+use serde_json::{json, Value};
 
 #[derive(Error, Debug)]
 pub enum BuildError {
@@ -23,11 +25,26 @@ fn main() -> Result<(), BuildError> {
 
     // All schema files for change watching
     let schema_configs = [
-        ("./assets/csaf-2-0-json-schema.json", "csaf/csaf2_0/schema.rs", true),
-        ("./assets/ssvc-1-0-1-merged.schema.json", "csaf/csaf2_1/ssvc_schema.rs", false),
-        ("./assets/csaf-2-1-json-schema.json", "csaf/csaf2_1/schema.rs", true),
-        ("./assets/ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json",
-         "csaf/csaf2_1/ssvc_dp_schema.rs", false)
+        (
+            "assets/csaf/csaf_2.0/json_schema/csaf_json_schema.json",
+            "csaf/csaf2_0/schema.rs",
+            Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
+        ),
+        (
+            "assets/ssvc-1-0-1-merged.schema.json",
+            "csaf/csaf2_1/ssvc_schema.rs",
+            None,
+        ),
+        (
+            "assets/csaf/csaf_2.1/json_schema/csaf.json",
+            "csaf/csaf2_1/schema.rs",
+            Some(&fix_2_1_schema),
+        ),
+        (
+            "assets/ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json",
+            "csaf/csaf2_1/ssvc_dp_schema.rs",
+            None,
+        )
     ];
 
     // Register watching for all inputs
@@ -36,8 +53,8 @@ fn main() -> Result<(), BuildError> {
     }
 
     // Execute all listed schema builds
-    for (input, output, no_date_time) in &schema_configs {
-        build(input, output, *no_date_time)?;
+    for (input, output, schema_patch) in &schema_configs {
+        build(input, output, schema_patch)?;
     }
 
     generate_language_subtags()?;
@@ -45,12 +62,16 @@ fn main() -> Result<(), BuildError> {
     Ok(())
 }
 
-fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError> {
+fn build(
+    input: &str,
+    output: &str,
+    schema_patch: &Option<&dyn Fn(&mut Value)>
+) -> Result<(), BuildError> {
     let content = fs::read_to_string(&input)?;
     let mut schema_value = serde_json::from_str(&content)?;
-    if no_date_time {
-        // Recursively search for "format": "date-time" and remove this format
-        remove_datetime_formats(&mut schema_value);
+    // Execute a schema patch function, if provided.
+    if let Some(patch_fn) = schema_patch {
+        patch_fn(&mut schema_value);
     }
     let schema: schemars::schema::RootSchema = serde_json::from_value(schema_value)?;
 
@@ -69,8 +90,38 @@ fn build(input: &str, output: &str, no_date_time: bool) -> Result<(), BuildError
     Ok(fs::write(out_file, content)?)
 }
 
-fn remove_datetime_formats(value: &mut serde_json::Value) {
-    if let serde_json::Value::Object(map) = value {
+/// Patches (unsupported) external schemas to the plain object type for CSAF 2.0.
+fn fix_2_0_schema(value: &mut Value) {
+    let prefix = "properties.vulnerabilities.items.properties.scores.items.properties";
+    let fix_paths = [
+        format!("{}.cvss_v2", prefix),
+        format!("{}.cvss_v3", prefix),
+    ];
+    for path in fix_paths {
+        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
+    }
+    remove_datetime_formats(value);
+}
+
+/// Patches (unsupported) external schemas to the plain object type for CSAF 2.1.
+fn fix_2_1_schema(value: &mut Value) {
+    let prefix =
+        "properties.vulnerabilities.items.properties.metrics.items.properties.content.properties";
+    let fix_paths = [
+        format!("{}.cvss_v2", prefix),
+        format!("{}.cvss_v3", prefix),
+        format!("{}.cvss_v4", prefix),
+        format!("{}.ssvc_v1", prefix),
+    ];
+    for path in fix_paths {
+        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
+    }
+    remove_datetime_formats(value);
+}
+
+/// Recursively searches for "format": "date-time" and removes this format.
+fn remove_datetime_formats(value: &mut Value) {
+    if let Value::Object(map) = value {
         if let Some(format) = map.get("format") {
             if format.as_str() == Some("date-time") {
                 // Remove the format property entirely
@@ -82,7 +133,7 @@ fn remove_datetime_formats(value: &mut serde_json::Value) {
         for (_, v) in map.iter_mut() {
             remove_datetime_formats(v);
         }
-    } else if let serde_json::Value::Array(arr) = value {
+    } else if let Value::Array(arr) = value {
         for item in arr.iter_mut() {
             remove_datetime_formats(item);
         }
@@ -92,6 +143,7 @@ fn remove_datetime_formats(value: &mut serde_json::Value) {
 /// Compile-time-embedded language-subtag-registry.txt
 const LANGUAGE_REGISTRY: &str = include_str!("assets/language-subtag-registry.txt");
 
+/// Generates the language subtags array from the build-embedded text file.
 fn generate_language_subtags() -> Result<(), BuildError> {
     let mut subtags = Vec::new();
     let mut current_entry_type = None;

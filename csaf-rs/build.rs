@@ -19,28 +19,13 @@ pub enum BuildError {
 }
 
 fn main() -> Result<(), BuildError> {
-    // We only need to generate these files as part of our cargo build process,
-    // not if we are publishing or getting built by cargo from a crates.io
-    // package. This is because the files are generated from the JSON schema
-    // files, which are not included in the published package.
-    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-    if manifest_dir.to_string_lossy().contains("target/package") {
-        // If we're in target/package/<version>, we don't need to generate the files
-        // because they are already generated in the package.
-        return Ok(());
-    } else if manifest_dir.to_string_lossy().contains("crates.io") {
-        // If we're in a crates.io folder we don't need to generate the files
-        // because they are already generated in the debug build.
-        return Ok(());
-    }
-
     println!("cargo:rerun-if-changed=build.rs");
 
     // All schema files for change watching
     let schema_configs = [
-        ("./src/csaf/csaf2_0/csaf_json_schema.json", "csaf/csaf2_0/schema.rs", true),
-        ("./src/csaf/csaf2_1/ssvc-1-0-1-merged.schema.json", "csaf/csaf2_1/ssvc_schema.rs", false),
-        ("./src/csaf/csaf2_1/csaf.json", "csaf/csaf2_1/schema.rs", true),
+        ("./assets/csaf-2-0-json-schema.json", "csaf/csaf2_0/schema.rs", true),
+        ("./assets/ssvc-1-0-1-merged.schema.json", "csaf/csaf2_1/ssvc_schema.rs", false),
+        ("./assets/csaf-2-1-json-schema.json", "csaf/csaf2_1/schema.rs", true),
         ("./assets/ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json",
          "csaf/csaf2_1/ssvc_dp_schema.rs", false)
     ];

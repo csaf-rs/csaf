@@ -225,7 +225,6 @@ name = "csaf-rs"
 version = "0.2.1"
 dependencies = [
  "chrono",
- "dp-schema",
  "glob",
  "packageurl",
  "prettyplease",
@@ -257,19 +256,6 @@ checksum = "9ed9a281f7bc9b7576e61468ba615a66a5c8cfdff42420a70aa82701a3b1e292"
 dependencies = [
  "block-buffer",
  "crypto-common",
-]
-
-[[package]]
-name = "dp-schema"
-version = "0.1.0"
-dependencies = [
- "prettyplease",
- "regress",
- "schemars",
- "serde",
- "serde_json",
- "syn",
- "typify",
 ]
 
 [[package]]

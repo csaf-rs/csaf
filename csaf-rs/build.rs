@@ -41,6 +41,8 @@ fn main() -> Result<(), BuildError> {
         ("./src/csaf/csaf2_0/csaf_json_schema.json", "csaf/csaf2_0/schema.rs", true),
         ("./src/csaf/csaf2_1/ssvc-1-0-1-merged.schema.json", "csaf/csaf2_1/ssvc_schema.rs", false),
         ("./src/csaf/csaf2_1/csaf.json", "csaf/csaf2_1/schema.rs", true),
+        ("../ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json", 
+         "csaf/csaf2_1/ssvc_dp_schema.rs", false)
     ];
 
     // Register watching for all inputs

@@ -1,4 +1,4 @@
-use dp_schema::decision_point::DecisionPoint;
+use crate::csaf::csaf2_1::ssvc_dp_schema::DecisionPoint;
 use crate::csaf::getter_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use rust_embed::RustEmbed;
 use std::collections::{BTreeSet, HashMap, HashSet};

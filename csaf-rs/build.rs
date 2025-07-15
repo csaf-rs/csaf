@@ -26,7 +26,7 @@ fn main() -> Result<(), BuildError> {
     // All schema files for change watching
     let schema_configs = [
         (
-            "assets/csaf/csaf_2.0/json_schema/csaf_json_schema.json",
+            "assets/csaf_2.0_json_schema.json",
             "csaf/csaf2_0/schema.rs",
             Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
         ),
@@ -36,12 +36,12 @@ fn main() -> Result<(), BuildError> {
             None,
         ),
         (
-            "assets/csaf/csaf_2.1/json_schema/csaf.json",
+            "assets/csaf_2.1_json_schema.json",
             "csaf/csaf2_1/schema.rs",
             Some(&fix_2_1_schema),
         ),
         (
-            "assets/ssvc/data/schema/v1/Decision_Point-1-0-1.schema.json",
+            "assets/decision_point_1.0.1_json_schema.json",
             "csaf/csaf2_1/ssvc_dp_schema.rs",
             None,
         )

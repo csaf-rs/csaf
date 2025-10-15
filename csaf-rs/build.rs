@@ -31,8 +31,8 @@ fn main() -> Result<(), BuildError> {
             Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
         ),
         (
-            "assets/ssvc-1-0-1-merged.schema.json",
-            "csaf/csaf2_1/ssvc_schema.rs",
+            "assets/Decision_Point_Value_Selection-2-0-0.schema.json",
+            "csaf/csaf2_1/ssvc_v2.rs",
             None,
         ),
         (
@@ -112,6 +112,7 @@ fn fix_2_1_schema(value: &mut Value) {
         format!("{}.cvss_v3", prefix),
         format!("{}.cvss_v4", prefix),
         format!("{}.ssvc_v1", prefix),
+        format!("{}.ssvc_v2", prefix),
     ];
     for path in fix_paths {
         value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();

@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use crate::csaf::validations::test_6_1_07::VulnerabilityMetrics::{CvssV2, CvssV30, CvssV31, CvssV4, Epss, SsvcV1};
 use std::collections::{HashMap, HashSet};
@@ -52,7 +52,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(
             for (m_i, m) in metrics.iter().enumerate() {
                 let content = m.get_content();
                 let mut content_metrics = Vec::<(VulnerabilityMetrics, &Option<String>)>::new();
-                if content.has_ssvc_v1() {
+                if content.has_ssvc() {
                     content_metrics.push((SsvcV1, m.get_source()));
                 }
                 if content.get_cvss_v2().is_some() {

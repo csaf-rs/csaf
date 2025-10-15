@@ -1,6 +1,6 @@
 use crate::csaf::csaf2_1::schema::DocumentStatus;
 use crate::csaf::csaf2_1::schema::LabelOfTlp::Clear;
-use crate::csaf::getter_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait, TrackingTrait};
+use crate::csaf::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait, TrackingTrait};
 use crate::csaf::helpers::{MAX_UUID, NIL_UUID};
 use crate::csaf::validation::ValidationError;
 

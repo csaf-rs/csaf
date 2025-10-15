@@ -1,38 +1,20 @@
-use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
-use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21};
-use crate::csaf::getter_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds, FirstKnownExploitationDatesTrait};
+use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
+use crate::csaf::csaf_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds, FirstKnownExploitationDatesTrait};
 use std::ops::Deref;
-use serde::de::Error;
 use serde_json::{Map, Value};
 use uuid::Uuid;
-use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
+use crate::csaf::csaf2_1::ssvc_v2::DecisionPointValueSelectionList as SsvcV2Selection;
 use crate::csaf::validation::ValidationError;
 
 impl WithGroupIds for Remediation {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
 impl RemediationTrait for Remediation {
-    /// Normalizes the remediation categories from CSAF 2.0 to those of CSAF 2.1.
-    ///
-    /// # Explanation
-    /// In CSAF 2.1, the list of remediation categories was expanded, making it a superset of those
-    /// in CSAF 2.0. This function ensures that the remediation category from a CSAF 2.0 remediation
-    /// object is converted into the corresponding category defined in CSAF 2.1.
-    ///
-    /// # Returns
-    /// A CSAF 2.1 `CategoryOfTheRemediation` that corresponds to the remediation category of the
-    /// current object.
-    fn get_category(&self) -> Remediation21 {
-        match self.category {
-            CategoryOfTheRemediation::Workaround => Remediation21::Workaround,
-            CategoryOfTheRemediation::Mitigation => Remediation21::Mitigation,
-            CategoryOfTheRemediation::VendorFix => Remediation21::VendorFix,
-            CategoryOfTheRemediation::NoFixPlanned => Remediation21::NoFixPlanned,
-            CategoryOfTheRemediation::NoneAvailable => Remediation21::NoneAvailable,
-        }
+    fn get_category(&self) -> CategoryOfTheRemediation {
+        self.category
     }
 
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
@@ -77,35 +59,34 @@ impl ProductStatusTrait for ProductStatus {
         self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    /// Not specified for CSAF 2.0, so `None`
     fn get_unknown(&self) -> Option<impl Iterator<Item=&String> + '_> {
-        None::<std::iter::Empty<&String>>
+        self.unknown.as_ref().map(|p| (*p).iter().map(|x| x.deref()))   
     }
 }
 
-impl MetricTrait for Score {
-    type ContentType = Score;
+impl MetricTrait for Metric {
+    type ContentType = Content;
 
     fn get_products(&self) -> impl Iterator<Item = &String> + '_ {
-        self.products.iter().map(|x| x.deref())
+        self.products.deref().iter().map(|p| p.deref())
     }
 
     fn get_content(&self) -> &Self::ContentType {
-        self
+        &self.content
     }
 
     fn get_source(&self) -> &Option<String> {
-        &None
+        &self.source
     }
 }
 
-impl ContentTrait for Score {
-    fn has_ssvc_v1(&self) -> bool {
-        false
+impl ContentTrait for Content {
+    fn has_ssvc(&self) -> bool {
+        !self.ssvc_v2.is_empty()
     }
 
-    fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error> {
-        Err(serde_json::Error::custom("SSVC metrics are not implemented in CSAF 2.0"))
+    fn get_ssvc(&self) -> Result<SsvcV2Selection, serde_json::Error> {
+        Ok(serde_json::from_value::<SsvcV2Selection>(Value::Object(self.ssvc_v2.clone()))?)
     }
 
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
@@ -125,17 +106,22 @@ impl ContentTrait for Score {
     }
 
     fn get_cvss_v4(&self) -> Option<&Map<String, Value>> {
-        None
+        if self.cvss_v4.is_empty() {
+            None
+        } else {
+            Some(&self.cvss_v4)
+        }
     }
 
     fn get_epss(&self) -> &Option<Epss> {
-        &None::<Epss>
+        &self.epss
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
         format!(
-            "/vulnerabilities/{}/scores/{}",
-            vulnerability_idx, metric_idx
+            "/vulnerabilities/{}/metrics/{}/content",
+            vulnerability_idx,
+            metric_idx,
         )
     }
 }
@@ -159,15 +145,13 @@ impl ThreatTrait for Threat {
 impl VulnerabilityTrait for Vulnerability {
     type RemediationType = Remediation;
     type ProductStatusType = ProductStatus;
-    // Metrics are not implemented in CSAF 2.0
-    type MetricType = Score;
+    type MetricType = Metric;
     type ThreatType = Threat;
     type FlagType = Flag;
     type InvolvementType = Involvement;
     type VulnerabilityIdType = Id;
     type NoteType = Note;
-    // First known exploitation dates are not implemented in CSAF 2.0
-    type FirstKnownExploitationDatesType = ();
+    type FirstKnownExploitationDatesType = FirstKnownExploitationDate;
 
     fn get_remediations(&self) -> &Vec<Self::RemediationType> {
         &self.remediations
@@ -178,7 +162,7 @@ impl VulnerabilityTrait for Vulnerability {
     }
 
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>> {
-        Some(&self.scores)
+        self.metrics.as_ref()
     }
 
     fn get_threats(&self) -> &Vec<Self::ThreatType> {
@@ -186,7 +170,7 @@ impl VulnerabilityTrait for Vulnerability {
     }
 
     fn get_disclosure_date(&self) -> &Option<String> {
-        &self.release_date
+        &self.disclosure_date
     }
 
     fn get_discovery_date(&self) -> &Option<String> {
@@ -204,7 +188,7 @@ impl VulnerabilityTrait for Vulnerability {
     fn get_cve(&self) -> Option<&String> {
         self.cve.as_ref().map(|x| x.deref())
     }
-    
+
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
         &self.ids
     }
@@ -214,7 +198,7 @@ impl VulnerabilityTrait for Vulnerability {
     }
 
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>> {
-        None
+        self.first_known_exploitation_dates.as_ref()
     }
 }
 
@@ -244,9 +228,9 @@ impl FlagTrait for Flag {
     }
 }
 
-impl FirstKnownExploitationDatesTrait for () {
+impl FirstKnownExploitationDatesTrait for FirstKnownExploitationDate {
     fn get_date(&self) -> &String {
-        panic!("First known exploitation dates are not implemented in CSAF 2.0");
+        &self.date
     }
 }
 
@@ -276,27 +260,21 @@ impl CsafTrait for CommonSecurityAdvisoryFramework {
 
 impl DocumentTrait for DocumentLevelMetaData {
     type TrackingType = Tracking;
-    type DistributionType = RulesForSharingDocument;
+    type DistributionType = RulesForDocumentSharing;
     type NoteType = Note;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
     }
 
-    /// Return distribution as ref Option, it is optional anyways
-    fn get_distribution_20(&self) -> Option<&Self::DistributionType> {
-        self.distribution.as_ref()
+    /// We normalize to Option here because property was optional in CSAF 2.0
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
+        Ok(&self.distribution)
     }
 
-    /// Return distribution or a Validation error to satisfy CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
-        match self.distribution.as_ref() {
-            None => Err(ValidationError {
-                message: "CSAF 2.1 requires the distribution property, but it is not set.".to_string(),
-                instance_path: "/document/distribution".to_string()
-            }),
-            Some(distribution) => Ok(distribution)
-        }
+    /// Always return the value because it is mandatory
+    fn get_distribution_20(&self) -> Option<&Self::DistributionType> {
+        Some(&self.distribution)
     }
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
@@ -312,66 +290,46 @@ impl DocumentTrait for DocumentLevelMetaData {
     }
 }
 
-impl DistributionTrait for RulesForSharingDocument {
-    type SharingGroupType = ();
+impl DistributionTrait for RulesForDocumentSharing {
+    type SharingGroupType = SharingGroup;
     type TlpType = TrafficLightProtocolTlp;
 
     fn get_sharing_group(&self) -> &Option<Self::SharingGroupType> {
-        &None
+        &self.sharing_group
     }
 
-    /// Return TLP as ref Option, it is an option anyway
+    /// We normalize to Option here because property was optional in CSAF 2.0
     fn get_tlp_20(&self) -> Option<&Self::TlpType> {
-        self.tlp.as_ref()
+        Some(&self.tlp)
     }
 
-    /// Return TLP or a ValidationError to satisfy CSAF 2.1 semantics
+    /// Always return the value because it is mandatory
     fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError> {
-        match self.tlp.as_ref() {
-            None => Err(ValidationError {
-                message: "CSAF 2.1 requires the TLP property, but it is not set.".to_string(),
-                instance_path: "/document/distribution/sharing_group/tlp".to_string()
-            }),
-            Some(tlp) => Ok(tlp)
-        }
+        Ok(&self.tlp)
     }
 }
 
 impl WithGroupIds for Note {
     fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
-        None::<std::iter::Empty<&String>>
+        self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
 impl NoteTrait for Note {}
 
-impl SharingGroupTrait for () {
+impl SharingGroupTrait for SharingGroup {
     fn get_id(&self) -> &Uuid {
-        panic!("Sharing groups are not implemented in CSAF 2.0");
+        &self.id
     }
 
     fn get_name(&self) -> Option<&String> {
-        panic!("Sharing groups are not implemented in CSAF 2.0");
+        self.name.as_ref().map(|x| x.deref())
     }
 }
 
 impl TlpTrait for TrafficLightProtocolTlp {
-    /// Normalizes the TLP (Traffic Light Protocol) labels from CSAF 2.0 to those of CSAF 2.1.
-    ///
-    /// # Explanation
-    /// In CSAF 2.1, the TLP labeling scheme was updated to align with the official TLP 2.0 standard,
-    /// which renamed "WHITE" to "CLEAR". This function ensures that TLP labels from CSAF 2.0
-    /// are converted to their corresponding labels in CSAF 2.1.
-    ///
-    /// # Returns
-    /// A CSAF 2.1 `Tlp21` value that corresponds to the TLP label of the current object.
-    fn get_label(&self) -> Tlp21 {
-        match self.label {
-            LabelOfTlp::Amber => Tlp21::Amber,
-            LabelOfTlp::Green => Tlp21::Green,
-            LabelOfTlp::Red => Tlp21::Red,
-            LabelOfTlp::White => Tlp21::Clear,
-        }
+    fn get_label(&self) -> LabelOfTlp {
+        self.label
     }
 }
 
@@ -395,12 +353,8 @@ impl TrackingTrait for Tracking {
         &self.revision_history
     }
 
-    fn get_status(&self) -> Status21 {
-        match self.status {
-            DocumentStatus::Draft => Status21::Draft,
-            DocumentStatus::Final => Status21::Final,
-            DocumentStatus::Interim => Status21::Interim,
-        }
+    fn get_status(&self) -> DocumentStatus {
+        self.status
     }
 
     fn get_id(&self) -> &String {
@@ -501,7 +455,7 @@ impl ProductTrait for FullProductNameT {
 
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
     fn get_purls(&self) -> Option<&[String]> {
-        self.purl.as_ref().map(|purl| std::slice::from_ref(purl))
+        self.purls.as_ref().map(|v| v.as_slice())
     }
 
     fn get_model_numbers(&self) -> Option<impl Iterator<Item = &String> + '_> {

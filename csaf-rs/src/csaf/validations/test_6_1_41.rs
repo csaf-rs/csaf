@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
+use crate::csaf::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
 use crate::csaf::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
 use crate::csaf::validation::ValidationError;
 

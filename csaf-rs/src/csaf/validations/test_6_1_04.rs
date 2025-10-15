@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, DocumentTrait, ProductGroupTrait, ProductTreeTrait, VulnerabilityTrait, WithGroupIds};
+use crate::csaf::csaf_traits::{CsafTrait, DocumentTrait, ProductGroupTrait, ProductTreeTrait, VulnerabilityTrait, WithGroupIds};
 use crate::csaf::validation::ValidationError;
 use std::collections::HashSet;
 

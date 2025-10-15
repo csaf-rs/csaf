@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use std::ops::Deref;
 use crate::csaf::helpers::{SSVC_DECISION_POINTS, DP_VAL_LOOKUP, REGISTERED_SSVC_NAMESPACES};
@@ -11,80 +11,82 @@ pub fn test_6_1_48_ssvc_decision_points(
     for (i_v, v) in vulnerabilities.iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
-                match m.get_content().get_ssvc_v1() {
-                    Ok(ssvc) => {
-                        for (i_s, selection) in ssvc.selections.iter().enumerate() {
-                            // Skip this test for unregistered namespaces
-                            if !REGISTERED_SSVC_NAMESPACES.contains(selection.namespace.deref()) {
-                                continue;
-                            }
+                if m.get_content().has_ssvc() {
+                    match m.get_content().get_ssvc() {
+                        Ok(ssvc) => {
+                            for (i_s, selection) in ssvc.selections.iter().enumerate() {
+                                // Skip this test for unregistered namespaces
+                                if !REGISTERED_SSVC_NAMESPACES.contains(selection.namespace.deref()) {
+                                    continue;
+                                }
 
-                            // Create the key for lookup in CSAF_SSVC_DECISION_POINTS
-                            let (namespace, name, version) = (
-                                selection.namespace.deref().to_owned(),
-                                selection.name.deref().to_owned(),
-                                selection.version.deref().to_owned(),
-                            );
-                            let dp_key = (namespace.clone(), name.clone(), version.clone());
-                            match SSVC_DECISION_POINTS.get(&dp_key) {
-                                Some(_) => {
-                                    // Get value indices of decision point
-                                    let reference_indices = DP_VAL_LOOKUP.get(&dp_key).unwrap();
-                                    // Index of last-seen value
-                                    let mut last_index: i32 = -1;
-                                    // Check if all values exist and are correctly ordered
-                                    for (i_val, value) in selection.values.iter().map(|v| v.deref()).enumerate() {
-                                        match reference_indices.get(value) {
-                                            None => return Err(ValidationError {
-                                                message: format!(
-                                                    "The SSVC decision point '{}::{}' (version {}) doesn't have the value '{}'",
-                                                    namespace, name, version, value
-                                                ),
-                                                instance_path: format!(
-                                                    "/vulnerabilities/{}/metrics/{}/content/ssvc_v1/selections/{}/values/{}",
-                                                    i_v, i_m, i_s, i_val
-                                                ),
-                                            }),
-                                            Some(i_dp_val) => {
-                                                if last_index > *i_dp_val {
-                                                    return Err(ValidationError {
-                                                        message: format!(
-                                                            "The values for SSVC decision point '{}::{}' (version {}) are not in correct order",
-                                                            namespace, name, version
-                                                        ),
-                                                        instance_path: format!(
-                                                            "/vulnerabilities/{}/metrics/{}/content/ssvc_v1/selections/{}/values/{}",
-                                                            i_v, i_m, i_s, i_val
-                                                        ),
-                                                    });
-                                                } else {
-                                                    last_index = *i_dp_val;
+                                // Create the key for lookup in CSAF_SSVC_DECISION_POINTS
+                                let (namespace, name, version) = (
+                                    selection.namespace.deref().to_owned(),
+                                    selection.name.deref().to_owned(),
+                                    selection.version.deref().to_owned(),
+                                );
+                                let dp_key = (namespace.clone(), name.clone(), version.clone());
+                                match SSVC_DECISION_POINTS.get(&dp_key) {
+                                    Some(_) => {
+                                        // Get value indices of decision point
+                                        let reference_indices = DP_VAL_LOOKUP.get(&dp_key).unwrap();
+                                        // Index of last-seen value
+                                        let mut last_index: i32 = -1;
+                                        // Check if all values exist and are correctly ordered
+                                        for (i_val, value) in selection.values.iter().map(|v| v.deref()).enumerate() {
+                                            match reference_indices.get(value) {
+                                                None => return Err(ValidationError {
+                                                    message: format!(
+                                                        "The SSVC decision point '{}::{}' (version {}) doesn't have the value '{}'",
+                                                        namespace, name, version, value
+                                                    ),
+                                                    instance_path: format!(
+                                                        "/vulnerabilities/{}/metrics/{}/content/ssvc_v1/selections/{}/values/{}",
+                                                        i_v, i_m, i_s, i_val
+                                                    ),
+                                                }),
+                                                Some(i_dp_val) => {
+                                                    if last_index > *i_dp_val {
+                                                        return Err(ValidationError {
+                                                            message: format!(
+                                                                "The values for SSVC decision point '{}::{}' (version {}) are not in correct order",
+                                                                namespace, name, version
+                                                            ),
+                                                            instance_path: format!(
+                                                                "/vulnerabilities/{}/metrics/{}/content/ssvc_v1/selections/{}/values/{}",
+                                                                i_v, i_m, i_s, i_val
+                                                            ),
+                                                        });
+                                                    } else {
+                                                        last_index = *i_dp_val;
+                                                    }
                                                 }
                                             }
                                         }
+                                    },
+                                    None => {
+                                        return Err(ValidationError {
+                                            message: format!(
+                                                "Unknown SSVC decision point '{}::{}' with version '{}'",
+                                                namespace, name, version
+                                            ),
+                                            instance_path: format!(
+                                                "/vulnerabilities/{}/metrics/{}/content/ssvc_v1/selections/{}",
+                                                i_v, i_m, i_s
+                                            ),
+                                        });
                                     }
-                                },
-                                None => {
-                                    return Err(ValidationError {
-                                        message: format!(
-                                            "Unknown SSVC decision point '{}::{}' with version '{}'",
-                                            namespace, name, version
-                                        ),
-                                        instance_path: format!(
-                                            "/vulnerabilities/{}/metrics/{}/content/ssvc_v1/selections/{}",
-                                            i_v, i_m, i_s
-                                        ),
-                                    });
                                 }
                             }
-                        }
-                    },
-                    Err(err) => {
-                        return Err(ValidationError {
-                            message: format!("Invalid SSVC object: {}", err),
-                            instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1", i_v, i_m),
-                        });
-                    },
+                        },
+                        Err(err) => {
+                            return Err(ValidationError {
+                                message: format!("Invalid SSVC object: {}", err),
+                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1", i_v, i_m),
+                            });
+                        },
+                    }
                 }
             }
         }

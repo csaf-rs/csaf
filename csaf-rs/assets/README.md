@@ -23,12 +23,18 @@ See https://github.com/CERTCC/SSVC/tree/main/data/json/decision_points for infor
 respective licenses. They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for
 successful crate publishing.
 
-- `ssvc-1-0-1-merged.schema.json`
+- `Decision_Point_Value_Selection-1-0-1_merged.schema.json`
 
 The SSVC decision point value selection schema provided here is derived from 
 https://certcc.github.io/SSVC/data/schema/v1/Decision_Point_Value_Selection-1-0-1.schema.json.
 Problematic (e.g., external) `$refs` have been resolved to allow proper parsing during the build process.
 Again, see https://github.com/CERTCC/SSVC/tree/main/data/json/decision_points for any further (license) information.
+
+- `Decision_Point_Value_Selection-2-0-0.schema.json`
+
+The SSVC decision point value selection schema provided here has been copied from
+https://raw.githubusercontent.com/CERTCC/SSVC/refs/heads/main/data/schema/v2/Decision_Point_Value_Selection-2-0-0.schema.json.
+
 
 ## External Assets
 

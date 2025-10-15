@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, FlagTrait, MetricTrait, ProductGroupTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, ThreatTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{CsafTrait, FlagTrait, MetricTrait, ProductGroupTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, ThreatTrait, VulnerabilityTrait};
 
 pub fn gather_product_references(doc: &impl CsafTrait) -> Vec<(String, String)> {
     let mut ids = Vec::<(String, String)>::new();

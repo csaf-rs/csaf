@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, RemediationTrait, RevisionTrait, ThreatTrait, TrackingTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, RemediationTrait, RevisionTrait, ThreatTrait, TrackingTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use regex::Regex;
 use std::sync::LazyLock;

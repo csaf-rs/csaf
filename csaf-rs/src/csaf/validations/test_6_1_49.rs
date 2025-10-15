@@ -1,5 +1,5 @@
 use crate::csaf::csaf2_1::schema::DocumentStatus;
-use crate::csaf::getter_traits::{ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
 
@@ -52,24 +52,26 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
             for (i_m, metric) in metrics.iter().enumerate() {
-                match metric.get_content().get_ssvc_v1() {
-                    Ok(ssvc) => {
-                        if ssvc.timestamp.fixed_offset() > newest_revision_date {
+                if metric.get_content().has_ssvc() {
+                    match metric.get_content().get_ssvc() {
+                        Ok(ssvc) => {
+                            if ssvc.timestamp.fixed_offset() > newest_revision_date {
+                                return Err(ValidationError {
+                                    message: format!(
+                                        "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
+                                        ssvc.timestamp.to_rfc3339(), i_v, newest_revision_date.to_rfc3339()
+                                    ),
+                                    instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1/timestamp", i_v, i_m),
+                                })
+                            }
+                        },
+                        Err(err) => {
                             return Err(ValidationError {
-                                message: format!(
-                                    "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
-                                    ssvc.timestamp.to_rfc3339(), i_v, newest_revision_date.to_rfc3339()
-                                ),
-                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1/timestamp", i_v, i_m),
-                            })
-                        }
-                    },
-                    Err(err) => {
-                        return Err(ValidationError {
-                            message: format!("Invalid SSVC object: {}", err),
-                            instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1", i_v, i_m),
-                        });
-                    },
+                                message: format!("Invalid SSVC object: {}", err),
+                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1", i_v, i_m),
+                            });
+                        },
+                    }
                 }
             }
         }

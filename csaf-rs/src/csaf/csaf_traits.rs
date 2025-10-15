@@ -1,7 +1,7 @@
 use std::collections::{BTreeSet, HashSet};
 use uuid::Uuid;
 use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp};
-use crate::csaf::csaf2_1::ssvc_schema::SsvcV1;
+use crate::csaf::csaf2_1::ssvc_v2::DecisionPointValueSelectionList as SsvcV2Selection;
 use crate::csaf::helpers::resolve_product_groups;
 use crate::csaf::validation::ValidationError;
 
@@ -378,11 +378,11 @@ pub trait MetricTrait {
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
     /// Returns whether this content contains a non-empty SSVC metric.
-    fn has_ssvc_v1(&self) -> bool;
+    fn has_ssvc(&self) -> bool;
 
     /// Returns a parsed instance of the contained SSVC metric, or a `serde_json::Error`,
     /// encapsulated as a `Result`.
-    fn get_ssvc_v1(&self) -> Result<SsvcV1, serde_json::Error>;
+    fn get_ssvc(&self) -> Result<SsvcV2Selection, serde_json::Error>;
 
     /// Returns a JSON representation of the contained CVSS 2.0 metric, if any.
     fn get_cvss_v2(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;

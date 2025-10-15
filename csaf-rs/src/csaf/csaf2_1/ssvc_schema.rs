@@ -234,7 +234,7 @@ impl ::std::convert::From<&Self> for SchemaVersion {
 impl ::std::fmt::Display for SchemaVersion {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::X101 => write!(f, "1-0-1"),
+            Self::X101 => f.write_str("1-0-1"),
         }
     }
 }
@@ -562,7 +562,7 @@ impl ::std::str::FromStr for SsvcdecisionpointselectionSchemaNamespace {
                 )
                 .unwrap()
         });
-        if (&*PATTERN).find(value).is_none() {
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(?=.{3,100}$)(x_)?[a-z0-9]{3}([/.-]?[a-z0-9]+){0,97}$\""
                     .into(),
@@ -658,7 +658,7 @@ impl ::std::str::FromStr for SsvcdecisionpointselectionSchemaVersion {
                 )
                 .unwrap()
         });
-        if (&*PATTERN).find(value).is_none() {
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$\""
                     .into(),

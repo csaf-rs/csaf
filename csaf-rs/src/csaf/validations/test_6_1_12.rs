@@ -1,5 +1,5 @@
 use crate::csaf::generated::language_subtags::is_valid_language_subtag;
-use crate::csaf::getter_traits::{CsafTrait, DocumentTrait};
+use crate::csaf::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), ValidationError> {

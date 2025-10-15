@@ -4,6 +4,7 @@ use crate::csaf::csaf2_1::loader::load_document as load_document_21;
 use crate::csaf::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
 use crate::csaf::validation::{Test, ValidationError};
 use std::collections::HashMap;
+use glob::GlobResult;
 
 /// Generic test helper that loads all test files matching a specific test number pattern
 /// and runs positive and negative validations against a test function.
@@ -27,7 +28,13 @@ fn run_csaf_tests<CsafType>(
     use glob::glob;
 
     // Load and test each file
-    for entry in glob(pattern).expect("Failed to parse glob pattern") {
+    let test_files: Vec<GlobResult> = glob(pattern)
+        .expect("Failed to parse glob pattern")
+        .collect();
+    if test_files.len() == 0 {
+        panic!("No test files found for pattern {}", pattern);
+    }
+    for entry in test_files {
         if let Ok(path) = entry {
             // Extract the file suffix (e.g., "01", "02", etc.)
             let file_name = path.file_name().unwrap().to_string_lossy();
@@ -87,7 +94,7 @@ pub fn run_csaf20_tests_with_excludes(
     // Find all test files matching the pattern
     let file_prefix = &format!("oasis_csaf_tc-csaf_2_0-2021-6-1-{}-", test_number);
     let pattern = &format!(
-        "assets/csaf/csaf_2.0/test/validator/data/mandatory/{}*.json",
+        "../csaf/csaf_2.0/test/validator/data/mandatory/{}*.json",
         file_prefix
     );
 
@@ -110,7 +117,7 @@ pub fn run_csaf21_tests_with_excludes(
     // Find all test files matching the pattern
     let file_prefix = &format!("oasis_csaf_tc-csaf_2_1-2024-6-1-{}-", test_number);
     let pattern = &format!(
-        "assets/csaf/csaf_2.1/test/validator/data/mandatory/{}*.json",
+        "../csaf/csaf_2.1/test/validator/data/mandatory/{}*.json",
         file_prefix
     );
 

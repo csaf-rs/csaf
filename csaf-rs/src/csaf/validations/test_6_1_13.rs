@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
+use crate::csaf::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
 use packageurl::PackageUrl;
 use regex::Regex;
@@ -27,9 +27,9 @@ pub fn test_6_1_13_purl(
                         // Parse the PURL
                         match PackageUrl::from_str(purl_str) {
                             Ok(_) => {},
-                            Err(_) => {
+                            Err(e) => {
                                 return Err(ValidationError {
-                                    message: format!("Invalid PURL format: {}", purl_str),
+                                    message: format!("Invalid PURL format: {}, Error: {}", purl_str, e),
                                     instance_path: format!("{}/product_identification_helper/purls/{}", path, i),
                                 });
                             }
@@ -45,7 +45,7 @@ pub fn test_6_1_13_purl(
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::test_helper::{run_csaf20_tests_with_excludes, run_csaf21_tests_with_excludes};
+    use crate::csaf::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_13::test_6_1_13_purl;
     use std::collections::HashMap;
@@ -53,18 +53,18 @@ mod tests {
     #[test]
     fn test_test_6_1_13() {
         let error01 = ValidationError {
-            message: "Invalid PURL format: pkg:maven/@1.3.4".to_string(),
+            message: "Invalid PURL format: pkg:maven/@1.3.4, Error: missing name".to_string(),
             instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/0".to_string(),
         };
         let error02 = ValidationError {
-            message: "`packageurl` does not know about specifics of OCI type etc.".to_string(),
-            instance_path: "dummy".to_string(),
+            message: "Invalid PURL format: pkg:oci/com.example/product-A@sha256%3Add134261219b2, Error: no namespace allowed for type \"oci\"".to_string(),
+            instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/0".to_string(),
         };
         let errors = HashMap::from([
             ("01", &error01),
             ("02", &error02),
         ]);
-        run_csaf20_tests_with_excludes("13", test_6_1_13_purl, &errors, &["02"]);
-        run_csaf21_tests_with_excludes("13", test_6_1_13_purl, &errors, &["02"]);
+        run_csaf20_tests("13", test_6_1_13_purl, &errors);
+        run_csaf21_tests("13", test_6_1_13_purl, &errors);
     }
 }

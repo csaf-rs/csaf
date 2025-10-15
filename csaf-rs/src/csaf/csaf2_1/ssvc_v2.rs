@@ -1,0 +1,1127 @@
+/// Error types.
+pub mod error {
+    /// Error from a `TryFrom` or `FromStr` implementation.
+    pub struct ConversionError(::std::borrow::Cow<'static, str>);
+    impl ::std::error::Error for ConversionError {}
+    impl ::std::fmt::Display for ConversionError {
+        fn fmt(
+            &self,
+            f: &mut ::std::fmt::Formatter<'_>,
+        ) -> Result<(), ::std::fmt::Error> {
+            ::std::fmt::Display::fmt(&self.0, f)
+        }
+    }
+    impl ::std::fmt::Debug for ConversionError {
+        fn fmt(
+            &self,
+            f: &mut ::std::fmt::Formatter<'_>,
+        ) -> Result<(), ::std::fmt::Error> {
+            ::std::fmt::Debug::fmt(&self.0, f)
+        }
+    }
+    impl From<&'static str> for ConversionError {
+        fn from(value: &'static str) -> Self {
+            Self(value.into())
+        }
+    }
+    impl From<String> for ConversionError {
+        fn from(value: String) -> Self {
+            Self(value.into())
+        }
+    }
+}
+///This schema defines the structure for representing selected values from SSVC Decision Points. Each selection list can have multiple selection objects, each representing a decision point, and each selection object can have multiple selected values when full certainty (i.e., a singular value selection) is not available.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "$id": "https://certcc.github.io/SSVC/data/schema/v2/Decision_Point_Value_Selection-2-0-0.schema.json",
+///  "title": "Decision Point Value Selection List",
+///  "description": "This schema defines the structure for representing selected values from SSVC Decision Points. Each selection list can have multiple selection objects, each representing a decision point, and each selection object can have multiple selected values when full certainty (i.e., a singular value selection) is not available.",
+///  "type": "object",
+///  "required": [
+///    "schemaVersion",
+///    "selections",
+///    "timestamp"
+///  ],
+///  "properties": {
+///    "decision_point_resources": {
+///      "title": "Decision Point Resources",
+///      "description": "A list of resources that provide additional context about the decision points found in this selection.",
+///      "examples": [
+///        [
+///          {
+///            "summary": "Documentation for a set of decision points",
+///            "uri": "https://example.com/decision_points"
+///          },
+///          {
+///            "summary": "JSON representation of decision point 2",
+///            "uri": "https://example.org/definitions/dp2.json"
+///          },
+///          {
+///            "summary": "A JSON file containing extension decision points in the x_com.example namespace",
+///            "uri": "https://example.com/ssvc/x_com.example/decision_points.json"
+///          }
+///        ]
+///      ],
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/Reference"
+///      },
+///      "minItems": 1
+///    },
+///    "references": {
+///      "title": "References",
+///      "description": "A list of references that provide additional context about the specific values selected.",
+///      "examples": [
+///        [
+///          {
+///            "summary": "A report on which the selections were based",
+///            "uri": "https://example.com/report"
+///          }
+///        ]
+///      ],
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/Reference"
+///      },
+///      "minItems": 1
+///    },
+///    "schemaVersion": {
+///      "title": "Schemaversion",
+///      "description": "The schema version of this selection list.",
+///      "type": "string",
+///      "const": "2.0.0"
+///    },
+///    "selections": {
+///      "title": "Selections",
+///      "description": "List of selections made from decision points. Each selection item corresponds to value keys contained in a specific decision point identified by its namespace, key, and version. Note that selection objects are deliberately minimal objects and do not contain the full decision point details.",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/Selection"
+///      },
+///      "minItems": 1
+///    },
+///    "target_ids": {
+///      "title": "Target Ids",
+///      "description": "Optional list of identifiers for the item or items (vulnerabilities, reports, advisories, systems, assets, etc.) being evaluated by these selections.",
+///      "examples": [
+///        [
+///          "CVE-1900-0000"
+///        ],
+///        [
+///          "VU#999999",
+///          "GHSA-0123-4567-89ab"
+///        ]
+///      ],
+///      "type": "array",
+///      "items": {
+///        "type": "string"
+///      },
+///      "minItems": 1,
+///      "uniqueItems": true
+///    },
+///    "timestamp": {
+///      "title": "Timestamp",
+///      "description": "Timestamp of the selections, in RFC 3339 format.",
+///      "examples": [
+///        "2025-01-01T12:00:00Z",
+///        "2025-01-02T15:30:45-04:00"
+///      ],
+///      "type": "string",
+///      "format": "date-time"
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct DecisionPointValueSelectionList {
+    ///A list of resources that provide additional context about the decision points found in this selection.
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub decision_point_resources: ::std::vec::Vec<Reference>,
+    ///A list of references that provide additional context about the specific values selected.
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub references: ::std::vec::Vec<Reference>,
+    ///The schema version of this selection list.
+    #[serde(rename = "schemaVersion")]
+    pub schema_version: ::std::string::String,
+    ///List of selections made from decision points. Each selection item corresponds to value keys contained in a specific decision point identified by its namespace, key, and version. Note that selection objects are deliberately minimal objects and do not contain the full decision point details.
+    pub selections: ::std::vec::Vec<Selection>,
+    ///Optional list of identifiers for the item or items (vulnerabilities, reports, advisories, systems, assets, etc.) being evaluated by these selections.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub target_ids: ::std::option::Option<Vec<::std::string::String>>,
+    ///Timestamp of the selections, in RFC 3339 format.
+    pub timestamp: ::chrono::DateTime<::chrono::offset::Utc>,
+}
+impl ::std::convert::From<&DecisionPointValueSelectionList>
+for DecisionPointValueSelectionList {
+    fn from(value: &DecisionPointValueSelectionList) -> Self {
+        value.clone()
+    }
+}
+impl DecisionPointValueSelectionList {
+    pub fn builder() -> builder::DecisionPointValueSelectionList {
+        Default::default()
+    }
+}
+///A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Key",
+///  "description": "A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)",
+///  "examples": [
+///    "E",
+///    "A",
+///    "SI",
+///    "L",
+///    "M",
+///    "H",
+///    "Mixed_case_OK",
+///    "alph4num3ric"
+///  ],
+///  "type": "string",
+///  "minLength": 1,
+///  "pattern": "^(([a-zA-Z0-9])|([a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9])|(T\\*))$"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Key(::std::string::String);
+impl ::std::ops::Deref for Key {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<Key> for ::std::string::String {
+    fn from(value: Key) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&Key> for Key {
+    fn from(value: &Key) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for Key {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        {
+            ::regress::Regex::new(
+                    "^(([a-zA-Z0-9])|([a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9])|(T\\*))$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
+            return Err(
+                "doesn't match pattern \"^(([a-zA-Z0-9])|([a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9])|(T\\*))$\""
+                    .into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Key {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for Key {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Key {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Key {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+/**A minimal representation of a decision point value.
+Intended to parallel the DecisionPointValue object, but with fewer required fields.
+A decision point value is uniquely identified within a decision point by its key.
+Globally, the combination of Decision Point namespace, key, and version coupled with the value key
+uniquely identifies a value across all decision points and values.
+Other required fields in the DecisionPointValue object, such as name and description, are optional here.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "MinimalDecisionPointValue",
+///  "description": "A minimal representation of a decision point value.\nIntended to parallel the DecisionPointValue object, but with fewer required fields.\nA decision point value is uniquely identified within a decision point by its key.\nGlobally, the combination of Decision Point namespace, key, and version coupled with the value key\nuniquely identifies a value across all decision points and values.\nOther required fields in the DecisionPointValue object, such as name and description, are optional here.",
+///  "type": "object",
+///  "required": [
+///    "definition",
+///    "key"
+///  ],
+///  "properties": {
+///    "definition": {
+///      "title": "Definition",
+///      "type": "string"
+///    },
+///    "key": {
+///      "title": "Key",
+///      "description": "A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)",
+///      "examples": [
+///        "E",
+///        "A",
+///        "SI",
+///        "L",
+///        "M",
+///        "H",
+///        "Mixed_case_OK",
+///        "alph4num3ric"
+///      ],
+///      "type": "string",
+///      "minLength": 1,
+///      "pattern": "^(([a-zA-Z0-9])|([a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9])|(T\\*))$"
+///    },
+///    "name": {
+///      "title": "Name",
+///      "type": "string"
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct MinimalDecisionPointValue {
+    pub definition: ::std::string::String,
+    ///A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)
+    pub key: Key,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub name: ::std::option::Option<::std::string::String>,
+}
+impl ::std::convert::From<&MinimalDecisionPointValue> for MinimalDecisionPointValue {
+    fn from(value: &MinimalDecisionPointValue) -> Self {
+        value.clone()
+    }
+}
+impl MinimalDecisionPointValue {
+    pub fn builder() -> builder::MinimalDecisionPointValue {
+        Default::default()
+    }
+}
+///The namespace of the SSVC object.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Namespace",
+///  "description": "The namespace of the SSVC object.",
+///  "examples": [
+///    "ssvc",
+///    "cisa",
+///    "x_example.test#test//.example.test#private-extension",
+///    "ssvc/de-DE/.example.organization#reference-arch-1"
+///  ],
+///  "type": "string",
+///  "maxLength": 1000,
+///  "minLength": 3,
+///  "pattern": "^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Namespace(::std::string::String);
+impl ::std::ops::Deref for Namespace {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<Namespace> for ::std::string::String {
+    fn from(value: Namespace) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&Namespace> for Namespace {
+    fn from(value: &Namespace) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for Namespace {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() > 1000usize {
+            return Err("longer than 1000 characters".into());
+        }
+        if value.chars().count() < 3usize {
+            return Err("shorter than 3 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        {
+            ::regress::Regex::new(
+                    "^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
+            return Err(
+                "doesn't match pattern \"^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$\""
+                    .into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Namespace {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for Namespace {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Namespace {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Namespace {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+/**A reference to a resource that provides additional context about the decision points or selections.
+This object is intentionally minimal and contains only the URL and an optional description.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Reference",
+///  "description": "A reference to a resource that provides additional context about the decision points or selections.\nThis object is intentionally minimal and contains only the URL and an optional description.",
+///  "type": "object",
+///  "required": [
+///    "summary",
+///    "uri"
+///  ],
+///  "properties": {
+///    "summary": {
+///      "title": "Summary",
+///      "type": "string"
+///    },
+///    "uri": {
+///      "title": "Uri",
+///      "type": "string",
+///      "format": "uri",
+///      "minLength": 1
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct Reference {
+    pub summary: ::std::string::String,
+    pub uri: ::std::string::String,
+}
+impl ::std::convert::From<&Reference> for Reference {
+    fn from(value: &Reference) -> Self {
+        value.clone()
+    }
+}
+impl Reference {
+    pub fn builder() -> builder::Reference {
+        Default::default()
+    }
+}
+/**A minimal selection object that contains the decision point ID and the selected values.
+While the Selection object parallels the DecisionPoint object, it is intentionally minimal, with
+fewer required fields and no additional metadata, as it is meant to represent a selection made from a
+previously defined decision point. The expectation is that a Selection object will usually have
+fewer values than the original decision point, as it represents a specific evaluation
+at a specific time and may therefore rule out some values that were previously considered.
+Other fields like name and description may be copied from the decision point, but are not required.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Selection",
+///  "description": "A minimal selection object that contains the decision point ID and the selected values.\nWhile the Selection object parallels the DecisionPoint object, it is intentionally minimal, with\nfewer required fields and no additional metadata, as it is meant to represent a selection made from a\npreviously defined decision point. The expectation is that a Selection object will usually have\nfewer values than the original decision point, as it represents a specific evaluation\nat a specific time and may therefore rule out some values that were previously considered.\nOther fields like name and description may be copied from the decision point, but are not required.",
+///  "type": "object",
+///  "required": [
+///    "definition",
+///    "key",
+///    "namespace",
+///    "values",
+///    "version"
+///  ],
+///  "properties": {
+///    "definition": {
+///      "title": "Definition",
+///      "type": "string"
+///    },
+///    "key": {
+///      "title": "Key",
+///      "description": "A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)",
+///      "examples": [
+///        "E",
+///        "A",
+///        "SI",
+///        "L",
+///        "M",
+///        "H",
+///        "Mixed_case_OK",
+///        "alph4num3ric"
+///      ],
+///      "type": "string",
+///      "minLength": 1,
+///      "pattern": "^(([a-zA-Z0-9])|([a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9])|(T\\*))$"
+///    },
+///    "name": {
+///      "title": "Name",
+///      "type": "string"
+///    },
+///    "namespace": {
+///      "title": "Namespace",
+///      "description": "The namespace of the SSVC object.",
+///      "examples": [
+///        "ssvc",
+///        "cisa",
+///        "x_example.test#test//.example.test#private-extension",
+///        "ssvc/de-DE/.example.organization#reference-arch-1"
+///      ],
+///      "type": "string",
+///      "maxLength": 1000,
+///      "minLength": 3,
+///      "pattern": "^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$"
+///    },
+///    "values": {
+///      "title": "Values",
+///      "description": "A list of selected value keys from the decision point values.",
+///      "examples": [
+///        [
+///          {
+///            "key": "N"
+///          },
+///          {
+///            "key": "Y"
+///          }
+///        ],
+///        [
+///          {
+///            "key": "A"
+///          },
+///          {
+///            "key": "B"
+///          },
+///          {
+///            "key": "C"
+///          }
+///        ]
+///      ],
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/MinimalDecisionPointValue"
+///      },
+///      "minItems": 1
+///    },
+///    "version": {
+///      "title": "Version",
+///      "description": "The version of the SSVC object. This must be a valid semantic version string.",
+///      "examples": [
+///        "1.0.0",
+///        "2.1.3"
+///      ],
+///      "type": "string",
+///      "minLength": 5,
+///      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct Selection {
+    pub definition: ::std::string::String,
+    ///A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)
+    pub key: Key,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub name: ::std::option::Option<::std::string::String>,
+    ///The namespace of the SSVC object.
+    pub namespace: Namespace,
+    ///A list of selected value keys from the decision point values.
+    pub values: ::std::vec::Vec<MinimalDecisionPointValue>,
+    ///The version of the SSVC object. This must be a valid semantic version string.
+    pub version: Version,
+}
+impl ::std::convert::From<&Selection> for Selection {
+    fn from(value: &Selection) -> Self {
+        value.clone()
+    }
+}
+impl Selection {
+    pub fn builder() -> builder::Selection {
+        Default::default()
+    }
+}
+///The version of the SSVC object. This must be a valid semantic version string.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Version",
+///  "description": "The version of the SSVC object. This must be a valid semantic version string.",
+///  "examples": [
+///    "1.0.0",
+///    "2.1.3"
+///  ],
+///  "type": "string",
+///  "minLength": 5,
+///  "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Version(::std::string::String);
+impl ::std::ops::Deref for Version {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<Version> for ::std::string::String {
+    fn from(value: Version) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&Version> for Version {
+    fn from(value: &Version) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for Version {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 5usize {
+            return Err("shorter than 5 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        {
+            ::regress::Regex::new(
+                    "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
+            return Err(
+                "doesn't match pattern \"^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$\""
+                    .into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Version {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for Version {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Version {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Version {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+/// Types for composing complex structures.
+pub mod builder {
+    #[derive(Clone, Debug)]
+    pub struct DecisionPointValueSelectionList {
+        decision_point_resources: ::std::result::Result<
+            ::std::vec::Vec<super::Reference>,
+            ::std::string::String,
+        >,
+        references: ::std::result::Result<
+            ::std::vec::Vec<super::Reference>,
+            ::std::string::String,
+        >,
+        schema_version: ::std::result::Result<
+            ::std::string::String,
+            ::std::string::String,
+        >,
+        selections: ::std::result::Result<
+            ::std::vec::Vec<super::Selection>,
+            ::std::string::String,
+        >,
+        target_ids: ::std::result::Result<
+            ::std::option::Option<Vec<::std::string::String>>,
+            ::std::string::String,
+        >,
+        timestamp: ::std::result::Result<
+            ::chrono::DateTime<::chrono::offset::Utc>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for DecisionPointValueSelectionList {
+        fn default() -> Self {
+            Self {
+                decision_point_resources: Ok(Default::default()),
+                references: Ok(Default::default()),
+                schema_version: Err("no value supplied for schema_version".to_string()),
+                selections: Err("no value supplied for selections".to_string()),
+                target_ids: Ok(Default::default()),
+                timestamp: Err("no value supplied for timestamp".to_string()),
+            }
+        }
+    }
+    impl DecisionPointValueSelectionList {
+        pub fn decision_point_resources<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Reference>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.decision_point_resources = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for decision_point_resources: {}",
+                        e
+                    )
+                });
+            self
+        }
+        pub fn references<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Reference>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.references = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for references: {}", e)
+                });
+            self
+        }
+        pub fn schema_version<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.schema_version = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for schema_version: {}", e)
+                });
+            self
+        }
+        pub fn selections<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Selection>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.selections = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for selections: {}", e)
+                });
+            self
+        }
+        pub fn target_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<::std::string::String>>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.target_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for target_ids: {}", e)
+                });
+            self
+        }
+        pub fn timestamp<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.timestamp = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for timestamp: {}", e)
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<DecisionPointValueSelectionList>
+    for super::DecisionPointValueSelectionList {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: DecisionPointValueSelectionList,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                decision_point_resources: value.decision_point_resources?,
+                references: value.references?,
+                schema_version: value.schema_version?,
+                selections: value.selections?,
+                target_ids: value.target_ids?,
+                timestamp: value.timestamp?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::DecisionPointValueSelectionList>
+    for DecisionPointValueSelectionList {
+        fn from(value: super::DecisionPointValueSelectionList) -> Self {
+            Self {
+                decision_point_resources: Ok(value.decision_point_resources),
+                references: Ok(value.references),
+                schema_version: Ok(value.schema_version),
+                selections: Ok(value.selections),
+                target_ids: Ok(value.target_ids),
+                timestamp: Ok(value.timestamp),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct MinimalDecisionPointValue {
+        definition: ::std::result::Result<::std::string::String, ::std::string::String>,
+        key: ::std::result::Result<super::Key, ::std::string::String>,
+        name: ::std::result::Result<
+            ::std::option::Option<::std::string::String>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for MinimalDecisionPointValue {
+        fn default() -> Self {
+            Self {
+                definition: Err("no value supplied for definition".to_string()),
+                key: Err("no value supplied for key".to_string()),
+                name: Ok(Default::default()),
+            }
+        }
+    }
+    impl MinimalDecisionPointValue {
+        pub fn definition<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.definition = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for definition: {}", e)
+                });
+            self
+        }
+        pub fn key<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Key>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.key = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for key: {}", e));
+            self
+        }
+        pub fn name<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.name = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for name: {}", e));
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<MinimalDecisionPointValue>
+    for super::MinimalDecisionPointValue {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: MinimalDecisionPointValue,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                definition: value.definition?,
+                key: value.key?,
+                name: value.name?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::MinimalDecisionPointValue>
+    for MinimalDecisionPointValue {
+        fn from(value: super::MinimalDecisionPointValue) -> Self {
+            Self {
+                definition: Ok(value.definition),
+                key: Ok(value.key),
+                name: Ok(value.name),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct Reference {
+        summary: ::std::result::Result<::std::string::String, ::std::string::String>,
+        uri: ::std::result::Result<::std::string::String, ::std::string::String>,
+    }
+    impl ::std::default::Default for Reference {
+        fn default() -> Self {
+            Self {
+                summary: Err("no value supplied for summary".to_string()),
+                uri: Err("no value supplied for uri".to_string()),
+            }
+        }
+    }
+    impl Reference {
+        pub fn summary<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.summary = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {}", e)
+                });
+            self
+        }
+        pub fn uri<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.uri = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for uri: {}", e));
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<Reference> for super::Reference {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: Reference,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                summary: value.summary?,
+                uri: value.uri?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::Reference> for Reference {
+        fn from(value: super::Reference) -> Self {
+            Self {
+                summary: Ok(value.summary),
+                uri: Ok(value.uri),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct Selection {
+        definition: ::std::result::Result<::std::string::String, ::std::string::String>,
+        key: ::std::result::Result<super::Key, ::std::string::String>,
+        name: ::std::result::Result<
+            ::std::option::Option<::std::string::String>,
+            ::std::string::String,
+        >,
+        namespace: ::std::result::Result<super::Namespace, ::std::string::String>,
+        values: ::std::result::Result<
+            ::std::vec::Vec<super::MinimalDecisionPointValue>,
+            ::std::string::String,
+        >,
+        version: ::std::result::Result<super::Version, ::std::string::String>,
+    }
+    impl ::std::default::Default for Selection {
+        fn default() -> Self {
+            Self {
+                definition: Err("no value supplied for definition".to_string()),
+                key: Err("no value supplied for key".to_string()),
+                name: Ok(Default::default()),
+                namespace: Err("no value supplied for namespace".to_string()),
+                values: Err("no value supplied for values".to_string()),
+                version: Err("no value supplied for version".to_string()),
+            }
+        }
+    }
+    impl Selection {
+        pub fn definition<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.definition = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for definition: {}", e)
+                });
+            self
+        }
+        pub fn key<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Key>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.key = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for key: {}", e));
+            self
+        }
+        pub fn name<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.name = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for name: {}", e));
+            self
+        }
+        pub fn namespace<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Namespace>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.namespace = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for namespace: {}", e)
+                });
+            self
+        }
+        pub fn values<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::vec::Vec<super::MinimalDecisionPointValue>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.values = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for values: {}", e)
+                });
+            self
+        }
+        pub fn version<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::Version>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.version = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for version: {}", e)
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<Selection> for super::Selection {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: Selection,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                definition: value.definition?,
+                key: value.key?,
+                name: value.name?,
+                namespace: value.namespace?,
+                values: value.values?,
+                version: value.version?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::Selection> for Selection {
+        fn from(value: super::Selection) -> Self {
+            Self {
+                definition: Ok(value.definition),
+                key: Ok(value.key),
+                name: Ok(value.name),
+                namespace: Ok(value.namespace),
+                values: Ok(value.values),
+                version: Ok(value.version),
+            }
+        }
+    }
+}

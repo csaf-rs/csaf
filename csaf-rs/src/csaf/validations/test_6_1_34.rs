@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{BranchTrait, CsafTrait, ProductTreeTrait};
+use crate::csaf::csaf_traits::{BranchTrait, CsafTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
 
 static MAX_DEPTH: u32 = 30;

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 use packageurl::PackageUrl;
-use crate::csaf::getter_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
+use crate::csaf::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_42_purl_consistency(

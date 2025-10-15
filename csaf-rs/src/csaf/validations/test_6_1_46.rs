@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_46_invalid_ssvc(
@@ -8,12 +8,14 @@ pub fn test_6_1_46_invalid_ssvc(
     for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
-                m.get_content().get_ssvc_v1().map_err(|e| {
-                    ValidationError {
-                        message: format!("Invalid SSVC object: {}", e),
-                        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1", i_v, i_m),
-                    }
-                })?;
+                if m.get_content().has_ssvc() {
+                    m.get_content().get_ssvc().map_err(|e| {
+                        ValidationError {
+                            message: format!("Invalid SSVC object: {}", e),
+                            instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1", i_v, i_m),
+                        }
+                    })?;
+                }
             }
         }
     }

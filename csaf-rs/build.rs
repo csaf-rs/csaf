@@ -31,20 +31,20 @@ fn main() -> Result<(), BuildError> {
             Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
         ),
         (
-            "assets/Decision_Point_Value_Selection-2-0-0.schema.json",
-            "csaf/csaf2_1/ssvc_v2.rs",
-            None,
-        ),
-        (
             "assets/csaf_2.1_json_schema.json",
             "csaf/csaf2_1/schema.rs",
             Some(&fix_2_1_schema),
         ),
         (
-            "assets/decision_point_1.0.1_json_schema.json",
-            "csaf/csaf2_1/ssvc_dp_schema.rs",
+            "assets/decision_point_json_schema.json",
+            "csaf/csaf2_1/ssvc_dp.rs",
             None,
-        )
+        ),
+        (
+            "assets/decision_point_selection_list_json_schema.json",
+            "csaf/csaf2_1/ssvc_dp_selection_list.rs",
+            None,
+        ),
     ];
 
     // Register watching for all inputs

@@ -1,6 +1,6 @@
 use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
 use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21};
-use crate::csaf::csaf2_1::ssvc_v2::DecisionPointValueSelectionList as SsvcV2Selection;
+use crate::csaf::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::csaf::csaf_traits::{BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds};
 use crate::csaf::validation::ValidationError;
 use serde::de::Error;
@@ -104,7 +104,7 @@ impl ContentTrait for Score {
         false
     }
 
-    fn get_ssvc(&self) -> Result<SsvcV2Selection, serde_json::Error> {
+    fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error> {
         Err(serde_json::Error::custom("SSVC metrics are not implemented in CSAF 2.0"))
     }
 

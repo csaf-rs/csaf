@@ -3,7 +3,7 @@ use crate::csaf::csaf_traits::{BranchTrait, CsafTrait, DistributionTrait, Docume
 use std::ops::Deref;
 use serde_json::{Map, Value};
 use uuid::Uuid;
-use crate::csaf::csaf2_1::ssvc_v2::DecisionPointValueSelectionList as SsvcV2Selection;
+use crate::csaf::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::csaf::validation::ValidationError;
 
 impl WithGroupIds for Remediation {
@@ -85,8 +85,8 @@ impl ContentTrait for Content {
         !self.ssvc_v2.is_empty()
     }
 
-    fn get_ssvc(&self) -> Result<SsvcV2Selection, serde_json::Error> {
-        Ok(serde_json::from_value::<SsvcV2Selection>(Value::Object(self.ssvc_v2.clone()))?)
+    fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error> {
+        Ok(serde_json::from_value::<SelectionList>(Value::Object(self.ssvc_v2.clone()))?)
     }
 
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {

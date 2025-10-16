@@ -1,4 +1,4 @@
-use crate::csaf::csaf2_1::ssvc_dp_schema::DecisionPoint;
+use crate::csaf::csaf2_1::ssvc_dp::DecisionPoint;
 use crate::csaf::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use rust_embed::RustEmbed;
 use std::collections::{BTreeSet, HashMap, HashSet};
@@ -72,10 +72,15 @@ pub static SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String, String), Deci
             let content = std::str::from_utf8(&file.data).unwrap();
             match serde_json::from_str::<DecisionPoint>(content) {
                 Ok(dp) => {
-                    println!("Loaded SSVC decision point '{}' (version {})", dp.name.deref(), dp.version.deref());
+                    println!(
+                        "Loaded SSVC decision point '{}' ({}, version {})",
+                        dp.key.deref(),
+                        dp.name.deref(),
+                        dp.version.deref()
+                    );
                     let key = (
                         dp.namespace.deref().to_owned(),
-                        dp.name.deref().to_owned(),
+                        dp.key.deref().to_owned(),
                         dp.version.deref().to_owned(),
                     );
                     decision_points.insert(key, dp);
@@ -90,13 +95,13 @@ pub static SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String, String), Deci
 
 /// Derives lookup maps for all observed SSVC decision points that can be used
 /// to verify the order of values within the respective decision points.
-pub static DP_VAL_LOOKUP: LazyLock<HashMap<(String, String, String), HashMap<String, i32>>> = LazyLock::new(|| {
+pub static DP_VAL_KEYS_LOOKUP: LazyLock<HashMap<(String, String, String), HashMap<String, i32>>> = LazyLock::new(|| {
     let mut lookups = HashMap::new();
 
     for (key, dp) in SSVC_DECISION_POINTS.iter() {
         let mut lookup_map = HashMap::new();
         for (i, v) in dp.values.iter().enumerate() {
-            lookup_map.insert(v.name.deref().to_owned(), i as i32);
+            lookup_map.insert(v.key.deref().to_owned(), i as i32);
         }
         lookups.insert(key.clone(), lookup_map);
     }

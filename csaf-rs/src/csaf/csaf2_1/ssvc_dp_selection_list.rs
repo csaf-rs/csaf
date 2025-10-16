@@ -30,142 +30,82 @@ pub mod error {
         }
     }
 }
-///This schema defines the structure for representing selected values from SSVC Decision Points. Each selection list can have multiple selection objects, each representing a decision point, and each selection object can have multiple selected values when full certainty (i.e., a singular value selection) is not available.
+///`Definition`
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "$id": "https://certcc.github.io/SSVC/data/schema/v2/Decision_Point_Value_Selection-2-0-0.schema.json",
-///  "title": "Decision Point Value Selection List",
-///  "description": "This schema defines the structure for representing selected values from SSVC Decision Points. Each selection list can have multiple selection objects, each representing a decision point, and each selection object can have multiple selected values when full certainty (i.e., a singular value selection) is not available.",
-///  "type": "object",
-///  "required": [
-///    "schemaVersion",
-///    "selections",
-///    "timestamp"
-///  ],
-///  "properties": {
-///    "decision_point_resources": {
-///      "title": "Decision Point Resources",
-///      "description": "A list of resources that provide additional context about the decision points found in this selection.",
-///      "examples": [
-///        [
-///          {
-///            "summary": "Documentation for a set of decision points",
-///            "uri": "https://example.com/decision_points"
-///          },
-///          {
-///            "summary": "JSON representation of decision point 2",
-///            "uri": "https://example.org/definitions/dp2.json"
-///          },
-///          {
-///            "summary": "A JSON file containing extension decision points in the x_com.example namespace",
-///            "uri": "https://example.com/ssvc/x_com.example/decision_points.json"
-///          }
-///        ]
-///      ],
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/Reference"
-///      },
-///      "minItems": 1
-///    },
-///    "references": {
-///      "title": "References",
-///      "description": "A list of references that provide additional context about the specific values selected.",
-///      "examples": [
-///        [
-///          {
-///            "summary": "A report on which the selections were based",
-///            "uri": "https://example.com/report"
-///          }
-///        ]
-///      ],
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/Reference"
-///      },
-///      "minItems": 1
-///    },
-///    "schemaVersion": {
-///      "title": "Schemaversion",
-///      "description": "The schema version of this selection list.",
-///      "type": "string",
-///      "const": "2.0.0"
-///    },
-///    "selections": {
-///      "title": "Selections",
-///      "description": "List of selections made from decision points. Each selection item corresponds to value keys contained in a specific decision point identified by its namespace, key, and version. Note that selection objects are deliberately minimal objects and do not contain the full decision point details.",
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/Selection"
-///      },
-///      "minItems": 1
-///    },
-///    "target_ids": {
-///      "title": "Target Ids",
-///      "description": "Optional list of identifiers for the item or items (vulnerabilities, reports, advisories, systems, assets, etc.) being evaluated by these selections.",
-///      "examples": [
-///        [
-///          "CVE-1900-0000"
-///        ],
-///        [
-///          "VU#999999",
-///          "GHSA-0123-4567-89ab"
-///        ]
-///      ],
-///      "type": "array",
-///      "items": {
-///        "type": "string"
-///      },
-///      "minItems": 1,
-///      "uniqueItems": true
-///    },
-///    "timestamp": {
-///      "title": "Timestamp",
-///      "description": "Timestamp of the selections, in RFC 3339 format.",
-///      "examples": [
-///        "2025-01-01T12:00:00Z",
-///        "2025-01-02T15:30:45-04:00"
-///      ],
-///      "type": "string",
-///      "format": "date-time"
-///    }
-///  },
-///  "additionalProperties": false
+///  "title": "Definition",
+///  "type": "string",
+///  "minLength": 1
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
-#[serde(deny_unknown_fields)]
-pub struct DecisionPointValueSelectionList {
-    ///A list of resources that provide additional context about the decision points found in this selection.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub decision_point_resources: ::std::vec::Vec<Reference>,
-    ///A list of references that provide additional context about the specific values selected.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub references: ::std::vec::Vec<Reference>,
-    ///The schema version of this selection list.
-    #[serde(rename = "schemaVersion")]
-    pub schema_version: ::std::string::String,
-    ///List of selections made from decision points. Each selection item corresponds to value keys contained in a specific decision point identified by its namespace, key, and version. Note that selection objects are deliberately minimal objects and do not contain the full decision point details.
-    pub selections: ::std::vec::Vec<Selection>,
-    ///Optional list of identifiers for the item or items (vulnerabilities, reports, advisories, systems, assets, etc.) being evaluated by these selections.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub target_ids: ::std::option::Option<Vec<::std::string::String>>,
-    ///Timestamp of the selections, in RFC 3339 format.
-    pub timestamp: ::chrono::DateTime<::chrono::offset::Utc>,
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Definition(::std::string::String);
+impl ::std::ops::Deref for Definition {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
 }
-impl ::std::convert::From<&DecisionPointValueSelectionList>
-for DecisionPointValueSelectionList {
-    fn from(value: &DecisionPointValueSelectionList) -> Self {
+impl ::std::convert::From<Definition> for ::std::string::String {
+    fn from(value: Definition) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&Definition> for Definition {
+    fn from(value: &Definition) -> Self {
         value.clone()
     }
 }
-impl DecisionPointValueSelectionList {
-    pub fn builder() -> builder::DecisionPointValueSelectionList {
-        Default::default()
+impl ::std::str::FromStr for Definition {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Definition {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for Definition {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Definition {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Definition {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
     }
 }
 ///A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)
@@ -286,13 +226,13 @@ Other required fields in the DecisionPointValue object, such as name and descrip
 ///  "description": "A minimal representation of a decision point value.\nIntended to parallel the DecisionPointValue object, but with fewer required fields.\nA decision point value is uniquely identified within a decision point by its key.\nGlobally, the combination of Decision Point namespace, key, and version coupled with the value key\nuniquely identifies a value across all decision points and values.\nOther required fields in the DecisionPointValue object, such as name and description, are optional here.",
 ///  "type": "object",
 ///  "required": [
-///    "definition",
 ///    "key"
 ///  ],
 ///  "properties": {
 ///    "definition": {
 ///      "title": "Definition",
-///      "type": "string"
+///      "type": "string",
+///      "minLength": 1
 ///    },
 ///    "key": {
 ///      "title": "Key",
@@ -313,7 +253,8 @@ Other required fields in the DecisionPointValue object, such as name and descrip
 ///    },
 ///    "name": {
 ///      "title": "Name",
-///      "type": "string"
+///      "type": "string",
+///      "minLength": 1
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -323,11 +264,12 @@ Other required fields in the DecisionPointValue object, such as name and descrip
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct MinimalDecisionPointValue {
-    pub definition: ::std::string::String,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub definition: ::std::option::Option<Definition>,
     ///A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)
     pub key: Key,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub name: ::std::option::Option<::std::string::String>,
+    pub name: ::std::option::Option<Name>,
 }
 impl ::std::convert::From<&MinimalDecisionPointValue> for MinimalDecisionPointValue {
     fn from(value: &MinimalDecisionPointValue) -> Self {
@@ -337,6 +279,84 @@ impl ::std::convert::From<&MinimalDecisionPointValue> for MinimalDecisionPointVa
 impl MinimalDecisionPointValue {
     pub fn builder() -> builder::MinimalDecisionPointValue {
         Default::default()
+    }
+}
+///`Name`
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Name",
+///  "type": "string",
+///  "minLength": 1
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Name(::std::string::String);
+impl ::std::ops::Deref for Name {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<Name> for ::std::string::String {
+    fn from(value: Name) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<&Name> for Name {
+    fn from(value: &Name) -> Self {
+        value.clone()
+    }
+}
+impl ::std::str::FromStr for Name {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Name {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for Name {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Name {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Name {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
     }
 }
 ///The namespace of the SSVC object.
@@ -356,7 +376,7 @@ impl MinimalDecisionPointValue {
 ///  "type": "string",
 ///  "maxLength": 1000,
 ///  "minLength": 3,
-///  "pattern": "^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$"
+///  "pattern": "^(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$"
 ///}
 /// ```
 /// </details>
@@ -393,13 +413,13 @@ impl ::std::str::FromStr for Namespace {
         static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
             ::regress::Regex::new(
-                    "^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$",
+                    "^(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$",
                 )
                 .unwrap()
         });
         if PATTERN.find(value).is_none() {
             return Err(
-                "doesn't match pattern \"^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$\""
+                "doesn't match pattern \"^(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$\""
                     .into(),
             );
         }
@@ -504,7 +524,6 @@ Other fields like name and description may be copied from the decision point, bu
 ///  "description": "A minimal selection object that contains the decision point ID and the selected values.\nWhile the Selection object parallels the DecisionPoint object, it is intentionally minimal, with\nfewer required fields and no additional metadata, as it is meant to represent a selection made from a\npreviously defined decision point. The expectation is that a Selection object will usually have\nfewer values than the original decision point, as it represents a specific evaluation\nat a specific time and may therefore rule out some values that were previously considered.\nOther fields like name and description may be copied from the decision point, but are not required.",
 ///  "type": "object",
 ///  "required": [
-///    "definition",
 ///    "key",
 ///    "namespace",
 ///    "values",
@@ -513,7 +532,8 @@ Other fields like name and description may be copied from the decision point, bu
 ///  "properties": {
 ///    "definition": {
 ///      "title": "Definition",
-///      "type": "string"
+///      "type": "string",
+///      "minLength": 1
 ///    },
 ///    "key": {
 ///      "title": "Key",
@@ -534,7 +554,8 @@ Other fields like name and description may be copied from the decision point, bu
 ///    },
 ///    "name": {
 ///      "title": "Name",
-///      "type": "string"
+///      "type": "string",
+///      "minLength": 1
 ///    },
 ///    "namespace": {
 ///      "title": "Namespace",
@@ -548,7 +569,7 @@ Other fields like name and description may be copied from the decision point, bu
 ///      "type": "string",
 ///      "maxLength": 1000,
 ///      "minLength": 3,
-///      "pattern": "^(?=.{3,1000}$)(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+\\#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$"
+///      "pattern": "^(x_([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|[a-z]([a-z]|[0-9])(((\\.|-))?(([a-z]|[0-9]))+)+(#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)?)((/|/(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo))((/((([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)|\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*|\\.(([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+|([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?(\\.([a-z]|[0-9])(((([a-z]|[0-9])|-)){0,61}([a-z]|[0-9]))?)+#(([a-z]|[0-9]))+((\\.|-)(([a-z]|[0-9]))+)*)\\$(([a-zA-Z]{2,3}(-[a-zA-Z]{3}(-[a-zA-Z]{3}){0,2})?|[a-zA-Z]{4,8})(-[a-zA-Z]{4})?(-([a-zA-Z]{2}|[0-9]{3}))?(-(([a-zA-Z0-9]){5,8}|[0-9]([a-zA-Z0-9]){3}))*(-[0-9A-WY-Za-wy-z](-([a-zA-Z0-9]){2,8})+)*(-[xX](-([a-zA-Z0-9]){2,8})+)?|[xX](-([a-zA-Z0-9]){2,8})+|i-default|i-mingo)))+)?)?$"
 ///    },
 ///    "values": {
 ///      "title": "Values",
@@ -599,11 +620,12 @@ Other fields like name and description may be copied from the decision point, bu
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Selection {
-    pub definition: ::std::string::String,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub definition: ::std::option::Option<Definition>,
     ///A short, non-empty string identifier for the object. Keys must start with an alphanumeric, contain only alphanumerics and `_`, and end with an alphanumeric.(`T*` is explicitly grandfathered in as a valid key, but should not be used for new objects.)
     pub key: Key,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub name: ::std::option::Option<::std::string::String>,
+    pub name: ::std::option::Option<Name>,
     ///The namespace of the SSVC object.
     pub namespace: Namespace,
     ///A list of selected value keys from the decision point values.
@@ -618,6 +640,143 @@ impl ::std::convert::From<&Selection> for Selection {
 }
 impl Selection {
     pub fn builder() -> builder::Selection {
+        Default::default()
+    }
+}
+///This schema defines the structure to represent an SSVC SelectionList object.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "$id": "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json",
+///  "title": "SelectionList",
+///  "description": "This schema defines the structure to represent an SSVC SelectionList object.",
+///  "type": "object",
+///  "required": [
+///    "schemaVersion",
+///    "selections",
+///    "timestamp"
+///  ],
+///  "properties": {
+///    "decision_point_resources": {
+///      "title": "Decision Point Resources",
+///      "description": "A list of resources that provide additional context about the decision points found in this selection.",
+///      "examples": [
+///        [
+///          {
+///            "summary": "Documentation for a set of decision points",
+///            "uri": "https://example.com/decision_points"
+///          },
+///          {
+///            "summary": "JSON representation of decision point 2",
+///            "uri": "https://example.org/definitions/dp2.json"
+///          },
+///          {
+///            "summary": "A JSON file containing extension decision points in the x_com.example namespace",
+///            "uri": "https://example.com/ssvc/x_com.example/decision_points.json"
+///          }
+///        ]
+///      ],
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/Reference"
+///      },
+///      "minItems": 1
+///    },
+///    "references": {
+///      "title": "References",
+///      "description": "A list of references that provide additional context about the specific values selected.",
+///      "examples": [
+///        [
+///          {
+///            "summary": "A report on which the selections were based",
+///            "uri": "https://example.com/report"
+///          }
+///        ]
+///      ],
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/Reference"
+///      },
+///      "minItems": 1
+///    },
+///    "schemaVersion": {
+///      "title": "Schemaversion",
+///      "description": "The schema version of this selection list.",
+///      "type": "string",
+///      "const": "2.0.0"
+///    },
+///    "selections": {
+///      "title": "Selections",
+///      "description": "List of selections made from decision points. Each selection item corresponds to value keys contained in a specific decision point identified by its namespace, key, and version. Note that selection objects are deliberately minimal objects and do not contain the full decision point details.",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/Selection"
+///      },
+///      "minItems": 1
+///    },
+///    "target_ids": {
+///      "title": "Target Ids",
+///      "description": "Optional list of identifiers for the item or items (vulnerabilities, reports, advisories, systems, assets, etc.) being evaluated by these selections.",
+///      "examples": [
+///        [
+///          "CVE-1900-0000"
+///        ],
+///        [
+///          "VU#999999",
+///          "GHSA-0123-4567-89ab"
+///        ]
+///      ],
+///      "type": "array",
+///      "items": {
+///        "type": "string"
+///      },
+///      "minItems": 1,
+///      "uniqueItems": true
+///    },
+///    "timestamp": {
+///      "title": "Timestamp",
+///      "description": "Timestamp of the selections, in RFC 3339 format.",
+///      "examples": [
+///        "2025-01-01T12:00:00Z",
+///        "2025-01-02T15:30:45-04:00"
+///      ],
+///      "type": "string",
+///      "format": "date-time"
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SelectionList {
+    ///A list of resources that provide additional context about the decision points found in this selection.
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub decision_point_resources: ::std::vec::Vec<Reference>,
+    ///A list of references that provide additional context about the specific values selected.
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub references: ::std::vec::Vec<Reference>,
+    ///The schema version of this selection list.
+    #[serde(rename = "schemaVersion")]
+    pub schema_version: ::std::string::String,
+    ///List of selections made from decision points. Each selection item corresponds to value keys contained in a specific decision point identified by its namespace, key, and version. Note that selection objects are deliberately minimal objects and do not contain the full decision point details.
+    pub selections: ::std::vec::Vec<Selection>,
+    ///Optional list of identifiers for the item or items (vulnerabilities, reports, advisories, systems, assets, etc.) being evaluated by these selections.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub target_ids: ::std::option::Option<Vec<::std::string::String>>,
+    ///Timestamp of the selections, in RFC 3339 format.
+    pub timestamp: ::chrono::DateTime<::chrono::offset::Utc>,
+}
+impl ::std::convert::From<&SelectionList> for SelectionList {
+    fn from(value: &SelectionList) -> Self {
+        value.clone()
+    }
+}
+impl SelectionList {
+    pub fn builder() -> builder::SelectionList {
         Default::default()
     }
 }
@@ -721,165 +880,21 @@ impl<'de> ::serde::Deserialize<'de> for Version {
 /// Types for composing complex structures.
 pub mod builder {
     #[derive(Clone, Debug)]
-    pub struct DecisionPointValueSelectionList {
-        decision_point_resources: ::std::result::Result<
-            ::std::vec::Vec<super::Reference>,
-            ::std::string::String,
-        >,
-        references: ::std::result::Result<
-            ::std::vec::Vec<super::Reference>,
-            ::std::string::String,
-        >,
-        schema_version: ::std::result::Result<
-            ::std::string::String,
-            ::std::string::String,
-        >,
-        selections: ::std::result::Result<
-            ::std::vec::Vec<super::Selection>,
-            ::std::string::String,
-        >,
-        target_ids: ::std::result::Result<
-            ::std::option::Option<Vec<::std::string::String>>,
-            ::std::string::String,
-        >,
-        timestamp: ::std::result::Result<
-            ::chrono::DateTime<::chrono::offset::Utc>,
-            ::std::string::String,
-        >,
-    }
-    impl ::std::default::Default for DecisionPointValueSelectionList {
-        fn default() -> Self {
-            Self {
-                decision_point_resources: Ok(Default::default()),
-                references: Ok(Default::default()),
-                schema_version: Err("no value supplied for schema_version".to_string()),
-                selections: Err("no value supplied for selections".to_string()),
-                target_ids: Ok(Default::default()),
-                timestamp: Err("no value supplied for timestamp".to_string()),
-            }
-        }
-    }
-    impl DecisionPointValueSelectionList {
-        pub fn decision_point_resources<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::Reference>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.decision_point_resources = value
-                .try_into()
-                .map_err(|e| {
-                    format!(
-                        "error converting supplied value for decision_point_resources: {}",
-                        e
-                    )
-                });
-            self
-        }
-        pub fn references<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::Reference>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.references = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for references: {}", e)
-                });
-            self
-        }
-        pub fn schema_version<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::string::String>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.schema_version = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for schema_version: {}", e)
-                });
-            self
-        }
-        pub fn selections<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::Selection>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.selections = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for selections: {}", e)
-                });
-            self
-        }
-        pub fn target_ids<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<
-                ::std::option::Option<Vec<::std::string::String>>,
-            >,
-            T::Error: ::std::fmt::Display,
-        {
-            self.target_ids = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for target_ids: {}", e)
-                });
-            self
-        }
-        pub fn timestamp<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.timestamp = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for timestamp: {}", e)
-                });
-            self
-        }
-    }
-    impl ::std::convert::TryFrom<DecisionPointValueSelectionList>
-    for super::DecisionPointValueSelectionList {
-        type Error = super::error::ConversionError;
-        fn try_from(
-            value: DecisionPointValueSelectionList,
-        ) -> ::std::result::Result<Self, super::error::ConversionError> {
-            Ok(Self {
-                decision_point_resources: value.decision_point_resources?,
-                references: value.references?,
-                schema_version: value.schema_version?,
-                selections: value.selections?,
-                target_ids: value.target_ids?,
-                timestamp: value.timestamp?,
-            })
-        }
-    }
-    impl ::std::convert::From<super::DecisionPointValueSelectionList>
-    for DecisionPointValueSelectionList {
-        fn from(value: super::DecisionPointValueSelectionList) -> Self {
-            Self {
-                decision_point_resources: Ok(value.decision_point_resources),
-                references: Ok(value.references),
-                schema_version: Ok(value.schema_version),
-                selections: Ok(value.selections),
-                target_ids: Ok(value.target_ids),
-                timestamp: Ok(value.timestamp),
-            }
-        }
-    }
-    #[derive(Clone, Debug)]
     pub struct MinimalDecisionPointValue {
-        definition: ::std::result::Result<::std::string::String, ::std::string::String>,
+        definition: ::std::result::Result<
+            ::std::option::Option<super::Definition>,
+            ::std::string::String,
+        >,
         key: ::std::result::Result<super::Key, ::std::string::String>,
         name: ::std::result::Result<
-            ::std::option::Option<::std::string::String>,
+            ::std::option::Option<super::Name>,
             ::std::string::String,
         >,
     }
     impl ::std::default::Default for MinimalDecisionPointValue {
         fn default() -> Self {
             Self {
-                definition: Err("no value supplied for definition".to_string()),
+                definition: Ok(Default::default()),
                 key: Err("no value supplied for key".to_string()),
                 name: Ok(Default::default()),
             }
@@ -888,7 +903,7 @@ pub mod builder {
     impl MinimalDecisionPointValue {
         pub fn definition<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::string::String>,
+            T: ::std::convert::TryInto<::std::option::Option<super::Definition>>,
             T::Error: ::std::fmt::Display,
         {
             self.definition = value
@@ -910,7 +925,7 @@ pub mod builder {
         }
         pub fn name<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+            T: ::std::convert::TryInto<::std::option::Option<super::Name>>,
             T::Error: ::std::fmt::Display,
         {
             self.name = value
@@ -1000,10 +1015,13 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Selection {
-        definition: ::std::result::Result<::std::string::String, ::std::string::String>,
+        definition: ::std::result::Result<
+            ::std::option::Option<super::Definition>,
+            ::std::string::String,
+        >,
         key: ::std::result::Result<super::Key, ::std::string::String>,
         name: ::std::result::Result<
-            ::std::option::Option<::std::string::String>,
+            ::std::option::Option<super::Name>,
             ::std::string::String,
         >,
         namespace: ::std::result::Result<super::Namespace, ::std::string::String>,
@@ -1016,7 +1034,7 @@ pub mod builder {
     impl ::std::default::Default for Selection {
         fn default() -> Self {
             Self {
-                definition: Err("no value supplied for definition".to_string()),
+                definition: Ok(Default::default()),
                 key: Err("no value supplied for key".to_string()),
                 name: Ok(Default::default()),
                 namespace: Err("no value supplied for namespace".to_string()),
@@ -1028,7 +1046,7 @@ pub mod builder {
     impl Selection {
         pub fn definition<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::string::String>,
+            T: ::std::convert::TryInto<::std::option::Option<super::Definition>>,
             T::Error: ::std::fmt::Display,
         {
             self.definition = value
@@ -1050,7 +1068,7 @@ pub mod builder {
         }
         pub fn name<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+            T: ::std::convert::TryInto<::std::option::Option<super::Name>>,
             T::Error: ::std::fmt::Display,
         {
             self.name = value
@@ -1121,6 +1139,151 @@ pub mod builder {
                 namespace: Ok(value.namespace),
                 values: Ok(value.values),
                 version: Ok(value.version),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct SelectionList {
+        decision_point_resources: ::std::result::Result<
+            ::std::vec::Vec<super::Reference>,
+            ::std::string::String,
+        >,
+        references: ::std::result::Result<
+            ::std::vec::Vec<super::Reference>,
+            ::std::string::String,
+        >,
+        schema_version: ::std::result::Result<
+            ::std::string::String,
+            ::std::string::String,
+        >,
+        selections: ::std::result::Result<
+            ::std::vec::Vec<super::Selection>,
+            ::std::string::String,
+        >,
+        target_ids: ::std::result::Result<
+            ::std::option::Option<Vec<::std::string::String>>,
+            ::std::string::String,
+        >,
+        timestamp: ::std::result::Result<
+            ::chrono::DateTime<::chrono::offset::Utc>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for SelectionList {
+        fn default() -> Self {
+            Self {
+                decision_point_resources: Ok(Default::default()),
+                references: Ok(Default::default()),
+                schema_version: Err("no value supplied for schema_version".to_string()),
+                selections: Err("no value supplied for selections".to_string()),
+                target_ids: Ok(Default::default()),
+                timestamp: Err("no value supplied for timestamp".to_string()),
+            }
+        }
+    }
+    impl SelectionList {
+        pub fn decision_point_resources<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Reference>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.decision_point_resources = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for decision_point_resources: {}",
+                        e
+                    )
+                });
+            self
+        }
+        pub fn references<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Reference>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.references = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for references: {}", e)
+                });
+            self
+        }
+        pub fn schema_version<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.schema_version = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for schema_version: {}", e)
+                });
+            self
+        }
+        pub fn selections<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Selection>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.selections = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for selections: {}", e)
+                });
+            self
+        }
+        pub fn target_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<::std::string::String>>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.target_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for target_ids: {}", e)
+                });
+            self
+        }
+        pub fn timestamp<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.timestamp = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for timestamp: {}", e)
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<SelectionList> for super::SelectionList {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: SelectionList,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                decision_point_resources: value.decision_point_resources?,
+                references: value.references?,
+                schema_version: value.schema_version?,
+                selections: value.selections?,
+                target_ids: value.target_ids?,
+                timestamp: value.timestamp?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::SelectionList> for SelectionList {
+        fn from(value: super::SelectionList) -> Self {
+            Self {
+                decision_point_resources: Ok(value.decision_point_resources),
+                references: Ok(value.references),
+                schema_version: Ok(value.schema_version),
+                selections: Ok(value.selections),
+                target_ids: Ok(value.target_ids),
+                timestamp: Ok(value.timestamp),
             }
         }
     }

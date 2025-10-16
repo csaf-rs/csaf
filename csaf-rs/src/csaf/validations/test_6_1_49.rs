@@ -61,14 +61,14 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(
                                         "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
                                         ssvc.timestamp.to_rfc3339(), i_v, newest_revision_date.to_rfc3339()
                                     ),
-                                    instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1/timestamp", i_v, i_m),
+                                    instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp", i_v, i_m),
                                 })
                             }
                         },
                         Err(err) => {
                             return Err(ValidationError {
                                 message: format!("Invalid SSVC object: {}", err),
-                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v1", i_v, i_m),
+                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
                             });
                         },
                     }
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn test_test_6_1_49() {
-        let instance_path = "/vulnerabilities/0/metrics/0/content/ssvc_v1/timestamp".to_string();
+        let instance_path = "/vulnerabilities/0/metrics/0/content/ssvc_v2/timestamp".to_string();
 
         run_csaf21_tests(
             "49",

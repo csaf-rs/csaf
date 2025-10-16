@@ -70,7 +70,7 @@ fn run_csaf_tests<CsafType>(
                     "Negative test case {} should have failed with the expected error",
                     test_num
                 );
-            } else if test_num.starts_with('1') {
+            } else if test_num.starts_with('1') || test_num.starts_with('3') {
                 // Positive test case - should succeed
                 assert_eq!(
                     Ok(()),

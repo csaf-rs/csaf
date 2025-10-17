@@ -23,7 +23,7 @@ See https://github.com/CERTCC/SSVC/tree/main/data/json/decision_points for infor
 https://github.com/CERTCC/SSVC/blob/main/data/LICENSE for information about licenses.
 They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
-- `decision_point_value_selection_json_schema.json`
+- `decision_point_value_selection_list_json_schema.json`
 
 See https://github.com/CERTCC/SSVC/blob/main/data/schema/v2/SelectionList_2_0_0.schema.json for this schema file and
 https://github.com/CERTCC/SSVC/blob/main/data/LICENSE for information about licenses.

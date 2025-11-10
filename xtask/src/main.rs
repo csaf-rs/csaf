@@ -62,7 +62,7 @@ fn build_web() -> Result<()> {
     println!("\n✅ Build complete!");
     println!("📁 Static files are in: csaf-validator/src/web/static/");
     println!("\n🚀 Run the web server with:");
-    println!("   cargo run --release -- --web");
+    println!("   cargo run --bin csaf-validator --release -- --web");
     
     Ok(())
 }
@@ -76,7 +76,7 @@ fn build_wasm() -> Result<()> {
         .args([
             "build",
             "--target", "web",
-            "--out-dir", "../demo/public/static",
+            "--out-dir", "../demo/public/assets",
             "csaf-rs"
         ])
         .status()
@@ -159,7 +159,7 @@ fn clean() -> Result<()> {
     
     let paths = [
         "demo/node_modules",
-        "demo/public/static",
+        "demo/public/assets",
         "csaf-validator/src/web/static",
         "target",
         ".deno",

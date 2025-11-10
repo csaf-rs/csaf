@@ -1,0 +1,12 @@
+# Deno
+node_modules/
+deno.lock
+
+# Build outputs
+dist/
+public/static/*.js
+public/static/*.wasm
+public/static/*.ts
+
+# Vite
+.vite/

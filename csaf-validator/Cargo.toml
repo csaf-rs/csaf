@@ -9,7 +9,17 @@ version = "0.2.1"
 edition = "2024"
 rust-version = "1.85.1"
 
+[features]
+default = ["web"]
+web = ["dep:axum", "dep:tokio", "dep:rust-embed", "dep:mime_guess"]
+
 [dependencies]
 csaf-rs = { path = "../csaf-rs", version = "0.2.1" }
 anyhow = "1.0.93"
 clap = { version = "4.5.23", features = ["derive"] }
+
+# Web server dependencies
+axum = { version = "0.7", optional = true }
+tokio = { version = "1", features = ["full"], optional = true }
+rust-embed = { version = "8", optional = true }
+mime_guess = { version = "2", optional = true }

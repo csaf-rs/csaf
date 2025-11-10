@@ -4,10 +4,12 @@ use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf::validation::{
     TestResult,
-    TestResultStatus::{Failure, NotFound, Success},
-    Validatable, ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
+    TestResultStatus::{Failure, NotFound, Success}, ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
 };
 use std::str::FromStr;
+
+#[cfg(feature = "web")]
+mod web;
 
 /// A validator for CSAF documents
 #[derive(Parser, Debug)]
@@ -16,6 +18,21 @@ struct Args {
     /// Path to the CSAF document to validate (not used with --web)
     #[arg()]
     path: Option<String>,
+
+    /// Start the web server instead of validating a file
+    #[cfg(feature = "web")]
+    #[arg(long)]
+    web: bool,
+
+    /// Host to bind the web server to (only with --web)
+    #[cfg(feature = "web")]
+    #[arg(long, default_value = "127.0.0.1", requires = "web")]
+    host: String,
+
+    /// Port to bind the web server to (only with --web)
+    #[cfg(feature = "web")]
+    #[arg(long, default_value = "8080", requires = "web")]
+    port: u16,
 
     /// Version of CSAF to use
     #[arg(short, long, default_value = "2.0")]
@@ -30,6 +47,24 @@ struct Args {
     test_id: Vec<String>,
 }
 
+#[cfg(feature = "web")]
+#[tokio::main]
+async fn main() -> Result<()> {
+    let args = Args::parse();
+
+    // If web mode is enabled, start the web server
+    if args.web {
+        return web::start_server(&args.host, args.port).await;
+    }
+
+    // Otherwise, validate a file
+    let path = args.path.as_ref()
+        .ok_or_else(|| anyhow::anyhow!("Path argument is required when not using --web"))?;
+
+    validate_file(path, &args)
+}
+
+#[cfg(not(feature = "web"))]
 fn main() -> Result<()> {
     let args = Args::parse();
 
@@ -61,7 +96,7 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
 /// This prints the results of the tests on stdout.
 fn validate_document<T>(document: T, version: &str, args: &Args) -> Result<()>
 where
-    T: csaf_rs::csaf::validation::Validatable<T>,
+    T: csaf::validation::Validatable<T>,
 {
     let preset = ValidationPreset::from_str(args.preset.as_str())
         .map_err(|_| anyhow::anyhow!("Invalid validation preset: {}", args.preset))?;

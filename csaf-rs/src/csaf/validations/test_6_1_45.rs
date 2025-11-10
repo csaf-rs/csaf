@@ -1,5 +1,5 @@
 use crate::csaf::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
-use crate::csaf::getter_traits::{CsafTrait, DistributionTrait, DocumentTrait, RevisionTrait, TlpTrait, TrackingTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, RevisionTrait, TlpTrait, TrackingTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
 

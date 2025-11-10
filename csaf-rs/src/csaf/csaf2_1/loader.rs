@@ -17,7 +17,7 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_1::schema::{CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, JsonSchema, LabelOfTlp, Publisher, Revision, RulesForSharingDocument, Tracking, TrafficLightProtocolTlp};
+    use crate::csaf::csaf2_1::schema::{CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, JsonSchema, LabelOfTlp, Publisher, Revision, RulesForDocumentSharing, Tracking, TrafficLightProtocolTlp};
 
     fn mock_document() -> CommonSecurityAdvisoryFramework {
         let now = chrono::Utc::now().to_string();
@@ -26,7 +26,7 @@ mod tests {
             .category("csaf_base")
             .csaf_version("2.1")
             .distribution(
-                RulesForSharingDocument::builder()
+                RulesForDocumentSharing::builder()
                     .tlp(
                         TrafficLightProtocolTlp::builder()
                             .label(LabelOfTlp::Clear)

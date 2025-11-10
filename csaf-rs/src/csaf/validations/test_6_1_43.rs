@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
+use crate::csaf::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::csaf::helpers::count_unescaped_stars;
 use crate::csaf::validation::ValidationError;
 

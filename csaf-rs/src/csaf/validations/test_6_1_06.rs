@@ -1,4 +1,4 @@
-use crate::csaf::getter_traits::{CsafTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{CsafTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};

@@ -1,6 +1,6 @@
 /// Error types.
 pub mod error {
-    /// Error from a TryFrom or FromStr implementation.
+    /// Error from a `TryFrom` or `FromStr` implementation.
     pub struct ConversionError(::std::borrow::Cow<'static, str>);
     impl ::std::error::Error for ConversionError {}
     impl ::std::fmt::Display for ConversionError {
@@ -262,7 +262,7 @@ impl ::std::str::FromStr for AdditionalRestartInformation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -409,7 +409,7 @@ impl ::std::str::FromStr for AlgorithmOfTheCryptographicHash {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -492,7 +492,7 @@ impl ::std::str::FromStr for AlternateName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -577,7 +577,7 @@ impl ::std::str::FromStr for AudienceOfNote {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -854,13 +854,13 @@ impl ::std::convert::From<&Self> for CategoryOfPublisher {
 impl ::std::fmt::Display for CategoryOfPublisher {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Coordinator => write!(f, "coordinator"),
-            Self::Discoverer => write!(f, "discoverer"),
-            Self::Multiplier => write!(f, "multiplier"),
-            Self::Other => write!(f, "other"),
-            Self::Translator => write!(f, "translator"),
-            Self::User => write!(f, "user"),
-            Self::Vendor => write!(f, "vendor"),
+            Self::Coordinator => f.write_str("coordinator"),
+            Self::Discoverer => f.write_str("discoverer"),
+            Self::Multiplier => f.write_str("multiplier"),
+            Self::Other => f.write_str("other"),
+            Self::Translator => f.write_str("translator"),
+            Self::User => f.write_str("user"),
+            Self::Vendor => f.write_str("vendor"),
         }
     }
 }
@@ -948,8 +948,8 @@ impl ::std::convert::From<&Self> for CategoryOfReference {
 impl ::std::fmt::Display for CategoryOfReference {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::External => write!(f, "external"),
-            Self::Self_ => write!(f, "self"),
+            Self::External => f.write_str("external"),
+            Self::Self_ => f.write_str("self"),
         }
     }
 }
@@ -1057,15 +1057,15 @@ impl ::std::convert::From<&Self> for CategoryOfRestart {
 impl ::std::fmt::Display for CategoryOfRestart {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Connected => write!(f, "connected"),
-            Self::Dependencies => write!(f, "dependencies"),
-            Self::Machine => write!(f, "machine"),
-            Self::None => write!(f, "none"),
-            Self::Parent => write!(f, "parent"),
-            Self::Service => write!(f, "service"),
-            Self::System => write!(f, "system"),
-            Self::VulnerableComponent => write!(f, "vulnerable_component"),
-            Self::Zone => write!(f, "zone"),
+            Self::Connected => f.write_str("connected"),
+            Self::Dependencies => f.write_str("dependencies"),
+            Self::Machine => f.write_str("machine"),
+            Self::None => f.write_str("none"),
+            Self::Parent => f.write_str("parent"),
+            Self::Service => f.write_str("service"),
+            Self::System => f.write_str("system"),
+            Self::VulnerableComponent => f.write_str("vulnerable_component"),
+            Self::Zone => f.write_str("zone"),
         }
     }
 }
@@ -1187,19 +1187,19 @@ impl ::std::convert::From<&Self> for CategoryOfTheBranch {
 impl ::std::fmt::Display for CategoryOfTheBranch {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Architecture => write!(f, "architecture"),
-            Self::HostName => write!(f, "host_name"),
-            Self::Language => write!(f, "language"),
-            Self::Legacy => write!(f, "legacy"),
-            Self::PatchLevel => write!(f, "patch_level"),
-            Self::Platform => write!(f, "platform"),
-            Self::ProductFamily => write!(f, "product_family"),
-            Self::ProductName => write!(f, "product_name"),
-            Self::ProductVersion => write!(f, "product_version"),
-            Self::ProductVersionRange => write!(f, "product_version_range"),
-            Self::ServicePack => write!(f, "service_pack"),
-            Self::Specification => write!(f, "specification"),
-            Self::Vendor => write!(f, "vendor"),
+            Self::Architecture => f.write_str("architecture"),
+            Self::HostName => f.write_str("host_name"),
+            Self::Language => f.write_str("language"),
+            Self::Legacy => f.write_str("legacy"),
+            Self::PatchLevel => f.write_str("patch_level"),
+            Self::Platform => f.write_str("platform"),
+            Self::ProductFamily => f.write_str("product_family"),
+            Self::ProductName => f.write_str("product_name"),
+            Self::ProductVersion => f.write_str("product_version"),
+            Self::ProductVersionRange => f.write_str("product_version_range"),
+            Self::ServicePack => f.write_str("service_pack"),
+            Self::Specification => f.write_str("specification"),
+            Self::Vendor => f.write_str("vendor"),
         }
     }
 }
@@ -1307,13 +1307,13 @@ impl ::std::convert::From<&Self> for CategoryOfTheRemediation {
 impl ::std::fmt::Display for CategoryOfTheRemediation {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::FixPlanned => write!(f, "fix_planned"),
-            Self::Mitigation => write!(f, "mitigation"),
-            Self::NoFixPlanned => write!(f, "no_fix_planned"),
-            Self::NoneAvailable => write!(f, "none_available"),
-            Self::OptionalPatch => write!(f, "optional_patch"),
-            Self::VendorFix => write!(f, "vendor_fix"),
-            Self::Workaround => write!(f, "workaround"),
+            Self::FixPlanned => f.write_str("fix_planned"),
+            Self::Mitigation => f.write_str("mitigation"),
+            Self::NoFixPlanned => f.write_str("no_fix_planned"),
+            Self::NoneAvailable => f.write_str("none_available"),
+            Self::OptionalPatch => f.write_str("optional_patch"),
+            Self::VendorFix => f.write_str("vendor_fix"),
+            Self::Workaround => f.write_str("workaround"),
         }
     }
 }
@@ -1403,9 +1403,9 @@ impl ::std::convert::From<&Self> for CategoryOfTheThreat {
 impl ::std::fmt::Display for CategoryOfTheThreat {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::ExploitStatus => write!(f, "exploit_status"),
-            Self::Impact => write!(f, "impact"),
-            Self::TargetSet => write!(f, "target_set"),
+            Self::ExploitStatus => f.write_str("exploit_status"),
+            Self::Impact => f.write_str("impact"),
+            Self::TargetSet => f.write_str("target_set"),
         }
     }
 }
@@ -1486,16 +1486,17 @@ impl ::std::str::FromStr for CommonPlatformEnumerationRepresentation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 5usize {
+        if value.chars().count() < 5usize {
             return Err("shorter than 5 characters".into());
         }
-        if regress::Regex::new(
-                "^((cpe:2\\.3:[aho\\*\\-](:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,\\/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){5}(:(([a-zA-Z]{2,3}(-([a-zA-Z]{2}|[0-9]{3}))?)|[\\*\\-]))(:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,\\/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){4})|([c][pP][eE]:\\/[AHOaho]?(:[A-Za-z0-9\\._\\-~%]*){0,6}))$",
-            )
-            .unwrap()
-            .find(value)
-            .is_none()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
+            ::regress::Regex::new(
+                    "^((cpe:2\\.3:[aho\\*\\-](:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,\\/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){5}(:(([a-zA-Z]{2,3}(-([a-zA-Z]{2}|[0-9]{3}))?)|[\\*\\-]))(:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,\\/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){4})|([c][pP][eE]:\\/[AHOaho]?(:[A-Za-z0-9\\._\\-~%]*){0,6}))$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^((cpe:2\\.3:[aho\\*\\-](:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,\\/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){5}(:(([a-zA-Z]{2,3}(-([a-zA-Z]{2}|[0-9]{3}))?)|[\\*\\-]))(:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,\\/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){4})|([c][pP][eE]:\\/[AHOaho]?(:[A-Za-z0-9\\._\\-~%]*){0,6}))$\""
                     .into(),
@@ -1634,7 +1635,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///          ]
 ///        },
 ///        "distribution": {
-///          "title": "Rules for sharing document",
+///          "title": "Rules for document sharing",
 ///          "description": "Describe any constraints on how this document might be shared.",
 ///          "type": "object",
 ///          "required": [
@@ -1653,6 +1654,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "title": "Sharing Group ID",
 ///                  "description": "Provides the unique ID for the sharing group.",
 ///                  "type": "string",
+///                  "format": "uuid",
 ///                  "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///                },
 ///                "name": {
@@ -2422,7 +2424,22 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                      },
 ///                      "additionalProperties": false
 ///                    },
+///                    "qualitative_severity_rating": {
+///                      "title": "Qualitative Severity Rating",
+///                      "description": "Contains an assessment of the severity of the vulnerability regarding the products on a qualitative scale.",
+///                      "type": "string",
+///                      "enum": [
+///                        "critical",
+///                        "high",
+///                        "low",
+///                        "medium",
+///                        "none"
+///                      ]
+///                    },
 ///                    "ssvc_v1": {
+///                      "type": "object"
+///                    },
+///                    "ssvc_v2": {
 ///                      "type": "object"
 ///                    }
 ///                  },
@@ -2565,7 +2582,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                },
 ///                "restart_required": {
 ///                  "title": "Restart required by remediation",
-///                  "description": "Provides information on category of restart is required by this remediation to become effective.",
+///                  "description": "Provides information on the category of restart required by this remediation to become effective.",
 ///                  "type": "object",
 ///                  "required": [
 ///                    "category"
@@ -2732,7 +2749,7 @@ impl ::std::str::FromStr for ContactDetails {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -2824,7 +2841,22 @@ impl<'de> ::serde::Deserialize<'de> for ContactDetails {
 ///      },
 ///      "additionalProperties": false
 ///    },
+///    "qualitative_severity_rating": {
+///      "title": "Qualitative Severity Rating",
+///      "description": "Contains an assessment of the severity of the vulnerability regarding the products on a qualitative scale.",
+///      "type": "string",
+///      "enum": [
+///        "critical",
+///        "high",
+///        "low",
+///        "medium",
+///        "none"
+///      ]
+///    },
 ///    "ssvc_v1": {
+///      "type": "object"
+///    },
+///    "ssvc_v2": {
 ///      "type": "object"
 ///    }
 ///  },
@@ -2843,8 +2875,13 @@ pub struct Content {
     pub cvss_v4: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub epss: ::std::option::Option<Epss>,
+    ///Contains an assessment of the severity of the vulnerability regarding the products on a qualitative scale.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub qualitative_severity_rating: ::std::option::Option<QualitativeSeverityRating>,
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub ssvc_v1: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+    #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
+    pub ssvc_v2: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
 }
 impl ::std::convert::From<&Content> for Content {
     fn from(value: &Content) -> Self {
@@ -2858,7 +2895,9 @@ impl ::std::default::Default for Content {
             cvss_v3: Default::default(),
             cvss_v4: Default::default(),
             epss: Default::default(),
+            qualitative_severity_rating: Default::default(),
             ssvc_v1: Default::default(),
+            ssvc_v2: Default::default(),
         }
     }
 }
@@ -2909,7 +2948,7 @@ impl ::std::str::FromStr for ContributingOrganization {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -3072,7 +3111,7 @@ impl CryptographicHashes {
 )]
 pub enum CsafVersion {
     #[serde(rename = "2.1")]
-    _21,
+    X21,
 }
 impl ::std::convert::From<&Self> for CsafVersion {
     fn from(value: &CsafVersion) -> Self {
@@ -3082,7 +3121,7 @@ impl ::std::convert::From<&Self> for CsafVersion {
 impl ::std::fmt::Display for CsafVersion {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::_21 => write!(f, "2.1"),
+            Self::X21 => f.write_str("2.1"),
         }
     }
 }
@@ -3092,7 +3131,7 @@ impl ::std::str::FromStr for CsafVersion {
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         match value {
-            "2.1" => Ok(Self::_21),
+            "2.1" => Ok(Self::X21),
             _ => Err("invalid value".into()),
         }
     }
@@ -3158,8 +3197,9 @@ impl ::std::str::FromStr for Cve {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^CVE-[0-9]{4}-[0-9]{4,}$").unwrap().find(value).is_none()
-        {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^CVE-[0-9]{4}-[0-9]{4,}$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^CVE-[0-9]{4}-[0-9]{4,}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -3321,11 +3361,11 @@ impl ::std::str::FromStr for CweVersion {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$")
-            .unwrap()
-            .find(value)
-            .is_none()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
+            ::regress::Regex::new("^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$").unwrap()
+        });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$\""
                     .into(),
@@ -3407,7 +3447,7 @@ impl ::std::str::FromStr for DetailsOfTheRemediation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -3486,7 +3526,7 @@ impl ::std::str::FromStr for DetailsOfTheThreat {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -3572,14 +3612,12 @@ impl ::std::str::FromStr for DocumentCategory {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
-        if regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$\"".into(),
             );
@@ -3770,7 +3808,7 @@ impl DocumentGenerator {
 ///      ]
 ///    },
 ///    "distribution": {
-///      "title": "Rules for sharing document",
+///      "title": "Rules for document sharing",
 ///      "description": "Describe any constraints on how this document might be shared.",
 ///      "type": "object",
 ///      "required": [
@@ -3789,6 +3827,7 @@ impl DocumentGenerator {
 ///              "title": "Sharing Group ID",
 ///              "description": "Provides the unique ID for the sharing group.",
 ///              "type": "string",
+///              "format": "uuid",
 ///              "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///            },
 ///            "name": {
@@ -4137,7 +4176,7 @@ pub struct DocumentLevelMetaData {
     pub category: DocumentCategory,
     ///Gives the version of the CSAF specification which the document was generated for.
     pub csaf_version: CsafVersion,
-    pub distribution: RulesForSharingDocument,
+    pub distribution: RulesForDocumentSharing,
     ///Identifies the language used by this document, corresponding to IETF BCP 47 / RFC 5646.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub lang: ::std::option::Option<LangT>,
@@ -4213,9 +4252,9 @@ impl ::std::convert::From<&Self> for DocumentStatus {
 impl ::std::fmt::Display for DocumentStatus {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Draft => write!(f, "draft"),
-            Self::Final => write!(f, "final"),
-            Self::Interim => write!(f, "interim"),
+            Self::Draft => f.write_str("draft"),
+            Self::Final => f.write_str("final"),
+            Self::Interim => f.write_str("interim"),
         }
     }
 }
@@ -4298,7 +4337,7 @@ impl ::std::str::FromStr for EngineName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -4441,7 +4480,7 @@ impl ::std::str::FromStr for EngineVersion {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -4520,7 +4559,7 @@ impl ::std::str::FromStr for EntitlementOfTheRemediation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -4724,7 +4763,7 @@ impl ::std::str::FromStr for Filename {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5607,7 +5646,7 @@ impl ::std::str::FromStr for IssuingAuthority {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5690,7 +5729,9 @@ impl ::std::fmt::Display for JsonSchema {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
             Self::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson => {
-                write!(f, "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json")
+                f.write_str(
+                    "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+                )
             }
         }
     }
@@ -5783,17 +5824,17 @@ impl ::std::convert::From<&Self> for LabelOfTheFlag {
 impl ::std::fmt::Display for LabelOfTheFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::ComponentNotPresent => write!(f, "component_not_present"),
+            Self::ComponentNotPresent => f.write_str("component_not_present"),
             Self::InlineMitigationsAlreadyExist => {
-                write!(f, "inline_mitigations_already_exist")
+                f.write_str("inline_mitigations_already_exist")
             }
             Self::VulnerableCodeCannotBeControlledByAdversary => {
-                write!(f, "vulnerable_code_cannot_be_controlled_by_adversary")
+                f.write_str("vulnerable_code_cannot_be_controlled_by_adversary")
             }
             Self::VulnerableCodeNotInExecutePath => {
-                write!(f, "vulnerable_code_not_in_execute_path")
+                f.write_str("vulnerable_code_not_in_execute_path")
             }
-            Self::VulnerableCodeNotPresent => write!(f, "vulnerable_code_not_present"),
+            Self::VulnerableCodeNotPresent => f.write_str("vulnerable_code_not_present"),
         }
     }
 }
@@ -5892,11 +5933,11 @@ impl ::std::convert::From<&Self> for LabelOfTlp {
 impl ::std::fmt::Display for LabelOfTlp {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Amber => write!(f, "AMBER"),
-            Self::AmberStrict => write!(f, "AMBER+STRICT"),
-            Self::Clear => write!(f, "CLEAR"),
-            Self::Green => write!(f, "GREEN"),
-            Self::Red => write!(f, "RED"),
+            Self::Amber => f.write_str("AMBER"),
+            Self::AmberStrict => f.write_str("AMBER+STRICT"),
+            Self::Clear => f.write_str("CLEAR"),
+            Self::Green => f.write_str("GREEN"),
+            Self::Red => f.write_str("RED"),
         }
     }
 }
@@ -5988,13 +6029,14 @@ impl ::std::str::FromStr for LangT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new(
-                "^(([A-Za-z]{2,3}(-[A-Za-z]{3}(-[A-Za-z]{3}){0,2})?|[A-Za-z]{4,8})(-[A-Za-z]{4})?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-[A-WY-Za-wy-z0-9](-[A-Za-z0-9]{2,8})+)*(-[Xx](-[A-Za-z0-9]{1,8})+)?|[Xx](-[A-Za-z0-9]{1,8})+|[Ii]-[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ii]-[Mm][Ii][Nn][Gg][Oo])$",
-            )
-            .unwrap()
-            .find(value)
-            .is_none()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
+            ::regress::Regex::new(
+                    "^(([A-Za-z]{2,3}(-[A-Za-z]{3}(-[A-Za-z]{3}){0,2})?|[A-Za-z]{4,8})(-[A-Za-z]{4})?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-[A-WY-Za-wy-z0-9](-[A-Za-z0-9]{2,8})+)*(-[Xx](-[A-Za-z0-9]{1,8})+)?|[Xx](-[A-Za-z0-9]{1,8})+|[Ii]-[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ii]-[Mm][Ii][Nn][Gg][Oo])$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(([A-Za-z]{2,3}(-[A-Za-z]{3}(-[A-Za-z]{3}){0,2})?|[A-Za-z]{4,8})(-[A-Za-z]{4})?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-[A-WY-Za-wy-z0-9](-[A-Za-z0-9]{2,8})+)*(-[Xx](-[A-Za-z0-9]{1,8})+)?|[Xx](-[A-Za-z0-9]{1,8})+|[Ii]-[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ii]-[Mm][Ii][Nn][Gg][Oo])$\""
                     .into(),
@@ -6076,7 +6118,7 @@ impl ::std::str::FromStr for LegacyVersionOfTheRevision {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6161,7 +6203,7 @@ impl ::std::str::FromStr for LicenseExpression {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6262,7 +6304,22 @@ impl<'de> ::serde::Deserialize<'de> for LicenseExpression {
 ///          },
 ///          "additionalProperties": false
 ///        },
+///        "qualitative_severity_rating": {
+///          "title": "Qualitative Severity Rating",
+///          "description": "Contains an assessment of the severity of the vulnerability regarding the products on a qualitative scale.",
+///          "type": "string",
+///          "enum": [
+///            "critical",
+///            "high",
+///            "low",
+///            "medium",
+///            "none"
+///          ]
+///        },
 ///        "ssvc_v1": {
+///          "type": "object"
+///        },
+///        "ssvc_v2": {
 ///          "type": "object"
 ///        }
 ///      },
@@ -6338,7 +6395,7 @@ impl ::std::str::FromStr for ModelNumber {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6422,7 +6479,7 @@ impl ::std::str::FromStr for NameOfPublisher {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6511,7 +6568,7 @@ impl ::std::str::FromStr for NameOfTheBranch {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6594,7 +6651,7 @@ impl ::std::str::FromStr for NameOfTheContributor {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6790,13 +6847,13 @@ impl ::std::convert::From<&Self> for NoteCategory {
 impl ::std::fmt::Display for NoteCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Description => write!(f, "description"),
-            Self::Details => write!(f, "details"),
-            Self::Faq => write!(f, "faq"),
-            Self::General => write!(f, "general"),
-            Self::LegalDisclaimer => write!(f, "legal_disclaimer"),
-            Self::Other => write!(f, "other"),
-            Self::Summary => write!(f, "summary"),
+            Self::Description => f.write_str("description"),
+            Self::Details => f.write_str("details"),
+            Self::Faq => f.write_str("faq"),
+            Self::General => f.write_str("general"),
+            Self::LegalDisclaimer => f.write_str("legal_disclaimer"),
+            Self::Other => f.write_str("other"),
+            Self::Summary => f.write_str("summary"),
         }
     }
 }
@@ -6878,7 +6935,7 @@ impl ::std::str::FromStr for NoteContent {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7070,11 +7127,11 @@ impl ::std::convert::From<&Self> for PartyCategory {
 impl ::std::fmt::Display for PartyCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Coordinator => write!(f, "coordinator"),
-            Self::Discoverer => write!(f, "discoverer"),
-            Self::Other => write!(f, "other"),
-            Self::User => write!(f, "user"),
-            Self::Vendor => write!(f, "vendor"),
+            Self::Coordinator => f.write_str("coordinator"),
+            Self::Discoverer => f.write_str("discoverer"),
+            Self::Other => f.write_str("other"),
+            Self::User => f.write_str("user"),
+            Self::Vendor => f.write_str("vendor"),
         }
     }
 }
@@ -7154,7 +7211,7 @@ impl ::std::str::FromStr for PartyContactInformation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7250,12 +7307,12 @@ impl ::std::convert::From<&Self> for PartyStatus {
 impl ::std::fmt::Display for PartyStatus {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Completed => write!(f, "completed"),
-            Self::ContactAttempted => write!(f, "contact_attempted"),
-            Self::Disputed => write!(f, "disputed"),
-            Self::InProgress => write!(f, "in_progress"),
-            Self::NotContacted => write!(f, "not_contacted"),
-            Self::Open => write!(f, "open"),
+            Self::Completed => f.write_str("completed"),
+            Self::ContactAttempted => f.write_str("contact_attempted"),
+            Self::Disputed => f.write_str("disputed"),
+            Self::InProgress => f.write_str("in_progress"),
+            Self::NotContacted => f.write_str("not_contacted"),
+            Self::Open => f.write_str("open"),
         }
     }
 }
@@ -7336,11 +7393,9 @@ impl ::std::str::FromStr for Percentile {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^(([0]\\.([0-9])+)|([1]\\.[0]+))$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^(([0]\\.([0-9])+)|([1]\\.[0]+))$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(([0]\\.([0-9])+)|([1]\\.[0]+))$\"".into(),
             );
@@ -7421,11 +7476,9 @@ impl ::std::str::FromStr for Probability {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^(([0]\\.([0-9])+)|([1]\\.[0]+))$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^(([0]\\.([0-9])+)|([1]\\.[0]+))$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(([0]\\.([0-9])+)|([1]\\.[0]+))$\"".into(),
             );
@@ -7573,7 +7626,7 @@ impl ::std::str::FromStr for ProductGroupIdT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7697,7 +7750,7 @@ impl ::std::str::FromStr for ProductIdT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8142,6 +8195,104 @@ impl Publisher {
         Default::default()
     }
 }
+///Contains an assessment of the severity of the vulnerability regarding the products on a qualitative scale.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Qualitative Severity Rating",
+///  "description": "Contains an assessment of the severity of the vulnerability regarding the products on a qualitative scale.",
+///  "type": "string",
+///  "enum": [
+///    "critical",
+///    "high",
+///    "low",
+///    "medium",
+///    "none"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(
+    ::serde::Deserialize,
+    ::serde::Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd
+)]
+pub enum QualitativeSeverityRating {
+    #[serde(rename = "critical")]
+    Critical,
+    #[serde(rename = "high")]
+    High,
+    #[serde(rename = "low")]
+    Low,
+    #[serde(rename = "medium")]
+    Medium,
+    #[serde(rename = "none")]
+    None,
+}
+impl ::std::convert::From<&Self> for QualitativeSeverityRating {
+    fn from(value: &QualitativeSeverityRating) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for QualitativeSeverityRating {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Critical => f.write_str("critical"),
+            Self::High => f.write_str("high"),
+            Self::Low => f.write_str("low"),
+            Self::Medium => f.write_str("medium"),
+            Self::None => f.write_str("none"),
+        }
+    }
+}
+impl ::std::str::FromStr for QualitativeSeverityRating {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        match value {
+            "critical" => Ok(Self::Critical),
+            "high" => Ok(Self::High),
+            "low" => Ok(Self::Low),
+            "medium" => Ok(Self::Medium),
+            "none" => Ok(Self::None),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl ::std::convert::TryFrom<&str> for QualitativeSeverityRating {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for QualitativeSeverityRating {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for QualitativeSeverityRating {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
 ///Holds any reference to conferences, papers, advisories, and other resources that are related and considered related to either a surrounding part of or the entire document and to be of value to the document consumer.
 ///
 /// <details><summary>JSON schema</summary>
@@ -8393,11 +8544,11 @@ impl ::std::convert::From<&Self> for RelationshipCategory {
 impl ::std::fmt::Display for RelationshipCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::DefaultComponentOf => write!(f, "default_component_of"),
-            Self::ExternalComponentOf => write!(f, "external_component_of"),
-            Self::InstalledOn => write!(f, "installed_on"),
-            Self::InstalledWith => write!(f, "installed_with"),
-            Self::OptionalComponentOf => write!(f, "optional_component_of"),
+            Self::DefaultComponentOf => f.write_str("default_component_of"),
+            Self::ExternalComponentOf => f.write_str("external_component_of"),
+            Self::InstalledOn => f.write_str("installed_on"),
+            Self::InstalledWith => f.write_str("installed_with"),
+            Self::OptionalComponentOf => f.write_str("optional_component_of"),
         }
     }
 }
@@ -8499,7 +8650,7 @@ impl ::std::convert::TryFrom<::std::string::String> for RelationshipCategory {
 ///    },
 ///    "restart_required": {
 ///      "title": "Restart required by remediation",
-///      "description": "Provides information on category of restart is required by this remediation to become effective.",
+///      "description": "Provides information on the category of restart required by this remediation to become effective.",
 ///      "type": "object",
 ///      "required": [
 ///        "category"
@@ -8574,14 +8725,14 @@ impl Remediation {
         Default::default()
     }
 }
-///Provides information on category of restart is required by this remediation to become effective.
+///Provides information on the category of restart required by this remediation to become effective.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
 ///  "title": "Restart required by remediation",
-///  "description": "Provides information on category of restart is required by this remediation to become effective.",
+///  "description": "Provides information on the category of restart required by this remediation to become effective.",
 ///  "type": "object",
 ///  "required": [
 ///    "category"
@@ -8705,7 +8856,7 @@ impl Revision {
 ///
 /// ```json
 ///{
-///  "title": "Rules for sharing document",
+///  "title": "Rules for document sharing",
 ///  "description": "Describe any constraints on how this document might be shared.",
 ///  "type": "object",
 ///  "required": [
@@ -8724,6 +8875,7 @@ impl Revision {
 ///          "title": "Sharing Group ID",
 ///          "description": "Provides the unique ID for the sharing group.",
 ///          "type": "string",
+///          "format": "uuid",
 ///          "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///        },
 ///        "name": {
@@ -8796,7 +8948,7 @@ impl Revision {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub struct RulesForSharingDocument {
+pub struct RulesForDocumentSharing {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub sharing_group: ::std::option::Option<SharingGroup>,
     ///Provides a textual description of additional constraints.
@@ -8804,13 +8956,13 @@ pub struct RulesForSharingDocument {
     pub text: ::std::option::Option<TextualDescription>,
     pub tlp: TrafficLightProtocolTlp,
 }
-impl ::std::convert::From<&RulesForSharingDocument> for RulesForSharingDocument {
-    fn from(value: &RulesForSharingDocument) -> Self {
+impl ::std::convert::From<&RulesForDocumentSharing> for RulesForDocumentSharing {
+    fn from(value: &RulesForDocumentSharing) -> Self {
         value.clone()
     }
 }
-impl RulesForSharingDocument {
-    pub fn builder() -> builder::RulesForSharingDocument {
+impl RulesForDocumentSharing {
+    pub fn builder() -> builder::RulesForDocumentSharing {
         Default::default()
     }
 }
@@ -8851,7 +9003,7 @@ impl ::std::str::FromStr for SerialNumber {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8910,6 +9062,7 @@ impl<'de> ::serde::Deserialize<'de> for SerialNumber {
 ///      "title": "Sharing Group ID",
 ///      "description": "Provides the unique ID for the sharing group.",
 ///      "type": "string",
+///      "format": "uuid",
 ///      "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
 ///    },
 ///    "name": {
@@ -8935,7 +9088,7 @@ impl<'de> ::serde::Deserialize<'de> for SerialNumber {
 #[serde(deny_unknown_fields)]
 pub struct SharingGroup {
     ///Provides the unique ID for the sharing group.
-    pub id: SharingGroupId,
+    pub id: ::uuid::Uuid,
     ///Contains a human-readable name for the sharing group.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub name: ::std::option::Option<SharingGroupName>,
@@ -8948,94 +9101,6 @@ impl ::std::convert::From<&SharingGroup> for SharingGroup {
 impl SharingGroup {
     pub fn builder() -> builder::SharingGroup {
         Default::default()
-    }
-}
-///Provides the unique ID for the sharing group.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Sharing Group ID",
-///  "description": "Provides the unique ID for the sharing group.",
-///  "type": "string",
-///  "pattern": "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$"
-///}
-/// ```
-/// </details>
-#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[serde(transparent)]
-pub struct SharingGroupId(::std::string::String);
-impl ::std::ops::Deref for SharingGroupId {
-    type Target = ::std::string::String;
-    fn deref(&self) -> &::std::string::String {
-        &self.0
-    }
-}
-impl ::std::convert::From<SharingGroupId> for ::std::string::String {
-    fn from(value: SharingGroupId) -> Self {
-        value.0
-    }
-}
-impl ::std::convert::From<&SharingGroupId> for SharingGroupId {
-    fn from(value: &SharingGroupId) -> Self {
-        value.clone()
-    }
-}
-impl ::std::str::FromStr for SharingGroupId {
-    type Err = self::error::ConversionError;
-    fn from_str(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new(
-                "^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$",
-            )
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
-            return Err(
-                "doesn't match pattern \"^(([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})|([0]{8}-([0]{4}-){3}[0]{12})|([f]{8}-([f]{4}-){3}[f]{12}))$\""
-                    .into(),
-            );
-        }
-        Ok(Self(value.to_string()))
-    }
-}
-impl ::std::convert::TryFrom<&str> for SharingGroupId {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl ::std::convert::TryFrom<&::std::string::String> for SharingGroupId {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl ::std::convert::TryFrom<::std::string::String> for SharingGroupId {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: ::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl<'de> ::serde::Deserialize<'de> for SharingGroupId {
-    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-    where
-        D: ::serde::Deserializer<'de>,
-    {
-        ::std::string::String::deserialize(deserializer)?
-            .parse()
-            .map_err(|e: self::error::ConversionError| {
-                <D::Error as ::serde::de::Error>::custom(e.to_string())
-            })
     }
 }
 ///Contains a human-readable name for the sharing group.
@@ -9083,7 +9148,7 @@ impl ::std::str::FromStr for SharingGroupName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9162,7 +9227,7 @@ impl ::std::str::FromStr for StockKeepingUnit {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9244,7 +9309,7 @@ impl ::std::str::FromStr for SummaryOfTheAcknowledgment {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9323,7 +9388,7 @@ impl ::std::str::FromStr for SummaryOfTheInvolvement {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9406,7 +9471,7 @@ impl ::std::str::FromStr for SummaryOfTheProductGroup {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9485,7 +9550,7 @@ impl ::std::str::FromStr for SummaryOfTheReference {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9567,7 +9632,7 @@ impl ::std::str::FromStr for SummaryOfTheRevision {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9650,7 +9715,7 @@ impl ::std::str::FromStr for SystemName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9733,7 +9798,7 @@ impl ::std::str::FromStr for Text {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9817,7 +9882,7 @@ impl ::std::str::FromStr for TextOfAggregateSeverity {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9901,7 +9966,7 @@ impl ::std::str::FromStr for TextualDescription {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9985,7 +10050,7 @@ impl ::std::str::FromStr for TextualDescriptionOfTheProduct {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -10135,7 +10200,7 @@ impl ::std::str::FromStr for Title {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -10220,7 +10285,7 @@ impl ::std::str::FromStr for TitleOfNote {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -10303,7 +10368,7 @@ impl ::std::str::FromStr for TitleOfThisDocument {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -10645,10 +10710,12 @@ impl ::std::str::FromStr for UniqueIdentifierForTheDocument {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
-        if regress::Regex::new("^[\\S](.*[\\S])?$").unwrap().find(value).is_none() {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[\\S](.*[\\S])?$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^[\\S](.*[\\S])?$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -10733,10 +10800,12 @@ impl ::std::str::FromStr for ValueOfTheCryptographicHash {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 32usize {
+        if value.chars().count() < 32usize {
             return Err("shorter than 32 characters".into());
         }
-        if regress::Regex::new("^[0-9a-fA-F]{32,}$").unwrap().find(value).is_none() {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[0-9a-fA-F]{32,}$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^[0-9a-fA-F]{32,}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -10822,13 +10891,14 @@ impl ::std::str::FromStr for VersionT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new(
-                "^(0|[1-9][0-9]*)$|^((0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$",
-            )
-            .unwrap()
-            .find(value)
-            .is_none()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
+            ::regress::Regex::new(
+                    "^(0|[1-9][0-9]*)$|^((0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(0|[1-9][0-9]*)$|^((0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$\""
                     .into(),
@@ -11202,7 +11272,22 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///                },
 ///                "additionalProperties": false
 ///              },
+///              "qualitative_severity_rating": {
+///                "title": "Qualitative Severity Rating",
+///                "description": "Contains an assessment of the severity of the vulnerability regarding the products on a qualitative scale.",
+///                "type": "string",
+///                "enum": [
+///                  "critical",
+///                  "high",
+///                  "low",
+///                  "medium",
+///                  "none"
+///                ]
+///              },
 ///              "ssvc_v1": {
+///                "type": "object"
+///              },
+///              "ssvc_v2": {
 ///                "type": "object"
 ///              }
 ///            },
@@ -11345,7 +11430,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          },
 ///          "restart_required": {
 ///            "title": "Restart required by remediation",
-///            "description": "Provides information on category of restart is required by this remediation to become effective.",
+///            "description": "Provides information on the category of restart required by this remediation to become effective.",
 ///            "type": "object",
 ///            "required": [
 ///              "category"
@@ -11570,7 +11655,9 @@ impl ::std::str::FromStr for WeaknessId {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^CWE-[1-9]\\d{0,5}$").unwrap().find(value).is_none() {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^CWE-[1-9]\\d{0,5}$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^CWE-[1-9]\\d{0,5}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -11655,14 +11742,12 @@ impl ::std::str::FromStr for WeaknessName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
-        if regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$\"".into(),
             );
@@ -12090,7 +12175,15 @@ pub mod builder {
             ::std::option::Option<super::Epss>,
             ::std::string::String,
         >,
+        qualitative_severity_rating: ::std::result::Result<
+            ::std::option::Option<super::QualitativeSeverityRating>,
+            ::std::string::String,
+        >,
         ssvc_v1: ::std::result::Result<
+            ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+            ::std::string::String,
+        >,
+        ssvc_v2: ::std::result::Result<
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             ::std::string::String,
         >,
@@ -12102,7 +12195,9 @@ pub mod builder {
                 cvss_v3: Ok(Default::default()),
                 cvss_v4: Ok(Default::default()),
                 epss: Ok(Default::default()),
+                qualitative_severity_rating: Ok(Default::default()),
                 ssvc_v1: Ok(Default::default()),
+                ssvc_v2: Ok(Default::default()),
             }
         }
     }
@@ -12159,6 +12254,23 @@ pub mod builder {
                 .map_err(|e| format!("error converting supplied value for epss: {}", e));
             self
         }
+        pub fn qualitative_severity_rating<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<super::QualitativeSeverityRating>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.qualitative_severity_rating = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for qualitative_severity_rating: {}",
+                        e
+                    )
+                });
+            self
+        }
         pub fn ssvc_v1<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<
@@ -12173,6 +12285,20 @@ pub mod builder {
                 });
             self
         }
+        pub fn ssvc_v2<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.ssvc_v2 = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for ssvc_v2: {}", e)
+                });
+            self
+        }
     }
     impl ::std::convert::TryFrom<Content> for super::Content {
         type Error = super::error::ConversionError;
@@ -12184,7 +12310,9 @@ pub mod builder {
                 cvss_v3: value.cvss_v3?,
                 cvss_v4: value.cvss_v4?,
                 epss: value.epss?,
+                qualitative_severity_rating: value.qualitative_severity_rating?,
                 ssvc_v1: value.ssvc_v1?,
+                ssvc_v2: value.ssvc_v2?,
             })
         }
     }
@@ -12195,7 +12323,9 @@ pub mod builder {
                 cvss_v3: Ok(value.cvss_v3),
                 cvss_v4: Ok(value.cvss_v4),
                 epss: Ok(value.epss),
+                qualitative_severity_rating: Ok(value.qualitative_severity_rating),
                 ssvc_v1: Ok(value.ssvc_v1),
+                ssvc_v2: Ok(value.ssvc_v2),
             }
         }
     }
@@ -12405,7 +12535,7 @@ pub mod builder {
         category: ::std::result::Result<super::DocumentCategory, ::std::string::String>,
         csaf_version: ::std::result::Result<super::CsafVersion, ::std::string::String>,
         distribution: ::std::result::Result<
-            super::RulesForSharingDocument,
+            super::RulesForDocumentSharing,
             ::std::string::String,
         >,
         lang: ::std::result::Result<
@@ -12504,7 +12634,7 @@ pub mod builder {
         }
         pub fn distribution<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<super::RulesForSharingDocument>,
+            T: ::std::convert::TryInto<super::RulesForDocumentSharing>,
             T::Error: ::std::fmt::Display,
         {
             self.distribution = value
@@ -14828,7 +14958,7 @@ pub mod builder {
         }
     }
     #[derive(Clone, Debug)]
-    pub struct RulesForSharingDocument {
+    pub struct RulesForDocumentSharing {
         sharing_group: ::std::result::Result<
             ::std::option::Option<super::SharingGroup>,
             ::std::string::String,
@@ -14842,7 +14972,7 @@ pub mod builder {
             ::std::string::String,
         >,
     }
-    impl ::std::default::Default for RulesForSharingDocument {
+    impl ::std::default::Default for RulesForDocumentSharing {
         fn default() -> Self {
             Self {
                 sharing_group: Ok(Default::default()),
@@ -14851,7 +14981,7 @@ pub mod builder {
             }
         }
     }
-    impl RulesForSharingDocument {
+    impl RulesForDocumentSharing {
         pub fn sharing_group<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<::std::option::Option<super::SharingGroup>>,
@@ -14885,11 +15015,11 @@ pub mod builder {
             self
         }
     }
-    impl ::std::convert::TryFrom<RulesForSharingDocument>
-    for super::RulesForSharingDocument {
+    impl ::std::convert::TryFrom<RulesForDocumentSharing>
+    for super::RulesForDocumentSharing {
         type Error = super::error::ConversionError;
         fn try_from(
-            value: RulesForSharingDocument,
+            value: RulesForDocumentSharing,
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
                 sharing_group: value.sharing_group?,
@@ -14898,9 +15028,9 @@ pub mod builder {
             })
         }
     }
-    impl ::std::convert::From<super::RulesForSharingDocument>
-    for RulesForSharingDocument {
-        fn from(value: super::RulesForSharingDocument) -> Self {
+    impl ::std::convert::From<super::RulesForDocumentSharing>
+    for RulesForDocumentSharing {
+        fn from(value: super::RulesForDocumentSharing) -> Self {
             Self {
                 sharing_group: Ok(value.sharing_group),
                 text: Ok(value.text),
@@ -14910,7 +15040,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct SharingGroup {
-        id: ::std::result::Result<super::SharingGroupId, ::std::string::String>,
+        id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
         name: ::std::result::Result<
             ::std::option::Option<super::SharingGroupName>,
             ::std::string::String,
@@ -14927,7 +15057,7 @@ pub mod builder {
     impl SharingGroup {
         pub fn id<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<super::SharingGroupId>,
+            T: ::std::convert::TryInto<::uuid::Uuid>,
             T::Error: ::std::fmt::Display,
         {
             self.id = value

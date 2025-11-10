@@ -1,6 +1,6 @@
 /// Error types.
 pub mod error {
-    /// Error from a TryFrom or FromStr implementation.
+    /// Error from a `TryFrom` or `FromStr` implementation.
     pub struct ConversionError(::std::borrow::Cow<'static, str>);
     impl ::std::error::Error for ConversionError {}
     impl ::std::fmt::Display for ConversionError {
@@ -259,7 +259,7 @@ impl ::std::str::FromStr for AdditionalRestartInformation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -404,7 +404,7 @@ impl ::std::str::FromStr for AlgorithmOfTheCryptographicHash {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -487,7 +487,7 @@ impl ::std::str::FromStr for AlternateName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -572,7 +572,7 @@ impl ::std::str::FromStr for AudienceOfNote {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -841,12 +841,12 @@ impl ::std::convert::From<&Self> for CategoryOfPublisher {
 impl ::std::fmt::Display for CategoryOfPublisher {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Coordinator => write!(f, "coordinator"),
-            Self::Discoverer => write!(f, "discoverer"),
-            Self::Other => write!(f, "other"),
-            Self::Translator => write!(f, "translator"),
-            Self::User => write!(f, "user"),
-            Self::Vendor => write!(f, "vendor"),
+            Self::Coordinator => f.write_str("coordinator"),
+            Self::Discoverer => f.write_str("discoverer"),
+            Self::Other => f.write_str("other"),
+            Self::Translator => f.write_str("translator"),
+            Self::User => f.write_str("user"),
+            Self::Vendor => f.write_str("vendor"),
         }
     }
 }
@@ -933,8 +933,8 @@ impl ::std::convert::From<&Self> for CategoryOfReference {
 impl ::std::fmt::Display for CategoryOfReference {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::External => write!(f, "external"),
-            Self::Self_ => write!(f, "self"),
+            Self::External => f.write_str("external"),
+            Self::Self_ => f.write_str("self"),
         }
     }
 }
@@ -1042,15 +1042,15 @@ impl ::std::convert::From<&Self> for CategoryOfRestart {
 impl ::std::fmt::Display for CategoryOfRestart {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Connected => write!(f, "connected"),
-            Self::Dependencies => write!(f, "dependencies"),
-            Self::Machine => write!(f, "machine"),
-            Self::None => write!(f, "none"),
-            Self::Parent => write!(f, "parent"),
-            Self::Service => write!(f, "service"),
-            Self::System => write!(f, "system"),
-            Self::VulnerableComponent => write!(f, "vulnerable_component"),
-            Self::Zone => write!(f, "zone"),
+            Self::Connected => f.write_str("connected"),
+            Self::Dependencies => f.write_str("dependencies"),
+            Self::Machine => f.write_str("machine"),
+            Self::None => f.write_str("none"),
+            Self::Parent => f.write_str("parent"),
+            Self::Service => f.write_str("service"),
+            Self::System => f.write_str("system"),
+            Self::VulnerableComponent => f.write_str("vulnerable_component"),
+            Self::Zone => f.write_str("zone"),
         }
     }
 }
@@ -1169,18 +1169,18 @@ impl ::std::convert::From<&Self> for CategoryOfTheBranch {
 impl ::std::fmt::Display for CategoryOfTheBranch {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Architecture => write!(f, "architecture"),
-            Self::HostName => write!(f, "host_name"),
-            Self::Language => write!(f, "language"),
-            Self::Legacy => write!(f, "legacy"),
-            Self::PatchLevel => write!(f, "patch_level"),
-            Self::ProductFamily => write!(f, "product_family"),
-            Self::ProductName => write!(f, "product_name"),
-            Self::ProductVersion => write!(f, "product_version"),
-            Self::ProductVersionRange => write!(f, "product_version_range"),
-            Self::ServicePack => write!(f, "service_pack"),
-            Self::Specification => write!(f, "specification"),
-            Self::Vendor => write!(f, "vendor"),
+            Self::Architecture => f.write_str("architecture"),
+            Self::HostName => f.write_str("host_name"),
+            Self::Language => f.write_str("language"),
+            Self::Legacy => f.write_str("legacy"),
+            Self::PatchLevel => f.write_str("patch_level"),
+            Self::ProductFamily => f.write_str("product_family"),
+            Self::ProductName => f.write_str("product_name"),
+            Self::ProductVersion => f.write_str("product_version"),
+            Self::ProductVersionRange => f.write_str("product_version_range"),
+            Self::ServicePack => f.write_str("service_pack"),
+            Self::Specification => f.write_str("specification"),
+            Self::Vendor => f.write_str("vendor"),
         }
     }
 }
@@ -1281,11 +1281,11 @@ impl ::std::convert::From<&Self> for CategoryOfTheRemediation {
 impl ::std::fmt::Display for CategoryOfTheRemediation {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Mitigation => write!(f, "mitigation"),
-            Self::NoFixPlanned => write!(f, "no_fix_planned"),
-            Self::NoneAvailable => write!(f, "none_available"),
-            Self::VendorFix => write!(f, "vendor_fix"),
-            Self::Workaround => write!(f, "workaround"),
+            Self::Mitigation => f.write_str("mitigation"),
+            Self::NoFixPlanned => f.write_str("no_fix_planned"),
+            Self::NoneAvailable => f.write_str("none_available"),
+            Self::VendorFix => f.write_str("vendor_fix"),
+            Self::Workaround => f.write_str("workaround"),
         }
     }
 }
@@ -1373,9 +1373,9 @@ impl ::std::convert::From<&Self> for CategoryOfTheThreat {
 impl ::std::fmt::Display for CategoryOfTheThreat {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::ExploitStatus => write!(f, "exploit_status"),
-            Self::Impact => write!(f, "impact"),
-            Self::TargetSet => write!(f, "target_set"),
+            Self::ExploitStatus => f.write_str("exploit_status"),
+            Self::Impact => f.write_str("impact"),
+            Self::TargetSet => f.write_str("target_set"),
         }
     }
 }
@@ -1456,16 +1456,17 @@ impl ::std::str::FromStr for CommonPlatformEnumerationRepresentation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 5usize {
+        if value.chars().count() < 5usize {
             return Err("shorter than 5 characters".into());
         }
-        if regress::Regex::new(
-                "^(cpe:2\\.3:[aho\\*\\-](:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){5}(:(([a-zA-Z]{2,3}(-([a-zA-Z]{2}|[0-9]{3}))?)|[\\*\\-]))(:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){4})|([c][pP][eE]:/[AHOaho]?(:[A-Za-z0-9\\._\\-~%]*){0,6})$",
-            )
-            .unwrap()
-            .find(value)
-            .is_none()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
+            ::regress::Regex::new(
+                    "^(cpe:2\\.3:[aho\\*\\-](:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){5}(:(([a-zA-Z]{2,3}(-([a-zA-Z]{2}|[0-9]{3}))?)|[\\*\\-]))(:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){4})|([c][pP][eE]:/[AHOaho]?(:[A-Za-z0-9\\._\\-~%]*){0,6})$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(cpe:2\\.3:[aho\\*\\-](:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){5}(:(([a-zA-Z]{2,3}(-([a-zA-Z]{2}|[0-9]{3}))?)|[\\*\\-]))(:(((\\?*|\\*?)([a-zA-Z0-9\\-\\._]|(\\\\[\\\\\\*\\?!\"#\\$%&'\\(\\)\\+,/:;<=>@\\[\\]\\^`\\{\\|\\}~]))+(\\?*|\\*?))|[\\*\\-])){4})|([c][pP][eE]:/[AHOaho]?(:[A-Za-z0-9\\._\\-~%]*){0,6})$\""
                     .into(),
@@ -2487,7 +2488,7 @@ impl ::std::str::FromStr for ContactDetails {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -2571,7 +2572,7 @@ impl ::std::str::FromStr for ContributingOrganization {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -2731,7 +2732,7 @@ impl CryptographicHashes {
 )]
 pub enum CsafVersion {
     #[serde(rename = "2.0")]
-    _20,
+    X20,
 }
 impl ::std::convert::From<&Self> for CsafVersion {
     fn from(value: &CsafVersion) -> Self {
@@ -2741,7 +2742,7 @@ impl ::std::convert::From<&Self> for CsafVersion {
 impl ::std::fmt::Display for CsafVersion {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::_20 => write!(f, "2.0"),
+            Self::X20 => f.write_str("2.0"),
         }
     }
 }
@@ -2751,7 +2752,7 @@ impl ::std::str::FromStr for CsafVersion {
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         match value {
-            "2.0" => Ok(Self::_20),
+            "2.0" => Ok(Self::X20),
             _ => Err("invalid value".into()),
         }
     }
@@ -2817,8 +2818,9 @@ impl ::std::str::FromStr for Cve {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^CVE-[0-9]{4}-[0-9]{4,}$").unwrap().find(value).is_none()
-        {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^CVE-[0-9]{4}-[0-9]{4,}$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^CVE-[0-9]{4}-[0-9]{4,}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -2954,7 +2956,7 @@ impl ::std::str::FromStr for DetailsOfTheRemediation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -3033,7 +3035,7 @@ impl ::std::str::FromStr for DetailsOfTheThreat {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -3119,14 +3121,12 @@ impl ::std::str::FromStr for DocumentCategory {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
-        if regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$")
-            .unwrap()
-            .find(value)
-            .is_none()
-        {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$\"".into(),
             );
@@ -3696,9 +3696,9 @@ impl ::std::convert::From<&Self> for DocumentStatus {
 impl ::std::fmt::Display for DocumentStatus {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Draft => write!(f, "draft"),
-            Self::Final => write!(f, "final"),
-            Self::Interim => write!(f, "interim"),
+            Self::Draft => f.write_str("draft"),
+            Self::Final => f.write_str("final"),
+            Self::Interim => f.write_str("interim"),
         }
     }
 }
@@ -3781,7 +3781,7 @@ impl ::std::str::FromStr for EngineName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -3922,7 +3922,7 @@ impl ::std::str::FromStr for EngineVersion {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -4001,7 +4001,7 @@ impl ::std::str::FromStr for EntitlementOfTheRemediation {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -4146,7 +4146,7 @@ impl ::std::str::FromStr for Filename {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -4919,7 +4919,7 @@ impl ::std::str::FromStr for IssuingAuthority {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5012,17 +5012,17 @@ impl ::std::convert::From<&Self> for LabelOfTheFlag {
 impl ::std::fmt::Display for LabelOfTheFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::ComponentNotPresent => write!(f, "component_not_present"),
+            Self::ComponentNotPresent => f.write_str("component_not_present"),
             Self::InlineMitigationsAlreadyExist => {
-                write!(f, "inline_mitigations_already_exist")
+                f.write_str("inline_mitigations_already_exist")
             }
             Self::VulnerableCodeCannotBeControlledByAdversary => {
-                write!(f, "vulnerable_code_cannot_be_controlled_by_adversary")
+                f.write_str("vulnerable_code_cannot_be_controlled_by_adversary")
             }
             Self::VulnerableCodeNotInExecutePath => {
-                write!(f, "vulnerable_code_not_in_execute_path")
+                f.write_str("vulnerable_code_not_in_execute_path")
             }
-            Self::VulnerableCodeNotPresent => write!(f, "vulnerable_code_not_present"),
+            Self::VulnerableCodeNotPresent => f.write_str("vulnerable_code_not_present"),
         }
     }
 }
@@ -5117,10 +5117,10 @@ impl ::std::convert::From<&Self> for LabelOfTlp {
 impl ::std::fmt::Display for LabelOfTlp {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Amber => write!(f, "AMBER"),
-            Self::Green => write!(f, "GREEN"),
-            Self::Red => write!(f, "RED"),
-            Self::White => write!(f, "WHITE"),
+            Self::Amber => f.write_str("AMBER"),
+            Self::Green => f.write_str("GREEN"),
+            Self::Red => f.write_str("RED"),
+            Self::White => f.write_str("WHITE"),
         }
     }
 }
@@ -5206,13 +5206,14 @@ impl ::std::str::FromStr for LangT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new(
-                "^(([A-Za-z]{2,3}(-[A-Za-z]{3}(-[A-Za-z]{3}){0,2})?|[A-Za-z]{4,8})(-[A-Za-z]{4})?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-[A-WY-Za-wy-z0-9](-[A-Za-z0-9]{2,8})+)*(-[Xx](-[A-Za-z0-9]{1,8})+)?|[Xx](-[A-Za-z0-9]{1,8})+|[Ii]-[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ii]-[Mm][Ii][Nn][Gg][Oo])$",
-            )
-            .unwrap()
-            .find(value)
-            .is_none()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
+            ::regress::Regex::new(
+                    "^(([A-Za-z]{2,3}(-[A-Za-z]{3}(-[A-Za-z]{3}){0,2})?|[A-Za-z]{4,8})(-[A-Za-z]{4})?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-[A-WY-Za-wy-z0-9](-[A-Za-z0-9]{2,8})+)*(-[Xx](-[A-Za-z0-9]{1,8})+)?|[Xx](-[A-Za-z0-9]{1,8})+|[Ii]-[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ii]-[Mm][Ii][Nn][Gg][Oo])$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(([A-Za-z]{2,3}(-[A-Za-z]{3}(-[A-Za-z]{3}){0,2})?|[A-Za-z]{4,8})(-[A-Za-z]{4})?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-[A-WY-Za-wy-z0-9](-[A-Za-z0-9]{2,8})+)*(-[Xx](-[A-Za-z0-9]{1,8})+)?|[Xx](-[A-Za-z0-9]{1,8})+|[Ii]-[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ii]-[Mm][Ii][Nn][Gg][Oo])$\""
                     .into(),
@@ -5294,7 +5295,7 @@ impl ::std::str::FromStr for LegacyVersionOfTheRevision {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5373,7 +5374,7 @@ impl ::std::str::FromStr for ModelNumber {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5457,7 +5458,7 @@ impl ::std::str::FromStr for NameOfPublisher {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5546,7 +5547,7 @@ impl ::std::str::FromStr for NameOfTheBranch {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5629,7 +5630,7 @@ impl ::std::str::FromStr for NameOfTheContributor {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -5813,13 +5814,13 @@ impl ::std::convert::From<&Self> for NoteCategory {
 impl ::std::fmt::Display for NoteCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Description => write!(f, "description"),
-            Self::Details => write!(f, "details"),
-            Self::Faq => write!(f, "faq"),
-            Self::General => write!(f, "general"),
-            Self::LegalDisclaimer => write!(f, "legal_disclaimer"),
-            Self::Other => write!(f, "other"),
-            Self::Summary => write!(f, "summary"),
+            Self::Description => f.write_str("description"),
+            Self::Details => f.write_str("details"),
+            Self::Faq => f.write_str("faq"),
+            Self::General => f.write_str("general"),
+            Self::LegalDisclaimer => f.write_str("legal_disclaimer"),
+            Self::Other => f.write_str("other"),
+            Self::Summary => f.write_str("summary"),
         }
     }
 }
@@ -5901,7 +5902,7 @@ impl ::std::str::FromStr for NoteContent {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6086,11 +6087,11 @@ impl ::std::convert::From<&Self> for PartyCategory {
 impl ::std::fmt::Display for PartyCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Coordinator => write!(f, "coordinator"),
-            Self::Discoverer => write!(f, "discoverer"),
-            Self::Other => write!(f, "other"),
-            Self::User => write!(f, "user"),
-            Self::Vendor => write!(f, "vendor"),
+            Self::Coordinator => f.write_str("coordinator"),
+            Self::Discoverer => f.write_str("discoverer"),
+            Self::Other => f.write_str("other"),
+            Self::User => f.write_str("user"),
+            Self::Vendor => f.write_str("vendor"),
         }
     }
 }
@@ -6187,12 +6188,12 @@ impl ::std::convert::From<&Self> for PartyStatus {
 impl ::std::fmt::Display for PartyStatus {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::Completed => write!(f, "completed"),
-            Self::ContactAttempted => write!(f, "contact_attempted"),
-            Self::Disputed => write!(f, "disputed"),
-            Self::InProgress => write!(f, "in_progress"),
-            Self::NotContacted => write!(f, "not_contacted"),
-            Self::Open => write!(f, "open"),
+            Self::Completed => f.write_str("completed"),
+            Self::ContactAttempted => f.write_str("contact_attempted"),
+            Self::Disputed => f.write_str("disputed"),
+            Self::InProgress => f.write_str("in_progress"),
+            Self::NotContacted => f.write_str("not_contacted"),
+            Self::Open => f.write_str("open"),
         }
     }
 }
@@ -6338,7 +6339,7 @@ impl ::std::str::FromStr for ProductGroupIdT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -6462,7 +6463,7 @@ impl ::std::str::FromStr for ProductIdT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7135,11 +7136,11 @@ impl ::std::convert::From<&Self> for RelationshipCategory {
 impl ::std::fmt::Display for RelationshipCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
-            Self::DefaultComponentOf => write!(f, "default_component_of"),
-            Self::ExternalComponentOf => write!(f, "external_component_of"),
-            Self::InstalledOn => write!(f, "installed_on"),
-            Self::InstalledWith => write!(f, "installed_with"),
-            Self::OptionalComponentOf => write!(f, "optional_component_of"),
+            Self::DefaultComponentOf => f.write_str("default_component_of"),
+            Self::ExternalComponentOf => f.write_str("external_component_of"),
+            Self::InstalledOn => f.write_str("installed_on"),
+            Self::InstalledWith => f.write_str("installed_with"),
+            Self::OptionalComponentOf => f.write_str("optional_component_of"),
         }
     }
 }
@@ -7598,7 +7599,7 @@ impl ::std::str::FromStr for SerialNumber {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7677,7 +7678,7 @@ impl ::std::str::FromStr for StockKeepingUnit {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7759,7 +7760,7 @@ impl ::std::str::FromStr for SummaryOfTheAcknowledgment {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7838,7 +7839,7 @@ impl ::std::str::FromStr for SummaryOfTheInvolvement {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -7921,7 +7922,7 @@ impl ::std::str::FromStr for SummaryOfTheProductGroup {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8000,7 +8001,7 @@ impl ::std::str::FromStr for SummaryOfTheReference {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8082,7 +8083,7 @@ impl ::std::str::FromStr for SummaryOfTheRevision {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8165,7 +8166,7 @@ impl ::std::str::FromStr for SystemName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8248,7 +8249,7 @@ impl ::std::str::FromStr for Text {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8332,7 +8333,7 @@ impl ::std::str::FromStr for TextOfAggregateSeverity {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8416,7 +8417,7 @@ impl ::std::str::FromStr for TextualDescription {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8500,7 +8501,7 @@ impl ::std::str::FromStr for TextualDescriptionOfTheProduct {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8648,7 +8649,7 @@ impl ::std::str::FromStr for Title {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8733,7 +8734,7 @@ impl ::std::str::FromStr for TitleOfNote {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -8816,7 +8817,7 @@ impl ::std::str::FromStr for TitleOfThisDocument {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))
@@ -9149,10 +9150,12 @@ impl ::std::str::FromStr for UniqueIdentifierForTheDocument {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
-        if regress::Regex::new("^[\\S](.*[\\S])?$").unwrap().find(value).is_none() {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[\\S](.*[\\S])?$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^[\\S](.*[\\S])?$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -9237,10 +9240,12 @@ impl ::std::str::FromStr for ValueOfTheCryptographicHash {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 32usize {
+        if value.chars().count() < 32usize {
             return Err("shorter than 32 characters".into());
         }
-        if regress::Regex::new("^[0-9a-fA-F]{32,}$").unwrap().find(value).is_none() {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[0-9a-fA-F]{32,}$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^[0-9a-fA-F]{32,}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -9326,13 +9331,14 @@ impl ::std::str::FromStr for VersionT {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new(
-                "^(0|[1-9][0-9]*)$|^((0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$",
-            )
-            .unwrap()
-            .find(value)
-            .is_none()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
+            ::regress::Regex::new(
+                    "^(0|[1-9][0-9]*)$|^((0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$",
+                )
+                .unwrap()
+        });
+        if PATTERN.find(value).is_none() {
             return Err(
                 "doesn't match pattern \"^(0|[1-9][0-9]*)$|^((0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$\""
                     .into(),
@@ -9927,7 +9933,9 @@ impl ::std::str::FromStr for WeaknessId {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if regress::Regex::new("^CWE-[1-9]\\d{0,5}$").unwrap().find(value).is_none() {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^CWE-[1-9]\\d{0,5}$").unwrap() });
+        if PATTERN.find(value).is_none() {
             return Err("doesn't match pattern \"^CWE-[1-9]\\d{0,5}$\"".into());
         }
         Ok(Self(value.to_string()))
@@ -10011,7 +10019,7 @@ impl ::std::str::FromStr for WeaknessName {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.len() < 1usize {
+        if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
         }
         Ok(Self(value.to_string()))

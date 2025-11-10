@@ -21,9 +21,9 @@ struct StaticAssets;
 pub async fn start_server(host: &str, port: u16) -> anyhow::Result<()> {
     let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
 
-    // Build the router - serves all static files
+    // Build the router - serve all static files with fallback to index.html
     let app = Router::new()
-        .route("/", get(index_handler))
+        .route("/", get(static_handler))
         .route("/*path", get(static_handler));
 
     println!("\n🚀 CSAF Validator Web UI starting...");
@@ -38,15 +38,15 @@ pub async fn start_server(host: &str, port: u16) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Handler for the index page
-async fn index_handler() -> impl IntoResponse {
-    static_handler(axum::extract::Path("index.html".to_string())).await
-}
-
 /// Handler for all static files (HTML, JS, CSS, WASM, etc.)
-async fn static_handler(axum::extract::Path(path): axum::extract::Path<String>) -> Response {
-    // Remove leading slash if present
+/// Defaults to index.html for root path
+async fn static_handler(path: Option<axum::extract::Path<String>>) -> Response {
+    let path = path
+        .map(|p| p.0)
+        .unwrap_or_else(|| "index.html".to_string());
+    
     let path = path.trim_start_matches('/');
+    let path = if path.is_empty() { "index.html" } else { path };
     
     match StaticAssets::get(path) {
         Some(content) => {

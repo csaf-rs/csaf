@@ -3,24 +3,9 @@
 //! This module provides WebAssembly bindings for validating CSAF documents in the browser.
 
 use wasm_bindgen::prelude::*;
-use serde::{Deserialize, Serialize};
-use crate::csaf::validation::{ValidationError, ValidationPreset, Validatable};
+use crate::csaf::validation::{ValidationResult, ValidationPreset, create_validation_result};
 use crate::csaf::csaf2_0::loader::load_document_from_str as load_document_from_str_2_0;
 use crate::csaf::csaf2_1::loader::load_document_from_str as load_document_from_str_2_1;
-
-/// Result of a CSAF validation
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ValidationResult {
-    /// Whether the validation was successful (no errors)
-    pub success: bool,
-    /// The detected CSAF version
-    pub version: String,
-    /// List of validation errors (empty if successful)
-    pub errors: Vec<ValidationError>,
-    /// The validation preset that was used
-    pub preset: ValidationPreset,
-}
 
 /// Initialize panic hook for better error messages in the browser console
 #[wasm_bindgen(start)]
@@ -76,82 +61,18 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<JsValue, JsValu
 
 /// Validate a CSAF 2.0 document
 fn validate_2_0(json_str: &str, preset: ValidationPreset) -> Result<ValidationResult, String> {
-    // Load the document
     let document = load_document_from_str_2_0(json_str)
         .map_err(|e| format!("Failed to load CSAF 2.0 document: {}", e))?;
-
-    // Collect errors by temporarily capturing output
-    let errors = collect_validation_errors_2_0(&document, preset.clone());
-
-    Ok(ValidationResult {
-        success: errors.is_empty(),
-        version: "2.0".to_string(),
-        errors,
-        preset,
-    })
+    
+    Ok(create_validation_result(&document, "2.0", preset))
 }
 
 /// Validate a CSAF 2.1 document
 fn validate_2_1(json_str: &str, preset: ValidationPreset) -> Result<ValidationResult, String> {
-    // Load the document
     let document = load_document_from_str_2_1(json_str)
         .map_err(|e| format!("Failed to load CSAF 2.1 document: {}", e))?;
-
-    // Collect errors by temporarily capturing output
-    let errors = collect_validation_errors_2_1(&document, preset.clone());
-
-    Ok(ValidationResult {
-        success: errors.is_empty(),
-        version: "2.1".to_string(),
-        errors,
-        preset,
-    })
-}
-
-/// Helper to collect validation errors from CSAF 2.0 validation
-fn collect_validation_errors_2_0(
-    target: &impl Validatable<crate::csaf::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
-    preset: ValidationPreset,
-) -> Vec<ValidationError> {
-    let mut errors = Vec::new();
-
-    // Get tests for the preset
-    if let Some(test_ids) = target.presets().get(&preset) {
-        let tests = target.tests();
-        
-        for test_id in test_ids {
-            if let Some(test_fn) = tests.get(test_id) {
-                if let Err(error) = test_fn(target.doc()) {
-                    errors.push(error);
-                }
-            }
-        }
-    }
-
-    errors
-}
-
-/// Helper to collect validation errors from CSAF 2.1 validation
-fn collect_validation_errors_2_1(
-    target: &impl Validatable<crate::csaf::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
-    preset: ValidationPreset,
-) -> Vec<ValidationError> {
-    let mut errors = Vec::new();
-
-    // Get tests for the preset
-    if let Some(test_ids) = target.presets().get(&preset) {
-        let tests = target.tests();
-        
-        for test_id in test_ids {
-            if let Some(test_fn) = tests.get(test_id) {
-                if let Err(error) = test_fn(target.doc()) {
-                    errors.push(error);
-                }
-            }
-        }
-    }
-
-    errors
+    
+    Ok(create_validation_result(&document, "2.1", preset))
 }
 
 #[cfg(test)]

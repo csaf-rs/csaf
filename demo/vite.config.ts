@@ -8,13 +8,13 @@ export default defineConfig({
     outDir: '../csaf-validator/src/web/static',
     emptyOutDir: true,
     rollupOptions: {
-      external: ['/static/csaf_rs.js'],
+      external: ['/assets/csaf_rs.js'],
       output: {
-        entryFileNames: 'static/[name].js',
-        chunkFileNames: 'static/[name].js',
-        assetFileNames: 'static/[name].[ext]',
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]',
         paths: {
-          '/static/csaf_rs.js': '/static/csaf_rs.js'
+          '/assets/csaf_rs.js': '/assets/csaf_rs.js'
         }
       }
     }

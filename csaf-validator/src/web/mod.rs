@@ -5,7 +5,7 @@
 
 use axum::{
     http::StatusCode,
-    response::{Html, IntoResponse, Response},
+    response::{IntoResponse, Response},
     routing::get,
     Router,
 };
@@ -21,10 +21,10 @@ struct StaticAssets;
 pub async fn start_server(host: &str, port: u16) -> anyhow::Result<()> {
     let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
 
-    // Build the router - only serves static files and the index.html
+    // Build the router - serves all static files
     let app = Router::new()
         .route("/", get(index_handler))
-        .route("/static/*path", get(static_handler));
+        .route("/*path", get(static_handler));
 
     println!("\n🚀 CSAF Validator Web UI starting...");
     println!("📝 Open your browser and navigate to: http://{}:{}", host, port);
@@ -40,23 +40,17 @@ pub async fn start_server(host: &str, port: u16) -> anyhow::Result<()> {
 
 /// Handler for the index page
 async fn index_handler() -> impl IntoResponse {
-    match StaticAssets::get("index.html") {
-        Some(content) => Html(content.data.to_vec()).into_response(),
-        None => (
-            StatusCode::NOT_FOUND,
-            "index.html not found. Please build the frontend first.",
-        )
-            .into_response(),
-    }
+    static_handler(axum::extract::Path("index.html".to_string())).await
 }
 
-/// Handler for static files (JS, CSS, WASM, etc.)
+/// Handler for all static files (HTML, JS, CSS, WASM, etc.)
 async fn static_handler(axum::extract::Path(path): axum::extract::Path<String>) -> Response {
-    let full_path = format!("static/{}", path);
+    // Remove leading slash if present
+    let path = path.trim_start_matches('/');
     
-    match StaticAssets::get(&full_path) {
+    match StaticAssets::get(path) {
         Some(content) => {
-            let mime_type = mime_guess::from_path(&path).first_or_octet_stream();
+            let mime_type = mime_guess::from_path(path).first_or_octet_stream();
             (
                 StatusCode::OK,
                 [(axum::http::header::CONTENT_TYPE, mime_type.as_ref())],
@@ -64,6 +58,10 @@ async fn static_handler(axum::extract::Path(path): axum::extract::Path<String>) 
             )
                 .into_response()
         }
-        None => (StatusCode::NOT_FOUND, format!("File not found: {}", full_path)).into_response(),
+        None => (
+            StatusCode::NOT_FOUND,
+            format!("File not found: {}", path),
+        )
+            .into_response(),
     }
 }

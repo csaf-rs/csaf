@@ -5,7 +5,7 @@ import DropZone from './components/DropZone';
 import DocumentInfo from './components/DocumentInfo';
 import LoadingSpinner from './components/LoadingSpinner';
 import ValidationResults from './components/ValidationResults';
-import ErrorAlert from './components/ErrorAlert';
+import Alert from './components/Alert';
 import Footer from './components/Footer';
 import { initWasm, validateDocument } from './utils/validation';
 import type { ValidationResult, ValidationPreset } from './types';
@@ -114,7 +114,7 @@ function App() {
           validateDisabled={!currentDocument}
         />
 
-        <DropZone onFileSelect={handleFileSelect} />
+        {!currentDocument && <DropZone onFileSelect={handleFileSelect} />}
 
         {currentFilename && (
           <DocumentInfo
@@ -127,7 +127,14 @@ function App() {
 
         {results && <ValidationResults results={results} />}
 
-        {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
+        {error && (
+          <Alert
+            type="error"
+            title="Error"
+            message={error}
+            onClose={() => setError(null)}
+          />
+        )}
 
         <Footer />
       </div>

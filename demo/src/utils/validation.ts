@@ -1,4 +1,4 @@
-import init, { validateCsaf } from '/static/csaf_rs.js';
+import init, { validateCsaf } from '/assets/csaf_rs.js';
 import type { ValidationResult, ValidationPreset } from '../types';
 
 let wasmInitialized = false;
@@ -11,7 +11,7 @@ export async function initWasm(): Promise<void> {
     return;
   }
 
-  await init('/static/csaf_rs_bg.wasm');
+  await init('/assets/csaf_rs_bg.wasm');
   wasmInitialized = true;
 }
 

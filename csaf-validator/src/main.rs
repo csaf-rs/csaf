@@ -9,6 +9,9 @@ use csaf_rs::csaf::validation::{
 };
 use std::str::FromStr;
 
+#[cfg(feature = "web")]
+mod web;
+
 /// A validator for CSAF documents
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -16,6 +19,21 @@ struct Args {
     /// Path to the CSAF document to validate (not used with --web)
     #[arg()]
     path: Option<String>,
+
+    /// Start the web server instead of validating a file
+    #[cfg(feature = "web")]
+    #[arg(long)]
+    web: bool,
+
+    /// Host to bind the web server to (only with --web)
+    #[cfg(feature = "web")]
+    #[arg(long, default_value = "127.0.0.1", requires = "web")]
+    host: String,
+
+    /// Port to bind the web server to (only with --web)
+    #[cfg(feature = "web")]
+    #[arg(long, default_value = "8080", requires = "web")]
+    port: u16,
 
     /// Version of CSAF to use
     #[arg(short, long, default_value = "2.0")]
@@ -30,6 +48,24 @@ struct Args {
     test_id: Vec<String>,
 }
 
+#[cfg(feature = "web")]
+#[tokio::main]
+async fn main() -> Result<()> {
+    let args = Args::parse();
+
+    // If web mode is enabled, start the web server
+    if args.web {
+        return web::start_server(&args.host, args.port).await;
+    }
+
+    // Otherwise, validate a file
+    let path = args.path.as_ref()
+        .ok_or_else(|| anyhow::anyhow!("Path argument is required when not using --web"))?;
+
+    validate_file(path, &args)
+}
+
+#[cfg(not(feature = "web"))]
 fn main() -> Result<()> {
     let args = Args::parse();
 

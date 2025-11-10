@@ -1,6 +1,6 @@
-import ValidationStats from './ValidationStats';
+import InfoCard from './InfoCard';
 import ErrorList from './ErrorList';
-import SuccessMessage from './SuccessMessage';
+import Alert from './Alert';
 import type { ValidationResult } from '../types';
 
 interface ValidationResultsProps {
@@ -25,16 +25,23 @@ function ValidationResults({ results }: ValidationResultsProps) {
         {badge}
       </div>
 
-      <ValidationStats
-        version={results.version}
-        preset={results.preset}
-        errorCount={results.errors.length}
+      <InfoCard
+        items={[
+          { label: 'CSAF Version', value: results.version },
+          { label: 'Preset Used', value: results.preset },
+          { label: 'Errors Found', value: results.errors.length },
+        ]}
+        columns={3}
       />
 
       {results.errors.length > 0 ? (
         <ErrorList errors={results.errors} />
       ) : (
-        <SuccessMessage />
+        <Alert
+          type="success"
+          title="Validation Passed!"
+          message="The document is valid according to the selected preset."
+        />
       )}
     </div>
   );

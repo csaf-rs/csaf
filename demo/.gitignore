@@ -4,9 +4,9 @@ deno.lock
 
 # Build outputs
 dist/
-public/static/*.js
-public/static/*.wasm
-public/static/*.ts
+public/assets/*.js
+public/assets/*.wasm
+public/assets/*.ts
 
 # Vite
 .vite/

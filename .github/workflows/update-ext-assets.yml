@@ -1,6 +1,7 @@
 name: Make PR for external assets update
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "15 3 * * 6"
 

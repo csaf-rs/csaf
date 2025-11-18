@@ -1,9 +1,9 @@
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use clap::Parser;
 use csaf_rs::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_rs::csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf_rs::csaf::validation::{
-    validate_by_preset, validate_by_tests, ValidationPreset, ValidationResult,
+    ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
 };
 use std::str::FromStr;
 
@@ -84,21 +84,7 @@ pub fn print_validation_result(result: &ValidationResult) {
 
     // Print individual test results
     for test_result in &result.test_results {
-        if test_result.success {
-            println!("Executing Test {}... ✅ Success", test_result.test_id);
-        } else if let Some(error) = test_result.errors.first() {
-            if error.message.contains("not found") {
-                println!(
-                    "Executing Test {}... ⚠️ Test not found",
-                    test_result.test_id
-                );
-            } else {
-                println!(
-                    "Executing Test {}... ❌ Error: {}",
-                    test_result.test_id, error.message
-                );
-            }
-        }
+        print_test_result(test_result);
     }
 
     // Print summary
@@ -110,5 +96,31 @@ pub fn print_validation_result(result: &ValidationResult) {
             "❌ Validation failed with {} error(s)\n",
             result.errors.len()
         );
+    }
+}
+
+/// Print individual test result to stdout.
+fn print_test_result(test_result: &csaf_rs::csaf::validation::TestResult) {
+    if test_result.success {
+        println!("Executing Test {}... ✅ Success", test_result.test_id);
+    } else {
+        // A little bit of crude way to check if our test is not found
+        if let Some(error) = test_result.errors.first() {
+            if error.message.contains("not found") {
+                println!(
+                    "Executing Test {}... ⚠️ Test not found",
+                    test_result.test_id
+                );
+            } else {
+                let msg = format!("Executing Test {}... ❌ ", test_result.test_id);
+                print!("{}", msg);
+                for (i, error) in (&test_result.errors).iter().enumerate() {
+                    if i > 0 {
+                        println!("{}", " ".repeat(msg.len()));
+                    }
+                    println!("Error: {}", error.message);
+                }
+            }
+        }
     }
 }

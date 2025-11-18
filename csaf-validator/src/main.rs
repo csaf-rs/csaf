@@ -13,6 +13,7 @@ use csaf_rs::csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf_rs::csaf::validation::{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     TestResult,
     TestResultStatus::{Failure, NotFound, Success},
     Validatable, ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
@@ -22,6 +23,10 @@ use csaf_rs::csaf::validation::{
 =======
     ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
 >>>>>>> f29503b (Printing multiple errors)
+=======
+    TestResult, TestResultStatus, ValidationPreset, ValidationResult, validate_by_preset,
+    validate_by_tests,
+>>>>>>> 8ac391e (Cleaner output)
 };
 use std::str::FromStr;
 
@@ -173,27 +178,30 @@ fn print_test_result(test_result: &TestResult) {
 }
 
 /// Print individual test result to stdout.
-fn print_test_result(test_result: &csaf_rs::csaf::validation::TestResult) {
-    if test_result.success {
-        println!("Executing Test {}... ✅ Success", test_result.test_id);
-    } else {
-        // A little bit of crude way to check if our test is not found
-        if let Some(error) = test_result.errors.first() {
-            if error.message.contains("not found") {
-                println!(
-                    "Executing Test {}... ⚠️ Test not found",
-                    test_result.test_id
-                );
-            } else {
-                let msg = format!("Executing Test {}... ❌ ", test_result.test_id);
-                print!("{}", msg);
-                for (i, error) in (&test_result.errors).iter().enumerate() {
-                    if i > 0 {
-                        println!("{}", " ".repeat(msg.len()));
-                    }
-                    println!("Error: {}", error.message);
+fn print_test_result(test_result: &TestResult) {
+    // Common prefix for all test statuses
+    let prefix = format!("Executing Test {} ... ", test_result.test_id);
+
+    match &test_result.status {
+        TestResultStatus::Success => {
+            // Yay, success!
+            println!("{}✅ Success", prefix);
+        }
+        TestResultStatus::Failure { errors } => {
+            // We want to print multiple errors nicely indented
+            let error_msg = "❌ ";
+            print!("{}{}", prefix, error_msg);
+            let indent = " ".repeat(prefix.len() + error_msg.len());
+            for (i, error) in errors.iter().enumerate() {
+                if i > 0 {
+                    print!("{}", indent);
                 }
+                println!("Error: {}", error.message);
             }
+        }
+        TestResultStatus::NotFound => {
+            // Test not found
+            println!("{}⚠️  Test not found", prefix);
         }
     }
 }

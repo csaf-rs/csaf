@@ -58,7 +58,9 @@ async fn main() -> Result<()> {
     }
 
     // Otherwise, validate a file
-    let path = args.path.as_ref()
+    let path = args
+        .path
+        .as_ref()
         .ok_or_else(|| anyhow::anyhow!("Path argument is required when not using --web"))?;
 
     validate_file(path, &args)

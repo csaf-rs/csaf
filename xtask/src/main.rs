@@ -76,7 +76,7 @@ fn build_wasm() -> Result<()> {
         .args([
             "build",
             "--target", "web",
-            "--out-dir", "../demo/public/assets",
+            "--out-dir", "../csaf-validator/web-ui/public/assets",
             "csaf-rs"
         ])
         .status()
@@ -95,11 +95,11 @@ fn build_frontend() -> Result<()> {
     
     check_deno()?;
     
-    let demo_dir = project_root().join("demo");
+    let web_ui_dir = project_root().join("csaf-validator/web-ui");
     
     let status = Command::new("deno")
         .args(["task", "build"])
-        .current_dir(&demo_dir)
+        .current_dir(&web_ui_dir)
         .status()
         .context("Failed to run deno task build")?;
     
@@ -116,12 +116,12 @@ fn install_deps() -> Result<()> {
     
     check_deno()?;
     
-    let demo_dir = project_root().join("demo");
+    let web_ui_dir = project_root().join("csaf-validator/web-ui");
     
     // Deno doesn't require explicit install, but we can cache dependencies
     let status = Command::new("deno")
         .args(["cache", "--reload", "npm:vite", "npm:react", "npm:react-dom"])
-        .current_dir(&demo_dir)
+        .current_dir(&web_ui_dir)
         .status()
         .context("Failed to cache deno dependencies")?;
     
@@ -139,11 +139,11 @@ fn dev_server() -> Result<()> {
     
     check_deno()?;
     
-    let demo_dir = project_root().join("demo");
+    let web_ui_dir = project_root().join("csaf-validator/web-ui");
     
     let status = Command::new("deno")
         .args(["task", "dev"])
-        .current_dir(&demo_dir)
+        .current_dir(&web_ui_dir)
         .status()
         .context("Failed to start dev server")?;
     
@@ -158,8 +158,8 @@ fn clean() -> Result<()> {
     println!("🧹 Cleaning build artifacts...");
     
     let paths = [
-        "demo/node_modules",
-        "demo/public/assets",
+        "csaf-validator/web-ui/node_modules",
+        "csaf-validator/web-ui/public/assets",
         "csaf-validator/src/web/static",
         "target",
         ".deno",

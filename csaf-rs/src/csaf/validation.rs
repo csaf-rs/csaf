@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
+use TestResultStatus::{*};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct ValidationError {
@@ -47,12 +48,12 @@ pub struct ValidationResult {
     pub success: bool,
     /// The detected CSAF version
     pub version: String,
-    /// List of validation errors (empty if successful)
-    pub errors: Vec<ValidationError>,
     /// The validation preset that was used
     pub preset: ValidationPreset,
     /// Individual test results with execution details
     pub test_results: Vec<TestResult>,
+    /// The total number of errors found during validation
+    pub num_errors: usize,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
@@ -135,13 +136,13 @@ pub fn validate_by_test<VersionedDocument>(
     // Try to find and execute the test specified by the test_id
     let status = if let Some(test_fn) = tests.get(test_id) {
         match test_fn(target.doc()) {
-            Ok(()) => TestResultStatus::Success,
-            Err(error) => TestResultStatus::Failure {
+            Ok(()) => Success,
+            Err(error) => Failure {
                 errors: vec![error],
             },
         }
     } else {
-        TestResultStatus::NotFound
+        NotFound
     };
 
     TestResult {
@@ -157,25 +158,24 @@ pub fn validate_by_tests<VersionedDocument>(
     preset: ValidationPreset,
     test_ids: &[&str],
 ) -> ValidationResult {
-    let mut errors = Vec::new();
     let mut test_results = Vec::new();
+    let mut success = true;
+    let mut num_errors: usize = 0;
 
     // Loop through tests and gather all results and errors
     for test_id in test_ids {
         let test_result = validate_by_test(target, test_id);
-        if let TestResultStatus::Failure {
-            errors: test_errors,
-        } = &test_result.status
-        {
-            errors.extend(test_errors.iter().cloned());
+        if let Failure { errors } = &test_result.status {
+            success = false;
+            num_errors += errors.len();            
         }
         test_results.push(test_result);
     }
 
     ValidationResult {
-        success: errors.is_empty(),
+        success: success,
         version: version.to_string(),
-        errors,
+        num_errors: num_errors,
         preset,
         test_results,
     }

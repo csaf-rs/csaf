@@ -26,9 +26,12 @@ pub async fn start_server(host: &str, port: u16) -> anyhow::Result<()> {
         .route("/", get(static_handler))
         .route("/*path", get(static_handler));
 
-    println!("\n🚀 CSAF Validator Web UI starting...");
-    println!("📝 Open your browser and navigate to: http://{}:{}", host, port);
-    println!("💡 All validation runs in your browser using WebAssembly");
+    println!("\nCSAF Validator Web UI starting...");
+    println!(
+        "Open your browser and navigate to: http://{}:{}",
+        host, port
+    );
+    println!("All validation runs in your browser using WebAssembly");
     println!("Press Ctrl+C to stop the server\n");
 
     // Start the server
@@ -44,10 +47,10 @@ async fn static_handler(path: Option<axum::extract::Path<String>>) -> Response {
     let path = path
         .map(|p| p.0)
         .unwrap_or_else(|| "index.html".to_string());
-    
+
     let path = path.trim_start_matches('/');
     let path = if path.is_empty() { "index.html" } else { path };
-    
+
     match StaticAssets::get(path) {
         Some(content) => {
             let mime_type = mime_guess::from_path(path).first_or_octet_stream();
@@ -58,10 +61,6 @@ async fn static_handler(path: Option<axum::extract::Path<String>>) -> Response {
             )
                 .into_response()
         }
-        None => (
-            StatusCode::NOT_FOUND,
-            format!("File not found: {}", path),
-        )
-            .into_response(),
+        None => (StatusCode::NOT_FOUND, format!("File not found: {}", path)).into_response(),
     }
 }

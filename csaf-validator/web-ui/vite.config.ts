@@ -5,7 +5,7 @@ import tailwindcss from 'npm:@tailwindcss/vite@^4.1.16';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    outDir: '../csaf-validator/src/web/static',
+    outDir: '../src/web/static',
     emptyOutDir: true,
     rollupOptions: {
       external: ['/assets/csaf_rs.js'],

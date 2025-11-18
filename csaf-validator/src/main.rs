@@ -1,32 +1,11 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 use anyhow::{Result, bail};
-=======
-use anyhow::{bail, Result};
->>>>>>> b557c87 (Validation API)
-=======
-use anyhow::{Result, bail};
->>>>>>> f29503b (Printing multiple errors)
 use clap::Parser;
 use csaf_rs::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_rs::csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf_rs::csaf::validation::{
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     TestResult,
     TestResultStatus::{Failure, NotFound, Success},
     Validatable, ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
-=======
-    validate_by_preset, validate_by_tests, ValidationPreset, ValidationResult,
->>>>>>> b557c87 (Validation API)
-=======
-    ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
->>>>>>> f29503b (Printing multiple errors)
-=======
-    TestResult, TestResultStatus, ValidationPreset, ValidationResult, validate_by_preset,
-    validate_by_tests,
->>>>>>> 8ac391e (Cleaner output)
 };
 use std::str::FromStr;
 
@@ -82,7 +61,7 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
 /// This prints the results of the tests on stdout.
 fn validate_document<T>(document: T, version: &str, args: &Args) -> Result<()>
 where
-    T: csaf_rs::csaf::validation::Validatable<T>,
+    T: Validatable<T>,
 {
     let preset = ValidationPreset::from_str(args.preset.as_str())
         .map_err(|_| anyhow::anyhow!("Invalid validation preset: {}", args.preset))?;
@@ -107,29 +86,7 @@ pub fn print_validation_result(result: &ValidationResult) {
 
     // Print individual test results
     for test_result in &result.test_results {
-<<<<<<< HEAD
-<<<<<<< HEAD
         print_test_result(test_result);
-=======
-        if test_result.success {
-            println!("Executing Test {}... ✅ Success", test_result.test_id);
-        } else if let Some(error) = test_result.errors.first() {
-            if error.message.contains("not found") {
-                println!(
-                    "Executing Test {}... ⚠️ Test not found",
-                    test_result.test_id
-                );
-            } else {
-                println!(
-                    "Executing Test {}... ❌ Error: {}",
-                    test_result.test_id, error.message
-                );
-            }
-        }
->>>>>>> b557c87 (Validation API)
-=======
-        print_test_result(test_result);
->>>>>>> f29503b (Printing multiple errors)
     }
 
     // Print summary
@@ -137,7 +94,6 @@ pub fn print_validation_result(result: &ValidationResult) {
     if result.success {
         println!("✅ Validation passed! No errors found.\n");
     } else {
-<<<<<<< HEAD
         println!("❌ Validation failed with {} error(s)\n", result.num_errors,);
     }
 }
@@ -165,41 +121,6 @@ fn print_test_result(test_result: &TestResult) {
             }
         }
         NotFound => {
-            // Test not found
-            println!("{}⚠️  Test not found", prefix);
-        }
-=======
-        println!(
-            "❌ Validation failed with {} error(s)\n",
-            result.errors.len()
-        );
->>>>>>> b557c87 (Validation API)
-    }
-}
-
-/// Print individual test result to stdout.
-fn print_test_result(test_result: &TestResult) {
-    // Common prefix for all test statuses
-    let prefix = format!("Executing Test {} ... ", test_result.test_id);
-
-    match &test_result.status {
-        TestResultStatus::Success => {
-            // Yay, success!
-            println!("{}✅ Success", prefix);
-        }
-        TestResultStatus::Failure { errors } => {
-            // We want to print multiple errors nicely indented
-            let error_msg = "❌ ";
-            print!("{}{}", prefix, error_msg);
-            let indent = " ".repeat(prefix.len() + error_msg.len());
-            for (i, error) in errors.iter().enumerate() {
-                if i > 0 {
-                    print!("{}", indent);
-                }
-                println!("Error: {}", error.message);
-            }
-        }
-        TestResultStatus::NotFound => {
             // Test not found
             println!("{}⚠️  Test not found", prefix);
         }

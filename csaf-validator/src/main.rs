@@ -61,7 +61,7 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
 /// This prints the results of the tests on stdout.
 fn validate_document<T>(document: T, version: &str, args: &Args) -> Result<()>
 where
-    T: Validatable<T>,
+    T: csaf_rs::csaf::validation::Validatable<T>,
 {
     let preset = ValidationPreset::from_str(args.preset.as_str())
         .map_err(|_| anyhow::anyhow!("Invalid validation preset: {}", args.preset))?;

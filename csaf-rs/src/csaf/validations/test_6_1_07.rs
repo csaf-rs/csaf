@@ -45,7 +45,7 @@ fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
 /// vulnerability.
 pub fn test_6_1_07_multiple_same_scores_per_product(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         let mut seen_metrics: HashMap<String, HashSet<(VulnerabilityMetrics, &Option<String>)>> = HashMap::new();
         if let Some(metrics) = v.get_metrics() {
@@ -65,14 +65,14 @@ pub fn test_6_1_07_multiple_same_scores_per_product(
                         } else if version == "3.0" {
                             content_metrics.push((CvssV30, m.get_source()));
                         } else {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!("CVSS-v3 version {} is not supported.", version),
                                 instance_path: format!(
                                     "{}/{}",
                                     content.get_content_json_path(v_i, m_i),
                                     get_metric_prop_name(CvssV30),
                                 ),
-                            });
+                            }]);
                         }
                     }
                 }
@@ -86,7 +86,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(
                     let metrics_set = seen_metrics.entry(p.to_string()).or_insert_with(|| HashSet::new());
                     for cm_src in content_metrics.iter() {
                         if metrics_set.contains(cm_src) {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} already has another metric \"{}\" {} assigned.",
                                     p,
@@ -101,7 +101,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(
                                     content.get_content_json_path(v_i, m_i),
                                     get_metric_prop_name(cm_src.0.to_owned())
                                 ),
-                            });
+                            }]);
                         } else {
                             metrics_set.insert(cm_src.to_owned());
                         }

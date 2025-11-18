@@ -32,7 +32,7 @@ impl Display for ProductStatusGroup {
 
 pub fn test_6_1_06_contradicting_product_status(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = v.get_product_status() {
             // Map of product IDs to product status groups (mutually exclusive, therefore only one allowed)
@@ -94,7 +94,7 @@ fn check_status_group<'a>(
     product_ids: Option<impl IntoIterator<Item = &'a String>>,
     status_group: ProductStatusGroup,
     field_name: &str,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(products) = product_ids {
         for (i_pid, pid) in products.into_iter().enumerate() {
             match product_statuses.get(pid) {
@@ -103,7 +103,7 @@ fn check_status_group<'a>(
                 }
                 Some(existing_status) => {
                     if *existing_status != status_group {
-                        return Err(ValidationError {
+                        return Err(vec![ValidationError {
                             message: format!(
                                 "Product {} is marked with product status group \"{}\" but has conflicting product status belonging to group \"{}\"",
                                 pid,
@@ -111,7 +111,7 @@ fn check_status_group<'a>(
                                 existing_status.to_string()
                             ),
                             instance_path: format!("/vulnerabilities/{}/product_status/{}/{}", v_i, field_name, i_pid),
-                        });
+                        }]);
                     }
                 }
             }

@@ -43,22 +43,22 @@ pub fn find_cycle<'a>(
 
 pub fn test_6_1_03_circular_definition_of_product_id(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut relation_map = HashMap::<String, HashMap<String, usize>>::new();
 
         for (i_r, r) in tree.get_relationships().iter().enumerate() {
             let rel_prod_id = r.get_full_product_name().get_product_id();
             if r.get_product_reference() == rel_prod_id {
-                return Err(ValidationError {
+                return Err(vec![ValidationError {
                     message: "Relationship references itself via product_reference".to_string(),
                     instance_path: format!("/product_tree/relationships/{}/product_reference", i_r),
-                })
+                }])
             } else if r.get_relates_to_product_reference() == rel_prod_id {
-                return Err(ValidationError {
+                return Err(vec![ValidationError {
                     message: "Relationship references itself via relates_to_product_reference".to_string(),
                     instance_path: format!("/product_tree/relationships/{}/relates_to_product_reference", i_r),
-                })
+                }])
             } else {
                 match relation_map.get_mut(r.get_product_reference()) {
                     Some(v) => {
@@ -78,10 +78,10 @@ pub fn test_6_1_03_circular_definition_of_product_id(
         for product_id in relation_map.keys() {
             let mut vec: Vec<&str> = vec!();
             if let Some((_, cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut vec) {
-                return Err(ValidationError {
+                return Err(vec![ValidationError {
                     message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
                     instance_path: format!("/product_tree/relationships/{}", relation_index),
-                })
+                }])
             }
         }
     }

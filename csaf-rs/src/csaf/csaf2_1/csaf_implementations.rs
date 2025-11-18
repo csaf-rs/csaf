@@ -268,7 +268,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     }
 
     /// We normalize to Option here because property was optional in CSAF 2.0
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, Vec<ValidationError>> {
         Ok(&self.distribution)
     }
 
@@ -304,7 +304,7 @@ impl DistributionTrait for RulesForDocumentSharing {
     }
 
     /// Always return the value because it is mandatory
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError> {
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, Vec<ValidationError>> {
         Ok(&self.tlp)
     }
 }
@@ -402,7 +402,7 @@ impl ProductTreeTrait for ProductTree {
         &self.full_product_names
     }
 
-    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>) -> Result<(), ValidationError> {
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>) -> Result<(), Vec<ValidationError>> {
         self.visit_all_products_generic(callback)
     }
 }

@@ -9,7 +9,7 @@ use chrono::{DateTime, FixedOffset};
 /// of the newest item in the `revision_history` if the document status is `final` or `interim`.
 pub fn test_6_1_49_inconsistent_ssvc_timestamp(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
     let status = tracking.get_status();
@@ -31,10 +31,10 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(
                 };
             }
             Err(_) => {
-                return Err(ValidationError {
+                return Err(vec![ValidationError {
                     message: format!("Invalid date format in revision history: {}", date_str),
                     instance_path: format!("/document/tracking/revision_history/{}/date", i_r),
-                });
+                }]);
             }
         }
     }
@@ -42,10 +42,10 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(
     let newest_revision_date = match newest_revision_date {
         Some(date) => date,
         // No entries in revision history
-        None => return Err(ValidationError {
+        None => return Err(vec![ValidationError {
             message: "Revision history must not be empty for status final or interim".to_string(),
             instance_path: "/document/tracking/revision_history".to_string(),
-        }),
+        }]),
     };
 
     // Check each vulnerability's SSVC timestamp
@@ -56,20 +56,20 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(
                     match metric.get_content().get_ssvc() {
                         Ok(ssvc) => {
                             if ssvc.timestamp.fixed_offset() > newest_revision_date {
-                                return Err(ValidationError {
+                                return Err(vec![ValidationError {
                                     message: format!(
                                         "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
                                         ssvc.timestamp.to_rfc3339(), i_v, newest_revision_date.to_rfc3339()
                                     ),
                                     instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp", i_v, i_m),
-                                })
+                                }])
                             }
                         },
                         Err(err) => {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!("Invalid SSVC object: {}", err),
                                 instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
-                            });
+                            }]);
                         },
                     }
                 }

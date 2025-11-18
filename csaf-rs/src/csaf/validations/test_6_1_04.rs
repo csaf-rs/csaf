@@ -4,7 +4,7 @@ use std::collections::HashSet;
 
 pub fn test_6_1_04_missing_definition_of_product_group_id(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut known_groups = HashSet::<String>::new();
         // Collect all known product group IDs
@@ -18,10 +18,10 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(
                 if let Some(group_ids) = note.get_group_ids() {
                     for (i_g, group_id) in group_ids.enumerate() {
                         if !known_groups.contains(group_id) {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!("Missing definition of product_group_id: {}", group_id),
                                 instance_path: format!("/document/notes/{}/group_ids/{}", i_n, i_g),
-                            });
+                            }]);
                         }
                     }
                 }
@@ -36,10 +36,10 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(
                     if let Some(group_ids) = flag.get_group_ids() {
                         for (i_g, group_id) in group_ids.enumerate() {
                             if !known_groups.contains(group_id) {
-                                return Err(ValidationError {
+                                return Err(vec![ValidationError {
                                     message: format!("Missing definition of product_group_id: {}", group_id),
                                     instance_path: format!("/vulnerabilities/{}/flags/{}/group_ids/{}", i_v, i_f, i_g),
-                                });
+                                }]);
                             }
                         }
                     }
@@ -52,10 +52,10 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(
                     if let Some(group_ids) = note.get_group_ids() {
                         for (i_g, group_id) in group_ids.enumerate() {
                             if !known_groups.contains(group_id) {
-                                return Err(ValidationError {
+                                return Err(vec![ValidationError {
                                     message: format!("Missing definition of product_group_id: {}", group_id),
                                     instance_path: format!("/vulnerabilities/{}/notes/{}/group_ids/{}", i_v, i_n, i_g),
-                                });
+                                }]);
                             }
                         }
                     }
@@ -67,10 +67,10 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(
                 if let Some(group_ids) = remediation.get_group_ids() {
                     for (i_g, group_id) in group_ids.collect::<Vec<_>>().iter().enumerate() {
                         if !known_groups.contains(*group_id) {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!("Missing definition of product_group_id: {}", group_id),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}/group_ids/{}", i_v, i_r, i_g),
-                            });
+                            }]);
                         }
                     }
                 }
@@ -81,10 +81,10 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(
                 if let Some(group_ids) = threat.get_group_ids() {
                     for (i_g, group_id) in group_ids.collect::<Vec<_>>().iter().enumerate() {
                         if !known_groups.contains(*group_id) {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!("Missing definition of product_group_id: {}", group_id),
                                 instance_path: format!("/vulnerabilities/{}/threats/{}/group_ids/{}", i_v, i_t, i_g),
-                            });
+                            }]);
                         }
                     }
                 }

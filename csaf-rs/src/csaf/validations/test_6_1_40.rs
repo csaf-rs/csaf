@@ -19,28 +19,28 @@ use crate::csaf::validation::ValidationError;
 /// # Returns
 ///
 /// * `Ok(())` if the validation passes.
-/// * `Err(ValidationError)` if the validation fails, with a message explaining the reason
+/// * `Err(vec![ValidationError])` if the validation fails, with a message explaining the reason
 ///   and the JSON path to the invalid element.
 pub fn test_6_1_40_invalid_sharing_group_name(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21()?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
         if let Some(sharing_group_name) = sharing_group.get_name() {
             if sharing_group_name == SG_NAME_PUBLIC {
                 if sharing_group.get_id() != MAX_UUID {
-                    return Err(ValidationError {
+                    return Err(vec![ValidationError {
                         message: format!("Sharing group name \"{}\" is prohibited without max UUID.", SG_NAME_PUBLIC),
                         instance_path: "/document/distribution/sharing_group/name".to_string()
-                    })
+                    }])
                 }
             } else if sharing_group_name == SG_NAME_PRIVATE {
                 if sharing_group.get_id() != NIL_UUID {
-                    return Err(ValidationError {
+                    return Err(vec![ValidationError {
                         message: format!("Sharing group name \"{}\" is prohibited without nil UUID.", SG_NAME_PRIVATE),
                         instance_path: "/document/distribution/sharing_group/name".to_string()
-                    })
+                    }])
                 }
             }
         }

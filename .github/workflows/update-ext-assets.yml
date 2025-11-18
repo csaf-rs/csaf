@@ -22,7 +22,7 @@ jobs:
       - name: Create PR
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ASSET_UPDATE_WORKFLOW_PAT }}
           commit-message: 'Update External Assets'
           branch: 'update-external-assets'
           delete-branch: true

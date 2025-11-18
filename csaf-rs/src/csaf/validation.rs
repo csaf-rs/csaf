@@ -26,10 +26,17 @@ impl std::fmt::Display for ValidationError {
 pub struct TestResult {
     /// The test ID that was executed
     pub test_id: String,
-    /// Whether the test passed
-    pub success: bool,
-    /// The errors if the test failed (empty if successful)
-    pub errors: Vec<ValidationError>,
+
+    /// The status of the test execution
+    pub status: TestResultStatus,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum TestResultStatus {
+    Success,
+    Failure { errors: Vec<ValidationError> },
+    NotFound,
 }
 
 /// Result of a CSAF validation
@@ -126,29 +133,20 @@ pub fn validate_by_test<VersionedDocument>(
     let tests = target.tests();
 
     // Try to find and execute the test specified by the test_id
-    if let Some(test_fn) = tests.get(test_id) {
+    let status = if let Some(test_fn) = tests.get(test_id) {
         match test_fn(target.doc()) {
-            Ok(()) => TestResult {
-                test_id: test_id.to_string(),
-                success: true,
-                errors: vec![],
-            },
-            Err(error) => TestResult {
-                test_id: test_id.to_string(),
-                success: false,
+            Ok(()) => TestResultStatus::Success,
+            Err(error) => TestResultStatus::Failure {
                 errors: vec![error],
             },
         }
     } else {
-        let error = ValidationError {
-            message: format!("Test '{}' not found", test_id),
-            instance_path: "".to_string(),
-        };
-        TestResult {
-            test_id: test_id.to_string(),
-            success: false,
-            errors: vec![error],
-        }
+        TestResultStatus::NotFound
+    };
+
+    TestResult {
+        test_id: test_id.to_string(),
+        status,
     }
 }
 
@@ -165,8 +163,12 @@ pub fn validate_by_tests<VersionedDocument>(
     // Loop through tests and gather all results and errors
     for test_id in test_ids {
         let test_result = validate_by_test(target, test_id);
-        
-        errors.extend(test_result.errors.iter().cloned());
+        if let TestResultStatus::Failure {
+            errors: test_errors,
+        } = &test_result.status
+        {
+            errors.extend(test_errors.iter().cloned());
+        }
         test_results.push(test_result);
     }
 

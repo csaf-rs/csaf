@@ -2,15 +2,10 @@ use anyhow::{bail, Result};
 use clap::Parser;
 use csaf_rs::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_rs::csaf::csaf2_1::loader::load_document as load_document_2_1;
-<<<<<<< HEAD
 use csaf_rs::csaf::validation::{
     validate_by_preset, validate_by_tests, ValidationPreset, ValidationResult,
 };
 use std::str::FromStr;
-=======
-use csaf_rs::csaf::validation::{create_validation_result, print_validation_result, validate_by_test, ValidationPreset};
-use clap::Parser;
->>>>>>> 7f22474 (Cleanup of validation API)
 
 #[cfg(feature = "web")]
 mod web;
@@ -62,7 +57,9 @@ async fn main() -> Result<()> {
     }
 
     // Otherwise, validate a file
-    let path = args.path.as_ref()
+    let path = args
+        .path
+        .as_ref()
         .ok_or_else(|| anyhow::anyhow!("Path argument is required when not using --web"))?;
 
     validate_file(path, &args)

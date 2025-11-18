@@ -3,7 +3,7 @@
 //! This module provides WebAssembly bindings for validating CSAF documents in the browser.
 
 use wasm_bindgen::prelude::*;
-use crate::csaf::validation::{ValidationResult, ValidationPreset, create_validation_result};
+use crate::csaf::validation::{ValidationResult, ValidationPreset, validate_by_preset};
 use crate::csaf::csaf2_0::loader::load_document_from_str as load_document_from_str_2_0;
 use crate::csaf::csaf2_1::loader::load_document_from_str as load_document_from_str_2_1;
 
@@ -64,7 +64,7 @@ fn validate_2_0(json_str: &str, preset: ValidationPreset) -> Result<ValidationRe
     let document = load_document_from_str_2_0(json_str)
         .map_err(|e| format!("Failed to load CSAF 2.0 document: {}", e))?;
     
-    Ok(create_validation_result(&document, "2.0", preset))
+    Ok(validate_by_preset(&document, "2.0", preset))
 }
 
 /// Validate a CSAF 2.1 document
@@ -72,7 +72,7 @@ fn validate_2_1(json_str: &str, preset: ValidationPreset) -> Result<ValidationRe
     let document = load_document_from_str_2_1(json_str)
         .map_err(|e| format!("Failed to load CSAF 2.1 document: {}", e))?;
     
-    Ok(create_validation_result(&document, "2.1", preset))
+    Ok(validate_by_preset(&document, "2.1", preset))
 }
 
 #[cfg(test)]
@@ -86,6 +86,7 @@ mod tests {
             version: "2.0".to_string(),
             errors: vec![],
             preset: ValidationPreset::Basic,
+            test_results: vec![],
         };
 
         let json = serde_json::to_string(&result).unwrap();

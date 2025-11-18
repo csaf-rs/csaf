@@ -84,7 +84,7 @@ pub trait Validate {
     fn validate_by_test<VersionedDocument>(&self, test_id: &str) -> TestResult;
 
     /// Validates this object according to specific test IDs and returns detailed results
-    fn validate_tests(
+    fn validate_by_tests(
         &self,
         version: &str,
         preset: ValidationPreset,
@@ -92,7 +92,7 @@ pub trait Validate {
     ) -> ValidationResult;
 
     /// Validates this object according to a validation preset and returns detailed results
-    fn validate_preset(&self, version: &str, preset: ValidationPreset) -> ValidationResult;
+    fn validate_by_preset(&self, version: &str, preset: ValidationPreset) -> ValidationResult;
 }
 
 pub type Test<VersionedDocument> = fn(&VersionedDocument) -> Result<(), ValidationError>;
@@ -101,7 +101,8 @@ pub type Test<VersionedDocument> = fn(&VersionedDocument) -> Result<(), Validati
 /// This trait MUST be implemented by the struct that represents a CSAF document
 /// in the respective version.
 ///
-/// It can then be used to validate documents with either [validate_by_preset] or [validate_by_test].
+/// It can then be used to validate documents with [validate_by_preset], [validate_by_tests],
+/// or [validate_by_test].
 pub trait Validatable<VersionedDocument> {
     /// Returns a hashmap containing the test ID per preset
     fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>>;

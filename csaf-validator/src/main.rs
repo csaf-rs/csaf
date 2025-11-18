@@ -89,7 +89,7 @@ pub fn print_validation_result(result: &ValidationResult) {
         } else if let Some(error) = test_result.errors.first() {
             if error.message.contains("not found") {
                 println!(
-                    "Executing Test {}... ⚠️  Test not found",
+                    "Executing Test {}... ⚠️ Test not found",
                     test_result.test_id
                 );
             } else {

@@ -1,0 +1,28 @@
+{
+  "tasks": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "install": "deno install"
+  },
+  "imports": {
+    "react": "npm:react@^18.3.1",
+    "react-dom": "npm:react-dom@^18.3.1",
+    "react/jsx-runtime": "npm:react@^18.3.1/jsx-runtime",
+    "react/jsx-dev-runtime": "npm:react@^18.3.1/jsx-dev-runtime",
+    "vite": "npm:vite@^6.0.5",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.1.16",
+    "@tailwindcss/forms": "npm:@tailwindcss/forms@^0.5.9",
+    "tailwindcss": "npm:tailwindcss@^4.1.16",
+    "typescript": "npm:typescript@^5.7.2",
+    "@types/react": "npm:@types/react@^18.3.12",
+    "@types/react-dom": "npm:@types/react-dom@^18.3.1",
+    "pretty-bytes": "npm:pretty-bytes@^6.1.1"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "nodeModulesDir": "auto"
+}

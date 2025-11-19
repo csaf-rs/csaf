@@ -4,17 +4,17 @@ use std::collections::HashSet;
 
 pub fn test_6_1_02_multiple_definition_of_product_id(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     // Map to store each key with all of its paths
     let mut conflicts = HashSet::<String>::new();
 
     if let Some(tree) = doc.get_product_tree().as_ref() {
         tree.visit_all_products(&mut |product, path| {
             if conflicts.contains(product.get_product_id()) {
-                Err(ValidationError {
+                Err(vec![ValidationError {
                     message: format!("Duplicate definition for product ID {}", product.get_product_id()),
                     instance_path: format!("{}/product_id", path),
-                })
+                }])
             } else {
                 conflicts.insert(product.get_product_id().to_owned());
                 Ok(())

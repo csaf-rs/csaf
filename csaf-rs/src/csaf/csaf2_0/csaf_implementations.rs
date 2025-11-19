@@ -289,12 +289,12 @@ impl DocumentTrait for DocumentLevelMetaData {
     }
 
     /// Return distribution or a Validation error to satisfy CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, Vec<ValidationError>> {
         match self.distribution.as_ref() {
-            None => Err(ValidationError {
+            None => Err(vec![ValidationError {
                 message: "CSAF 2.1 requires the distribution property, but it is not set.".to_string(),
                 instance_path: "/document/distribution".to_string()
-            }),
+            }]),
             Some(distribution) => Ok(distribution)
         }
     }
@@ -326,12 +326,12 @@ impl DistributionTrait for RulesForSharingDocument {
     }
 
     /// Return TLP or a ValidationError to satisfy CSAF 2.1 semantics
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError> {
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, Vec<ValidationError>> {
         match self.tlp.as_ref() {
-            None => Err(ValidationError {
+            None => Err(vec![ValidationError {
                 message: "CSAF 2.1 requires the TLP property, but it is not set.".to_string(),
                 instance_path: "/document/distribution/sharing_group/tlp".to_string()
-            }),
+            }]),
             Some(tlp) => Ok(tlp)
         }
     }
@@ -448,7 +448,7 @@ impl ProductTreeTrait for ProductTree {
         &self.full_product_names
     }
 
-    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>) -> Result<(), ValidationError> {
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>) -> Result<(), Vec<ValidationError>> {
         self.visit_all_products_generic(callback)
     }
 }

@@ -4,17 +4,17 @@ use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_44_multiple_stars_in_serial_number(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
             if let Some(helper) = product.get_product_identification_helper() {
                 if let Some(serial_numbers) = helper.get_serial_numbers() {
                     for (index, serial_number) in serial_numbers.enumerate() {
                         if count_unescaped_stars(serial_number) > 1 {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: "Serial number must not contain multiple unescaped asterisks (stars)".to_string(),
                                 instance_path: format!("{}/product_identification_helper/serial_numbers/{}", path, index),
-                            });
+                            }]);
                         }
                     }
                 }

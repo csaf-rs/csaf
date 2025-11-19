@@ -65,7 +65,7 @@ fn run_csaf_tests<CsafType>(
                         )
                     );
                 assert_eq!(
-                    Err((*expected_error).clone()),
+                    Err(vec![(*expected_error).clone()]),
                     test_function(&doc),
                     "Negative test case {} should have failed with the expected error",
                     test_num

@@ -5,7 +5,7 @@ use chrono::{DateTime, FixedOffset};
 
 pub fn test_6_1_45_inconsistent_disclosure_date(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     // Only check if document is TLP:CLEAR and status is final or interim
     let document = doc.get_document();
     let status = document.get_tracking().get_status();
@@ -42,10 +42,10 @@ pub fn test_6_1_45_inconsistent_disclosure_date(
                     Some(prev_max) => Some(prev_max.max(rev_datetime)),
                 }
             })
-            .map_err(|_| ValidationError {
+            .map_err(|_| vec![ValidationError {
                 message: format!("Invalid date format in revision history: {}", rev.get_date()),
                 instance_path: format!("/document/tracking/revision_history/{}", i_rev),
-            })?;
+            }])?;
     }
 
     if let Some(newest_date) = newest_revision_date {
@@ -59,17 +59,17 @@ pub fn test_6_1_45_inconsistent_disclosure_date(
                             disclosure_datetime, newest_date
                         );
                         if disclosure_datetime > newest_date {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: "Disclosure date must not be later than the newest revision history date for TLP:CLEAR documents with final or interim status".to_string(),
                                 instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
-                            });
+                            }]);
                         }
                     },
                     Err(_) => {
-                        return Err(ValidationError {
+                        return Err(vec![ValidationError {
                             message: format!("Invalid disclosure date format: {}", disclosure_date),
                             instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
-                        });
+                        }]);
                     }
                 }
             }

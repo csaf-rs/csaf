@@ -23,7 +23,7 @@ const FIXED_CONFLICTS: &[CategoryOfTheRemediation] = &[
 
 pub fn test_6_1_36_status_group_contradicting_remediation_categories(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = v.get_product_status() {
             // Collect Product IDs that may cause conflicts
@@ -42,34 +42,34 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                     // Iterate over product IDs
                     for p in product_ids {
                         if affected_products.contains(&p) && cat == CategoryOfTheRemediation::OptionalPatch {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} is listed as affected but has conflicting remediation category {}",
                                     p,
                                     cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                            });
+                            }]);
                         }
                         if not_affected_products.contains(&p) && NOT_AFFECTED_CONFLICTS.contains(&cat) {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} is listed as not affected but has conflicting remediation category {}",
                                     p,
                                     cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                            });
+                            }]);
                         }
                         if fixed_products.contains(&p) && FIXED_CONFLICTS.contains(&cat) {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} is listed as fixed but has conflicting remediation category {}",
                                     p,
                                     cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                            });
+                            }]);
                         }
                     }
                 }

@@ -4,17 +4,17 @@ use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_43_multiple_stars_in_model_number(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
             if let Some(helper) = product.get_product_identification_helper() {
                 if let Some(model_numbers) = helper.get_model_numbers() {
                     for (index, model_number) in model_numbers.enumerate() {
                         if count_unescaped_stars(model_number) > 1 {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: "Model number must not contain multiple unescaped asterisks (stars)".to_string(),
                                 instance_path: format!("{}/product_identification_helper/model_numbers/{}", path, index),
-                            });
+                            }]);
                         }
                     }
                 }

@@ -19,10 +19,10 @@ use crate::csaf::validation::ValidationError;
 /// # Returns
 ///
 /// - `Ok(())` if the validation passes.
-/// - `Err(ValidationError)` if the requirements are not met.
+/// - `Err(vec![ValidationError])` if the requirements are not met.
 pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21()?;
 
     if distribution.get_tlp_21()?.get_label() == Clear {
@@ -33,10 +33,10 @@ pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(
             } else if sharing_group_id == NIL_UUID && doc.get_document().get_tracking().get_status() == DocumentStatus::Draft {
                 Ok(())
             } else {
-                Err(ValidationError {
+                Err(vec![ValidationError {
                     message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status.".to_string(),
                     instance_path: "/document/distribution/sharing_group/id".to_string(),
-                })
+                }])
             };
         }
     }

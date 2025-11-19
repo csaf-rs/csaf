@@ -5,7 +5,7 @@ use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_01_missing_definition_of_product_id(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     let mut definitions_set = HashSet::<String>::new();
     if let Some(tree) = doc.get_product_tree().as_ref() {
         _ = tree.visit_all_products(&mut |fpn, _path| {
@@ -17,10 +17,10 @@ pub fn test_6_1_01_missing_definition_of_product_id(
     let references = gather_product_references(doc);
     for (ref_id, ref_path) in references.iter() {
         if !definitions_set.contains(ref_id) {
-            return Err(ValidationError {
+            return Err(vec![ValidationError {
                 message: format!("Missing definition of product_id: {}", ref_id),
                 instance_path: ref_path.to_string(),
-            })
+            }])
         }
     }
 

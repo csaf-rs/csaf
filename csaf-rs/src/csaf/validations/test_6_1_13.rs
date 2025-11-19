@@ -11,7 +11,7 @@ static PURL_REGEX: LazyLock<Regex> = LazyLock::new(||
 
 pub fn test_6_1_13_purl(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
             if let Some(helper) = product.get_product_identification_helper() {
@@ -19,19 +19,19 @@ pub fn test_6_1_13_purl(
                     for (i, purl_str) in purls.iter().enumerate() {
                         // Check against PURL regex
                         if !PURL_REGEX.is_match(purl_str) {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!("PURL doesn't comply with CSAF PURL regex: {}", purl_str),
                                 instance_path: format!("{}/product_identification_helper/purls/{}", path, i),
-                            });
+                            }]);
                         }
                         // Parse the PURL
                         match PackageUrl::from_str(purl_str) {
                             Ok(_) => {},
                             Err(e) => {
-                                return Err(ValidationError {
+                                return Err(vec![ValidationError {
                                     message: format!("Invalid PURL format: {}, Error: {}", purl_str, e),
                                     instance_path: format!("{}/product_identification_helper/purls/{}", path, i),
-                                });
+                                }]);
                             }
                         };
                     }

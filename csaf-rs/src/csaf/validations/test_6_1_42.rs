@@ -5,7 +5,7 @@ use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_42_purl_consistency(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
             if let Some(helper) = product.get_product_identification_helper() {
@@ -21,10 +21,10 @@ pub fn test_6_1_42_purl_consistency(
                         let mut purl = match PackageUrl::from_str(purl_str) {
                             Ok(p) => p,
                             Err(_) => {
-                                return Err(ValidationError {
+                                return Err(vec![ValidationError {
                                     message: format!("Invalid PURL format: {}", purl_str),
                                     instance_path: format!("{}/product_identification_helper/purls/{}", path, i),
-                                });
+                                }]);
                             }
                         };
 
@@ -34,10 +34,10 @@ pub fn test_6_1_42_purl_consistency(
                         if let Some(ref base) = base_parts {
                             // Must always match
                             if current_parts != *base {
-                                return Err(ValidationError {
+                                return Err(vec![ValidationError {
                                     message: String::from("PURLs within the same product_identification_helper must only differ in qualifiers"),
                                     instance_path: format!("{}/product_identification_helper/purls/{}", path, i),
-                                });
+                                }]);
                             }
                         } else {
                             // The first PURL becomes the base for comparison

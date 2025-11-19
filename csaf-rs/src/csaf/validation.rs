@@ -103,7 +103,8 @@ pub trait Validate {
     fn validate_by_preset(&self, version: &str, preset: ValidationPreset) -> ValidationResult;
 }
 
-pub type Test<VersionedDocument> = fn(&VersionedDocument) -> Result<(), ValidationError>;
+/// This type represents a validation test function for a specific CSAF versioned document.
+pub type Test<VersionedDocument> = fn(&VersionedDocument) -> Result<(), Vec<ValidationError>>;
 
 /// Represents something which is validatable according to the CSAF standard.
 /// This trait MUST be implemented by the struct that represents a CSAF document
@@ -137,8 +138,8 @@ pub fn validate_by_test<VersionedDocument>(
     let status = if let Some(test_fn) = tests.get(test_id) {
         match test_fn(target.doc()) {
             Ok(()) => Success,
-            Err(error) => Failure {
-                errors: vec![error],
+            Err(errors) => Failure {
+                errors,
             },
         }
     } else {

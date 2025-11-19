@@ -18,7 +18,7 @@ static MUT_EX_STATES: &[CategoryOfTheRemediation] = &[
 
 pub fn test_6_1_35_contradicting_remediations(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         // Data struct to store observed remediation categories per product IT
         let mut product_categories: BTreeMap<String, Vec<CategoryOfTheRemediation>> = BTreeMap::new();
@@ -38,7 +38,7 @@ pub fn test_6_1_35_contradicting_remediations(
                             // Checks if the current category conflicts with any other in the group of mutually exclusive ones.
                             || MUT_EX_STATES.contains(&cat) && exist_cat_set.iter().any(|e_cat| MUT_EX_STATES.contains(e_cat))
                         {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} has contradicting remediations: {} and {}",
                                     p,
@@ -46,7 +46,7 @@ pub fn test_6_1_35_contradicting_remediations(
                                     cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                            });
+                            }]);
                         }
                         exist_cat_set.push(cat);
                     } else {

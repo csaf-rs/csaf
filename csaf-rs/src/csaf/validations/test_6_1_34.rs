@@ -5,15 +5,15 @@ static MAX_DEPTH: u32 = 30;
 
 pub fn test_6_1_34_branches_recursion_depth(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     if let Some(tree) = doc.get_product_tree().as_ref() {
         if let Some(branches) = tree.get_branches() {
             for (i, branch) in branches.iter().enumerate() {
                 if let Some(path) = branch.find_excessive_branch_depth(MAX_DEPTH) {
-                    return Err(ValidationError {
+                    return Err(vec![ValidationError {
                         message: format!("Branches recursion depth too big (> {})", MAX_DEPTH),
                         instance_path: format!("/product_tree/branches/{}{}", i, path)
-                    });
+                    }])
                 }
             }
         }

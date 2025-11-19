@@ -2,7 +2,7 @@ use crate::csaf::generated::language_subtags::is_valid_language_subtag;
 use crate::csaf::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::csaf::validation::ValidationError;
 
-pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), ValidationError> {
+pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
 
     // Check /document/lang if it exists
@@ -18,15 +18,15 @@ pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), ValidationError>
     Ok(())
 }
 
-fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), ValidationError> {
+fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<ValidationError>> {
     // Extract the primary language subtag (everything before the first hyphen)
     let primary_subtag = lang_code.split('-').next().unwrap_or(lang_code);
 
     if !is_valid_language_subtag(primary_subtag) {
-        return Err(ValidationError {
+        return Err(vec![ValidationError {
             message: format!("Invalid language code '{}': primary language subtag '{}' is not a valid language subtag", lang_code, primary_subtag),
             instance_path: json_path.to_string(),
-        });
+        }]);
     }
 
     Ok(())

@@ -5,7 +5,7 @@ use std::ops::Deref;
 
 pub fn test_6_1_48_ssvc_decision_points(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     for (i_v, v) in vulnerabilities.iter().enumerate() {
@@ -36,7 +36,7 @@ pub fn test_6_1_48_ssvc_decision_points(
                                         // Check if all values exist and are correctly ordered
                                         for (i_val, v_key) in selection.values.iter().map(|v| v.key.deref()).enumerate() {
                                             match reference_indices.get(v_key) {
-                                                None => return Err(ValidationError {
+                                                None => return Err(vec![ValidationError {
                                                     message: format!(
                                                         "The SSVC decision point '{}::{}' (version {}) doesn't have a value with key '{}'",
                                                         namespace, dp.name.deref(), version, v_key
@@ -45,10 +45,10 @@ pub fn test_6_1_48_ssvc_decision_points(
                                                         "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
                                                         i_v, i_m, i_s, i_val
                                                     ),
-                                                }),
+                                                }]),
                                                 Some(i_dp_val) => {
                                                     if last_index > *i_dp_val {
-                                                        return Err(ValidationError {
+                                                        return Err(vec![ValidationError {
                                                             message: format!(
                                                                 "The values for SSVC decision point '{}::{}' (version {}) are not in correct order",
                                                                 namespace, dp.name.deref(), version
@@ -57,7 +57,7 @@ pub fn test_6_1_48_ssvc_decision_points(
                                                                 "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
                                                                 i_v, i_m, i_s, i_val
                                                             ),
-                                                        });
+                                                        }])
                                                     } else {
                                                         last_index = *i_dp_val;
                                                     }
@@ -66,7 +66,7 @@ pub fn test_6_1_48_ssvc_decision_points(
                                         }
                                     },
                                     None => {
-                                        return Err(ValidationError {
+                                        return Err(vec![ValidationError {
                                             message: format!(
                                                 "Unknown SSVC decision point '{}::{}' with version '{}'",
                                                 namespace, s_key, version
@@ -75,16 +75,16 @@ pub fn test_6_1_48_ssvc_decision_points(
                                                 "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}",
                                                 i_v, i_m, i_s
                                             ),
-                                        });
+                                        }]);
                                     }
                                 }
                             }
                         },
                         Err(err) => {
-                            return Err(ValidationError {
+                            return Err(vec![ValidationError {
                                 message: format!("Invalid SSVC object: {}", err),
                                 instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
-                            });
+                            }]);
                         },
                     }
                 }

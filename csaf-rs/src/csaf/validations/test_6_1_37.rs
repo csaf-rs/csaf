@@ -14,7 +14,7 @@ static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(||
 /// vulnerability disclosure/discovery dates, remediation dates, threat dates, etc.
 pub fn test_6_1_37_date_and_time(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
     // Check the initial release date
@@ -95,21 +95,21 @@ pub fn test_6_1_37_date_and_time(
     Ok(())
 }
 
-fn check_datetime(date_time: &String, instance_path: &str) -> Result<(), ValidationError> {
+fn check_datetime(date_time: &String, instance_path: &str) -> Result<(), Vec<ValidationError>> {
     if CSAF_RFC3339_REGEX.is_match(date_time) {
         // Add chrono-based plausibility check
         match chrono::DateTime::parse_from_rfc3339(date_time) {
             Ok(_) => Ok(()), // Successfully parsed as a valid RFC3339 datetime
-            Err(e) => Err(ValidationError {
+            Err(e) => Err(vec![ValidationError {
                 message: format!("Date-time string {} matched RFC3339 regex but failed chrono parsing: {}", date_time, e),
                 instance_path: instance_path.to_string(),
-            }),
+            }]),
         }
     } else {
-        Err(ValidationError {
+        Err(vec![ValidationError {
             message: format!("Invalid date-time string {}, expected RFC3339-compliant format with non-empty timezone and no leap seconds", date_time),
             instance_path: instance_path.to_string(),
-        })
+        }])
     }
 }
 

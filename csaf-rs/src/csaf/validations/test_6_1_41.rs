@@ -17,11 +17,11 @@ use crate::csaf::validation::ValidationError;
 /// # Returns
 ///
 /// * `Ok(())` if the validation passes.
-/// * `Err(ValidationError)` if the validation fails, with a message explaining the reason
+/// * `Err(vec![ValidationError])` if the validation fails, with a message explaining the reason
 ///   and the JSON path to the invalid element.
 pub fn test_6_1_41_missing_sharing_group_name(
     doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21()?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
@@ -30,10 +30,10 @@ pub fn test_6_1_41_missing_sharing_group_name(
             // If max UUID is used, the name must exist and be NAME_PUBLIC
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PUBLIC => {},
-                _ => return Err(ValidationError {
+                _ => return Err(vec![ValidationError {
                     message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
                     instance_path: "/document/distribution/sharing_group/name".to_string()
-                })
+                }])
             }
         }
         // Check if nil UUID is used
@@ -41,10 +41,10 @@ pub fn test_6_1_41_missing_sharing_group_name(
             // If nil UUID is used, the name must exist and be NAME_PRIVATE
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PRIVATE => {},
-                _ => return Err(ValidationError {
+                _ => return Err(vec![ValidationError {
                     message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
                     instance_path: "/document/distribution/sharing_group/name".to_string()
-                })
+                }])
             }
         }
     }

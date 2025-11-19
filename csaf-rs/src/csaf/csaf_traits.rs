@@ -45,7 +45,7 @@ pub trait DocumentTrait {
     fn get_tracking(&self) -> &Self::TrackingType;
 
     /// Returns the distribution information for this document with CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError>;
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, Vec<ValidationError>>;
 
     /// Returns the distribution information for this document with CSAF 2.0 semantics
     fn get_distribution_20(&self) -> Option<&Self::DistributionType>;
@@ -75,7 +75,7 @@ pub trait DistributionTrait {
     fn get_tlp_20(&self) -> Option<&Self::TlpType>;
 
     /// Returns the TLP information for this distribution with CSAF 2.1 semantics
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, Vec<ValidationError>>;
 }
 
 pub trait NoteTrait: WithGroupIds {}
@@ -478,8 +478,8 @@ pub trait ProductTreeTrait {
     /// * `Err(ValidationError)` if the callback returned an error for any product
     fn visit_all_products_generic(
         &self,
-        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>
-    ) -> Result<(), ValidationError> {
+        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>
+    ) -> Result<(), Vec<ValidationError>> {
         // Visit products in branches
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
@@ -532,8 +532,8 @@ pub trait ProductTreeTrait {
     /// `visit_all_products_generic()` with the same callback.
     fn visit_all_products(
         &self,
-        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>
-    ) -> Result<(), ValidationError>;
+        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>
+    ) -> Result<(), Vec<ValidationError>>;
 }
 
 /// Trait representing an abstract branch in a product tree.
@@ -558,8 +558,8 @@ pub trait BranchTrait<FPN: ProductTrait> : Sized {
     ///
     /// # Returns
     /// * `Ok(())` if the traversal completes successfully
-    /// * `Err(ValidationError)` if the callback returns an error for any branch
-    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str) -> Result<(), ValidationError>) -> Result<(), ValidationError> {
+    /// * `Err(Vec<ValidationError>)` if the callback returns an error for any branch
+    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str) -> Result<(), Vec<ValidationError>>) -> Result<(), Vec<ValidationError>> {
         callback(self, &path)?;
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {

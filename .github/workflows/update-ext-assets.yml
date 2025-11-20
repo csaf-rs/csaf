@@ -14,6 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.ASSET_UPDATER_APP_ID }}
+          private-key: ${{ secrets.ASSET_UPDATER_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
 
       - name: Update external assets
@@ -22,7 +28,7 @@ jobs:
       - name: Create PR
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           commit-message: 'Update External Assets'
           branch: 'update-external-assets'
           delete-branch: true

@@ -1,5 +1,5 @@
 # Default rustfmt configuration for this repository, only stable features
-max_width = 120 # maybe even 200 in the future?
+max_width = 120
 hard_tabs = false
 tab_spaces = 4
 

@@ -52,19 +52,17 @@ mod tests {
 
     #[test]
     fn test_test_6_1_13() {
-        let error01 = ValidationError {
-            message: "Invalid PURL format: pkg:maven/@1.3.4, Error: missing name".to_string(),
-            instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/0".to_string(),
-        };
-        let error02 = ValidationError {
-            message: "Invalid PURL format: pkg:oci/com.example/product-A@sha256%3Add134261219b2, Error: no namespace allowed for type \"oci\"".to_string(),
-            instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/0".to_string(),
-        };
         let errors = HashMap::from([
-            ("01", &error01),
-            ("02", &error02),
+            ("01", vec![ValidationError {
+                message: "Invalid PURL format: pkg:maven/@1.3.4, Error: missing name".to_string(),
+                instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/0".to_string(),
+            }]),
+            ("02", vec![ValidationError {
+                message: "Invalid PURL format: pkg:oci/com.example/product-A@sha256%3Add134261219b2, Error: no namespace allowed for type \"oci\"".to_string(),
+                instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/0".to_string(),
+            }]),
         ]);
-        run_csaf20_tests("13", test_6_1_13_purl, &errors);
-        run_csaf21_tests("13", test_6_1_13_purl, &errors);
+        run_csaf20_tests("13", test_6_1_13_purl, errors.clone());
+        run_csaf21_tests("13", test_6_1_13_purl, errors);
     }
 }

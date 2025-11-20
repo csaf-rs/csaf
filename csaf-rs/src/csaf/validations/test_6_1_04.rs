@@ -104,19 +104,19 @@ mod tests {
 
     #[test]
     fn test_test_6_1_04() {
-        let error01 = ValidationError {
-            message: "Missing definition of product_group_id: CSAFGID-1020301".to_string(),
-            instance_path: "/vulnerabilities/0/threats/0/group_ids/0".to_string(),
-        };
-        let error02 = ValidationError {
-            message: "Missing definition of product_group_id: CSAFGID-1020300".to_string(),
-            instance_path: "/vulnerabilities/0/flags/0/group_ids/0".to_string(),
-        };
         let errors = HashMap::from([
-            ("01", &error01),
-            ("02", &error02),
+            ("01", vec![
+                ValidationError {
+                    message: "Missing definition of product_group_id: CSAFGID-1020301".to_string(),
+                    instance_path: "/vulnerabilities/0/threats/0/group_ids/0".to_string(),
+                }]),
+            ("02", vec![
+                ValidationError {
+                    message: "Missing definition of product_group_id: CSAFGID-1020300".to_string(),
+                    instance_path: "/vulnerabilities/0/flags/0/group_ids/0".to_string(),
+                }]),
         ]);
-        run_csaf20_tests("04", test_6_1_04_missing_definition_of_product_group_id, &errors);
-        run_csaf21_tests("04", test_6_1_04_missing_definition_of_product_group_id, &errors);
+        run_csaf20_tests("04", test_6_1_04_missing_definition_of_product_group_id, errors.clone());
+        run_csaf21_tests("04", test_6_1_04_missing_definition_of_product_group_id, errors);
     }
 }

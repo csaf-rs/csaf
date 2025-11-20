@@ -94,19 +94,19 @@ mod tests {
         run_csaf21_tests(
             "49",
             test_6_1_49_inconsistent_ssvc_timestamp,
-            &HashMap::from([
-                ("01", &ValidationError {
+            HashMap::from([
+                ("01", vec![ValidationError {
                     message: "SSVC timestamp (2024-07-13T10:00:00+00:00) for vulnerability at index 0 is later than the newest revision date (2024-01-24T10:00:00+00:00)".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: "SSVC timestamp (2024-02-29T10:30:00+00:00) for vulnerability at index 0 is later than the newest revision date (2024-02-29T10:00:00+00:00)".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("03", &ValidationError {
+                }]),
+                ("03", vec![ValidationError {
                     message: "SSVC timestamp (2024-02-29T10:30:00+00:00) for vulnerability at index 0 is later than the newest revision date (2024-02-29T10:00:00+00:00)".to_string(),
                     instance_path: instance_path.clone(),
-                }),
+                }]),
             ])
         );
     }

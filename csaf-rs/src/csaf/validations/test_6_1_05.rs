@@ -33,14 +33,14 @@ mod tests {
 
     #[test]
     fn test_test_6_1_02() {
-        let error01 = ValidationError {
-            message: "Duplicate definition for product group ID CSAFGID-1020300".to_string(),
-            instance_path: "/product_tree/product_groups/1/group_id".to_string(),
-        };
         let errors = HashMap::from([
-            ("01", &error01)
+            ("01", vec![
+            ValidationError {
+                message: "Duplicate definition for product group ID CSAFGID-1020300".to_string(),
+                instance_path: "/product_tree/product_groups/1/group_id".to_string(),
+            }])
         ]);
-        run_csaf20_tests("05", test_6_1_05_multiple_definition_of_product_group_id, &errors);
-        run_csaf21_tests("05", test_6_1_05_multiple_definition_of_product_group_id, &errors);
+        run_csaf20_tests("05", test_6_1_05_multiple_definition_of_product_group_id, errors.clone());
+        run_csaf21_tests("05", test_6_1_05_multiple_definition_of_product_group_id, errors);
     }
 }

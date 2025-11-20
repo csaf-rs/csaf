@@ -91,23 +91,23 @@ mod tests {
         run_csaf21_tests(
             "36",
             test_6_1_36_status_group_contradicting_remediation_categories,
-            &HashMap::from([
-                ("01", &ValidationError {
+            HashMap::from([
+                ("01", vec![ValidationError {
                     message: "Product CSAFPID-9080700 is listed as not affected but has conflicting remediation category vendor_fix".to_string(),
                     instance_path: "/vulnerabilities/0/remediations/0".to_string()
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: "Product CSAFPID-9080703 is listed as fixed but has conflicting remediation category none_available".to_string(),
                     instance_path: "/vulnerabilities/0/remediations/0".to_string()
-                }),
-                ("03", &ValidationError {
+                }]),
+                ("03", vec![ValidationError {
                     message: "Product CSAFPID-9080700 is listed as affected but has conflicting remediation category optional_patch".to_string(),
                     instance_path: "/vulnerabilities/0/remediations/0".to_string(),
-                }),
-                ("04", &ValidationError {
+                }]),
+                ("04", vec![ValidationError {
                     message: "Product CSAFPID-9080700 is listed as fixed but has conflicting remediation category no_fix_planned".to_string(),
                     instance_path: "/vulnerabilities/0/remediations/0".to_string(),
-                }),
+                }]),
             ]),
         );
     }

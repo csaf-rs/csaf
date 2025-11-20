@@ -33,23 +33,23 @@ mod tests {
         run_csaf21_tests(
             "34",
             test_6_1_34_branches_recursion_depth,
-            &HashMap::from([
-                ("01", &ValidationError {
+            HashMap::from([
+                ("01", vec![ValidationError {
                     message: "Branches recursion depth too big (> 30)".to_string(),
                     instance_path: "/product_tree/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string(),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: "Branches recursion depth too big (> 30)".to_string(),
                     instance_path: "/product_tree/branches/0/branches/0/branches/1/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string(),
-                }),
+                }]),
             ]),
         );
     }

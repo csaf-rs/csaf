@@ -65,15 +65,15 @@ mod tests {
     fn test_test_6_1_42() {
         run_csaf21_tests(
             "42",
-            test_6_1_42_purl_consistency, &HashMap::from([
-                ("01", &ValidationError {
+            test_6_1_42_purl_consistency, HashMap::from([
+                ("01", vec![ValidationError {
                     message: ERROR_MESSAGE.to_string(),
                     instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/1".to_string(),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: ERROR_MESSAGE.to_string(),
                     instance_path: "/product_tree/branches/0/branches/0/branches/0/product/product_identification_helper/purls/2".to_string(),
-                }),
+                }]),
             ])
         );
     }

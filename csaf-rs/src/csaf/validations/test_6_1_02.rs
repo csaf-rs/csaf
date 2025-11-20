@@ -34,14 +34,15 @@ mod tests {
 
     #[test]
     fn test_test_6_1_02() {
-        let error01 = ValidationError {
-            message: "Duplicate definition for product ID CSAFPID-9080700".to_string(),
-            instance_path: "/product_tree/full_product_names/1/product_id".to_string(),
-        };
         let errors = HashMap::from([
-            ("01", &error01)
+            ("01", vec![
+                ValidationError {
+                    message: "Duplicate definition for product ID CSAFPID-9080700".to_string(),
+                    instance_path: "/product_tree/full_product_names/1/product_id".to_string(),
+                },
+            ])
         ]);
-        run_csaf20_tests("02", test_6_1_02_multiple_definition_of_product_id, &errors);
-        run_csaf21_tests("02", test_6_1_02_multiple_definition_of_product_id, &errors);
+        run_csaf20_tests("02", test_6_1_02_multiple_definition_of_product_id, errors.clone());
+        run_csaf21_tests("02", test_6_1_02_multiple_definition_of_product_id, errors);
     }
 }

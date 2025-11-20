@@ -63,23 +63,23 @@ mod tests {
     fn test_test_6_1_41() {
         run_csaf21_tests(
             "41",
-            test_6_1_41_missing_sharing_group_name, &HashMap::from([
-                ("01", &ValidationError {
+            test_6_1_41_missing_sharing_group_name, HashMap::from([
+                ("01", vec![ValidationError {
                     message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
                     instance_path: "/document/distribution/sharing_group/name".to_string()
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
                     instance_path: "/document/distribution/sharing_group/name".to_string()
-                }),
-                ("03", &ValidationError {
+                }]),
+                ("03", vec![ValidationError {
                     message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
                     instance_path: "/document/distribution/sharing_group/name".to_string()
-                }),
-                ("04", &ValidationError {
+                }]),
+                ("04", vec![ValidationError {
                     message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
                     instance_path: "/document/distribution/sharing_group/name".to_string()
-                }),
+                }]),
             ])
         );
     }

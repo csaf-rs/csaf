@@ -22,10 +22,10 @@ use crate::csaf::validation::ValidationError;
 pub fn test_6_1_38_non_public_sharing_group_max_uuid(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
-    let distribution = doc.get_document().get_distribution_21()?;
+    let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
-        if sharing_group.get_id() == MAX_UUID && distribution.get_tlp_21()?.get_label() != Clear {
+        if sharing_group.get_id() == MAX_UUID && distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() != Clear {
             return Err(vec![ValidationError {
                 message: "Document must be public (TLD CLEAR) when using max UUID as sharing group ID.".to_string(),
                 instance_path: "/document/distribution/sharing_group/tlp/label".to_string()

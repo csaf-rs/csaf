@@ -268,7 +268,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     }
 
     /// We normalize to Option here because property was optional in CSAF 2.0
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, Vec<ValidationError>> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
         Ok(&self.distribution)
     }
 
@@ -304,7 +304,7 @@ impl DistributionTrait for RulesForDocumentSharing {
     }
 
     /// Always return the value because it is mandatory
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, Vec<ValidationError>> {
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError> {
         Ok(&self.tlp)
     }
 }

@@ -22,7 +22,7 @@ use crate::csaf::validation::ValidationError;
 pub fn test_6_1_41_missing_sharing_group_name(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
-    let distribution = doc.get_document().get_distribution_21()?;
+    let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
         // Check if max UUID is used

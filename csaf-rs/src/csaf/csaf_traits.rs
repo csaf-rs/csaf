@@ -45,7 +45,7 @@ pub trait DocumentTrait {
     fn get_tracking(&self) -> &Self::TrackingType;
 
     /// Returns the distribution information for this document with CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, Vec<ValidationError>>;
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError>;
 
     /// Returns the distribution information for this document with CSAF 2.0 semantics
     fn get_distribution_20(&self) -> Option<&Self::DistributionType>;
@@ -75,7 +75,7 @@ pub trait DistributionTrait {
     fn get_tlp_20(&self) -> Option<&Self::TlpType>;
 
     /// Returns the TLP information for this distribution with CSAF 2.1 semantics
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, Vec<ValidationError>>;
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
 }
 
 pub trait NoteTrait: WithGroupIds {}
@@ -461,7 +461,7 @@ pub trait ProductTreeTrait {
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
 
     /// Visits all product references in the product tree by invoking the provided callback for each
-    /// product. Returns immediately with the error Result provided by `callback`, if occurring.
+    /// product. Returns with collected error Results provided by `callback`, if occurring.
     ///
     /// This method traverses all locations in the product tree where products can be referenced:
     /// - Products within branches (recursively)
@@ -470,45 +470,53 @@ pub trait ProductTreeTrait {
     ///
     /// # Parameters
     /// * `callback` - A mutable function that takes a reference to a product and its path string 
-    ///   and returns a `Result<(), ValidationError>`. The path string represents the JSON pointer
-    ///   to the product's location in the document.
+    ///   and returns a `Result<(), Vec<ValidationError>>`. The path string represents the JSON
+    ///   pointer to the product's location in the document.
     ///
     /// # Returns
     /// * `Ok(())` if all products were visited successfully
-    /// * `Err(ValidationError)` if the callback returned an error for any product
+    /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
     fn visit_all_products_generic(
         &self,
         callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>
     ) -> Result<(), Vec<ValidationError>> {
+        let mut errors: Option<Vec<ValidationError>> = None;
+
         // Visit products in branches
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), &mut |branch: &Self::BranchType, path| {
+                if let Err(errs) = branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), &mut |branch: &Self::BranchType, path| {
                     if let Some(product_ref) = branch.get_product() {
                         callback(product_ref, &format!("{}/product", path))?;
                     }
                     Ok(())
-                })?;
+                }) {
+                    errors.get_or_insert_with(Vec::new).extend(errs);
+                }
             }
         }
 
         // Visit full_product_names
         for (i, fpn) in self.get_full_product_names().iter().enumerate() {
-            callback(
+            if let Err(errs) = callback(
                 fpn,
                 &format!("/product_tree/full_product_names/{}", i),
-            )?;
+            ) {
+                errors.get_or_insert_with(Vec::new).extend(errs);
+            }
         }
 
         // Visit relationships
         for (i, rel) in self.get_relationships().iter().enumerate() {
-            callback(
+            if let Err(errs) = callback(
                 rel.get_full_product_name(),
                 &format!("/product_tree/relationships/{}/full_product_name", i),
-            )?;
+            ) {
+                errors.get_or_insert_with(Vec::new).extend(errs);
+            }
         }
 
-        Ok(())
+        errors.map_or(Ok(()), Err)
     }
 
     /// A trait wrapper for `visit_all_products_generic()` that allows implementations to provide
@@ -560,13 +568,20 @@ pub trait BranchTrait<FPN: ProductTrait> : Sized {
     /// * `Ok(())` if the traversal completes successfully
     /// * `Err(Vec<ValidationError>)` if the callback returns an error for any branch
     fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str) -> Result<(), Vec<ValidationError>>) -> Result<(), Vec<ValidationError>> {
-        callback(self, &path)?;
+        let mut errors: Option<Vec<ValidationError>> = None;
+
+        if let Err(e) = callback(self, &path) {
+            errors.get_or_insert_with(Vec::new).extend(e);
+        }
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("{}/branches/{}", path, i), callback)?;
+                if let Err(e) = branch.visit_branches_rec(&format!("{}/branches/{}", path, i), callback) {
+                    errors.get_or_insert_with(Vec::new).extend(e);
+                }
             }
         }
-        Ok(())
+
+        errors.map_or(Ok(()), Err)
     }
 
     /// Searches for branches that exceed the maximum allowed depth in the branch hierarchy.

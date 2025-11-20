@@ -41,14 +41,13 @@ mod tests {
 
     #[test]
     fn test_test_6_1_12() {
-        let error01 = ValidationError {
-            message: "Invalid language code 'EZ': primary language subtag 'EZ' is not a valid language subtag".to_string(),
-            instance_path: "/document/lang".to_string(),
-        };
         let errors = HashMap::from([
-            ("01", &error01)
+            ("01", vec![ValidationError {
+                message: "Invalid language code 'EZ': primary language subtag 'EZ' is not a valid language subtag".to_string(),
+                instance_path: "/document/lang".to_string(),
+            }]),
         ]);
-        run_csaf20_tests("12", test_6_1_12_language, &errors);
-        run_csaf21_tests("12", test_6_1_12_language, &errors);
+        run_csaf20_tests("12", test_6_1_12_language, errors.clone());
+        run_csaf21_tests("12", test_6_1_12_language, errors);
     }
 }

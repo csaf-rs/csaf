@@ -98,15 +98,16 @@ mod tests {
 
     #[test]
     fn test_test_6_1_03() {
-        let error01 = ValidationError {
-            message: "Relationship references itself via relates_to_product_reference".to_string(),
-            instance_path: "/product_tree/relationships/0/relates_to_product_reference".to_string(),
-        };
         let errors = HashMap::from([
-            ("01", &error01)
+            ("01", vec![
+                ValidationError {
+                    message: "Relationship references itself via relates_to_product_reference".to_string(),
+                    instance_path: "/product_tree/relationships/0/relates_to_product_reference".to_string(),
+                }
+        ])
         ]);
-        run_csaf20_tests("03", test_6_1_03_circular_definition_of_product_id, &errors);
-        run_csaf21_tests("03", test_6_1_03_circular_definition_of_product_id, &errors);
+        run_csaf20_tests("03", test_6_1_03_circular_definition_of_product_id, errors.clone());
+        run_csaf21_tests("03", test_6_1_03_circular_definition_of_product_id, errors);
     }
 
     #[test]

@@ -128,38 +128,38 @@ mod tests {
         run_csaf20_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,
-            &HashMap::from([
-                ("01", &ValidationError {
+            HashMap::from([
+                ("01", vec![ValidationError {
                     message: cvss_v31_error_message.to_string(),
                     instance_path: format!("{}/cvss_v3", csaf_20_path_prefix),
-                }),
+                }]),
             ]),
         );
         run_csaf21_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,
-            &HashMap::from([
-                ("01", &ValidationError {
+            HashMap::from([
+                ("01", vec![ValidationError {
                     message: cvss_v31_error_message.to_string(),
                     instance_path: format!("{}/cvss_v3", csaf_21_path_prefix),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: "Product CSAFPID-9080700 already has another metric \"CVSS-v3.0\" without a source assigned.".to_string(),
                     instance_path: format!("{}/cvss_v3", csaf_21_path_prefix),
-                }),
-                ("03", &ValidationError {
+                }]),
+                ("03", vec![ValidationError {
                     message: "Product CSAFPID-9080700 already has another metric \"CVSS-v2\" without a source assigned.".to_string(),
                     instance_path: format!("{}/cvss_v2", csaf_21_path_prefix),
-                }),
-                ("04", &ValidationError {
+                }]),
+                ("04", vec![ValidationError {
                     message: "Product CSAFPID-9080700 already has another metric \"CVSS-v4\" without a source assigned.".to_string(),
                     instance_path: format!("{}/cvss_v4", csaf_21_path_prefix),
-                }),
-                ("05", &ValidationError {
+                }]),
+                ("05", vec![ValidationError {
                     message: "Product CSAFPID-9080700 already has another metric \"CVSS-v3.1\" with the same source \
                     \"https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json\" assigned.".to_string(),
                     instance_path: format!("{}/cvss_v3", csaf_21_path_prefix),
-                }),
+                }]),
             ]),
         );
     }

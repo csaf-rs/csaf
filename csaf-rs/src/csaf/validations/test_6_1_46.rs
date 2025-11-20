@@ -34,15 +34,15 @@ mod tests {
     fn test_test_6_1_46() {
         run_csaf21_tests(
             "46",
-            test_6_1_46_invalid_ssvc, &HashMap::from([
-                ("01", &ValidationError {
+            test_6_1_46_invalid_ssvc, HashMap::from([
+                ("01", vec![ValidationError {
                     message: "Invalid SSVC object: missing field `selections`".to_string(),
                     instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2".to_string(),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message:  "Invalid SSVC object: missing field `key`".to_string(),
                     instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2".to_string(),
-                }),
+                }]),
             ])
         );
     }

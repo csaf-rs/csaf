@@ -124,47 +124,47 @@ mod tests {
     fn test_test_6_1_37() {
         run_csaf21_tests(
             "37",
-            test_6_1_37_date_and_time, &HashMap::from([
-                ("01", &ValidationError {
+            test_6_1_37_date_and_time, HashMap::from([
+                ("01", vec![ValidationError {
                     message: "Invalid date-time string 2024-01-24 10:00:00.000Z, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/document/tracking/initial_release_date".to_string(),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: "Invalid date-time string 2024-01-24T10:00:00.000z, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/document/tracking/initial_release_date".to_string(),
-                }),
-                ("03", &ValidationError {
+                }]),
+                ("03", vec![ValidationError {
                     message: "Invalid date-time string 2017-01-01T02:59:60+04:00, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }),
-                ("04", &ValidationError {
+                }]),
+                ("04", vec![ValidationError {
                     message: "Date-time string 2023-04-31T00:00:00+01:00 matched RFC3339 regex but failed chrono parsing: input is out of range".to_string(),
                     instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }),
-                ("05", &ValidationError {
+                }]),
+                ("05", vec![ValidationError {
                     message: "Date-time string 2023-02-29T00:00:00+01:00 matched RFC3339 regex but failed chrono parsing: input is out of range".to_string(),
                     instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }),
-                ("06", &ValidationError {
+                }]),
+                ("06", vec![ValidationError {
                     message: "Invalid date-time string 2016-12-31T00:00:60+23:59, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }),
-                ("07", &ValidationError {
+                }]),
+                ("07", vec![ValidationError {
                     message: "Invalid date-time string 2015-06-30T10:29:60-13:30, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }),
-                ("08", &ValidationError {
+                }]),
+                ("08", vec![ValidationError {
                     message: "Invalid date-time string 2015-06-30T10:29:60-13:30, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }),
-                ("09", &ValidationError {
+                }]),
+                ("09", vec![ValidationError {
                     message: "Invalid date-time string 2016-12-31T23:59:60.0123+00:00, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }),
-                ("20", &ValidationError {
+                }]),
+                ("20", vec![ValidationError {
                     message: "Invalid date-time string 2024-01-24t10:00:00.000Z, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
                     instance_path: "/vulnerabilities/0/first_known_exploitation_dates/0/date".to_string(),
-                }),
+                }]),
             ])
         );
     }

@@ -22,7 +22,7 @@ fn run_csaf_tests<CsafType>(
     file_prefix: &str,
     document_loader: fn(&str) -> std::io::Result<CsafType>,
     test_function: Test<CsafType>,
-    expected_errors: &HashMap<&str, &ValidationError>,
+    expected_errors: HashMap<&str, Vec<ValidationError>>,
     skipped_tests: &[&str],
 ) {
     use glob::glob;
@@ -55,18 +55,18 @@ fn run_csaf_tests<CsafType>(
 
             // Check if this is expected to be a negative or positive test case
             if test_num.starts_with('0') || test_num.starts_with('2') {
-                // Negative test case - should fail with a specific error
-                let expected_error = expected_errors
+                // Negative test case - should fail with specific errors
+                let expected_errors = expected_errors
                     .get(test_num)
                     .expect(
                         &format!(
                             "Missing expected error definition for negative test case {}",
                             test_num
                         )
-                    );
+                    ).clone();
                 assert_eq!(
-                    Err(vec![(*expected_error).clone()]),
-                    test_function(&doc),
+                    expected_errors,
+                    test_function(&doc).unwrap_err(),
                     "Negative test case {} should have failed with the expected error",
                     test_num
                 );
@@ -88,7 +88,7 @@ fn run_csaf_tests<CsafType>(
 pub fn run_csaf20_tests_with_excludes(
     test_number: &str,
     test_function: Test<Csaf20>,
-    expected_errors: &HashMap<&str, &ValidationError>,
+    expected_errors: HashMap<&str, Vec<ValidationError>>,
     skipped_tests: &[&str],
 ) {
     // Find all test files matching the pattern
@@ -111,7 +111,7 @@ pub fn run_csaf20_tests_with_excludes(
 pub fn run_csaf21_tests_with_excludes(
     test_number: &str,
     test_function: Test<Csaf21>,
-    expected_errors: &HashMap<&str, &ValidationError>,
+    expected_errors: HashMap<&str, Vec<ValidationError>>,
     skipped_tests: &[&str],
 ) {
     // Find all test files matching the pattern
@@ -135,7 +135,7 @@ pub fn run_csaf21_tests_with_excludes(
 pub fn run_csaf20_tests(
     test_number: &str,
     test_function: Test<Csaf20>,
-    expected_errors: &HashMap<&str, &ValidationError>,
+    expected_errors: HashMap<&str, Vec<ValidationError>>,
 ) {
     run_csaf20_tests_with_excludes(test_number, test_function, expected_errors, &[])
 }
@@ -144,7 +144,7 @@ pub fn run_csaf20_tests(
 pub fn run_csaf21_tests(
     test_number: &str,
     test_function: Test<Csaf21>,
-    expected_errors: &HashMap<&str, &ValidationError>,
+    expected_errors: HashMap<&str, Vec<ValidationError>>,
 ) {
     run_csaf21_tests_with_excludes(test_number, test_function, expected_errors, &[])
 }

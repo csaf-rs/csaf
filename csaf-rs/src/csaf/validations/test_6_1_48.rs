@@ -109,31 +109,31 @@ mod tests {
         run_csaf21_tests_with_excludes(
             "48",
             test_6_1_48_ssvc_decision_points,
-            &HashMap::from([
-                ("01", &ValidationError {
+            HashMap::from([
+                ("01", vec![ValidationError {
                     message: "The SSVC decision point 'ssvc::Mission Impact' (version 1.0.0) doesn't have a value with key 'D'".to_string(),
                     instance_path: format!("{}/values/1", instance_path),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: "Unknown SSVC decision point 'ssvc::SIs' with version '2.0.0'".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("03", &ValidationError {
+                }]),
+                ("03", vec![ValidationError {
                     message: "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
                     instance_path: format!("{}/values/1", instance_path),
-                }),
-                ("04", &ValidationError {
+                }]),
+                ("04", vec![ValidationError {
                     message: "Unknown SSVC decision point 'ssvc::SI' with version '1.9.7'".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("05", &ValidationError {
+                }]),
+                ("05", vec![ValidationError {
                     message: "The SSVC decision point 'cvss::Attack Complexity' (version 3.0.1) doesn't have a value with key 'E'".to_string(),
                     instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
-                }),
-                ("06", &ValidationError {
+                }]),
+                ("06", vec![ValidationError {
                     message: "Unknown SSVC decision point 'cvss::E' with version '3.0.1'".to_string(),
                     instance_path: instance_path.clone(),
-                }),
+                }]),
             ]),
             // Tests 07, 08, 09, 21 deal with complex SSVC namespace rules, skipped for now.
             // Test 16: There seems to be no Exploit Maturity (E) decision point version 3.0.1 in the SSVC repository, skipped for now.

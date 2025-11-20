@@ -131,35 +131,37 @@ mod tests {
     fn test_test_6_1_06() {
         let first_error_message = "Product CSAFPID-9080700 is marked with product status group \"not affected\" but has conflicting product status belonging to group \"affected\"";
         let first_error_path = "/vulnerabilities/0/product_status/known_not_affected/0";
+       
+       let expected_errors = HashMap::from([
+            ("01", vec![ValidationError {
+                message: first_error_message.to_string(),
+                instance_path: first_error_path.to_string()
+            }]),
+            ("02", vec![ValidationError {
+                message: first_error_message.to_string(),
+                instance_path: first_error_path.to_string()
+            }]),
+            ("03", vec![ValidationError {
+                message: first_error_message.to_string(),
+                instance_path: first_error_path.to_string()
+            }]),
+            ("04", vec![ValidationError {
+                message: "Product CSAFPID-9080701 is marked with product status group \"fixed\" but has conflicting product status belonging to group \"not affected\"".to_string(),
+                instance_path: "/vulnerabilities/0/product_status/fixed/0".to_string(),
+            }]),
+            ("05", vec![ValidationError {
+                message: "Product CSAFPID-9080702 is marked with product status group \"fixed\" but has conflicting product status belonging to group \"affected\"".to_string(),
+                instance_path: "/vulnerabilities/0/product_status/first_fixed/0".to_string(),
+            }]),
+            ("06", vec![ValidationError {
+                message: "Product CSAFPID-9080700 is marked with product status group \"unknown\" but has conflicting product status belonging to group \"affected\"".to_string(),
+                instance_path: "/vulnerabilities/0/product_status/unknown/0".to_string(),
+            }]),
+        ]);
         run_csaf21_tests(
             "06",
             test_6_1_06_contradicting_product_status,
-            &HashMap::from([
-                ("01", &ValidationError {
-                    message: first_error_message.to_string(),
-                    instance_path: first_error_path.to_string()
-                }),
-                ("02", &ValidationError {
-                    message: first_error_message.to_string(),
-                    instance_path: first_error_path.to_string()
-                }),
-                ("03", &ValidationError {
-                    message: first_error_message.to_string(),
-                    instance_path: first_error_path.to_string()
-                }),
-                ("04", &ValidationError {
-                    message: "Product CSAFPID-9080701 is marked with product status group \"fixed\" but has conflicting product status belonging to group \"not affected\"".to_string(),
-                    instance_path: "/vulnerabilities/0/product_status/fixed/0".to_string(),
-                }),
-                ("05", &ValidationError {
-                    message: "Product CSAFPID-9080702 is marked with product status group \"fixed\" but has conflicting product status belonging to group \"affected\"".to_string(),
-                    instance_path: "/vulnerabilities/0/product_status/first_fixed/0".to_string(),
-                }),
-                ("06", &ValidationError {
-                    message: "Product CSAFPID-9080700 is marked with product status group \"unknown\" but has conflicting product status belonging to group \"affected\"".to_string(),
-                    instance_path: "/vulnerabilities/0/product_status/unknown/0".to_string(),
-                }),
-            ]),
+            expected_errors,
         );
     }
 }

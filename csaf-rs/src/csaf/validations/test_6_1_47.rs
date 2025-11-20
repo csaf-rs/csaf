@@ -82,31 +82,31 @@ mod tests {
         run_csaf21_tests(
             "47",
             test_6_1_47_inconsistent_ssvc_id,
-            &HashMap::from([
-                ("01", &ValidationError {
+            HashMap::from([
+                ("01", vec![ValidationError {
                     message: "The SSVC target ID 'CVE-1900-0002' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("02", &ValidationError {
+                }]),
+                ("02", vec![ValidationError {
                     message: "The SSVC target ID 'CVE-1900-0001' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("03", &ValidationError {
+                }]),
+                ("03", vec![ValidationError {
                     message: "The SSVC target ID '2723' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("04", &ValidationError {
+                }]),
+                ("04", vec![ValidationError {
                     message: "The SSVC target ID 'Bug#2723' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("05", &ValidationError {
+                }]),
+                ("05", vec![ValidationError {
                     message: "The SSVC target ID 'OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-15' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
                     instance_path: instance_path.clone(),
-                }),
-                ("06", &ValidationError {
+                }]),
+                ("06", vec![ValidationError {
                     message: "The SSVC target ID equals the document ID 'OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-06' and the document contains multiple vulnerabilities".to_string(),
                     instance_path: "/vulnerabilities/1/metrics/0/content/ssvc_v2/target_ids/0".to_string(),
-                }),
+                }]),
             ])
         );
     }

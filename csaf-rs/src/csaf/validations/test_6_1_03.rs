@@ -1,6 +1,6 @@
 use crate::csaf::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait, RelationshipTrait};
 use crate::csaf::validation::ValidationError;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Find the first cycle in the given `relation_map`, if any.
 ///
@@ -11,12 +11,10 @@ use std::collections::HashMap;
 pub fn find_cycle<'a>(
     relation_map: &'a HashMap<String, HashMap<String, usize>>,
     product_id: &'a str,
-    visited: &mut Vec<&'a str>,
+    visited: &mut HashSet<&'a str>,
 ) -> Option<(String, Vec<String>, usize)> {
-    if visited.contains(&product_id) {
+    if !visited.insert(product_id) {
         return Some((product_id.to_string(), vec![product_id.to_string()], 0));
-    } else {
-        visited.push(product_id);
     }
     if let Some(next_vec) = relation_map.get(product_id) {
         for (next, r_i) in next_vec {
@@ -37,7 +35,7 @@ pub fn find_cycle<'a>(
             }
         }
     }
-    visited.pop();
+    visited.remove(product_id);
     None
 }
 
@@ -46,7 +44,6 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut relation_map = HashMap::<String, HashMap<String, usize>>::new();
 
-        
         for (i_r, r) in tree.get_relationships().iter().enumerate() {
             let rel_prod_id = r.get_full_product_name().get_product_id();
             if r.get_product_reference() == rel_prod_id {
@@ -76,8 +73,8 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
 
         // Perform cycle check
         for product_id in relation_map.keys() {
-            let mut vec: Vec<&str> = vec![];
-            if let Some((_, cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut vec) {
+            let mut visited = HashSet::new();
+            if let Some((_, cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
                 errors.get_or_insert_with(Vec::new).push(ValidationError {
                     message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
                     instance_path: format!("/product_tree/relationships/{}", relation_index),
@@ -94,7 +91,7 @@ mod tests {
     use crate::csaf::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_03::test_6_1_03_circular_definition_of_product_id;
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
 
     #[test]
     fn test_test_6_1_03() {
@@ -130,7 +127,7 @@ mod tests {
         relation_map.insert("F".to_string(), HashMap::from([("G".to_string(), 7)]));
 
         // Test cycle detection starting from the first node
-        let mut visited = Vec::new();
+        let mut visited = HashSet::new();
         let result = super::find_cycle(&relation_map, "A", &mut visited);
         assert!(result.is_some());
         let (cycle_end, cycle, relation_index) = result.unwrap();
@@ -139,7 +136,7 @@ mod tests {
         assert_eq!(relation_index, 1);
 
         // Test starting from a node that's part of the cycle
-        let mut visited = Vec::new();
+        let mut visited = HashSet::new();
         let result = super::find_cycle(&relation_map, "C", &mut visited);
         assert!(result.is_some());
         let (cycle_end, cycle, relation_index) = result.unwrap();
@@ -148,12 +145,12 @@ mod tests {
         assert_eq!(relation_index, 3);
 
         // Test starting from a node that's not part of any cycle
-        let mut visited = Vec::new();
+        let mut visited = HashSet::new();
         let result = super::find_cycle(&relation_map, "E", &mut visited);
         assert!(result.is_none());
 
         // Test with empty visited Set and starting from a node not in the map
-        let mut visited = Vec::new();
+        let mut visited = HashSet::new();
         let result = super::find_cycle(&relation_map, "Z", &mut visited);
         assert!(result.is_none());
     }

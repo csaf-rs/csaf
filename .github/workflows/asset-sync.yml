@@ -31,6 +31,9 @@ jobs:
       - name: Run update_assets.sh
         run: ./update_assets.sh
 
+      - name: Run cargo check (for .rs file re-generation)
+        run: cargo check
+
       - name: Commit changes (if any)
         run: |
           if [[ -n $(git status --porcelain) ]]; then

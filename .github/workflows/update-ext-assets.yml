@@ -25,6 +25,9 @@ jobs:
       - name: Update external assets
         run: ./update_ext_assets.sh
 
+      - name: Run cargo check (for .rs file re-generation)
+        run: cargo check
+
       - name: Create PR
         uses: peter-evans/create-pull-request@v7
         with:

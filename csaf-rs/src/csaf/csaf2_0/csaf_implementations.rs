@@ -289,12 +289,12 @@ impl DocumentTrait for DocumentLevelMetaData {
     }
 
     /// Return distribution or a Validation error to satisfy CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, Vec<ValidationError>> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
         match self.distribution.as_ref() {
-            None => Err(vec![ValidationError {
+            None => Err(ValidationError {
                 message: "CSAF 2.1 requires the distribution property, but it is not set.".to_string(),
                 instance_path: "/document/distribution".to_string()
-            }]),
+            }),
             Some(distribution) => Ok(distribution)
         }
     }
@@ -326,12 +326,12 @@ impl DistributionTrait for RulesForSharingDocument {
     }
 
     /// Return TLP or a ValidationError to satisfy CSAF 2.1 semantics
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, Vec<ValidationError>> {
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError> {
         match self.tlp.as_ref() {
-            None => Err(vec![ValidationError {
+            None => Err(ValidationError {
                 message: "CSAF 2.1 requires the TLP property, but it is not set.".to_string(),
                 instance_path: "/document/distribution/sharing_group/tlp".to_string()
-            }]),
+            }),
             Some(tlp) => Ok(tlp)
         }
     }

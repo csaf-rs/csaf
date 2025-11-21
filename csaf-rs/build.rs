@@ -28,22 +28,22 @@ fn main() -> Result<(), BuildError> {
     let schema_configs = [
         (
             "assets/csaf_2.0_json_schema.json",
-            "csaf/csaf2_0/schema.rs",
+            "csaf/csaf2_0/schema.generated.rs",
             Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
         ),
         (
             "assets/csaf_2.1_json_schema.json",
-            "csaf/csaf2_1/schema.rs",
+            "csaf/csaf2_1/schema.generated.rs",
             Some(&fix_2_1_schema),
         ),
         (
             "assets/decision_point_json_schema.json",
-            "csaf/csaf2_1/ssvc_dp.rs",
+            "csaf/csaf2_1/ssvc_dp.generated.rs",
             None,
         ),
         (
             "assets/decision_point_selection_list_json_schema.json",
-            "csaf/csaf2_1/ssvc_dp_selection_list.rs",
+            "csaf/csaf2_1/ssvc_dp_selection_list.generated.rs",
             None,
         ),
     ];

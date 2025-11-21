@@ -1,5 +1,5 @@
-use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::csaf::csaf_traits::{CsafTrait, ProductStatusTrait, RemediationTrait, VulnerabilityTrait};
+use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::csaf::validation::ValidationError;
 use std::collections::HashSet;
 
@@ -45,8 +45,7 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                             return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} is listed as affected but has conflicting remediation category {}",
-                                    p,
-                                    cat
+                                    p, cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
                             }]);
@@ -55,8 +54,7 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                             return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} is listed as not affected but has conflicting remediation category {}",
-                                    p,
-                                    cat
+                                    p, cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
                             }]);
@@ -65,8 +63,7 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                             return Err(vec![ValidationError {
                                 message: format!(
                                     "Product {} is listed as fixed but has conflicting remediation category {}",
-                                    p,
-                                    cat
+                                    p, cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
                             }]);
@@ -81,10 +78,10 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
     use crate::csaf::test_helper::run_csaf21_tests;
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_36::test_6_1_36_status_group_contradicting_remediation_categories;
+    use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_36() {

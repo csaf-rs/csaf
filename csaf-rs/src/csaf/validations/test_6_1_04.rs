@@ -1,10 +1,10 @@
-use crate::csaf::csaf_traits::{CsafTrait, DocumentTrait, ProductGroupTrait, ProductTreeTrait, VulnerabilityTrait, WithGroupIds};
+use crate::csaf::csaf_traits::{
+    CsafTrait, DocumentTrait, ProductGroupTrait, ProductTreeTrait, VulnerabilityTrait, WithGroupIds,
+};
 use crate::csaf::validation::ValidationError;
 use std::collections::HashSet;
 
-pub fn test_6_1_04_missing_definition_of_product_group_id(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut known_groups = HashSet::<String>::new();
         // Collect all known product group IDs
@@ -69,7 +69,10 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(
                         if !known_groups.contains(*group_id) {
                             return Err(vec![ValidationError {
                                 message: format!("Missing definition of product_group_id: {}", group_id),
-                                instance_path: format!("/vulnerabilities/{}/remediations/{}/group_ids/{}", i_v, i_r, i_g),
+                                instance_path: format!(
+                                    "/vulnerabilities/{}/remediations/{}/group_ids/{}",
+                                    i_v, i_r, i_g
+                                ),
                             }]);
                         }
                     }
@@ -105,16 +108,20 @@ mod tests {
     #[test]
     fn test_test_6_1_04() {
         let errors = HashMap::from([
-            ("01", vec![
-                ValidationError {
+            (
+                "01",
+                vec![ValidationError {
                     message: "Missing definition of product_group_id: CSAFGID-1020301".to_string(),
                     instance_path: "/vulnerabilities/0/threats/0/group_ids/0".to_string(),
-                }]),
-            ("02", vec![
-                ValidationError {
+                }],
+            ),
+            (
+                "02",
+                vec![ValidationError {
                     message: "Missing definition of product_group_id: CSAFGID-1020300".to_string(),
                     instance_path: "/vulnerabilities/0/flags/0/group_ids/0".to_string(),
-                }]),
+                }],
+            ),
         ]);
         run_csaf20_tests("04", test_6_1_04_missing_definition_of_product_group_id, errors.clone());
         run_csaf21_tests("04", test_6_1_04_missing_definition_of_product_group_id, errors);

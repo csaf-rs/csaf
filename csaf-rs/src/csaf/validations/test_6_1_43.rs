@@ -2,9 +2,7 @@ use crate::csaf::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, Prod
 use crate::csaf::helpers::count_unescaped_stars;
 use crate::csaf::validation::ValidationError;
 
-pub fn test_6_1_43_multiple_stars_in_model_number(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
@@ -14,8 +12,12 @@ pub fn test_6_1_43_multiple_stars_in_model_number(
                     for (index, model_number) in model_numbers.enumerate() {
                         if count_unescaped_stars(model_number) > 1 {
                             errors.get_or_insert_with(Vec::new).push(ValidationError {
-                                message: "Model number must not contain multiple unescaped asterisks (stars)".to_string(),
-                                instance_path: format!("{}/product_identification_helper/model_numbers/{}", path, index),
+                                message: "Model number must not contain multiple unescaped asterisks (stars)"
+                                    .to_string(),
+                                instance_path: format!(
+                                    "{}/product_identification_helper/model_numbers/{}",
+                                    path, index
+                                ),
                             });
                         }
                     }
@@ -39,15 +41,17 @@ mod tests {
     fn test_test_6_1_43() {
         let expected_error = ValidationError {
             message: "Model number must not contain multiple unescaped asterisks (stars)".to_string(),
-            instance_path: "/product_tree/full_product_names/0/product_identification_helper/model_numbers/0".to_string(),
+            instance_path: "/product_tree/full_product_names/0/product_identification_helper/model_numbers/0"
+                .to_string(),
         };
 
         run_csaf21_tests(
             "43",
-            test_6_1_43_multiple_stars_in_model_number, HashMap::from([
+            test_6_1_43_multiple_stars_in_model_number,
+            HashMap::from([
                 ("01", vec![expected_error.clone()]),
                 ("02", vec![expected_error.clone()]),
-            ])
+            ]),
         );
     }
 }

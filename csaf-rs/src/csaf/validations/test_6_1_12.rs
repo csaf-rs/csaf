@@ -1,5 +1,5 @@
-use crate::csaf::generated::language_subtags::is_valid_language_subtag;
 use crate::csaf::csaf_traits::{CsafTrait, DocumentTrait};
+use crate::csaf::generated::language_subtags::is_valid_language_subtag;
 use crate::csaf::validation::ValidationError;
 
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
@@ -10,7 +10,7 @@ pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationEr
         validate_language_code(lang, "/document/lang")?;
     }
 
-    // Check /document/source_lang if it exists  
+    // Check /document/source_lang if it exists
     if let Some(source_lang) = document.get_source_lang() {
         validate_language_code(source_lang, "/document/source_lang")?;
     }
@@ -24,7 +24,10 @@ fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<Va
 
     if !is_valid_language_subtag(primary_subtag) {
         return Err(vec![ValidationError {
-            message: format!("Invalid language code '{}': primary language subtag '{}' is not a valid language subtag", lang_code, primary_subtag),
+            message: format!(
+                "Invalid language code '{}': primary language subtag '{}' is not a valid language subtag",
+                lang_code, primary_subtag
+            ),
             instance_path: json_path.to_string(),
         }]);
     }
@@ -41,12 +44,14 @@ mod tests {
 
     #[test]
     fn test_test_6_1_12() {
-        let errors = HashMap::from([
-            ("01", vec![ValidationError {
-                message: "Invalid language code 'EZ': primary language subtag 'EZ' is not a valid language subtag".to_string(),
+        let errors = HashMap::from([(
+            "01",
+            vec![ValidationError {
+                message: "Invalid language code 'EZ': primary language subtag 'EZ' is not a valid language subtag"
+                    .to_string(),
                 instance_path: "/document/lang".to_string(),
-            }]),
-        ]);
+            }],
+        )]);
         run_csaf20_tests("12", test_6_1_12_language, errors.clone());
         run_csaf21_tests("12", test_6_1_12_language, errors);
     }

@@ -5,12 +5,8 @@ use regex::Regex;
 use std::str::FromStr;
 use std::sync::LazyLock;
 
-static PURL_REGEX: LazyLock<Regex> = LazyLock::new(||
-    Regex::new(r"^pkg:[A-Za-z.\-+][A-Za-z0-9.\-+]*/.+").unwrap()
-);
-pub fn test_6_1_13_purl(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+static PURL_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^pkg:[A-Za-z.\-+][A-Za-z0-9.\-+]*/.+").unwrap());
+pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {

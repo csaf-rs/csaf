@@ -1,11 +1,11 @@
+use crate::csaf::csaf_traits::{
+    CsafTrait, DistributionTrait, DocumentTrait, RevisionTrait, TlpTrait, TrackingTrait, VulnerabilityTrait,
+};
 use crate::csaf::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
-use crate::csaf::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, RevisionTrait, TlpTrait, TrackingTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
 
-pub fn test_6_1_45_inconsistent_disclosure_date(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Only check if document is TLP:CLEAR and status is final or interim
     let document = doc.get_document();
     let status = document.get_tracking().get_status();
@@ -34,18 +34,19 @@ pub fn test_6_1_45_inconsistent_disclosure_date(
             .map(|rev_datetime| {
                 println!(
                     "rev_datetime: {:?}, newest_revision_date: {:?}",
-                    rev_datetime,
-                    newest_revision_date
+                    rev_datetime, newest_revision_date
                 );
                 newest_revision_date = match newest_revision_date {
                     None => Some(rev_datetime),
                     Some(prev_max) => Some(prev_max.max(rev_datetime)),
                 }
             })
-            .map_err(|_| vec![ValidationError {
-                message: format!("Invalid date format in revision history: {}", rev.get_date()),
-                instance_path: format!("/document/tracking/revision_history/{}", i_rev),
-            }])?;
+            .map_err(|_| {
+                vec![ValidationError {
+                    message: format!("Invalid date format in revision history: {}", rev.get_date()),
+                    instance_path: format!("/document/tracking/revision_history/{}", i_rev),
+                }]
+            })?;
     }
 
     if let Some(newest_date) = newest_revision_date {
@@ -70,7 +71,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(
                             message: format!("Invalid disclosure date format: {}", disclosure_date),
                             instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
                         }]);
-                    }
+                    },
                 }
             }
         }
@@ -95,11 +96,12 @@ mod tests {
 
         run_csaf21_tests(
             "45",
-            test_6_1_45_inconsistent_disclosure_date, HashMap::from([
+            test_6_1_45_inconsistent_disclosure_date,
+            HashMap::from([
                 ("01", vec![expected_error.clone()]),
                 ("02", vec![expected_error.clone()]),
                 ("03", vec![expected_error.clone()]),
-            ])
+            ]),
         );
     }
 }

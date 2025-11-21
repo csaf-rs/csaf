@@ -30,9 +30,7 @@ impl Display for ProductStatusGroup {
     }
 }
 
-pub fn test_6_1_06_contradicting_product_status(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = v.get_product_status() {
             // Map of product IDs to product status groups (mutually exclusive, therefore only one allowed)
@@ -100,7 +98,7 @@ fn check_status_group<'a>(
             match product_statuses.get(pid) {
                 None => {
                     product_statuses.insert(pid.to_owned(), status_group.clone());
-                }
+                },
                 Some(existing_status) => {
                     if *existing_status != status_group {
                         return Err(vec![ValidationError {
@@ -113,7 +111,7 @@ fn check_status_group<'a>(
                             instance_path: format!("/vulnerabilities/{}/product_status/{}/{}", v_i, field_name, i_pid),
                         }]);
                     }
-                }
+                },
             }
         }
     }
@@ -131,8 +129,8 @@ mod tests {
     fn test_test_6_1_06() {
         let first_error_message = "Product CSAFPID-9080700 is marked with product status group \"not affected\" but has conflicting product status belonging to group \"affected\"";
         let first_error_path = "/vulnerabilities/0/product_status/known_not_affected/0";
-       
-       let expected_errors = HashMap::from([
+
+        let expected_errors = HashMap::from([
             ("01", vec![ValidationError {
                 message: first_error_message.to_string(),
                 instance_path: first_error_path.to_string()
@@ -158,10 +156,6 @@ mod tests {
                 instance_path: "/vulnerabilities/0/product_status/unknown/0".to_string(),
             }]),
         ]);
-        run_csaf21_tests(
-            "06",
-            test_6_1_06_contradicting_product_status,
-            expected_errors,
-        );
+        run_csaf21_tests("06", test_6_1_06_contradicting_product_status, expected_errors);
     }
 }

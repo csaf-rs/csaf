@@ -1,8 +1,8 @@
+use TestResultStatus::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
-use TestResultStatus::{*};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct ValidationError {
@@ -13,11 +13,7 @@ pub struct ValidationError {
 
 impl std::fmt::Display for ValidationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "ValidationError: {} at {}",
-            self.message, self.instance_path
-        )
+        write!(f, "ValidationError: {} at {}", self.message, self.instance_path)
     }
 }
 
@@ -92,12 +88,7 @@ pub trait Validate {
     fn validate_by_test<VersionedDocument>(&self, test_id: &str) -> TestResult;
 
     /// Validates this object according to specific test IDs and returns detailed results
-    fn validate_by_tests(
-        &self,
-        version: &str,
-        preset: ValidationPreset,
-        test_ids: &[&str],
-    ) -> ValidationResult;
+    fn validate_by_tests(&self, version: &str, preset: ValidationPreset, test_ids: &[&str]) -> ValidationResult;
 
     /// Validates this object according to a validation preset and returns detailed results
     fn validate_by_preset(&self, version: &str, preset: ValidationPreset) -> ValidationResult;
@@ -127,10 +118,7 @@ pub trait Validatable<VersionedDocument> {
 /// This function will check, whether the test_id exists in the Validatable's
 /// tests. If it does, it will execute the test function and return the result.
 /// If not, it will return a TestResult indicating that the test was not found.
-pub fn validate_by_test<VersionedDocument>(
-    target: &impl Validatable<VersionedDocument>,
-    test_id: &str,
-) -> TestResult {
+pub fn validate_by_test<VersionedDocument>(target: &impl Validatable<VersionedDocument>, test_id: &str) -> TestResult {
     // Fetch tests from the validatable
     let tests = target.tests();
 
@@ -138,9 +126,7 @@ pub fn validate_by_test<VersionedDocument>(
     let status = if let Some(test_fn) = tests.get(test_id) {
         match test_fn(target.doc()) {
             Ok(()) => Success,
-            Err(errors) => Failure {
-                errors,
-            },
+            Err(errors) => Failure { errors },
         }
     } else {
         NotFound
@@ -168,7 +154,7 @@ pub fn validate_by_tests<VersionedDocument>(
         let test_result = validate_by_test(target, test_id);
         if let Failure { errors } = &test_result.status {
             success = false;
-            num_errors += errors.len();            
+            num_errors += errors.len();
         }
         test_results.push(test_result);
     }

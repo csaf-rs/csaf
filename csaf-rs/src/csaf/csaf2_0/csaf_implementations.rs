@@ -1,7 +1,20 @@
-use crate::csaf::csaf2_0::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
-use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21};
+use crate::csaf::csaf_traits::{
+    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait,
+    FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
+    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, RelationshipTrait,
+    RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait,
+    VulnerabilityTrait, WithGroupIds,
+};
+use crate::csaf::csaf2_0::schema::{
+    Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData,
+    DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note,
+    ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score,
+    Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+};
+use crate::csaf::csaf2_1::schema::{
+    CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21,
+};
 use crate::csaf::csaf2_1::ssvc_dp_selection_list::SelectionList;
-use crate::csaf::csaf_traits::{BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds};
 use crate::csaf::validation::ValidationError;
 use serde::de::Error;
 use serde_json::{Map, Value};
@@ -9,7 +22,7 @@ use std::ops::Deref;
 use uuid::Uuid;
 
 impl WithGroupIds for Remediation {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
@@ -74,11 +87,13 @@ impl ProductStatusTrait for ProductStatus {
     }
 
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+        self.under_investigation
+            .as_ref()
+            .map(|p| (*p).iter().map(|x| x.deref()))
     }
 
     /// Not specified for CSAF 2.0, so `None`
-    fn get_unknown(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_> {
         None::<std::iter::Empty<&String>>
     }
 }
@@ -105,7 +120,9 @@ impl ContentTrait for Score {
     }
 
     fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error> {
-        Err(serde_json::Error::custom("SSVC metrics are not implemented in CSAF 2.0"))
+        Err(serde_json::Error::custom(
+            "SSVC metrics are not implemented in CSAF 2.0",
+        ))
     }
 
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
@@ -133,10 +150,7 @@ impl ContentTrait for Score {
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
-        format!(
-            "/vulnerabilities/{}/scores/{}",
-            vulnerability_idx, metric_idx
-        )
+        format!("/vulnerabilities/{}/scores/{}", vulnerability_idx, metric_idx)
     }
 }
 
@@ -204,7 +218,7 @@ impl VulnerabilityTrait for Vulnerability {
     fn get_cve(&self) -> Option<&String> {
         self.cve.as_ref().map(|x| x.deref())
     }
-    
+
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
         &self.ids
     }
@@ -229,7 +243,7 @@ impl VulnerabilityIdTrait for Id {
 }
 
 impl WithGroupIds for Flag {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
@@ -239,7 +253,7 @@ impl FlagTrait for Flag {
         &self.date
     }
 
-    fn get_product_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
@@ -293,9 +307,9 @@ impl DocumentTrait for DocumentLevelMetaData {
         match self.distribution.as_ref() {
             None => Err(ValidationError {
                 message: "CSAF 2.1 requires the distribution property, but it is not set.".to_string(),
-                instance_path: "/document/distribution".to_string()
+                instance_path: "/document/distribution".to_string(),
             }),
-            Some(distribution) => Ok(distribution)
+            Some(distribution) => Ok(distribution),
         }
     }
 
@@ -330,15 +344,15 @@ impl DistributionTrait for RulesForSharingDocument {
         match self.tlp.as_ref() {
             None => Err(ValidationError {
                 message: "CSAF 2.1 requires the TLP property, but it is not set.".to_string(),
-                instance_path: "/document/distribution/sharing_group/tlp".to_string()
+                instance_path: "/document/distribution/sharing_group/tlp".to_string(),
             }),
-            Some(tlp) => Ok(tlp)
+            Some(tlp) => Ok(tlp),
         }
     }
 }
 
 impl WithGroupIds for Note {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         None::<std::iter::Empty<&String>>
     }
 }
@@ -448,7 +462,10 @@ impl ProductTreeTrait for ProductTree {
         &self.full_product_names
     }
 
-    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>) -> Result<(), Vec<ValidationError>> {
+    fn visit_all_products(
+        &self,
+        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>,
+    ) -> Result<(), Vec<ValidationError>> {
         self.visit_all_products_generic(callback)
     }
 }

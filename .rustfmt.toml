@@ -1,0 +1,13 @@
+# Default rustfmt configuration for this repository, only stable features
+max_width = 120
+hard_tabs = false
+tab_spaces = 4
+
+# Imports and derives
+reorder_imports = true
+merge_derives = true
+
+fn_params_layout = "Tall"
+match_block_trailing_comma = true
+remove_nested_parens = true
+use_try_shorthand = true

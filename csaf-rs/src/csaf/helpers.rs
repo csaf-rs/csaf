@@ -1,10 +1,10 @@
-use crate::csaf::csaf2_1::ssvc_dp::DecisionPoint;
 use crate::csaf::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
+use crate::csaf::csaf2_1::ssvc_dp::DecisionPoint;
 use rust_embed::RustEmbed;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::ops::Deref;
 use std::sync::LazyLock;
-use uuid::{uuid, Uuid};
+use uuid::{Uuid, uuid};
 
 /// Special name for public sharing groups
 pub static SG_NAME_PUBLIC: &str = "Public";
@@ -18,7 +18,7 @@ pub static NIL_UUID: &Uuid = &uuid!("00000000-0000-0000-0000-000000000000");
 
 pub fn resolve_product_groups<'a, I>(doc: &impl CsafTrait, product_groups: I) -> Option<BTreeSet<String>>
 where
-    I: IntoIterator<Item = &'a String>
+    I: IntoIterator<Item = &'a String>,
 {
     let product_groups: Vec<&String> = product_groups.into_iter().collect();
 
@@ -85,7 +85,10 @@ pub static SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String, String), Deci
                     );
                     decision_points.insert(key, dp);
                 },
-                Err(err) => eprintln!("Warning: Failed to parse decision point from file {}: {}", filename, err),
+                Err(err) => eprintln!(
+                    "Warning: Failed to parse decision point from file {}: {}",
+                    filename, err
+                ),
             }
         }
     }
@@ -95,19 +98,20 @@ pub static SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String, String), Deci
 
 /// Derives lookup maps for all observed SSVC decision points that can be used
 /// to verify the order of values within the respective decision points.
-pub static DP_VAL_KEYS_LOOKUP: LazyLock<HashMap<(String, String, String), HashMap<String, i32>>> = LazyLock::new(|| {
-    let mut lookups = HashMap::new();
+pub static DP_VAL_KEYS_LOOKUP: LazyLock<HashMap<(String, String, String), HashMap<String, i32>>> =
+    LazyLock::new(|| {
+        let mut lookups = HashMap::new();
 
-    for (key, dp) in SSVC_DECISION_POINTS.iter() {
-        let mut lookup_map = HashMap::new();
-        for (i, v) in dp.values.iter().enumerate() {
-            lookup_map.insert(v.key.deref().to_owned(), i as i32);
+        for (key, dp) in SSVC_DECISION_POINTS.iter() {
+            let mut lookup_map = HashMap::new();
+            for (i, v) in dp.values.iter().enumerate() {
+                lookup_map.insert(v.key.deref().to_owned(), i as i32);
+            }
+            lookups.insert(key.clone(), lookup_map);
         }
-        lookups.insert(key.clone(), lookup_map);
-    }
 
-    lookups
-});
+        lookups
+    });
 
 /// Collects all "registered" namespaces from known decision points. We assume that each namespace
 /// that occurs in at least one decision point in the SSVC repository is a "registered" namespace.

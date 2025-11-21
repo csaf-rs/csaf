@@ -47,11 +47,11 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
         "2.0" => {
             let document = load_document_2_0(path)?;
             validate_document(document, "2.0", args)
-        }
+        },
         "2.1" => {
             let document = load_document_2_1(path)?;
             validate_document(document, "2.1", args)
-        }
+        },
         _ => bail!(format!("Invalid CSAF version: {}", args.csaf_version)),
     }
 }
@@ -107,7 +107,7 @@ fn print_test_result(test_result: &TestResult) {
         Success => {
             // Yay, success!
             println!("{}✅ Success", prefix);
-        }
+        },
         Failure { errors } => {
             // We want to print multiple errors nicely indented
             let error_msg = "❌ ";
@@ -119,10 +119,10 @@ fn print_test_result(test_result: &TestResult) {
                 }
                 println!("Error: {}", error.message);
             }
-        }
+        },
         NotFound => {
             // Test not found
             println!("{}⚠️  Test not found", prefix);
-        }
+        },
     }
 }

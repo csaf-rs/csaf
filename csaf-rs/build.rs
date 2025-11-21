@@ -1,11 +1,11 @@
+use json_dotpath::DotPaths;
+use quote::quote;
+use serde_json::{Value, json};
 use std::path::Path;
-use std::{fs, io};
 use std::string::ToString;
+use std::{fs, io};
 use thiserror::Error;
 use typify::{TypeSpace, TypeSpaceSettings};
-use json_dotpath::DotPaths;
-use serde_json::{json, Value};
-use quote::quote;
 
 #[derive(Error, Debug)]
 pub enum BuildError {
@@ -28,22 +28,22 @@ fn main() -> Result<(), BuildError> {
     let schema_configs = [
         (
             "assets/csaf_2.0_json_schema.json",
-            "csaf/csaf2_0/schema.rs",
+            "csaf/csaf2_0/schema.generated.rs",
             Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
         ),
         (
             "assets/csaf_2.1_json_schema.json",
-            "csaf/csaf2_1/schema.rs",
+            "csaf/csaf2_1/schema.generated.rs",
             Some(&fix_2_1_schema),
         ),
         (
             "assets/decision_point_json_schema.json",
-            "csaf/csaf2_1/ssvc_dp.rs",
+            "csaf/csaf2_1/ssvc_dp.generated.rs",
             None,
         ),
         (
             "assets/decision_point_selection_list_json_schema.json",
-            "csaf/csaf2_1/ssvc_dp_selection_list.rs",
+            "csaf/csaf2_1/ssvc_dp_selection_list.generated.rs",
             None,
         ),
     ];
@@ -68,11 +68,12 @@ pub static GENERATED_CODE_HEADER: &str = "
  * Do not edit manually!
  ";
 
-fn build(
-    input: &str,
-    output: &str,
-    schema_patch: &Option<&dyn Fn(&mut Value)>
-) -> Result<(), BuildError> {
+fn add_ignore_rustfmt(file: &mut syn::File) {
+    let doc_attr = syn::parse_quote! { #![cfg_attr(any(), rustfmt::skip)] };
+    file.attrs.insert(0, doc_attr);
+}
+
+fn build(input: &str, output: &str, schema_patch: &Option<&dyn Fn(&mut Value)>) -> Result<(), BuildError> {
     let content = fs::read_to_string(&input)?;
     let mut schema_value = serde_json::from_str(&content)?;
     // Execute a schema patch function, if provided.
@@ -85,13 +86,14 @@ fn build(
         TypeSpaceSettings::default()
             .with_struct_builder(true)
             .with_derive("PartialEq".into())
-            .with_derive("Eq".into())
+            .with_derive("Eq".into()),
     );
     type_space.add_root_schema(schema)?;
 
     // Convert the TypeSpace token stream into a syn::File so we can inject a file-level doc attribute
     let mut file = syn::parse2::<syn::File>(type_space.to_stream())?;
 
+    add_ignore_rustfmt(&mut file);
     // Parse the GENERATED_CODE_HEADER as a doc attribute
     let doc_attr = syn::parse_quote! { #![doc = #GENERATED_CODE_HEADER] };
     file.attrs.insert(0, doc_attr);
@@ -107,10 +109,7 @@ fn build(
 /// Patches (unsupported) external schemas to the plain object type for CSAF 2.0.
 fn fix_2_0_schema(value: &mut Value) {
     let prefix = "properties.vulnerabilities.items.properties.scores.items.properties";
-    let fix_paths = [
-        format!("{}.cvss_v2", prefix),
-        format!("{}.cvss_v3", prefix),
-    ];
+    let fix_paths = [format!("{}.cvss_v2", prefix), format!("{}.cvss_v3", prefix)];
     for path in fix_paths {
         value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
     }
@@ -119,8 +118,7 @@ fn fix_2_0_schema(value: &mut Value) {
 
 /// Patches (unsupported) external schemas to the plain object type for CSAF 2.1.
 fn fix_2_1_schema(value: &mut Value) {
-    let prefix =
-        "properties.vulnerabilities.items.properties.metrics.items.properties.content.properties";
+    let prefix = "properties.vulnerabilities.items.properties.metrics.items.properties.content.properties";
     let fix_paths = [
         format!("{}.cvss_v2", prefix),
         format!("{}.cvss_v3", prefix),
@@ -200,8 +198,10 @@ fn generate_language_subtags() -> Result<(), BuildError> {
         }
     };
 
+    let mut file: syn::File = syn::parse2(tokens)?;
+    add_ignore_rustfmt(&mut file);
+
     // Pretty-print the generated code.
-    let file: syn::File = syn::parse2(tokens)?;
     let code = prettyplease::unparse(&file);
 
     let out_path = Path::new("src")

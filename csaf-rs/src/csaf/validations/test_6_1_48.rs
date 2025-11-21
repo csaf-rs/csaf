@@ -3,9 +3,7 @@ use crate::csaf::helpers::{DP_VAL_KEYS_LOOKUP, REGISTERED_SSVC_NAMESPACES, SSVC_
 use crate::csaf::validation::ValidationError;
 use std::ops::Deref;
 
-pub fn test_6_1_48_ssvc_decision_points(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     for (i_v, v) in vulnerabilities.iter().enumerate() {
@@ -34,34 +32,42 @@ pub fn test_6_1_48_ssvc_decision_points(
                                         // Index of last-seen value
                                         let mut last_index: i32 = -1;
                                         // Check if all values exist and are correctly ordered
-                                        for (i_val, v_key) in selection.values.iter().map(|v| v.key.deref()).enumerate() {
+                                        for (i_val, v_key) in selection.values.iter().map(|v| v.key.deref()).enumerate()
+                                        {
                                             match reference_indices.get(v_key) {
-                                                None => return Err(vec![ValidationError {
-                                                    message: format!(
-                                                        "The SSVC decision point '{}::{}' (version {}) doesn't have a value with key '{}'",
-                                                        namespace, dp.name.deref(), version, v_key
-                                                    ),
-                                                    instance_path: format!(
-                                                        "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
-                                                        i_v, i_m, i_s, i_val
-                                                    ),
-                                                }]),
+                                                None => {
+                                                    return Err(vec![ValidationError {
+                                                        message: format!(
+                                                            "The SSVC decision point '{}::{}' (version {}) doesn't have a value with key '{}'",
+                                                            namespace,
+                                                            dp.name.deref(),
+                                                            version,
+                                                            v_key
+                                                        ),
+                                                        instance_path: format!(
+                                                            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
+                                                            i_v, i_m, i_s, i_val
+                                                        ),
+                                                    }]);
+                                                },
                                                 Some(i_dp_val) => {
                                                     if last_index > *i_dp_val {
                                                         return Err(vec![ValidationError {
                                                             message: format!(
                                                                 "The values for SSVC decision point '{}::{}' (version {}) are not in correct order",
-                                                                namespace, dp.name.deref(), version
+                                                                namespace,
+                                                                dp.name.deref(),
+                                                                version
                                                             ),
                                                             instance_path: format!(
                                                                 "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
                                                                 i_v, i_m, i_s, i_val
                                                             ),
-                                                        }])
+                                                        }]);
                                                     } else {
                                                         last_index = *i_dp_val;
                                                     }
-                                                }
+                                                },
                                             }
                                         }
                                     },
@@ -76,7 +82,7 @@ pub fn test_6_1_48_ssvc_decision_points(
                                                 i_v, i_m, i_s
                                             ),
                                         }]);
-                                    }
+                                    },
                                 }
                             }
                         },

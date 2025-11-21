@@ -1,9 +1,9 @@
-use crate::csaf::csaf_traits::{ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{
+    ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait,
+};
 use crate::csaf::validation::ValidationError;
 
-pub fn test_6_1_47_inconsistent_ssvc_id(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     for (i_v, v) in vulnerabilities.iter().enumerate() {
@@ -23,8 +23,14 @@ pub fn test_6_1_47_inconsistent_ssvc_id(
                                         // If there are multiple vulnerabilities, the validation must fail here.
                                         if vulnerabilities.len() > 1 {
                                             return Err(ValidationError {
-                                                message: format!("The SSVC target ID equals the document ID '{}' and the document contains multiple vulnerabilities", document_id),
-                                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}", i_v, i_m, i_t),
+                                                message: format!(
+                                                    "The SSVC target ID equals the document ID '{}' and the document contains multiple vulnerabilities",
+                                                    document_id
+                                                ),
+                                                instance_path: format!(
+                                                    "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
+                                                    i_v, i_m, i_t
+                                                ),
                                             });
                                         }
                                         // Target ID is valid, continue to next
@@ -47,8 +53,14 @@ pub fn test_6_1_47_inconsistent_ssvc_id(
 
                                     // Return error if target ID is not valid
                                     return Err(ValidationError {
-                                        message: format!("The SSVC target ID '{}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability", target_id),
-                                        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}", i_v, i_m, i_t),
+                                        message: format!(
+                                            "The SSVC target ID '{}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability",
+                                            target_id
+                                        ),
+                                        instance_path: format!(
+                                            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
+                                            i_v, i_m, i_t
+                                        ),
                                     });
                                 }
                             }
@@ -58,7 +70,7 @@ pub fn test_6_1_47_inconsistent_ssvc_id(
                                 message: format!("Invalid SSVC object: {}", err),
                                 instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
                             });
-                        }
+                        },
                     }
                 }
             }

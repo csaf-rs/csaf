@@ -2,9 +2,7 @@ use crate::csaf::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
 use std::collections::HashSet;
 
-pub fn test_6_1_02_multiple_definition_of_product_id(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     // Map to store each key with all of its paths
     let mut conflicts = HashSet::<String>::new();
 
@@ -38,9 +36,7 @@ mod tests {
             message: "Duplicate definition for product ID CSAFPID-9080700".to_string(),
             instance_path: "/product_tree/full_product_names/1/product_id".to_string(),
         };
-        let errors = HashMap::from([
-            ("01", &error01)
-        ]);
+        let errors = HashMap::from([("01", &error01)]);
         run_csaf20_tests("02", test_6_1_02_multiple_definition_of_product_id, &errors);
         run_csaf21_tests("02", test_6_1_02_multiple_definition_of_product_id, &errors);
     }

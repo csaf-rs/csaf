@@ -1,8 +1,8 @@
 use super::schema::CommonSecurityAdvisoryFramework;
-use std::collections::HashMap;
 use crate::csaf::validation::{Test, Validatable, ValidationPreset};
 use crate::csaf::validations::test_6_1_01::test_6_1_01_missing_definition_of_product_id;
 use crate::csaf::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
+use std::collections::HashMap;
 
 impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
     fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>> {
@@ -31,4 +31,3 @@ impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFram
         self
     }
 }
-

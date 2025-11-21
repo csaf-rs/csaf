@@ -5,13 +5,9 @@ use regex::Regex;
 use std::str::FromStr;
 use std::sync::LazyLock;
 
-static PURL_REGEX: LazyLock<Regex> = LazyLock::new(||
-    Regex::new(r"^pkg:[A-Za-z.\-+][A-Za-z0-9.\-+]*/.+").unwrap()
-);
+static PURL_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^pkg:[A-Za-z.\-+][A-Za-z0-9.\-+]*/.+").unwrap());
 
-pub fn test_6_1_13_purl(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
             if let Some(helper) = product.get_product_identification_helper() {
@@ -32,7 +28,7 @@ pub fn test_6_1_13_purl(
                                     message: format!("Invalid PURL format: {}, Error: {}", purl_str, e),
                                     instance_path: format!("{}/product_identification_helper/purls/{}", path, i),
                                 });
-                            }
+                            },
                         };
                     }
                 }
@@ -60,10 +56,7 @@ mod tests {
             message: "Invalid PURL format: pkg:oci/com.example/product-A@sha256%3Add134261219b2, Error: no namespace allowed for type \"oci\"".to_string(),
             instance_path: "/product_tree/full_product_names/0/product_identification_helper/purls/0".to_string(),
         };
-        let errors = HashMap::from([
-            ("01", &error01),
-            ("02", &error02),
-        ]);
+        let errors = HashMap::from([("01", &error01), ("02", &error02)]);
         run_csaf20_tests("13", test_6_1_13_purl, &errors);
         run_csaf21_tests("13", test_6_1_13_purl, &errors);
     }

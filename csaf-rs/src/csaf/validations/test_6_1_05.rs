@@ -2,9 +2,7 @@ use crate::csaf::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
 use std::collections::HashSet;
 
-pub fn test_6_1_05_multiple_definition_of_product_group_id(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     // Map to store each key with all of its paths
     let mut conflicts = HashSet::<String>::new();
 
@@ -14,7 +12,7 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(
                 return Err(ValidationError {
                     message: format!("Duplicate definition for product group ID {}", g.get_group_id()),
                     instance_path: format!("/product_tree/product_groups/{}/group_id", i_g),
-                })
+                });
             } else {
                 conflicts.insert(g.get_group_id().to_owned());
             }
@@ -37,9 +35,7 @@ mod tests {
             message: "Duplicate definition for product group ID CSAFGID-1020300".to_string(),
             instance_path: "/product_tree/product_groups/1/group_id".to_string(),
         };
-        let errors = HashMap::from([
-            ("01", &error01)
-        ]);
+        let errors = HashMap::from([("01", &error01)]);
         run_csaf20_tests("05", test_6_1_05_multiple_definition_of_product_group_id, &errors);
         run_csaf21_tests("05", test_6_1_05_multiple_definition_of_product_group_id, &errors);
     }

@@ -1,11 +1,9 @@
-use std::str::FromStr;
-use packageurl::PackageUrl;
 use crate::csaf::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::csaf::validation::ValidationError;
+use packageurl::PackageUrl;
+use std::str::FromStr;
 
-pub fn test_6_1_42_purl_consistency(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
             if let Some(helper) = product.get_product_identification_helper() {
@@ -54,10 +52,10 @@ pub fn test_6_1_42_purl_consistency(
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
     use crate::csaf::test_helper::run_csaf21_tests;
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_42::test_6_1_42_purl_consistency;
+    use std::collections::HashMap;
 
     static ERROR_MESSAGE: &str = "PURLs within the same product_identification_helper must only differ in qualifiers";
 

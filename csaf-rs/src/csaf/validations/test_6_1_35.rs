@@ -1,5 +1,5 @@
-use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::csaf::csaf_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
+use crate::csaf::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::csaf::validation::ValidationError;
 use std::collections::BTreeMap;
 
@@ -16,9 +16,7 @@ static MUT_EX_STATES: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::VendorFix,
 ];
 
-pub fn test_6_1_35_contradicting_remediations(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         // Data struct to store observed remediation categories per product IT
         let mut product_categories: BTreeMap<String, Vec<CategoryOfTheRemediation>> = BTreeMap::new();
@@ -42,7 +40,11 @@ pub fn test_6_1_35_contradicting_remediations(
                                 message: format!(
                                     "Product {} has contradicting remediations: {} and {}",
                                     p,
-                                    exist_cat_set.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(", "),
+                                    exist_cat_set
+                                        .iter()
+                                        .map(|c| c.to_string())
+                                        .collect::<Vec<String>>()
+                                        .join(", "),
                                     cat
                                 ),
                                 instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),

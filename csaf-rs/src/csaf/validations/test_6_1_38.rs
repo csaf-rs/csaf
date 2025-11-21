@@ -1,5 +1,5 @@
-use crate::csaf::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::csaf::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait};
+use crate::csaf::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::csaf::helpers::MAX_UUID;
 use crate::csaf::validation::ValidationError;
 
@@ -19,17 +19,15 @@ use crate::csaf::validation::ValidationError;
 /// * `Ok(())` if the validation passes.
 /// * `Err(ValidationError)` if the validation fails, with a message explaining the reason
 ///   and the JSON path to the invalid element.
-pub fn test_6_1_38_non_public_sharing_group_max_uuid(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_38_non_public_sharing_group_max_uuid(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     let distribution = doc.get_document().get_distribution_21()?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
         if sharing_group.get_id() == MAX_UUID && distribution.get_tlp_21()?.get_label() != Clear {
             return Err(ValidationError {
                 message: "Document must be public (TLD CLEAR) when using max UUID as sharing group ID.".to_string(),
-                instance_path: "/document/distribution/sharing_group/tlp/label".to_string()
-            })
+                instance_path: "/document/distribution/sharing_group/tlp/label".to_string(),
+            });
         }
     }
 
@@ -50,11 +48,15 @@ mod tests {
             instance_path: "/document/distribution/sharing_group/tlp/label".to_string(),
         };
 
-        run_csaf21_tests("38", test_6_1_38_non_public_sharing_group_max_uuid, &HashMap::from([
-            ("01", &expected_error),
-            ("02", &expected_error),
-            ("03", &expected_error),
-            ("04", &expected_error),
-        ]));
+        run_csaf21_tests(
+            "38",
+            test_6_1_38_non_public_sharing_group_max_uuid,
+            &HashMap::from([
+                ("01", &expected_error),
+                ("02", &expected_error),
+                ("03", &expected_error),
+                ("04", &expected_error),
+            ]),
+        );
     }
 }

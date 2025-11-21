@@ -11,11 +11,7 @@ pub struct ValidationError {
 
 impl std::fmt::Display for ValidationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "ValidationError: {} at {}",
-            self.message, self.instance_path
-        )
+        write!(f, "ValidationError: {} at {}", self.message, self.instance_path)
     }
 }
 
@@ -76,10 +72,7 @@ pub trait Validatable<VersionedDocument> {
 
 /// Executes all tests of the specified [preset] against the [target]
 /// (which is of type [VersionedDocument], e.g. a CSAF 2.0 document).
-pub fn validate_by_preset<VersionedDocument>(
-    target: &impl Validatable<VersionedDocument>,
-    preset: ValidationPreset,
-) {
+pub fn validate_by_preset<VersionedDocument>(target: &impl Validatable<VersionedDocument>, preset: ValidationPreset) {
     println!("Validating document with {:?} preset... \n", preset);
 
     // Loop through tests
@@ -95,10 +88,7 @@ pub fn validate_by_preset<VersionedDocument>(
     }
 }
 
-pub fn validate_by_test<VersionedDocument>(
-    target: &impl Validatable<VersionedDocument>,
-    test_id: &str,
-) {
+pub fn validate_by_test<VersionedDocument>(target: &impl Validatable<VersionedDocument>, test_id: &str) {
     if let Some(test_fn) = target.tests().get(test_id) {
         let _ = match test_fn(target.doc()) {
             Ok(()) => println!("> Test Success"),

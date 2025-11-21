@@ -14,14 +14,14 @@ pub fn find_cycle<'a>(
     visited: &mut Vec<&'a str>,
 ) -> Option<(String, Vec<String>, usize)> {
     if visited.contains(&product_id) {
-        return Some((product_id.to_string(), vec!(product_id.to_string()), 0));
+        return Some((product_id.to_string(), vec![product_id.to_string()], 0));
     } else {
         visited.push(product_id);
     }
     if let Some(next_vec) = relation_map.get(product_id) {
         for (next, r_i) in next_vec {
             match find_cycle(relation_map, next, visited) {
-                None => {}
+                None => {},
                 Some((cycle_end, mut cycle, r_i_res)) => {
                     if cycle.len() == 1 || cycle_end != *cycle.last().unwrap() {
                         // Back-trace the cycle to the first node
@@ -33,7 +33,7 @@ pub fn find_cycle<'a>(
                         }
                     }
                     return Some((cycle_end, cycle, r_i_res));
-                }
+                },
             }
         }
     }
@@ -41,9 +41,7 @@ pub fn find_cycle<'a>(
     None
 }
 
-pub fn test_6_1_03_circular_definition_of_product_id(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut relation_map = HashMap::<String, HashMap<String, usize>>::new();
 
@@ -53,12 +51,12 @@ pub fn test_6_1_03_circular_definition_of_product_id(
                 return Err(ValidationError {
                     message: "Relationship references itself via product_reference".to_string(),
                     instance_path: format!("/product_tree/relationships/{}/product_reference", i_r),
-                })
+                });
             } else if r.get_relates_to_product_reference() == rel_prod_id {
                 return Err(ValidationError {
                     message: "Relationship references itself via relates_to_product_reference".to_string(),
                     instance_path: format!("/product_tree/relationships/{}/relates_to_product_reference", i_r),
-                })
+                });
             } else {
                 match relation_map.get_mut(r.get_product_reference()) {
                     Some(v) => {
@@ -67,21 +65,21 @@ pub fn test_6_1_03_circular_definition_of_product_id(
                     None => {
                         relation_map.insert(
                             r.get_product_reference().to_owned(),
-                            HashMap::from([(r.get_relates_to_product_reference().to_owned(), i_r)])
+                            HashMap::from([(r.get_relates_to_product_reference().to_owned(), i_r)]),
                         );
-                    }
+                    },
                 }
             }
         }
 
         // Perform cycle check
         for product_id in relation_map.keys() {
-            let mut vec: Vec<&str> = vec!();
+            let mut vec: Vec<&str> = vec![];
             if let Some((_, cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut vec) {
                 return Err(ValidationError {
                     message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
                     instance_path: format!("/product_tree/relationships/{}", relation_index),
-                })
+                });
             }
         }
     }
@@ -102,9 +100,7 @@ mod tests {
             message: "Relationship references itself via relates_to_product_reference".to_string(),
             instance_path: "/product_tree/relationships/0/relates_to_product_reference".to_string(),
         };
-        let errors = HashMap::from([
-            ("01", &error01)
-        ]);
+        let errors = HashMap::from([("01", &error01)]);
         run_csaf20_tests("03", test_6_1_03_circular_definition_of_product_id, &errors);
         run_csaf21_tests("03", test_6_1_03_circular_definition_of_product_id, &errors);
     }
@@ -114,32 +110,20 @@ mod tests {
         // Create a relation map with a non-trivial cycle: B -> C -> D -> B
         let mut relation_map = HashMap::new();
 
-        relation_map.insert(
-            "A".to_string(),
-            HashMap::from([("B".to_string(), 0)])
-        );
+        relation_map.insert("A".to_string(), HashMap::from([("B".to_string(), 0)]));
         relation_map.insert(
             "B".to_string(),
-            HashMap::from([("C".to_string(), 1), ("E".to_string(), 2)])
+            HashMap::from([("C".to_string(), 1), ("E".to_string(), 2)]),
         );
         relation_map.insert(
             "C".to_string(),
-            HashMap::from([("D".to_string(), 3), ("F".to_string(), 4)])
+            HashMap::from([("D".to_string(), 3), ("F".to_string(), 4)]),
         );
-        relation_map.insert(
-            "D".to_string(),
-            HashMap::from([("B".to_string(), 5)])
-        );
+        relation_map.insert("D".to_string(), HashMap::from([("B".to_string(), 5)]));
 
         // Also add some nodes that aren't part of the cycle
-        relation_map.insert(
-            "E".to_string(),
-            HashMap::from([("F".to_string(), 6)])
-        );
-        relation_map.insert(
-            "F".to_string(),
-            HashMap::from([("G".to_string(), 7)])
-        );
+        relation_map.insert("E".to_string(), HashMap::from([("F".to_string(), 6)]));
+        relation_map.insert("F".to_string(), HashMap::from([("G".to_string(), 7)]));
 
         // Test cycle detection starting from the first node
         let mut visited = Vec::new();

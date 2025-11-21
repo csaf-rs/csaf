@@ -1,10 +1,22 @@
-use crate::csaf::csaf2_1::schema::{Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability};
-use crate::csaf::csaf_traits::{BranchTrait, CsafTrait, DistributionTrait, DocumentTrait, FlagTrait, ProductTrait, GeneratorTrait, InvolvementTrait, MetricTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, ContentTrait, VulnerabilityIdTrait, NoteTrait, WithGroupIds, FirstKnownExploitationDatesTrait};
-use std::ops::Deref;
-use serde_json::{Map, Value};
-use uuid::Uuid;
+use crate::csaf::csaf_traits::{
+    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait,
+    FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
+    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, RelationshipTrait,
+    RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait,
+    VulnerabilityTrait, WithGroupIds,
+};
+use crate::csaf::csaf2_1::schema::{
+    Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator,
+    DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, ProductGroup, ProductStatus, ProductTree,
+    Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
+    TrafficLightProtocolTlp, Vulnerability,
+};
 use crate::csaf::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::csaf::validation::ValidationError;
+use serde_json::{Map, Value};
+use std::ops::Deref;
+use uuid::Uuid;
 
 impl WithGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
@@ -56,11 +68,13 @@ impl ProductStatusTrait for ProductStatus {
     }
 
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.under_investigation.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+        self.under_investigation
+            .as_ref()
+            .map(|p| (*p).iter().map(|x| x.deref()))
     }
 
-    fn get_unknown(&self) -> Option<impl Iterator<Item=&String> + '_> {
-        self.unknown.as_ref().map(|p| (*p).iter().map(|x| x.deref()))   
+    fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.unknown.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
@@ -86,7 +100,9 @@ impl ContentTrait for Content {
     }
 
     fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error> {
-        Ok(serde_json::from_value::<SelectionList>(Value::Object(self.ssvc_v2.clone()))?)
+        Ok(serde_json::from_value::<SelectionList>(Value::Object(
+            self.ssvc_v2.clone(),
+        ))?)
     }
 
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
@@ -118,11 +134,7 @@ impl ContentTrait for Content {
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
-        format!(
-            "/vulnerabilities/{}/metrics/{}/content",
-            vulnerability_idx,
-            metric_idx,
-        )
+        format!("/vulnerabilities/{}/metrics/{}/content", vulnerability_idx, metric_idx,)
     }
 }
 
@@ -213,7 +225,7 @@ impl VulnerabilityIdTrait for Id {
 }
 
 impl WithGroupIds for Flag {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
@@ -223,7 +235,7 @@ impl FlagTrait for Flag {
         &self.date
     }
 
-    fn get_product_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
@@ -310,7 +322,7 @@ impl DistributionTrait for RulesForDocumentSharing {
 }
 
 impl WithGroupIds for Note {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item=&String> + '_> {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
@@ -402,7 +414,10 @@ impl ProductTreeTrait for ProductTree {
         &self.full_product_names
     }
 
-    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>) -> Result<(), ValidationError> {
+    fn visit_all_products(
+        &self,
+        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>,
+    ) -> Result<(), ValidationError> {
         self.visit_all_products_generic(callback)
     }
 }

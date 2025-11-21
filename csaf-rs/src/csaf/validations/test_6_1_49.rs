@@ -1,5 +1,7 @@
+use crate::csaf::csaf_traits::{
+    ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait,
+};
 use crate::csaf::csaf2_1::schema::DocumentStatus;
-use crate::csaf::csaf_traits::{ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
 
@@ -7,9 +9,7 @@ use chrono::{DateTime, FixedOffset};
 ///
 /// For each vulnerability, it is tested that the SSVC `timestamp` is earlier or equal to the `date`
 /// of the newest item in the `revision_history` if the document status is `final` or `interim`.
-pub fn test_6_1_49_inconsistent_ssvc_timestamp(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
     let status = tracking.get_status();
@@ -27,25 +27,27 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(
             Ok(date) => {
                 newest_revision_date = match newest_revision_date {
                     None => Some(date),
-                    Some(newest_date) => Some(newest_date.max(date))
+                    Some(newest_date) => Some(newest_date.max(date)),
                 };
-            }
+            },
             Err(_) => {
                 return Err(ValidationError {
                     message: format!("Invalid date format in revision history: {}", date_str),
                     instance_path: format!("/document/tracking/revision_history/{}/date", i_r),
                 });
-            }
+            },
         }
     }
 
     let newest_revision_date = match newest_revision_date {
         Some(date) => date,
         // No entries in revision history
-        None => return Err(ValidationError {
-            message: "Revision history must not be empty for status final or interim".to_string(),
-            instance_path: "/document/tracking/revision_history".to_string(),
-        }),
+        None => {
+            return Err(ValidationError {
+                message: "Revision history must not be empty for status final or interim".to_string(),
+                instance_path: "/document/tracking/revision_history".to_string(),
+            });
+        },
     };
 
     // Check each vulnerability's SSVC timestamp
@@ -59,10 +61,15 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(
                                 return Err(ValidationError {
                                     message: format!(
                                         "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
-                                        ssvc.timestamp.to_rfc3339(), i_v, newest_revision_date.to_rfc3339()
+                                        ssvc.timestamp.to_rfc3339(),
+                                        i_v,
+                                        newest_revision_date.to_rfc3339()
                                     ),
-                                    instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp", i_v, i_m),
-                                })
+                                    instance_path: format!(
+                                        "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp",
+                                        i_v, i_m
+                                    ),
+                                });
                             }
                         },
                         Err(err) => {

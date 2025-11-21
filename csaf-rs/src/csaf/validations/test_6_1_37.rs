@@ -1,27 +1,34 @@
-use crate::csaf::csaf_traits::{CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, RemediationTrait, RevisionTrait, ThreatTrait, TrackingTrait, VulnerabilityTrait};
+use crate::csaf::csaf_traits::{
+    CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait,
+    RemediationTrait, RevisionTrait, ThreatTrait, TrackingTrait, VulnerabilityTrait,
+};
 use crate::csaf::validation::ValidationError;
 use regex::Regex;
 use std::sync::LazyLock;
 
-static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(||
+static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^((\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:(?:[0-4]\d|5[0-9])(?:\.\d+)?)(Z|[+-]\d{2}:\d{2}))$").unwrap()
-);
+});
 
 /// Validates that all date/time fields in the CSAF document conform to the required format
 /// (ISO 8601 format with time zone or UTC).
 ///
 /// This function checks all date/time fields in the document, including tracking dates,
 /// vulnerability disclosure/discovery dates, remediation dates, threat dates, etc.
-pub fn test_6_1_37_date_and_time(
-    doc: &impl CsafTrait,
-) -> Result<(), ValidationError> {
+pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), ValidationError> {
     let tracking = doc.get_document().get_tracking();
 
     // Check the initial release date
-    check_datetime(tracking.get_initial_release_date(), "/document/tracking/initial_release_date")?;
+    check_datetime(
+        tracking.get_initial_release_date(),
+        "/document/tracking/initial_release_date",
+    )?;
 
     // Check the current release date
-    check_datetime(tracking.get_current_release_date(), "/document/tracking/current_release_date")?;
+    check_datetime(
+        tracking.get_current_release_date(),
+        "/document/tracking/current_release_date",
+    )?;
 
     // Check the generator date if present
     if let Some(generator) = tracking.get_generator() {
@@ -34,7 +41,7 @@ pub fn test_6_1_37_date_and_time(
     for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
         check_datetime(
             revision.get_date(),
-            &format!("/document/tracking/revision_history/{}/date", i_r)
+            &format!("/document/tracking/revision_history/{}/date", i_r),
         )?;
     }
 
@@ -63,10 +70,7 @@ pub fn test_6_1_37_date_and_time(
         if let Some(involvements) = vuln.get_involvements() {
             for (i_i, involvement) in involvements.iter().enumerate() {
                 if let Some(date) = involvement.get_date() {
-                    check_datetime(
-                        date,
-                        &format!("/vulnerabilities/{}/involvements/{}/date", i_v, i_i)
-                    )?;
+                    check_datetime(date, &format!("/vulnerabilities/{}/involvements/{}/date", i_v, i_i))?;
                 }
             }
         }
@@ -84,10 +88,13 @@ pub fn test_6_1_37_date_and_time(
                 check_datetime(date, &format!("/vulnerabilities/{}/threats/{}/date", i_v, i_t))?;
             }
         }
-        
+
         if let Some(first_known_exploitation_dates) = vuln.get_first_known_exploitation_dates() {
             for (i_d, date) in first_known_exploitation_dates.iter().enumerate() {
-                check_datetime(date.get_date(), &format!("/vulnerabilities/{}/first_known_exploitation_dates/{}/date", i_v, i_d))?;
+                check_datetime(
+                    date.get_date(),
+                    &format!("/vulnerabilities/{}/first_known_exploitation_dates/{}/date", i_v, i_d),
+                )?;
             }
         }
     }
@@ -101,13 +108,19 @@ fn check_datetime(date_time: &String, instance_path: &str) -> Result<(), Validat
         match chrono::DateTime::parse_from_rfc3339(date_time) {
             Ok(_) => Ok(()), // Successfully parsed as a valid RFC3339 datetime
             Err(e) => Err(ValidationError {
-                message: format!("Date-time string {} matched RFC3339 regex but failed chrono parsing: {}", date_time, e),
+                message: format!(
+                    "Date-time string {} matched RFC3339 regex but failed chrono parsing: {}",
+                    date_time, e
+                ),
                 instance_path: instance_path.to_string(),
             }),
         }
     } else {
         Err(ValidationError {
-            message: format!("Invalid date-time string {}, expected RFC3339-compliant format with non-empty timezone and no leap seconds", date_time),
+            message: format!(
+                "Invalid date-time string {}, expected RFC3339-compliant format with non-empty timezone and no leap seconds",
+                date_time
+            ),
             instance_path: instance_path.to_string(),
         })
     }
@@ -119,7 +132,7 @@ mod tests {
     use crate::csaf::validation::ValidationError;
     use crate::csaf::validations::test_6_1_37::test_6_1_37_date_and_time;
     use std::collections::HashMap;
-    
+
     #[test]
     fn test_test_6_1_37() {
         run_csaf21_tests(

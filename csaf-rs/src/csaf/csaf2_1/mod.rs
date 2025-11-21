@@ -1,9 +1,9 @@
+pub mod csaf_implementations;
 pub mod loader;
 #[path = "schema.generated.rs"]
 pub mod schema;
-pub mod validation;
-pub mod csaf_implementations;
 #[path = "ssvc_dp.generated.rs"]
 pub mod ssvc_dp;
 #[path = "ssvc_dp_selection_list.generated.rs"]
 pub mod ssvc_dp_selection_list;
+pub mod validation;

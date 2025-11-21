@@ -1,9 +1,9 @@
-use std::collections::{BTreeSet, HashSet};
-use uuid::Uuid;
 use crate::csaf::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp};
 use crate::csaf::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::csaf::helpers::resolve_product_groups;
 use crate::csaf::validation::ValidationError;
+use std::collections::{BTreeSet, HashSet};
+use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -139,7 +139,6 @@ pub trait RevisionTrait {
     fn get_summary(&self) -> &String;
 }
 
-
 /// Trait representing an abstract vulnerability in a CSAF document.
 ///
 /// The `VulnerabilityTrait` defines the structure of a vulnerability and includes
@@ -168,7 +167,7 @@ pub trait VulnerabilityTrait {
 
     /// The associated type representing vulnerability notes.
     type NoteType: NoteTrait;
-    
+
     type FirstKnownExploitationDatesType: FirstKnownExploitationDatesTrait;
 
     /// Retrieves a list of remediations associated with the vulnerability.
@@ -203,10 +202,9 @@ pub trait VulnerabilityTrait {
 
     /// Returns the notes associated with this vulnerability.
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
-    
+
     /// Returns the information about the first known exploitation dates of this vulnerability.
-    fn get_first_known_exploitation_dates(&self)
-        -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
+    fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
 }
 
 pub trait VulnerabilityIdTrait {
@@ -219,7 +217,7 @@ pub trait VulnerabilityIdTrait {
 pub trait FlagTrait: WithGroupIds {
     /// Returns the date associated with this vulnerability flag
     fn get_date(&self) -> &Option<String>;
-    
+
     /// Returns the product IDs associated with this vulnerability flag
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }
@@ -303,7 +301,7 @@ pub trait ProductStatusTrait {
 
     /// Returns a reference to the list of product IDs currently under investigation.
     fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_>;
-    
+
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
@@ -469,7 +467,7 @@ pub trait ProductTreeTrait {
     /// - Full product names within relationships
     ///
     /// # Parameters
-    /// * `callback` - A mutable function that takes a reference to a product and its path string 
+    /// * `callback` - A mutable function that takes a reference to a product and its path string
     ///   and returns a `Result<(), ValidationError>`. The path string represents the JSON pointer
     ///   to the product's location in the document.
     ///
@@ -478,26 +476,26 @@ pub trait ProductTreeTrait {
     /// * `Err(ValidationError)` if the callback returned an error for any product
     fn visit_all_products_generic(
         &self,
-        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>
+        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>,
     ) -> Result<(), ValidationError> {
         // Visit products in branches
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), &mut |branch: &Self::BranchType, path| {
-                    if let Some(product_ref) = branch.get_product() {
-                        callback(product_ref, &format!("{}/product", path))?;
-                    }
-                    Ok(())
-                })?;
+                branch.visit_branches_rec(
+                    &format!("/product_tree/branches/{}", i),
+                    &mut |branch: &Self::BranchType, path| {
+                        if let Some(product_ref) = branch.get_product() {
+                            callback(product_ref, &format!("{}/product", path))?;
+                        }
+                        Ok(())
+                    },
+                )?;
             }
         }
 
         // Visit full_product_names
         for (i, fpn) in self.get_full_product_names().iter().enumerate() {
-            callback(
-                fpn,
-                &format!("/product_tree/full_product_names/{}", i),
-            )?;
+            callback(fpn, &format!("/product_tree/full_product_names/{}", i))?;
         }
 
         // Visit relationships
@@ -532,12 +530,12 @@ pub trait ProductTreeTrait {
     /// `visit_all_products_generic()` with the same callback.
     fn visit_all_products(
         &self,
-        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>
+        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), ValidationError>,
     ) -> Result<(), ValidationError>;
 }
 
 /// Trait representing an abstract branch in a product tree.
-pub trait BranchTrait<FPN: ProductTrait> : Sized {
+pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// Returns an optional reference to the child branches of this branch.
     fn get_branches(&self) -> Option<&Vec<Self>>;
 
@@ -559,7 +557,11 @@ pub trait BranchTrait<FPN: ProductTrait> : Sized {
     /// # Returns
     /// * `Ok(())` if the traversal completes successfully
     /// * `Err(ValidationError)` if the callback returns an error for any branch
-    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str) -> Result<(), ValidationError>) -> Result<(), ValidationError> {
+    fn visit_branches_rec(
+        &self,
+        path: &str,
+        callback: &mut impl FnMut(&Self, &str) -> Result<(), ValidationError>,
+    ) -> Result<(), ValidationError> {
         callback(self, &path)?;
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {

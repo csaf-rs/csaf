@@ -1,9 +1,9 @@
-use std::str::FromStr;
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
+use clap::Parser;
 use csaf_rs::csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf_rs::csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf_rs::csaf::validation::{validate_by_preset, validate_by_test, Validatable, ValidationPreset};
-use clap::Parser;
+use csaf_rs::csaf::validation::{Validatable, ValidationPreset, validate_by_preset, validate_by_test};
+use std::str::FromStr;
 
 /// A validator for CSAF documents
 #[derive(Parser, Debug)]
@@ -29,12 +29,8 @@ fn main() -> Result<()> {
     let args = Args::parse();
 
     match args.csaf_version.as_str() {
-        "2.0" => {
-            process_document(load_document_2_0(args.path.as_str())?, &args)
-        }
-        "2.1" => {
-            process_document(load_document_2_1(args.path.as_str())?, &args)
-        }
+        "2.0" => process_document(load_document_2_0(args.path.as_str())?, &args),
+        "2.1" => process_document(load_document_2_1(args.path.as_str())?, &args),
         _ => bail!(format!("Invalid CSAF version: {}", args.csaf_version)),
     }
 }

@@ -227,7 +227,7 @@ pub trait FirstKnownExploitationDatesTrait {
 }
 
 /// Trait for accessing vulnerability involvement information
-pub trait InvolvementTrait {
+pub trait InvolvementTrait: WithGroupIds {
     /// Returns the date associated with this vulnerability involvement
     fn get_date(&self) -> &Option<String>;
 }

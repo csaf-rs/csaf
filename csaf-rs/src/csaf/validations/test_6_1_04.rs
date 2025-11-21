@@ -1,101 +1,28 @@
-use crate::csaf::csaf_traits::{
-    CsafTrait, DocumentTrait, ProductGroupTrait, ProductTreeTrait, VulnerabilityTrait, WithGroupIds,
-};
+use crate::csaf::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
+use crate::csaf::product_helpers::gather_product_group_references;
 use crate::csaf::validation::ValidationError;
 use std::collections::HashSet;
 
 pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+    let mut errors: Option<Vec<ValidationError>> = Option::None;
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut known_groups = HashSet::<String>::new();
-        // Collect all known product group IDs
         for g in tree.get_product_groups().iter() {
             known_groups.insert(g.get_group_id().to_owned());
         }
 
-        // Check document notes
-        if let Some(notes) = doc.get_document().get_notes() {
-            for (i_n, note) in notes.iter().enumerate() {
-                if let Some(group_ids) = note.get_group_ids() {
-                    for (i_g, group_id) in group_ids.enumerate() {
-                        if !known_groups.contains(group_id) {
-                            return Err(vec![ValidationError {
-                                message: format!("Missing definition of product_group_id: {}", group_id),
-                                instance_path: format!("/document/notes/{}/group_ids/{}", i_n, i_g),
-                            }]);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Check vulnerabilities
-        for (i_v, vuln) in doc.get_vulnerabilities().iter().enumerate() {
-            // Check vulnerability flags
-            if let Some(flags) = vuln.get_flags() {
-                for (i_f, flag) in flags.iter().enumerate() {
-                    if let Some(group_ids) = flag.get_group_ids() {
-                        for (i_g, group_id) in group_ids.enumerate() {
-                            if !known_groups.contains(group_id) {
-                                return Err(vec![ValidationError {
-                                    message: format!("Missing definition of product_group_id: {}", group_id),
-                                    instance_path: format!("/vulnerabilities/{}/flags/{}/group_ids/{}", i_v, i_f, i_g),
-                                }]);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Check vulnerability notes
-            if let Some(notes) = vuln.get_notes() {
-                for (i_n, note) in notes.iter().enumerate() {
-                    if let Some(group_ids) = note.get_group_ids() {
-                        for (i_g, group_id) in group_ids.enumerate() {
-                            if !known_groups.contains(group_id) {
-                                return Err(vec![ValidationError {
-                                    message: format!("Missing definition of product_group_id: {}", group_id),
-                                    instance_path: format!("/vulnerabilities/{}/notes/{}/group_ids/{}", i_v, i_n, i_g),
-                                }]);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Check vulnerability remediations
-            for (i_r, remediation) in vuln.get_remediations().iter().enumerate() {
-                if let Some(group_ids) = remediation.get_group_ids() {
-                    for (i_g, group_id) in group_ids.collect::<Vec<_>>().iter().enumerate() {
-                        if !known_groups.contains(*group_id) {
-                            return Err(vec![ValidationError {
-                                message: format!("Missing definition of product_group_id: {}", group_id),
-                                instance_path: format!(
-                                    "/vulnerabilities/{}/remediations/{}/group_ids/{}",
-                                    i_v, i_r, i_g
-                                ),
-                            }]);
-                        }
-                    }
-                }
-            }
-
-            // Check vulnerability threats
-            for (i_t, threat) in vuln.get_threats().iter().enumerate() {
-                if let Some(group_ids) = threat.get_group_ids() {
-                    for (i_g, group_id) in group_ids.collect::<Vec<_>>().iter().enumerate() {
-                        if !known_groups.contains(*group_id) {
-                            return Err(vec![ValidationError {
-                                message: format!("Missing definition of product_group_id: {}", group_id),
-                                instance_path: format!("/vulnerabilities/{}/threats/{}/group_ids/{}", i_v, i_t, i_g),
-                            }]);
-                        }
-                    }
-                }
+        let product_group_references = gather_product_group_references(doc);
+        for (ref_id, ref_path) in product_group_references.iter() {
+            if !known_groups.contains(ref_id) {
+                errors.get_or_insert_with(Vec::new).push(ValidationError {
+                    message: format!("Missing definition of product_group_id: {}", ref_id),
+                    instance_path: ref_path.to_owned(),
+                });
             }
         }
     }
 
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 #[cfg(test)]
@@ -117,10 +44,16 @@ mod tests {
             ),
             (
                 "02",
-                vec![ValidationError {
-                    message: "Missing definition of product_group_id: CSAFGID-1020300".to_string(),
-                    instance_path: "/vulnerabilities/0/flags/0/group_ids/0".to_string(),
-                }],
+                vec![
+                    ValidationError {
+                        message: "Missing definition of product_group_id: CSAFGID-1020300".to_string(),
+                        instance_path: "/vulnerabilities/0/flags/0/group_ids/0".to_string(),
+                    },
+                    ValidationError {
+                        message: "Missing definition of product_group_id: CSAFGID-1020301".to_string(),
+                        instance_path: "/vulnerabilities/1/flags/0/group_ids/0".to_string(),
+                    },
+                ],
             ),
         ]);
         run_csaf20_tests("04", test_6_1_04_missing_definition_of_product_group_id, errors.clone());

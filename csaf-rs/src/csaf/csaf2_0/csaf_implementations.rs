@@ -270,6 +270,12 @@ impl InvolvementTrait for Involvement {
     }
 }
 
+impl WithGroupIds for Involvement {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
+}
+
 impl CsafTrait for CommonSecurityAdvisoryFramework {
     type VulnerabilityType = Vulnerability;
     type ProductTreeType = ProductTree;

@@ -39,13 +39,7 @@ jobs:
       - name: Update assets
         run: ./update_assets.sh
       - name: Format check
-        run: cargo fmt --all --check > fmt-results.txt 2>&1
-      - name: Upload format check results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: fmt-results-${{ matrix.target.arch }}
-          path: fmt-results.txt
+        run: cargo fmt --all --check -- -l
       - name: Build
         run: cargo build --target=${{ matrix.target.arch }} --release --verbose
       - name: Run tests

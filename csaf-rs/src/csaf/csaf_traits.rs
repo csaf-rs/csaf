@@ -78,7 +78,10 @@ pub trait DistributionTrait {
     fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
 }
 
-pub trait NoteTrait: WithGroupIds {}
+pub trait NoteTrait: WithGroupIds {
+    /// Returns the product IDs associated with this vulnerability flag
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+}
 
 /// Trait representing sharing group information
 pub trait SharingGroupTrait {

@@ -68,6 +68,11 @@ pub static GENERATED_CODE_HEADER: &str = "
  * Do not edit manually!
  ";
 
+ fn add_ignore_rustfmt(file: &mut syn::File) {
+    let doc_attr = syn::parse_quote! { #![cfg_attr(any(), rustfmt::skip)] };
+    file.attrs.insert(0, doc_attr);
+ }
+
 fn build(
     input: &str,
     output: &str,
@@ -92,6 +97,7 @@ fn build(
     // Convert the TypeSpace token stream into a syn::File so we can inject a file-level doc attribute
     let mut file = syn::parse2::<syn::File>(type_space.to_stream())?;
 
+    add_ignore_rustfmt(&mut file);
     // Parse the GENERATED_CODE_HEADER as a doc attribute
     let doc_attr = syn::parse_quote! { #![doc = #GENERATED_CODE_HEADER] };
     file.attrs.insert(0, doc_attr);
@@ -200,8 +206,10 @@ fn generate_language_subtags() -> Result<(), BuildError> {
         }
     };
 
+    let mut file: syn::File = syn::parse2(tokens)?;
+    add_ignore_rustfmt(&mut file);
+
     // Pretty-print the generated code.
-    let file: syn::File = syn::parse2(tokens)?;
     let code = prettyplease::unparse(&file);
 
     let out_path = Path::new("src")

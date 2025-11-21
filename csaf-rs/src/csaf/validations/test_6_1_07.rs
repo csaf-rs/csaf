@@ -1,6 +1,6 @@
 use crate::csaf::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::csaf::validation::ValidationError;
-use crate::csaf::validations::test_6_1_07::VulnerabilityMetrics::{CvssV2, CvssV30, CvssV31, CvssV4, Epss, SsvcV1};
+use crate::csaf::validations::test_6_1_07::VulnerabilityMetrics::{CvssV2, CvssV4, CvssV30, CvssV31, Epss, SsvcV1};
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 
@@ -43,9 +43,7 @@ fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
 
 /// Test 6.1.7: Check for multiple identical metric types (with an identical source) per
 /// vulnerability.
-pub fn test_6_1_07_multiple_same_scores_per_product(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         let mut seen_metrics: HashMap<String, HashSet<(VulnerabilityMetrics, &Option<String>)>> = HashMap::new();
         if let Some(metrics) = v.get_metrics() {
@@ -122,18 +120,20 @@ mod tests {
 
     #[test]
     fn test_test_6_1_07() {
-        let cvss_v31_error_message = "Product CSAFPID-9080700 already has another metric \"CVSS-v3.1\" without a source assigned.";
+        let cvss_v31_error_message =
+            "Product CSAFPID-9080700 already has another metric \"CVSS-v3.1\" without a source assigned.";
         let csaf_20_path_prefix = "/vulnerabilities/0/scores/1";
         let csaf_21_path_prefix = "/vulnerabilities/0/metrics/1/content";
         run_csaf20_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,
-            HashMap::from([
-                ("01", vec![ValidationError {
+            HashMap::from([(
+                "01",
+                vec![ValidationError {
                     message: cvss_v31_error_message.to_string(),
                     instance_path: format!("{}/cvss_v3", csaf_20_path_prefix),
-                }]),
-            ]),
+                }],
+            )]),
         );
         run_csaf21_tests(
             "07",

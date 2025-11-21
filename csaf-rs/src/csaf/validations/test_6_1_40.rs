@@ -21,9 +21,7 @@ use crate::csaf::validation::ValidationError;
 /// * `Ok(())` if the validation passes.
 /// * `Err(vec![ValidationError])` if the validation fails, with a message explaining the reason
 ///   and the JSON path to the invalid element.
-pub fn test_6_1_40_invalid_sharing_group_name(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
@@ -31,16 +29,22 @@ pub fn test_6_1_40_invalid_sharing_group_name(
             if sharing_group_name == SG_NAME_PUBLIC {
                 if sharing_group.get_id() != MAX_UUID {
                     return Err(vec![ValidationError {
-                        message: format!("Sharing group name \"{}\" is prohibited without max UUID.", SG_NAME_PUBLIC),
-                        instance_path: "/document/distribution/sharing_group/name".to_string()
-                    }])
+                        message: format!(
+                            "Sharing group name \"{}\" is prohibited without max UUID.",
+                            SG_NAME_PUBLIC
+                        ),
+                        instance_path: "/document/distribution/sharing_group/name".to_string(),
+                    }]);
                 }
             } else if sharing_group_name == SG_NAME_PRIVATE {
                 if sharing_group.get_id() != NIL_UUID {
                     return Err(vec![ValidationError {
-                        message: format!("Sharing group name \"{}\" is prohibited without nil UUID.", SG_NAME_PRIVATE),
-                        instance_path: "/document/distribution/sharing_group/name".to_string()
-                    }])
+                        message: format!(
+                            "Sharing group name \"{}\" is prohibited without nil UUID.",
+                            SG_NAME_PRIVATE
+                        ),
+                        instance_path: "/document/distribution/sharing_group/name".to_string(),
+                    }]);
                 }
             }
         }
@@ -53,23 +57,38 @@ pub fn test_6_1_40_invalid_sharing_group_name(
 mod tests {
     use crate::csaf::test_helper::run_csaf21_tests;
     use crate::csaf::validation::ValidationError;
-    use crate::csaf::validations::test_6_1_40::{test_6_1_40_invalid_sharing_group_name, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
+    use crate::csaf::validations::test_6_1_40::{
+        SG_NAME_PRIVATE, SG_NAME_PUBLIC, test_6_1_40_invalid_sharing_group_name,
+    };
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_40() {
         run_csaf21_tests(
             "40",
-            test_6_1_40_invalid_sharing_group_name, HashMap::from([
-                ("01", vec![ValidationError {
-                    message: format!("Sharing group name \"{}\" is prohibited without max UUID.", SG_NAME_PUBLIC),
-                    instance_path: "/document/distribution/sharing_group/name".to_string()
-                }]),
-                ("02", vec![ValidationError {
-                    message: format!("Sharing group name \"{}\" is prohibited without nil UUID.", SG_NAME_PRIVATE),
-                    instance_path: "/document/distribution/sharing_group/name".to_string()
-                }]),
-            ])
+            test_6_1_40_invalid_sharing_group_name,
+            HashMap::from([
+                (
+                    "01",
+                    vec![ValidationError {
+                        message: format!(
+                            "Sharing group name \"{}\" is prohibited without max UUID.",
+                            SG_NAME_PUBLIC
+                        ),
+                        instance_path: "/document/distribution/sharing_group/name".to_string(),
+                    }],
+                ),
+                (
+                    "02",
+                    vec![ValidationError {
+                        message: format!(
+                            "Sharing group name \"{}\" is prohibited without nil UUID.",
+                            SG_NAME_PRIVATE
+                        ),
+                        instance_path: "/document/distribution/sharing_group/name".to_string(),
+                    }],
+                ),
+            ]),
         );
     }
 }

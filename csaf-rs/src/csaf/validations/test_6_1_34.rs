@@ -3,17 +3,15 @@ use crate::csaf::validation::ValidationError;
 
 static MAX_DEPTH: u32 = 30;
 
-pub fn test_6_1_34_branches_recursion_depth(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     if let Some(tree) = doc.get_product_tree().as_ref() {
         if let Some(branches) = tree.get_branches() {
             for (i, branch) in branches.iter().enumerate() {
                 if let Some(path) = branch.find_excessive_branch_depth(MAX_DEPTH) {
                     return Err(vec![ValidationError {
                         message: format!("Branches recursion depth too big (> {})", MAX_DEPTH),
-                        instance_path: format!("/product_tree/branches/{}{}", i, path)
-                    }])
+                        instance_path: format!("/product_tree/branches/{}{}", i, path),
+                    }]);
                 }
             }
         }
@@ -34,22 +32,30 @@ mod tests {
             "34",
             test_6_1_34_branches_recursion_depth,
             HashMap::from([
-                ("01", vec![ValidationError {
-                    message: "Branches recursion depth too big (> 30)".to_string(),
-                    instance_path: "/product_tree/branches/0/branches/0/branches/0/branches/0\
+                (
+                    "01",
+                    vec![ValidationError {
+                        message: "Branches recursion depth too big (> 30)".to_string(),
+                        instance_path: "/product_tree/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string(),
-                }]),
-                ("02", vec![ValidationError {
-                    message: "Branches recursion depth too big (> 30)".to_string(),
-                    instance_path: "/product_tree/branches/0/branches/0/branches/1/branches/0\
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0"
+                            .to_string(),
+                    }],
+                ),
+                (
+                    "02",
+                    vec![ValidationError {
+                        message: "Branches recursion depth too big (> 30)".to_string(),
+                        instance_path: "/product_tree/branches/0/branches/0/branches/1/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                     /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0".to_string(),
-                }]),
+                    /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0"
+                            .to_string(),
+                    }],
+                ),
             ]),
         );
     }

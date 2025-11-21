@@ -1,5 +1,5 @@
-use std::{fs::File, io::BufReader};
 use super::schema::CommonSecurityAdvisoryFramework;
+use std::{fs::File, io::BufReader};
 
 pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {
     println!("Trying to load document {}", path);
@@ -7,17 +7,17 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
     let f = File::open(path)?;
     let reader = BufReader::new(f);
     let doc: CommonSecurityAdvisoryFramework = serde_json::from_reader(reader)?;
-    println!(
-        "Successfully parsed document '{}'",
-        doc.document.title.to_string()
-    );
+    println!("Successfully parsed document '{}'", doc.document.title.to_string());
 
     Ok(doc)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf::csaf2_1::schema::{CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, JsonSchema, LabelOfTlp, Publisher, Revision, RulesForDocumentSharing, Tracking, TrafficLightProtocolTlp};
+    use crate::csaf::csaf2_1::schema::{
+        CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, JsonSchema, LabelOfTlp, Publisher,
+        Revision, RulesForDocumentSharing, Tracking, TrafficLightProtocolTlp,
+    };
 
     fn mock_document() -> CommonSecurityAdvisoryFramework {
         let now = chrono::Utc::now().to_string();
@@ -26,13 +26,8 @@ mod tests {
             .category("csaf_base")
             .csaf_version("2.1")
             .distribution(
-                RulesForDocumentSharing::builder()
-                    .tlp(
-                        TrafficLightProtocolTlp::builder()
-                            .label(LabelOfTlp::Clear)
-                    )
+                RulesForDocumentSharing::builder().tlp(TrafficLightProtocolTlp::builder().label(LabelOfTlp::Clear)),
             )
-
             .publisher(
                 Publisher::builder()
                     .category(CategoryOfPublisher::Coordinator)
@@ -46,12 +41,14 @@ mod tests {
                     .initial_release_date(now.clone())
                     .status("final")
                     .version("1")
-                    .revision_history(vec![Revision::builder()
-                        .number("1")
-                        .date(now.clone())
-                        .summary("test")
-                        .try_into()
-                        .unwrap()]),
+                    .revision_history(vec![
+                        Revision::builder()
+                            .number("1")
+                            .date(now.clone())
+                            .summary("test")
+                            .try_into()
+                            .unwrap(),
+                    ]),
             )
             .try_into()
             .unwrap();

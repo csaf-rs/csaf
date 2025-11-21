@@ -7,10 +7,7 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
     let f = File::open(path)?;
     let reader = BufReader::new(f);
     let doc: CommonSecurityAdvisoryFramework = serde_json::from_reader(reader)?;
-    println!(
-        "Successfully parsed document '{}'",
-        doc.document.title.to_string()
-    );
+    println!("Successfully parsed document '{}'", doc.document.title.to_string());
 
     Ok(doc)
 }
@@ -18,8 +15,7 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
 #[cfg(test)]
 mod tests {
     use crate::csaf::csaf2_0::schema::{
-        CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, Publisher,
-        Revision, Tracking,
+        CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, Publisher, Revision, Tracking,
     };
 
     fn mock_document() -> CommonSecurityAdvisoryFramework {
@@ -41,12 +37,14 @@ mod tests {
                     .initial_release_date(now.clone())
                     .status("final")
                     .version("1")
-                    .revision_history(vec![Revision::builder()
-                        .number("1")
-                        .date(now.clone())
-                        .summary("test")
-                        .try_into()
-                        .unwrap()]),
+                    .revision_history(vec![
+                        Revision::builder()
+                            .number("1")
+                            .date(now.clone())
+                            .summary("test")
+                            .try_into()
+                            .unwrap(),
+                    ]),
             )
             .try_into()
             .unwrap();

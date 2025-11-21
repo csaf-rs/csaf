@@ -7,6 +7,7 @@ keywords = ["csaf"]
 readme = "../README.md"
 version = "0.2.1"
 edition = "2024"
+rust-version = "1.85.1"
 
 [dependencies]
 csaf-rs = { path = "../csaf-rs", version = "0.2.1" }

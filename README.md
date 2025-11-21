@@ -1,8 +1,17 @@
 # csaf-rust
 
-This repository is a proof-of-concept for a CSAF library in Rust that relies on automatically generating CSAF document structs from the JSON schema.
+This repository is a reference implementation for the CSAF standard in Rust that relies on automatically generating CSAF document structs from the JSON schema.
 
 This is work-in-progress.
+
+## Structure
+
+- `csaf-validator` contains a command line tool to validate CSAF documents.
+- `csaf-rs` contains the actual validator library which currently publishes a crate to [crates.io](https://crates.io/crates/csaf-rs). In the future there will be a WASM version published to NPM and also bindings to other languages via [UniFFI](https://github.com/mozilla/uniffi-rs).
+
+## Minimum required Rust version (MSRV)
+
+1.85.1
 
 ## Build
 

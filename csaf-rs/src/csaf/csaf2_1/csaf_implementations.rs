@@ -252,6 +252,12 @@ impl InvolvementTrait for Involvement {
     }
 }
 
+impl WithGroupIds for Involvement {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    }
+}
+
 impl CsafTrait for CommonSecurityAdvisoryFramework {
     type VulnerabilityType = Vulnerability;
     type ProductTreeType = ProductTree;

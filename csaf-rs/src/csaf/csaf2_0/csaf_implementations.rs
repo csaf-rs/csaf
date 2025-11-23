@@ -363,7 +363,11 @@ impl WithGroupIds for Note {
     }
 }
 
-impl NoteTrait for Note {}
+impl NoteTrait for Note {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
+}
 
 impl SharingGroupTrait for () {
     fn get_id(&self) -> &Uuid {

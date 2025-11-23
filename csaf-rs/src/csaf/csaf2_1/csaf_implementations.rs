@@ -333,7 +333,11 @@ impl WithGroupIds for Note {
     }
 }
 
-impl NoteTrait for Note {}
+impl NoteTrait for Note {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    }
+}
 
 impl SharingGroupTrait for SharingGroup {
     fn get_id(&self) -> &Uuid {

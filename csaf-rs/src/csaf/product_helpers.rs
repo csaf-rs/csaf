@@ -109,6 +109,19 @@ pub fn gather_product_group_references(doc: &impl CsafTrait) -> Vec<(String, Str
 pub fn gather_product_references(doc: &impl CsafTrait) -> Vec<(String, String)> {
     let mut ids = Vec::<(String, String)>::new();
 
+    if let Some(notes) = doc.get_document().get_notes() {
+        for (note_index, note) in notes.iter().enumerate() {
+            if let Some(product_ids) = note.get_product_ids() {
+                for (product_index, product_id) in product_ids.enumerate() {
+                    ids.push((
+                        product_id.to_owned(),
+                        format!("/document/notes/{}/product_ids/{}", note_index, product_index),
+                    ))
+                }
+            }
+        }
+    }
+
     if let Some(pt) = doc.get_product_tree().as_ref() {
         // /product_tree/product_groups[]/product_ids[]
         for (g_i, g) in pt.get_product_groups().iter().enumerate() {

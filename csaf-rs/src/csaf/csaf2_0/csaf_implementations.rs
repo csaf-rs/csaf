@@ -472,10 +472,7 @@ impl ProductTreeTrait for ProductTree {
         &self.full_product_names
     }
 
-    fn visit_all_products(
-        &self,
-        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>,
-    ) -> Result<(), Vec<ValidationError>> {
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> ()) -> () {
         self.visit_all_products_generic(callback)
     }
 }

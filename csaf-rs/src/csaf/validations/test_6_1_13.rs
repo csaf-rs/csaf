@@ -32,8 +32,7 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
                     }
                 }
             }
-            Ok(())
-        })?;
+        });
     }
 
     errors.map_or(Ok(()), Err)

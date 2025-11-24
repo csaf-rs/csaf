@@ -477,47 +477,33 @@ pub trait ProductTreeTrait {
     /// # Returns
     /// * `Ok(())` if all products were visited successfully
     /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
-    fn visit_all_products_generic(
-        &self,
-        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>,
-    ) -> Result<(), Vec<ValidationError>> {
-        let mut errors: Option<Vec<ValidationError>> = None;
-
+    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> ()) -> () {
         // Visit products in branches
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                if let Err(errs) = branch.visit_branches_rec(
+                branch.visit_branches_rec(
                     &format!("/product_tree/branches/{}", i),
                     &mut |branch: &Self::BranchType, path| {
                         if let Some(product_ref) = branch.get_product() {
-                            callback(product_ref, &format!("{}/product", path))?;
+                            callback(product_ref, &format!("{}/product", path));
                         }
-                        Ok(())
                     },
-                ) {
-                    errors.get_or_insert_with(Vec::new).extend(errs);
-                }
+                );
             }
         }
 
         // Visit full_product_names
         for (i, fpn) in self.get_full_product_names().iter().enumerate() {
-            if let Err(errs) = callback(fpn, &format!("/product_tree/full_product_names/{}", i)) {
-                errors.get_or_insert_with(Vec::new).extend(errs);
-            }
+            callback(fpn, &format!("/product_tree/full_product_names/{}", i));
         }
 
         // Visit relationships
         for (i, rel) in self.get_relationships().iter().enumerate() {
-            if let Err(errs) = callback(
+            callback(
                 rel.get_full_product_name(),
                 &format!("/product_tree/relationships/{}/full_product_name", i),
-            ) {
-                errors.get_or_insert_with(Vec::new).extend(errs);
-            }
+            );
         }
-
-        errors.map_or(Ok(()), Err)
     }
 
     /// A trait wrapper for `visit_all_products_generic()` that allows implementations to provide
@@ -539,10 +525,7 @@ pub trait ProductTreeTrait {
     /// # Implementation Notes
     /// Trait implementers should typically implement this by delegating to
     /// `visit_all_products_generic()` with the same callback.
-    fn visit_all_products(
-        &self,
-        callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> Result<(), Vec<ValidationError>>,
-    ) -> Result<(), Vec<ValidationError>>;
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> ()) -> ();
 }
 
 /// Trait representing an abstract branch in a product tree.
@@ -568,25 +551,13 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// # Returns
     /// * `Ok(())` if the traversal completes successfully
     /// * `Err(Vec<ValidationError>)` if the callback returns an error for any branch
-    fn visit_branches_rec(
-        &self,
-        path: &str,
-        callback: &mut impl FnMut(&Self, &str) -> Result<(), Vec<ValidationError>>,
-    ) -> Result<(), Vec<ValidationError>> {
-        let mut errors: Option<Vec<ValidationError>> = None;
-
-        if let Err(e) = callback(self, &path) {
-            errors.get_or_insert_with(Vec::new).extend(e);
-        }
+    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str) -> ()) -> () {
+        callback(self, &path);
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                if let Err(e) = branch.visit_branches_rec(&format!("{}/branches/{}", path, i), callback) {
-                    errors.get_or_insert_with(Vec::new).extend(e);
-                }
+                branch.visit_branches_rec(&format!("{}/branches/{}", path, i), callback);
             }
         }
-
-        errors.map_or(Ok(()), Err)
     }
 
     /// Searches for branches that exceed the maximum allowed depth in the branch hierarchy.

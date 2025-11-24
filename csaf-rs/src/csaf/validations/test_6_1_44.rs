@@ -23,8 +23,7 @@ pub fn test_6_1_44_multiple_stars_in_serial_number(doc: &impl CsafTrait) -> Resu
                     }
                 }
             }
-            Ok(())
-        })?;
+        });
     }
 
     errors.map_or(Ok(()), Err)

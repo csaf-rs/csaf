@@ -1,161 +1,153 @@
-use crate::csaf_traits::{CsafTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
-use std::fmt::{Display, Formatter};
-
-/// Contradiction Product Status Groups
-#[derive(PartialEq, Clone)]
-enum ProductStatusGroup {
-    // first_affected, known_affected, last_affected
-    Affected,
-    // known_not_affected
-    NotAffected,
-    // first_fixed, fixed
-    Fixed,
-    // under_investigation
-    UnderInvestigation,
-    // unknown
-    Unknown,
-}
-
-impl Display for ProductStatusGroup {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ProductStatusGroup::Affected => write!(f, "affected"),
-            ProductStatusGroup::NotAffected => write!(f, "not affected"),
-            ProductStatusGroup::Fixed => write!(f, "fixed"),
-            ProductStatusGroup::UnderInvestigation => write!(f, "under investigation"),
-            ProductStatusGroup::Unknown => write!(f, "unknown"),
-        }
-    }
-}
 
 pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
-        if let Some(product_status) = v.get_product_status() {
-            // Map of product IDs to product status groups (mutually exclusive, therefore only one allowed)
-            let mut product_statuses: HashMap<String, ProductStatusGroup> = HashMap::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
+    for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
+        if let Some(product_status) = vulnerability.get_product_status() {
+            if let Some(product_status_map) = product_status.get_all_by_product_status() {
+                // Invert the map: product_id -> list of ProductStatusGroups
+                let mut product_to_groups: HashMap<String, Vec<ProductStatusGroup>> = HashMap::new();
 
-            // Handle all products with an "affected" status - these don't need conflict checking
-            for pid in product_status.get_all_affected() {
-                product_statuses.insert(pid.to_owned(), ProductStatusGroup::Affected);
+                for (group, product_ids) in product_status_map {
+                    if group == ProductStatusGroup::Recommended {
+                        // recommended products must not be checked for contradictions
+                        continue;
+                    }
+                    for product_id in product_ids {
+                        product_to_groups
+                            .entry(product_id.to_owned())
+                            .or_insert_with(Vec::new)
+                            .push(group.clone());
+                    }
+                }
+
+                // Check for products with multiple status groups (contradictions)
+                for (product_id, groups) in product_to_groups {
+                    if groups.len() > 1 {
+                        let mut affected_groups = groups;
+                        affected_groups.sort();
+                        errors.get_or_insert_with(Vec::new).push(ValidationError {
+                            message: create_error_message(&product_id, &affected_groups),
+                            instance_path: format!("/vulnerabilities/{}/product_status", vulnerability_index),
+                        });
+                    }
+                }
             }
-
-            // Handle all other status groups with conflict checking
-            check_status_group(
-                v_i,
-                &mut product_statuses,
-                product_status.get_known_not_affected(),
-                ProductStatusGroup::NotAffected,
-                "known_not_affected",
-            )?;
-
-            check_status_group(
-                v_i,
-                &mut product_statuses,
-                product_status.get_first_fixed(),
-                ProductStatusGroup::Fixed,
-                "first_fixed",
-            )?;
-            check_status_group(
-                v_i,
-                &mut product_statuses,
-                product_status.get_fixed(),
-                ProductStatusGroup::Fixed,
-                "fixed",
-            )?;
-
-            check_status_group(
-                v_i,
-                &mut product_statuses,
-                product_status.get_under_investigation(),
-                ProductStatusGroup::UnderInvestigation,
-                "under_investigation",
-            )?;
-
-            check_status_group(
-                v_i,
-                &mut product_statuses,
-                product_status.get_unknown(),
-                ProductStatusGroup::Unknown,
-                "unknown",
-            )?;
         }
     }
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
-// Helper function to check for status group conflicts
-fn check_status_group<'a>(
-    v_i: usize,
-    product_statuses: &mut HashMap<String, ProductStatusGroup>,
-    product_ids: Option<impl IntoIterator<Item = &'a String>>,
-    status_group: ProductStatusGroup,
-    field_name: &str,
-) -> Result<(), Vec<ValidationError>> {
-    if let Some(products) = product_ids {
-        for (i_pid, pid) in products.into_iter().enumerate() {
-            match product_statuses.get(pid) {
-                None => {
-                    product_statuses.insert(pid.to_owned(), status_group.clone());
-                },
-                Some(existing_status) => {
-                    if *existing_status != status_group {
-                        return Err(vec![ValidationError {
-                            message: format!(
-                                "Product {} is marked with product status group \"{}\" but has conflicting product status belonging to group \"{}\"",
-                                pid,
-                                status_group.to_string(),
-                                existing_status.to_string()
-                            ),
-                            instance_path: format!("/vulnerabilities/{}/product_status/{}/{}", v_i, field_name, i_pid),
-                        }]);
-                    }
-                },
-            }
-        }
-    }
-    Ok(())
+fn create_error_message(product_id: &str, groups: &[ProductStatusGroup]) -> String {
+    let group_names: Vec<String> = groups.iter().map(|g| format!("'{}'", g.to_string())).collect();
+    format!(
+        "Product {} is member of contradicting product status groups: {}",
+        product_id,
+        group_names.join(", ")
+    )
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf21_tests;
+    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
-    use crate::validations::test_6_1_06::test_6_1_06_contradicting_product_status;
+    use crate::validations::test_6_1_06::{
+        ProductStatusGroup, create_error_message, test_6_1_06_contradicting_product_status,
+    };
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_06() {
-        let first_error_message = "Product CSAFPID-9080700 is marked with product status group \"not affected\" but has conflicting product status belonging to group \"affected\"";
-        let first_error_path = "/vulnerabilities/0/product_status/known_not_affected/0";
-
         let expected_errors = HashMap::from([
-            ("01", vec![ValidationError {
-                message: first_error_message.to_string(),
-                instance_path: first_error_path.to_string()
-            }]),
-            ("02", vec![ValidationError {
-                message: first_error_message.to_string(),
-                instance_path: first_error_path.to_string()
-            }]),
-            ("03", vec![ValidationError {
-                message: first_error_message.to_string(),
-                instance_path: first_error_path.to_string()
-            }]),
-            ("04", vec![ValidationError {
-                message: "Product CSAFPID-9080701 is marked with product status group \"fixed\" but has conflicting product status belonging to group \"not affected\"".to_string(),
-                instance_path: "/vulnerabilities/0/product_status/fixed/0".to_string(),
-            }]),
-            ("05", vec![ValidationError {
-                message: "Product CSAFPID-9080702 is marked with product status group \"fixed\" but has conflicting product status belonging to group \"affected\"".to_string(),
-                instance_path: "/vulnerabilities/0/product_status/first_fixed/0".to_string(),
-            }]),
-            ("06", vec![ValidationError {
-                message: "Product CSAFPID-9080700 is marked with product status group \"unknown\" but has conflicting product status belonging to group \"affected\"".to_string(),
-                instance_path: "/vulnerabilities/0/product_status/unknown/0".to_string(),
-            }]),
+            (
+                "01",
+                vec![ValidationError {
+                    message: create_error_message(
+                        "CSAFPID-9080700",
+                        &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+                    ),
+                    instance_path: "/vulnerabilities/0/product_status".to_string(),
+                }],
+            ),
+            (
+                "02",
+                vec![ValidationError {
+                    message: create_error_message(
+                        "CSAFPID-9080700",
+                        &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+                    ),
+                    instance_path: "/vulnerabilities/0/product_status".to_string(),
+                }],
+            ),
+            (
+                "03",
+                vec![ValidationError {
+                    message: create_error_message(
+                        "CSAFPID-9080700",
+                        &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+                    ),
+                    instance_path: "/vulnerabilities/0/product_status".to_string(),
+                }],
+            ),
+            (
+                "04",
+                vec![
+                    ValidationError {
+                        message: create_error_message(
+                            "CSAFPID-9080700",
+                            &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
+                        ),
+                        instance_path: "/vulnerabilities/0/product_status".to_string(),
+                    },
+                    ValidationError {
+                        message: create_error_message(
+                            "CSAFPID-9080701",
+                            &[ProductStatusGroup::NotAffected, ProductStatusGroup::Fixed],
+                        ),
+                        instance_path: "/vulnerabilities/0/product_status".to_string(),
+                    },
+                ],
+            ),
+            (
+                "05",
+                vec![
+                    ValidationError {
+                        message: create_error_message(
+                            "CSAFPID-9080700",
+                            &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
+                        ),
+                        instance_path: "/vulnerabilities/0/product_status".to_string(),
+                    },
+                    ValidationError {
+                        message: create_error_message(
+                            "CSAFPID-9080701",
+                            &[ProductStatusGroup::NotAffected, ProductStatusGroup::UnderInvestigation],
+                        ),
+                        instance_path: "/vulnerabilities/0/product_status".to_string(),
+                    },
+                    ValidationError {
+                        message: create_error_message(
+                            "CSAFPID-9080702",
+                            &[ProductStatusGroup::Affected, ProductStatusGroup::Fixed],
+                        ),
+                        instance_path: "/vulnerabilities/0/product_status".to_string(),
+                    },
+                ],
+            ),
+            (
+                "06",
+                vec![ValidationError {
+                    message: create_error_message(
+                        "CSAFPID-9080700",
+                        &[ProductStatusGroup::Affected, ProductStatusGroup::Unknown],
+                    ),
+                    instance_path: "/vulnerabilities/0/product_status".to_string(),
+                }],
+            ),
         ]);
+        run_csaf20_tests("06", test_6_1_06_contradicting_product_status, expected_errors.clone());
         run_csaf21_tests("06", test_6_1_06_contradicting_product_status, expected_errors);
     }
 }

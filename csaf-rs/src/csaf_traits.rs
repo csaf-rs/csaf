@@ -2,7 +2,8 @@ use crate::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, Lab
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
-use std::collections::{BTreeSet, HashSet};
+use std::collections::{BTreeSet, HashMap, HashSet};
+use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
@@ -279,6 +280,36 @@ pub trait RemediationTrait: WithGroupIds {
     fn get_date(&self) -> &Option<String>;
 }
 
+/// Enum representing product status groups
+#[derive(PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
+pub enum ProductStatusGroup {
+    // first_affected, known_affected, last_affected
+    Affected,
+    // known_not_affected
+    NotAffected,
+    // first_fixed, fixed
+    Fixed,
+    // under_investigation
+    UnderInvestigation,
+    // unknown
+    Unknown,
+    // recommended
+    Recommended,
+}
+
+impl Display for ProductStatusGroup {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ProductStatusGroup::Affected => write!(f, "affected"),
+            ProductStatusGroup::NotAffected => write!(f, "not affected"),
+            ProductStatusGroup::Fixed => write!(f, "fixed"),
+            ProductStatusGroup::UnderInvestigation => write!(f, "under investigation"),
+            ProductStatusGroup::Unknown => write!(f, "unknown"),
+            ProductStatusGroup::Recommended => write!(f, "recommended"),
+        }
+    }
+}
+
 /// Trait representing an abstract product status in a CSAF document.
 pub trait ProductStatusTrait {
     /// Returns a reference to the list of first affected product IDs.
@@ -308,6 +339,86 @@ pub trait ProductStatusTrait {
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
+    fn get_all_by_product_status(&self) -> Option<HashMap<ProductStatusGroup, HashSet<&String>>> {
+        let mut result: Option<HashMap<ProductStatusGroup, HashSet<&String>>> = None;
+
+        // affected
+        if let Some(first_affected) = self.get_first_affected() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::Affected)
+                .or_insert_with(HashSet::new)
+                .extend(first_affected);
+        }
+        if let Some(last_affected) = self.get_last_affected() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::Affected)
+                .or_insert_with(HashSet::new)
+                .extend(last_affected);
+        }
+        if let Some(known_affected) = self.get_known_affected() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::Affected)
+                .or_insert_with(HashSet::new)
+                .extend(known_affected);
+        }
+
+        // not affected
+        if let Some(not_affected) = self.get_known_not_affected() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::NotAffected)
+                .or_insert_with(HashSet::new)
+                .extend(not_affected);
+        }
+
+        // fixed
+        if let Some(fixed) = self.get_fixed() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::Fixed)
+                .or_insert_with(HashSet::new)
+                .extend(fixed);
+        }
+        if let Some(first_fixed) = self.get_first_fixed() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::Fixed)
+                .or_insert_with(HashSet::new)
+                .extend(first_fixed);
+        }
+
+        // under investigation
+        if let Some(under_investigation) = self.get_under_investigation() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::UnderInvestigation)
+                .or_insert_with(HashSet::new)
+                .extend(under_investigation);
+        }
+
+        // unknown
+        if let Some(unknown) = self.get_unknown() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::Unknown)
+                .or_insert_with(HashSet::new)
+                .extend(unknown);
+        }
+
+        // recommended
+        if let Some(recommended) = self.get_recommended() {
+            result
+                .get_or_insert_with(HashMap::new)
+                .entry(ProductStatusGroup::Recommended)
+                .or_insert_with(HashSet::new)
+                .extend(recommended);
+        }
+        result
+    }
+
     /// Combines all affected product IDs into a `HashSet`.
     ///
     /// This method aggregates product IDs from these lists:
@@ -319,6 +430,7 @@ pub trait ProductStatusTrait {
     ///
     /// A `HashSet` containing all aggregated product IDs. If none of these lists are
     /// populated, the returned `HashSet` will be empty.
+    #[deprecated(note = "Use get_all_by_product_status instead")]
     fn get_all_affected(&self) -> HashSet<&String> {
         let mut result = HashSet::new();
 
@@ -347,6 +459,7 @@ pub trait ProductStatusTrait {
     ///
     /// A `HashSet` containing all aggregated product IDs. If none of these lists are
     /// populated, the returned `HashSet` will be empty.
+    #[deprecated(note = "Use get_all_by_product_status instead")]
     fn get_all_fixed(&self) -> HashSet<&String> {
         let mut result = HashSet::new();
 

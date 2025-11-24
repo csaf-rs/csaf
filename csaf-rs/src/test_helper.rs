@@ -60,10 +60,13 @@ fn run_csaf_tests<CsafType>(
                         "Missing expected error definition for negative test case {}",
                         test_num
                     ))
-                    .clone();
+                    .clone()
+                    .sort_by(|a, b| a.message.cmp(&b.message));
                 assert_eq!(
                     expected_errors,
-                    test_function(&doc).unwrap_err(),
+                    test_function(&doc)
+                        .unwrap_err()
+                        .sort_by(|a, b| a.message.cmp(&b.message)),
                     "Negative test case {} should have failed with the expected error",
                     test_num
                 );

@@ -5,32 +5,33 @@ use std::collections::{HashMap, HashSet};
 /// Find the first cycle in the given `relation_map`, if any.
 ///
 /// # Returns
-/// - Product ID where the cycle was first detected
-/// - String representation of the whole cycle detected
+/// - `Vec` of the product IDs forming the detected cycle
 /// - Index of the CSAF relation containing the product ID where the cycle was first detected
 pub fn find_cycle<'a>(
     relation_map: &'a HashMap<String, HashMap<String, usize>>,
     product_id: &'a str,
     visited: &mut HashSet<&'a str>,
-) -> Option<(String, Vec<String>, usize)> {
+) -> Option<(Vec<String>, usize)> {
     if !visited.insert(product_id) {
-        return Some((product_id.to_string(), vec![product_id.to_string()], 0));
+        return Some((vec![product_id.to_string()], 0));
     }
     if let Some(next_vec) = relation_map.get(product_id) {
         for (next, r_i) in next_vec {
             match find_cycle(relation_map, next, visited) {
                 None => {},
-                Some((cycle_end, mut cycle, r_i_res)) => {
-                    if cycle.len() == 1 || cycle_end != *cycle.last().unwrap() {
+                Some((mut cycle, r_i_res)) => {
+                    let first = cycle.first().unwrap();
+                    if cycle.len() == 1 || first != cycle.last().unwrap() {
+                        if first == product_id {
+                            // Reverse the cycle when it is complete
+                            cycle.push(product_id.to_string());
+                            cycle.reverse();
+                            return Some((cycle, *r_i));
+                        }
                         // Back-trace the cycle to the first node
                         cycle.push(product_id.to_string());
-                        if cycle_end == product_id {
-                            // Reverse the cycle when it is complete
-                            cycle.reverse();
-                            return Some((cycle_end, cycle, *r_i));
-                        }
                     }
-                    return Some((cycle_end, cycle, r_i_res));
+                    return Some((cycle, r_i_res));
                 },
             }
         }
@@ -40,7 +41,7 @@ pub fn find_cycle<'a>(
 }
 
 pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = Option::None;
+    let mut errors: Option<Vec<ValidationError>> = None;
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut relation_map = HashMap::<String, HashMap<String, usize>>::new();
 
@@ -72,9 +73,9 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
         }
 
         // Perform cycle check
+        let mut visited = HashSet::new();
         for product_id in relation_map.keys() {
-            let mut visited = HashSet::new();
-            if let Some((_, cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
+            if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
                 errors.get_or_insert_with(Vec::new).push(ValidationError {
                     message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
                     instance_path: format!("/product_tree/relationships/{}", relation_index),
@@ -130,8 +131,7 @@ mod tests {
         let mut visited = HashSet::new();
         let result = super::find_cycle(&relation_map, "A", &mut visited);
         assert!(result.is_some());
-        let (cycle_end, cycle, relation_index) = result.unwrap();
-        assert_eq!(cycle_end, "B");
+        let (cycle, relation_index) = result.unwrap();
         assert_eq!(cycle, vec!("B", "C", "D", "B"));
         assert_eq!(relation_index, 1);
 
@@ -139,8 +139,7 @@ mod tests {
         let mut visited = HashSet::new();
         let result = super::find_cycle(&relation_map, "C", &mut visited);
         assert!(result.is_some());
-        let (cycle_end, cycle, relation_index) = result.unwrap();
-        assert_eq!(cycle_end, "C");
+        let (cycle, relation_index) = result.unwrap();
         assert_eq!(cycle, vec!("C", "D", "B", "C"));
         assert_eq!(relation_index, 3);
 

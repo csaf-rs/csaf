@@ -11,7 +11,7 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
             if let Some(helper) = product.get_product_identification_helper() {
                 if let Some(purls) = helper.get_purls() {
                     if purls.len() <= 1 {
-                        return Ok(());
+                        return;
                     }
 
                     let mut base_parts: Option<String> = None;
@@ -47,8 +47,7 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
                     }
                 }
             }
-            Ok(())
-        })?;
+        });
     }
 
     errors.map_or(Ok(()), Err)

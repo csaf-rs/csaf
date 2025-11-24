@@ -6,9 +6,8 @@ use std::collections::HashSet;
 pub fn test_6_1_01_missing_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut definitions_set = HashSet::<String>::new();
     if let Some(tree) = doc.get_product_tree().as_ref() {
-        _ = tree.visit_all_products(&mut |fpn, _path| {
+        tree.visit_all_products(&mut |fpn, _path| {
             definitions_set.insert(fpn.get_product_id().to_owned());
-            Ok(())
         });
     }
 

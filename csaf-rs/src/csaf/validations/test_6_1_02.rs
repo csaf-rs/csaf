@@ -8,7 +8,7 @@ pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Re
 
     let mut errors: Option<Vec<ValidationError>> = Option::None;
     if let Some(tree) = doc.get_product_tree().as_ref() {
-        _ = tree.visit_all_products(&mut |product, path| {
+        tree.visit_all_products(&mut |product, path| {
             if products.contains(product.get_product_id()) {
                 errors.get_or_insert_with(Vec::new).push(ValidationError {
                     message: format!("Duplicate definition for product ID {}", product.get_product_id()),
@@ -17,7 +17,6 @@ pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Re
             } else {
                 products.insert(product.get_product_id().to_owned());
             }
-            Ok(())
         });
     }
 

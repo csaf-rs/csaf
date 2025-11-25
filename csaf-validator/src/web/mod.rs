@@ -4,10 +4,10 @@
 //! All validation is performed client-side using WASM.
 
 use axum::{
+    Router,
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use rust_embed::RustEmbed;
 use std::net::SocketAddr;
@@ -27,10 +27,7 @@ pub async fn start_server(host: &str, port: u16) -> anyhow::Result<()> {
         .route("/*path", get(static_handler));
 
     println!("\nCSAF Validator Web UI starting...");
-    println!(
-        "Open your browser and navigate to: http://{}:{}",
-        host, port
-    );
+    println!("Open your browser and navigate to: http://{}:{}", host, port);
     println!("All validation runs in your browser using WebAssembly");
     println!("Press Ctrl+C to stop the server\n");
 
@@ -44,9 +41,7 @@ pub async fn start_server(host: &str, port: u16) -> anyhow::Result<()> {
 /// Handler for all static files (HTML, JS, CSS, WASM, etc.)
 /// Defaults to index.html for root path
 async fn static_handler(path: Option<axum::extract::Path<String>>) -> Response {
-    let path = path
-        .map(|p| p.0)
-        .unwrap_or_else(|| "index.html".to_string());
+    let path = path.map(|p| p.0).unwrap_or_else(|| "index.html".to_string());
 
     let path = path.trim_start_matches('/');
     let path = if path.is_empty() { "index.html" } else { path };
@@ -60,7 +55,7 @@ async fn static_handler(path: Option<axum::extract::Path<String>>) -> Response {
                 content.data.to_vec(),
             )
                 .into_response()
-        }
+        },
         None => (StatusCode::NOT_FOUND, format!("File not found: {}", path)).into_response(),
     }
 }

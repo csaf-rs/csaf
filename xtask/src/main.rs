@@ -75,14 +75,7 @@ fn build_wasm() -> Result<()> {
     check_wasm_pack()?;
 
     let status = Command::new("wasm-pack")
-        .args([
-            "build",
-            "--target",
-            "web",
-            "--scope",
-            "csaf-rs",
-            "csaf-rs",
-        ])
+        .args(["build", "--target", "web", "--scope", "csaf-rs", "csaf-rs"])
         .status()
         .context("Failed to run wasm-pack")?;
 

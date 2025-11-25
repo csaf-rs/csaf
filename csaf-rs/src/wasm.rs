@@ -27,7 +27,7 @@ pub fn init() {
 ///
 /// A `ValidationResult` containing the validation outcome and any errors
 #[wasm_bindgen(js_name = validateCsaf)]
-pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<JsValue, JsValue> {
+pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResult, JsValue> {
     // Parse the preset
     let preset = preset_str.parse::<ValidationPreset>().map_err(|_| {
         JsValue::from_str(&format!(
@@ -62,8 +62,7 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<JsValue, JsValu
     };
 
     match result {
-        Ok(validation_result) => serde_wasm_bindgen::to_value(&validation_result)
-            .map_err(|e| JsValue::from_str(&format!("Serialization error: {}", e))),
+        Ok(validation_result) => Ok(validation_result),
         Err(e) => Err(JsValue::from_str(&e)),
     }
 }

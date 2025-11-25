@@ -5,7 +5,7 @@ use csaf_rs::csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf_rs::csaf::validation::{
     TestResult,
     TestResultStatus::{Failure, NotFound, Success},
-    Validatable, ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
+    ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
 };
 use std::str::FromStr;
 

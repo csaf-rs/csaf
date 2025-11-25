@@ -42,6 +42,11 @@ jobs:
         run: cargo fmt --all --check -- -l
       - name: Build
         run: cargo build --target=${{ matrix.target.arch }} --release --verbose
+      - name: Build WASM bindings
+        run: |
+          if [ "${{ matrix.target.arch }}" = "wasm32-wasip2" ]; then
+            wasm-pack build csaf-rs --scope csaf-rs
+          fi
       - name: Run tests
         run: cargo test --target=${{ matrix.target.arch }} --verbose
         if: ${{ matrix.target.skip-test != true }}

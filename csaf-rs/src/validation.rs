@@ -3,11 +3,12 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
+use tsify::Tsify;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, Tsify)]
+#[serde(rename_all = "camelCase")]
 pub struct ValidationError {
     pub message: String,
-    #[serde(rename = "instancePath")]
     pub instance_path: String,
 }
 
@@ -18,7 +19,7 @@ impl std::fmt::Display for ValidationError {
 }
 
 /// Result of executing a single test
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
 #[serde(rename_all = "camelCase")]
 pub struct TestResult {
     /// The test ID that was executed
@@ -28,7 +29,7 @@ pub struct TestResult {
     pub status: TestResultStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
 #[serde(rename_all = "camelCase")]
 pub enum TestResultStatus {
     Success,
@@ -37,8 +38,9 @@ pub enum TestResultStatus {
 }
 
 /// Result of a CSAF validation
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
 #[serde(rename_all = "camelCase")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ValidationResult {
     /// Whether the validation was successful (no errors)
     pub success: bool,
@@ -52,8 +54,8 @@ pub struct ValidationResult {
     pub num_errors: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, Tsify)]
+#[serde(rename_all = "camelCase")]
 pub enum ValidationPreset {
     Basic,
     Extended,

@@ -8,13 +8,13 @@ export default defineConfig({
     outDir: '../src/web/static',
     emptyOutDir: true,
     rollupOptions: {
-      external: ['/assets/csaf_rs.js'],
+      external: ['/assets/pkg/csaf_rs.js'],
       output: {
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name].[ext]',
         paths: {
-          '/assets/csaf_rs.js': '/assets/csaf_rs.js'
+          '/assets/pkg/csaf_rs.js': '/assets/pkg/csaf_rs.js'
         }
       }
     }

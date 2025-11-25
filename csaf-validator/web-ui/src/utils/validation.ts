@@ -1,5 +1,5 @@
-import init, { validateCsaf } from '/assets/csaf_rs.js';
 import type { ValidationResult, ValidationPreset } from '../types';
+import init, { validateCsaf } from '/assets/pkg/csaf_rs.js';
 
 let wasmInitialized = false;
 
@@ -11,7 +11,7 @@ export async function initWasm(): Promise<void> {
     return;
   }
 
-  await init('/assets/csaf_rs_bg.wasm');
+  await init();
   wasmInitialized = true;
 }
 
@@ -30,5 +30,21 @@ export async function validateDocument(
   }
 
   const jsonStr = JSON.stringify(document);
-  return validateCsaf(jsonStr, preset);
+  const result = await validateCsaf(jsonStr, preset);
+
+  // Normalize older/newer shapes: ensure a top-level `errors` array exists
+  if (!('errors' in result) || result.errors === undefined) {
+    const collected: ValidationResult['errors'] = [];
+    if (Array.isArray((result as any).testResults)) {
+      for (const tr of (result as any).testResults) {
+        const status = tr.status;
+        if (status && status.errors && Array.isArray(status.errors)) {
+          collected.push(...status.errors);
+        }
+      }
+    }
+    (result as any).errors = collected;
+  }
+
+  return result;
 }

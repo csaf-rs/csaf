@@ -1,4 +1,4 @@
-declare module '/static/csaf_rs.js' {
+declare module '/assets/pkg/csaf_rs.js' {
   import type { ValidationResult } from './types';
 
   export default function init(wasmPath: string): Promise<void>;

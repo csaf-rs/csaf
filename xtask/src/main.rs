@@ -22,6 +22,7 @@ fn main() -> Result<()> {
         Some("build-web") => build_web()?,
         Some("build-wasm") => build_wasm()?,
         Some("build-frontend") => build_frontend()?,
+        Some("gen-ts") => gen_ts()?,
         Some("install") => install_deps()?,
         Some("clean") => clean()?,
         Some("dev") => dev_server()?,
@@ -39,6 +40,7 @@ TASKS:
     build-web       Build WASM module and frontend (complete build)
     build-wasm      Build only the WASM module
     build-frontend  Build only the frontend
+    gen-ts          Generate TypeScript defs from Rust types (ts-rs)
     install         Install frontend dependencies
     clean           Clean build artifacts
     dev             Start frontend dev server (requires build-wasm first)
@@ -79,8 +81,6 @@ fn build_wasm() -> Result<()> {
             "web",
             "--scope",
             "csaf-rs",
-            "--out-dir",
-            "../csaf-validator/web-ui/public/assets",
             "csaf-rs",
         ])
         .status()
@@ -112,6 +112,23 @@ fn build_frontend() -> Result<()> {
     }
 
     println!("✓ Frontend built successfully");
+    Ok(())
+}
+
+fn gen_ts() -> Result<()> {
+    println!("🧾 Generating TypeScript definitions from Rust types (ts-rs)...");
+
+    // Run the helper binary included in the csaf-rs crate that emits the .d.ts file
+    let status = Command::new("cargo")
+        .args(["run", "-p", "csaf-rs", "--bin", "tsgen"])
+        .status()
+        .context("Failed to run tsgen binary")?;
+
+    if !status.success() {
+        bail!("tsgen failed");
+    }
+
+    println!("✓ TypeScript definitions generated");
     Ok(())
 }
 

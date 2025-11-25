@@ -3,8 +3,11 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
+use ts_rs::TS;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub struct ValidationError {
     pub message: String,
     #[serde(rename = "instancePath")]
@@ -18,7 +21,8 @@ impl std::fmt::Display for ValidationError {
 }
 
 /// Result of executing a single test
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct TestResult {
     /// The test ID that was executed
@@ -28,7 +32,8 @@ pub struct TestResult {
     pub status: TestResultStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum TestResultStatus {
     Success,
@@ -37,7 +42,8 @@ pub enum TestResultStatus {
 }
 
 /// Result of a CSAF validation
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationResult {
     /// Whether the validation was successful (no errors)
@@ -52,7 +58,8 @@ pub struct ValidationResult {
     pub num_errors: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum ValidationPreset {
     Basic,

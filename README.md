@@ -36,7 +36,8 @@ The final binary will be in `target/release` and can then be installed, for exam
 
 ## Build WASM Bindings
 
-If you want to build the WASM bindings locally, install `wasm-pack` (make `~/.cargo/bin` is in the path) and execute it:
+If you want to build the WASM bindings locally, install `wasm-pack` (make sure `~/.cargo/bin` is in
+the path) and execute it:
 ```bash
 cargo install wasm-pack
 wasm-pack build csaf-rs --scope csaf-rs

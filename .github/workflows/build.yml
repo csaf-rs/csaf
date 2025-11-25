@@ -45,7 +45,7 @@ jobs:
       - name: Build WASM bindings
         run: |
           if [ "${{ matrix.target.arch }}" = "wasm32-wasip2" ]; then
-            wasm-pack build csaf-rs --scope csaf-rs
+            ~/.cargo/bin/wasm-pack build csaf-rs --scope csaf-rs
           fi
       - name: Run tests
         run: cargo test --target=${{ matrix.target.arch }} --verbose

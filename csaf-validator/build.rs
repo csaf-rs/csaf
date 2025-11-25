@@ -4,8 +4,8 @@ fn main() {
     // Only run these steps if the web feature is enabled
     #[cfg(feature = "web")]
     {
-        println!("cargo:rerun-if-changed=../demo/src");
-        println!("cargo:rerun-if-changed=../demo/index.html");
+        println!("cargo:rerun-if-changed=src");
+        println!("cargo:rerun-if-changed=web-ui");
         println!("cargo:rerun-if-changed=../csaf-rs/src");
 
         // Check if static files exist, if not, provide helpful error

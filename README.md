@@ -34,6 +34,16 @@ cargo build --release
 
 The final binary will be in `target/release` and can then be installed, for example, in a system-wide folder.
 
+## Build WASM Bindings
+
+If you want to build the WASM bindings locally, install `wasm-pack` (make `~/.cargo/bin` is in the path) and execute it:
+```bash
+cargo install wasm-pack
+wasm-pack build csaf-rs --scope csaf-rs
+```
+
+This will create a JavaScript/TypeScript package in `csaf-rs/pkg`.
+
 ## Usage
 
 After [building](README.md#build) or downloading `csaf-validator` from [the available releases](https://github.com/csaf-rs/csaf/releases), the usage is quite simple and additional help can be display using `--help`.

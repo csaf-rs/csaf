@@ -66,3 +66,19 @@ csaf-validator --csaf-version 2.0 --preset full my-csaf-2-0-document.json
 # validate a CSAF 2.1 document with one specific test
 csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 ```
+
+
+## Test-Conformance to the Standard
+
+* :white_check_mark: Implemented
+* :o: Not applicable
+
+### Mandatory Tests
+
+| Testspecification | 2.0 | 2.1 (experimental) |
+| --- | --- | --- |
+| 6.1.1 | :white_check_mark:  | |
+| 6.1.2 | :white_check_mark:  | |
+| 6.1.3 | :white_check_mark:  | |
+| 6.1.4 | :white_check_mark:  | |
+| 6.1.5 | :white_check_mark:  | |

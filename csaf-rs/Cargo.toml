@@ -9,6 +9,9 @@ version = "0.2.1"
 edition = "2024"
 rust-version = "1.85.1"
 
+[lib]
+name = "csaf"
+
 [dependencies]
 regress = "0.10"
 serde = { version = "1", features = ["derive"] }

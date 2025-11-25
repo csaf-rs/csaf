@@ -9,6 +9,13 @@ version = "0.2.1"
 edition = "2024"
 rust-version = "1.85.1"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["wasm"]
+wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:console_error_panic_hook"]
+
 [dependencies]
 regress = "0.10"
 serde = { version = "1", features = ["derive"] }
@@ -19,6 +26,15 @@ glob = "0.3"
 rust-embed = { version = "8", features = ["include-exclude"] }
 packageurl = "0.6.0-rc.1"
 uuid = { version = "1.17.0", features = ["v7", "serde"] }
+tsify = "*"
+
+# WASM dependencies
+wasm-bindgen = { version = "0.2", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 
 [build-dependencies]
 schemars = "0.8"

@@ -1,0 +1,12 @@
+# Deno
+node_modules/
+deno.lock
+
+# Build outputs
+dist/
+public/assets/*.js
+public/assets/*.wasm
+public/assets/*.ts
+
+# Vite
+.vite/

@@ -29,18 +29,9 @@ pub fn init() {
 #[wasm_bindgen(js_name = validateCsaf)]
 pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResult, JsValue> {
     // Parse the preset
-<<<<<<< HEAD
     let preset = preset_str
         .parse::<ValidationPreset>()
         .map_err(|_| JsValue::from_str(&format!("Invalid preset: {}", preset_str)))?;
-=======
-    let preset = preset_str.parse::<ValidationPreset>().map_err(|_| {
-        JsValue::from_str(&format!(
-            "Invalid preset: {}. Use 'basic', 'extended', or 'full'",
-            preset_str
-        ))
-    })?;
->>>>>>> 78b3eb1 (Fixed errors)
 
     // First, try to detect the version by parsing the JSON
     let json_value: serde_json::Value =
@@ -68,12 +59,7 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResul
     };
 
     match result {
-<<<<<<< HEAD
         Ok(validation_result) => Ok(validation_result),
-=======
-        Ok(validation_result) => serde_wasm_bindgen::to_value(&validation_result)
-            .map_err(|e| JsValue::from_str(&format!("Serialization error: {}", e))),
->>>>>>> 78b3eb1 (Fixed errors)
         Err(e) => Err(JsValue::from_str(&e)),
     }
 }

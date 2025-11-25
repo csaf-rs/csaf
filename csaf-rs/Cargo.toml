@@ -35,11 +35,6 @@ console_error_panic_hook = { version = "0.1", optional = true }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 
-# WASM dependencies
-wasm-bindgen = { version = "0.2", optional = true }
-serde-wasm-bindgen = { version = "0.6", optional = true }
-console_error_panic_hook = { version = "0.1", optional = true }
-
 [build-dependencies]
 schemars = "0.8"
 serde = { version = "1", features = ["derive"] }

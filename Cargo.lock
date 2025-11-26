@@ -226,7 +226,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-rs"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "chrono",
  "console_error_panic_hook",
@@ -252,7 +252,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-validator"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "clap",

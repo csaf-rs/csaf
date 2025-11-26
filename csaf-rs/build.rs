@@ -28,22 +28,22 @@ fn main() -> Result<(), BuildError> {
     let schema_configs = [
         (
             "assets/csaf_2.0_json_schema.json",
-            "csaf/csaf2_0/schema.generated.rs",
+            "csaf2_0/schema.generated.rs",
             Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
         ),
         (
             "assets/csaf_2.1_json_schema.json",
-            "csaf/csaf2_1/schema.generated.rs",
+            "csaf2_1/schema.generated.rs",
             Some(&fix_2_1_schema),
         ),
         (
             "assets/decision_point_json_schema.json",
-            "csaf/csaf2_1/ssvc_dp.generated.rs",
+            "csaf2_1/ssvc_dp.generated.rs",
             None,
         ),
         (
             "assets/decision_point_selection_list_json_schema.json",
-            "csaf/csaf2_1/ssvc_dp_selection_list.generated.rs",
+            "csaf2_1/ssvc_dp_selection_list.generated.rs",
             None,
         ),
     ];
@@ -204,10 +204,7 @@ fn generate_language_subtags() -> Result<(), BuildError> {
     // Pretty-print the generated code.
     let code = prettyplease::unparse(&file);
 
-    let out_path = Path::new("src")
-        .join("csaf")
-        .join("generated")
-        .join("language_subtags.rs");
+    let out_path = Path::new("src").join("generated").join("language_subtags.rs");
     fs::write(&out_path, code)?;
 
     println!("cargo:rerun-if-changed=../assets/language-subtag-registry.txt");

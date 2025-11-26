@@ -7,3 +7,5 @@ pub mod product_helpers;
 pub mod test_helper;
 pub mod validation;
 pub mod validations;
+#[cfg(feature = "wasm")]
+pub mod wasm;

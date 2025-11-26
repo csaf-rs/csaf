@@ -2,9 +2,9 @@
 //!
 //! This module provides WebAssembly bindings for validating CSAF documents in the browser.
 
-use crate::csaf::csaf2_0::loader::load_document_from_str as load_document_from_str_2_0;
-use crate::csaf::csaf2_1::loader::load_document_from_str as load_document_from_str_2_1;
-use crate::csaf::validation::{ValidationPreset, ValidationResult, validate_by_preset};
+use crate::csaf2_0::loader::load_document_from_str as load_document_from_str_2_0;
+use crate::csaf2_1::loader::load_document_from_str as load_document_from_str_2_1;
+use crate::validation::{ValidationPreset, ValidationResult, validate_by_preset};
 use wasm_bindgen::prelude::*;
 
 /// Initialize panic hook for better error messages in the browser console
@@ -29,12 +29,9 @@ pub fn init() {
 #[wasm_bindgen(js_name = validateCsaf)]
 pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResult, JsValue> {
     // Parse the preset
-    let preset = preset_str.parse::<ValidationPreset>().map_err(|_| {
-        JsValue::from_str(&format!(
-            "Invalid preset: {}. Use 'basic', 'extended', or 'full'",
-            preset_str
-        ))
-    })?;
+    let preset = preset_str
+        .parse::<ValidationPreset>()
+        .map_err(|_| JsValue::from_str(&format!("Invalid preset: {}", preset_str)))?;
 
     // First, try to detect the version by parsing the JSON
     let json_value: serde_json::Value =

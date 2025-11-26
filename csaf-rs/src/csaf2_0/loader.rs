@@ -12,6 +12,12 @@ pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramew
     Ok(doc)
 }
 
+/// Load a CSAF document from a JSON string
+pub fn load_document_from_str(json_str: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {
+    let doc: CommonSecurityAdvisoryFramework = serde_json::from_str(json_str)?;
+    Ok(doc)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::csaf2_0::schema::{

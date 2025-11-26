@@ -10,11 +10,12 @@ edition = "2024"
 rust-version = "1.85.1"
 
 [lib]
+name = "csaf"
 crate-type = ["cdylib", "rlib"]
 
 [features]
 default = ["wasm"]
-wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:console_error_panic_hook"]
+wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:tsify", "dep:console_error_panic_hook"]
 
 [dependencies]
 regress = "0.10"

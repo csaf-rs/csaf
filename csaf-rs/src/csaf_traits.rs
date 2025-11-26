@@ -477,7 +477,7 @@ pub trait ProductTreeTrait {
     /// # Returns
     /// * `Ok(())` if all products were visited successfully
     /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
-    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> ()) -> () {
+    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
         // Visit products in branches
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
@@ -525,7 +525,7 @@ pub trait ProductTreeTrait {
     /// # Implementation Notes
     /// Trait implementers should typically implement this by delegating to
     /// `visit_all_products_generic()` with the same callback.
-    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> ()) -> ();
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str));
 }
 
 /// Trait representing an abstract branch in a product tree.
@@ -546,13 +546,13 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// # Parameters
     /// * `path` - A string representing the current path in the branch hierarchy
     /// * `callback` - A mutable function that takes a reference to Self and the
-    ///                current path string and returns a Result
+    ///   current path string and returns a Result
     ///
     /// # Returns
     /// * `Ok(())` if the traversal completes successfully
     /// * `Err(Vec<ValidationError>)` if the callback returns an error for any branch
-    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str) -> ()) -> () {
-        callback(self, &path);
+    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str)) {
+        callback(self, path);
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
                 branch.visit_branches_rec(&format!("{}/branches/{}", path, i), callback);

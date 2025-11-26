@@ -9,7 +9,7 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
         for (i_g, g) in tree.get_product_groups().iter().enumerate() {
             product_group_ids_with_paths
                 .entry(g.get_group_id().to_owned())
-                .or_insert_with(Vec::new)
+                .or_default()
                 .push(format!("/product_tree/product_groups/{}/group_id", i_g));
         }
     }

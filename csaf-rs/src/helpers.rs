@@ -27,8 +27,8 @@ where
             .get_product_groups()
             .iter()
             .filter(|x| product_groups.iter().any(|g| *g == x.get_group_id()))
-            .map(|x| x.get_product_ids().map(|p| p.to_string()).collect::<Vec<String>>())
-            .flatten()
+            .flat_map(|x| x.get_product_ids())
+            .map(|p| p.to_string())
             .collect()
     })
 }

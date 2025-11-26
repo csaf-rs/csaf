@@ -13,7 +13,7 @@ use std::collections::HashMap;
 /// * `test_number` - The test number to run (e.g., "36" for 6.1.36 tests)
 /// * `test_function` - The test function to execute against each document
 /// * `negative_cases` - A slice of tuples containing (file_suffix, expected_validation_error)
-///                     for negative test cases (starting with "0")
+///   for negative test cases (starting with "0")
 ///
 /// This function assumes tests with filenames ending with numbers starting with "0"
 /// are negative tests, and those starting with "1" are positive tests.
@@ -29,7 +29,7 @@ fn run_csaf_tests<CsafType>(
 
     // Load and test each file
     let test_files: Vec<GlobResult> = glob(pattern).expect("Failed to parse glob pattern").collect();
-    if test_files.len() == 0 {
+    if test_files.is_empty() {
         panic!("No test files found for pattern {}", pattern);
     }
     for entry in test_files {

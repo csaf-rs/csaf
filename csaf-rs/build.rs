@@ -73,8 +73,13 @@ fn add_ignore_rustfmt(file: &mut syn::File) {
     file.attrs.insert(0, doc_attr);
 }
 
+fn add_ignore_clippy(file: &mut syn::File) {
+    let doc_attr = syn::parse_quote! { #![allow(clippy::all)] };
+    file.attrs.insert(0, doc_attr);
+}
+
 fn build(input: &str, output: &str, schema_patch: &Option<&dyn Fn(&mut Value)>) -> Result<(), BuildError> {
-    let content = fs::read_to_string(&input)?;
+    let content = fs::read_to_string(input)?;
     let mut schema_value = serde_json::from_str(&content)?;
     // Execute a schema patch function, if provided.
     if let Some(patch_fn) = schema_patch {
@@ -94,6 +99,7 @@ fn build(input: &str, output: &str, schema_patch: &Option<&dyn Fn(&mut Value)>) 
     let mut file = syn::parse2::<syn::File>(type_space.to_stream())?;
 
     add_ignore_rustfmt(&mut file);
+    add_ignore_clippy(&mut file);
     // Parse the GENERATED_CODE_HEADER as a doc attribute
     let doc_attr = syn::parse_quote! { #![doc = #GENERATED_CODE_HEADER] };
     file.attrs.insert(0, doc_attr);
@@ -200,6 +206,7 @@ fn generate_language_subtags() -> Result<(), BuildError> {
 
     let mut file: syn::File = syn::parse2(tokens)?;
     add_ignore_rustfmt(&mut file);
+    add_ignore_clippy(&mut file);
 
     // Pretty-print the generated code.
     let code = prettyplease::unparse(&file);

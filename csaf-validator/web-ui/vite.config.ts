@@ -1,21 +1,27 @@
-import { defineConfig } from 'npm:vite@^6.0.5';
-import react from 'npm:@vitejs/plugin-react@^4.3.4';
-import tailwindcss from 'npm:@tailwindcss/vite@^4.1.16';
+import { defineConfig } from 'vite';
+import path from 'path';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath } from 'url';
+
+// Compute __dirname for ESM
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  build: {
+  resolve: {
+    alias: {
+      '@csaf-rs/csaf-rs': path.resolve(__dirname, 'src/csaf-rs/csaf.js')
+    }
+  },
+    build: {
     outDir: '../src/web/static',
     emptyOutDir: true,
     rollupOptions: {
-      external: ['/assets/pkg/csaf_rs.js'],
       output: {
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name].[ext]',
-        paths: {
-          '/assets/pkg/csaf_rs.js': '/assets/pkg/csaf_rs.js'
-        }
       }
     }
   },

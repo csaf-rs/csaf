@@ -1,5 +1,5 @@
 import type { ValidationResult, ValidationPreset } from '../types';
-import init, { validateCsaf } from '/assets/pkg/csaf_rs.js';
+import init, { validateCsaf } from '@csaf-rs/csaf-rs';
 
 let wasmInitialized = false;
 
@@ -10,8 +10,12 @@ export async function initWasm(): Promise<void> {
   if (wasmInitialized) {
     return;
   }
-
-  await init();
+  // Initialize the wasm module by passing an explicit URL for the `.wasm`
+  // file that Vite will resolve as an asset. This avoids runtime fetch
+  // errors (dev server 403) when the default resolution doesn't map.
+  const wasmUrl = new URL('/src/csaf-rs/csaf_bg.wasm', import.meta.url).toString();
+  console.log(wasmUrl);
+  await init({ module_or_path: wasmUrl });
   wasmInitialized = true;
 }
 
@@ -30,7 +34,7 @@ export async function validateDocument(
   }
 
   const jsonStr = JSON.stringify(document);
-  const result = await validateCsaf(jsonStr, preset);
+  const result = (await validateCsaf(jsonStr, preset)) as any;
 
   // Normalize older/newer shapes: ensure a top-level `errors` array exists
   if (!('errors' in result) || result.errors === undefined) {

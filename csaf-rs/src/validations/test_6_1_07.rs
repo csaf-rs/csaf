@@ -44,11 +44,13 @@ fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
 fn gather_product_metrics(
     vulnerability: &impl VulnerabilityTrait,
     vulnerability_index: usize,
-) -> Result<Option<HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>>>, Vec<ValidationError>>
-{
+) -> (
+    Option<HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>>>,
+    Option<Vec<ValidationError>>,
+) {
     let metrics = vulnerability.get_metrics();
     if metrics.is_none() {
-        return Ok(None);
+        return (None, None);
     }
     let mut errors: Option<Vec<ValidationError>> = None;
     let mut product_metrics: HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>> =
@@ -99,36 +101,35 @@ fn gather_product_metrics(
             }
         }
     }
-    errors.map_or(Ok(Some(product_metrics)), Err)
+    (Some(product_metrics), errors)
 }
 
 /// Test 6.1.7: Check for multiple identical metric types per vulnerability.
 pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
-        let product_metrics_option = gather_product_metrics(vulnerability, vulnerability_index);
-        match product_metrics_option {
-            Err(err) => errors.get_or_insert_with(Vec::new).extend(err),
-            Ok(Some(product_metrics)) => {
-                for (p, metrics_map) in product_metrics.iter() {
-                    for ((metric_type, _), paths) in metrics_map.iter() {
-                        if paths.len() > 1 {
-                            for path in paths {
-                                errors.get_or_insert_with(Vec::new).push(ValidationError {
-                                    message: create_error_message(metric_type, p),
-                                    instance_path: format!(
-                                        "{}/{}",
-                                        path.to_string(),
-                                        get_metric_prop_name(metric_type.to_owned())
-                                    ),
-                                });
-                            }
+        let (product_metrics, metrics_errors) = gather_product_metrics(vulnerability, vulnerability_index);
+        if let Some(metrics_errors) = metrics_errors {
+            errors.get_or_insert_with(Vec::new).extend(metrics_errors);
+        }
+        if let Some(product_metrics) = product_metrics {
+            for (p, metrics_map) in product_metrics.iter() {
+                for ((metric_type, _), paths) in metrics_map.iter() {
+                    if paths.len() > 1 {
+                        for path in paths {
+                            errors.get_or_insert_with(Vec::new).push(ValidationError {
+                                message: create_error_message(metric_type, p),
+                                instance_path: format!(
+                                    "{}/{}",
+                                    path.to_string(),
+                                    get_metric_prop_name(metric_type.to_owned())
+                                ),
+                            });
                         }
                     }
                 }
-            },
-            Ok(None) => {},
-        };
+            }
+        }
     }
     errors.map_or(Ok(()), Err)
 }

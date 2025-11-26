@@ -36,16 +36,14 @@ pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<()
                         instance_path: "/document/distribution/sharing_group/name".to_string(),
                     }]);
                 }
-            } else if sharing_group_name == SG_NAME_PRIVATE {
-                if sharing_group.get_id() != NIL_UUID {
-                    return Err(vec![ValidationError {
-                        message: format!(
-                            "Sharing group name \"{}\" is prohibited without nil UUID.",
-                            SG_NAME_PRIVATE
-                        ),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }]);
-                }
+            } else if sharing_group_name == SG_NAME_PRIVATE && sharing_group.get_id() != NIL_UUID {
+                return Err(vec![ValidationError {
+                    message: format!(
+                        "Sharing group name \"{}\" is prohibited without nil UUID.",
+                        SG_NAME_PRIVATE
+                    ),
+                    instance_path: "/document/distribution/sharing_group/name".to_string(),
+                }]);
             }
         }
     }

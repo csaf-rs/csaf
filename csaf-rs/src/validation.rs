@@ -160,9 +160,9 @@ pub fn validate_by_tests<VersionedDocument>(
     }
 
     ValidationResult {
-        success: success,
+        success,
         version: version.to_string(),
-        num_errors: num_errors,
+        num_errors,
         preset,
         test_results,
     }
@@ -178,7 +178,7 @@ pub fn validate_by_preset<VersionedDocument>(
     let test_ids: Vec<&str> = target
         .presets()
         .get(&preset)
-        .map(|ids| ids.iter().copied().collect())
+        .map(|ids| ids.to_vec())
         .unwrap_or_default();
 
     // Forward them to validate_by_tests

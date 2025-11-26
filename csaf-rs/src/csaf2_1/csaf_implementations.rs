@@ -100,9 +100,7 @@ impl ContentTrait for Content {
     }
 
     fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error> {
-        Ok(serde_json::from_value::<SelectionList>(Value::Object(
-            self.ssvc_v2.clone(),
-        ))?)
+        serde_json::from_value::<SelectionList>(Value::Object(self.ssvc_v2.clone()))
     }
 
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
@@ -198,7 +196,7 @@ impl VulnerabilityTrait for Vulnerability {
     }
 
     fn get_cve(&self) -> Option<&String> {
-        self.cve.as_ref().map(|x| x.deref())
+        self.cve.as_deref()
     }
 
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
@@ -206,7 +204,7 @@ impl VulnerabilityTrait for Vulnerability {
     }
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
-        self.notes.as_ref().map(|x| x.deref())
+        self.notes.as_deref()
     }
 
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>> {
@@ -296,15 +294,15 @@ impl DocumentTrait for DocumentLevelMetaData {
     }
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
-        self.notes.as_ref().map(|x| x.deref())
+        self.notes.as_deref()
     }
 
     fn get_lang(&self) -> Option<&String> {
-        self.lang.as_ref().map(|x| x.deref())
+        self.lang.as_deref()
     }
 
     fn get_source_lang(&self) -> Option<&String> {
-        self.source_lang.as_ref().map(|x| x.deref())
+        self.source_lang.as_deref()
     }
 }
 
@@ -345,7 +343,7 @@ impl SharingGroupTrait for SharingGroup {
     }
 
     fn get_name(&self) -> Option<&String> {
-        self.name.as_ref().map(|x| x.deref())
+        self.name.as_deref()
     }
 }
 
@@ -409,7 +407,7 @@ impl ProductTreeTrait for ProductTree {
     type FullProductNameType = FullProductNameT;
 
     fn get_branches(&self) -> Option<&Vec<Self::BranchType>> {
-        self.branches.as_ref().map(|branches| branches.deref())
+        self.branches.as_deref()
     }
 
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType> {
@@ -424,14 +422,14 @@ impl ProductTreeTrait for ProductTree {
         &self.full_product_names
     }
 
-    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str) -> ()) -> () {
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
         self.visit_all_products_generic(callback)
     }
 }
 
 impl BranchTrait<FullProductNameT> for Branch {
     fn get_branches(&self) -> Option<&Vec<Self>> {
-        self.branches.as_ref().map(|branches| branches.deref())
+        self.branches.as_deref()
     }
 
     fn get_product(&self) -> &Option<FullProductNameT> {
@@ -477,7 +475,7 @@ impl ProductTrait for FullProductNameT {
 
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
     fn get_purls(&self) -> Option<&[String]> {
-        self.purls.as_ref().map(|v| v.as_slice())
+        self.purls.as_deref()
     }
 
     fn get_model_numbers(&self) -> Option<impl Iterator<Item = &String> + '_> {

@@ -1,6 +1,6 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
-use crate::validations::test_6_1_07::VulnerabilityMetrics::{CvssV2, CvssV4, CvssV30, CvssV31, Epss, SsvcV1};
+use crate::validations::test_6_1_07::VulnerabilityMetrics::{CvssV2, CvssV4, CvssV30, Epss, SsvcV1};
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 
@@ -9,8 +9,7 @@ use std::fmt::{Display, Formatter};
 enum VulnerabilityMetrics {
     SsvcV1,
     CvssV2,
-    CvssV30,
-    CvssV31,
+    CvssV30(String),
     CvssV4,
     Epss,
 }
@@ -21,8 +20,7 @@ impl Display for VulnerabilityMetrics {
         match self {
             SsvcV1 => write!(f, "SSVC-v1"),
             CvssV2 => write!(f, "CVSS-v2"),
-            CvssV30 => write!(f, "CVSS-v3.0"),
-            CvssV31 => write!(f, "CVSS-v3.1"),
+            CvssV30(version) => write!(f, "CVSS-v{}", *version),
             CvssV4 => write!(f, "CVSS-v4"),
             Epss => write!(f, "EPSS"),
         }
@@ -34,8 +32,7 @@ fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
     match metric {
         SsvcV1 => "ssvc_v1",
         CvssV2 => "cvss_v2",
-        CvssV30 => "cvss_v3",
-        CvssV31 => "cvss_v3",
+        CvssV30(_s) => "cvss_v3",
         CvssV4 => "cvss_v4",
         Epss => "epss",
     }
@@ -44,15 +41,11 @@ fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
 fn gather_product_metrics(
     vulnerability: &impl VulnerabilityTrait,
     vulnerability_index: usize,
-) -> (
-    Option<HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>>>,
-    Option<Vec<ValidationError>>,
-) {
+) -> Option<HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>>> {
     let metrics = vulnerability.get_metrics();
     if metrics.is_none() {
-        return (None, None);
+        return None;
     }
-    let mut errors: Option<Vec<ValidationError>> = None;
     let mut product_metrics: HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>> =
         HashMap::new();
     for (metric_index, metric) in metrics.unwrap().iter().enumerate() {
@@ -65,21 +58,9 @@ fn gather_product_metrics(
             present_metric_types.insert(CvssV2);
         }
         if let Some(cvss_v3) = content.get_cvss_v3() {
-            if let Some(version) = cvss_v3.get("version") {
-                if version == "3.1" {
-                    present_metric_types.insert(CvssV31);
-                } else if version == "3.0" {
-                    present_metric_types.insert(CvssV30);
-                } else {
-                    errors.get_or_insert_with(Vec::new).push(ValidationError {
-                        message: format!("CVSS-v3 version {} is not supported.", version),
-                        instance_path: format!(
-                            "{}/{}",
-                            content.get_content_json_path(vulnerability_index, metric_index),
-                            get_metric_prop_name(CvssV30),
-                        ),
-                    });
-                }
+            if let Some(version) = cvss_v3.get("version").and_then(|v| v.as_str()) {
+                // extract as_str because otherwise additional quotation marks would be included
+                present_metric_types.insert(CvssV30(version.to_owned()));
             }
         }
         if content.get_cvss_v4().is_some() {
@@ -101,17 +82,14 @@ fn gather_product_metrics(
             }
         }
     }
-    (Some(product_metrics), errors)
+    Some(product_metrics)
 }
 
 /// Test 6.1.7: Check for multiple identical metric types per vulnerability.
 pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
-        let (product_metrics, metrics_errors) = gather_product_metrics(vulnerability, vulnerability_index);
-        if let Some(metrics_errors) = metrics_errors {
-            errors.get_or_insert_with(Vec::new).extend(metrics_errors);
-        }
+        let product_metrics = gather_product_metrics(vulnerability, vulnerability_index);
         if let Some(product_metrics) = product_metrics {
             for (p, metrics_map) in product_metrics.iter() {
                 for ((metric_type, _), paths) in metrics_map.iter() {
@@ -153,7 +131,8 @@ mod tests {
 
     #[test]
     fn test_test_6_1_07() {
-        let cvss_v31_error_message = create_error_message(&VulnerabilityMetrics::CvssV31, "CSAFPID-9080700");
+        let cvss_v31_error_message =
+            create_error_message(&VulnerabilityMetrics::CvssV30("3.1".to_string()), "CSAFPID-9080700");
 
         run_csaf20_tests(
             "07",
@@ -173,7 +152,8 @@ mod tests {
             )]),
         );
 
-        let cvss_v30_error_message = create_error_message(&VulnerabilityMetrics::CvssV30, "CSAFPID-9080700");
+        let cvss_v30_error_message =
+            create_error_message(&VulnerabilityMetrics::CvssV30("3.0".to_string()), "CSAFPID-9080700");
         run_csaf21_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,

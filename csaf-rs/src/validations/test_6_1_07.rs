@@ -1,56 +1,23 @@
-use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::csaf_traits::VulnerabilityMetric::{CvssV2, CvssV3, CvssV4, Epss, SsvcV1};
+use crate::csaf_traits::{
+    ContentTrait, CsafTrait, MetricTrait, VulnerabilityMetric, VulnerabilityTrait, get_metric_prop_name,
+};
 use crate::validation::ValidationError;
-use crate::validations::test_6_1_07::VulnerabilityMetrics::{CvssV2, CvssV4, CvssV30, Epss, SsvcV1};
 use std::collections::{HashMap, HashSet};
-use std::fmt::{Display, Formatter};
-
-/// Types of metrics known until CSAF 2.1
-#[derive(Hash, Eq, PartialEq, Clone)]
-enum VulnerabilityMetrics {
-    SsvcV1,
-    CvssV2,
-    CvssV30(String),
-    CvssV4,
-    Epss,
-}
-
-/// Display implementation for VulnerabilityMetrics.
-impl Display for VulnerabilityMetrics {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            SsvcV1 => write!(f, "SSVC-v1"),
-            CvssV2 => write!(f, "CVSS-v2"),
-            CvssV30(version) => write!(f, "CVSS-v{}", *version),
-            CvssV4 => write!(f, "CVSS-v4"),
-            Epss => write!(f, "EPSS"),
-        }
-    }
-}
-
-/// Returns the name of the metric property for the given metric type.
-fn get_metric_prop_name(metric: VulnerabilityMetrics) -> &'static str {
-    match metric {
-        SsvcV1 => "ssvc_v1",
-        CvssV2 => "cvss_v2",
-        CvssV30(_s) => "cvss_v3",
-        CvssV4 => "cvss_v4",
-        Epss => "epss",
-    }
-}
 
 fn gather_product_metrics(
     vulnerability: &impl VulnerabilityTrait,
     vulnerability_index: usize,
-) -> Option<HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>>> {
+) -> Option<HashMap<String, HashMap<(VulnerabilityMetric, Option<String>), Vec<String>>>> {
     let metrics = vulnerability.get_metrics();
     if metrics.is_none() {
         return None;
     }
-    let mut product_metrics: HashMap<String, HashMap<(VulnerabilityMetrics, Option<String>), Vec<String>>> =
+    let mut product_metrics: HashMap<String, HashMap<(VulnerabilityMetric, Option<String>), Vec<String>>> =
         HashMap::new();
     for (metric_index, metric) in metrics.unwrap().iter().enumerate() {
         let content = metric.get_content();
-        let mut present_metric_types = HashSet::<VulnerabilityMetrics>::new();
+        let mut present_metric_types = HashSet::<VulnerabilityMetric>::new();
         if content.has_ssvc() {
             present_metric_types.insert(SsvcV1);
         }
@@ -59,8 +26,8 @@ fn gather_product_metrics(
         }
         if let Some(cvss_v3) = content.get_cvss_v3() {
             if let Some(version) = cvss_v3.get("version").and_then(|v| v.as_str()) {
-                // extract as_str because otherwise additional quotation marks would be included
-                present_metric_types.insert(CvssV30(version.to_owned()));
+                // Use as_str because otherwise additional quotation marks would be included
+                present_metric_types.insert(CvssV3(version.to_owned()));
             }
         }
         if content.get_cvss_v4().is_some() {
@@ -75,7 +42,7 @@ fn gather_product_metrics(
                 product_metrics
                         .entry(product_id.to_owned())
                         .or_insert_with(HashMap::new)
-                        // distinguish by source and metric type to allow e.g., multiple CVSS scores from different sources
+                        // Distinguish by source and metric type to allow e.g., multiple CVSS scores from different sources
                         .entry((metric_type.to_owned(), metric.get_source().clone()))
                         .or_insert_with(Vec::new)
                         .push(content.get_content_json_path(vulnerability_index, metric_index));
@@ -112,7 +79,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
     errors.map_or(Ok(()), Err)
 }
 
-fn create_error_message(score_type: &VulnerabilityMetrics, product_id: &str) -> String {
+fn create_error_message(score_type: &VulnerabilityMetric, product_id: &str) -> String {
     format!(
         "Multiple {} scores are given for {}.",
         score_type.to_string(),
@@ -125,14 +92,14 @@ mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
     use crate::validations::test_6_1_07::{
-        VulnerabilityMetrics, create_error_message, test_6_1_07_multiple_same_scores_per_product,
+        VulnerabilityMetric, create_error_message, test_6_1_07_multiple_same_scores_per_product,
     };
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_07() {
         let cvss_v31_error_message =
-            create_error_message(&VulnerabilityMetrics::CvssV30("3.1".to_string()), "CSAFPID-9080700");
+            create_error_message(&VulnerabilityMetric::CvssV3("3.1".to_string()), "CSAFPID-9080700");
 
         run_csaf20_tests(
             "07",
@@ -153,7 +120,7 @@ mod tests {
         );
 
         let cvss_v30_error_message =
-            create_error_message(&VulnerabilityMetrics::CvssV30("3.0".to_string()), "CSAFPID-9080700");
+            create_error_message(&VulnerabilityMetric::CvssV3("3.0".to_string()), "CSAFPID-9080700");
         run_csaf21_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,
@@ -188,11 +155,11 @@ mod tests {
                     "03",
                     vec![
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV2, "CSAFPID-9080700"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080700"),
                             instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v2".to_string(),
                         },
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV2, "CSAFPID-9080700"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080700"),
                             instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v2".to_string(),
                         },
                     ],
@@ -201,11 +168,11 @@ mod tests {
                     "04",
                     vec![
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV4, "CSAFPID-9080700"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080700"),
                             instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
                         },
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV4, "CSAFPID-9080700"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080700"),
                             instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v4".to_string(),
                         },
                     ],
@@ -230,19 +197,19 @@ mod tests {
                             instance_path: "/vulnerabilities/1/metrics/2/content/cvss_v3".to_string(),
                         },
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV2, "CSAFPID-9080701"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080701"),
                             instance_path: "/vulnerabilities/2/metrics/0/content/cvss_v2".to_string(),
                         },
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV2, "CSAFPID-9080701"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080701"),
                             instance_path: "/vulnerabilities/2/metrics/1/content/cvss_v2".to_string(),
                         },
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV4, "CSAFPID-9080701"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080701"),
                             instance_path: "/vulnerabilities/3/metrics/0/content/cvss_v4".to_string(),
                         },
                         ValidationError {
-                            message: create_error_message(&VulnerabilityMetrics::CvssV4, "CSAFPID-9080701"),
+                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080701"),
                             instance_path: "/vulnerabilities/3/metrics/1/content/cvss_v4".to_string(),
                         },
                     ],

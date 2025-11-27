@@ -445,6 +445,40 @@ pub trait ContentTrait {
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String;
 }
 
+/// Types of vulnerability metrics known until CSAF 2.1
+#[derive(Hash, Eq, PartialEq, Clone)]
+pub enum VulnerabilityMetric {
+    SsvcV1,
+    CvssV2,
+    CvssV3(String),
+    CvssV4,
+    Epss,
+}
+
+/// Display implementation for VulnerabilityMetrics.
+impl Display for VulnerabilityMetric {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            VulnerabilityMetric::SsvcV1 => write!(f, "SSVC-v1"),
+            VulnerabilityMetric::CvssV2 => write!(f, "CVSS-v2"),
+            VulnerabilityMetric::CvssV3(version) => write!(f, "CVSS-v{}", *version),
+            VulnerabilityMetric::CvssV4 => write!(f, "CVSS-v4"),
+            VulnerabilityMetric::Epss => write!(f, "EPSS"),
+        }
+    }
+}
+
+/// Returns the name of the metric property for the given metric type.
+pub fn get_metric_prop_name(metric: VulnerabilityMetric) -> &'static str {
+    match metric {
+        VulnerabilityMetric::SsvcV1 => "ssvc_v1",
+        VulnerabilityMetric::CvssV2 => "cvss_v2",
+        VulnerabilityMetric::CvssV3(_) => "cvss_v3",
+        VulnerabilityMetric::CvssV4 => "cvss_v4",
+        VulnerabilityMetric::Epss => "epss",
+    }
+}
+
 /// Trait representing an abstract threat in a CSAF document.
 pub trait ThreatTrait: WithGroupIds {
     /// Retrieves a list of product IDs associated with this threat, if any.

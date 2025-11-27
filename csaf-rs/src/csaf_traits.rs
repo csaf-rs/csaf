@@ -368,7 +368,11 @@ pub trait ProductStatusTrait {
         add_product_status!(result, ProductStatusGroup::Fixed, self.get_first_fixed());
 
         // under investigation
-        add_product_status!(result, ProductStatusGroup::UnderInvestigation, self.get_under_investigation());
+        add_product_status!(
+            result,
+            ProductStatusGroup::UnderInvestigation,
+            self.get_under_investigation()
+        );
 
         // unknown
         add_product_status!(result, ProductStatusGroup::Unknown, self.get_unknown());

@@ -54,7 +54,7 @@ mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
     use crate::validations::test_6_1_06::{
-        create_error_message, test_6_1_06_contradicting_product_status, ProductStatusGroup,
+        ProductStatusGroup, create_error_message, test_6_1_06_contradicting_product_status,
     };
     use std::collections::HashMap;
 

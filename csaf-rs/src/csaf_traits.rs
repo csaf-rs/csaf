@@ -351,6 +351,7 @@ pub trait ProductStatusTrait {
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
+    /// Returns a `HashMap` containing all product IDs grouped by their statuses.
     fn get_all_by_product_status(&self) -> HashMap<ProductStatusGroup, HashSet<&String>> {
         let mut result: HashMap<ProductStatusGroup, HashSet<&String>> = HashMap::new();
 
@@ -374,61 +375,6 @@ pub trait ProductStatusTrait {
 
         // recommended
         add_product_status!(result, ProductStatusGroup::Recommended, self.get_recommended());
-
-        result
-    }
-
-    /// Combines all affected product IDs into a `HashSet`.
-    ///
-    /// This method aggregates product IDs from these lists:
-    /// - First affected product IDs
-    /// - Last affected product IDs
-    /// - Known affected product IDs
-    ///
-    /// # Returns
-    ///
-    /// A `HashSet` containing all aggregated product IDs. If none of these lists are
-    /// populated, the returned `HashSet` will be empty.
-    #[deprecated(note = "Use get_all_by_product_status instead")]
-    fn get_all_affected(&self) -> HashSet<&String> {
-        let mut result = HashSet::new();
-
-        if let Some(first_affected) = self.get_first_affected() {
-            result.extend(first_affected);
-        }
-
-        if let Some(last_affected) = self.get_last_affected() {
-            result.extend(last_affected);
-        }
-
-        if let Some(known_affected) = self.get_known_affected() {
-            result.extend(known_affected);
-        }
-
-        result
-    }
-
-    /// Combines all fixed product IDs into a `HashSet`.    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
-    ///
-    /// This method aggregates product IDs from these lists:
-    /// - First fixed product IDs
-    /// - Fixed product IDs
-    ///
-    /// # Returns
-    ///
-    /// A `HashSet` containing all aggregated product IDs. If none of these lists are
-    /// populated, the returned `HashSet` will be empty.
-    #[deprecated(note = "Use get_all_by_product_status instead")]
-    fn get_all_fixed(&self) -> HashSet<&String> {
-        let mut result = HashSet::new();
-
-        if let Some(first_fixed) = self.get_first_fixed() {
-            result.extend(first_fixed);
-        }
-
-        if let Some(fixed) = self.get_fixed() {
-            result.extend(fixed);
-        }
 
         result
     }

@@ -310,6 +310,19 @@ impl Display for ProductStatusGroup {
     }
 }
 
+/// Helper macro to add product status groups to a HashMap
+macro_rules! add_product_status {
+    ($result:expr, $status_group:expr, $getter:expr) => {
+        if let Some(products) = $getter {
+            $result
+                .get_or_insert_with(HashMap::new)
+                .entry($status_group)
+                .or_insert_with(HashSet::new)
+                .extend(products);
+        }
+    };
+}
+
 /// Trait representing an abstract product status in a CSAF document.
 pub trait ProductStatusTrait {
     /// Returns a reference to the list of first affected product IDs.
@@ -343,79 +356,26 @@ pub trait ProductStatusTrait {
         let mut result: Option<HashMap<ProductStatusGroup, HashSet<&String>>> = None;
 
         // affected
-        if let Some(first_affected) = self.get_first_affected() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::Affected)
-                .or_insert_with(HashSet::new)
-                .extend(first_affected);
-        }
-        if let Some(last_affected) = self.get_last_affected() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::Affected)
-                .or_insert_with(HashSet::new)
-                .extend(last_affected);
-        }
-        if let Some(known_affected) = self.get_known_affected() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::Affected)
-                .or_insert_with(HashSet::new)
-                .extend(known_affected);
-        }
+        add_product_status!(result, ProductStatusGroup::Affected, self.get_first_affected());
+        add_product_status!(result, ProductStatusGroup::Affected, self.get_last_affected());
+        add_product_status!(result, ProductStatusGroup::Affected, self.get_known_affected());
 
         // not affected
-        if let Some(not_affected) = self.get_known_not_affected() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::NotAffected)
-                .or_insert_with(HashSet::new)
-                .extend(not_affected);
-        }
+        add_product_status!(result, ProductStatusGroup::NotAffected, self.get_known_not_affected());
 
         // fixed
-        if let Some(fixed) = self.get_fixed() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::Fixed)
-                .or_insert_with(HashSet::new)
-                .extend(fixed);
-        }
-        if let Some(first_fixed) = self.get_first_fixed() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::Fixed)
-                .or_insert_with(HashSet::new)
-                .extend(first_fixed);
-        }
+        add_product_status!(result, ProductStatusGroup::Fixed, self.get_fixed());
+        add_product_status!(result, ProductStatusGroup::Fixed, self.get_first_fixed());
 
         // under investigation
-        if let Some(under_investigation) = self.get_under_investigation() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::UnderInvestigation)
-                .or_insert_with(HashSet::new)
-                .extend(under_investigation);
-        }
+        add_product_status!(result, ProductStatusGroup::UnderInvestigation, self.get_under_investigation());
 
         // unknown
-        if let Some(unknown) = self.get_unknown() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::Unknown)
-                .or_insert_with(HashSet::new)
-                .extend(unknown);
-        }
+        add_product_status!(result, ProductStatusGroup::Unknown, self.get_unknown());
 
         // recommended
-        if let Some(recommended) = self.get_recommended() {
-            result
-                .get_or_insert_with(HashMap::new)
-                .entry(ProductStatusGroup::Recommended)
-                .or_insert_with(HashSet::new)
-                .extend(recommended);
-        }
+        add_product_status!(result, ProductStatusGroup::Recommended, self.get_recommended());
+
         result
     }
 

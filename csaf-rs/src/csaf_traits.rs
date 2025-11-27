@@ -2,7 +2,8 @@ use crate::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, Lab
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
-use std::collections::{BTreeSet, HashSet};
+use std::collections::{BTreeSet, HashMap, HashSet};
+use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
@@ -279,6 +280,48 @@ pub trait RemediationTrait: WithGroupIds {
     fn get_date(&self) -> &Option<String>;
 }
 
+/// Enum representing product status groups
+#[derive(PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
+pub enum ProductStatusGroup {
+    // first_affected, known_affected, last_affected
+    Affected,
+    // known_not_affected
+    NotAffected,
+    // first_fixed, fixed
+    Fixed,
+    // under_investigation
+    UnderInvestigation,
+    // unknown
+    Unknown,
+    // recommended
+    Recommended,
+}
+
+impl Display for ProductStatusGroup {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ProductStatusGroup::Affected => write!(f, "affected"),
+            ProductStatusGroup::NotAffected => write!(f, "not affected"),
+            ProductStatusGroup::Fixed => write!(f, "fixed"),
+            ProductStatusGroup::UnderInvestigation => write!(f, "under investigation"),
+            ProductStatusGroup::Unknown => write!(f, "unknown"),
+            ProductStatusGroup::Recommended => write!(f, "recommended"),
+        }
+    }
+}
+
+/// Helper macro to add product status groups to a HashMap
+macro_rules! add_product_status {
+    ($result:ident, $status_group:expr, $getter:expr) => {
+        if let Some(products) = $getter {
+            $result
+                .entry($status_group)
+                .or_insert_with(HashSet::new)
+                .extend(products);
+        }
+    };
+}
+
 /// Trait representing an abstract product status in a CSAF document.
 pub trait ProductStatusTrait {
     /// Returns a reference to the list of first affected product IDs.
@@ -308,55 +351,34 @@ pub trait ProductStatusTrait {
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
-    /// Combines all affected product IDs into a `HashSet`.
-    ///
-    /// This method aggregates product IDs from these lists:
-    /// - First affected product IDs
-    /// - Last affected product IDs
-    /// - Known affected product IDs
-    ///
-    /// # Returns
-    ///
-    /// A `HashSet` containing all aggregated product IDs. If none of these lists are
-    /// populated, the returned `HashSet` will be empty.
-    fn get_all_affected(&self) -> HashSet<&String> {
-        let mut result = HashSet::new();
+    /// Returns a `HashMap` containing all product IDs grouped by their statuses.
+    fn get_all_by_product_status(&self) -> HashMap<ProductStatusGroup, HashSet<&String>> {
+        let mut result: HashMap<ProductStatusGroup, HashSet<&String>> = HashMap::new();
 
-        if let Some(first_affected) = self.get_first_affected() {
-            result.extend(first_affected);
-        }
+        // affected
+        add_product_status!(result, ProductStatusGroup::Affected, self.get_first_affected());
+        add_product_status!(result, ProductStatusGroup::Affected, self.get_last_affected());
+        add_product_status!(result, ProductStatusGroup::Affected, self.get_known_affected());
 
-        if let Some(last_affected) = self.get_last_affected() {
-            result.extend(last_affected);
-        }
+        // not affected
+        add_product_status!(result, ProductStatusGroup::NotAffected, self.get_known_not_affected());
 
-        if let Some(known_affected) = self.get_known_affected() {
-            result.extend(known_affected);
-        }
+        // fixed
+        add_product_status!(result, ProductStatusGroup::Fixed, self.get_fixed());
+        add_product_status!(result, ProductStatusGroup::Fixed, self.get_first_fixed());
 
-        result
-    }
+        // under investigation
+        add_product_status!(
+            result,
+            ProductStatusGroup::UnderInvestigation,
+            self.get_under_investigation()
+        );
 
-    /// Combines all fixed product IDs into a `HashSet`.    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
-    ///
-    /// This method aggregates product IDs from these lists:
-    /// - First fixed product IDs
-    /// - Fixed product IDs
-    ///
-    /// # Returns
-    ///
-    /// A `HashSet` containing all aggregated product IDs. If none of these lists are
-    /// populated, the returned `HashSet` will be empty.
-    fn get_all_fixed(&self) -> HashSet<&String> {
-        let mut result = HashSet::new();
+        // unknown
+        add_product_status!(result, ProductStatusGroup::Unknown, self.get_unknown());
 
-        if let Some(first_fixed) = self.get_first_fixed() {
-            result.extend(first_fixed);
-        }
-
-        if let Some(fixed) = self.get_fixed() {
-            result.extend(fixed);
-        }
+        // recommended
+        add_product_status!(result, ProductStatusGroup::Recommended, self.get_recommended());
 
         result
     }

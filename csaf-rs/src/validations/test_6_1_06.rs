@@ -6,33 +6,33 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
     let mut errors: Option<Vec<ValidationError>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = vulnerability.get_product_status() {
-            if let Some(product_status_map) = product_status.get_all_by_product_status() {
-                // Invert the map: product_id -> list of ProductStatusGroups
-                let mut product_to_groups: HashMap<String, Vec<ProductStatusGroup>> = HashMap::new();
+            let product_status_map = product_status.get_all_by_product_status();
 
-                for (group, product_ids) in product_status_map {
-                    if group == ProductStatusGroup::Recommended {
-                        // recommended products must not be checked for contradictions
-                        continue;
-                    }
-                    for product_id in product_ids {
-                        product_to_groups
-                            .entry(product_id.to_owned())
-                            .or_insert_with(Vec::new)
-                            .push(group.clone());
-                    }
+            // Invert the map: product_id -> list of ProductStatusGroups
+            let mut product_to_groups: HashMap<String, Vec<ProductStatusGroup>> = HashMap::new();
+
+            for (group, product_ids) in product_status_map {
+                if group == ProductStatusGroup::Recommended {
+                    // recommended products must not be checked for contradictions
+                    continue;
                 }
+                for product_id in product_ids {
+                    product_to_groups
+                        .entry(product_id.to_owned())
+                        .or_insert_with(Vec::new)
+                        .push(group.clone());
+                }
+            }
 
-                // Check for products with multiple status groups (contradictions)
-                for (product_id, groups) in product_to_groups {
-                    if groups.len() > 1 {
-                        let mut affected_groups = groups;
-                        affected_groups.sort();
-                        errors.get_or_insert_with(Vec::new).push(ValidationError {
-                            message: create_error_message(&product_id, &affected_groups),
-                            instance_path: format!("/vulnerabilities/{}/product_status", vulnerability_index),
-                        });
-                    }
+            // Check for products with multiple status groups (contradictions)
+            for (product_id, groups) in product_to_groups {
+                if groups.len() > 1 {
+                    let mut affected_groups = groups;
+                    affected_groups.sort();
+                    errors.get_or_insert_with(Vec::new).push(ValidationError {
+                        message: create_error_message(&product_id, &affected_groups),
+                        instance_path: format!("/vulnerabilities/{}/product_status", vulnerability_index),
+                    });
                 }
             }
         }
@@ -54,7 +54,7 @@ mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
     use crate::validations::test_6_1_06::{
-        ProductStatusGroup, create_error_message, test_6_1_06_contradicting_product_status,
+        create_error_message, test_6_1_06_contradicting_product_status, ProductStatusGroup,
     };
     use std::collections::HashMap;
 

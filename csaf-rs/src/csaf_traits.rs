@@ -312,10 +312,9 @@ impl Display for ProductStatusGroup {
 
 /// Helper macro to add product status groups to a HashMap
 macro_rules! add_product_status {
-    ($result:expr, $status_group:expr, $getter:expr) => {
+    ($result:ident, $status_group:expr, $getter:expr) => {
         if let Some(products) = $getter {
             $result
-                .get_or_insert_with(HashMap::new)
                 .entry($status_group)
                 .or_insert_with(HashSet::new)
                 .extend(products);
@@ -352,8 +351,8 @@ pub trait ProductStatusTrait {
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
-    fn get_all_by_product_status(&self) -> Option<HashMap<ProductStatusGroup, HashSet<&String>>> {
-        let mut result: Option<HashMap<ProductStatusGroup, HashSet<&String>>> = None;
+    fn get_all_by_product_status(&self) -> HashMap<ProductStatusGroup, HashSet<&String>> {
+        let mut result: HashMap<ProductStatusGroup, HashSet<&String>> = HashMap::new();
 
         // affected
         add_product_status!(result, ProductStatusGroup::Affected, self.get_first_affected());

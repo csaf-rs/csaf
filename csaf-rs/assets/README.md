@@ -36,3 +36,12 @@ This is a 1:1 copy from the respective repository (i.e., git submodule), cloned 
 Contains IANA's language subtag registry found at 
 https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry.
 Assumed to be public domain material, according to https://www.iana.org/help/licensing-terms.
+
+### Metric resources
+
+Schema definitions for metric content
+
+- `cvss-v2.0.json` see https://www.first.org/cvss/cvss-v2.0.json
+- `cvss-v3.0.json` see https://www.first.org/cvss/cvss-v3.0.json
+- `cvss-v3.1.json` see https://www.first.org/cvss/cvss-v3.1.json
+- `cvss-v4.0.json` see https://www.first.org/cvss/cvss-v4.0.json

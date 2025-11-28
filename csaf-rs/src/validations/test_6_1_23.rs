@@ -24,7 +24,7 @@ pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), 
         if paths.len() > 1 {
             for path in paths.iter() {
                 errors.push(ValidationError {
-                    message: format!("Duplicate usage of same CVE identifier '{}'.", cve),
+                    message: format!("Duplicate usage of same CVE identifier '{}'", cve),
                     instance_path: format!("/vulnerabilities/{}/cve", path),
                 });
             }
@@ -58,7 +58,7 @@ mod tests {
                 },
             ],
         )]);
-        run_csaf20_tests("22", test_6_1_23_multiple_use_of_same_cve, errors.clone());
-        run_csaf21_tests("22", test_6_1_23_multiple_use_of_same_cve, errors);
+        run_csaf20_tests("23", test_6_1_23_multiple_use_of_same_cve, errors.clone());
+        run_csaf21_tests("23", test_6_1_23_multiple_use_of_same_cve, errors);
     }
 }

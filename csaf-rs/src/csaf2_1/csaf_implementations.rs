@@ -380,6 +380,10 @@ impl TrackingTrait for Tracking {
     fn get_id(&self) -> &String {
         self.id.deref()
     }
+
+    fn get_version(&self) -> &String {
+        self.version.deref()
+    }
 }
 
 impl GeneratorTrait for DocumentGenerator {

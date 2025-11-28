@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, RevisionTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
@@ -31,7 +31,7 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
             }
         }
     }
-    
+
     if !errors.is_empty() {
         return Err(errors);
     }
@@ -46,19 +46,24 @@ mod tests {
 
     #[test]
     fn test_test_6_1_22() {
-        let errors = std::collections::HashMap::from([
-            (
-                "01",
-                vec![crate::validation::ValidationError {
+        let errors = std::collections::HashMap::from([(
+            "01",
+            vec![
+                crate::validation::ValidationError {
                     message: "Duplicate definition of revision history number 1".to_string(),
                     instance_path: "/document/tracking/revision_history/0/number".to_string(),
-                }, crate::validation::ValidationError {
+                },
+                crate::validation::ValidationError {
                     message: "Duplicate definition of revision history number 1".to_string(),
                     instance_path: "/document/tracking/revision_history/1/number".to_string(),
-                }],
-            ),
-        ]);
-        run_csaf20_tests("22", test_6_1_22_multiple_definition_in_revision_history, errors.clone());
+                },
+            ],
+        )]);
+        run_csaf20_tests(
+            "22",
+            test_6_1_22_multiple_definition_in_revision_history,
+            errors.clone(),
+        );
         run_csaf21_tests("22", test_6_1_22_multiple_definition_in_revision_history, errors);
     }
 }

@@ -8,11 +8,12 @@ use crate::csaf_traits::{
 use crate::csaf2_0::schema::{
     Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData,
     DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note,
-    ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score,
-    Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    PartyCategory, ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision,
+    RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
     CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21,
+    PartyCategory as PartyCategory21,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -267,6 +268,16 @@ impl FirstKnownExploitationDatesTrait for () {
 impl InvolvementTrait for Involvement {
     fn get_date(&self) -> &Option<String> {
         &self.date
+    }
+
+    fn get_party(&self) -> PartyCategory21 {
+        match self.party {
+            PartyCategory::Coordinator => PartyCategory21::Coordinator,
+            PartyCategory::Discoverer => PartyCategory21::Discoverer,
+            PartyCategory::Other => PartyCategory21::Other,
+            PartyCategory::User => PartyCategory21::User,
+            PartyCategory::Vendor => PartyCategory21::Vendor,
+        }
     }
 }
 

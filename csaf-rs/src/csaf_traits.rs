@@ -1,4 +1,4 @@
-use crate::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp};
+use crate::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, PartyCategory};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
@@ -234,6 +234,9 @@ pub trait FirstKnownExploitationDatesTrait {
 pub trait InvolvementTrait: WithGroupIds {
     /// Returns the date associated with this vulnerability involvement
     fn get_date(&self) -> &Option<String>;
+
+    /// Returns the party associated with this vulnerability involvement
+    fn get_party(&self) -> PartyCategory;
 }
 
 /// Trait representing an abstract remediation in a CSAF document.

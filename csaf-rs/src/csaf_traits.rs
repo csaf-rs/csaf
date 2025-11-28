@@ -123,6 +123,9 @@ pub trait TrackingTrait {
 
     /// Returns the tracking ID of this document
     fn get_id(&self) -> &String;
+
+    /// Returns the version of this document
+    fn get_version(&self) -> &String;
 }
 
 /// Trait for accessing document generator information

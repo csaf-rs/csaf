@@ -54,19 +54,19 @@ fn run_csaf_tests<CsafType>(
             // Check if this is expected to be a negative or positive test case
             if test_num.starts_with('0') || test_num.starts_with('2') {
                 // Negative test case - should fail with specific errors
-                let expected_errors = expected_errors
+
+                let mut expected_errors = expected_errors
                     .get(test_num)
                     .expect(&format!(
                         "Missing expected error definition for negative test case {}",
                         test_num
                     ))
-                    .clone()
-                    .sort_by(|a, b| a.message.cmp(&b.message));
+                    .clone();
+                expected_errors.sort_by(|a, b| a.message.cmp(&b.message));
+                let mut test_errors = test_function(&doc).unwrap_err();
+                test_errors.sort_by(|a, b| a.message.cmp(&b.message));
                 assert_eq!(
-                    expected_errors,
-                    test_function(&doc)
-                        .unwrap_err()
-                        .sort_by(|a, b| a.message.cmp(&b.message)),
+                    expected_errors, test_errors,
                     "Negative test case {} should have failed with the expected error",
                     test_num
                 );

@@ -1,18 +1,19 @@
 use crate::csaf_traits::{
     BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait,
     FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
-    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, RelationshipTrait,
-    RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait,
-    VulnerabilityTrait, WithGroupIds,
+    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
+    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
+    VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
 };
 use crate::csaf2_0::schema::{
-    Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator, DocumentLevelMetaData,
-    DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note,
-    ProductGroup, ProductStatus, ProductTree, Relationship, Remediation, Revision, RulesForSharingDocument, Score,
-    Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator,
+    DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement,
+    LabelOfTlp, Note, ProductGroup, ProductStatus, ProductTree, Publisher, Relationship, Remediation, Revision,
+    RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
-    CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21,
+    CategoryOfPublisher as CategoryOfPublisher21, CategoryOfTheRemediation as Remediation21,
+    DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -298,6 +299,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     type TrackingType = Tracking;
     type DistributionType = RulesForSharingDocument;
     type NoteType = Note;
+    type PublisherType = Publisher;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -329,6 +331,23 @@ impl DocumentTrait for DocumentLevelMetaData {
 
     fn get_source_lang(&self) -> Option<&String> {
         self.source_lang.as_deref()
+    }
+
+    fn get_publisher(&self) -> &Publisher {
+        &self.publisher
+    }
+}
+
+impl PublisherTrait for Publisher {
+    fn get_category(&self) -> CategoryOfPublisher21 {
+        match self.category {
+            CategoryOfPublisher::Coordinator => CategoryOfPublisher21::Coordinator,
+            CategoryOfPublisher::Discoverer => CategoryOfPublisher21::Discoverer,
+            CategoryOfPublisher::Other => CategoryOfPublisher21::Other,
+            CategoryOfPublisher::Translator => CategoryOfPublisher21::Translator,
+            CategoryOfPublisher::Vendor => CategoryOfPublisher21::Vendor,
+            CategoryOfPublisher::User => CategoryOfPublisher21::User,
+        }
     }
 }
 

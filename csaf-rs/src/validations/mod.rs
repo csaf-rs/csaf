@@ -12,6 +12,8 @@ pub mod test_6_1_14;
 
 pub mod test_6_1_20;
 
+pub mod test_6_1_22;
+
 pub mod test_6_1_34;
 pub mod test_6_1_35;
 pub mod test_6_1_36;

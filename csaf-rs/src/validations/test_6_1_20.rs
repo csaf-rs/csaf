@@ -1,11 +1,6 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VersionNumber};
 use crate::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use regex::Regex;
-use std::sync::LazyLock;
-
-// Regex to detect pre-release part in semver by checking for a hyphen anywhere in the version string
-static SEMVER_PRERELEASE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^.*(-.*)$").unwrap());
 
 /// 6.1.20 Non-draft Document Version
 ///
@@ -22,20 +17,17 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
     }
 
     // Extract pre-release semver part
-    let version = tracking.get_version();
-    let prerelease_capture = SEMVER_PRERELEASE_REGEX
-        .captures(version)
-        .and_then(|caps| caps.get(1))
-        .map(|m| m.as_str());
-
-    if let Some(prerelease_part) = prerelease_capture {
-        return Err(vec![ValidationError {
-            message: format!(
-                "The document status is {} but the document version contains the pre-release part '{}'",
-                status, prerelease_part
-            ),
-            instance_path: "/document/version".to_string(),
-        }]);
+    if let VersionNumber::Semver(version) = tracking.get_version() {
+        if !version.pre.is_empty() {
+            return Err(vec![ValidationError {
+                message: format!(
+                    "The document status is {} but the document version contains the pre-release part '-{}'",
+                    status,
+                    version.pre.to_string()
+                ),
+                instance_path: "/document/version".to_string(),
+            }]);
+        }
     }
 
     Ok(())

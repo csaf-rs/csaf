@@ -239,6 +239,7 @@ dependencies = [
  "regress",
  "rust-embed",
  "schemars",
+ "semver",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",

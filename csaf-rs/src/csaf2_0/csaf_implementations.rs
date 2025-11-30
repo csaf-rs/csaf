@@ -431,7 +431,7 @@ impl TrackingTrait for Tracking {
         self.id.deref()
     }
 
-    fn get_version(&self) -> &String {
+    fn get_version_string(&self) -> &String {
         self.version.deref()
     }
 }
@@ -446,7 +446,7 @@ impl RevisionTrait for Revision {
     fn get_date(&self) -> &String {
         &self.date
     }
-    fn get_number(&self) -> &String {
+    fn get_number_string(&self) -> &String {
         &self.number
     }
     fn get_summary(&self) -> &String {

@@ -2,8 +2,11 @@ use crate::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, Lab
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
+use regex::Regex;
+use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::sync::LazyLock;
 use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
@@ -125,7 +128,71 @@ pub trait TrackingTrait {
     fn get_id(&self) -> &String;
 
     /// Returns the version of this document
-    fn get_version(&self) -> &String;
+    fn get_version_string(&self) -> &String;
+
+    fn get_version(&self) -> VersionNumber {
+        VersionNumber::from_number(self.get_version_string())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd)]
+pub enum VersionNumber {
+    Integer(u64),
+    Semver(Version),
+}
+
+impl VersionNumber {
+    fn from_number(number: &str) -> Self {
+        static CSAF_INTVER_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(0|[1-9][0-9]*)$").unwrap());
+        static CSAF_SEMVER_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+            Regex::new(r"^((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$").unwrap()
+        });
+        if CSAF_INTVER_REGEX.is_match(number) {
+            if let Ok(number) = number.parse::<u64>() {
+                return VersionNumber::Integer(number);
+            } else {
+                panic!("Intver version could not be parsed")
+            }
+        } else if CSAF_SEMVER_REGEX.is_match(number) {
+            if let Ok(number) = Version::parse(number) {
+                return VersionNumber::Semver(number);
+            } else {
+                panic!("Semver version could not be parsed")
+            }
+        }
+        panic!("Found version that does not match intver or semver")
+    }
+}
+
+impl Display for VersionNumber {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            VersionNumber::Integer(num) => write!(f, "{}", num),
+            VersionNumber::Semver(version) => write!(f, "{}", version),
+        }
+    }
+}
+
+impl Ord for VersionNumber {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match (self, other) {
+            (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a.cmp(b),
+            (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a.cmp(b),
+            // Integer immer vor Semver bei gemischten
+            (VersionNumber::Integer(a), VersionNumber::Semver(b)) => {
+                panic!(
+                    "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",
+                    a, b
+                )
+            },
+            (VersionNumber::Semver(a), VersionNumber::Integer(b)) => {
+                panic!(
+                    "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",
+                    b, a
+                )
+            },
+        }
+    }
 }
 
 /// Trait for accessing document generator information
@@ -140,7 +207,11 @@ pub trait RevisionTrait {
     fn get_date(&self) -> &String;
 
     /// Returns the number/identifier of this revision
-    fn get_number(&self) -> &String;
+    fn get_number_string(&self) -> &String;
+
+    fn get_number(&self) -> VersionNumber {
+        VersionNumber::from_number(self.get_number_string())
+    }
 
     /// Returns the summary of changes in this revision
     fn get_summary(&self) -> &String;

@@ -8,7 +8,7 @@ pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<Validatio
     let document = doc.get_document();
     if let Some(lang) = document.get_lang() {
         if let Some(source_lang) = document.get_source_lang() {
-            if lang == source_lang {
+            if lang.to_lowercase() == source_lang.to_lowercase() {
                 return Err(vec![ValidationError {
                     message: format!("document language and source language have the same value {}", lang),
                     instance_path: "/document/source_lang".to_string(),

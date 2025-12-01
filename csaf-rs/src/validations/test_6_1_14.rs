@@ -2,9 +2,14 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait,
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};
 
+/// 6.1.14 Sorted Revision History
+///
+/// The revision history items, when sorted by their `/document/tracking/revision_history[]/date` field,
+/// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let revision_history = doc.get_document().get_tracking().get_revision_history();
 
+    // Generate tuples of (revision history path index, date, number)
     let mut path_date_number_vec: Vec<(usize, DateTime<Utc>, VersionNumber)> = Vec::new();
     for (i_r, revision) in revision_history.iter().enumerate() {
         let date = DateTime::parse_from_rfc3339(revision.get_date()).map(|dt| dt.with_timezone(&Utc));
@@ -13,11 +18,14 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
             path_date_number_vec.push((i_r, date, rev_num));
         }
     }
+    // Sort by date
     path_date_number_vec.sort_by(|a, b| a.1.cmp(&b.1));
 
+    // Sort by number
     let mut path_date_number_vec_sorted_by_number = path_date_number_vec.clone();
     path_date_number_vec_sorted_by_number.sort_by(|a, b| a.2.cmp(&b.2));
 
+    // Generate errors if revision history items are sorted differently between sort by date and sort by number
     let mut errors = Vec::new();
     for i in 0..path_date_number_vec.len() {
         if path_date_number_vec[i].1 != path_date_number_vec_sorted_by_number[i].1 {
@@ -25,8 +33,7 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
                 message: format!(
                     "Revision history is not sorted by date, revision with number {} is out of place",
                     path_date_number_vec[i].2
-                )
-                .to_string(),
+                ),
                 instance_path: format!("/document/tracking/revision_history/{}", path_date_number_vec[i].0),
             });
         }

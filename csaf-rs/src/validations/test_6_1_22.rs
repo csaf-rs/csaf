@@ -7,9 +7,7 @@ use std::collections::HashMap;
 /// Items of the revision history must not contain the same string in the
 /// `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let document = doc.get_document();
-    let tracking = document.get_tracking();
-    let revision_history = tracking.get_revision_history();
+    let revision_history = doc.get_document().get_tracking().get_revision_history();
 
     // Map occurrence paths indexes to revision numbers
     let mut number_paths: HashMap<String, Vec<usize>> = HashMap::new();

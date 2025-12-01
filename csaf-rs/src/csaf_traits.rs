@@ -2,11 +2,9 @@ use crate::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, Lab
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
-use regex::Regex;
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
-use std::sync::LazyLock;
 use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.

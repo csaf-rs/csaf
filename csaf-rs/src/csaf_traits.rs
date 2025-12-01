@@ -143,24 +143,12 @@ pub enum VersionNumber {
 
 impl VersionNumber {
     fn from_number(number: &str) -> Self {
-        static CSAF_INTVER_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(0|[1-9][0-9]*)$").unwrap());
-        static CSAF_SEMVER_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-            Regex::new(r"^((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$").unwrap()
-        });
-        if CSAF_INTVER_REGEX.is_match(number) {
-            if let Ok(number) = number.parse::<u64>() {
-                return VersionNumber::Integer(number);
-            } else {
-                panic!("Intver version could not be parsed")
-            }
-        } else if CSAF_SEMVER_REGEX.is_match(number) {
-            if let Ok(number) = Version::parse(number) {
-                return VersionNumber::Semver(number);
-            } else {
-                panic!("Semver version could not be parsed")
-            }
+        if let Ok(number) = number.parse::<u64>() {
+            return VersionNumber::Integer(number);
+        } else if let Ok(number) = Version::parse(number) {
+            return VersionNumber::Semver(number);
         }
-        panic!("Found version that does not match intver or semver")
+        panic!("Version could not be parsed as intver or semver")
     }
 }
 

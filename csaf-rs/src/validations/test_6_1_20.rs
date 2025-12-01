@@ -1,6 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VersionNumber};
 use crate::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
+use crate::version_helpers::is_semver_has_prerelease;
 
 /// 6.1.20 Non-draft Document Version
 ///
@@ -16,17 +17,15 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
     }
 
     // Check if there is a pre-release part
-    if let VersionNumber::Semver(version) = tracking.get_version() {
-        if !version.pre.is_empty() {
-            return Err(vec![ValidationError {
-                message: format!(
-                    "The document status is {} but the document version contains the pre-release part '-{}'",
-                    status,
-                    version.pre.to_string()
-                ),
-                instance_path: "/document/version".to_string(),
-            }]);
-        }
+    let version = tracking.get_version();
+    if is_semver_has_prerelease(&version) {
+        return Err(vec![ValidationError {
+            message: format!(
+                "The document status is {} but the document version {} contains a pre-release part",
+                status, version
+            ),
+            instance_path: "/document/version".to_string(),
+        }]);
     }
 
     Ok(())
@@ -43,7 +42,7 @@ mod tests {
             "01",
             vec![crate::validation::ValidationError {
                 message:
-                    "The document status is interim but the document version contains the pre-release part '-alpha'"
+                    "The document status is interim but the document version 1.0.0-alpha contains a pre-release part"
                         .to_string(),
                 instance_path: "/document/version".to_string(),
             }],

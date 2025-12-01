@@ -1,6 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait, VersionNumber};
 use crate::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
+use crate::version_helpers::{is_intver_is_zero, is_semver_is_major_zero};
 
 /// 6.1.18 Released Revision History
 ///
@@ -18,29 +19,24 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     let mut errors = Vec::new();
     let revision_history = doc.get_document().get_tracking().get_revision_history();
     for (i_r, revision) in revision_history.iter().enumerate() {
-        match revision.get_number() {
-            VersionNumber::Integer(number) => {
-                if number == 0 {
-                    errors.push(ValidationError {
-                        message: format!(
-                            "Document with status '{}' contains a revision history item with number '{}'",
-                            status, number
-                        ),
-                        instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
-                    });
-                }
-            },
-            VersionNumber::Semver(number) => {
-                if number.major == 0 {
-                    errors.push(ValidationError {
-                        message: format!(
-                            "Document with status '{}' contains a revision history item with number '{}'",
-                            status, number
-                        ),
-                        instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
-                    });
-                }
-            },
+        let number = revision.get_number();
+        if is_intver_is_zero(&number) {
+            errors.push(ValidationError {
+                message: format!(
+                    "Document with status '{}' contains a revision history item with number '{}'",
+                    status, number
+                ),
+                instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
+            });
+        }
+        if is_semver_is_major_zero(&number) {
+            errors.push(ValidationError {
+                message: format!(
+                    "Document with status '{}' contains a revision history item with number '{}'",
+                    status, number
+                ),
+                instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
+            });
         }
     }
 

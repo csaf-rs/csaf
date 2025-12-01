@@ -8,7 +8,7 @@ use crate::csaf_traits::{
 use crate::csaf2_1::schema::{
     Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator,
     DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT,
-    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, ProductGroup, ProductStatus, ProductTree,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, PartyCategory, ProductGroup, ProductStatus, ProductTree,
     Publisher, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
     TrafficLightProtocolTlp, Vulnerability,
 };
@@ -247,6 +247,10 @@ impl FirstKnownExploitationDatesTrait for FirstKnownExploitationDate {
 impl InvolvementTrait for Involvement {
     fn get_date(&self) -> &Option<String> {
         &self.date
+    }
+
+    fn get_party(&self) -> PartyCategory {
+        self.party
     }
 }
 

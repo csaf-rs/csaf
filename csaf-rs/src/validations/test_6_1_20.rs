@@ -7,8 +7,7 @@ use crate::validation::ValidationError;
 /// For documents with status "final" or "interim", the `/document/version` field must not contain
 /// a pre-release part (e.g. "1.0.0-alpha").
 pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let document = doc.get_document();
-    let tracking = document.get_tracking();
+    let tracking = doc.get_document().get_tracking();
     let status = tracking.get_status();
 
     // Check if the document status is not "final" or "interim"
@@ -16,7 +15,7 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
         return Ok(());
     }
 
-    // Extract pre-release semver part
+    // Check if there is a pre-release part
     if let VersionNumber::Semver(version) = tracking.get_version() {
         if !version.pre.is_empty() {
             return Err(vec![ValidationError {

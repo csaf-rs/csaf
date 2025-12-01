@@ -6,6 +6,11 @@ pub mod helpers;
 pub mod product_helpers;
 pub mod test_helper;
 pub mod validation;
-pub mod validations;
+pub mod validations {
+    automod::dir! {
+        pub "src/validations"
+    }
+}
+
 #[cfg(feature = "wasm")]
 pub mod wasm;

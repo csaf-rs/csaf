@@ -8,9 +8,9 @@ use crate::csaf_traits::{
 use crate::csaf2_1::schema::{
     Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator,
     DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT,
-    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, PartyCategory, ProductGroup, ProductStatus, ProductTree,
-    Publisher, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
-    TrafficLightProtocolTlp, Vulnerability,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, PartyCategory, ProductGroup, ProductStatus,
+    ProductTree, Publisher, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat,
+    Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;

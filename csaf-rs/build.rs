@@ -183,7 +183,7 @@ fn generate_language_subtags() -> Result<(), BuildError> {
         if let Some(ref entry_type) = current_entry_type {
             if entry_type == "language" {
                 if let Some(subtag) = line.strip_prefix("Subtag: ") {
-                    subtags.push(subtag.to_string());
+                    subtags.push(subtag.to_lowercase().to_string());
                 }
             }
         }
@@ -199,8 +199,11 @@ fn generate_language_subtags() -> Result<(), BuildError> {
             #(#subtags_iter),*
         ];
 
+        /// Checks if a given subtag is a valid language subtag.
+        /// Lower cases the input before checking.
         pub fn is_valid_language_subtag(subtag: &str) -> bool {
-            LANGUAGE_SUBTAGS_ARRAY.binary_search(&subtag).is_ok()
+            let sub = &subtag.to_lowercase();
+            LANGUAGE_SUBTAGS_ARRAY.binary_search(&sub.as_str()).is_ok()
         }
     };
 

@@ -27,14 +27,9 @@ fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<Va
     // Extract the primary language subtag (everything before the first hyphen)
     let primary_subtag = lang_code.split('-').next().unwrap_or(lang_code);
 
-    // ToDo casing
     if !is_valid_language_subtag(primary_subtag) {
         return Err(vec![ValidationError {
-            message: format!(
-                "Invalid language code '{}': primary language subtag '{}' is not a valid language subtag",
-                //EZ is not a valid language. It is the subtag for the region "Eurozone".
-                lang_code, primary_subtag
-            ),
+            message: create_error_message(lang_code, primary_subtag),
             instance_path: json_path.to_string(),
         }]);
     }
@@ -42,11 +37,11 @@ fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<Va
     Ok(())
 }
 
-fn create_error_message(language: String) -> String {
+fn create_error_message(language: &str, subtag: &str) -> String {
     format!(
         "Invalid language code '{}': primary language subtag '{}' is not a valid language subtag",
         language,
-        language.split('-').next().unwrap_or(&language)
+        subtag
     )
 }
 
@@ -54,7 +49,7 @@ fn create_error_message(language: String) -> String {
 mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
-    use crate::validations::test_6_1_12::test_6_1_12_language;
+    use crate::validations::test_6_1_12::{create_error_message, test_6_1_12_language};
     use std::collections::HashMap;
 
     #[test]
@@ -62,8 +57,7 @@ mod tests {
         let errors = HashMap::from([(
             "01",
             vec![ValidationError {
-                message: "Invalid language code 'EZ': primary language subtag 'EZ' is not a valid language subtag"
-                    .to_string(),
+                message: create_error_message("EZ", "EZ"),
                 instance_path: "/document/lang".to_string(),
             }],
         )]);

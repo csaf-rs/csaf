@@ -11,6 +11,6 @@ pub mod validations {
         pub "src/validations"
     }
 }
-
+pub mod version_helpers;
 #[cfg(feature = "wasm")]
 pub mod wasm;

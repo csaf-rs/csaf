@@ -1,16 +1,16 @@
 use crate::csaf_traits::{
     BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait,
     FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
-    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, RelationshipTrait,
-    RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait,
-    VulnerabilityTrait, WithGroupIds,
+    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
+    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
+    VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
 };
 use crate::csaf2_1::schema::{
-    Branch, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator,
+    Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator,
     DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT,
     HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, PartyCategory, ProductGroup, ProductStatus,
-    ProductTree, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
-    TrafficLightProtocolTlp, Vulnerability,
+    ProductTree, Publisher, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat,
+    Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -282,6 +282,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     type TrackingType = Tracking;
     type DistributionType = RulesForDocumentSharing;
     type NoteType = Note;
+    type PublisherType = Publisher;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -307,6 +308,16 @@ impl DocumentTrait for DocumentLevelMetaData {
 
     fn get_source_lang(&self) -> Option<&String> {
         self.source_lang.as_deref()
+    }
+
+    fn get_publisher(&self) -> &Self::PublisherType {
+        &self.publisher
+    }
+}
+
+impl PublisherTrait for Publisher {
+    fn get_category(&self) -> CategoryOfPublisher {
+        self.category
     }
 }
 

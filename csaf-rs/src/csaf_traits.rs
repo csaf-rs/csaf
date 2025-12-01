@@ -1,4 +1,6 @@
-use crate::csaf2_1::schema::{CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, PartyCategory};
+use crate::csaf2_1::schema::{
+    CategoryOfPublisher, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, PartyCategory,
+};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
@@ -42,6 +44,9 @@ pub trait DocumentTrait {
     /// Type representing document notes
     type NoteType: NoteTrait;
 
+    /// Type representing document publisher information
+    type PublisherType: PublisherTrait;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
 
@@ -59,6 +64,13 @@ pub trait DocumentTrait {
 
     /// Returns the source language associated with this document.
     fn get_source_lang(&self) -> Option<&String>;
+
+    /// Returns the publisher information for this document
+    fn get_publisher(&self) -> &Self::PublisherType;
+}
+
+pub trait PublisherTrait {
+    fn get_category(&self) -> CategoryOfPublisher;
 }
 
 /// Trait representing distribution information for a document

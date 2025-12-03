@@ -4,6 +4,8 @@ pub mod csaf_traits;
 pub mod generated;
 pub mod helpers;
 pub mod test_helper;
+pub mod test_result_comparison;
+pub mod test_validation;
 pub mod validation;
 pub mod validations;
 #[cfg(feature = "wasm")]

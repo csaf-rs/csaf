@@ -54,7 +54,7 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
     panic!("Revision history is empty, document is malformed.");
 }
 
-pub fn test_6_1_16_err_generator(doc_version: String, latest_number: String, doc_status: String) -> ValidationError {
+fn test_6_1_16_err_generator(doc_version: String, latest_number: String, doc_status: String) -> ValidationError {
     ValidationError {
         message: format!(
             "The document version '{}' is not equal to the latest revision history number '{}' in document with status '{}'",

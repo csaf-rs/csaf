@@ -45,7 +45,7 @@ pub fn generate_revision_history_tuples(doc: &impl CsafTrait) -> Vec<RevisionHis
 
 /// Sorts the revision history tuples first by date, second by number
 pub fn sort_revision_history_tuples_by_date_by_number(tuples: &mut Vec<RevisionHistoryTupleType>) {
-    tuples.sort_unstable_by_key(|item| (item.1, item.2.clone()));
+    tuples.sort_by_key(|item| (item.1, item.2.clone()));
 }
 
 /// Sorts the revision history tuples by number

@@ -152,13 +152,23 @@ pub enum VersionNumber {
 }
 
 impl VersionNumber {
-    fn from_number(number: &str) -> Self {
+    /// Parses a string to either intver or semver
+    /// Will panic if not parseable
+    pub fn from_number(number: &str) -> Self {
         if let Ok(number) = number.parse::<u64>() {
             return VersionNumber::Integer(number);
         } else if let Ok(number) = Version::parse(number) {
             return VersionNumber::Semver(number);
         }
         panic!("Version could not be parsed as intver or semver")
+    }
+
+    /// Gets the version number for intver / the major version for semver
+    pub fn get_major(&self) -> u64 {
+        match self {
+            VersionNumber::Integer(num) => *num,
+            VersionNumber::Semver(semver) => semver.major,
+        }
     }
 }
 

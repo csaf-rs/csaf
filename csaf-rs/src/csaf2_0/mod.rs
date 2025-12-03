@@ -1,7 +1,6 @@
 pub mod csaf_implementations;
 pub mod loader;
-#[path = "schema.generated.rs"]
-pub mod schema;
+pub mod test_structure_impl;
 #[path = "testcases.generated.rs"]
 pub mod testcases;
 pub mod validation;

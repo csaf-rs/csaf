@@ -2,8 +2,8 @@ use crate::csaf_traits::{
     CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait,
     WithOptionalGroupIds, WithOptionalProductIds,
 };
-use crate::csaf2_1::schema::CategoryOfTheThreat;
 use crate::helpers::resolve_product_groups;
+use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 

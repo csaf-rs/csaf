@@ -24,8 +24,9 @@ pub fn compare_test_results(
         },
         (Err(actual_errs), Err(expected_errs)) => {
             // Both fail - compare errors ignoring order
+            let mut errors: Vec<String> = Vec::new();
             if actual_errs.len() != expected_errs.len() {
-                return Err(format!(
+                errors.push(format!(
                     "Test {} case {}: Error count mismatch - expected {} error(s) but got {}",
                     test_id,
                     case_num,
@@ -39,23 +40,57 @@ pub fn compare_test_results(
                 if !actual_errs.iter().any(|actual_err| {
                     actual_err.message == expected_err.message && actual_err.instance_path == expected_err.instance_path
                 }) {
-                    return Err(format!(
-                        "Test {} case {}: Expected error not found - message: '{}', path: '{}'",
+                    errors.push(format!(
+                        "Test {} case {}: Expected error not found: '{}', path: '{}'",
                         test_id, case_num, expected_err.message, expected_err.instance_path
                     ));
                 }
             }
-            Ok(())
+            for actual_err in actual_errs {
+                if !expected_errs.iter().any(|expected_err| {
+                    expected_err.message == actual_err.message && expected_err.instance_path == actual_err.instance_path
+                }) {
+                    errors.push(format!(
+                        "Test {} case {}: Found not expected error: '{}', path: '{}'",
+                        test_id, case_num, actual_err.message, actual_err.instance_path
+                    ));
+                }
+            }
+            if errors.is_empty() {
+                Ok(())
+            } else {
+                Err(errors.join("\n"))
+            }
         },
-        (Ok(()), Err(_)) => Err(format!(
-            "Test {} case {}: Expected failure but validation passed",
-            test_id, case_num
-        )),
-        (Err(actual_errs), Ok(())) => Err(format!(
-            "Test {} case {}: Expected success but validation failed with {} error(s)",
-            test_id,
-            case_num,
-            actual_errs.len()
-        )),
+        (Ok(()), Err(expected_errors)) => {
+            let mut errors: Vec<String> = Vec::new();
+            errors.push(format!(
+                "Test {} case {}: Expected failure but validation passed.",
+                test_id, case_num
+            ));
+            for err in expected_errors {
+                errors.push(format!(
+                    "Test {} case {}: Expected error: '{}', path: '{}'",
+                    test_id, case_num, err.message, err.instance_path
+                ));
+            }
+            Err(errors.join("\n"))
+        },
+        (Err(actual_errs), Ok(())) => {
+            let mut errors: Vec<String> = Vec::new();
+            errors.push(format!(
+                "Test {} case {}: Expected success but validation failed with {} error(s).",
+                test_id,
+                case_num,
+                actual_errs.len()
+            ));
+            for err in actual_errs {
+                errors.push(format!(
+                    "Test {} case {}: Not expected error: '{}', path: '{}'",
+                    test_id, case_num, err.message, err.instance_path
+                ));
+            }
+            Err(errors.join("\n"))
+        },
     }
 }

@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
-use crate::csaf2_1::schema::DocumentStatus;
+use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
 /// 6.1.18 Released Revision History

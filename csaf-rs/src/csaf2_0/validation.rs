@@ -1,4 +1,4 @@
-use super::schema::CommonSecurityAdvisoryFramework;
+use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use crate::{
     csaf2_0::testcases::TESTS_2_0,
     validation::{Test, Validatable, ValidationPreset},

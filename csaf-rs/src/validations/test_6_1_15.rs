@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, PublisherTrait};
-use crate::csaf2_1::schema::CategoryOfPublisher;
+use crate::schema::csaf2_1::schema::CategoryOfPublisher;
 use crate::validation::ValidationError;
 
 /// 6.1.15 Translator

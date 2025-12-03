@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait};
-use crate::csaf2_1::schema::PartyCategory;
+use crate::schema::csaf2_1::schema::PartyCategory;
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 

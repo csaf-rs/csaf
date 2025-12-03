@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait};
-use crate::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::helpers::MAX_UUID;
+use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::validation::ValidationError;
 
 /// Validates that a CSAF document using the maximum UUID as the sharing group ID

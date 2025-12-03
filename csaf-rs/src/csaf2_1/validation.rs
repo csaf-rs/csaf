@@ -1,4 +1,4 @@
-use super::schema::CommonSecurityAdvisoryFramework;
+use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::validation::{Test, Validatable, ValidationPreset};
 use crate::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
 use crate::validations::test_6_1_34::test_6_1_34_branches_recursion_depth;

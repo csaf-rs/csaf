@@ -6,4 +6,6 @@ pub mod schema;
 pub mod ssvc_dp;
 #[path = "ssvc_dp_selection_list.generated.rs"]
 pub mod ssvc_dp_selection_list;
+#[path = "testcases.generated.rs"]
+pub mod testcases;
 pub mod validation;

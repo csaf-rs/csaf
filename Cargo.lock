@@ -282,6 +282,7 @@ dependencies = [
  "jsonschema",
  "packageurl",
  "prettyplease",
+ "proc-macro2",
  "quote",
  "regex",
  "regress",

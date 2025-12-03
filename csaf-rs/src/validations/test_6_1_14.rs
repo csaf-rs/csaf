@@ -1,40 +1,36 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait, VersionNumber};
+use crate::csaf_traits::CsafTrait;
 use crate::validation::ValidationError;
-use chrono::{DateTime, Utc};
+use crate::version_helpers::{
+    generate_revision_history_tuples, sort_revision_history_tuples_by_date_by_number,
+    sort_revision_history_tuples_by_number,
+};
 
 /// 6.1.14 Sorted Revision History
 ///
 /// The revision history items, when sorted by their `/document/tracking/revision_history[]/date` field,
 /// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let revision_history = doc.get_document().get_tracking().get_revision_history();
-
     // Generate tuples of (revision history path index, date, number)
-    let mut path_date_number_vec: Vec<(usize, DateTime<Utc>, VersionNumber)> = Vec::new();
-    for (i_r, revision) in revision_history.iter().enumerate() {
-        let date = DateTime::parse_from_rfc3339(revision.get_date()).map(|dt| dt.with_timezone(&Utc));
-        if let Ok(date) = date {
-            let rev_num = revision.get_number();
-            path_date_number_vec.push((i_r, date, rev_num));
-        }
-    }
-    // Sort by date
-    path_date_number_vec.sort_by(|a, b| a.1.cmp(&b.1));
+    let mut rev_history_tuples_sort_by_date = generate_revision_history_tuples(doc);
+    let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
 
-    // Sort by number
-    let mut path_date_number_vec_sorted_by_number = path_date_number_vec.clone();
-    path_date_number_vec_sorted_by_number.sort_by(|a, b| a.2.cmp(&b.2));
+    // Sort by date and by number
+    sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples_sort_by_date);
+    sort_revision_history_tuples_by_number(&mut rev_history_tuples_sort_by_number);
 
     // Generate errors if revision history items are sorted differently between sort by date and sort by number
     let mut errors = Vec::new();
-    for i in 0..path_date_number_vec.len() {
-        if path_date_number_vec[i].1 != path_date_number_vec_sorted_by_number[i].1 {
+    for i in 0..rev_history_tuples_sort_by_date.len() {
+        if rev_history_tuples_sort_by_date[i].1 != rev_history_tuples_sort_by_number[i].1 {
             errors.push(ValidationError {
                 message: format!(
                     "Revision history is not sorted by date, revision with number {} is out of place",
-                    path_date_number_vec[i].2
+                    rev_history_tuples_sort_by_date[i].2
                 ),
-                instance_path: format!("/document/tracking/revision_history/{}", path_date_number_vec[i].0),
+                instance_path: format!(
+                    "/document/tracking/revision_history/{}",
+                    rev_history_tuples_sort_by_date[i].0
+                ),
             });
         }
     }

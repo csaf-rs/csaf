@@ -14,7 +14,6 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
     let mut rev_history_tuples = generate_revision_history_tuples(doc);
     sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples);
 
-    println!("{:?}", rev_history_tuples);
     if let Some((_, _, latest_number)) = rev_history_tuples.last() {
         let doc_version = document.get_tracking().get_version();
         let doc_status = document.get_tracking().get_status();
@@ -22,8 +21,6 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
             VersionNumber::Integer(_) => {
                 // We can use the default eq here, as intver has no pre-release or build metadata
                 // and the eq will return false if comparing intver with semver
-                println!("{:?}", doc_version);
-                println!("{:?}", latest_number);
                 if doc_version == *latest_number {
                     return Ok(());
                 }

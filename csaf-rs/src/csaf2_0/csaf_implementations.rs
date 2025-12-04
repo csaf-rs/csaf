@@ -8,12 +8,13 @@ use crate::csaf_traits::{
 use crate::csaf2_0::schema::{
     Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator,
     DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement,
-    LabelOfTlp, Note, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Relationship, Remediation,
-    Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Relationship,
+    Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfTheRemediation as Remediation21,
-    DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21, PartyCategory as PartyCategory21,
+    DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21, NoteCategory as NoteCategory21,
+    PartyCategory as PartyCategory21,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -346,6 +347,10 @@ impl DocumentTrait for DocumentLevelMetaData {
     fn get_publisher(&self) -> &Publisher {
         &self.publisher
     }
+
+    fn get_category_string(&self) -> &String {
+        &self.category.deref()
+    }
 }
 
 impl PublisherTrait for Publisher {
@@ -395,6 +400,18 @@ impl WithGroupIds for Note {
 impl NoteTrait for Note {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         None::<std::iter::Empty<&String>>
+    }
+
+    fn get_category(&self) -> NoteCategory21 {
+        match self.category {
+            NoteCategory::Summary => NoteCategory21::Summary,
+            NoteCategory::Details => NoteCategory21::Details,
+            NoteCategory::Other => NoteCategory21::Other,
+            NoteCategory::Description => NoteCategory21::Description,
+            NoteCategory::Faq => NoteCategory21::Faq,
+            NoteCategory::General => NoteCategory21::General,
+            NoteCategory::LegalDisclaimer => NoteCategory21::LegalDisclaimer,
+        }
     }
 }
 

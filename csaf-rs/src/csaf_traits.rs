@@ -1,5 +1,5 @@
 use crate::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, PartyCategory,
+    CategoryOfPublisher, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, NoteCategory, PartyCategory,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
@@ -68,6 +68,41 @@ pub trait DocumentTrait {
 
     /// Returns the publisher information for this document
     fn get_publisher(&self) -> &Self::PublisherType;
+
+    /// Returns the category of the document as a string
+    fn get_category_string(&self) -> &String;
+
+    /// Returns the category of the document as an enum
+    fn get_category(&self) -> DocumentCategory {
+        DocumentCategory::from_str(self.get_category_string())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum DocumentCategory {
+    CsafInformationalAdvisory,
+    CsafSecurityIncidentResponse,
+    Other(String),
+}
+
+impl DocumentCategory {
+    pub fn from_str(category: &str) -> Self {
+        match category {
+            "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
+            "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
+            _ => DocumentCategory::Other("_".to_string()),
+        }
+    }
+}
+
+impl Display for DocumentCategory {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informal_advisory"),
+            DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
+            DocumentCategory::Other(other) => write!(f, "{}", other),
+        }
+    }
 }
 
 pub trait PublisherTrait {
@@ -95,6 +130,8 @@ pub trait DistributionTrait {
 pub trait NoteTrait: WithGroupIds {
     /// Returns the product IDs associated with this vulnerability flag
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+
+    fn get_category(&self) -> NoteCategory;
 }
 
 /// Trait representing sharing group information

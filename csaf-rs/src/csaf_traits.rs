@@ -1,5 +1,6 @@
 use crate::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, NoteCategory, PartyCategory,
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, NoteCategory,
+    PartyCategory,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
@@ -48,6 +49,8 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
+    type DocumentReferenceType: DocumentReferenceTrait;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
 
@@ -76,6 +79,19 @@ pub trait DocumentTrait {
     fn get_category(&self) -> DocumentCategory {
         DocumentCategory::from_str(self.get_category_string())
     }
+
+    /// Returns the references of this document
+    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
+}
+
+/// Trait representing document references
+pub trait DocumentReferenceTrait {
+    // Returns the category of the document reference as enum
+    fn get_category(&self) -> &CategoryOfReference;
+    // Returns the summary of the document reference
+    fn get_summary(&self) -> &String;
+    // Returns the URL of the document reference
+    fn get_url(&self) -> &String;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -98,7 +114,7 @@ impl DocumentCategory {
 impl Display for DocumentCategory {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informal_advisory"),
+            DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
             DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
             DocumentCategory::Other(other) => write!(f, "{}", other),
         }

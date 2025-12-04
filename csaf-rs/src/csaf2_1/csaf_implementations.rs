@@ -1,16 +1,16 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait,
-    FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
-    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
-    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
-    VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
+    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
+    FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait,
+    ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait,
+    PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait,
+    TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
 };
 use crate::csaf2_1::schema::{
-    Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator,
-    DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT,
-    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory, ProductGroup,
-    ProductStatus, ProductTree, Publisher, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup,
-    Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
+    Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag,
+    FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, NoteCategory,
+    PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
+    RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -283,6 +283,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     type DistributionType = RulesForDocumentSharing;
     type NoteType = Note;
     type PublisherType = Publisher;
+    type DocumentReferenceType = Reference;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -316,6 +317,24 @@ impl DocumentTrait for DocumentLevelMetaData {
 
     fn get_category_string(&self) -> &String {
         &self.category.deref()
+    }
+
+    fn get_references(&self) -> Option<&Vec<Reference>> {
+        self.references.as_deref()
+    }
+}
+
+impl DocumentReferenceTrait for Reference {
+    fn get_category(&self) -> &CategoryOfReference {
+        &self.category
+    }
+
+    fn get_summary(&self) -> &String {
+        &self.summary
+    }
+
+    fn get_url(&self) -> &String {
+        &self.url
     }
 }
 

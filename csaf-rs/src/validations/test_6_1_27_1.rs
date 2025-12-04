@@ -19,6 +19,7 @@ pub fn test_6_1_27_1_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Vali
         return Ok(());
     }
 
+    // check if there is a document note with the required category
     let mut found_valid_note = false;
     if let Some(notes) = doc.get_document().get_notes() {
         for note in notes.iter() {
@@ -34,6 +35,7 @@ pub fn test_6_1_27_1_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Vali
         }
     }
 
+    // if there isn't a note with the required category, return an error
     if !found_valid_note {
         return Err(vec![ValidationError {
             message: format!(

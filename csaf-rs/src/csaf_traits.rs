@@ -111,11 +111,14 @@ pub trait DocumentReferenceTrait {
 pub enum DocumentCategory {
     CsafInformationalAdvisory,
     CsafSecurityIncidentResponse,
+    CsafSecurityAdvisory,
+    CsafVex,
     Other(String),
     // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
     // for syntactic sugar, we don't need to make this distinction here
     CsafWithdrawn,
     CsafSuperseded,
+    CsafDeprecatedSecurityAdvisory,
 }
 
 impl DocumentCategory {
@@ -123,6 +126,9 @@ impl DocumentCategory {
         match category {
             "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
             "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
+            "csaf_security_advisory" => DocumentCategory::CsafSecurityAdvisory,
+            "csaf_vex" => DocumentCategory::CsafVex,
+            "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
             "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
             "csaf_superseded" => DocumentCategory::CsafSuperseded,
             _ => DocumentCategory::Other("_".to_string()),
@@ -135,6 +141,9 @@ impl Display for DocumentCategory {
         match self {
             DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
             DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
+            DocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
+            DocumentCategory::CsafVex => write!(f, "csaf_vex"),
+            DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
             DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
             DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
             DocumentCategory::Other(other) => write!(f, "{}", other),

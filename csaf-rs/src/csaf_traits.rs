@@ -82,6 +82,19 @@ pub trait DocumentTrait {
 
     /// Returns the references of this document
     fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
+
+    fn get_csaf_version(&self) -> &CsafVersion;
+}
+
+/// Enum representing CSAF versions
+///
+/// Contrary to other enums that are based on enums in the generated schemas, we are re-defining
+/// this enum in the trait. Each schema only contains an enum with "their" version, and merging them
+/// would be more complex then defining here and mapping in the implementations.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum CsafVersion {
+    X20,
+    X21,
 }
 
 /// Trait representing document references
@@ -99,6 +112,10 @@ pub enum DocumentCategory {
     CsafInformationalAdvisory,
     CsafSecurityIncidentResponse,
     Other(String),
+    // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
+    // for syntactic sugar, we don't need to make this distinction here
+    CsafWithdrawn,
+    CsafSuperseded,
 }
 
 impl DocumentCategory {
@@ -106,6 +123,8 @@ impl DocumentCategory {
         match category {
             "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
             "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
+            "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
+            "csaf_superseded" => DocumentCategory::CsafSuperseded,
             _ => DocumentCategory::Other("_".to_string()),
         }
     }
@@ -116,6 +135,8 @@ impl Display for DocumentCategory {
         match self {
             DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
             DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
+            DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
+            DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
             DocumentCategory::Other(other) => write!(f, "{}", other),
         }
     }

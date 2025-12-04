@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
+    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
     FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait,
     ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait,
     PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait,
@@ -7,10 +7,10 @@ use crate::csaf_traits::{
 };
 use crate::csaf2_0::schema::{
     Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
-    DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
-    Involvement, LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher,
-    Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp,
-    Vulnerability, Reference
+    CsafVersion as CsafVersion20, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup,
+    ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForSharingDocument,
+    Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
@@ -356,6 +356,12 @@ impl DocumentTrait for DocumentLevelMetaData {
 
     fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>> {
         self.references.as_deref()
+    }
+
+    fn get_csaf_version(&self) -> &CsafVersion {
+        match self.csaf_version {
+            CsafVersion20::X20 => &CsafVersion::X20,
+        }
     }
 }
 

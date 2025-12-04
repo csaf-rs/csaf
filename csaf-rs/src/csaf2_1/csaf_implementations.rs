@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
+    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
     FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait,
     ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait,
     PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait,
@@ -7,10 +7,11 @@ use crate::csaf_traits::{
 };
 use crate::csaf2_1::schema::{
     Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
-    Content, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag,
-    FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, NoteCategory,
-    PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
-    RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Content, CsafVersion as CsafVersion21, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss,
+    FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp,
+    Metric, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference,
+    Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
+    TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -321,6 +322,12 @@ impl DocumentTrait for DocumentLevelMetaData {
 
     fn get_references(&self) -> Option<&Vec<Reference>> {
         self.references.as_deref()
+    }
+
+    fn get_csaf_version(&self) -> &CsafVersion {
+        match self.csaf_version {
+            CsafVersion21::X21 => &CsafVersion::X21,
+        }
     }
 }
 

@@ -45,9 +45,9 @@ mod tests {
     use std::collections::HashMap;
 
     #[test]
-    fn test_test_6_1_27_4() {
+    fn test_test_6_1_27_8() {
         let errors = HashMap::from([("01", vec![test_6_1_27_8_err_generator(&DocumentCategory::CsafVex, &0)])]);
-        run_csaf20_tests("27-07", test_6_1_27_8_vulnerability_id, errors.clone());
-        run_csaf21_tests("27-07", test_6_1_27_8_vulnerability_id, errors);
+        run_csaf20_tests("27-08", test_6_1_27_8_vulnerability_id, errors.clone());
+        run_csaf21_tests("27-08", test_6_1_27_8_vulnerability_id, errors);
     }
 }

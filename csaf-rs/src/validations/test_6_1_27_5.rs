@@ -59,7 +59,7 @@ mod tests {
     use std::collections::HashMap;
 
     #[test]
-    fn test_test_6_1_27_4() {
+    fn test_test_6_1_27_5() {
         let errors = HashMap::from([
             (
                 "01",

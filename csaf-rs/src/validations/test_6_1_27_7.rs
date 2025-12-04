@@ -51,7 +51,7 @@ mod tests {
     use std::collections::HashMap;
 
     #[test]
-    fn test_test_6_1_27_4() {
+    fn test_test_6_1_27_7() {
         let errors = HashMap::from([("01", vec![test_6_1_27_7_err_generator(&DocumentCategory::CsafVex, &0)])]);
         run_csaf20_tests("27-07", test_6_1_27_7_vex_product_status, errors.clone());
         run_csaf21_tests("27-07", test_6_1_27_7_vex_product_status, errors);

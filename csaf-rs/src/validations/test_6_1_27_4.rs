@@ -28,7 +28,7 @@ pub fn test_6_1_27_4_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<Valida
         }
     }
 
-    // return error if there are elements in /vulnerabilities
+    // return error if there are there isn't a product tree
     if doc.get_product_tree().is_none() {
         return Err(vec![test_6_1_27_4_err_generator(doc_category)]);
     }

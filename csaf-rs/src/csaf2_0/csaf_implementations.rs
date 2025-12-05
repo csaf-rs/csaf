@@ -1,16 +1,16 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
-    FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait,
+    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait,
+    FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait,
     ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait,
     PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait,
     TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
 };
 use crate::csaf2_0::schema::{
-    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
-    CsafVersion as CsafVersion20, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT,
-    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup,
-    ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForSharingDocument,
-    Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, CsafVersion as CsafVersion20, CryptographicHashes,
+    DocumentGenerator, DocumentLevelMetaData, DocumentStatus, FileHash, Flag, FullProductNameT,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus,
+    ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking,
+    TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
@@ -603,6 +603,8 @@ impl ProductTrait for FullProductNameT {
 }
 
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
+    type HashType = CryptographicHashes;
+
     fn get_purls(&self) -> Option<&[String]> {
         self.purl.as_ref().map(std::slice::from_ref)
     }
@@ -613,5 +615,31 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
 
     fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.serial_numbers.as_ref().map(|v| v.iter().map(|x| x.deref()))
+    }
+
+    fn get_hashes(&self) -> &Vec<Self::HashType> {
+        self.hashes.as_ref()
+    }
+}
+
+impl HashTrait for CryptographicHashes {
+    type FileHashType = FileHash;
+
+    fn get_filename(&self) -> &String {
+        self.filename.deref()
+    }
+
+    fn get_file_hashes(&self) -> &Vec<Self::FileHashType> {
+        self.file_hashes.as_ref()
+    }
+}
+
+impl FileHashTrait for FileHash {
+    fn get_algorithm(&self) -> &String {
+        self.algorithm.deref()
+    }
+
+    fn get_hash(&self) -> &String {
+        self.value.deref()
     }
 }

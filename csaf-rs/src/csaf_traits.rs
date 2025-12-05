@@ -841,12 +841,36 @@ pub trait ProductTrait {
 
 /// Trait representing an abstract product identification helper of a full product name.
 pub trait ProductIdentificationHelperTrait {
+    type HashType: HashTrait;
+
     /// Returns the PURLs identifying the associated product.
     fn get_purls(&self) -> Option<&[String]>;
 
     fn get_model_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
     fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
+
+    fn get_hashes(&self) -> &Vec<Self::HashType>;
+}
+
+/// Trait representing a collection of file_hashes for a file as part of a product identification helper
+pub trait HashTrait {
+    type FileHashType: FileHashTrait;
+
+    /// Returns the filename
+    fn get_filename(&self) -> &String;
+
+    /// returns
+    fn get_file_hashes(&self) -> &Vec<Self::FileHashType>;
+}
+
+/// Trait representing a file_hash, identified by the used hash algorithm and the hash
+pub trait FileHashTrait {
+    /// Returns the hashing algorithm of this hash
+    fn get_algorithm(&self) -> &String;
+
+    /// Returns the hash
+    fn get_hash(&self) -> &String;
 }
 
 pub trait WithGroupIds {

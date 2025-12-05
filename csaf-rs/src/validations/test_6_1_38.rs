@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait};
-use crate::csaf2_1::schema::LabelOfTlp::Clear;
+use csaf_schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::helpers::MAX_UUID;
 use crate::validation::ValidationError;
 

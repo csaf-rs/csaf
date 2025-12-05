@@ -34,16 +34,6 @@ fn main() -> Result<(), BuildError> {
     // All schema files for change watching
     let schema_configs = [
         (
-            "assets/csaf_2.0_json_schema.json",
-            "csaf2_0/schema.generated.rs",
-            Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
-        ),
-        (
-            "assets/csaf_2.1_json_schema.json",
-            "csaf2_1/schema.generated.rs",
-            Some(&fix_2_1_schema),
-        ),
-        (
             "assets/decision_point_json_schema.json",
             "csaf2_1/ssvc_dp.generated.rs",
             None,
@@ -127,53 +117,6 @@ fn build(input: &str, output: &str, schema_patch: &Option<&dyn Fn(&mut Value)>) 
     let mut out_file = Path::new("src").to_path_buf();
     out_file.push(output);
     Ok(fs::write(out_file, content)?)
-}
-
-/// Patches (unsupported) external schemas to the plain object type for CSAF 2.0.
-fn fix_2_0_schema(value: &mut Value) {
-    let prefix = "properties.vulnerabilities.items.properties.scores.items.properties";
-    let fix_paths = [format!("{}.cvss_v2", prefix), format!("{}.cvss_v3", prefix)];
-    for path in fix_paths {
-        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
-    }
-    remove_datetime_formats(value);
-}
-
-/// Patches (unsupported) external schemas to the plain object type for CSAF 2.1.
-fn fix_2_1_schema(value: &mut Value) {
-    let prefix = "properties.vulnerabilities.items.properties.metrics.items.properties.content.properties";
-    let fix_paths = [
-        format!("{}.cvss_v2", prefix),
-        format!("{}.cvss_v3", prefix),
-        format!("{}.cvss_v4", prefix),
-        format!("{}.ssvc_v1", prefix),
-        format!("{}.ssvc_v2", prefix),
-    ];
-    for path in fix_paths {
-        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
-    }
-    remove_datetime_formats(value);
-}
-
-/// Recursively searches for "format": "date-time" and removes this format.
-fn remove_datetime_formats(value: &mut Value) {
-    if let Value::Object(map) = value {
-        if let Some(format) = map.get("format") {
-            if format.as_str() == Some("date-time") {
-                // Remove the format property entirely
-                map.remove("format");
-            }
-        }
-
-        // Recursively process all values in the object
-        for (_, v) in map.iter_mut() {
-            remove_datetime_formats(v);
-        }
-    } else if let Value::Array(arr) = value {
-        for item in arr.iter_mut() {
-            remove_datetime_formats(item);
-        }
-    }
 }
 
 /// Compile-time-embedded language-subtag-registry.txt
@@ -287,11 +230,11 @@ fn generate_testcases(input: &str, output: &str, csaf_version: CsafVersion) -> R
     // Determine CSAF document type and constant name from version parameter
     let (csaf_doc_type, tests_const_name) = match csaf_version {
         CsafVersion::V2_0 => (
-            quote! { crate::csaf2_0::schema::CommonSecurityAdvisoryFramework },
+            quote! { csaf_schema::csaf2_0::schema::CommonSecurityAdvisoryFramework },
             Ident::new("TESTS_2_0", Span::call_site()),
         ),
         CsafVersion::V2_1 => (
-            quote! { crate::csaf2_1::schema::CommonSecurityAdvisoryFramework },
+            quote! { csaf_schema::csaf2_1::schema::CommonSecurityAdvisoryFramework },
             Ident::new("TESTS_2_1", Span::call_site()),
         ),
     };
@@ -367,7 +310,7 @@ fn generate_testcases(input: &str, output: &str, csaf_version: CsafVersion) -> R
         // Generate validator struct name
         let validator_name = format!("ValidatorFor{}", struct_name);
         let validator_ident = Ident::new(&validator_name, Span::call_site());
-        
+
         // Generate the struct definition using the shared TestValidator trait
         let struct_def = quote! {
             #[derive(Debug, Clone, Copy)]
@@ -376,7 +319,7 @@ fn generate_testcases(input: &str, output: &str, csaf_version: CsafVersion) -> R
             impl<V> #struct_ident<V> {
                 /// Test ID
                 pub const ID: &'static str = #test_id;
-                
+
                 /// Create a new test instance
                 pub const fn new() -> Self {
                     Self(std::marker::PhantomData)
@@ -419,7 +362,7 @@ fn generate_testcases(input: &str, output: &str, csaf_version: CsafVersion) -> R
                 ) {
                     // Create test cases as tuples of (case_num, doc, expected)
                     let test_cases = vec![#(#test_cases),*];
-                    
+
                     // Create validator instance
                     let validator = V::default();
 
@@ -437,9 +380,9 @@ fn generate_testcases(input: &str, output: &str, csaf_version: CsafVersion) -> R
                     }
                 }
             }
-            
+
             /// Validator for test case #test_id
-            /// 
+            ///
             /// Implement `TestValidator<#csaf_doc_type>` on this struct to provide validation logic.
             #[derive(Debug, Clone, Copy, Default)]
             pub struct #validator_ident;
@@ -457,18 +400,22 @@ fn generate_testcases(input: &str, output: &str, csaf_version: CsafVersion) -> R
     }
 
     // Generate field definitions for TESTS constant (each test as a field with typed validator)
-    let field_defs = test_instances.iter().map(|(instance_name, struct_name, validator_name)| {
-        quote! {
-            pub #instance_name: #struct_name<#validator_name>
-        }
-    });
+    let field_defs = test_instances
+        .iter()
+        .map(|(instance_name, struct_name, validator_name)| {
+            quote! {
+                pub #instance_name: #struct_name<#validator_name>
+            }
+        });
 
     // Generate field initializers for TESTS constant (with typed instances)
-    let field_inits = test_instances.iter().map(|(instance_name, struct_name, _validator_name)| {
-        quote! {
-            #instance_name: #struct_name::new()
-        }
-    });
+    let field_inits = test_instances
+        .iter()
+        .map(|(instance_name, struct_name, _validator_name)| {
+            quote! {
+                #instance_name: #struct_name::new()
+            }
+        });
 
     // Generate preset methods - collect the vecs for reuse
     let mandatory_refs: Vec<_> = mandatory_tests

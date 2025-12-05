@@ -1,4 +1,3 @@
-use super::schema::CommonSecurityAdvisoryFramework;
 use crate::validation::{Test, Validatable, ValidationPreset};
 use crate::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
 use crate::validations::test_6_1_34::test_6_1_34_branches_recursion_depth;
@@ -10,6 +9,7 @@ use crate::validations::test_6_1_39::test_6_1_39_public_sharing_group_with_no_ma
 use crate::validations::test_6_1_40::test_6_1_40_invalid_sharing_group_name;
 use crate::validations::test_6_1_41::test_6_1_41_missing_sharing_group_name;
 use crate::validations::test_6_1_42::test_6_1_42_purl_consistency;
+use csaf_schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use std::collections::HashMap;
 
 impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {

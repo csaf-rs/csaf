@@ -1,0 +1,28 @@
+[package]
+name = "csaf-schema"
+description = "Rustified CSAF JSON schema definitions"
+license = "Apache-2.0"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+regress = "0.10"
+serde_json = "1"
+uuid = { version = "1.17.0", features = ["v7", "serde"] }
+
+[features]
+default = []
+testcases = []
+
+[build-dependencies]
+schemars = "0.8"
+serde_json = "1"
+jsonschema = { version = "0.37.4", default-features = false }
+syn = "2"
+thiserror = "2"
+json_dotpath = "1"
+typify = "0.4"
+prettyplease = "0.2"
+quote = "1"
+proc-macro2 = "1"

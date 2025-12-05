@@ -289,6 +289,7 @@ dependencies = [
  "automod",
  "chrono",
  "console_error_panic_hook",
+ "csaf-schema",
  "glob",
  "json_dotpath",
  "jsonschema",
@@ -310,6 +311,25 @@ dependencies = [
  "typify",
  "uuid",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "csaf-schema"
+version = "0.1.0"
+dependencies = [
+ "json_dotpath",
+ "jsonschema",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "regress",
+ "schemars",
+ "serde",
+ "serde_json",
+ "syn",
+ "thiserror 2.0.16",
+ "typify",
+ "uuid",
 ]
 
 [[package]]

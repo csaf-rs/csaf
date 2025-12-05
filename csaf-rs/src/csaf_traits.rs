@@ -1,6 +1,7 @@
-use crate::csaf2_1::schema::{
+use csaf_schema::csaf2_1::schema::{
     CategoryOfPublisher, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, PartyCategory,
 };
+
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;

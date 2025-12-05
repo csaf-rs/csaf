@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
-use crate::csaf2_1::schema::DocumentStatus;
+use csaf_schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 use crate::version_helpers::{is_intver_is_zero, is_semver_is_major_zero};
 

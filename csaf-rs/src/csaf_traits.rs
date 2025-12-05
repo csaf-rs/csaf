@@ -228,20 +228,42 @@ pub trait TrackingTrait {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd)]
+#[derive(Debug, Clone, Eq, PartialOrd)]
 pub enum VersionNumber {
     Integer(u64),
     Semver(Version),
 }
 
 impl VersionNumber {
-    fn from_number(number: &str) -> Self {
+    /// Parses a string to either intver or semver
+    /// Will panic if not parseable
+    pub fn from_number(number: &str) -> Self {
         if let Ok(number) = number.parse::<u64>() {
             return VersionNumber::Integer(number);
         } else if let Ok(number) = Version::parse(number) {
             return VersionNumber::Semver(number);
         }
         panic!("Version could not be parsed as intver or semver")
+    }
+
+    /// Gets the version number for intver / the major version for semver
+    pub fn get_major(&self) -> u64 {
+        match self {
+            VersionNumber::Integer(num) => *num,
+            VersionNumber::Semver(semver) => semver.major,
+        }
+    }
+}
+
+impl PartialEq for VersionNumber {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a == b,
+            (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a == b,
+            // Integer and Semver are always unequal
+            (VersionNumber::Integer(_), VersionNumber::Semver(_)) => false,
+            (VersionNumber::Semver(_), VersionNumber::Integer(_)) => false,
+        }
     }
 }
 
@@ -259,7 +281,7 @@ impl Ord for VersionNumber {
         match (self, other) {
             (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a.cmp(b),
             (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a.cmp(b),
-            // Integer immer vor Semver bei gemischten
+            // Panic if intver and semver are compared against each other
             (VersionNumber::Integer(a), VersionNumber::Semver(b)) => {
                 panic!(
                     "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",

@@ -15,7 +15,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
     let cvss20_validator = create_validator(include_str!("../../assets/cvss-v2.0.json"));
     let cvss30_validator = create_validator(include_str!("../../assets/cvss-v3.0.json"));
     let cvss31_validator = create_validator(include_str!("../../assets/cvss-v3.1.json"));
-    let cvss40_validator = create_validator(include_str!("../../assets/cvss-v4.0.json"));
+    let cvss40_validator = create_validator(include_str!("../../assets/cvss-v4.0.1.json"));
 
     let mut errors: Vec<ValidationError> = Vec::new();
 

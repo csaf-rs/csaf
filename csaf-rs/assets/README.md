@@ -109,10 +109,10 @@ License as provided in the document
 > WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-- `cvss-v4.0.json` see https://www.first.org/cvss/cvss-v4.0.json
+- `cvss-v4.0.1.json` see https://www.first.org/cvss/cvss-v4.0.1.json
 
 License as provided in the document
-> Copyright (c) 2023, FIRST.ORG, INC.
+> Copyright (c) 2025, FIRST.ORG, INC.
 > All rights reserved.
 > 
 > Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 

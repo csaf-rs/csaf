@@ -1,5 +1,6 @@
 use crate::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, PartyCategory,
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, NoteCategory,
+    PartyCategory,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
@@ -48,6 +49,8 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
+    type DocumentReferenceType: DocumentReferenceTrait;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
 
@@ -68,6 +71,84 @@ pub trait DocumentTrait {
 
     /// Returns the publisher information for this document
     fn get_publisher(&self) -> &Self::PublisherType;
+
+    /// Returns the category of the document as a string
+    fn get_category_string(&self) -> &String;
+
+    /// Returns the category of the document as an enum
+    fn get_category(&self) -> DocumentCategory {
+        DocumentCategory::from_str(self.get_category_string())
+    }
+
+    /// Returns the references of this document
+    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
+
+    fn get_csaf_version(&self) -> &CsafVersion;
+}
+
+/// Enum representing CSAF versions
+///
+/// Contrary to other enums that are based on enums in the generated schemas, we are re-defining
+/// this enum in the trait. Each schema only contains an enum with "their" version, and merging them
+/// would be more complex then defining here and mapping in the implementations.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum CsafVersion {
+    X20,
+    X21,
+}
+
+/// Trait representing document references
+pub trait DocumentReferenceTrait {
+    // Returns the category of the document reference as enum
+    fn get_category(&self) -> &CategoryOfReference;
+    // Returns the summary of the document reference
+    fn get_summary(&self) -> &String;
+    // Returns the URL of the document reference
+    fn get_url(&self) -> &String;
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum DocumentCategory {
+    CsafInformationalAdvisory,
+    CsafSecurityIncidentResponse,
+    CsafSecurityAdvisory,
+    CsafVex,
+    Other(String),
+    // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
+    // for syntactic sugar, we don't need to make this distinction here
+    CsafWithdrawn,
+    CsafSuperseded,
+    CsafDeprecatedSecurityAdvisory,
+}
+
+impl DocumentCategory {
+    pub fn from_str(category: &str) -> Self {
+        match category {
+            "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
+            "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
+            "csaf_security_advisory" => DocumentCategory::CsafSecurityAdvisory,
+            "csaf_vex" => DocumentCategory::CsafVex,
+            "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
+            "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
+            "csaf_superseded" => DocumentCategory::CsafSuperseded,
+            _ => DocumentCategory::Other("_".to_string()),
+        }
+    }
+}
+
+impl Display for DocumentCategory {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
+            DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
+            DocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
+            DocumentCategory::CsafVex => write!(f, "csaf_vex"),
+            DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
+            DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
+            DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
+            DocumentCategory::Other(other) => write!(f, "{}", other),
+        }
+    }
 }
 
 pub trait PublisherTrait {
@@ -95,6 +176,8 @@ pub trait DistributionTrait {
 pub trait NoteTrait: WithGroupIds {
     /// Returns the product IDs associated with this vulnerability flag
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+
+    fn get_category(&self) -> NoteCategory;
 }
 
 /// Trait representing sharing group information

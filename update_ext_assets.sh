@@ -47,4 +47,4 @@ rsync_url https://www.iana.org/assignments/language-subtag-registry/language-sub
 rsync_url https://www.first.org/cvss/cvss-v2.0.json csaf-rs/assets/cvss-v2.0.json
 rsync_url https://www.first.org/cvss/cvss-v3.0.json csaf-rs/assets/cvss-v3.0.json
 rsync_url https://www.first.org/cvss/cvss-v3.1.json csaf-rs/assets/cvss-v3.1.json
-rsync_url https://www.first.org/cvss/cvss-v4.0.json csaf-rs/assets/cvss-v4.0.json
+rsync_url https://www.first.org/cvss/cvss-v4.0.1.json csaf-rs/assets/cvss-v4.0.1.json

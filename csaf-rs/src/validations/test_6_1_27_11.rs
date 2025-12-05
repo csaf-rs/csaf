@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
 /// 6.1.27.11 Vulnerabilities

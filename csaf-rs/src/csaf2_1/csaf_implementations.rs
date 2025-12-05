@@ -1,16 +1,17 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait,
-    FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait,
-    ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait,
-    PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait,
-    TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
+    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
+    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
+    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
+    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
+    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
 };
 use crate::csaf2_1::schema::{
-    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, CsafVersion as CsafVersion21,
-    CryptographicHashes, DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, FileHash,
-    FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp,
-    Metric, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation,
-    Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
+    Content, CryptographicHashes, CsafVersion as CsafVersion21, DocumentGenerator, DocumentLevelMetaData,
+    DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
+    Involvement, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree,
+    Publisher, Reference, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
+    TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;

@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait, DocumentTrait};
-use crate::csaf2_1::schema::{CategoryOfReference};
+use crate::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
 
 /// 6.1.27.2 Document References

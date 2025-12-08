@@ -14,9 +14,9 @@ pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationEr
     }
 
     // Check /document/source_lang if it exists
-    if let Some(source_lang) = document.get_source_lang() 
+    if let Some(source_lang) = document.get_source_lang()
         && let Err(e) = validate_language_code(source_lang, "/document/source_lang")
-    {   
+    {
         errors.get_or_insert_default().extend(e);
     }
 
@@ -40,8 +40,7 @@ fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<Va
 fn create_error_message(language: &str, subtag: &str) -> String {
     format!(
         "Invalid language code '{}': primary language subtag '{}' is not a valid language subtag",
-        language,
-        subtag
+        language, subtag
     )
 }
 

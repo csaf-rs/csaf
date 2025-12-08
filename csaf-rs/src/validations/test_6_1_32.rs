@@ -1,6 +1,4 @@
-use crate::csaf_traits::{
-    CsafTrait, FlagTrait, VulnerabilityTrait, WithGroupIds,
-};
+use crate::csaf_traits::{CsafTrait, FlagTrait, VulnerabilityTrait, WithGroupIds};
 use crate::validation::ValidationError;
 
 /// 6.1.32 Flag without Product Reference
@@ -16,12 +14,14 @@ pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Resul
             for (f_r, flag) in flags.iter().enumerate() {
                 // Check if both group_ids and product_ids present and not empty
                 if let Some(mut group_ids) = flag.get_group_ids()
-                    && group_ids.any(|_| true) {
-                        continue;
+                    && group_ids.any(|_| true)
+                {
+                    continue;
                 }
                 if let Some(mut product_ids) = flag.get_product_ids()
-                    && product_ids.any(|_| true) {
-                        continue;
+                    && product_ids.any(|_| true)
+                {
+                    continue;
                 }
                 errors.push(ValidationError {
                     message: "Each flag must reference at least one group_id or product_id".to_string(),
@@ -49,9 +49,10 @@ mod tests {
     fn test_test_6_1_32() {
         let errors = HashMap::from([(
             "01",
-            vec![
-                ValidationError { message: "Each flag must reference at least one group_id or product_id".to_string(), instance_path: "/vulnerabilities/0/flags/0".to_string() }
-            ],
+            vec![ValidationError {
+                message: "Each flag must reference at least one group_id or product_id".to_string(),
+                instance_path: "/vulnerabilities/0/flags/0".to_string(),
+            }],
         )]);
         run_csaf20_tests("32", test_6_1_32_flag_without_product_reference, errors.clone());
         run_csaf21_tests("32", test_6_1_32_flag_without_product_reference, errors);

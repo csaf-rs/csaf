@@ -277,7 +277,9 @@ impl Display for VersionNumber {
 }
 
 impl PartialOrd for VersionNumber {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> { Some(self.cmp(other)) }
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Ord for VersionNumber {

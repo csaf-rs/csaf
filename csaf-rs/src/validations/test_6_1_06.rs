@@ -19,7 +19,7 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
                 for product_id in product_ids {
                     product_to_groups
                         .entry(product_id.to_owned())
-                        .or_insert_with(Vec::new)
+                        .or_default()
                         .push(group.clone());
                 }
             }
@@ -41,7 +41,7 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
 }
 
 fn create_error_message(product_id: &str, groups: &[ProductStatusGroup]) -> String {
-    let group_names: Vec<String> = groups.iter().map(|g| format!("'{}'", g.to_string())).collect();
+    let group_names: Vec<String> = groups.iter().map(|g| format!("'{}'", g)).collect();
     format!(
         "Product {} is member of contradicting product status groups: {}",
         product_id,

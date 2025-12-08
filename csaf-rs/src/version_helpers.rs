@@ -47,7 +47,7 @@ pub fn generate_revision_history_tuples(doc: &impl CsafTrait) -> Vec<RevisionHis
 ///
 /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
 /// should be unique anyways, as long the second order key (revision history numbers) are unique
-pub fn sort_revision_history_tuples_by_date_by_number(tuples: &mut Vec<RevisionHistoryTupleType>) {
+pub fn sort_revision_history_tuples_by_date_by_number(tuples: &mut [RevisionHistoryTupleType]) {
     tuples.sort_unstable_by_key(|item| (item.1, item.2.clone()));
 }
 
@@ -55,6 +55,6 @@ pub fn sort_revision_history_tuples_by_date_by_number(tuples: &mut Vec<RevisionH
 ///
 /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
 /// should be unique anyways, as long as the order key (revision history numbers) are unique
-pub fn sort_revision_history_tuples_by_number(tuples: &mut Vec<RevisionHistoryTupleType>) {
+pub fn sort_revision_history_tuples_by_number(tuples: &mut [RevisionHistoryTupleType]) {
     tuples.sort_unstable_by(|a, b| a.2.cmp(&b.2));
 }

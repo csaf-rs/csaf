@@ -12,20 +12,20 @@ pub fn test_6_1_27_6_product_status(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     let doc_category = doc.get_document().get_category();
 
     // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20 {
-        if doc_category != DocumentCategory::CsafSecurityAdvisory {
+    if *doc.get_document().get_csaf_version() == CsafVersion::X20
+        && doc_category != DocumentCategory::CsafSecurityAdvisory {
             return Ok(());
         }
-    }
+
 
     // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21 {
-        if doc_category != DocumentCategory::CsafSecurityAdvisory
+    if *doc.get_document().get_csaf_version() == CsafVersion::X21
+        && doc_category != DocumentCategory::CsafSecurityAdvisory
             && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
         {
             return Ok(());
         }
-    }
+
 
     let mut errors: Option<Vec<ValidationError>> = None;
     // return error if there are vulnerabilities without product_status

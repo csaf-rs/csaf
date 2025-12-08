@@ -12,21 +12,22 @@ pub fn test_6_1_27_4_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<Valida
     let doc_category = doc.get_document().get_category();
 
     // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20 {
-        if doc_category != DocumentCategory::CsafSecurityAdvisory && doc_category != DocumentCategory::CsafVex {
+    if *doc.get_document().get_csaf_version() == CsafVersion::X20
+        && doc_category != DocumentCategory::CsafSecurityAdvisory
+        && doc_category != DocumentCategory::CsafVex {
             return Ok(());
         }
-    }
+
 
     // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21 {
-        if doc_category != DocumentCategory::CsafSecurityAdvisory
+    if *doc.get_document().get_csaf_version() == CsafVersion::X21
+            && doc_category != DocumentCategory::CsafSecurityAdvisory
             && doc_category != DocumentCategory::CsafVex
             && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
         {
             return Ok(());
         }
-    }
+
 
     // return error if there are there isn't a product tree
     if doc.get_product_tree().is_none() {

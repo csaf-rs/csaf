@@ -32,55 +32,50 @@ fn run_csaf_tests<CsafType>(
     if test_files.is_empty() {
         panic!("No test files found for pattern {}", pattern);
     }
-    for entry in test_files {
-        if let Ok(path) = entry {
-            // Extract the file suffix (e.g., "01", "02", etc.)
-            let file_name = path.file_name().unwrap().to_string_lossy();
-            println!("{}", file_name);
-            let test_num = file_name
-                .strip_prefix(file_prefix)
-                .unwrap()
-                .strip_suffix(".json")
-                .unwrap();
+    for path in test_files.into_iter().flatten() {
+        // Extract the file suffix (e.g., "01", "02", etc.)
+        let file_name = path.file_name().unwrap().to_string_lossy();
+        println!("{}", file_name);
+        let test_num = file_name
+            .strip_prefix(file_prefix)
+            .unwrap()
+            .strip_suffix(".json")
+            .unwrap();
 
-            if skipped_tests.contains(&test_num) {
-                println!("Skipping test {}", test_num);
-                continue;
-            }
+        if skipped_tests.contains(&test_num) {
+            println!("Skipping test {}", test_num);
+            continue;
+        }
 
-            // Load the document
-            let doc = document_loader(path.to_string_lossy().as_ref()).unwrap();
+        // Load the document
+        let doc = document_loader(path.to_string_lossy().as_ref()).unwrap();
 
-            // Check if this is expected to be a negative or positive test case
-            if test_num.starts_with('0') || test_num.starts_with('2') {
-                // Negative test case - should fail with specific errors
+        // Check if this is expected to be a negative or positive test case
+        if test_num.starts_with('0') || test_num.starts_with('2') {
+            // Negative test case - should fail with specific errors
 
-                let mut expected_errors = expected_errors
-                    .get(test_num)
-                    .expect(&format!(
-                        "Missing expected error definition for negative test case {}",
-                        test_num
-                    ))
-                    .clone();
-                expected_errors.sort_by(|a, b| a.message.cmp(&b.message));
-                let mut test_errors = test_function(&doc).unwrap_err();
-                test_errors.sort_by(|a, b| a.message.cmp(&b.message));
-                assert_eq!(
-                    expected_errors, test_errors,
-                    "Negative test case {} should have failed with the expected error",
-                    test_num
-                );
-            } else if test_num.starts_with('1') || test_num.starts_with('3') {
-                // Positive test case - should succeed
-                assert_eq!(
-                    Ok(()),
-                    test_function(&doc),
-                    "Positive test case {} should have succeeded",
-                    test_num
-                );
-            } else {
-                panic!("Unexpected test case number format: {}", test_num);
-            }
+            let mut expected_errors = expected_errors
+                .get(test_num)
+                .unwrap_or_else(|| panic!("Missing expected error definition for negative test case {}", test_num))
+                .clone();
+            expected_errors.sort_by(|a, b| a.message.cmp(&b.message));
+            let mut test_errors = test_function(&doc).unwrap_err();
+            test_errors.sort_by(|a, b| a.message.cmp(&b.message));
+            assert_eq!(
+                expected_errors, test_errors,
+                "Negative test case {} should have failed with the expected error",
+                test_num
+            );
+        } else if test_num.starts_with('1') || test_num.starts_with('3') {
+            // Positive test case - should succeed
+            assert_eq!(
+                Ok(()),
+                test_function(&doc),
+                "Positive test case {} should have succeeded",
+                test_num
+            );
+        } else {
+            panic!("Unexpected test case number format: {}", test_num);
         }
     }
 }

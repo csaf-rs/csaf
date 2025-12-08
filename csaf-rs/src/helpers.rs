@@ -62,9 +62,10 @@ pub fn count_unescaped_stars(s: &str) -> u32 {
 #[include = "*.json"]
 struct SsvcDecisionPointJsonFiles;
 
+type SsvcDecisionPointsMap = HashMap<(String, String, String), DecisionPoint>;
 /// Recursively loads all decision point JSON descriptions from `../ssvc/data/json/decision_points`.
 /// Entries are stored in a `HashMap` indexed by their respective (name, version) tuple for lookup.
-pub static SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String, String), DecisionPoint>> = LazyLock::new(|| {
+pub static SSVC_DECISION_POINTS: LazyLock<SsvcDecisionPointsMap> = LazyLock::new(|| {
     let mut decision_points = HashMap::new();
 
     for filename in SsvcDecisionPointJsonFiles::iter() {
@@ -96,22 +97,22 @@ pub static SSVC_DECISION_POINTS: LazyLock<HashMap<(String, String, String), Deci
     decision_points
 });
 
+type SsvcDecisionPointsLookupMap = HashMap<(String, String, String), HashMap<String, i32>>;
 /// Derives lookup maps for all observed SSVC decision points that can be used
 /// to verify the order of values within the respective decision points.
-pub static DP_VAL_KEYS_LOOKUP: LazyLock<HashMap<(String, String, String), HashMap<String, i32>>> =
-    LazyLock::new(|| {
-        let mut lookups = HashMap::new();
+pub static DP_VAL_KEYS_LOOKUP: LazyLock<SsvcDecisionPointsLookupMap> = LazyLock::new(|| {
+    let mut lookups = HashMap::new();
 
-        for (key, dp) in SSVC_DECISION_POINTS.iter() {
-            let mut lookup_map = HashMap::new();
-            for (i, v) in dp.values.iter().enumerate() {
-                lookup_map.insert(v.key.deref().to_owned(), i as i32);
-            }
-            lookups.insert(key.clone(), lookup_map);
+    for (key, dp) in SSVC_DECISION_POINTS.iter() {
+        let mut lookup_map = HashMap::new();
+        for (i, v) in dp.values.iter().enumerate() {
+            lookup_map.insert(v.key.deref().to_owned(), i as i32);
         }
+        lookups.insert(key.clone(), lookup_map);
+    }
 
-        lookups
-    });
+    lookups
+});
 
 /// Collects all "registered" namespaces from known decision points. We assume that each namespace
 /// that occurs in at least one decision point in the SSVC repository is a "registered" namespace.

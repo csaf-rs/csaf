@@ -26,7 +26,7 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
                     for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
                         let file_hash_is = algorithms
                             .entry(file_hash.get_algorithm().to_string())
-                            .or_insert_with(Vec::new);
+                            .or_default();
                         file_hash_is.push(file_hash_i);
                     }
                     // For each algo found multiple times, generate error message for all indices with the algo

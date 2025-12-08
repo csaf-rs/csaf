@@ -351,7 +351,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     }
 
     fn get_category_string(&self) -> &String {
-        &self.category.deref()
+        self.category.deref()
     }
 
     fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>> {

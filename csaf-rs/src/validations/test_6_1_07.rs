@@ -41,10 +41,10 @@ fn gather_product_metrics(
             for metric_type in present_metric_types.iter() {
                 product_metrics
                         .entry(product_id.to_owned())
-                        .or_insert_with(HashMap::new)
+                        .or_default()
                         // Distinguish by source and metric type to allow e.g., multiple CVSS scores from different sources
                         .entry((metric_type.to_owned(), metric.get_source().clone()))
-                        .or_insert_with(Vec::new)
+                        .or_default()
                         .push(content.get_content_json_path(vulnerability_index, metric_index));
             }
         }
@@ -66,7 +66,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
                                 message: create_error_message(metric_type, p),
                                 instance_path: format!(
                                     "{}/{}",
-                                    path.to_string(),
+                                    path,
                                     get_metric_prop_name(metric_type.to_owned())
                                 ),
                             });
@@ -82,7 +82,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
 fn create_error_message(score_type: &VulnerabilityMetric, product_id: &str) -> String {
     format!(
         "Multiple {} scores are given for {}.",
-        score_type.to_string(),
+        score_type,
         product_id
     )
 }

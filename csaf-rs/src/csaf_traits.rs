@@ -77,7 +77,7 @@ pub trait DocumentTrait {
 
     /// Returns the category of the document as an enum
     fn get_category(&self) -> DocumentCategory {
-        DocumentCategory::from_str(self.get_category_string())
+        DocumentCategory::from_string(self.get_category_string())
     }
 
     /// Returns the references of this document
@@ -122,7 +122,7 @@ pub enum DocumentCategory {
 }
 
 impl DocumentCategory {
-    pub fn from_str(category: &str) -> Self {
+    pub fn from_string(category: &str) -> Self {
         match category {
             "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
             "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,

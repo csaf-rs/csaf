@@ -24,20 +24,18 @@ pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<Validatio
 mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
-    use std::collections::HashMap;
     use crate::validations::test_6_1_28::test_6_1_28_translation;
+    use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_28() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![ValidationError {
-                    message: "document language and source language have the same value en-US".to_string(),
-                    instance_path: "/document/source_lang".to_string(),
-                }],
-            )
-        ]);
+        let errors = HashMap::from([(
+            "01",
+            vec![ValidationError {
+                message: "document language and source language have the same value en-US".to_string(),
+                instance_path: "/document/source_lang".to_string(),
+            }],
+        )]);
         run_csaf20_tests("28", test_6_1_28_translation, errors.clone());
         run_csaf21_tests("28", test_6_1_28_translation, errors);
     }

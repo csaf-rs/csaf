@@ -11,7 +11,6 @@ use crate::{
 /// 6.1.8 Invalid CVSS
 /// Invalid CVSS object according to scheme
 pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-
     let cvss20_validator = create_validator(include_str!("../../assets/cvss-v2.0.json"));
     let cvss30_validator = create_validator(include_str!("../../assets/cvss-v3.0.json"));
     let cvss31_validator = create_validator(include_str!("../../assets/cvss-v3.1.json"));
@@ -31,7 +30,8 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                 if let Some(cvss3) = content.get_cvss_v3() {
                     // Use as_str because otherwise additional quotation marks would be included
                     if let Some(version) = cvss3.get("version").and_then(|v| v.as_str()) {
-                        let instance_path = create_instance_path(&instance_prefix, VulnerabilityMetric::CvssV3(version.to_string()));
+                        let instance_path =
+                            create_instance_path(&instance_prefix, VulnerabilityMetric::CvssV3(version.to_string()));
                         if version == "3.0" {
                             evaluate_cvss(cvss3, &cvss30_validator, instance_path.clone(), &mut errors);
                         } else if version == "3.1" {
@@ -60,7 +60,12 @@ fn create_instance_path(base: &str, metric: VulnerabilityMetric) -> String {
     format!("{}/{}", base, prop_name)
 }
 
-fn evaluate_cvss (cvss_value: &Map<String, Value>, validator: &Validator, instance_path: String, errors: &mut Vec<ValidationError>) {
+fn evaluate_cvss(
+    cvss_value: &Map<String, Value>,
+    validator: &Validator,
+    instance_path: String,
+    errors: &mut Vec<ValidationError>,
+) {
     let value = serde_json::to_value(cvss_value).unwrap();
     let evaluation = validator.evaluate(&value);
     for error in evaluation.iter_errors() {

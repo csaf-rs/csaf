@@ -1,6 +1,6 @@
-use std::mem::discriminant;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
+use std::mem::discriminant;
 
 /// 6.1.30 Mixed Integer and Semantic Versioning
 ///
@@ -17,7 +17,10 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
         let rev_number = revision.get_number();
         if doc_version_disc != discriminant(&rev_number) {
             errors.push(ValidationError {
-                message: format!("The document version '{}' and revision history number '{}' use different versioning schemes", doc_version, rev_number),
+                message: format!(
+                    "The document version '{}' and revision history number '{}' use different versioning schemes",
+                    doc_version, rev_number
+                ),
                 instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
             });
         }
@@ -34,15 +37,17 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
 mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
-    use std::collections::HashMap;
     use crate::validations::test_6_1_30::test_6_1_30_mixed_integer_and_semantic_versioning;
+    use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_30() {
         let errors = HashMap::from([(
             "01",
             vec![ValidationError {
-                message: "The document version '2' and revision history number '1.0.0' use different versioning schemes".to_string(),
+                message:
+                    "The document version '2' and revision history number '1.0.0' use different versioning schemes"
+                        .to_string(),
                 instance_path: "/document/tracking/revision_history/0/number".to_string(),
             }],
         )]);

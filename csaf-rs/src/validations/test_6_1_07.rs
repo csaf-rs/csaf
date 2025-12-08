@@ -5,15 +5,17 @@ use crate::csaf_traits::{
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
+type ProductMetricsMap =
+    HashMap<String, HashMap<(VulnerabilityMetric, Option<String>), Vec<String>>>;
 fn gather_product_metrics(
     vulnerability: &impl VulnerabilityTrait,
     vulnerability_index: usize,
-) -> Option<HashMap<String, HashMap<(VulnerabilityMetric, Option<String>), Vec<String>>>> {
+) -> Option<ProductMetricsMap> {
     let metrics = vulnerability.get_metrics();
-    if metrics.is_none() {
-        return None;
-    }
-    let mut product_metrics: HashMap<String, HashMap<(VulnerabilityMetric, Option<String>), Vec<String>>> =
+
+    metrics?;
+
+    let mut product_metrics: ProductMetricsMap =
         HashMap::new();
     for (metric_index, metric) in metrics.unwrap().iter().enumerate() {
         let content = metric.get_content();

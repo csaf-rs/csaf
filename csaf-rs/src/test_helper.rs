@@ -32,8 +32,7 @@ fn run_csaf_tests<CsafType>(
     if test_files.is_empty() {
         panic!("No test files found for pattern {}", pattern);
     }
-    for entry in test_files {
-        if let Ok(path) = entry {
+    for path in test_files.into_iter().flatten() {
             // Extract the file suffix (e.g., "01", "02", etc.)
             let file_name = path.file_name().unwrap().to_string_lossy();
             println!("{}", file_name);
@@ -57,7 +56,7 @@ fn run_csaf_tests<CsafType>(
 
                 let mut expected_errors = expected_errors
                     .get(test_num)
-                    .expect(&format!(
+                    .unwrap_or_else(|| panic!(
                         "Missing expected error definition for negative test case {}",
                         test_num
                     ))
@@ -82,7 +81,6 @@ fn run_csaf_tests<CsafType>(
                 panic!("Unexpected test case number format: {}", test_num);
             }
         }
-    }
 }
 
 pub fn run_csaf20_tests_with_excludes(

@@ -5,8 +5,7 @@ use crate::csaf_traits::{
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
-type ProductMetricsMap =
-    HashMap<String, HashMap<(VulnerabilityMetric, Option<String>), Vec<String>>>;
+type ProductMetricsMap = HashMap<String, HashMap<(VulnerabilityMetric, Option<String>), Vec<String>>>;
 fn gather_product_metrics(
     vulnerability: &impl VulnerabilityTrait,
     vulnerability_index: usize,
@@ -15,8 +14,7 @@ fn gather_product_metrics(
 
     metrics?;
 
-    let mut product_metrics: ProductMetricsMap =
-        HashMap::new();
+    let mut product_metrics: ProductMetricsMap = HashMap::new();
     for (metric_index, metric) in metrics.unwrap().iter().enumerate() {
         let content = metric.get_content();
         let mut present_metric_types = HashSet::<VulnerabilityMetric>::new();
@@ -66,11 +64,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
                         for path in paths {
                             errors.get_or_insert_with(Vec::new).push(ValidationError {
                                 message: create_error_message(metric_type, p),
-                                instance_path: format!(
-                                    "{}/{}",
-                                    path,
-                                    get_metric_prop_name(metric_type.to_owned())
-                                ),
+                                instance_path: format!("{}/{}", path, get_metric_prop_name(metric_type.to_owned())),
                             });
                         }
                     }
@@ -82,11 +76,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
 }
 
 fn create_error_message(score_type: &VulnerabilityMetric, product_id: &str) -> String {
-    format!(
-        "Multiple {} scores are given for {}.",
-        score_type,
-        product_id
-    )
+    format!("Multiple {} scores are given for {}.", score_type, product_id)
 }
 
 #[cfg(test)]

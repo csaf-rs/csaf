@@ -78,7 +78,7 @@ fn evaluate_cvss(
 
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests};
+    use crate::test_helper::run_csaf20_tests;
     use crate::validation::ValidationError;
     use crate::validations::test_6_1_08::test_6_1_08_invalid_cvss;
     use std::collections::HashMap;

@@ -228,7 +228,7 @@ pub trait TrackingTrait {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialOrd)]
+#[derive(Debug, Clone, Eq)]
 pub enum VersionNumber {
     Integer(u64),
     Semver(Version),
@@ -274,6 +274,10 @@ impl Display for VersionNumber {
             VersionNumber::Semver(version) => write!(f, "{}", version),
         }
     }
+}
+
+impl PartialOrd for VersionNumber {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> { Some(self.cmp(other)) }
 }
 
 impl Ord for VersionNumber {

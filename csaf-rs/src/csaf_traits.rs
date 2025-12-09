@@ -5,6 +5,7 @@ use crate::csaf2_1::schema::{
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
+use regex::Regex;
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
@@ -109,21 +110,94 @@ pub trait DocumentReferenceTrait {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DocumentCategory {
+    // These categories are only mentioned in CSAF 2.0
+    CsafBase,
     CsafInformationalAdvisory,
     CsafSecurityIncidentResponse,
     CsafSecurityAdvisory,
     CsafVex,
-    Other(String),
     // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
     // for syntactic sugar, we don't need to make this distinction here
     CsafWithdrawn,
     CsafSuperseded,
     CsafDeprecatedSecurityAdvisory,
+    Other(String),
 }
 
 impl DocumentCategory {
+    const CSAF_20_KNOWN_PROFILES: [DocumentCategory; 5] = [
+        DocumentCategory::CsafBase,
+        DocumentCategory::CsafSecurityIncidentResponse,
+        DocumentCategory::CsafInformationalAdvisory,
+        DocumentCategory::CsafSecurityAdvisory,
+        DocumentCategory::CsafVex,
+    ];
+
+    const CSAF_21_KNOWN_PROFILES: [DocumentCategory; 8] = [
+        DocumentCategory::CsafBase,
+        DocumentCategory::CsafSecurityIncidentResponse,
+        DocumentCategory::CsafInformationalAdvisory,
+        DocumentCategory::CsafSecurityAdvisory,
+        DocumentCategory::CsafVex,
+        DocumentCategory::CsafDeprecatedSecurityAdvisory,
+        DocumentCategory::CsafWithdrawn,
+        DocumentCategory::CsafSuperseded,
+    ];
+
+    /// Checks if the category string starts with "csaf_"
+    pub fn starts_with_csaf_underscore(&self) -> bool {
+        self.to_string().starts_with("csaf_")
+    }
+
+    /// Checks if the document category is a known profile for the given CSAF version
+    pub fn is_known_profile(&self, version: &CsafVersion) -> bool {
+        match version {
+            CsafVersion::X20 => Self::CSAF_20_KNOWN_PROFILES.contains(&self),
+            CsafVersion::X21 => Self::CSAF_21_KNOWN_PROFILES.contains(&self),
+        }
+    }
+
+    /// Returns a concatenated string of known profiles for the given CSAF version
+    pub fn known_profile_concat(version: &CsafVersion) -> String {
+        let profiles: &[DocumentCategory] = match version {
+            CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
+            CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,
+        };
+        profiles
+            .iter()
+            .map(|profile| profile.to_string())
+            .collect::<Vec<String>>()
+            .join(", ")
+    }
+
+    /// Returns a vector of tuples containing normalized known profile strings and their original enum values
+    pub fn known_profiles_normalized(version: &CsafVersion) -> Vec<(String, DocumentCategory)> {
+        let profiles: &[DocumentCategory] = match version {
+            CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
+            CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,
+        };
+        profiles
+            .iter()
+            .map(|profile| (profile.normalize(), profile.clone()))
+            .collect()
+    }
+
+    /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore
+    pub fn normalize(&self) -> String {
+        // Regex to match leading "csaf" and any whitespace, hyphen or underscore
+        // before the "csaf" or otherwise anywhere in the string
+        // ^[\s_-]*csaf - matches any leading whitespaces, hyphens or underscores followed by "csaf"
+        // |            - or
+        // [\s_-]      - matches any whitespace, hyphen or underscore anywhere in the string
+        let normalization_regex: Regex = Regex::new(r"^[\s_-]*csaf_|[\s_-]").unwrap();
+        normalization_regex
+            .replace_all(&self.to_string().to_lowercase(), "")
+            .to_string()
+    }
+
     pub fn from_string(category: &str) -> Self {
         match category {
+            "csaf_base" => DocumentCategory::CsafBase,
             "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
             "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
             "csaf_security_advisory" => DocumentCategory::CsafSecurityAdvisory,
@@ -131,7 +205,7 @@ impl DocumentCategory {
             "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
             "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
             "csaf_superseded" => DocumentCategory::CsafSuperseded,
-            _ => DocumentCategory::Other("_".to_string()),
+            default => DocumentCategory::Other(default.to_string()),
         }
     }
 }
@@ -139,6 +213,7 @@ impl DocumentCategory {
 impl Display for DocumentCategory {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
+            DocumentCategory::CsafBase => write!(f, "csaf_base"),
             DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
             DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
             DocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),

@@ -1,19 +1,21 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait,
-    FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
-    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
-    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
-    VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
+    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
+    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
+    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
+    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
+    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
 };
 use crate::csaf2_0::schema::{
-    Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, DocumentGenerator,
-    DocumentLevelMetaData, DocumentStatus, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement,
-    LabelOfTlp, Note, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Relationship, Remediation,
-    Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
+    CryptographicHashes, CsafVersion as CsafVersion20, DocumentGenerator, DocumentLevelMetaData, DocumentStatus,
+    FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, NoteCategory,
+    PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
+    RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
-    CategoryOfPublisher as CategoryOfPublisher21, CategoryOfTheRemediation as Remediation21,
-    DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21, PartyCategory as PartyCategory21,
+    CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
+    CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21,
+    NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -310,6 +312,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     type DistributionType = RulesForSharingDocument;
     type NoteType = Note;
     type PublisherType = Publisher;
+    type DocumentReferenceType = Reference;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -345,6 +348,37 @@ impl DocumentTrait for DocumentLevelMetaData {
 
     fn get_publisher(&self) -> &Publisher {
         &self.publisher
+    }
+
+    fn get_category_string(&self) -> &String {
+        self.category.deref()
+    }
+
+    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>> {
+        self.references.as_deref()
+    }
+
+    fn get_csaf_version(&self) -> &CsafVersion {
+        match self.csaf_version {
+            CsafVersion20::X20 => &CsafVersion::X20,
+        }
+    }
+}
+
+impl DocumentReferenceTrait for Reference {
+    fn get_category(&self) -> &CategoryOfReference21 {
+        match &self.category {
+            CategoryOfReference::External => &CategoryOfReference21::External,
+            CategoryOfReference::Self_ => &CategoryOfReference21::Self_,
+        }
+    }
+
+    fn get_summary(&self) -> &String {
+        &self.summary
+    }
+
+    fn get_url(&self) -> &String {
+        &self.url
     }
 }
 
@@ -395,6 +429,18 @@ impl WithGroupIds for Note {
 impl NoteTrait for Note {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         None::<std::iter::Empty<&String>>
+    }
+
+    fn get_category(&self) -> NoteCategory21 {
+        match self.category {
+            NoteCategory::Summary => NoteCategory21::Summary,
+            NoteCategory::Details => NoteCategory21::Details,
+            NoteCategory::Other => NoteCategory21::Other,
+            NoteCategory::Description => NoteCategory21::Description,
+            NoteCategory::Faq => NoteCategory21::Faq,
+            NoteCategory::General => NoteCategory21::General,
+            NoteCategory::LegalDisclaimer => NoteCategory21::LegalDisclaimer,
+        }
     }
 }
 
@@ -557,6 +603,8 @@ impl ProductTrait for FullProductNameT {
 }
 
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
+    type HashType = CryptographicHashes;
+
     fn get_purls(&self) -> Option<&[String]> {
         self.purl.as_ref().map(std::slice::from_ref)
     }
@@ -567,5 +615,31 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
 
     fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.serial_numbers.as_ref().map(|v| v.iter().map(|x| x.deref()))
+    }
+
+    fn get_hashes(&self) -> &Vec<Self::HashType> {
+        self.hashes.as_ref()
+    }
+}
+
+impl HashTrait for CryptographicHashes {
+    type FileHashType = FileHash;
+
+    fn get_filename(&self) -> &String {
+        self.filename.deref()
+    }
+
+    fn get_file_hashes(&self) -> &Vec<Self::FileHashType> {
+        self.file_hashes.as_ref()
+    }
+}
+
+impl FileHashTrait for FileHash {
+    fn get_algorithm(&self) -> &String {
+        self.algorithm.deref()
+    }
+
+    fn get_hash(&self) -> &String {
+        self.value.deref()
     }
 }

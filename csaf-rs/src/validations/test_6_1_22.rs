@@ -13,7 +13,7 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
     let mut number_paths: HashMap<String, Vec<usize>> = HashMap::new();
     for (i_r, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number_string();
-        let path = number_paths.entry(number.clone()).or_insert_with(Vec::new);
+        let path = number_paths.entry(number.clone()).or_default();
         path.push(i_r);
     }
 

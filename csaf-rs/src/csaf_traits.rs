@@ -1,5 +1,6 @@
 use crate::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, PartyCategory,
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, NoteCategory,
+    PartyCategory,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
@@ -48,6 +49,8 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
+    type DocumentReferenceType: DocumentReferenceTrait;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
 
@@ -68,6 +71,84 @@ pub trait DocumentTrait {
 
     /// Returns the publisher information for this document
     fn get_publisher(&self) -> &Self::PublisherType;
+
+    /// Returns the category of the document as a string
+    fn get_category_string(&self) -> &String;
+
+    /// Returns the category of the document as an enum
+    fn get_category(&self) -> DocumentCategory {
+        DocumentCategory::from_string(self.get_category_string())
+    }
+
+    /// Returns the references of this document
+    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
+
+    fn get_csaf_version(&self) -> &CsafVersion;
+}
+
+/// Enum representing CSAF versions
+///
+/// Contrary to other enums that are based on enums in the generated schemas, we are re-defining
+/// this enum in the trait. Each schema only contains an enum with "their" version, and merging them
+/// would be more complex then defining here and mapping in the implementations.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum CsafVersion {
+    X20,
+    X21,
+}
+
+/// Trait representing document references
+pub trait DocumentReferenceTrait {
+    // Returns the category of the document reference as enum
+    fn get_category(&self) -> &CategoryOfReference;
+    // Returns the summary of the document reference
+    fn get_summary(&self) -> &String;
+    // Returns the URL of the document reference
+    fn get_url(&self) -> &String;
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum DocumentCategory {
+    CsafInformationalAdvisory,
+    CsafSecurityIncidentResponse,
+    CsafSecurityAdvisory,
+    CsafVex,
+    Other(String),
+    // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
+    // for syntactic sugar, we don't need to make this distinction here
+    CsafWithdrawn,
+    CsafSuperseded,
+    CsafDeprecatedSecurityAdvisory,
+}
+
+impl DocumentCategory {
+    pub fn from_string(category: &str) -> Self {
+        match category {
+            "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
+            "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
+            "csaf_security_advisory" => DocumentCategory::CsafSecurityAdvisory,
+            "csaf_vex" => DocumentCategory::CsafVex,
+            "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
+            "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
+            "csaf_superseded" => DocumentCategory::CsafSuperseded,
+            _ => DocumentCategory::Other("_".to_string()),
+        }
+    }
+}
+
+impl Display for DocumentCategory {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
+            DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
+            DocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
+            DocumentCategory::CsafVex => write!(f, "csaf_vex"),
+            DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
+            DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
+            DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
+            DocumentCategory::Other(other) => write!(f, "{}", other),
+        }
+    }
 }
 
 pub trait PublisherTrait {
@@ -95,6 +176,8 @@ pub trait DistributionTrait {
 pub trait NoteTrait: WithGroupIds {
     /// Returns the product IDs associated with this vulnerability flag
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+
+    fn get_category(&self) -> NoteCategory;
 }
 
 /// Trait representing sharing group information
@@ -145,20 +228,42 @@ pub trait TrackingTrait {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd)]
+#[derive(Debug, Clone, Eq)]
 pub enum VersionNumber {
     Integer(u64),
     Semver(Version),
 }
 
 impl VersionNumber {
-    fn from_number(number: &str) -> Self {
+    /// Parses a string to either intver or semver
+    /// Will panic if not parseable
+    pub fn from_number(number: &str) -> Self {
         if let Ok(number) = number.parse::<u64>() {
             return VersionNumber::Integer(number);
         } else if let Ok(number) = Version::parse(number) {
             return VersionNumber::Semver(number);
         }
         panic!("Version could not be parsed as intver or semver")
+    }
+
+    /// Gets the version number for intver / the major version for semver
+    pub fn get_major(&self) -> u64 {
+        match self {
+            VersionNumber::Integer(num) => *num,
+            VersionNumber::Semver(semver) => semver.major,
+        }
+    }
+}
+
+impl PartialEq for VersionNumber {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a == b,
+            (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a == b,
+            // Integer and Semver are always unequal
+            (VersionNumber::Integer(_), VersionNumber::Semver(_)) => false,
+            (VersionNumber::Semver(_), VersionNumber::Integer(_)) => false,
+        }
     }
 }
 
@@ -171,12 +276,18 @@ impl Display for VersionNumber {
     }
 }
 
+impl PartialOrd for VersionNumber {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 impl Ord for VersionNumber {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
             (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a.cmp(b),
             (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a.cmp(b),
-            // Integer immer vor Semver bei gemischten
+            // Panic if intver and semver are compared against each other
             (VersionNumber::Integer(a), VersionNumber::Semver(b)) => {
                 panic!(
                     "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",
@@ -758,12 +869,36 @@ pub trait ProductTrait {
 
 /// Trait representing an abstract product identification helper of a full product name.
 pub trait ProductIdentificationHelperTrait {
+    type HashType: HashTrait;
+
     /// Returns the PURLs identifying the associated product.
     fn get_purls(&self) -> Option<&[String]>;
 
     fn get_model_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
     fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
+
+    fn get_hashes(&self) -> &Vec<Self::HashType>;
+}
+
+/// Trait representing a collection of file_hashes for a file as part of a product identification helper
+pub trait HashTrait {
+    type FileHashType: FileHashTrait;
+
+    /// Returns the filename
+    fn get_filename(&self) -> &String;
+
+    /// returns
+    fn get_file_hashes(&self) -> &Vec<Self::FileHashType>;
+}
+
+/// Trait representing a file_hash, identified by the used hash algorithm and the hash
+pub trait FileHashTrait {
+    /// Returns the hashing algorithm of this hash
+    fn get_algorithm(&self) -> &String;
+
+    /// Returns the hash
+    fn get_hash(&self) -> &String;
 }
 
 pub trait WithGroupIds {

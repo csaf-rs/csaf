@@ -1,16 +1,17 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, DistributionTrait, DocumentTrait, FirstKnownExploitationDatesTrait,
-    FlagTrait, GeneratorTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
-    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
-    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
-    VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
+    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
+    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
+    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
+    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
+    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
 };
 use crate::csaf2_1::schema::{
-    Branch, CategoryOfPublisher, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework, Content, DocumentGenerator,
-    DocumentLevelMetaData, DocumentStatus, Epss, FirstKnownExploitationDate, Flag, FullProductNameT,
-    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Metric, Note, PartyCategory, ProductGroup, ProductStatus,
-    ProductTree, Publisher, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat,
-    Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
+    Content, CryptographicHashes, CsafVersion as CsafVersion21, DocumentGenerator, DocumentLevelMetaData,
+    DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
+    Involvement, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree,
+    Publisher, Reference, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
+    TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -283,6 +284,7 @@ impl DocumentTrait for DocumentLevelMetaData {
     type DistributionType = RulesForDocumentSharing;
     type NoteType = Note;
     type PublisherType = Publisher;
+    type DocumentReferenceType = Reference;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -312,6 +314,34 @@ impl DocumentTrait for DocumentLevelMetaData {
 
     fn get_publisher(&self) -> &Self::PublisherType {
         &self.publisher
+    }
+
+    fn get_category_string(&self) -> &String {
+        self.category.deref()
+    }
+
+    fn get_references(&self) -> Option<&Vec<Reference>> {
+        self.references.as_deref()
+    }
+
+    fn get_csaf_version(&self) -> &CsafVersion {
+        match self.csaf_version {
+            CsafVersion21::X21 => &CsafVersion::X21,
+        }
+    }
+}
+
+impl DocumentReferenceTrait for Reference {
+    fn get_category(&self) -> &CategoryOfReference {
+        &self.category
+    }
+
+    fn get_summary(&self) -> &String {
+        &self.summary
+    }
+
+    fn get_url(&self) -> &String {
+        &self.url
     }
 }
 
@@ -349,6 +379,10 @@ impl WithGroupIds for Note {
 impl NoteTrait for Note {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    }
+
+    fn get_category(&self) -> NoteCategory {
+        self.category
     }
 }
 
@@ -493,6 +527,8 @@ impl ProductTrait for FullProductNameT {
 }
 
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
+    type HashType = CryptographicHashes;
+
     fn get_purls(&self) -> Option<&[String]> {
         self.purls.as_deref()
     }
@@ -503,5 +539,31 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
 
     fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.serial_numbers.as_ref().map(|v| v.iter().map(|x| x.deref()))
+    }
+
+    fn get_hashes(&self) -> &Vec<Self::HashType> {
+        self.hashes.as_ref()
+    }
+}
+
+impl HashTrait for CryptographicHashes {
+    type FileHashType = FileHash;
+
+    fn get_filename(&self) -> &String {
+        self.filename.deref()
+    }
+
+    fn get_file_hashes(&self) -> &Vec<Self::FileHashType> {
+        self.file_hashes.as_ref()
+    }
+}
+
+impl FileHashTrait for FileHash {
+    fn get_algorithm(&self) -> &String {
+        self.algorithm.deref()
+    }
+
+    fn get_hash(&self) -> &String {
+        self.value.deref()
     }
 }

@@ -59,8 +59,7 @@ fn test_6_1_27_6_err_generator_too_similar(
     ValidationError {
         message: format!(
             "Document category '{}' is prohibited. It is too similar to the known category: {}",
-            doc_category,
-            known_category
+            doc_category, known_category
         ),
         instance_path: "/document/category".to_string(),
     }

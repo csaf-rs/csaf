@@ -151,8 +151,8 @@ impl DocumentCategory {
     /// Checks if the document category is a known profile for the given CSAF version
     pub fn is_known_profile(&self, version: &CsafVersion) -> bool {
         match version {
-            CsafVersion::X20 => Self::CSAF_20_KNOWN_PROFILES.contains(&self),
-            CsafVersion::X21 => Self::CSAF_21_KNOWN_PROFILES.contains(&self),
+            CsafVersion::X20 => Self::CSAF_20_KNOWN_PROFILES.contains(self),
+            CsafVersion::X21 => Self::CSAF_21_KNOWN_PROFILES.contains(self),
         }
     }
 

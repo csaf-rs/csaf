@@ -45,7 +45,7 @@ fn test_6_1_27_6_err_generator_starts_with_csaf(
     ValidationError {
         message: format!(
             "Document category '{}' is prohibited. Only the following values are allowed to starting with 'csaf_' are allowed: {}",
-            doc_category.to_string(),
+            doc_category,
             DocumentCategory::known_profile_concat(version)
         ),
         instance_path: "/document/category".to_string(),
@@ -59,8 +59,8 @@ fn test_6_1_27_6_err_generator_too_similar(
     ValidationError {
         message: format!(
             "Document category '{}' is prohibited. It is too similar to the known category: {}",
-            doc_category.to_string(),
-            known_category.to_string()
+            doc_category,
+            known_category
         ),
         instance_path: "/document/category".to_string(),
     }

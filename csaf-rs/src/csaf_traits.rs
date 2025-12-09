@@ -108,16 +108,15 @@ pub trait DocumentReferenceTrait {
     fn get_url(&self) -> &String;
 }
 
+/// Shared Enum representing document categories
+/// Contains well-known categories of CSAF version 2.0 and 2.1 as enum variants
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DocumentCategory {
-    // These categories are only mentioned in CSAF 2.0
     CsafBase,
     CsafInformationalAdvisory,
     CsafSecurityIncidentResponse,
     CsafSecurityAdvisory,
     CsafVex,
-    // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
-    // for syntactic sugar, we don't need to make this distinction here
     CsafWithdrawn,
     CsafSuperseded,
     CsafDeprecatedSecurityAdvisory,

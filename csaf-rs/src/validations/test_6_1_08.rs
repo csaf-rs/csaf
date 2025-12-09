@@ -11,10 +11,10 @@ use crate::{
 /// 6.1.8 Invalid CVSS
 /// Invalid CVSS object according to scheme
 pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let cvss20_validator = create_validator(include_str!("../../assets/cvss-v2.0.json"));
-    let cvss30_validator = create_validator(include_str!("../../assets/cvss-v3.0.json"));
-    let cvss31_validator = create_validator(include_str!("../../assets/cvss-v3.1.json"));
-    let cvss40_validator = create_validator(include_str!("../../assets/cvss-v4.0.1.json"));
+    let cvss20_validator = create_validator(include_str!("../../assets/cvss-v2.0.json"), false);
+    let cvss30_validator = create_validator(include_str!("../../assets/cvss-v3.0.json"), false);
+    let cvss31_validator = create_validator(include_str!("../../assets/cvss-v3.1.json"), false);
+    let cvss40_validator = create_validator(include_str!("../../assets/cvss-v4.0.1.json"), false);
 
     let mut errors: Vec<ValidationError> = Vec::new();
 
@@ -50,8 +50,12 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
-fn create_validator(schema_str: &str) -> Validator {
-    let parsed_schema: Value = serde_json::from_str(schema_str).unwrap();
+fn create_validator(schema_str: &str, strict: bool) -> Validator {
+    let mut parsed_schema: Value = serde_json::from_str(schema_str).unwrap();
+    let map = parsed_schema.as_object_mut().unwrap();
+    if strict {
+        map.insert("additionalProperties".to_string(), Value::Bool(false));
+    }
     jsonschema::validator_for(&parsed_schema).unwrap()
 }
 
@@ -78,7 +82,7 @@ fn evaluate_cvss(
 
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf20_tests;
+    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
     use crate::validations::test_6_1_08::test_6_1_08_invalid_cvss;
     use std::collections::HashMap;
@@ -113,7 +117,6 @@ mod tests {
             ]),
         );
         // 2.1 tests are not valid at the moment
-        /*
         run_csaf21_tests(
             "08",
             test_6_1_08_invalid_cvss,
@@ -148,18 +151,43 @@ mod tests {
                 ),
                 (
                     "05",
-                    vec![
-                        // ToDo
-                    ],
+                    vec![ValidationError {
+                        message: "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow \"CRITICAL\"".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow 9.3".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    }],
                 ),
                 (
                     "06",
-                    vec![
-                        // ToDo
-                    ],
+                    vec![ValidationError {
+                        message: "Unevaluated properties are not allowed ('environmentalScore', 'environmentalSeverity', 'threatScore', 'threatSeverity' were unexpected)".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow \"CRITICAL\"".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow \"MEDIUM\"".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow 9.3".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow 5.4".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    }],
                 )
             ]),
         );
-         */
     }
 }

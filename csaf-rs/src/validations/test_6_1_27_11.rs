@@ -14,19 +14,19 @@ pub fn test_6_1_27_11_vulnerabilities(doc: &impl CsafTrait) -> Result<(), Vec<Va
     // check if document is relevant document category in csaf 2.0
     if *doc.get_document().get_csaf_version() == CsafVersion::X20
         && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex {
-            return Ok(());
-        }
+        && doc_category != DocumentCategory::CsafVex
+    {
+        return Ok(());
+    }
 
     // check if document is relevant document category in csaf 2.1
     if *doc.get_document().get_csaf_version() == CsafVersion::X21
-            && doc_category != DocumentCategory::CsafSecurityAdvisory
-            && doc_category != DocumentCategory::CsafVex
-            && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
-        {
-            return Ok(());
-        }
-
+        && doc_category != DocumentCategory::CsafSecurityAdvisory
+        && doc_category != DocumentCategory::CsafVex
+        && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
+    {
+        return Ok(());
+    }
 
     if doc.get_vulnerabilities().is_empty() {
         return Err(vec![test_6_1_27_11_err_generator(&doc_category)]);

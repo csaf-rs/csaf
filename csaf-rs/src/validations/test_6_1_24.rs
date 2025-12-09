@@ -20,9 +20,7 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
             for (inv_r, involvement) in involvements.iter().enumerate() {
                 if let Some(date) = involvement.get_date() {
                     let party = involvement.get_party();
-                    let paths = date_party_paths_map
-                        .entry((date.clone(), party))
-                        .or_default();
+                    let paths = date_party_paths_map.entry((date.clone(), party)).or_default();
                     paths.push(inv_r);
                 }
             }

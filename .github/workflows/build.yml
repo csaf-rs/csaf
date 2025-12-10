@@ -18,6 +18,7 @@ jobs:
   build:
     strategy:
       matrix:
+        version: [msrv, stable]
         target:
           - arch: x86_64-unknown-linux-gnu
             runs-on: ubuntu-latest
@@ -36,6 +37,9 @@ jobs:
           submodules: 'true'
       - name: Prepare target
         run: rustup target add ${{ matrix.target.arch }}
+      - name: Set Rust version if not MSRV
+        if: ${{ matrix.version == 'stable' }}
+        run: rustup override set stable
       - name: Update assets
         run: ./update_assets.sh
       - name: Format check
@@ -59,7 +63,7 @@ jobs:
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         uses: actions/upload-artifact@v4
         with:
-          name: csaf-validator-${{ matrix.target.arch }}
+          name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
   publish-crates:
     runs-on: ubuntu-latest

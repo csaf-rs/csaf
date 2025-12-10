@@ -982,61 +982,57 @@ pub trait WithProductIds {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }
 
+/// Central helper function for extracting group references.
+///
+/// This function implements the core logic for extracting group IDs and their JSON paths
+/// from an iterator of items that implement `WithGroupIds`. This avoids code duplication
+/// across multiple trait implementations.
+///
+/// # Arguments
+///
+/// * `items` - An iterator over items that implement WithGroupIds
+/// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
+///
+/// # Returns
+///
+/// A vector of tuples containing (group_id, json_path) for each group reference found.
+fn extract_impl<'a, T: WithGroupIds + 'a>(
+    items: impl Iterator<Item = &'a T>,
+    path_prefix: &str,
+) -> Vec<(String, String)> {
+    let mut ids: Vec<(String, String)> = Vec::new();
+    for (index, item) in items.enumerate() {
+        if let Some(group_ids) = item.get_group_ids() {
+            for (group_index, group_id) in group_ids.enumerate() {
+                ids.push((
+                    group_id.to_owned(),
+                    format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
+                ))
+            }
+        }
+    }
+    ids
+}
+
 /// Extension trait for extracting group references from Option<Vec<T>> where T implements WithGroupIds.
 ///
 /// This trait provides a generic method to extract group IDs from collections of objects
 /// that implement the `WithGroupIds` trait, returning them as tuples of (group_id, json_path).
-/// It is commonly used to collect group references for validation purposes.
 /// ```
 pub trait ExtractGroupReferences<T: WithGroupIds> {
-    /// Extracts all group IDs from a collection of items that implement WithGroupIds.
-    ///
-    /// # Arguments
-    ///
-    /// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
-    ///
-    /// # Returns
-    ///
-    /// A vector of tuples containing (group_id, json_path) for each group reference found.
-    /// If the collection is None or empty, returns an empty vector.
+
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
 }
 
 impl<T: WithGroupIds> ExtractGroupReferences<T> for Option<&Vec<T>> {
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        if let Some(items) = self {
-            for (index, item) in items.iter().enumerate() {
-                if let Some(group_ids) = item.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
-                        ))
-                    }
-                }
-            }
-        }
-        ids
+        extract_impl(self.iter().flat_map(|x| x.iter()), path_prefix)
     }
 }
 
 impl<T: WithGroupIds> ExtractGroupReferences<T> for &Option<Vec<T>> {
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        if let Some(items) = self {
-            for (index, item) in items.iter().enumerate() {
-                if let Some(group_ids) = item.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
-                        ))
-                    }
-                }
-            }
-        }
-        ids
+        extract_impl(self.iter().flatten(), path_prefix)
     }
 }
 
@@ -1045,33 +1041,12 @@ impl<T: WithGroupIds> ExtractGroupReferences<T> for &Option<Vec<T>> {
 /// This trait provides a method to extract group IDs from a vector of objects
 /// that implement the `WithGroupIds` trait.
 pub trait ExtractGroupReferencesFromVec<T: WithGroupIds> {
-    /// Extracts all group IDs from a vector of items that implement WithGroupIds.
-    ///
-    /// # Arguments
-    ///
-    /// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "remediations", "threats")
-    ///
-    /// # Returns
-    ///
-    /// A vector of tuples containing (group_id, json_path) for each group reference found.
-    /// If the vector is empty, returns an empty vector.
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
 }
 
 impl<T: WithGroupIds> ExtractGroupReferencesFromVec<T> for Vec<T> {
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        for (index, item) in self.iter().enumerate() {
-            if let Some(group_ids) = item.get_group_ids() {
-                for (group_index, group_id) in group_ids.enumerate() {
-                    ids.push((
-                        group_id.to_owned(),
-                        format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
-                    ))
-                }
-            }
-        }
-        ids
+        extract_impl(self.iter(), path_prefix)
     }
 }
 

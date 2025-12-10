@@ -46,8 +46,10 @@ jobs:
         run: cargo fmt --all --check -- -l
       - name: Clippy check
         run: cargo clippy --all-targets -- -D warnings
+      - name: Install cargo-auditable
+        run: cargo install cargo-auditable
       - name: Build
-        run: cargo build --target=${{ matrix.target.arch }} --release --verbose
+        run: cargo auditable build --target=${{ matrix.target.arch }} --release --verbose
       - name: Build WASM bindings
         run: |
           if [ "${{ matrix.target.arch }}" = "wasm32-wasip2" ]; then

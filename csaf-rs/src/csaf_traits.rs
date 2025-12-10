@@ -1,9 +1,10 @@
 use crate::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, NoteCategory,
-    PartyCategory,
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTheFlag,
+    LabelOfTlp, NoteCategory, PartyCategory,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
+use crate::product_helpers::prepend_path;
 use crate::validation::ValidationError;
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
@@ -31,8 +32,51 @@ pub trait CsafTrait {
     /// Retrieves all vulnerabilities present in the CSAF document.
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType>;
 
+    /// Utility function to get all group IDs referenced in vulnerabilities along with their JSON paths
+    fn get_vulnerability_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (vuln_index, vulnerability) in self.get_vulnerabilities().iter().enumerate() {
+            let prefix_string = "vulnerabilities";
+            ids.append(&mut prepend_path(
+                prefix_string,
+                &vuln_index,
+                vulnerability.get_flags_group_references(),
+            ));
+            ids.append(&mut prepend_path(
+                prefix_string,
+                &vuln_index,
+                vulnerability.get_involvement_group_references(),
+            ));
+            ids.append(&mut prepend_path(
+                prefix_string,
+                &vuln_index,
+                vulnerability.get_notes_group_references(),
+            ));
+            ids.append(&mut prepend_path(
+                prefix_string,
+                &vuln_index,
+                vulnerability.get_remediations_group_references(),
+            ));
+            ids.append(&mut prepend_path(
+                prefix_string,
+                &vuln_index,
+                vulnerability.get_threats_group_references(),
+            ));
+        }
+        ids
+    }
+
     /// Retrieves the document meta present in the CSAF document.
     fn get_document(&self) -> &Self::DocumentType;
+
+    /// Utility function to get all group IDs referenced in the document along with their JSON paths
+    fn get_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        ids.append(&mut self.get_document().get_notes_group_references());
+        ids.append(&mut self.get_vulnerability_group_references());
+        ids
+    }
 }
 
 /// Trait representing document meta-level information
@@ -62,6 +106,24 @@ pub trait DocumentTrait {
 
     /// Returns the notes associated with this document
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
+
+    /// Utility function to get all group IDs referenced in notes along with their JSON paths
+    fn get_notes_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        if let Some(notes) = self.get_notes() {
+            for (note_index, note) in notes.iter().enumerate() {
+                if let Some(group_ids) = note.get_group_ids() {
+                    for (group_index, group_id) in group_ids.enumerate() {
+                        ids.push((
+                            group_id.to_owned(),
+                            format!("/document/notes/{}/group_ids/{}", note_index, group_index),
+                        ))
+                    }
+                }
+            }
+        }
+        ids
+    }
 
     /// Returns the language associated with this document.
     fn get_lang(&self) -> Option<&String>;
@@ -173,10 +235,7 @@ pub trait DistributionTrait {
     fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
 }
 
-pub trait NoteTrait: WithGroupIds {
-    /// Returns the product IDs associated with this vulnerability flag
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
-
+pub trait NoteTrait: WithGroupIds + WithProductIds {
     fn get_category(&self) -> NoteCategory;
 }
 
@@ -360,6 +419,22 @@ pub trait VulnerabilityTrait {
     /// Retrieves a list of remediations associated with the vulnerability.
     fn get_remediations(&self) -> &Vec<Self::RemediationType>;
 
+    /// Utility function to get all group IDs referenced in remediations along with their JSON paths
+    fn get_remediations_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        for (remediation_index, remediation) in self.get_remediations().iter().enumerate() {
+            if let Some(group_ids) = remediation.get_group_ids() {
+                for (group_index, group_id) in group_ids.enumerate() {
+                    ids.push((
+                        group_id.to_owned(),
+                        format!("remediations/{}/group_ids/{}", remediation_index, group_index),
+                    ))
+                }
+            }
+        }
+        ids
+    }
+
     /// Retrieves the status of products affected by the vulnerability, if available.
     fn get_product_status(&self) -> &Option<Self::ProductStatusType>;
 
@@ -368,6 +443,22 @@ pub trait VulnerabilityTrait {
 
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
+
+    /// Utility function to get all group IDs referenced in threats along with their JSON paths
+    fn get_threats_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        for (threat_index, threat) in self.get_threats().iter().enumerate() {
+            if let Some(group_ids) = threat.get_group_ids() {
+                for (group_index, group_id) in group_ids.enumerate() {
+                    ids.push((
+                        group_id.to_owned(),
+                        format!("threats/{}/group_ids/{}", threat_index, group_index),
+                    ))
+                }
+            }
+        }
+        ids
+    }
 
     /// Returns the date when this vulnerability was initially disclosed.
     fn get_disclosure_date(&self) -> &Option<String>;
@@ -378,8 +469,44 @@ pub trait VulnerabilityTrait {
     /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
 
+    /// Utility function to get all group IDs referenced in flags along with their JSON paths
+    fn get_flags_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        if let Some(flags) = self.get_flags() {
+            for (flag_index, flag) in flags.iter().enumerate() {
+                if let Some(group_ids) = flag.get_group_ids() {
+                    for (group_index, group_id) in group_ids.enumerate() {
+                        ids.push((
+                            group_id.to_owned(),
+                            format!("flags/{}/group_ids/{}", flag_index, group_index),
+                        ))
+                    }
+                }
+            }
+        }
+        ids
+    }
+
     /// Returns all involvements associated with this vulnerability.
     fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>>;
+
+    /// Utility function to get all group IDs referenced in involvements along with their JSON paths
+    fn get_involvement_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        if let Some(involvements) = self.get_involvements() {
+            for (involvement_index, involvement) in involvements.iter().enumerate() {
+                if let Some(group_ids) = involvement.get_group_ids() {
+                    for (group_index, group_id) in group_ids.enumerate() {
+                        ids.push((
+                            group_id.to_owned(),
+                            format!("involvements/{}/group_ids/{}", involvement_index, group_index),
+                        ))
+                    }
+                }
+            }
+        }
+        ids
+    }
 
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
@@ -389,6 +516,24 @@ pub trait VulnerabilityTrait {
 
     /// Returns the notes associated with this vulnerability.
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
+
+    /// Utility function to get all group IDs referenced in notes along with their JSON paths
+    fn get_notes_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        if let Some(notes) = self.get_notes() {
+            for (note_index, note) in notes.iter().enumerate() {
+                if let Some(group_ids) = note.get_group_ids() {
+                    for (group_index, group_id) in group_ids.enumerate() {
+                        ids.push((
+                            group_id.to_owned(),
+                            format!("notes/{}/group_ids/{}", note_index, group_index),
+                        ))
+                    }
+                }
+            }
+        }
+        ids
+    }
 
     /// Returns the information about the first known exploitation dates of this vulnerability.
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
@@ -401,12 +546,12 @@ pub trait VulnerabilityIdTrait {
 }
 
 /// Trait for accessing vulnerability flags information
-pub trait FlagTrait: WithGroupIds {
+pub trait FlagTrait: WithGroupIds + WithProductIds {
     /// Returns the date associated with this vulnerability flag
     fn get_date(&self) -> &Option<String>;
 
-    /// Returns the product IDs associated with this vulnerability flag
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    /// Returns the label of the vulnerability flag
+    fn get_label(&self) -> LabelOfTheFlag;
 }
 
 pub trait FirstKnownExploitationDatesTrait {
@@ -426,14 +571,11 @@ pub trait InvolvementTrait: WithGroupIds {
 ///
 /// The `RemediationTrait` encapsulates the details of a remediation, such as its
 /// category and the affected products or groups.
-pub trait RemediationTrait: WithGroupIds {
+pub trait RemediationTrait: WithGroupIds + WithProductIds {
     /// Returns the category of the remediation.
     ///
     /// Categories are defined by the CSAF schema.
     fn get_category(&self) -> CategoryOfTheRemediation;
-
-    /// Retrieves the product IDs directly affected by this remediation, if any.
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
     /// Computes a set of all product IDs affected by this remediation, either
     /// directly or through product groups.
@@ -666,10 +808,7 @@ pub fn get_metric_prop_name(metric: VulnerabilityMetric) -> &'static str {
 }
 
 /// Trait representing an abstract threat in a CSAF document.
-pub trait ThreatTrait: WithGroupIds {
-    /// Retrieves a list of product IDs associated with this threat, if any.
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
-
+pub trait ThreatTrait: WithGroupIds + WithProductIds {
     /// Returns the date associated with this threat
     fn get_date(&self) -> &Option<String>;
 }
@@ -902,6 +1041,11 @@ pub trait FileHashTrait {
 }
 
 pub trait WithGroupIds {
-    /// Returns the product group IDs associated with this vulnerability flag
+    /// Returns the product group IDs associated with this entity
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+}
+
+pub trait WithProductIds {
+    /// Returns the product IDs associated with this entity
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }

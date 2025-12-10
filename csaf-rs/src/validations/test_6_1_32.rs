@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, FlagTrait, VulnerabilityTrait, WithGroupIds};
+use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithGroupIds, WithProductIds};
 use crate::validation::ValidationError;
 
 /// 6.1.32 Flag without Product Reference

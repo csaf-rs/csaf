@@ -1,21 +1,15 @@
-use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
-    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
-    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
-    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
-    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
-};
+use crate::csaf_traits::{BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds, WithProductIds};
 use crate::csaf2_0::schema::{
     Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
     CryptographicHashes, CsafVersion as CsafVersion20, DocumentGenerator, DocumentLevelMetaData, DocumentStatus,
-    FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTlp, Note, NoteCategory,
-    PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
-    RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Note,
+    NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship,
+    Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
-    CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTlp as Tlp21,
-    NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
+    CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21,
+    LabelOfTlp as Tlp21, NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -27,6 +21,12 @@ use uuid::Uuid;
 impl WithGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
+    }
+}
+
+impl WithProductIds for Remediation {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
@@ -51,9 +51,7 @@ impl RemediationTrait for Remediation {
         }
     }
 
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
+
 
     fn get_date(&self) -> &Option<String> {
         &self.date
@@ -163,11 +161,13 @@ impl WithGroupIds for Threat {
     }
 }
 
-impl ThreatTrait for Threat {
+impl WithProductIds for Threat {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
+}
 
+impl ThreatTrait for Threat {
     fn get_date(&self) -> &Option<String> {
         &self.date
     }
@@ -251,13 +251,27 @@ impl WithGroupIds for Flag {
     }
 }
 
+impl WithProductIds for Flag {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    }
+}
+
 impl FlagTrait for Flag {
     fn get_date(&self) -> &Option<String> {
         &self.date
     }
 
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    fn get_label(&self) -> LabelOfTheFlag21 {
+        match self.label {
+            LabelOfTheFlag::ComponentNotPresent => LabelOfTheFlag21::ComponentNotPresent,
+            LabelOfTheFlag::InlineMitigationsAlreadyExist => LabelOfTheFlag21::InlineMitigationsAlreadyExist,
+            LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary => {
+                LabelOfTheFlag21::VulnerableCodeCannotBeControlledByAdversary
+            },
+            LabelOfTheFlag::VulnerableCodeNotInExecutePath => LabelOfTheFlag21::VulnerableCodeNotInExecutePath,
+            LabelOfTheFlag::VulnerableCodeNotPresent => LabelOfTheFlag21::VulnerableCodeNotPresent,
+        }
     }
 }
 
@@ -426,10 +440,13 @@ impl WithGroupIds for Note {
     }
 }
 
-impl NoteTrait for Note {
+impl WithProductIds for Note {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         None::<std::iter::Empty<&String>>
     }
+}
+
+impl NoteTrait for Note {
 
     fn get_category(&self) -> NoteCategory21 {
         match self.category {

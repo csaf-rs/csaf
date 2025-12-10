@@ -1,109 +1,14 @@
 use crate::csaf_traits::{
-    CsafTrait, DocumentTrait, FlagTrait, MetricTrait, NoteTrait, ProductGroupTrait, ProductStatusTrait,
-    ProductTreeTrait, RelationshipTrait, RemediationTrait, ThreatTrait, VulnerabilityTrait, WithGroupIds,
+    CsafTrait, DocumentTrait, MetricTrait, ProductGroupTrait, ProductStatusTrait,
+    ProductTreeTrait, RelationshipTrait, VulnerabilityTrait,
+    WithProductIds,
 };
 
-pub fn gather_product_group_references(doc: &impl CsafTrait) -> Vec<(String, String)> {
-    let mut ids = Vec::<(String, String)>::new();
-
-    // /document/notes[]/group_ids[]
-    if let Some(notes) = doc.get_document().get_notes() {
-        for (note_index, note) in notes.iter().enumerate() {
-            if let Some(group_ids) = note.get_group_ids() {
-                for (group_index, group_id) in group_ids.enumerate() {
-                    ids.push((
-                        group_id.to_owned(),
-                        format!("/document/notes/{}/group_ids/{}", note_index, group_index),
-                    ))
-                }
-            }
-        }
-    }
-
-    for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
-        // /vulnerabilities[]/flags[]/group_ids[]
-        if let Some(flags) = vulnerability.get_flags() {
-            for (flag_index, flag) in flags.iter().enumerate() {
-                if let Some(group_ids) = flag.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!(
-                                "/vulnerabilities/{}/flags/{}/group_ids/{}",
-                                vulnerability_index, flag_index, group_index
-                            ),
-                        ))
-                    }
-                }
-            }
-        }
-
-        // /vulnerabilities[]/involvements[]/group_ids[]
-        if let Some(involvements) = vulnerability.get_involvements() {
-            for (involvement_index, involvement) in involvements.iter().enumerate() {
-                if let Some(group_ids) = involvement.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!(
-                                "/vulnerabilities/{}/involvements/{}/group_ids/{}",
-                                vulnerability_index, involvement_index, group_index
-                            ),
-                        ))
-                    }
-                }
-            }
-        }
-
-        // /vulnerabilities[]/notes[]/group_ids[]
-        if let Some(notes) = vulnerability.get_notes() {
-            for (note_index, note) in notes.iter().enumerate() {
-                if let Some(group_ids) = note.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!(
-                                "/vulnerabilities/{}/notes/{}/group_ids/{}",
-                                vulnerability_index, note_index, group_index
-                            ),
-                        ))
-                    }
-                }
-            }
-        }
-
-        // /vulnerabilities[]/remediations[]/group_ids
-        for (remediation_index, remediation) in vulnerability.get_remediations().iter().enumerate() {
-            if let Some(group_ids) = remediation.get_group_ids() {
-                for (group_index, group_id) in group_ids.enumerate() {
-                    ids.push((
-                        group_id.to_owned(),
-                        format!(
-                            "/vulnerabilities/{}/remediations/{}/group_ids/{}",
-                            vulnerability_index, remediation_index, group_index
-                        ),
-                    ))
-                }
-            }
-        }
-
-        // /vulnerabilities[]/threats[]/group_ids
-        for (threat_index, threat) in vulnerability.get_threats().iter().enumerate() {
-            if let Some(group_ids) = threat.get_group_ids() {
-                for (group_index, group_id) in group_ids.enumerate() {
-                    ids.push((
-                        group_id.to_owned(),
-                        format!(
-                            "/vulnerabilities/{}/threats/{}/group_ids/{}",
-                            vulnerability_index, threat_index, group_index
-                        ),
-                    ))
-                }
-            }
-        }
-    }
-
-    ids
+pub fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
+    id_path_tuples
+        .iter()
+        .map(|(group_or_product_id, path)| (group_or_product_id.to_owned(), format!("/{}/{}/{}", prefix, idx, path)))
+        .collect()
 }
 
 pub fn gather_product_references(doc: &impl CsafTrait) -> Vec<(String, String)> {

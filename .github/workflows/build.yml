@@ -16,6 +16,8 @@ env:
 
 jobs:
   build:
+    permissions:
+      contents: write
     strategy:
       matrix:
         version: [msrv, stable]
@@ -67,6 +69,22 @@ jobs:
         with:
           name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          format: cyclonedx-json
+          artifact-name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-sbom.cdx.json
+          output-directory: ./target/${{ matrix.target.arch }}/release/
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          format: spdx-json
+          artifact-name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-sbom.spdx.json
+          output-directory: ./target/${{ matrix.target.arch }}/release/
+
+
   publish-crates:
     runs-on: ubuntu-latest
     permissions:

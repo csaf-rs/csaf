@@ -109,20 +109,8 @@ pub trait DocumentTrait {
 
     /// Utility function to get all group IDs referenced in notes along with their JSON paths
     fn get_notes_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        if let Some(notes) = self.get_notes() {
-            for (note_index, note) in notes.iter().enumerate() {
-                if let Some(group_ids) = note.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!("/document/notes/{}/group_ids/{}", note_index, group_index),
-                        ))
-                    }
-                }
-            }
-        }
-        ids
+        self.get_notes()
+            .extract_group_references("/document/notes")
     }
 
     /// Returns the language associated with this document.
@@ -421,18 +409,8 @@ pub trait VulnerabilityTrait {
 
     /// Utility function to get all group IDs referenced in remediations along with their JSON paths
     fn get_remediations_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        for (remediation_index, remediation) in self.get_remediations().iter().enumerate() {
-            if let Some(group_ids) = remediation.get_group_ids() {
-                for (group_index, group_id) in group_ids.enumerate() {
-                    ids.push((
-                        group_id.to_owned(),
-                        format!("remediations/{}/group_ids/{}", remediation_index, group_index),
-                    ))
-                }
-            }
-        }
-        ids
+        self.get_remediations()
+            .extract_group_references("remediations")
     }
 
     /// Retrieves the status of products affected by the vulnerability, if available.
@@ -446,18 +424,8 @@ pub trait VulnerabilityTrait {
 
     /// Utility function to get all group IDs referenced in threats along with their JSON paths
     fn get_threats_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        for (threat_index, threat) in self.get_threats().iter().enumerate() {
-            if let Some(group_ids) = threat.get_group_ids() {
-                for (group_index, group_id) in group_ids.enumerate() {
-                    ids.push((
-                        group_id.to_owned(),
-                        format!("threats/{}/group_ids/{}", threat_index, group_index),
-                    ))
-                }
-            }
-        }
-        ids
+        self.get_threats()
+            .extract_group_references("threats")
     }
 
     /// Returns the date when this vulnerability was initially disclosed.
@@ -471,20 +439,8 @@ pub trait VulnerabilityTrait {
 
     /// Utility function to get all group IDs referenced in flags along with their JSON paths
     fn get_flags_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        if let Some(flags) = self.get_flags() {
-            for (flag_index, flag) in flags.iter().enumerate() {
-                if let Some(group_ids) = flag.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!("flags/{}/group_ids/{}", flag_index, group_index),
-                        ))
-                    }
-                }
-            }
-        }
-        ids
+        self.get_flags()
+            .extract_group_references("flags")
     }
 
     /// Returns all involvements associated with this vulnerability.
@@ -492,20 +448,8 @@ pub trait VulnerabilityTrait {
 
     /// Utility function to get all group IDs referenced in involvements along with their JSON paths
     fn get_involvement_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        if let Some(involvements) = self.get_involvements() {
-            for (involvement_index, involvement) in involvements.iter().enumerate() {
-                if let Some(group_ids) = involvement.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!("involvements/{}/group_ids/{}", involvement_index, group_index),
-                        ))
-                    }
-                }
-            }
-        }
-        ids
+        self.get_involvements()
+            .extract_group_references("involvements")
     }
 
     /// Returns the CVE associated with the vulnerability.
@@ -519,20 +463,8 @@ pub trait VulnerabilityTrait {
 
     /// Utility function to get all group IDs referenced in notes along with their JSON paths
     fn get_notes_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        if let Some(notes) = self.get_notes() {
-            for (note_index, note) in notes.iter().enumerate() {
-                if let Some(group_ids) = note.get_group_ids() {
-                    for (group_index, group_id) in group_ids.enumerate() {
-                        ids.push((
-                            group_id.to_owned(),
-                            format!("notes/{}/group_ids/{}", note_index, group_index),
-                        ))
-                    }
-                }
-            }
-        }
-        ids
+        self.get_notes()
+            .extract_group_references("notes")
     }
 
     /// Returns the information about the first known exploitation dates of this vulnerability.
@@ -1049,3 +981,97 @@ pub trait WithProductIds {
     /// Returns the product IDs associated with this entity
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }
+
+/// Extension trait for extracting group references from Option<Vec<T>> where T implements WithGroupIds.
+///
+/// This trait provides a generic method to extract group IDs from collections of objects
+/// that implement the `WithGroupIds` trait, returning them as tuples of (group_id, json_path).
+/// It is commonly used to collect group references for validation purposes.
+/// ```
+pub trait ExtractGroupReferences<T: WithGroupIds> {
+    /// Extracts all group IDs from a collection of items that implement WithGroupIds.
+    ///
+    /// # Arguments
+    ///
+    /// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
+    ///
+    /// # Returns
+    ///
+    /// A vector of tuples containing (group_id, json_path) for each group reference found.
+    /// If the collection is None or empty, returns an empty vector.
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
+}
+
+impl<T: WithGroupIds> ExtractGroupReferences<T> for Option<&Vec<T>> {
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        if let Some(items) = self {
+            for (index, item) in items.iter().enumerate() {
+                if let Some(group_ids) = item.get_group_ids() {
+                    for (group_index, group_id) in group_ids.enumerate() {
+                        ids.push((
+                            group_id.to_owned(),
+                            format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
+                        ))
+                    }
+                }
+            }
+        }
+        ids
+    }
+}
+
+impl<T: WithGroupIds> ExtractGroupReferences<T> for &Option<Vec<T>> {
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        if let Some(items) = self {
+            for (index, item) in items.iter().enumerate() {
+                if let Some(group_ids) = item.get_group_ids() {
+                    for (group_index, group_id) in group_ids.enumerate() {
+                        ids.push((
+                            group_id.to_owned(),
+                            format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
+                        ))
+                    }
+                }
+            }
+        }
+        ids
+    }
+}
+
+/// Extension trait for extracting group references from Vec<T> where T implements WithGroupIds.
+///
+/// This trait provides a method to extract group IDs from a vector of objects
+/// that implement the `WithGroupIds` trait.
+pub trait ExtractGroupReferencesFromVec<T: WithGroupIds> {
+    /// Extracts all group IDs from a vector of items that implement WithGroupIds.
+    ///
+    /// # Arguments
+    ///
+    /// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "remediations", "threats")
+    ///
+    /// # Returns
+    ///
+    /// A vector of tuples containing (group_id, json_path) for each group reference found.
+    /// If the vector is empty, returns an empty vector.
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
+}
+
+impl<T: WithGroupIds> ExtractGroupReferencesFromVec<T> for Vec<T> {
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        for (index, item) in self.iter().enumerate() {
+            if let Some(group_ids) = item.get_group_ids() {
+                for (group_index, group_id) in group_ids.enumerate() {
+                    ids.push((
+                        group_id.to_owned(),
+                        format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
+                    ))
+                }
+            }
+        }
+        ids
+    }
+}
+

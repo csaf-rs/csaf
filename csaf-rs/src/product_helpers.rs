@@ -1,7 +1,6 @@
 use crate::csaf_traits::{
-    CsafTrait, DocumentTrait, MetricTrait, ProductGroupTrait, ProductStatusTrait,
-    ProductTreeTrait, RelationshipTrait, VulnerabilityTrait,
-    WithProductIds,
+    CsafTrait, MetricTrait, ProductGroupTrait, ProductStatusTrait, ProductTreeTrait, RelationshipTrait,
+    VulnerabilityTrait,
 };
 
 pub fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
@@ -14,18 +13,7 @@ pub fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, Stri
 pub fn gather_product_references(doc: &impl CsafTrait) -> Vec<(String, String)> {
     let mut ids = Vec::<(String, String)>::new();
 
-    if let Some(notes) = doc.get_document().get_notes() {
-        for (note_index, note) in notes.iter().enumerate() {
-            if let Some(product_ids) = note.get_product_ids() {
-                for (product_index, product_id) in product_ids.enumerate() {
-                    ids.push((
-                        product_id.to_owned(),
-                        format!("/document/notes/{}/product_ids/{}", note_index, product_index),
-                    ))
-                }
-            }
-        }
-    }
+    ids.append(&mut doc.get_product_references());
 
     if let Some(pt) = doc.get_product_tree().as_ref() {
         // /product_tree/product_groups[]/product_ids[]
@@ -127,18 +115,6 @@ pub fn gather_product_references(doc: &impl CsafTrait) -> Vec<(String, String)> 
             }
         }
 
-        // /vulnerabilities[]/remediations[]/product_ids[]
-        for (rem_i, rem) in v.get_remediations().iter().enumerate() {
-            if let Some(product_ids) = rem.get_product_ids() {
-                for (x_i, x) in product_ids.enumerate() {
-                    ids.push((
-                        x.to_owned(),
-                        format!("/vulnerabilities/{}/remediations/{}/product_ids/{}", v_i, rem_i, x_i),
-                    ));
-                }
-            }
-        }
-
         // /vulnerabilities[]/metrics[]/products[]
         if let Some(metrics) = v.get_metrics().as_ref() {
             for (metric_i, metric) in metrics.iter().enumerate() {
@@ -147,32 +123,6 @@ pub fn gather_product_references(doc: &impl CsafTrait) -> Vec<(String, String)> 
                         x.to_owned(),
                         format!("/vulnerabilities/{}/metrics/{}/products/{}", v_i, metric_i, x_i),
                     ));
-                }
-            }
-        }
-
-        // /vulnerabilities[]/threats[]/product_ids[]
-        for (threat_i, threat) in v.get_threats().iter().enumerate() {
-            if let Some(product_ids) = threat.get_product_ids() {
-                for (x_i, x) in product_ids.enumerate() {
-                    ids.push((
-                        x.to_owned(),
-                        format!("/vulnerabilities/{}/threats/{}/product_ids/{}", v_i, threat_i, x_i),
-                    ));
-                }
-            }
-        }
-
-        // /vulnerabilities[]/flags[]/product_ids[]
-        if let Some(flags) = v.get_flags().as_ref() {
-            for (flag_i, flag) in flags.iter().enumerate() {
-                if let Some(product_ids) = flag.get_product_ids() {
-                    for (x_i, x) in product_ids.enumerate() {
-                        ids.push((
-                            x.to_owned(),
-                            format!("/vulnerabilities/{}/flags/{}/product_ids/{}", v_i, flag_i, x_i),
-                        ));
-                    }
                 }
             }
         }

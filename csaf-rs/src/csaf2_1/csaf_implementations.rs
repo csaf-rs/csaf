@@ -1,4 +1,11 @@
-use crate::csaf_traits::{BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds, WithProductIds};
+use crate::csaf_traits::{
+    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
+    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
+    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
+    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
+    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
+    WithOptionalProductIds,
+};
 use crate::csaf2_1::schema::{
     Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
     Content, CryptographicHashes, CsafVersion as CsafVersion21, DocumentGenerator, DocumentLevelMetaData,
@@ -13,13 +20,13 @@ use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
 
-impl WithGroupIds for Remediation {
+impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
-impl WithProductIds for Remediation {
+impl WithOptionalProductIds for Remediation {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
@@ -133,13 +140,13 @@ impl ContentTrait for Content {
     }
 }
 
-impl WithGroupIds for Threat {
+impl WithOptionalGroupIds for Threat {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
-impl WithProductIds for Threat {
+impl WithOptionalProductIds for Threat {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
@@ -221,16 +228,17 @@ impl VulnerabilityIdTrait for Id {
     }
 }
 
-impl WithGroupIds for Flag {
+impl WithOptionalGroupIds for Flag {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
-impl WithProductIds for Flag {
+impl WithOptionalProductIds for Flag {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }}
+    }
+}
 
 impl FlagTrait for Flag {
     fn get_date(&self) -> &Option<String> {
@@ -258,7 +266,7 @@ impl InvolvementTrait for Involvement {
     }
 }
 
-impl WithGroupIds for Involvement {
+impl WithOptionalGroupIds for Involvement {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
@@ -373,13 +381,13 @@ impl DistributionTrait for RulesForDocumentSharing {
     }
 }
 
-impl WithGroupIds for Note {
+impl WithOptionalGroupIds for Note {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
-impl WithProductIds for Note {
+impl WithOptionalProductIds for Note {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }

@@ -1014,13 +1014,20 @@ fn extract_impl<'a, T: WithGroupIds + 'a>(
     ids
 }
 
-/// Extension trait for extracting group references from Option<Vec<T>> where T implements WithGroupIds.
+/// Extension trait for extracting group references from collections where T implements WithGroupIds.
 ///
 /// This trait provides a generic method to extract group IDs from collections of objects
 /// that implement the `WithGroupIds` trait, returning them as tuples of (group_id, json_path).
-/// ```
+///
+/// Implemented for:
+/// - `Option<&Vec<T>>`
+/// - `&Option<Vec<T>>`
+/// - `Vec<T>`
+///
+/// TODO: As already discussed, we should simplify / align our return params here.
+/// It does not make sense to have the same functionality return either `Option<&Vec<T>>` or
+/// `&Option<Vec<T>>` in some cases. When this is done, we can remove the unused case.
 pub trait ExtractGroupReferences<T: WithGroupIds> {
-
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
 }
 
@@ -1036,15 +1043,7 @@ impl<T: WithGroupIds> ExtractGroupReferences<T> for &Option<Vec<T>> {
     }
 }
 
-/// Extension trait for extracting group references from Vec<T> where T implements WithGroupIds.
-///
-/// This trait provides a method to extract group IDs from a vector of objects
-/// that implement the `WithGroupIds` trait.
-pub trait ExtractGroupReferencesFromVec<T: WithGroupIds> {
-    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
-}
-
-impl<T: WithGroupIds> ExtractGroupReferencesFromVec<T> for Vec<T> {
+impl<T: WithGroupIds> ExtractGroupReferences<T> for Vec<T> {
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
         extract_impl(self.iter(), path_prefix)
     }

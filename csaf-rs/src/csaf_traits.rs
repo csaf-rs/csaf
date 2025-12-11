@@ -89,14 +89,14 @@ pub trait CsafTrait {
     fn get_document(&self) -> &Self::DocumentType;
 
     /// Utility function to get all group IDs referenced in the document along with their JSON paths
-    fn get_group_references(&self) -> Vec<(String, String)> {
+    fn get_all_group_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
         ids.append(&mut self.get_document().get_notes_group_references());
         ids.append(&mut self.get_vulnerability_group_references());
         ids
     }
 
-    fn get_product_references(&self) -> Vec<(String, String)> {
+    fn get_all_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
         ids.append(&mut self.get_document().get_notes_product_references());
         ids.append(&mut self.get_vulnerability_product_references());

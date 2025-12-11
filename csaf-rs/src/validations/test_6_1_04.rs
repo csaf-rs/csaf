@@ -10,7 +10,7 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
             known_groups.insert(g.get_group_id().to_owned());
         }
 
-        let product_group_references = doc.get_group_references();
+        let product_group_references = doc.get_all_group_references();
         for (ref_id, ref_path) in product_group_references.iter() {
             if !known_groups.contains(ref_id) {
                 errors.get_or_insert_with(Vec::new).push(ValidationError {

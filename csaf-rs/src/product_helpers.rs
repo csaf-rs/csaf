@@ -13,7 +13,7 @@ pub fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, Stri
 pub fn gather_product_references(doc: &impl CsafTrait) -> Vec<(String, String)> {
     let mut ids = Vec::<(String, String)>::new();
 
-    ids.append(&mut doc.get_product_references());
+    ids.append(&mut doc.get_all_product_references());
 
     if let Some(pt) = doc.get_product_tree().as_ref() {
         // /product_tree/product_groups[]/product_ids[]

@@ -71,32 +71,17 @@ pub trait CsafTrait {
         let mut ids: Vec<(String, String)> = Vec::new();
 
         for (vuln_index, vulnerability) in self.get_vulnerabilities().iter().enumerate() {
-            let prefix_string = "vulnerabilities";
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
+            let getters = [
                 vulnerability.get_flags_product_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_threats_product_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_remediations_product_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_product_status_product_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_metrics_product_references(),
-            ));
+            ];
+
+            for getter in getters {
+                ids.append(&mut prepend_path("vulnerabilities", &vuln_index, getter));
+            }
         }
         ids
     }

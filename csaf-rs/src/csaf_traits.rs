@@ -5,7 +5,6 @@ use crate::csaf2_1::schema::{
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
-use regex::Regex;
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
@@ -143,9 +142,60 @@ impl DocumentCategory {
         DocumentCategory::CsafSuperseded,
     ];
 
+    /// Helper function to remove whitespace, underscores and hyphens from a string
+    fn remove_whitespace_underscore_hyphen(s: String) -> String {
+        s.chars()
+            .filter(|c| !c.is_whitespace() && *c != '_' && *c != '-')
+            .collect()
+    }
+
     /// Checks if the category string starts with "csaf_"
+    /// Removes whitespace, underscores and hyphens before checking
+    ///
+    /// Examples:
+    /// `csaf_base´ -> true
+    /// `csaf_basE` -> true
+    /// ` csaf_base` -> true
+    /// `_csaf_base` -> true
+    /// `saf_base` -> false
+    /// `_saf_base` -> false
+    fn string_starts_with_csaf_underscore(s: String) -> bool {
+        let prefix_before_csaf_underscore = s.split("csaf_").next();
+        if let Some(prefix) = prefix_before_csaf_underscore {
+            // the category contains "csaf_"
+            let cleaned_prefix = Self::remove_whitespace_underscore_hyphen(prefix.to_string());
+            // return true if everything before "csaf_" is whitespace, underscore or hyphen
+            cleaned_prefix.is_empty()
+        } else {
+            // the category does not contain "csaf_"
+            false
+        }
+    }
+
+    /// Checks if the category is DocumentCategory::Other
+    pub fn is_other(&self) -> bool {
+        matches!(self, DocumentCategory::Other(_))
+    }
+
+    /// Checks if the category string starts with "csaf_"
+    /// Removes whitespace, underscores and hyphens before checking
+    ///
+    /// Examples:
+    /// `csaf_base´ -> true
+    /// `csaf_basE` -> true
+    /// ` csaf_base` -> true
+    /// `_csaf_base` -> true
+    /// `-csaf_base` -> true
+    /// `saf_base` -> false
+    /// `_saf_base` -> false
     pub fn starts_with_csaf_underscore(&self) -> bool {
-        self.to_string().starts_with("csaf_")
+        // check if this is DocumentCategory::Other
+        // if it is not, the string does start with "csaf_" by convention
+        if !self.is_other() {
+            return true;
+        }
+
+        Self::string_starts_with_csaf_underscore(self.to_string())
     }
 
     /// Checks if the document category is a known profile for the given CSAF version
@@ -182,16 +232,27 @@ impl DocumentCategory {
     }
 
     /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore
+    ///
+    /// Examples:
+    /// `csaf_base´ -> `base`
+    /// `csaf-basE` -> `base`
+    /// ` csaf_base` -> `base`
+    /// `_csaf_base` -> `base`
+    /// `-csaf_base` -> `base`
+    /// `saf_base` -> `safbase`
+    /// `_saf_base` -> `safbase`
+    /// `Some_Other-Category` -> `someothercategory`
     pub fn normalize(&self) -> String {
-        // Regex to match leading "csaf" and any whitespace, hyphen or underscore
-        // before the "csaf" or otherwise anywhere in the string
-        // ^[\s_-]*csaf - matches any leading whitespaces, hyphens or underscores followed by "csaf"
-        // |            - or
-        // [\s_-]      - matches any whitespace, hyphen or underscore anywhere in the string
-        let normalization_regex: Regex = Regex::new(r"^[\s_-]*csaf_|[\s_-]").unwrap();
-        normalization_regex
-            .replace_all(&self.to_string().to_lowercase(), "")
-            .to_string()
+        // lowercase
+        let mut category_lowercase = self.to_string().to_lowercase();
+        // check if it starts with "csaf_" and prefix before is whitespace, underscore or hyphen
+        if Self::string_starts_with_csaf_underscore(category_lowercase.to_owned()) {
+            // remove leading prefix and "csaf_"
+            // we can safely unwrap here, as we already checked that it contains "csaf_"
+            category_lowercase = category_lowercase.split_once("csaf_").unwrap().1.to_string();
+        }
+        // remove whitespace, underscores and hyphens in the rest of the string
+        Self::remove_whitespace_underscore_hyphen(category_lowercase.to_string())
     }
 
     pub fn from_string(category: &str) -> Self {

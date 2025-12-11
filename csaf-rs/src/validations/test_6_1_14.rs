@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, RevisionHistorySortable};
 use crate::validation::ValidationError;
 
 
@@ -13,8 +13,8 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
 
     // Sort by date and by number
 
-    TrackingTrait::sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples_sort_by_date);
-    TrackingTrait::sort_revision_history_tuples_by_number(&mut rev_history_tuples_sort_by_number);
+    rev_history_tuples_sort_by_date.sort_by_date_then_number();
+    rev_history_tuples_sort_by_number.sort_by_number();
 
     // Generate errors if revision history items are sorted differently between sort by date and sort by number
     let mut errors = Vec::new();

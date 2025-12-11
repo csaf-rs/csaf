@@ -279,13 +279,38 @@ pub trait TlpTrait {
 }
 
 /// A tuple of (revision history path index, date, number)
-pub type RevisionHistoryTupleType = (usize, DateTime<Utc>, VersionNumber);
 pub type RevisionHistory = Vec<RevisionHistoryItem>;
 
+#[derive(Clone)]
 pub struct RevisionHistoryItem {
     pub path_index: usize,
     pub date: DateTime<Utc>,
     pub number: VersionNumber,
+}
+
+/// Trait providing sorting functionality for revision history
+pub trait RevisionHistorySortable {
+    /// Sorts the revision history items first by date, second by number
+    ///
+    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
+    /// should be unique anyways, as long the second order key (revision history numbers) are unique
+    fn sort_by_date_then_number(&mut self);
+
+    /// Sorts the revision history items by number
+    ///
+    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
+    /// should be unique anyways, as long as the order key (revision history numbers) are unique
+    fn sort_by_number(&mut self);
+}
+
+impl RevisionHistorySortable for RevisionHistory {
+    fn sort_by_date_then_number(&mut self) {
+        self.sort_unstable_by_key(|item| (item.date, item.number.clone()));
+    }
+
+    fn sort_by_number(&mut self) {
+        self.sort_unstable_by(|a, b| a.number.cmp(&b.number));
+    }
 }
 
 pub trait TrackingTrait {
@@ -329,21 +354,6 @@ pub trait TrackingTrait {
         revision_history
     }
 
-    /// Sorts the revision history tuples first by date, second by number
-    ///
-    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
-    /// should be unique anyways, as long the second order key (revision history numbers) are unique
-    fn sort_revision_history_tuples_by_date_by_number(tuples: &mut RevisionHistory) {
-        tuples.sort_unstable_by_key(|item| (item.date, item.number.clone()));
-    }
-
-    /// Sorts the revision history tuples by number
-    ///
-    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
-    /// should be unique anyways, as long as the order key (revision history numbers) are unique
-    fn sort_revision_history_tuples_by_number(tuples: &mut RevisionHistory) {
-        tuples.sort_unstable_by(|a, b| a.number.cmp(&b.number));
-    }
 
     /// Returns the status of this document
     fn get_status(&self) -> DocumentStatus;

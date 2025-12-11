@@ -87,6 +87,16 @@ pub trait CsafTrait {
                 &vuln_index,
                 vulnerability.get_remediations_product_references(),
             ));
+            ids.append(&mut prepend_path(
+                prefix_string,
+                &vuln_index,
+                vulnerability.get_product_status_product_references(),
+            ));
+            ids.append(&mut prepend_path(
+                prefix_string,
+                &vuln_index,
+                vulnerability.get_metrics_product_references(),
+            ));
         }
         ids
     }
@@ -455,8 +465,34 @@ pub trait VulnerabilityTrait {
     /// Retrieves the status of products affected by the vulnerability, if available.
     fn get_product_status(&self) -> &Option<Self::ProductStatusType>;
 
+    fn get_product_status_product_references(&self) -> Vec<(String, String)> {
+        if let Some(product_status) = self.get_product_status() {
+            product_status.get_all_product_references()
+        } else {
+            Vec::new()
+        }
+    }
+
     /// Returns an optional vector of metrics related to the vulnerability.
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>>;
+
+    /// Utility function to get all group IDs referenced in metrics along with their JSON paths
+    fn get_metrics_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        if let Some(metrics) = self.get_metrics().as_ref() {
+            for (metric_i, metric) in metrics.iter().enumerate() {
+                for (x_i, x) in metric.get_products().enumerate() {
+                    ids.push((
+                        x.to_owned(),
+                        format!("metrics/{}/products/{}", metric_i, x_i),
+                    ));
+                }
+            }
+        }
+
+        ids
+    }
 
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
@@ -653,6 +689,33 @@ pub trait ProductStatusTrait {
 
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
+
+    /// Helper method to add product references with a given label to the result vector.
+    fn extract_product_references<'a>(
+        &self,
+        ids: &mut Vec<(String, String)>,
+        products: Option<impl Iterator<Item = &'a String> + 'a>,
+        label: &str,
+    ) {
+        if let Some(iter) = products {
+            for (x_i, x) in iter.enumerate() {
+                ids.push(((*x).to_owned(), format!("product_status/{}/{}", label, x_i)));
+            }
+        }
+    }
+
+    fn get_all_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        self.extract_product_references(&mut ids, self.get_first_affected(), "first_affected");
+        self.extract_product_references(&mut ids, self.get_first_fixed(), "first_fixed");
+        self.extract_product_references(&mut ids, self.get_fixed(), "fixed");
+        self.extract_product_references(&mut ids, self.get_known_affected(), "known_affected");
+        self.extract_product_references(&mut ids, self.get_known_not_affected(), "known_not_affected");
+        self.extract_product_references(&mut ids, self.get_last_affected(), "last_affected");
+        self.extract_product_references(&mut ids, self.get_recommended(), "recommended");
+        self.extract_product_references(&mut ids, self.get_under_investigation(), "under_investigation");
+        ids
+    }
 
     /// Returns a `HashMap` containing all product IDs grouped by their statuses.
     fn get_all_by_product_status(&self) -> HashMap<ProductStatusGroup, HashSet<&String>> {

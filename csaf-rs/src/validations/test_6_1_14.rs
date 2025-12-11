@@ -1,6 +1,5 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, RevisionHistorySortable};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
-
 
 /// 6.1.14 Sorted Revision History
 ///

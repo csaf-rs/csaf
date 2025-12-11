@@ -355,7 +355,6 @@ pub trait TrackingTrait {
         revision_history
     }
 
-
     /// Returns the status of this document
     fn get_status(&self) -> DocumentStatus;
 

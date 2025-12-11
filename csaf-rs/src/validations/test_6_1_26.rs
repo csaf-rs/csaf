@@ -22,11 +22,6 @@ pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<
     // throw error if document category is too similar to known categories
     // this is done by comparing normalized versions of the categories
     for normalized_known_category in DocumentCategory::known_profiles_normalized(version) {
-        println!(
-            "Comparing '{}' with known normalized category '{}'",
-            doc_category.normalize(),
-            normalized_known_category.0
-        );
         if doc_category.normalize() == normalized_known_category.0 {
             return Err(vec![test_6_1_27_6_err_generator_too_similar(
                 &doc_category,

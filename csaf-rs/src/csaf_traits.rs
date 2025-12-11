@@ -42,6 +42,7 @@ pub trait CsafTrait {
     /// Retrieves all vulnerabilities present in the CSAF document.
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType>;
 
+    /// Utility function to prepend a JSON path prefix to a list of (ID, path) tuples
     fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
         id_path_tuples
             .iter()
@@ -70,6 +71,7 @@ pub trait CsafTrait {
         ids
     }
 
+    /// Utility function to get all product IDs referenced in vulnerabilities along with their JSON paths
     fn get_vulnerability_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
@@ -99,6 +101,7 @@ pub trait CsafTrait {
         ids
     }
 
+    /// Utility function to get all product IDs referenced in the document along with their JSON paths
     fn get_all_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
         ids.append(&mut self.get_document().get_notes_product_references());
@@ -857,6 +860,7 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of product groups in the product tree.
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
 
+    /// Utility function to get all product references in product groups along with their JSON paths
     fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
@@ -875,6 +879,7 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of relationships in the product tree.
     fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
 
+    /// Utility function to get all product references in relationships along with their JSON paths
     fn get_relationships_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 

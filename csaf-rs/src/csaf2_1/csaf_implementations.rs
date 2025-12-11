@@ -3,15 +3,16 @@ use crate::csaf_traits::{
     FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
     MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
     ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
-    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithGroupIds,
+    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
+    WithOptionalProductIds,
 };
 use crate::csaf2_1::schema::{
     Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
     Content, CryptographicHashes, CsafVersion as CsafVersion21, DocumentGenerator, DocumentLevelMetaData,
     DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
-    Involvement, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree,
-    Publisher, Reference, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
-    TrafficLightProtocolTlp, Vulnerability,
+    Involvement, LabelOfTheFlag, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus,
+    ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup,
+    Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -19,19 +20,21 @@ use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
 
-impl WithGroupIds for Remediation {
+impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
+    }
+}
+
+impl WithOptionalProductIds for Remediation {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
 impl RemediationTrait for Remediation {
     fn get_category(&self) -> CategoryOfTheRemediation {
         self.category
-    }
-
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 
     fn get_date(&self) -> &Option<String> {
@@ -137,17 +140,19 @@ impl ContentTrait for Content {
     }
 }
 
-impl WithGroupIds for Threat {
+impl WithOptionalGroupIds for Threat {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
     }
 }
 
-impl ThreatTrait for Threat {
+impl WithOptionalProductIds for Threat {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
+}
 
+impl ThreatTrait for Threat {
     fn get_date(&self) -> &Option<String> {
         &self.date
     }
@@ -223,9 +228,15 @@ impl VulnerabilityIdTrait for Id {
     }
 }
 
-impl WithGroupIds for Flag {
+impl WithOptionalGroupIds for Flag {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
+    }
+}
+
+impl WithOptionalProductIds for Flag {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
@@ -234,8 +245,8 @@ impl FlagTrait for Flag {
         &self.date
     }
 
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    fn get_label(&self) -> LabelOfTheFlag {
+        self.label
     }
 }
 
@@ -255,7 +266,7 @@ impl InvolvementTrait for Involvement {
     }
 }
 
-impl WithGroupIds for Involvement {
+impl WithOptionalGroupIds for Involvement {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
@@ -370,17 +381,19 @@ impl DistributionTrait for RulesForDocumentSharing {
     }
 }
 
-impl WithGroupIds for Note {
+impl WithOptionalGroupIds for Note {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
 }
 
-impl NoteTrait for Note {
+impl WithOptionalProductIds for Note {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
     }
+}
 
+impl NoteTrait for Note {
     fn get_category(&self) -> NoteCategory {
         self.category
     }

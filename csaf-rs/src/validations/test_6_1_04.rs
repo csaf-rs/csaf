@@ -1,5 +1,4 @@
 use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
-use crate::product_helpers::gather_product_group_references;
 use crate::validation::ValidationError;
 use std::collections::HashSet;
 
@@ -11,7 +10,7 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
             known_groups.insert(g.get_group_id().to_owned());
         }
 
-        let product_group_references = gather_product_group_references(doc);
+        let product_group_references = doc.get_all_group_references();
         for (ref_id, ref_path) in product_group_references.iter() {
             if !known_groups.contains(ref_id) {
                 errors.get_or_insert_with(Vec::new).push(ValidationError {

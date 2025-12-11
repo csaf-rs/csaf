@@ -12,9 +12,8 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
     let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
 
     // Sort by date and by number
-
-    rev_history_tuples_sort_by_date.sort_by_date_then_number();
-    rev_history_tuples_sort_by_number.sort_by_number();
+    rev_history_tuples_sort_by_date.inplace_sort_by_date_then_number();
+    rev_history_tuples_sort_by_number.inplace_sort_by_number();
 
     // Generate errors if revision history items are sorted differently between sort by date and sort by number
     let mut errors = Vec::new();

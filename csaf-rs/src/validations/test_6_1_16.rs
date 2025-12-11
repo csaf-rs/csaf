@@ -11,7 +11,7 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
     let document = doc.get_document();
 
     let mut revision_history = doc.get_document().get_tracking().get_revision_history_tuples();
-    revision_history.sort_by_date_then_number();
+    revision_history.inplace_sort_by_date_then_number();
 
     if let Some(latest_revision_history_item) = revision_history.last() {
         let latest_number = &latest_revision_history_item.number;

@@ -294,21 +294,21 @@ pub trait RevisionHistorySortable {
     ///
     /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
     /// should be unique anyways, as long the second order key (revision history numbers) are unique
-    fn sort_by_date_then_number(&mut self);
+    fn inplace_sort_by_date_then_number(&mut self);
 
     /// Sorts the revision history items by number
     ///
     /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
     /// should be unique anyways, as long as the order key (revision history numbers) are unique
-    fn sort_by_number(&mut self);
+    fn inplace_sort_by_number(&mut self);
 }
 
 impl RevisionHistorySortable for RevisionHistory {
-    fn sort_by_date_then_number(&mut self) {
+    fn inplace_sort_by_date_then_number(&mut self) {
         self.sort_unstable_by_key(|item| (item.date, item.number.clone()));
     }
 
-    fn sort_by_number(&mut self) {
+    fn inplace_sort_by_number(&mut self) {
         self.sort_unstable_by(|a, b| a.number.cmp(&b.number));
     }
 }
@@ -396,6 +396,7 @@ impl VersionNumber {
     }
 
     /// Checks whether the intver version is zero, always `false` for semver
+    /// Hard coupled check that version is intver and zero
     pub fn is_intver_is_zero(&self) -> bool {
         if let VersionNumber::Integer(version) = self {
             return *version == 0;
@@ -404,6 +405,7 @@ impl VersionNumber {
     }
 
     /// Checks whether the semver major version is zero, always `false` for intver
+    /// Hard coupled check that version is semver and major is zero
     pub fn is_semver_is_major_zero(&self) -> bool {
         if let VersionNumber::Semver(version) = self {
             return version.major == 0;
@@ -412,6 +414,7 @@ impl VersionNumber {
     }
 
     /// Checks whether the semver has a pre-release part, always `false` for intver
+    /// Hard coupled check that version is semver and has pre-release part
     pub fn is_semver_has_prerelease(&self) -> bool {
         if let VersionNumber::Semver(version) = self {
             return !version.pre.is_empty();

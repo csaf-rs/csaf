@@ -1,5 +1,4 @@
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
-use crate::product_helpers::gather_product_references;
 use crate::validation::ValidationError;
 use std::collections::HashSet;
 
@@ -11,7 +10,7 @@ pub fn test_6_1_01_missing_definition_of_product_id(doc: &impl CsafTrait) -> Res
         });
     }
 
-    let references = gather_product_references(doc);
+    let references = doc.get_all_product_references();
     let mut errors: Option<Vec<ValidationError>> = Option::None;
     for (ref_id, ref_path) in references.iter() {
         if !definitions_set.contains(ref_id) {

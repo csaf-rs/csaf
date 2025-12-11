@@ -4,7 +4,6 @@ use crate::csaf2_1::schema::{
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
-use crate::product_helpers::prepend_path;
 use crate::validation::ValidationError;
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
@@ -29,40 +28,44 @@ pub trait CsafTrait {
     /// Returns the product tree of the CSAF document, if available.
     fn get_product_tree(&self) -> &Option<Self::ProductTreeType>;
 
+    fn get_product_tree_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        if let Some(product_tree) = self.get_product_tree() {
+            ids.append(&mut product_tree.get_product_groups_product_references());
+            ids.append(&mut product_tree.get_relationships_product_references());
+        }
+
+        ids
+    }
+
     /// Retrieves all vulnerabilities present in the CSAF document.
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType>;
+
+    fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
+        id_path_tuples
+            .iter()
+            .map(|(group_or_product_id, path)| {
+                (group_or_product_id.to_owned(), format!("/{}/{}/{}", prefix, idx, path))
+            })
+            .collect()
+    }
 
     /// Utility function to get all group IDs referenced in vulnerabilities along with their JSON paths
     fn get_vulnerability_group_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
         for (vuln_index, vulnerability) in self.get_vulnerabilities().iter().enumerate() {
-            let prefix_string = "vulnerabilities";
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
+            let getters = [
                 vulnerability.get_flags_group_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_involvement_group_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_notes_group_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_remediations_group_references(),
-            ));
-            ids.append(&mut prepend_path(
-                prefix_string,
-                &vuln_index,
                 vulnerability.get_threats_group_references(),
-            ));
+            ];
+            for getter in getters {
+                ids.append(&mut Self::prepend_path("vulnerabilities", &vuln_index, getter));
+            }
         }
         ids
     }
@@ -80,7 +83,7 @@ pub trait CsafTrait {
             ];
 
             for getter in getters {
-                ids.append(&mut prepend_path("vulnerabilities", &vuln_index, getter));
+                ids.append(&mut Self::prepend_path("vulnerabilities", &vuln_index, getter));
             }
         }
         ids
@@ -100,9 +103,7 @@ pub trait CsafTrait {
         let mut ids: Vec<(String, String)> = Vec::new();
         ids.append(&mut self.get_document().get_notes_product_references());
         ids.append(&mut self.get_vulnerability_product_references());
-        if let Some(_product_tree) = self.get_product_tree() {
-            // TODO: add product tree product references if needed
-        }
+        ids.append(&mut self.get_product_tree_product_references());
         ids
     }
 }
@@ -468,10 +469,7 @@ pub trait VulnerabilityTrait {
         if let Some(metrics) = self.get_metrics().as_ref() {
             for (metric_i, metric) in metrics.iter().enumerate() {
                 for (x_i, x) in metric.get_products().enumerate() {
-                    ids.push((
-                        x.to_owned(),
-                        format!("metrics/{}/products/{}", metric_i, x_i),
-                    ));
+                    ids.push((x.to_owned(), format!("metrics/{}/products/{}", metric_i, x_i)));
                 }
             }
         }
@@ -859,8 +857,40 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of product groups in the product tree.
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
 
+    fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (pg_i, pg) in self.get_product_groups().iter().enumerate() {
+            for (p_i, p) in pg.get_product_ids().enumerate() {
+                ids.push((
+                    (*p).to_owned(),
+                    format!("/product_tree/product_groups/{}/product_ids/{}", pg_i, p_i),
+                ));
+            }
+        }
+
+        ids
+    }
+
     /// Retrieves a reference to the list of relationships in the product tree.
     fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
+
+    fn get_relationships_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (rel_i, rel) in self.get_relationships().iter().enumerate() {
+            ids.push((
+                rel.get_product_reference().to_owned(),
+                format!("/product_tree/relationships/{}/product_reference", rel_i),
+            ));
+            ids.push((
+                rel.get_relates_to_product_reference().to_owned(),
+                format!("/product_tree/relationships/{}/relates_to_product_reference", rel_i),
+            ));
+        }
+
+        ids
+    }
 
     /// Retrieves a reference to the list of full product names in the product tree.
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;

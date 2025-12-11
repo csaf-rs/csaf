@@ -1,9 +1,6 @@
-use crate::csaf_traits::CsafTrait;
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_helpers::{
-    generate_revision_history_tuples, sort_revision_history_tuples_by_date_by_number,
-    sort_revision_history_tuples_by_number,
-};
+
 
 /// 6.1.14 Sorted Revision History
 ///
@@ -11,25 +8,26 @@ use crate::version_helpers::{
 /// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Generate tuples of (revision history path index, date, number)
-    let mut rev_history_tuples_sort_by_date = generate_revision_history_tuples(doc);
+    let mut rev_history_tuples_sort_by_date = doc.get_document().get_tracking().get_revision_history_tuples();
     let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
 
     // Sort by date and by number
-    sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples_sort_by_date);
-    sort_revision_history_tuples_by_number(&mut rev_history_tuples_sort_by_number);
+
+    TrackingTrait::sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples_sort_by_date);
+    TrackingTrait::sort_revision_history_tuples_by_number(&mut rev_history_tuples_sort_by_number);
 
     // Generate errors if revision history items are sorted differently between sort by date and sort by number
     let mut errors = Vec::new();
     for i in 0..rev_history_tuples_sort_by_date.len() {
-        if rev_history_tuples_sort_by_date[i].1 != rev_history_tuples_sort_by_number[i].1 {
+        if rev_history_tuples_sort_by_date[i].date != rev_history_tuples_sort_by_number[i].date {
             errors.push(ValidationError {
                 message: format!(
                     "Revision history is not sorted by date, revision with number {} is out of place",
-                    rev_history_tuples_sort_by_date[i].2
+                    rev_history_tuples_sort_by_date[i].number
                 ),
                 instance_path: format!(
                     "/document/tracking/revision_history/{}",
-                    rev_history_tuples_sort_by_date[i].0
+                    rev_history_tuples_sort_by_date[i].path_index
                 ),
             });
         }

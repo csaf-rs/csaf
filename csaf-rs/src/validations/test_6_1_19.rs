@@ -1,6 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_helpers::is_semver_has_prerelease;
 
 /// 6.1.19 Revision History Entries for Pre-release Versions
 ///
@@ -13,7 +12,7 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     let revision_history = doc.get_document().get_tracking().get_revision_history();
     for (i_r, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();
-        if is_semver_has_prerelease(&number) {
+        if number.is_semver_has_prerelease() {
             errors.push(ValidationError {
                 message: format!("revision history item number '{}' contains a pre-release part", number),
                 instance_path: format!("/document/tracking/revision_history/{}/number", i_r),

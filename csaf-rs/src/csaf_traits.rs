@@ -5,10 +5,10 @@ use crate::csaf2_1::schema::{
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
+use chrono::{DateTime, Utc};
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
-use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
@@ -280,6 +280,13 @@ pub trait TlpTrait {
 
 /// A tuple of (revision history path index, date, number)
 pub type RevisionHistoryTupleType = (usize, DateTime<Utc>, VersionNumber);
+pub type RevisionHistory = Vec<RevisionHistoryItem>;
+
+pub struct RevisionHistoryItem {
+    pub path_index: usize,
+    pub date: DateTime<Utc>,
+    pub number: VersionNumber,
+}
 
 pub trait TrackingTrait {
     /// Type representing document generator information
@@ -302,32 +309,40 @@ pub trait TrackingTrait {
 
     /// Extracts the revision history of the document into a vector of tuples
     /// containing (revision history path index, date, number)
-    fn get_revision_history_tuple(&self) ->  Vec<RevisionHistoryTupleType> {
-        let mut path_date_number_vec: Vec<RevisionHistoryTupleType> = Vec::new();
+    fn get_revision_history_tuples(&self) -> RevisionHistory {
+        let mut revision_history: RevisionHistory = Vec::new();
         for (i_r, revision) in self.get_revision_history().iter().enumerate() {
             let date = DateTime::parse_from_rfc3339(revision.get_date()).map(|dt| dt.with_timezone(&Utc));
-        if let Ok(date) = date {
-                let rev_num = revision.get_number();
-                path_date_number_vec.push((i_r, date, rev_num));
+            if let Ok(date) = date {
+                revision_history.push(RevisionHistoryItem {
+                    path_index: i_r,
+                    date,
+                    number: revision.get_number(),
+                });
+            } else {
+                panic!(
+                    "Encountered date that could not be parsed as RFC3339: {}",
+                    revision.get_date()
+                );
             }
         }
-        path_date_number_vec
+        revision_history
     }
 
     /// Sorts the revision history tuples first by date, second by number
     ///
     /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
     /// should be unique anyways, as long the second order key (revision history numbers) are unique
-    fn sort_revision_history_tuples_by_date_by_number(tuples: &mut [RevisionHistoryTupleType]) {
-        tuples.sort_unstable_by_key(|item| (item.1, item.2.clone()));
+    fn sort_revision_history_tuples_by_date_by_number(tuples: &mut RevisionHistory) {
+        tuples.sort_unstable_by_key(|item| (item.date, item.number.clone()));
     }
 
     /// Sorts the revision history tuples by number
     ///
     /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
     /// should be unique anyways, as long as the order key (revision history numbers) are unique
-    fn sort_revision_history_tuples_by_number(tuples: &mut [RevisionHistoryTupleType]) {
-        tuples.sort_unstable_by(|a, b| a.2.cmp(&b.2));
+    fn sort_revision_history_tuples_by_number(tuples: &mut RevisionHistory) {
+        tuples.sort_unstable_by(|a, b| a.number.cmp(&b.number));
     }
 
     /// Returns the status of this document

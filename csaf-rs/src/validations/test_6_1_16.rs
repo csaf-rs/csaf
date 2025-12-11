@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VersionNumber};
 use crate::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::version_helpers::{generate_revision_history_tuples, sort_revision_history_tuples_by_date_by_number};
 
 /// 6.1.16 Latest Document Version
 ///
@@ -11,10 +10,11 @@ use crate::version_helpers::{generate_revision_history_tuples, sort_revision_his
 pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
 
-    let mut rev_history_tuples = generate_revision_history_tuples(doc);
-    sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples);
+    let mut revision_history = doc.get_document().get_tracking().get_revision_history_tuples();
+    TrackingTrait::sort_revision_history_tuples_by_date_by_number(&mut revision_history);
 
-    if let Some((_, _, latest_number)) = rev_history_tuples.last() {
+    if let Some(latest_revision_history_item) = revision_history.last() {
+        let latest_number = &latest_revision_history_item.number;
         let doc_version = document.get_tracking().get_version();
         let doc_status = document.get_tracking().get_status();
         match latest_number {

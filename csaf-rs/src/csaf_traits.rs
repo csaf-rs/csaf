@@ -278,9 +278,11 @@ pub trait TlpTrait {
     fn get_label(&self) -> LabelOfTlp;
 }
 
-/// A tuple of (revision history path index, date, number)
+/// Type alias for a vector of revision history items
 pub type RevisionHistory = Vec<RevisionHistoryItem>;
 
+/// Struct representing a revision history item
+/// Includes the path index in the original revision history, the date, and the version number
 #[derive(Clone)]
 pub struct RevisionHistoryItem {
     pub path_index: usize,
@@ -332,8 +334,7 @@ pub trait TrackingTrait {
     /// Returns the revision history for this document
     fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
 
-    /// Extracts the revision history of the document into a vector of tuples
-    /// containing (revision history path index, date, number)
+    /// Utility function to get revision history as structs containing revision history path index, date and number
     fn get_revision_history_tuples(&self) -> RevisionHistory {
         let mut revision_history: RevisionHistory = Vec::new();
         for (i_r, revision) in self.get_revision_history().iter().enumerate() {

@@ -109,6 +109,8 @@ pub trait DocumentReferenceTrait {
 
 /// Shared Enum representing document categories
 /// Contains well-known categories of CSAF version 2.0 and 2.1 as enum variants
+/// All other category strings (which are by definition csaf_base)
+/// are represented as DocumentCategory::CsafBaseOther(String)
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DocumentCategory {
     CsafBase,
@@ -119,7 +121,7 @@ pub enum DocumentCategory {
     CsafWithdrawn,
     CsafSuperseded,
     CsafDeprecatedSecurityAdvisory,
-    Other(String),
+    CsafBaseOther(String),
 }
 
 impl DocumentCategory {
@@ -172,9 +174,14 @@ impl DocumentCategory {
         }
     }
 
-    /// Checks if the category is DocumentCategory::Other
-    pub fn is_other(&self) -> bool {
-        matches!(self, DocumentCategory::Other(_))
+    /// Checks if the category is DocumentCategory::CsafBaseOther
+    pub fn is_base_other(&self) -> bool {
+        matches!(self, DocumentCategory::CsafBaseOther(_))
+    }
+
+    /// Checks if the category is DocumentCategory::CsafBase or DocumentCategory::CsafBaseOther
+    pub fn is_base(&self) -> bool {
+        matches!(self, DocumentCategory::CsafBase | DocumentCategory::CsafBaseOther(_))
     }
 
     /// Checks if the category string starts with "csaf_"
@@ -188,10 +195,11 @@ impl DocumentCategory {
     /// `-csaf_base` -> true
     /// `saf_base` -> false
     /// `_saf_base` -> false
+    /// `Csaf_base` -> false
     pub fn starts_with_csaf_underscore(&self) -> bool {
         // check if this is DocumentCategory::Other
         // if it is not, the string does start with "csaf_" by convention
-        if !self.is_other() {
+        if !self.is_base_other() {
             return true;
         }
 
@@ -241,6 +249,7 @@ impl DocumentCategory {
     /// `-csaf_base` -> `base`
     /// `saf_base` -> `safbase`
     /// `_saf_base` -> `safbase`
+    /// `Csaf_base` -> `csafbase`
     /// `Some_Other-Category` -> `someothercategory`
     pub fn normalize(&self) -> String {
         // lowercase
@@ -265,7 +274,7 @@ impl DocumentCategory {
             "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
             "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
             "csaf_superseded" => DocumentCategory::CsafSuperseded,
-            default => DocumentCategory::Other(default.to_string()),
+            default => DocumentCategory::CsafBaseOther(default.to_string()),
         }
     }
 }
@@ -281,7 +290,7 @@ impl Display for DocumentCategory {
             DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
             DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
             DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
-            DocumentCategory::Other(other) => write!(f, "{}", other),
+            DocumentCategory::CsafBaseOther(other) => write!(f, "{}", other),
         }
     }
 }

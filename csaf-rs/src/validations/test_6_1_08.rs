@@ -78,7 +78,7 @@ fn evaluate_cvss(
 
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf20_tests;
+    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
     use crate::validations::test_6_1_08::test_6_1_08_invalid_cvss;
     use std::collections::HashMap;
@@ -113,7 +113,6 @@ mod tests {
             ]),
         );
         // 2.1 tests are not valid at the moment
-        /*
         run_csaf21_tests(
             "08",
             test_6_1_08_invalid_cvss,
@@ -148,18 +147,43 @@ mod tests {
                 ),
                 (
                     "05",
-                    vec![
-                        // ToDo
-                    ],
+                    vec![ValidationError {
+                        message: "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow \"CRITICAL\"".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow 9.3".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    }],
                 ),
                 (
                     "06",
-                    vec![
-                        // ToDo
-                    ],
+                    vec![ValidationError {
+                        message: "Unevaluated properties are not allowed ('environmentalScore', 'environmentalSeverity', 'threatScore', 'threatSeverity' were unexpected)".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow \"CRITICAL\"".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow \"MEDIUM\"".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow 9.3".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    },
+                    ValidationError {
+                        message: "False schema does not allow 5.4".to_string(),
+                        instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+                    }],
                 )
             ]),
         );
-         */
     }
 }

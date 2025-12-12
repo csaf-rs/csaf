@@ -193,23 +193,166 @@ pub trait DocumentReferenceTrait {
     fn get_url(&self) -> &String;
 }
 
+/// Shared Enum representing document categories
+/// Contains well-known categories of CSAF version 2.0 and 2.1 as enum variants
+/// All other category strings (which are by definition csaf_base)
+/// are represented as DocumentCategory::CsafBaseOther(String)
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DocumentCategory {
+    CsafBase,
     CsafInformationalAdvisory,
     CsafSecurityIncidentResponse,
     CsafSecurityAdvisory,
     CsafVex,
-    Other(String),
-    // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
-    // for syntactic sugar, we don't need to make this distinction here
     CsafWithdrawn,
     CsafSuperseded,
     CsafDeprecatedSecurityAdvisory,
+    CsafBaseOther(String),
 }
 
 impl DocumentCategory {
+    const CSAF_20_KNOWN_PROFILES: [DocumentCategory; 5] = [
+        DocumentCategory::CsafBase,
+        DocumentCategory::CsafSecurityIncidentResponse,
+        DocumentCategory::CsafInformationalAdvisory,
+        DocumentCategory::CsafSecurityAdvisory,
+        DocumentCategory::CsafVex,
+    ];
+
+    const CSAF_21_KNOWN_PROFILES: [DocumentCategory; 8] = [
+        DocumentCategory::CsafBase,
+        DocumentCategory::CsafSecurityIncidentResponse,
+        DocumentCategory::CsafInformationalAdvisory,
+        DocumentCategory::CsafSecurityAdvisory,
+        DocumentCategory::CsafVex,
+        DocumentCategory::CsafDeprecatedSecurityAdvisory,
+        DocumentCategory::CsafWithdrawn,
+        DocumentCategory::CsafSuperseded,
+    ];
+
+    /// Helper function to remove whitespace, underscores and hyphens from a string
+    fn remove_whitespace_underscore_hyphen(s: String) -> String {
+        s.chars()
+            .filter(|c| !c.is_whitespace() && *c != '_' && *c != '-')
+            .collect()
+    }
+
+    /// Checks if the category string starts with "csaf_"
+    /// Removes whitespace, underscores and hyphens before checking
+    ///
+    /// Examples:
+    /// `csaf_base´ -> true
+    /// `csaf_basE` -> true
+    /// ` csaf_base` -> true
+    /// `_csaf_base` -> true
+    /// `saf_base` -> false
+    /// `_saf_base` -> false
+    fn string_starts_with_csaf_underscore(s: String) -> bool {
+        let prefix_before_csaf_underscore = s.split("csaf_").next();
+        if let Some(prefix) = prefix_before_csaf_underscore {
+            // the category contains "csaf_"
+            let cleaned_prefix = Self::remove_whitespace_underscore_hyphen(prefix.to_string());
+            // return true if everything before "csaf_" is whitespace, underscore or hyphen
+            cleaned_prefix.is_empty()
+        } else {
+            // the category does not contain "csaf_"
+            false
+        }
+    }
+
+    /// Checks if the category is DocumentCategory::CsafBaseOther
+    pub fn is_base_other(&self) -> bool {
+        matches!(self, DocumentCategory::CsafBaseOther(_))
+    }
+
+    /// Checks if the category is DocumentCategory::CsafBase or DocumentCategory::CsafBaseOther
+    pub fn is_base(&self) -> bool {
+        matches!(self, DocumentCategory::CsafBase | DocumentCategory::CsafBaseOther(_))
+    }
+
+    /// Checks if the category string starts with "csaf_"
+    /// Removes whitespace, underscores and hyphens before checking
+    ///
+    /// Examples:
+    /// `csaf_base´ -> true
+    /// `csaf_basE` -> true
+    /// ` csaf_base` -> true
+    /// `_csaf_base` -> true
+    /// `-csaf_base` -> true
+    /// `saf_base` -> false
+    /// `_saf_base` -> false
+    /// `Csaf_base` -> false
+    pub fn starts_with_csaf_underscore(&self) -> bool {
+        // check if this is DocumentCategory::Other
+        // if it is not, the string does start with "csaf_" by convention
+        if !self.is_base_other() {
+            return true;
+        }
+
+        Self::string_starts_with_csaf_underscore(self.to_string())
+    }
+
+    /// Checks if the document category is a known profile for the given CSAF version
+    pub fn is_known_profile(&self, version: &CsafVersion) -> bool {
+        match version {
+            CsafVersion::X20 => Self::CSAF_20_KNOWN_PROFILES.contains(self),
+            CsafVersion::X21 => Self::CSAF_21_KNOWN_PROFILES.contains(self),
+        }
+    }
+
+    /// Returns a concatenated string of known profiles for the given CSAF version
+    pub fn known_profile_concat(version: &CsafVersion) -> String {
+        let profiles: &[DocumentCategory] = match version {
+            CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
+            CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,
+        };
+        profiles
+            .iter()
+            .map(|profile| profile.to_string())
+            .collect::<Vec<String>>()
+            .join(", ")
+    }
+
+    /// Returns a vector of tuples containing normalized known profile strings and their original enum values
+    pub fn known_profiles_normalized(version: &CsafVersion) -> Vec<(String, DocumentCategory)> {
+        let profiles: &[DocumentCategory] = match version {
+            CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
+            CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,
+        };
+        profiles
+            .iter()
+            .map(|profile| (profile.normalize(), profile.clone()))
+            .collect()
+    }
+
+    /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore
+    ///
+    /// Examples:
+    /// `csaf_base´ -> `base`
+    /// `csaf-basE` -> `base`
+    /// ` csaf_base` -> `base`
+    /// `_csaf_base` -> `base`
+    /// `-csaf_base` -> `base`
+    /// `saf_base` -> `safbase`
+    /// `_saf_base` -> `safbase`
+    /// `Csaf_base` -> `csafbase`
+    /// `Some_Other-Category` -> `someothercategory`
+    pub fn normalize(&self) -> String {
+        // lowercase
+        let mut category_lowercase = self.to_string().to_lowercase();
+        // check if it starts with "csaf_" and prefix before is whitespace, underscore or hyphen
+        if Self::string_starts_with_csaf_underscore(category_lowercase.to_owned()) {
+            // remove leading prefix and "csaf_"
+            // we can safely unwrap here, as we already checked that it contains "csaf_"
+            category_lowercase = category_lowercase.split_once("csaf_").unwrap().1.to_string();
+        }
+        // remove whitespace, underscores and hyphens in the rest of the string
+        Self::remove_whitespace_underscore_hyphen(category_lowercase.to_string())
+    }
+
     pub fn from_string(category: &str) -> Self {
         match category {
+            "csaf_base" => DocumentCategory::CsafBase,
             "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
             "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
             "csaf_security_advisory" => DocumentCategory::CsafSecurityAdvisory,
@@ -217,7 +360,7 @@ impl DocumentCategory {
             "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
             "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
             "csaf_superseded" => DocumentCategory::CsafSuperseded,
-            _ => DocumentCategory::Other("_".to_string()),
+            default => DocumentCategory::CsafBaseOther(default.to_string()),
         }
     }
 }
@@ -225,6 +368,7 @@ impl DocumentCategory {
 impl Display for DocumentCategory {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
+            DocumentCategory::CsafBase => write!(f, "csaf_base"),
             DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
             DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
             DocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
@@ -232,7 +376,7 @@ impl Display for DocumentCategory {
             DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
             DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
             DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
-            DocumentCategory::Other(other) => write!(f, "{}", other),
+            DocumentCategory::CsafBaseOther(other) => write!(f, "{}", other),
         }
     }
 }

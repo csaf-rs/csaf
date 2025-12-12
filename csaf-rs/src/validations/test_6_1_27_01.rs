@@ -9,7 +9,7 @@ use crate::validation::ValidationError;
 ///
 /// Documents with these categories must have at least one entry in `/document/notes` with `category` values
 /// of `description`, `details`, `general` or `summary`.
-pub fn test_6_1_27_1_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
     // check document category
@@ -53,11 +53,11 @@ pub fn test_6_1_27_1_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
-    use crate::validations::test_6_1_27_1::test_6_1_27_1_document_notes;
+    use crate::validations::test_6_1_27_01::test_6_1_27_01_document_notes;
     use std::collections::HashMap;
 
     #[test]
-    fn test_test_6_1_27_1() {
+    fn test_test_6_1_27_01() {
         let errors = HashMap::from([(
             "01",
             vec![ValidationError {
@@ -65,7 +65,7 @@ mod tests {
                 instance_path: "/document/notes".to_string(),
             }],
         )]);
-        run_csaf20_tests("27-01", test_6_1_27_1_document_notes, errors.clone());
-        run_csaf21_tests("27-01", test_6_1_27_1_document_notes, errors);
+        run_csaf20_tests("27-01", test_6_1_27_01_document_notes, errors.clone());
+        run_csaf21_tests("27-01", test_6_1_27_01_document_notes, errors);
     }
 }

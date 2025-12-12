@@ -14,7 +14,7 @@ use std::collections::{HashMap, HashSet};
 /// Each item in `/vulnerabilities[]/product_status/known_not_affected` must have a corresponding
 /// impact statement in `/vulnerabilities[]/flags` or `/vulnerabilities[]/threats`. For impact statements under
 /// `threats`, the category must be `impact`.
-pub fn test_6_1_27_9_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
     let vulnerabilities = doc.get_vulnerabilities();
 
@@ -87,7 +87,7 @@ pub fn test_6_1_27_9_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<Va
 
         // generate errors for all remaining known_not_affected product or group ids
         for known_not_affected_group_id in known_not_affected_product_or_group_ids.iter() {
-            errors.get_or_insert_with(Vec::new).push(test_6_1_27_9_err_generator(
+            errors.get_or_insert_with(Vec::new).push(test_6_1_27_09_err_generator(
                 &doc_category,
                 known_not_affected_group_id.0.to_string(),
                 v_i,
@@ -99,7 +99,7 @@ pub fn test_6_1_27_9_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<Va
     errors.map_or(Ok(()), Err)
 }
 
-fn test_6_1_27_9_err_generator(
+fn test_6_1_27_09_err_generator(
     document_category: &DocumentCategory,
     product_or_group_id: String,
     vuln_path_index: usize,
@@ -123,15 +123,15 @@ fn test_6_1_27_9_err_generator(
 mod tests {
     use crate::csaf_traits::DocumentCategory;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_27_9::{test_6_1_27_9_err_generator, test_6_1_27_9_impact_statement};
+    use crate::validations::test_6_1_27_09::{test_6_1_27_09_err_generator, test_6_1_27_09_impact_statement};
     use std::collections::HashMap;
 
     #[test]
-    fn test_test_6_1_27_9() {
+    fn test_test_6_1_27_09() {
         let errors = HashMap::from([
             (
                 "01",
-                vec![test_6_1_27_9_err_generator(
+                vec![test_6_1_27_09_err_generator(
                     &DocumentCategory::CsafVex,
                     "CSAFPID-9080702".to_string(),
                     0,
@@ -140,7 +140,7 @@ mod tests {
             ),
             (
                 "02",
-                vec![test_6_1_27_9_err_generator(
+                vec![test_6_1_27_09_err_generator(
                     &DocumentCategory::CsafVex,
                     "CSAFPID-9080702".to_string(),
                     0,
@@ -149,7 +149,7 @@ mod tests {
             ),
             (
                 "03",
-                vec![test_6_1_27_9_err_generator(
+                vec![test_6_1_27_09_err_generator(
                     &DocumentCategory::CsafVex,
                     "CSAFPID-9080700".to_string(),
                     0,
@@ -158,7 +158,7 @@ mod tests {
             ),
             (
                 "04",
-                vec![test_6_1_27_9_err_generator(
+                vec![test_6_1_27_09_err_generator(
                     &DocumentCategory::CsafVex,
                     "CSAFPID-9080700".to_string(),
                     0,
@@ -167,7 +167,7 @@ mod tests {
             ),
             (
                 "05",
-                vec![test_6_1_27_9_err_generator(
+                vec![test_6_1_27_09_err_generator(
                     &DocumentCategory::CsafVex,
                     "CSAFPID-9080700".to_string(),
                     0,
@@ -176,7 +176,7 @@ mod tests {
             ),
             (
                 "06",
-                vec![test_6_1_27_9_err_generator(
+                vec![test_6_1_27_09_err_generator(
                     &DocumentCategory::CsafVex,
                     "CSAFPID-9080701".to_string(),
                     1,
@@ -184,7 +184,7 @@ mod tests {
                 )],
             ),
         ]);
-        run_csaf20_tests("27-09", test_6_1_27_9_impact_statement, errors.clone());
-        run_csaf21_tests("27-09", test_6_1_27_9_impact_statement, errors);
+        run_csaf20_tests("27-09", test_6_1_27_09_impact_statement, errors.clone());
+        run_csaf21_tests("27-09", test_6_1_27_09_impact_statement, errors);
     }
 }

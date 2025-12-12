@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::version_helpers::{is_intver_is_zero, is_semver_has_prerelease, is_semver_is_major_zero};
 
 /// 6.1.17 Document Status Draft
 ///
@@ -18,13 +17,13 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
     // Check if the version is 0, 0.y.z or contains a pre-release part
     let mut error_message: Option<String> = None;
     let version = doc.get_document().get_tracking().get_version();
-    if is_intver_is_zero(&version) {
+    if version.is_intver_is_zero() {
         error_message = Some(format!(
             "The document version is '{}' but the document status is '{}'",
             version, status
         ));
     }
-    if is_semver_is_major_zero(&version) || is_semver_has_prerelease(&version) {
+    if version.is_semver_is_major_zero() || version.is_semver_has_prerelease() {
         error_message = Some(format!(
             "The document version is '{}' but the document status is '{}'",
             version, status

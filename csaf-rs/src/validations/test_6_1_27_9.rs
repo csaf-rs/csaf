@@ -32,12 +32,6 @@ pub fn test_6_1_27_9_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<Va
         if let Some(product_status) = vulnerability.get_product_status() {
             if let Some(known_not_affected) = product_status.get_known_not_affected() {
                 for (kna_i, known_not_affected_entry) in known_not_affected.into_iter().enumerate() {
-                    if known_not_affected_product_or_group_ids.contains_key(known_not_affected_entry) {
-                        panic!(
-                            "Duplicate product or group id entry found in known_not_affected: {}",
-                            known_not_affected_entry
-                        );
-                    }
                     known_not_affected_product_or_group_ids.insert(known_not_affected_entry.to_owned(), kna_i);
                 }
             }

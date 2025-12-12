@@ -7,16 +7,18 @@ use crate::csaf_traits::{
     WithOptionalProductIds,
 };
 use crate::csaf2_0::schema::{
-    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
-    CryptographicHashes, CsafVersion as CsafVersion20, DocumentGenerator, DocumentLevelMetaData, DocumentStatus,
-    FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Note,
-    NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship,
-    Remediation, Revision, RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
+    CommonSecurityAdvisoryFramework, CryptographicHashes, CsafVersion as CsafVersion20, DocumentGenerator,
+    DocumentLevelMetaData, DocumentStatus, FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
+    Involvement, LabelOfTheFlag, LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus,
+    ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat,
+    Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
-    CategoryOfTheRemediation as Remediation21, DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21,
-    LabelOfTlp as Tlp21, NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
+    CategoryOfTheRemediation as Remediation21, CategoryOfTheThreat as CategoryOfTheThreat21,
+    DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21, LabelOfTlp as Tlp21,
+    NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
@@ -175,6 +177,14 @@ impl WithOptionalProductIds for Threat {
 impl ThreatTrait for Threat {
     fn get_date(&self) -> &Option<String> {
         &self.date
+    }
+
+    fn get_category(&self) -> CategoryOfTheThreat21 {
+        match self.category {
+            CategoryOfTheThreat::ExploitStatus => CategoryOfTheThreat21::ExploitStatus,
+            CategoryOfTheThreat::Impact => CategoryOfTheThreat21::Impact,
+            CategoryOfTheThreat::TargetSet => CategoryOfTheThreat21::TargetSet,
+        }
     }
 }
 

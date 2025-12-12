@@ -8,7 +8,7 @@ use crate::validation::ValidationError;
 /// value `csaf_withdrawn` and `csaf_superseded` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with this category must not have a `/vulnerabilities` element.
-pub fn test_6_1_27_3_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // check if document is relevant document category in csaf 2.0
     if *doc.get_document().get_csaf_version() == CsafVersion::X20
         && doc.get_document().get_category() != DocumentCategory::CsafInformationalAdvisory
@@ -43,11 +43,11 @@ pub fn test_6_1_27_3_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Valid
 mod tests {
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
     use crate::validation::ValidationError;
-    use crate::validations::test_6_1_27_3::test_6_1_27_3_vulnerability;
+    use crate::validations::test_6_1_27_03::test_6_1_27_03_vulnerability;
     use std::collections::HashMap;
 
     #[test]
-    fn test_test_6_1_27_3() {
+    fn test_test_6_1_27_03() {
         let errors = HashMap::from([
             (
                 "01",
@@ -77,7 +77,7 @@ mod tests {
             }],
             ),
         ]);
-        run_csaf20_tests("27-03", test_6_1_27_3_vulnerability, errors.clone());
-        run_csaf21_tests("27-03", test_6_1_27_3_vulnerability, errors);
+        run_csaf20_tests("27-03", test_6_1_27_03_vulnerability, errors.clone());
+        run_csaf21_tests("27-03", test_6_1_27_03_vulnerability, errors);
     }
 }

@@ -8,7 +8,7 @@ use crate::validation::ValidationError;
 /// value `csaf_deprecated_security_advisory` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with these categories must have a `/vulnerabilities[]/product_status` element.
-pub fn test_6_1_27_6_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_06_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
     // check if document is relevant document category in csaf 2.0
@@ -32,14 +32,14 @@ pub fn test_6_1_27_6_product_status(doc: &impl CsafTrait) -> Result<(), Vec<Vali
         if vulnerability.get_product_status().is_none() {
             errors
                 .get_or_insert_with(Vec::new)
-                .push(test_6_1_27_6_err_generator(&doc_category, &v_i));
+                .push(test_6_1_27_06_err_generator(&doc_category, &v_i));
         }
     }
 
     errors.map_or(Ok(()), Err)
 }
 
-fn test_6_1_27_6_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
+fn test_6_1_27_06_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{}' must have a product_status element in each vulnerability",
@@ -53,29 +53,35 @@ fn test_6_1_27_6_err_generator(document_category: &DocumentCategory, vuln_path_i
 mod tests {
     use crate::csaf_traits::DocumentCategory;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_27_6::{test_6_1_27_6_err_generator, test_6_1_27_6_product_status};
+    use crate::validations::test_6_1_27_06::{test_6_1_27_06_err_generator, test_6_1_27_06_product_status};
     use std::collections::HashMap;
 
     #[test]
-    fn test_test_6_1_27_6() {
+    fn test_test_6_1_27_06() {
         let errors = HashMap::from([
             (
                 "01",
-                vec![test_6_1_27_6_err_generator(&DocumentCategory::CsafSecurityAdvisory, &0)],
+                vec![test_6_1_27_06_err_generator(
+                    &DocumentCategory::CsafSecurityAdvisory,
+                    &0,
+                )],
             ),
             (
                 "02",
-                vec![test_6_1_27_6_err_generator(&DocumentCategory::CsafSecurityAdvisory, &0)],
+                vec![test_6_1_27_06_err_generator(
+                    &DocumentCategory::CsafSecurityAdvisory,
+                    &0,
+                )],
             ),
             (
                 "03",
-                vec![test_6_1_27_6_err_generator(
+                vec![test_6_1_27_06_err_generator(
                     &DocumentCategory::CsafDeprecatedSecurityAdvisory,
                     &0,
                 )],
             ),
         ]);
-        run_csaf20_tests("27-06", test_6_1_27_6_product_status, errors.clone());
-        run_csaf21_tests("27-06", test_6_1_27_6_product_status, errors);
+        run_csaf20_tests("27-06", test_6_1_27_06_product_status, errors.clone());
+        run_csaf21_tests("27-06", test_6_1_27_06_product_status, errors);
     }
 }

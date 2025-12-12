@@ -1,5 +1,4 @@
-use crate::csaf_traits::{
-    CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};

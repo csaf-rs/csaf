@@ -1,6 +1,5 @@
-use crate::csaf_traits::{CsafTrait, VersionNumber};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait, VersionNumber};
 use crate::validation::ValidationError;
-use crate::version_helpers::{generate_revision_history_tuples, sort_revision_history_tuples_by_date_by_number};
 
 /// 6.1.21 Missing Item in Revision History
 ///
@@ -12,8 +11,8 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // Generate and sort the revision history tuples by date first and by number second
-    let mut rev_history_tuples = generate_revision_history_tuples(doc);
-    sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples);
+    let mut rev_history_tuples = doc.get_document().get_tracking().get_revision_history_tuples();
+    rev_history_tuples.inplace_sort_by_date_then_number();
 
     if rev_history_tuples.is_empty() {
         // This should not be able to happen as revision history is a required property with 1..* items
@@ -22,26 +21,26 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 
     // We can safely unwrap here, as there has to be at least one item in rev_history_tuples
     let first_tuple = rev_history_tuples.first().unwrap();
-    let first_version = first_tuple.2.clone();
+    let first_version = first_tuple.number.clone();
     let first_number = first_version.get_major();
 
     // Throw error if first version is not 0 or 1
     if first_number > 1 {
         return Err(vec![test_6_1_21_err_wrong_first_version_generator(
             first_version,
-            first_tuple.0.to_string(),
+            first_tuple.path_index.to_string(),
         )]);
     }
 
-    let last_number = rev_history_tuples.last().unwrap().2.clone().get_major();
+    let last_number = rev_history_tuples.last().unwrap().number.clone().get_major();
 
     println!("First number: {}", first_number);
     println!("Last number: {}", last_number);
     for expected_number in first_number + 1..last_number {
         println!("Checking for expected number: {}", expected_number);
         let mut found = false;
-        for (_, _, number) in rev_history_tuples.iter() {
-            if number.clone().get_major() == expected_number {
+        for revision_history_item in rev_history_tuples.iter() {
+            if revision_history_item.number.clone().get_major() == expected_number {
                 found = true;
                 break;
             }

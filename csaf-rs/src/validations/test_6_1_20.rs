@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::version_helpers::is_semver_has_prerelease;
 
 /// 6.1.20 Non-draft Document Version
 ///
@@ -18,7 +17,7 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
 
     // Check if there is a pre-release part
     let version = tracking.get_version();
-    if is_semver_has_prerelease(&version) {
+    if version.is_semver_has_prerelease() {
         return Err(vec![ValidationError {
             message: format!(
                 "The document status is {} but the document version {} contains a pre-release part",

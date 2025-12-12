@@ -5,6 +5,7 @@ use crate::csaf2_1::schema::{
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
+use chrono::{DateTime, Utc};
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
@@ -277,6 +278,43 @@ pub trait TlpTrait {
     fn get_label(&self) -> LabelOfTlp;
 }
 
+/// Type alias for a vector of revision history items
+pub type RevisionHistory = Vec<RevisionHistoryItem>;
+
+/// Struct representing a revision history item
+/// Includes the path index in the original revision history, the date, and the version number
+#[derive(Clone)]
+pub struct RevisionHistoryItem {
+    pub path_index: usize,
+    pub date: DateTime<Utc>,
+    pub number: VersionNumber,
+}
+
+/// Trait providing sorting functionality for revision history
+pub trait RevisionHistorySortable {
+    /// Sorts the revision history items first by date, second by number
+    ///
+    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
+    /// should be unique anyways, as long the second order key (revision history numbers) are unique
+    fn inplace_sort_by_date_then_number(&mut self);
+
+    /// Sorts the revision history items by number
+    ///
+    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
+    /// should be unique anyways, as long as the order key (revision history numbers) are unique
+    fn inplace_sort_by_number(&mut self);
+}
+
+impl RevisionHistorySortable for RevisionHistory {
+    fn inplace_sort_by_date_then_number(&mut self) {
+        self.sort_unstable_by_key(|item| (item.date, item.number.clone()));
+    }
+
+    fn inplace_sort_by_number(&mut self) {
+        self.sort_unstable_by(|a, b| a.number.cmp(&b.number));
+    }
+}
+
 pub trait TrackingTrait {
     /// Type representing document generator information
     type GeneratorType: GeneratorTrait;
@@ -295,6 +333,27 @@ pub trait TrackingTrait {
 
     /// Returns the revision history for this document
     fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
+
+    /// Utility function to get revision history as structs containing revision history path index, date and number
+    fn get_revision_history_tuples(&self) -> RevisionHistory {
+        let mut revision_history: RevisionHistory = Vec::new();
+        for (i_r, revision) in self.get_revision_history().iter().enumerate() {
+            let date = DateTime::parse_from_rfc3339(revision.get_date()).map(|dt| dt.with_timezone(&Utc));
+            if let Ok(date) = date {
+                revision_history.push(RevisionHistoryItem {
+                    path_index: i_r,
+                    date,
+                    number: revision.get_number(),
+                });
+            } else {
+                panic!(
+                    "Encountered date that could not be parsed as RFC3339: {}",
+                    revision.get_date()
+                );
+            }
+        }
+        revision_history
+    }
 
     /// Returns the status of this document
     fn get_status(&self) -> DocumentStatus;
@@ -334,6 +393,33 @@ impl VersionNumber {
             VersionNumber::Integer(num) => *num,
             VersionNumber::Semver(semver) => semver.major,
         }
+    }
+
+    /// Checks whether the intver version is zero, always `false` for semver
+    /// Hard coupled check that version is intver and zero
+    pub fn is_intver_is_zero(&self) -> bool {
+        if let VersionNumber::Integer(version) = self {
+            return *version == 0;
+        }
+        false
+    }
+
+    /// Checks whether the semver major version is zero, always `false` for intver
+    /// Hard coupled check that version is semver and major is zero
+    pub fn is_semver_is_major_zero(&self) -> bool {
+        if let VersionNumber::Semver(version) = self {
+            return version.major == 0;
+        }
+        false
+    }
+
+    /// Checks whether the semver has a pre-release part, always `false` for intver
+    /// Hard coupled check that version is semver and has pre-release part
+    pub fn is_semver_has_prerelease(&self) -> bool {
+        if let VersionNumber::Semver(version) = self {
+            return !version.pre.is_empty();
+        }
+        false
     }
 }
 

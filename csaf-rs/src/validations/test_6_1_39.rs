@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait, TrackingTrait};
-use crate::csaf2_1::schema::DocumentStatus;
-use crate::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::helpers::{MAX_UUID, NIL_UUID};
+use crate::schema::csaf2_1::schema::DocumentStatus;
+use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::validation::ValidationError;
 
 /// Validates that when a document is marked with TLP CLEAR, any associated sharing group

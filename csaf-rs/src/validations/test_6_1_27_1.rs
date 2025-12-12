@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
-use crate::csaf2_1::schema::NoteCategory;
+use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
 /// 6.1.27.1 Document Notes

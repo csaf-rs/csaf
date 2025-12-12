@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
-use crate::csaf2_1::schema::CategoryOfTheRemediation;
+use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::ValidationError;
 use std::collections::BTreeMap;
 

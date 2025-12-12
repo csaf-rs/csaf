@@ -1,6 +1,5 @@
-use super::schema::CommonSecurityAdvisoryFramework;
+use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::validation::{Test, Validatable, ValidationPreset};
-use crate::validations::test_6_1_01::test_6_1_01_missing_definition_of_product_id;
 use crate::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
 use crate::validations::test_6_1_34::test_6_1_34_branches_recursion_depth;
 use crate::validations::test_6_1_35::test_6_1_35_contradicting_remediations;
@@ -33,7 +32,6 @@ impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFram
     fn tests(&self) -> HashMap<&str, Test<CommonSecurityAdvisoryFramework>> {
         type CsafTest = Test<CommonSecurityAdvisoryFramework>;
         HashMap::from([
-            ("6.1.1", test_6_1_01_missing_definition_of_product_id as CsafTest),
             ("6.1.2", test_6_1_02_multiple_definition_of_product_id as CsafTest),
             ("6.1.34", test_6_1_34_branches_recursion_depth as CsafTest),
             ("6.1.35", test_6_1_35_contradicting_remediations as CsafTest),

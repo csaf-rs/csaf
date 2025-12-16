@@ -282,6 +282,7 @@ dependencies = [
  "jsonschema",
  "packageurl",
  "prettyplease",
+ "proc-macro2",
  "quote",
  "regex",
  "regress",
@@ -1264,6 +1265,24 @@ dependencies = [
  "quote",
  "serde_derive_internals",
  "syn",
+]
+
+[[package]]
+name = "type-generator"
+version = "0.0.0"
+dependencies = [
+ "clap",
+ "json_dotpath",
+ "jsonschema",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "schemars",
+ "serde",
+ "serde_json",
+ "syn",
+ "thiserror 2.0.17",
+ "typify",
 ]
 
 [[package]]

@@ -1,7 +1,7 @@
 use crate::csaf2_0::loader::load_document as load_document_20;
-use crate::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
 use crate::csaf2_1::loader::load_document as load_document_21;
-use crate::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
+use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
+use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
 use crate::validation::{Test, ValidationError};
 use glob::GlobResult;
 use std::collections::HashMap;

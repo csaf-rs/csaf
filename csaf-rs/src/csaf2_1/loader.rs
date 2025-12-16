@@ -1,4 +1,4 @@
-use super::schema::CommonSecurityAdvisoryFramework;
+use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use std::{fs::File, io::BufReader};
 
 pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {
@@ -20,7 +20,7 @@ pub fn load_document_from_str(json_str: &str) -> std::io::Result<CommonSecurityA
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf2_1::schema::{
+    use crate::schema::csaf2_1::schema::{
         CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, JsonSchema, LabelOfTlp, Publisher,
         Revision, RulesForDocumentSharing, Tracking, TrafficLightProtocolTlp,
     };

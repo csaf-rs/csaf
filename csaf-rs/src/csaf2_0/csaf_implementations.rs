@@ -6,7 +6,8 @@ use crate::csaf_traits::{
     ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
     WithOptionalProductIds,
 };
-use crate::csaf2_0::schema::{
+use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
+use crate::schema::csaf2_0::schema::{
     Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
     CommonSecurityAdvisoryFramework, CryptographicHashes, CsafVersion as CsafVersion20, DocumentGenerator,
     DocumentLevelMetaData, DocumentStatus, FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
@@ -14,13 +15,12 @@ use crate::csaf2_0::schema::{
     ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat,
     Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
-use crate::csaf2_1::schema::{
+use crate::schema::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
     CategoryOfTheRemediation as Remediation21, CategoryOfTheThreat as CategoryOfTheThreat21,
     DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21, LabelOfTlp as Tlp21,
     NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
-use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::validation::ValidationError;
 use serde::de::Error;
 use serde_json::{Map, Value};

@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusTrait, RemediationTrait, VulnerabilityTrait};
-use crate::csaf2_1::schema::CategoryOfTheRemediation;
+use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::ValidationError;
 
 /// Remediation categories that conflict with the product status "not affected".

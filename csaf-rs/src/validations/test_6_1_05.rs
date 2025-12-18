@@ -2,6 +2,13 @@ use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
+fn generate_err_msg(group_id: &str, path: &str) -> ValidationError {
+    ValidationError {
+        message: format!("Duplicate definition for product group ID {}", group_id),
+        instance_path: path.to_owned(),
+    }
+}
+
 pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut product_group_ids_with_paths = HashMap::<String, Vec<String>>::new();
 
@@ -17,12 +24,7 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
     let errors: Vec<ValidationError> = product_group_ids_with_paths
         .iter()
         .filter(|(_, paths)| paths.len() > 1)
-        .flat_map(|(group_id, paths)| {
-            paths.iter().map(move |path| ValidationError {
-                message: format!("Duplicate definition for product group ID {}", group_id),
-                instance_path: path.clone(),
-            })
-        })
+        .flat_map(|(group_id, paths)| paths.iter().map(move |path| generate_err_msg(group_id, path)))
         .collect();
 
     if errors.is_empty() { Ok(()) } else { Err(errors) }
@@ -30,9 +32,8 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_05::test_6_1_05_multiple_definition_of_product_group_id;
     use std::collections::HashMap;
 
     #[test]
@@ -40,14 +41,8 @@ mod tests {
         let errors = HashMap::from([(
             "01",
             vec![
-                ValidationError {
-                    message: "Duplicate definition for product group ID CSAFGID-1020300".to_string(),
-                    instance_path: "/product_tree/product_groups/0/group_id".to_string(),
-                },
-                ValidationError {
-                    message: "Duplicate definition for product group ID CSAFGID-1020300".to_string(),
-                    instance_path: "/product_tree/product_groups/1/group_id".to_string(),
-                },
+                generate_err_msg("CSAFGID-1020300", "/product_tree/product_groups/0/group_id"),
+                generate_err_msg("CSAFGID-1020300", "/product_tree/product_groups/1/group_id"),
             ],
         )]);
         run_csaf20_tests(

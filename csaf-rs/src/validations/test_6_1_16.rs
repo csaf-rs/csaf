@@ -54,6 +54,10 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
     panic!("Revision history is empty, document is malformed.");
 }
 
+/// Generates a validation error for test 6.1.16.
+///
+/// Creates an error message indicating that the document version does not match
+/// the latest revision history number.
 fn test_6_1_16_err_generator(doc_version: String, latest_number: String, doc_status: String) -> ValidationError {
     ValidationError {
         message: format!(
@@ -66,8 +70,8 @@ fn test_6_1_16_err_generator(doc_version: String, latest_number: String, doc_sta
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_16::{test_6_1_16_err_generator, test_6_1_16_latest_document_version};
     use std::collections::HashMap;
 
     #[test]

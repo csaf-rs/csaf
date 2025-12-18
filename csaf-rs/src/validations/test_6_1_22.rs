@@ -2,6 +2,26 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
+/// Generates a validation error for a duplicate revision history number.
+///
+/// Creates a `ValidationError` for a specific duplicate revision number occurrence,
+/// indicating the path to the duplicate entry and the conflicting number.
+///
+/// # Arguments
+///
+/// * `number` - The duplicate revision number string
+/// * `path` - The index of this duplicate occurrence
+///
+/// # Returns
+///
+/// A `ValidationError` instance for this duplicate occurrence
+fn generate_duplicate_revision_error(number: &str, path: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Duplicate definition of revision history number {}", number),
+        instance_path: format!("/document/tracking/revision_history/{}/number", path),
+    }
+}
+
 /// Test 6.1.22: Multiple Definition in Revision History
 ///
 /// Items of the revision history must not contain the same string in the
@@ -21,12 +41,11 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
     let mut errors = Vec::new();
     for (number, paths) in &number_paths {
         if paths.len() > 1 {
-            for path in paths.iter() {
-                errors.push(ValidationError {
-                    message: format!("Duplicate definition of revision history number {}", number),
-                    instance_path: format!("/document/tracking/revision_history/{}/number", path),
-                });
-            }
+            errors.extend(
+                paths
+                    .iter()
+                    .map(|path| generate_duplicate_revision_error(number, *path)),
+            );
         }
     }
 
@@ -39,22 +58,16 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_22::test_6_1_22_multiple_definition_in_revision_history;
 
     #[test]
     fn test_test_6_1_22() {
         let errors = std::collections::HashMap::from([(
             "01",
             vec![
-                crate::validation::ValidationError {
-                    message: "Duplicate definition of revision history number 1".to_string(),
-                    instance_path: "/document/tracking/revision_history/0/number".to_string(),
-                },
-                crate::validation::ValidationError {
-                    message: "Duplicate definition of revision history number 1".to_string(),
-                    instance_path: "/document/tracking/revision_history/1/number".to_string(),
-                },
+                generate_duplicate_revision_error("1", 0),
+                generate_duplicate_revision_error("1", 1),
             ],
         )]);
         run_csaf20_tests(

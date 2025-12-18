@@ -1,6 +1,15 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
+/// Creates a ValidationError for documents that should not have vulnerabilities
+fn create_vulnerabilities_error() -> ValidationError {
+    ValidationError {
+        message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
+            .to_string(),
+        instance_path: "/vulnerabilities".to_string(),
+    }
+}
+
 /// 6.1.27.3 Vulnerabilities
 ///
 /// This test only applies to documents with `/document/category` with value `csaf_informational_advisory` for
@@ -29,11 +38,7 @@ pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 
     // return error if there are elements in /vulnerabilities
     if !doc.get_vulnerabilities().is_empty() {
-        return Err(vec![ValidationError {
-            message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-                .to_string(),
-            instance_path: "/vulnerabilities".to_string(),
-        }]);
+        return Err(vec![create_vulnerabilities_error()]);
     }
 
     Ok(())
@@ -41,41 +46,16 @@ pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_27_03::test_6_1_27_03_vulnerability;
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_27_03() {
         let errors = HashMap::from([
-            (
-                "01",
-                vec![ValidationError {
-                message:
-                    "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-                        .to_string(),
-                instance_path: "/vulnerabilities".to_string(),
-            }],
-            ),
-            (
-                "02",
-                vec![ValidationError {
-                message:
-                    "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-                        .to_string(),
-                instance_path: "/vulnerabilities".to_string(),
-            }],
-            ),
-            (
-                "03",
-                vec![ValidationError {
-                message:
-                    "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-                        .to_string(),
-                instance_path: "/vulnerabilities".to_string(),
-            }],
-            ),
+            ("01", vec![create_vulnerabilities_error()]),
+            ("02", vec![create_vulnerabilities_error()]),
+            ("03", vec![create_vulnerabilities_error()]),
         ]);
         run_csaf20_tests("27-03", test_6_1_27_03_vulnerability, errors.clone());
         run_csaf21_tests("27-03", test_6_1_27_03_vulnerability, errors);

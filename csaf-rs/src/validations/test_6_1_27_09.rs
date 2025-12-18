@@ -121,9 +121,8 @@ fn test_6_1_27_09_err_generator(
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf_traits::DocumentCategory;
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_27_09::{test_6_1_27_09_err_generator, test_6_1_27_09_impact_statement};
     use std::collections::HashMap;
 
     #[test]

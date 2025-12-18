@@ -39,9 +39,8 @@ fn test_6_1_27_08_err_generator(document_category: &DocumentCategory, vuln_path_
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf_traits::DocumentCategory;
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_27_08::{test_6_1_27_08_err_generator, test_6_1_27_08_vulnerability_id};
     use std::collections::HashMap;
 
     #[test]

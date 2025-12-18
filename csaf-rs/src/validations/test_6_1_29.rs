@@ -30,10 +30,8 @@ fn test_6_1_29_err_generator(vuln_index: usize, rem_index: usize) -> ValidationE
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_29::{
-        test_6_1_29_err_generator, test_6_1_29_remediation_without_product_reference,
-    };
     use std::collections::HashMap;
 
     #[test]

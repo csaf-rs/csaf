@@ -59,6 +59,28 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_8
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_08_invalid_cvss(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_8
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_08_invalid_cvss(doc)
+    }
+}
+
 fn create_validator(schema_str: &str) -> Validator {
     let parsed_schema: Value = serde_json::from_str(schema_str).unwrap();
     jsonschema::validator_for(&parsed_schema).unwrap()
@@ -93,129 +115,127 @@ fn create_validation_error(message: String, base: &str, metric: VulnerabilityMet
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_08() {
-        run_csaf20_tests(
-            "08",
-            test_6_1_08_invalid_cvss,
-            HashMap::from([
-                (
-                    "01",
-                    vec![create_validation_error(
-                        "\"baseSeverity\" is a required property".to_string(),
-                        "/vulnerabilities/0/scores/0",
-                        VulnerabilityMetric::CvssV3("3.1".to_string()),
-                    )],
-                ),
-                (
-                    "02",
-                    vec![create_validation_error(
-                        "\"baseSeverity\" is a required property".to_string(),
-                        "/vulnerabilities/0/scores/0",
-                        VulnerabilityMetric::CvssV3("3.0".to_string()),
-                    )],
-                ),
-                (
-                    "03",
-                    vec![create_validation_error(
-                        "\"version\" is a required property".to_string(),
-                        "/vulnerabilities/0/scores/0",
-                        VulnerabilityMetric::CvssV2,
-                    )],
-                ),
-            ]),
+        // CSAF 2.0 error cases (different paths: /scores/)
+        let case_01_v2_0 = Err(vec![create_validation_error(
+            "\"baseSeverity\" is a required property".to_string(),
+            "/vulnerabilities/0/scores/0",
+            VulnerabilityMetric::CvssV3("3.1".to_string()),
+        )]);
+
+        let case_02_v2_0 = Err(vec![create_validation_error(
+            "\"baseSeverity\" is a required property".to_string(),
+            "/vulnerabilities/0/scores/0",
+            VulnerabilityMetric::CvssV3("3.0".to_string()),
+        )]);
+
+        let case_03_v2_0 = Err(vec![create_validation_error(
+            "\"version\" is a required property".to_string(),
+            "/vulnerabilities/0/scores/0",
+            VulnerabilityMetric::CvssV2,
+        )]);
+
+        // CSAF 2.1 error cases (different paths: /metrics/)
+        let case_01_v2_1 = Err(vec![create_validation_error(
+            "\"baseSeverity\" is a required property".to_string(),
+            "/vulnerabilities/0/metrics/0/content",
+            VulnerabilityMetric::CvssV3("3.1".to_string()),
+        )]);
+
+        let case_02_v2_1 = Err(vec![create_validation_error(
+            "\"baseSeverity\" is a required property".to_string(),
+            "/vulnerabilities/0/metrics/0/content",
+            VulnerabilityMetric::CvssV3("3.0".to_string()),
+        )]);
+
+        let case_03_v2_1 = Err(vec![create_validation_error(
+            "\"version\" is a required property".to_string(),
+            "/vulnerabilities/0/metrics/0/content",
+            VulnerabilityMetric::CvssV2,
+        )]);
+
+        let case_04 = Err(vec![create_validation_error(
+            "\"baseSeverity\" is a required property".to_string(),
+            "/vulnerabilities/0/metrics/0/content",
+            VulnerabilityMetric::CvssV4,
+        )]);
+
+        let case_05 = Err(vec![
+            create_validation_error(
+                "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+            create_validation_error(
+                "False schema does not allow \"CRITICAL\"".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+            create_validation_error(
+                "False schema does not allow 9.3".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+        ]);
+
+        let case_06 = Err(vec![
+            create_validation_error(
+                "Unevaluated properties are not allowed ('environmentalScore', 'environmentalSeverity', 'threatScore', 'threatSeverity' were unexpected)".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+            create_validation_error(
+                "False schema does not allow \"CRITICAL\"".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+            create_validation_error(
+                "False schema does not allow \"MEDIUM\"".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+            create_validation_error(
+                "False schema does not allow 9.3".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+            create_validation_error(
+                "False schema does not allow 5.4".to_string(),
+                "/vulnerabilities/0/metrics/0/content",
+                VulnerabilityMetric::CvssV4,
+            ),
+        ]);
+
+        // CSAF 2.0 has 7 test cases (01-03, 11-14)
+        TESTS_2_0.test_6_1_8.expect(
+            case_01_v2_0,
+            case_02_v2_0,
+            case_03_v2_0,
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
         );
-        // 2.1 tests are not valid at the moment
-        run_csaf21_tests(
-            "08",
-            test_6_1_08_invalid_cvss,
-            HashMap::from([
-                (
-                    "01",
-                    vec![create_validation_error(
-                        "\"baseSeverity\" is a required property".to_string(),
-                        "/vulnerabilities/0/metrics/0/content",
-                        VulnerabilityMetric::CvssV3("3.1".to_string()),
-                    )],
-                ),
-                (
-                    "02",
-                    vec![create_validation_error(
-                        "\"baseSeverity\" is a required property".to_string(),
-                        "/vulnerabilities/0/metrics/0/content",
-                        VulnerabilityMetric::CvssV3("3.0".to_string()),
-                    )],
-                ),
-                (
-                    "03",
-                    vec![create_validation_error(
-                        "\"version\" is a required property".to_string(),
-                        "/vulnerabilities/0/metrics/0/content",
-                        VulnerabilityMetric::CvssV2,
-                    )],
-                ),
-                (
-                    "04",
-                    vec![create_validation_error(
-                        "\"baseSeverity\" is a required property".to_string(),
-                        "/vulnerabilities/0/metrics/0/content",
-                        VulnerabilityMetric::CvssV4,
-                    )],
-                ),
-                (
-                    "05",
-                    vec![
-                        create_validation_error(
-                            "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                        create_validation_error(
-                            "False schema does not allow \"CRITICAL\"".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                        create_validation_error(
-                            "False schema does not allow 9.3".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                    ],
-                ),
-                (
-                    "06",
-                    vec![
-                        create_validation_error(
-                            "Unevaluated properties are not allowed ('environmentalScore', 'environmentalSeverity', 'threatScore', 'threatSeverity' were unexpected)".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                        create_validation_error(
-                            "False schema does not allow \"CRITICAL\"".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                        create_validation_error(
-                            "False schema does not allow \"MEDIUM\"".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                        create_validation_error(
-                            "False schema does not allow 9.3".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                        create_validation_error(
-                            "False schema does not allow 5.4".to_string(),
-                            "/vulnerabilities/0/metrics/0/content",
-                            VulnerabilityMetric::CvssV4,
-                        ),
-                    ],
-                )
-            ]),
+
+        // CSAF 2.1 has 13 test cases (01-06, 11-17)
+        TESTS_2_1.test_6_1_8.expect(
+            case_01_v2_1,
+            case_02_v2_1,
+            case_03_v2_1,
+            case_04,
+            case_05,
+            case_06,
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
         );
     }
 }

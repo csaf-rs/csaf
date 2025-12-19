@@ -1,5 +1,6 @@
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait, RelationshipTrait};
 use crate::validation::ValidationError;
+use crate::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
 use std::collections::{HashMap, HashSet};
 
 fn generate_self_reference_product_error(index: usize) -> ValidationError {
@@ -105,16 +106,40 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
     errors.map_or(Ok(()), Err)
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_3
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_03_circular_definition_of_product_id(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_3
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_03_circular_definition_of_product_id(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_03() {
-        let errors = HashMap::from([("01", vec![generate_self_reference_relates_to_error(0)])]);
-        run_csaf20_tests("03", test_6_1_03_circular_definition_of_product_id, errors.clone());
-        run_csaf21_tests("03", test_6_1_03_circular_definition_of_product_id, errors);
+        let shared_error_01 = Err(vec![generate_self_reference_relates_to_error(0)]);
+
+        TESTS_2_0.test_6_1_3.expect(shared_error_01.clone());
+        TESTS_2_1.test_6_1_3.expect(shared_error_01.clone());
     }
 
     #[test]

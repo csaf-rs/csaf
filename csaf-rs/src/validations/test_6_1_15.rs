@@ -28,17 +28,53 @@ pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<Validation
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_15
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_15_translator(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_15
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_15_translator(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_15() {
-        let error = create_missing_source_lang_error();
-        let errors = HashMap::from([("01", vec![error.clone()]), ("02", vec![error.clone()])]);
-        run_csaf20_tests("15", test_6_1_15_translator, errors.clone());
-        run_csaf21_tests("15", test_6_1_15_translator, errors);
+        // Error cases
+        let case_01 = Err(vec![create_missing_source_lang_error()]);
+        let case_02 = Err(vec![create_missing_source_lang_error()]);
+
+        // Both CSAF 2.0 and 2.1 have 4 test cases (01, 02, 11, 12)
+        TESTS_2_0.test_6_1_15.expect(
+            case_01.clone(),
+            case_02.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
+
+        TESTS_2_1.test_6_1_15.expect(
+            case_01,
+            case_02,
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
     }
 }

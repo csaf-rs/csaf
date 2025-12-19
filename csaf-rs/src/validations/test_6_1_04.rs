@@ -30,31 +30,48 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
     errors.map_or(Ok(()), Err)
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_4
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_04_missing_definition_of_product_group_id(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_4
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_04_missing_definition_of_product_group_id(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_04() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![generate_err_msg(
-                    "CSAFGID-1020301",
-                    "/vulnerabilities/0/threats/0/group_ids/0",
-                )],
-            ),
-            (
-                "02",
-                vec![
-                    generate_err_msg("CSAFGID-1020300", "/vulnerabilities/0/flags/0/group_ids/0"),
-                    generate_err_msg("CSAFGID-1020301", "/vulnerabilities/1/flags/0/group_ids/0"),
-                ],
-            ),
+        let case_01 = Err(vec![generate_err_msg(
+            "CSAFGID-1020301",
+            "/vulnerabilities/0/threats/0/group_ids/0",
+        )]);
+        let case_02 = Err(vec![
+            generate_err_msg("CSAFGID-1020300", "/vulnerabilities/0/flags/0/group_ids/0"),
+            generate_err_msg("CSAFGID-1020301", "/vulnerabilities/1/flags/0/group_ids/0"),
         ]);
-        run_csaf20_tests("04", test_6_1_04_missing_definition_of_product_group_id, errors.clone());
-        run_csaf21_tests("04", test_6_1_04_missing_definition_of_product_group_id, errors);
+        let case_11 = Ok(());
+        let case_12 = Ok(());
+
+        TESTS_2_0.test_6_1_4.expect(case_01.clone(), case_02, case_11, case_12);
+        TESTS_2_1.test_6_1_4.expect(case_01);
     }
 }

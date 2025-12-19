@@ -64,89 +64,127 @@ fn test_6_1_16_err_generator(doc_version: String, latest_number: String, doc_sta
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_16
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_16_latest_document_version(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_16
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_16_latest_document_version(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_16() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![test_6_1_16_err_generator(
-                    "1".to_string(),
-                    "2".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "02",
-                vec![test_6_1_16_err_generator(
-                    "1".to_string(),
-                    "2".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "03",
-                vec![test_6_1_16_err_generator(
-                    "1".to_string(),
-                    "2".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "04",
-                vec![test_6_1_16_err_generator(
-                    "1.0.0".to_string(),
-                    "2.0.0".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "05",
-                vec![test_6_1_16_err_generator(
-                    "1.0.0".to_string(),
-                    "2.0.0".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "06",
-                vec![test_6_1_16_err_generator(
-                    "9".to_string(),
-                    "10".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "07",
-                vec![test_6_1_16_err_generator(
-                    "1.9.0".to_string(),
-                    "1.10.0".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "08",
-                vec![test_6_1_16_err_generator(
-                    "1".to_string(),
-                    "2".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-            (
-                "09",
-                vec![test_6_1_16_err_generator(
-                    "2".to_string(),
-                    "1".to_string(),
-                    "final".to_string(),
-                )],
-            ),
-        ]);
-        run_csaf20_tests("16", test_6_1_16_latest_document_version, errors.clone());
-        run_csaf21_tests("16", test_6_1_16_latest_document_version, errors);
+        // Error cases
+        let case_01 = Err(vec![test_6_1_16_err_generator(
+            "1".to_string(),
+            "2".to_string(),
+            "final".to_string(),
+        )]);
+        let case_02 = Err(vec![test_6_1_16_err_generator(
+            "1".to_string(),
+            "2".to_string(),
+            "final".to_string(),
+        )]);
+        let case_03 = Err(vec![test_6_1_16_err_generator(
+            "1".to_string(),
+            "2".to_string(),
+            "final".to_string(),
+        )]);
+        let case_04 = Err(vec![test_6_1_16_err_generator(
+            "1.0.0".to_string(),
+            "2.0.0".to_string(),
+            "final".to_string(),
+        )]);
+        let case_05 = Err(vec![test_6_1_16_err_generator(
+            "1.0.0".to_string(),
+            "2.0.0".to_string(),
+            "final".to_string(),
+        )]);
+        let case_06 = Err(vec![test_6_1_16_err_generator(
+            "9".to_string(),
+            "10".to_string(),
+            "final".to_string(),
+        )]);
+        let case_07 = Err(vec![test_6_1_16_err_generator(
+            "1.9.0".to_string(),
+            "1.10.0".to_string(),
+            "final".to_string(),
+        )]);
+        let case_08 = Err(vec![test_6_1_16_err_generator(
+            "1".to_string(),
+            "2".to_string(),
+            "final".to_string(),
+        )]);
+        let case_09 = Err(vec![test_6_1_16_err_generator(
+            "2".to_string(),
+            "1".to_string(),
+            "final".to_string(),
+        )]);
+
+        // CSAF 2.0 has 18 test cases (01-08, 11-19, 31)
+        TESTS_2_0.test_6_1_16.expect(
+            case_01.clone(),
+            case_02.clone(),
+            case_03.clone(),
+            case_04.clone(),
+            case_05.clone(),
+            case_06.clone(),
+            case_07.clone(),
+            case_08.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
+            Ok(()), // case_18
+            Ok(()), // case_19
+            Ok(()), // case_31
+        );
+
+        // CSAF 2.1 has 20 test cases (01-09, 11-19, 31-32)
+        TESTS_2_1.test_6_1_16.expect(
+            case_01,
+            case_02,
+            case_03,
+            case_04,
+            case_05,
+            case_06,
+            case_07,
+            case_08,
+            case_09,
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
+            Ok(()), // case_18
+            Ok(()), // case_19
+            Ok(()), // case_31
+            Ok(()), // case_32
+        );
     }
 }

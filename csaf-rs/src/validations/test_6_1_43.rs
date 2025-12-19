@@ -20,7 +20,7 @@ pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Resul
                         if count_unescaped_stars(model_number) > 1 {
                             errors
                                 .get_or_insert_with(Vec::new)
-                                .push(create_validation_error(&path, index));
+                                .push(create_validation_error(path, index));
                         }
                     }
                 }

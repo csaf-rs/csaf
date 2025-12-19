@@ -20,7 +20,7 @@ pub fn test_6_1_44_multiple_stars_in_serial_number(doc: &impl CsafTrait) -> Resu
                         if count_unescaped_stars(serial_number) > 1 {
                             errors
                                 .get_or_insert_with(Vec::new)
-                                .push(create_multiple_stars_error(&path, index));
+                                .push(create_multiple_stars_error(path, index));
                         }
                     }
                 }

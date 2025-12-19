@@ -2,7 +2,7 @@ use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrai
 use crate::helpers::{DP_VAL_KEYS_LOOKUP, REGISTERED_SSVC_NAMESPACES, SSVC_DECISION_POINTS};
 use crate::validation::ValidationError;
 use std::ops::Deref;
-
+#[allow(clippy::too_many_arguments)]
 fn create_unknown_value_error(
     namespace: &str,
     dp_name: &str,

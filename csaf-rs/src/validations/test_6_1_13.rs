@@ -33,7 +33,7 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
                         if !PURL_REGEX.is_match(purl_str) {
                             errors
                                 .get_or_insert_with(Vec::new)
-                                .push(generate_purl_regex_error(purl_str, &path, i));
+                                .push(generate_purl_regex_error(purl_str, path, i));
                             continue;
                         }
                         // Parse the PURL
@@ -41,7 +41,7 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
                             errors.get_or_insert_with(Vec::new).push(generate_purl_format_error(
                                 purl_str,
                                 &e.to_string(),
-                                &path,
+                                path,
                                 i,
                             ));
                         }

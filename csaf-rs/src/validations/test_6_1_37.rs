@@ -122,7 +122,7 @@ fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance
     }
 }
 
-fn check_datetime(date_time: &String, instance_path: &str) -> Result<(), Vec<ValidationError>> {
+fn check_datetime(date_time: &str, instance_path: &str) -> Result<(), Vec<ValidationError>> {
     if CSAF_RFC3339_REGEX.is_match(date_time) {
         // Add chrono-based plausibility check
         match chrono::DateTime::parse_from_rfc3339(date_time) {

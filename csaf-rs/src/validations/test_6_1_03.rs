@@ -1,6 +1,5 @@
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait, RelationshipTrait};
 use crate::validation::ValidationError;
-use crate::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
 use std::collections::{HashMap, HashSet};
 
 fn generate_self_reference_product_error(index: usize) -> ValidationError {

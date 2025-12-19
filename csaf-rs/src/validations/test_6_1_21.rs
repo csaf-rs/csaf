@@ -122,9 +122,9 @@ fn test_6_1_21_err_missing_version_in_range(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf_traits::VersionNumber;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::csaf_traits::VersionNumber;
 
     #[test]
     fn test_test_6_1_21() {

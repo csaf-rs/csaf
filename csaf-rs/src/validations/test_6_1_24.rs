@@ -59,46 +59,110 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_24
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_24_multiple_definition_in_involvements(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_24
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_24_multiple_definition_in_involvements(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_24() {
-        let errors_20 = std::collections::HashMap::from([
-            (
-                "01",
-                vec![
-                    generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-                    generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-                ],
+        // Error cases for CSAF 2.0 (different dates than CSAF 2.1)
+        let case_01_v2_0 = Err(vec![
+            generate_duplicate_involvement_error(
+                "2021-04-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                0,
             ),
-            (
-                "02",
-                vec![
-                    generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-                    generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-                ],
-            ),
-        ]);
-        let errors_21 = std::collections::HashMap::from([
-            (
-                "01",
-                vec![
-                    generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-                    generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-                ],
-            ),
-            (
-                "02",
-                vec![
-                    generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-                    generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-                ],
+            generate_duplicate_involvement_error(
+                "2021-04-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                1,
             ),
         ]);
-        run_csaf20_tests("24", test_6_1_24_multiple_definition_in_involvements, errors_20);
-        run_csaf21_tests("24", test_6_1_24_multiple_definition_in_involvements, errors_21);
+        let case_02_v2_0 = Err(vec![
+            generate_duplicate_involvement_error(
+                "2021-04-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                0,
+            ),
+            generate_duplicate_involvement_error(
+                "2021-04-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                1,
+            ),
+        ]);
+
+        // Error cases for CSAF 2.1 (different dates than CSAF 2.0)
+        let case_01_v2_1 = Err(vec![
+            generate_duplicate_involvement_error(
+                "2023-08-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                0,
+            ),
+            generate_duplicate_involvement_error(
+                "2023-08-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                1,
+            ),
+        ]);
+        let case_02_v2_1 = Err(vec![
+            generate_duplicate_involvement_error(
+                "2023-08-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                0,
+            ),
+            generate_duplicate_involvement_error(
+                "2023-08-23T10:00:00.000Z",
+                &PartyCategory::Vendor,
+                0,
+                1,
+            ),
+        ]);
+
+        // CSAF 2.0 has 4 test cases (01-02, 11-12)
+        TESTS_2_0.test_6_1_24.expect(
+            case_01_v2_0,
+            case_02_v2_0,
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
+
+        // CSAF 2.1 has 4 test cases (01-02, 11-12)
+        TESTS_2_1.test_6_1_24.expect(
+            case_01_v2_1,
+            case_02_v2_1,
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
     }
 }

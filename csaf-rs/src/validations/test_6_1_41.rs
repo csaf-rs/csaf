@@ -2,6 +2,20 @@ use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGro
 use crate::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
 use crate::validation::ValidationError;
 
+fn create_max_uuid_sharing_group_error() -> ValidationError {
+    ValidationError {
+        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
+        instance_path: "/document/distribution/sharing_group/name".to_string(),
+    }
+}
+
+fn create_nil_uuid_sharing_group_error() -> ValidationError {
+    ValidationError {
+        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
+        instance_path: "/document/distribution/sharing_group/name".to_string(),
+    }
+}
+
 /// Validates that a CSAF document with specific sharing group IDs has the correct corresponding name.
 ///
 /// This function ensures that:
@@ -29,10 +43,7 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PUBLIC => {},
                 _ => {
-                    return Err(vec![ValidationError {
-                        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }]);
+                    return Err(vec![create_max_uuid_sharing_group_error()]);
                 },
             }
         }
@@ -42,10 +53,7 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PRIVATE => {},
                 _ => {
-                    return Err(vec![ValidationError {
-                        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }]);
+                    return Err(vec![create_nil_uuid_sharing_group_error()]);
                 },
             }
         }
@@ -56,45 +64,23 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_41::{SG_NAME_PRIVATE, SG_NAME_PUBLIC, test_6_1_41_missing_sharing_group_name};
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_41() {
+        let max_uuid_error = create_max_uuid_sharing_group_error();
+        let nil_uuid_error = create_nil_uuid_sharing_group_error();
+
         run_csaf21_tests(
             "41",
             test_6_1_41_missing_sharing_group_name,
             HashMap::from([
-                (
-                    "01",
-                    vec![ValidationError {
-                        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
-                (
-                    "02",
-                    vec![ValidationError {
-                        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
-                (
-                    "03",
-                    vec![ValidationError {
-                        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
-                (
-                    "04",
-                    vec![ValidationError {
-                        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
+                ("01", vec![max_uuid_error.clone()]),
+                ("02", vec![nil_uuid_error.clone()]),
+                ("03", vec![max_uuid_error.clone()]),
+                ("04", vec![nil_uuid_error.clone()]),
             ]),
         );
     }

@@ -2,6 +2,16 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
+fn create_validation_error(status: &DocumentStatus, version: &str) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "The document status is {} but the document version {} contains a pre-release part",
+            status, version
+        ),
+        instance_path: "/document/version".to_string(),
+    }
+}
+
 /// 6.1.20 Non-draft Document Version
 ///
 /// For documents with status "final" or "interim", the `/document/version` field must not contain
@@ -18,13 +28,7 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
     // Check if there is a pre-release part
     let version = tracking.get_version();
     if version.is_semver_has_prerelease() {
-        return Err(vec![ValidationError {
-            message: format!(
-                "The document status is {} but the document version {} contains a pre-release part",
-                status, version
-            ),
-            instance_path: "/document/version".to_string(),
-        }]);
+        return Err(vec![create_validation_error(&status, &version.to_string())]);
     }
 
     Ok(())
@@ -32,19 +36,17 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_20::test_6_1_20_non_draft_document_version;
 
     #[test]
     fn test_test_6_1_20() {
         let errors = std::collections::HashMap::from([(
             "01",
-            vec![crate::validation::ValidationError {
-                message:
-                    "The document status is interim but the document version 1.0.0-alpha contains a pre-release part"
-                        .to_string(),
-                instance_path: "/document/version".to_string(),
-            }],
+            vec![create_validation_error(
+                &crate::schema::csaf2_1::schema::DocumentStatus::Interim,
+                "1.0.0-alpha",
+            )],
         )]);
         run_csaf20_tests("20", test_6_1_20_non_draft_document_version, errors.clone());
         run_csaf21_tests("20", test_6_1_20_non_draft_document_version, errors);

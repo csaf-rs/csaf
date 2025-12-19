@@ -2,6 +2,16 @@ use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
+fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Document with category '{}' must have at least one document note with category 'description', 'details', 'general' or 'summary'",
+            doc_category
+        ),
+        instance_path: "/document/notes".to_string(),
+    }
+}
+
 /// 6.1.27.1 Document Notes
 ///
 /// This test only applies to documents with `/document/category` with value `csaf_informational_advisory`
@@ -37,13 +47,7 @@ pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Val
 
     // if there isn't a note with the required category, return an error
     if !found_valid_note {
-        return Err(vec![ValidationError {
-            message: format!(
-                "Document with category '{}' must have at least one document note with category 'description', 'details', 'general' or 'summary'",
-                doc_category
-            ),
-            instance_path: "/document/notes".to_string(),
-        }]);
+        return Err(vec![create_missing_note_error(doc_category)]);
     }
 
     Ok(())
@@ -51,19 +55,17 @@ pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Val
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_27_01::test_6_1_27_01_document_notes;
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_27_01() {
         let errors = HashMap::from([(
             "01",
-            vec![ValidationError {
-                message: "Document with category 'csaf_security_incident_response' must have at least one document note with category 'description', 'details', 'general' or 'summary'".to_string(),
-                instance_path: "/document/notes".to_string(),
-            }],
+            vec![create_missing_note_error(
+                DocumentCategory::CsafSecurityIncidentResponse,
+            )],
         )]);
         run_csaf20_tests("27-01", test_6_1_27_01_document_notes, errors.clone());
         run_csaf21_tests("27-01", test_6_1_27_01_document_notes, errors);

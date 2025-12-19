@@ -2,6 +2,76 @@ use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrai
 use crate::helpers::{DP_VAL_KEYS_LOOKUP, REGISTERED_SSVC_NAMESPACES, SSVC_DECISION_POINTS};
 use crate::validation::ValidationError;
 use std::ops::Deref;
+#[allow(clippy::too_many_arguments)]
+fn create_unknown_value_error(
+    namespace: &str,
+    dp_name: &str,
+    version: &str,
+    value_key: &str,
+    i_v: usize,
+    i_m: usize,
+    i_s: usize,
+    i_val: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "The SSVC decision point '{}::{}' (version {}) doesn't have a value with key '{}'",
+            namespace, dp_name, version, value_key
+        ),
+        instance_path: format!(
+            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
+            i_v, i_m, i_s, i_val
+        ),
+    }
+}
+
+fn create_incorrect_order_error(
+    namespace: &str,
+    dp_name: &str,
+    version: &str,
+    i_v: usize,
+    i_m: usize,
+    i_s: usize,
+    i_val: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "The values for SSVC decision point '{}::{}' (version {}) are not in correct order",
+            namespace, dp_name, version
+        ),
+        instance_path: format!(
+            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
+            i_v, i_m, i_s, i_val
+        ),
+    }
+}
+
+fn create_unknown_decision_point_error(
+    namespace: &str,
+    key: &str,
+    version: &str,
+    i_v: usize,
+    i_m: usize,
+    i_s: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Unknown SSVC decision point '{}::{}' with version '{}'",
+            namespace, key, version
+        ),
+        instance_path: format!(
+            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}",
+            i_v, i_m, i_s
+        ),
+    }
+}
+
+fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Invalid SSVC object: {}", error),
+        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
+    }
+}
 
 pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
@@ -36,34 +106,28 @@ pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<
                                         {
                                             match reference_indices.get(v_key) {
                                                 None => {
-                                                    return Err(vec![ValidationError {
-                                                        message: format!(
-                                                            "The SSVC decision point '{}::{}' (version {}) doesn't have a value with key '{}'",
-                                                            namespace,
-                                                            dp.name.deref(),
-                                                            version,
-                                                            v_key
-                                                        ),
-                                                        instance_path: format!(
-                                                            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
-                                                            i_v, i_m, i_s, i_val
-                                                        ),
-                                                    }]);
+                                                    return Err(vec![create_unknown_value_error(
+                                                        &namespace,
+                                                        dp.name.deref(),
+                                                        &version,
+                                                        v_key,
+                                                        i_v,
+                                                        i_m,
+                                                        i_s,
+                                                        i_val,
+                                                    )]);
                                                 },
                                                 Some(i_dp_val) => {
                                                     if last_index > *i_dp_val {
-                                                        return Err(vec![ValidationError {
-                                                            message: format!(
-                                                                "The values for SSVC decision point '{}::{}' (version {}) are not in correct order",
-                                                                namespace,
-                                                                dp.name.deref(),
-                                                                version
-                                                            ),
-                                                            instance_path: format!(
-                                                                "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
-                                                                i_v, i_m, i_s, i_val
-                                                            ),
-                                                        }]);
+                                                        return Err(vec![create_incorrect_order_error(
+                                                            &namespace,
+                                                            dp.name.deref(),
+                                                            &version,
+                                                            i_v,
+                                                            i_m,
+                                                            i_s,
+                                                            i_val,
+                                                        )]);
                                                     } else {
                                                         last_index = *i_dp_val;
                                                     }
@@ -72,25 +136,15 @@ pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<
                                         }
                                     },
                                     None => {
-                                        return Err(vec![ValidationError {
-                                            message: format!(
-                                                "Unknown SSVC decision point '{}::{}' with version '{}'",
-                                                namespace, s_key, version
-                                            ),
-                                            instance_path: format!(
-                                                "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}",
-                                                i_v, i_m, i_s
-                                            ),
-                                        }]);
+                                        return Err(vec![create_unknown_decision_point_error(
+                                            &namespace, &s_key, &version, i_v, i_m, i_s,
+                                        )]);
                                     },
                                 }
                             }
                         },
                         Err(err) => {
-                            return Err(vec![ValidationError {
-                                message: format!("Invalid SSVC object: {}", err),
-                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
-                            }]);
+                            return Err(vec![create_invalid_ssvc_error(err, i_v, i_m)]);
                         },
                     }
                 }
@@ -103,48 +157,71 @@ pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::run_csaf21_tests_with_excludes;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_48::test_6_1_48_ssvc_decision_points;
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_48() {
-        let instance_path = "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string();
-
         run_csaf21_tests_with_excludes(
             "48",
             test_6_1_48_ssvc_decision_points,
             HashMap::from([
-                ("01", vec![ValidationError {
-                    message: "The SSVC decision point 'ssvc::Mission Impact' (version 1.0.0) doesn't have a value with key 'D'".to_string(),
-                    instance_path: format!("{}/values/1", instance_path),
-                }]),
-                ("02", vec![ValidationError {
-                    message: "Unknown SSVC decision point 'ssvc::SIs' with version '2.0.0'".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("03", vec![ValidationError {
-                    message: "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
-                    instance_path: format!("{}/values/1", instance_path),
-                }]),
-                ("04", vec![ValidationError {
-                    message: "Unknown SSVC decision point 'ssvc::SI' with version '1.9.7'".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("05", vec![ValidationError {
-                    message: "The SSVC decision point 'cvss::Attack Complexity' (version 3.0.1) doesn't have a value with key 'E'".to_string(),
-                    instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
-                }]),
-                ("06", vec![ValidationError {
-                    message: "Unknown SSVC decision point 'cvss::E' with version '3.0.1'".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
+                (
+                    "01",
+                    vec![create_unknown_value_error(
+                        "ssvc",
+                        "Mission Impact",
+                        "1.0.0",
+                        "D",
+                        0,
+                        0,
+                        0,
+                        1,
+                    )],
+                ),
+                (
+                    "02",
+                    vec![create_unknown_decision_point_error("ssvc", "SIs", "2.0.0", 0, 0, 0)],
+                ),
+                (
+                    "03",
+                    vec![create_incorrect_order_error(
+                        "ssvc",
+                        "Safety Impact",
+                        "2.0.0",
+                        0,
+                        0,
+                        0,
+                        1,
+                    )],
+                ),
+                (
+                    "04",
+                    vec![create_unknown_decision_point_error("ssvc", "SI", "1.9.7", 0, 0, 0)],
+                ),
+                (
+                    "05",
+                    vec![create_unknown_value_error(
+                        "cvss",
+                        "Attack Complexity",
+                        "3.0.1",
+                        "E",
+                        0,
+                        0,
+                        0,
+                        0,
+                    )],
+                ),
+                (
+                    "06",
+                    vec![create_unknown_decision_point_error("cvss", "E", "3.0.1", 0, 0, 0)],
+                ),
             ]),
             // Tests 07, 08, 09, 21 deal with complex SSVC namespace rules, skipped for now.
             // Test 16: There seems to be no Exploit Maturity (E) decision point version 3.0.1 in the SSVC repository, skipped for now.
             // Test 31: Erroneous JSON field "description", skipped for now.
-            &["07", "08", "09", "21", "16", "31"]
+            &["07", "08", "09", "21", "16", "31"],
         );
     }
 }

@@ -2,6 +2,20 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
+fn create_revision_history_error(
+    status: &DocumentStatus,
+    number: &impl std::fmt::Display,
+    index: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Document with status '{}' contains a revision history item with number '{}'",
+            status, number
+        ),
+        instance_path: format!("/document/tracking/revision_history/{}/number", index),
+    }
+}
+
 /// 6.1.18 Released Revision History
 ///
 /// For documents with `/document/status` "final" or "interim", no item in `/document/tracking/revision_history[]`
@@ -20,13 +34,7 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     for (i_r, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();
         if number.is_intver_is_zero() || number.is_semver_is_major_zero() {
-            errors.push(ValidationError {
-                message: format!(
-                    "Document with status '{}' contains a revision history item with number '{}'",
-                    status, number
-                ),
-                instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
-            });
+            errors.push(create_revision_history_error(&status, &number, i_r));
         }
     }
 
@@ -39,19 +47,15 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_18::test_6_1_18_released_revision_history;
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_14() {
         let errors = HashMap::from([(
             "01",
-            vec![ValidationError {
-                message: "Document with status 'final' contains a revision history item with number '0'".to_string(),
-                instance_path: "/document/tracking/revision_history/0/number".to_string(),
-            }],
+            vec![create_revision_history_error(&DocumentStatus::Final, &"0", 0)],
         )]);
         run_csaf20_tests("18", test_6_1_18_released_revision_history, errors.clone());
         run_csaf21_tests("18", test_6_1_18_released_revision_history, errors);

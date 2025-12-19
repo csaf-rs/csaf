@@ -34,10 +34,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 
     let last_number = rev_history_tuples.last().unwrap().number.clone().get_major();
 
-    println!("First number: {}", first_number);
-    println!("Last number: {}", last_number);
     for expected_number in first_number + 1..last_number {
-        println!("Checking for expected number: {}", expected_number);
         let mut found = false;
         for revision_history_item in rev_history_tuples.iter() {
             if revision_history_item.number.clone().get_major() == expected_number {
@@ -102,12 +99,9 @@ fn test_6_1_21_err_missing_version_in_range(
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::csaf_traits::VersionNumber;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_21::{
-        test_6_1_21_err_missing_version_in_range, test_6_1_21_err_wrong_first_version_generator,
-        test_6_1_21_missing_item_in_revision_history,
-    };
 
     #[test]
     fn test_test_6_1_21() {

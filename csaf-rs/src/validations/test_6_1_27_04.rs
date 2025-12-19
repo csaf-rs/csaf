@@ -48,9 +48,8 @@ fn test_6_1_27_04_err_generator(document_category: DocumentCategory) -> Validati
 
 #[cfg(test)]
 mod tests {
-    use crate::csaf_traits::DocumentCategory;
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_27_04::{test_6_1_27_04_err_generator, test_6_1_27_04_product_tree};
     use std::collections::HashMap;
 
     #[test]

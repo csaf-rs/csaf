@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for flags without referenced group_ids or product_ids
 fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> ValidationError {
     ValidationError {
         message: "Each flag must reference at least one group_id or product_id".to_string(),

@@ -1,14 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
-/// Generates a validation error for a revision history entry with a pre-release version.
-///
-/// # Arguments
-/// * `number` - The revision number that contains a pre-release part
-/// * `index` - The index of the revision history entry
-///
-/// # Returns
-/// A `ValidationError` describing the pre-release version violation
 fn create_prerelease_version_error(number: impl std::fmt::Display, index: usize) -> ValidationError {
     ValidationError {
         message: format!("revision history item number '{}' contains a pre-release part", number),

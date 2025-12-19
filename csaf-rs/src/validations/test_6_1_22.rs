@@ -2,19 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
-/// Generates a validation error for a duplicate revision history number.
-///
-/// Creates a `ValidationError` for a specific duplicate revision number occurrence,
-/// indicating the path to the duplicate entry and the conflicting number.
-///
-/// # Arguments
-///
-/// * `number` - The duplicate revision number string
-/// * `path` - The index of this duplicate occurrence
-///
-/// # Returns
-///
-/// A `ValidationError` instance for this duplicate occurrence
 fn generate_duplicate_revision_error(number: &str, path: usize) -> ValidationError {
     ValidationError {
         message: format!("Duplicate definition of revision history number {}", number),

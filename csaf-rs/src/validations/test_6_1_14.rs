@@ -1,14 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 
-/// Creates a validation error for a revision history item that is out of place.
-///
-/// # Arguments
-/// * `revision_number` - The revision number of the out-of-place item
-/// * `path_index` - The index in the revision history path where the error occurred
-///
-/// # Returns
-/// A `ValidationError` indicating that the revision history item is not sorted by date
 fn create_revision_history_error(revision_number: impl std::fmt::Display, path_index: usize) -> ValidationError {
     ValidationError {
         message: format!(

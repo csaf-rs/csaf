@@ -2,12 +2,6 @@ use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait, Relationship
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
-/// Creates a `ValidationError` indicating that a relationship references itself
-/// through the product_reference field.
-///
-/// # Arguments
-///
-/// * `index` - The index of the relationship in the relationships array
 fn generate_self_reference_product_error(index: usize) -> ValidationError {
     ValidationError {
         message: "Relationship references itself via product_reference".to_string(),
@@ -15,12 +9,6 @@ fn generate_self_reference_product_error(index: usize) -> ValidationError {
     }
 }
 
-/// Creates a `ValidationError` indicating that a relationship references itself
-/// through the relates_to_product_reference field.
-///
-/// # Arguments
-///
-/// * `index` - The index of the relationship in the relationships array
 fn generate_self_reference_relates_to_error(index: usize) -> ValidationError {
     ValidationError {
         message: "Relationship references itself via relates_to_product_reference".to_string(),
@@ -28,12 +16,6 @@ fn generate_self_reference_relates_to_error(index: usize) -> ValidationError {
     }
 }
 
-/// Creates a `ValidationError` indicating that a cycle was detected in the product relationships.
-///
-/// # Arguments
-///
-/// * `cycle` - A vector of product IDs forming the cycle
-/// * `relation_index` - The index of the relationship that contains the cycle
 fn generate_cycle_error(cycle: &[String], relation_index: usize) -> ValidationError {
     ValidationError {
         message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
@@ -87,9 +69,13 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
         for (i_r, r) in tree.get_relationships().iter().enumerate() {
             let rel_prod_id = r.get_full_product_name().get_product_id();
             if r.get_product_reference() == rel_prod_id {
-                errors.get_or_insert_with(Vec::new).push(generate_self_reference_product_error(i_r));
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(generate_self_reference_product_error(i_r));
             } else if r.get_relates_to_product_reference() == rel_prod_id {
-                errors.get_or_insert_with(Vec::new).push(generate_self_reference_relates_to_error(i_r));
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(generate_self_reference_relates_to_error(i_r));
             } else {
                 match relation_map.get_mut(r.get_product_reference()) {
                     Some(v) => {
@@ -109,7 +95,9 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
         let mut visited = HashSet::new();
         for product_id in relation_map.keys() {
             if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
-                errors.get_or_insert_with(Vec::new).push(generate_cycle_error(&cycle, relation_index));
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(generate_cycle_error(&cycle, relation_index));
             }
         }
     }
@@ -124,10 +112,7 @@ mod tests {
 
     #[test]
     fn test_test_6_1_03() {
-        let errors = HashMap::from([(
-            "01",
-            vec![generate_self_reference_relates_to_error(0)],
-        )]);
+        let errors = HashMap::from([("01", vec![generate_self_reference_relates_to_error(0)])]);
         run_csaf20_tests("03", test_6_1_03_circular_definition_of_product_id, errors.clone());
         run_csaf21_tests("03", test_6_1_03_circular_definition_of_product_id, errors);
     }

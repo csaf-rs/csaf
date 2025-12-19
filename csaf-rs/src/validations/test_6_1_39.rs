@@ -4,7 +4,6 @@ use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for public sharing group without max UUID or nil UUID with draft status
 fn create_public_sharing_group_error() -> ValidationError {
     ValidationError {
         message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status."

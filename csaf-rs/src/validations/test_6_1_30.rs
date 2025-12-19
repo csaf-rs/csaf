@@ -2,7 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::validation::ValidationError;
 use std::mem::discriminant;
 
-/// Creates a ValidationError for mixed versioning schemes
 fn create_mixed_versioning_error(doc_version: &str, rev_number: &str, revision_index: usize) -> ValidationError {
     ValidationError {
         message: format!(

@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for when document language and source language have the same value
 fn create_same_language_error(lang: &str) -> ValidationError {
     ValidationError {
         message: format!("document language and source language have the same value {}", lang),

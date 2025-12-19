@@ -2,16 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
-/// Creates a validation error for a non-draft document with a pre-release version.
-///
-/// # Arguments
-///
-/// * `status` - The document status (e.g., "final" or "interim")
-/// * `version` - The document version string
-///
-/// # Returns
-///
-/// A validation error indicating that the document status is incompatible with the pre-release version.
 fn create_validation_error(status: &DocumentStatus, version: &str) -> ValidationError {
     ValidationError {
         message: format!(

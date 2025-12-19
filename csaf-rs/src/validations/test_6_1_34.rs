@@ -3,7 +3,6 @@ use crate::validation::ValidationError;
 
 static MAX_DEPTH: u32 = 30;
 
-/// Creates a ValidationError for excessive branch recursion depth
 fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> ValidationError {
     ValidationError {
         message: format!("Branches recursion depth too big (> {})", MAX_DEPTH),

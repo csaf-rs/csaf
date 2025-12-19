@@ -2,19 +2,6 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
-/// Generates a validation error for a duplicate CVE identifier.
-///
-/// Creates a `ValidationError` for a specific duplicate CVE occurrence,
-/// indicating the path to the duplicate entry and the conflicting CVE identifier.
-///
-/// # Arguments
-///
-/// * `cve` - The duplicate CVE identifier string
-/// * `path` - The index of this duplicate occurrence
-///
-/// # Returns
-///
-/// A `ValidationError` instance for this duplicate occurrence
 fn generate_duplicate_cve_error(cve: &str, path: usize) -> ValidationError {
     ValidationError {
         message: format!("Duplicate usage of same CVE identifier '{}'", cve),

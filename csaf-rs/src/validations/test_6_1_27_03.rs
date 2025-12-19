@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for documents that should not have vulnerabilities
 fn create_vulnerabilities_error() -> ValidationError {
     ValidationError {
         message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"

@@ -3,7 +3,6 @@ use crate::helpers::MAX_UUID;
 use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for non-public sharing group with max UUID
 fn create_non_public_sharing_group_error() -> ValidationError {
     ValidationError {
         message: "Document must be public (TLD CLEAR) when using max UUID as sharing group ID.".to_string(),

@@ -2,7 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, PublisherTrait};
 use crate::schema::csaf2_1::schema::CategoryOfPublisher;
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for missing source_lang when publisher category is "translator".
 fn create_missing_source_lang_error() -> ValidationError {
     ValidationError {
         message: "source_lang is required when the publisher category is 'translator'".to_string(),

@@ -3,21 +3,6 @@ use crate::schema::csaf2_1::schema::PartyCategory;
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
-/// Generates a validation error for a duplicate involvement tuple.
-///
-/// Creates a `ValidationError` for a specific duplicate (date, party) tuple occurrence,
-/// indicating the path to the duplicate entry and the conflicting tuple values.
-///
-/// # Arguments
-///
-/// * `date` - The duplicate involvement date string
-/// * `party` - The duplicate party category
-/// * `vul_r` - The vulnerability index
-/// * `inv_r` - The involvement index
-///
-/// # Returns
-///
-/// A `ValidationError` instance for this duplicate occurrence
 fn generate_duplicate_involvement_error(
     date: &str,
     party: &PartyCategory,

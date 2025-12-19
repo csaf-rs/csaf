@@ -2,6 +2,20 @@ use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGro
 use crate::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
 use crate::validation::ValidationError;
 
+fn create_max_uuid_sharing_group_error() -> ValidationError {
+    ValidationError {
+        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
+        instance_path: "/document/distribution/sharing_group/name".to_string(),
+    }
+}
+
+fn create_nil_uuid_sharing_group_error() -> ValidationError {
+    ValidationError {
+        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
+        instance_path: "/document/distribution/sharing_group/name".to_string(),
+    }
+}
+
 /// Validates that a CSAF document with specific sharing group IDs has the correct corresponding name.
 ///
 /// This function ensures that:
@@ -19,21 +33,6 @@ use crate::validation::ValidationError;
 /// * `Ok(())` if the validation passes.
 /// * `Err(vec![ValidationError])` if the validation fails, with a message explaining the reason
 ///   and the JSON path to the invalid element.
-
-fn create_max_uuid_sharing_group_error() -> ValidationError {
-    ValidationError {
-        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-        instance_path: "/document/distribution/sharing_group/name".to_string(),
-    }
-}
-
-fn create_nil_uuid_sharing_group_error() -> ValidationError {
-    ValidationError {
-        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-        instance_path: "/document/distribution/sharing_group/name".to_string(),
-    }
-}
-
 pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 

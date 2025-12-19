@@ -5,6 +5,27 @@ use crate::schema::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
 use crate::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
 
+fn create_invalid_revision_date_error(date: &str, i_rev: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Invalid date format in revision history: {}", date),
+        instance_path: format!("/document/tracking/revision_history/{}", i_rev),
+    }
+}
+
+fn create_disclosure_date_too_late_error(i_v: usize) -> ValidationError {
+    ValidationError {
+        message: "Disclosure date must not be later than the newest revision history date for TLP:CLEAR documents with final or interim status".to_string(),
+        instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
+    }
+}
+
+fn create_invalid_disclosure_date_error(date: &str, i_v: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Invalid disclosure date format: {}", date),
+        instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
+    }
+}
+
 pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Only check if document is TLP:CLEAR and status is final or interim
     let document = doc.get_document();
@@ -41,12 +62,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
                     Some(prev_max) => Some(prev_max.max(rev_datetime)),
                 }
             })
-            .map_err(|_| {
-                vec![ValidationError {
-                    message: format!("Invalid date format in revision history: {}", rev.get_date()),
-                    instance_path: format!("/document/tracking/revision_history/{}", i_rev),
-                }]
-            })?;
+            .map_err(|_| vec![create_invalid_revision_date_error(rev.get_date(), i_rev)])?;
     }
 
     if let Some(newest_date) = newest_revision_date {
@@ -60,17 +76,11 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
                             disclosure_datetime, newest_date
                         );
                         if disclosure_datetime > newest_date {
-                            return Err(vec![ValidationError {
-                                message: "Disclosure date must not be later than the newest revision history date for TLP:CLEAR documents with final or interim status".to_string(),
-                                instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
-                            }]);
+                            return Err(vec![create_disclosure_date_too_late_error(i_v)]);
                         }
                     },
                     Err(_) => {
-                        return Err(vec![ValidationError {
-                            message: format!("Invalid disclosure date format: {}", disclosure_date),
-                            instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
-                        }]);
+                        return Err(vec![create_invalid_disclosure_date_error(disclosure_date, i_v)]);
                     },
                 }
             }
@@ -82,25 +92,19 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_45::test_6_1_45_inconsistent_disclosure_date;
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_45() {
-        let expected_error = ValidationError {
-            message: "Disclosure date must not be later than the newest revision history date for TLP:CLEAR documents with final or interim status".to_string(),
-            instance_path: "/vulnerabilities/0/discovery_date".to_string(),
-        };
-
         run_csaf21_tests(
             "45",
             test_6_1_45_inconsistent_disclosure_date,
             HashMap::from([
-                ("01", vec![expected_error.clone()]),
-                ("02", vec![expected_error.clone()]),
-                ("03", vec![expected_error.clone()]),
+                ("01", vec![create_disclosure_date_too_late_error(0)]),
+                ("02", vec![create_disclosure_date_too_late_error(0)]),
+                ("03", vec![create_disclosure_date_too_late_error(0)]),
             ]),
         );
     }

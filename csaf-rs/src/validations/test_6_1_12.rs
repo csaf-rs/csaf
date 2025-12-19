@@ -2,20 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::generated::language_subtags::is_valid_language_subtag;
 use crate::validation::ValidationError;
 
-/// Generates a validation error for an invalid language code.
-///
-/// Creates a `ValidationError` for a language code where the primary language subtag
-/// is not recognized as a valid language subtag according to BCP 47.
-///
-/// # Arguments
-///
-/// * `language` - The full language code that is invalid
-/// * `subtag` - The primary language subtag that failed validation
-/// * `path` - The JSON path where this language code was found
-///
-/// # Returns
-///
-/// A `ValidationError` instance for this invalid language code
 fn generate_invalid_language_error(language: &str, subtag: &str, path: &str) -> ValidationError {
     ValidationError {
         message: format!(
@@ -52,12 +38,15 @@ fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<Va
     let primary_subtag = lang_code.split('-').next().unwrap_or(lang_code);
 
     if !is_valid_language_subtag(primary_subtag) {
-        return Err(vec![generate_invalid_language_error(lang_code, primary_subtag, json_path)]);
+        return Err(vec![generate_invalid_language_error(
+            lang_code,
+            primary_subtag,
+            json_path,
+        )]);
     }
 
     Ok(())
 }
-
 
 #[cfg(test)]
 mod tests {

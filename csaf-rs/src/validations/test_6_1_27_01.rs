@@ -2,7 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for missing required document notes
 fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(

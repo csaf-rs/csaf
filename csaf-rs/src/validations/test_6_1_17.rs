@@ -2,19 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
-/// Generates a validation error for incompatible document version and status.
-///
-/// Creates a `ValidationError` when the document version (0, 0.y.z, or with pre-release)
-/// is incompatible with the document status (must be "draft" for such versions).
-///
-/// # Arguments
-///
-/// * `version` - The document version string
-/// * `status` - The document status
-///
-/// # Returns
-///
-/// A `ValidationError` instance for this incompatible version/status combination
 fn generate_status_version_error(version: &str, status: &DocumentStatus) -> ValidationError {
     ValidationError {
         message: format!(

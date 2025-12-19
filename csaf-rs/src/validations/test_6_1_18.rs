@@ -2,15 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
-/// Creates a ValidationError for a revision history item with version 0 or 0.y.z.
-///
-/// # Arguments
-/// * `status` - The document status
-/// * `number` - The revision number
-/// * `index` - The index of the revision history item
-///
-/// # Returns
-/// A ValidationError with the appropriate message and instance path.
 fn create_revision_history_error(
     status: &DocumentStatus,
     number: &impl std::fmt::Display,

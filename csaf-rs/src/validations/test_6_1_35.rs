@@ -16,7 +16,6 @@ static MUT_EX_STATES: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::VendorFix,
 ];
 
-/// Creates a ValidationError for contradicting remediations
 fn create_contradicting_remediations_error(
     product_id: &str,
     existing_categories: &[CategoryOfTheRemediation],

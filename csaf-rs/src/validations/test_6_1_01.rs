@@ -2,30 +2,6 @@ use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 use std::collections::HashSet;
 
-/// Validation implementation for test 6.1.1 (CSAF 2.0)
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        validate_missing_product_id(doc)
-    }
-}
-
-/// Validation implementation for test 6.1.1 (CSAF 2.1)
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        validate_missing_product_id(doc)
-    }
-}
-
 fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<ValidationError>> {
     let mut definitions_set = HashSet::<String>::new();
     if let Some(tree) = doc.get_product_tree().as_ref() {
@@ -50,6 +26,30 @@ fn generate_err_msg(ref_id: &str, ref_path: &str) -> ValidationError {
     ValidationError {
         message: format!("Missing definition of product_id: {}", ref_id),
         instance_path: ref_path.to_string(),
+    }
+}
+
+/// Validation implementation for test 6.1.1 (CSAF 2.0)
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_1
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        validate_missing_product_id(doc)
+    }
+}
+
+/// Validation implementation for test 6.1.1 (CSAF 2.1)
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_1
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        validate_missing_product_id(doc)
     }
 }
 

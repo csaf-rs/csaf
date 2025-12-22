@@ -91,20 +91,18 @@ mod tests {
             0,
         )]);
 
-        let case_02 = Err(vec![generate_purl_format_error(
-            "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
-            "no namespace allowed for type \"oci\"",
-            "/product_tree/full_product_names/0",
-            0,
-        )]);
-
         // CSAF 2.0 has 1 test case (01)
         TESTS_2_0.test_6_1_13.expect(case_01.clone());
 
         // CSAF 2.1 has 4 test cases (01, 02, 11, 12)
         TESTS_2_1.test_6_1_13.expect(
             case_01,
-            case_02,
+            Err(vec![generate_purl_format_error(
+                "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
+                "no namespace allowed for type \"oci\"",
+                "/product_tree/full_product_names/0",
+                0,
+            )]),
             Ok(()), // case_11
             Ok(()), // case_12
         );

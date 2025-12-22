@@ -44,7 +44,7 @@ pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_0::testcases::ValidatorForTest6_1_27_3
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_3
 {
     fn validate(
         &self,
@@ -55,7 +55,7 @@ for crate::csaf2_0::testcases::ValidatorForTest6_1_27_3
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_1_27_3
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_3
 {
     fn validate(
         &self,
@@ -78,6 +78,8 @@ mod tests {
         let case_03 = Err(vec![create_vulnerabilities_error()]);
 
         TESTS_2_0.test_6_1_27_3.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_3.expect(case_01, case_02, case_03, Ok(()), Ok(()), Ok(()));
+        TESTS_2_1
+            .test_6_1_27_3
+            .expect(case_01, case_02, case_03, Ok(()), Ok(()), Ok(()));
     }
 }

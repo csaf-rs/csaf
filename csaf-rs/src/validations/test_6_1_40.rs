@@ -81,6 +81,8 @@ mod tests {
         let case_02 = Err(vec![create_private_sharing_group_error()]);
 
         // Only CSAF 2.1 has this test with 6 test cases (2 error cases, 4 success cases)
-        TESTS_2_1.test_6_1_40.expect(case_01, case_02, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1
+            .test_6_1_40
+            .expect(case_01, case_02, Ok(()), Ok(()), Ok(()), Ok(()));
     }
 }

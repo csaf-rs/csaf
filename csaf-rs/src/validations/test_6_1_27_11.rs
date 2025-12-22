@@ -78,9 +78,7 @@ mod tests {
         let case_01 = Err(vec![create_missing_vulnerabilities_error(
             &DocumentCategory::CsafSecurityAdvisory,
         )]);
-        let case_02 = Err(vec![create_missing_vulnerabilities_error(
-            &DocumentCategory::CsafVex,
-        )]);
+        let case_02 = Err(vec![create_missing_vulnerabilities_error(&DocumentCategory::CsafVex)]);
         let case_03 = Err(vec![create_missing_vulnerabilities_error(
             &DocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);

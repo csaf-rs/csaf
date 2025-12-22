@@ -49,7 +49,7 @@ pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Ve
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_0::testcases::ValidatorForTest6_1_27_2
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_2
 {
     fn validate(
         &self,
@@ -60,7 +60,7 @@ for crate::csaf2_0::testcases::ValidatorForTest6_1_27_2
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_1_27_2
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_2
 {
     fn validate(
         &self,

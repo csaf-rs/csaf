@@ -98,7 +98,7 @@ fn test_6_1_27_10_err_generator(
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_0::testcases::ValidatorForTest6_1_27_10
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_10
 {
     fn validate(
         &self,
@@ -109,7 +109,7 @@ for crate::csaf2_0::testcases::ValidatorForTest6_1_27_10
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_1_27_10
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_10
 {
     fn validate(
         &self,

@@ -52,7 +52,7 @@ fn test_6_1_27_05_err_generator(document_category: &DocumentCategory, vuln_path_
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_0::testcases::ValidatorForTest6_1_27_5
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_5
 {
     fn validate(
         &self,
@@ -63,7 +63,7 @@ for crate::csaf2_0::testcases::ValidatorForTest6_1_27_5
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_1_27_5
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_5
 {
     fn validate(
         &self,

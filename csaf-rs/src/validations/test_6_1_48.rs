@@ -183,7 +183,9 @@ mod tests {
             0,
             1,
         )]);
-        let case_02 = Err(vec![create_unknown_decision_point_error("ssvc", "SIs", "2.0.0", 0, 0, 0)]);
+        let case_02 = Err(vec![create_unknown_decision_point_error(
+            "ssvc", "SIs", "2.0.0", 0, 0, 0,
+        )]);
         let case_03 = Err(vec![create_incorrect_order_error(
             "ssvc",
             "Safety Impact",
@@ -193,7 +195,9 @@ mod tests {
             0,
             1,
         )]);
-        let case_04 = Err(vec![create_unknown_decision_point_error("ssvc", "SI", "1.9.7", 0, 0, 0)]);
+        let case_04 = Err(vec![create_unknown_decision_point_error(
+            "ssvc", "SI", "1.9.7", 0, 0, 0,
+        )]);
         let case_05 = Err(vec![create_unknown_value_error(
             "cvss",
             "Attack Complexity",

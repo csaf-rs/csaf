@@ -47,7 +47,7 @@ fn test_6_1_27_04_err_generator(document_category: DocumentCategory) -> Validati
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_0::testcases::ValidatorForTest6_1_27_4
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_4
 {
     fn validate(
         &self,
@@ -58,7 +58,7 @@ for crate::csaf2_0::testcases::ValidatorForTest6_1_27_4
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_1_27_4
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_4
 {
     fn validate(
         &self,
@@ -76,7 +76,9 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_04() {
-        let case_01 = Err(vec![test_6_1_27_04_err_generator(DocumentCategory::CsafSecurityAdvisory)]);
+        let case_01 = Err(vec![test_6_1_27_04_err_generator(
+            DocumentCategory::CsafSecurityAdvisory,
+        )]);
         let case_02 = Err(vec![test_6_1_27_04_err_generator(DocumentCategory::CsafVex)]);
         let case_03 = Err(vec![test_6_1_27_04_err_generator(
             DocumentCategory::CsafDeprecatedSecurityAdvisory,

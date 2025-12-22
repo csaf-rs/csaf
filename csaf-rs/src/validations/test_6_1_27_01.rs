@@ -78,9 +78,9 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf_traits::DocumentCategory;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::csaf_traits::DocumentCategory;
 
     #[test]
     fn test_test_6_1_27_01() {

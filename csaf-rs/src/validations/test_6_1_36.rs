@@ -150,15 +150,8 @@ mod tests {
         )]);
 
         // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
-        TESTS_2_1.test_6_1_36.expect(
-            case_01,
-            case_02,
-            case_03,
-            case_04,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1
+            .test_6_1_36
+            .expect(case_01, case_02, case_03, case_04, Ok(()), Ok(()), Ok(()), Ok(()));
     }
 }

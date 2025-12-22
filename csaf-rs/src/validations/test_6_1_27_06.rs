@@ -1,5 +1,6 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
+use crate::validations::test_6_1_27_04::test_6_1_27_04_product_tree;
 
 /// 6.1.27.6 Product Status
 ///
@@ -49,38 +50,50 @@ fn test_6_1_27_06_err_generator(document_category: &DocumentCategory, vuln_path_
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+for crate::csaf2_0::testcases::ValidatorForTest6_1_27_6
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_06_product_status(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+for crate::csaf2_1::testcases::ValidatorForTest6_1_27_6
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_06_product_status(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_06() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![test_6_1_27_06_err_generator(
-                    &DocumentCategory::CsafSecurityAdvisory,
-                    &0,
-                )],
-            ),
-            (
-                "02",
-                vec![test_6_1_27_06_err_generator(
-                    &DocumentCategory::CsafSecurityAdvisory,
-                    &0,
-                )],
-            ),
-            (
-                "03",
-                vec![test_6_1_27_06_err_generator(
-                    &DocumentCategory::CsafDeprecatedSecurityAdvisory,
-                    &0,
-                )],
-            ),
-        ]);
-        run_csaf20_tests("27-06", test_6_1_27_06_product_status, errors.clone());
-        run_csaf21_tests("27-06", test_6_1_27_06_product_status, errors);
+        let case_01 = Err(vec![test_6_1_27_06_err_generator(
+            &DocumentCategory::CsafSecurityAdvisory,
+            &0,
+        )]);
+        let case_02 = Err(vec![test_6_1_27_06_err_generator(
+            &DocumentCategory::CsafSecurityAdvisory,
+            &0,
+        )]);
+        let case_03 = Err(vec![test_6_1_27_06_err_generator(
+            &DocumentCategory::CsafDeprecatedSecurityAdvisory,
+            &0,
+        )]);
+
+        TESTS_2_0.test_6_1_27_6.expect(case_01.clone());
+        TESTS_2_1.test_6_1_27_6.expect(case_01, case_02, case_03);
     }
 }

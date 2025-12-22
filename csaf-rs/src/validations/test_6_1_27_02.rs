@@ -1,6 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait, DocumentTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
+use crate::validations::test_6_1_27_01::test_6_1_27_01_document_notes;
 
 fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> ValidationError {
     ValidationError {
@@ -48,21 +49,41 @@ pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Ve
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+for crate::csaf2_0::testcases::ValidatorForTest6_1_27_2
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_02_document_references(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+for crate::csaf2_1::testcases::ValidatorForTest6_1_27_2
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_02_document_references(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_02() {
-        let errors = HashMap::from([(
-            "01",
-            vec![create_missing_external_reference_error(
-                &DocumentCategory::CsafInformationalAdvisory,
-            )],
+        let case_01 = Err(vec![create_missing_external_reference_error(
+            &DocumentCategory::CsafInformationalAdvisory,
         )]);
-        run_csaf20_tests("27-02", test_6_1_27_02_document_references, errors.clone());
-        run_csaf21_tests("27-02", test_6_1_27_02_document_references, errors);
+
+        TESTS_2_0.test_6_1_27_2.expect(case_01.clone());
+        TESTS_2_1.test_6_1_27_2.expect(case_01);
     }
 }

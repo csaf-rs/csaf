@@ -106,55 +106,59 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_36
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_36_status_group_contradicting_remediation_categories(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::run_csaf21_tests;
-    use std::collections::HashMap;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_36() {
-        run_csaf21_tests(
-            "36",
-            test_6_1_36_status_group_contradicting_remediation_categories,
-            HashMap::from([
-                (
-                    "01",
-                    vec![create_not_affected_conflict_error(
-                        "CSAFPID-9080700",
-                        &CategoryOfTheRemediation::VendorFix,
-                        0,
-                        0,
-                    )],
-                ),
-                (
-                    "02",
-                    vec![create_fixed_conflict_error(
-                        "CSAFPID-9080703",
-                        &CategoryOfTheRemediation::NoneAvailable,
-                        0,
-                        0,
-                    )],
-                ),
-                (
-                    "03",
-                    vec![create_affected_conflict_error(
-                        "CSAFPID-9080700",
-                        &CategoryOfTheRemediation::OptionalPatch,
-                        0,
-                        0,
-                    )],
-                ),
-                (
-                    "04",
-                    vec![create_fixed_conflict_error(
-                        "CSAFPID-9080700",
-                        &CategoryOfTheRemediation::NoFixPlanned,
-                        0,
-                        0,
-                    )],
-                ),
-            ]),
+        let case_01 = Err(vec![create_not_affected_conflict_error(
+            "CSAFPID-9080700",
+            &CategoryOfTheRemediation::VendorFix,
+            0,
+            0,
+        )]);
+        let case_02 = Err(vec![create_fixed_conflict_error(
+            "CSAFPID-9080703",
+            &CategoryOfTheRemediation::NoneAvailable,
+            0,
+            0,
+        )]);
+        let case_03 = Err(vec![create_affected_conflict_error(
+            "CSAFPID-9080700",
+            &CategoryOfTheRemediation::OptionalPatch,
+            0,
+            0,
+        )]);
+        let case_04 = Err(vec![create_fixed_conflict_error(
+            "CSAFPID-9080700",
+            &CategoryOfTheRemediation::NoFixPlanned,
+            0,
+            0,
+        )]);
+
+        // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
+        TESTS_2_1.test_6_1_36.expect(
+            case_01,
+            case_02,
+            case_03,
+            case_04,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

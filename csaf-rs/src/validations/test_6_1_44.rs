@@ -31,23 +31,33 @@ pub fn test_6_1_44_multiple_stars_in_serial_number(doc: &impl CsafTrait) -> Resu
     errors.map_or(Ok(()), Err)
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_44
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_44_multiple_stars_in_serial_number(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::run_csaf21_tests;
-    use std::collections::HashMap;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_44() {
         let expected_error = create_multiple_stars_error("/product_tree/full_product_names/0", 0);
 
-        run_csaf21_tests(
-            "44",
-            test_6_1_44_multiple_stars_in_serial_number,
-            HashMap::from([
-                ("01", vec![expected_error.clone()]),
-                ("02", vec![expected_error.clone()]),
-            ]),
+        // Only CSAF 2.1 has this test with 5 test cases (2 error cases, 3 success cases)
+        TESTS_2_1.test_6_1_44.expect(
+            Err(vec![expected_error.clone()]),
+            Err(vec![expected_error]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

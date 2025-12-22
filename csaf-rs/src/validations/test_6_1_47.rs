@@ -102,41 +102,54 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_47
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_47_inconsistent_ssvc_id(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::run_csaf21_tests;
-    use std::collections::HashMap;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_47() {
-        run_csaf21_tests(
-            "47",
-            test_6_1_47_inconsistent_ssvc_id,
-            HashMap::from([
-                ("01", vec![create_target_id_mismatch_error("CVE-1900-0002", 0, 0, 0)]),
-                ("02", vec![create_target_id_mismatch_error("CVE-1900-0001", 0, 0, 0)]),
-                ("03", vec![create_target_id_mismatch_error("2723", 0, 0, 0)]),
-                ("04", vec![create_target_id_mismatch_error("Bug#2723", 0, 0, 0)]),
-                (
-                    "05",
-                    vec![create_target_id_mismatch_error(
-                        "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-15",
-                        0,
-                        0,
-                        0,
-                    )],
-                ),
-                (
-                    "06",
-                    vec![create_document_id_multiple_vulnerabilities_error(
-                        "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-06",
-                        1,
-                        0,
-                        0,
-                    )],
-                ),
-            ]),
+        let case_01 = Err(vec![create_target_id_mismatch_error("CVE-1900-0002", 0, 0, 0)]);
+        let case_02 = Err(vec![create_target_id_mismatch_error("CVE-1900-0001", 0, 0, 0)]);
+        let case_03 = Err(vec![create_target_id_mismatch_error("2723", 0, 0, 0)]);
+        let case_04 = Err(vec![create_target_id_mismatch_error("Bug#2723", 0, 0, 0)]);
+        let case_05 = Err(vec![create_target_id_mismatch_error(
+            "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-15",
+            0,
+            0,
+            0,
+        )]);
+        let case_06 = Err(vec![create_document_id_multiple_vulnerabilities_error(
+            "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-06",
+            1,
+            0,
+            0,
+        )]);
+
+        // Only CSAF 2.1 has this test with 11 test cases (6 error cases, 5 success cases)
+        TESTS_2_1.test_6_1_47.expect(
+            case_01,
+            case_02,
+            case_03,
+            case_04,
+            case_05,
+            case_06,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

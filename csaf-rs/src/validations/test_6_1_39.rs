@@ -66,10 +66,11 @@ mod tests {
 
     #[test]
     fn test_test_6_1_39() {
+        let err = Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
         TESTS_2_1.test_6_1_39.expect(
-            Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
-            Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
+            err.clone(),
+            err.clone(),
             Ok(()),
             Ok(()),
         );

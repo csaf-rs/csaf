@@ -59,20 +59,19 @@ mod tests {
     #[test]
     fn test_test_6_1_15() {
         // Error cases
-        let case_01 = Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
-        let case_02 = Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
+        let err = Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
 
         // Both CSAF 2.0 and 2.1 have 4 test cases (01, 02, 11, 12)
         TESTS_2_0.test_6_1_15.expect(
-            case_01.clone(),
-            case_02.clone(),
+            err.clone(),
+            err.clone(),
             Ok(()), // case_11
             Ok(()), // case_12
         );
 
         TESTS_2_1.test_6_1_15.expect(
-            case_01,
-            case_02,
+            err.clone(),
+            err.clone(),
             Ok(()), // case_11
             Ok(()), // case_12
         );

@@ -78,12 +78,15 @@ mod tests {
 
     #[test]
     fn test_test_6_1_41() {
+        let max_uuid_err = Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
+        let nil_uuid_err = Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
+
         // Only CSAF 2.1 has this test with 6 test cases (4 error cases, 2 success cases)
         TESTS_2_1.test_6_1_41.expect(
-            Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]),
-            Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]),
-            Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]),
-            Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]),
+            max_uuid_err.clone(),
+            nil_uuid_err.clone(),
+            max_uuid_err.clone(),
+            nil_uuid_err.clone(),
             Ok(()),
             Ok(()),
         );

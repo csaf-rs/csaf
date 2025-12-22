@@ -1,6 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
-use crate::validations::test_6_1_27_04::test_6_1_27_04_product_tree;
 
 /// 6.1.27.7 VEX Product Status
 ///

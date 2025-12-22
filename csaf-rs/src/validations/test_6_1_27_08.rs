@@ -1,6 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
-use crate::validations::test_6_1_27_04::test_6_1_27_04_product_tree;
 
 /// 6.1.27.8 Vulnerability ID
 ///

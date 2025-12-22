@@ -2,7 +2,6 @@ use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStat
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
-use crate::validations::test_6_1_27_04::test_6_1_27_04_product_tree;
 
 /// 6.1.27.10 Action Statement
 ///

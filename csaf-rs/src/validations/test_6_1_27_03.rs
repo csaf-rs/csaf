@@ -1,6 +1,5 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
-use crate::validations::test_6_1_27_02::test_6_1_27_02_document_references;
 
 fn create_vulnerabilities_error() -> ValidationError {
     ValidationError {

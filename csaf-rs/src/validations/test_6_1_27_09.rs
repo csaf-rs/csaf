@@ -6,7 +6,6 @@ use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
-use crate::validations::test_6_1_27_04::test_6_1_27_04_product_tree;
 
 /// 6.1.27.9 Impact Statement
 ///

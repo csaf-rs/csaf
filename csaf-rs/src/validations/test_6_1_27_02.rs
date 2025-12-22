@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait, DocumentTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
-use crate::validations::test_6_1_27_01::test_6_1_27_01_document_notes;
 
 fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> ValidationError {
     ValidationError {

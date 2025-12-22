@@ -1,13 +1,13 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
-fn create_vulnerabilities_error() -> ValidationError {
-    ValidationError {
-        message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-            .to_string(),
-        instance_path: "/vulnerabilities".to_string(),
-    }
-}
+static VULNERABILITIES_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
+        .to_string(),
+    instance_path: "/vulnerabilities".to_string(),
+});
 
 /// 6.1.27.3 Vulnerabilities
 ///
@@ -37,7 +37,7 @@ pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 
     // return error if there are elements in /vulnerabilities
     if !doc.get_vulnerabilities().is_empty() {
-        return Err(vec![create_vulnerabilities_error()]);
+        return Err(vec![VULNERABILITIES_ERROR.clone()]);
     }
 
     Ok(())
@@ -73,13 +73,13 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_03() {
-        let case_01 = Err(vec![create_vulnerabilities_error()]);
+        let case_01 = Err(vec![VULNERABILITIES_ERROR.clone()]);
 
         TESTS_2_0.test_6_1_27_3.expect(case_01.clone());
         TESTS_2_1.test_6_1_27_3.expect(
             case_01,
-            Err(vec![create_vulnerabilities_error()]),
-            Err(vec![create_vulnerabilities_error()]),
+            Err(vec![VULNERABILITIES_ERROR.clone()]),
+            Err(vec![VULNERABILITIES_ERROR.clone()]),
             Ok(()),
             Ok(()),
             Ok(()),

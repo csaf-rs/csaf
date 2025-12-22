@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait,
 };
@@ -12,12 +14,10 @@ fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationE
     }
 }
 
-fn create_empty_revision_history_error() -> ValidationError {
-    ValidationError {
-        message: "Revision history must not be empty for status final or interim".to_string(),
-        instance_path: "/document/tracking/revision_history".to_string(),
-    }
-}
+static EMPTY_REVISION_HISTORY_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "Revision history must not be empty for status final or interim".to_string(),
+    instance_path: "/document/tracking/revision_history".to_string(),
+});
 
 fn create_ssvc_timestamp_too_late_error(
     ssvc_timestamp: &str,
@@ -76,7 +76,7 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
         Some(date) => date,
         // No entries in revision history
         None => {
-            return Err(vec![create_empty_revision_history_error()]);
+            return Err(vec![EMPTY_REVISION_HISTORY_ERROR.clone()]);
         },
     };
 

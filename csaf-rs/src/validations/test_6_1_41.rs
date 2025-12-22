@@ -1,20 +1,18 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
 use crate::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
 use crate::validation::ValidationError;
 
-fn create_max_uuid_sharing_group_error() -> ValidationError {
-    ValidationError {
-        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-        instance_path: "/document/distribution/sharing_group/name".to_string(),
-    }
-}
+static MAX_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
+    instance_path: "/document/distribution/sharing_group/name".to_string(),
+});
 
-fn create_nil_uuid_sharing_group_error() -> ValidationError {
-    ValidationError {
-        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-        instance_path: "/document/distribution/sharing_group/name".to_string(),
-    }
-}
+static NIL_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
+    instance_path: "/document/distribution/sharing_group/name".to_string(),
+});
 
 /// Validates that a CSAF document with specific sharing group IDs has the correct corresponding name.
 ///
@@ -43,7 +41,7 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PUBLIC => {},
                 _ => {
-                    return Err(vec![create_max_uuid_sharing_group_error()]);
+                    return Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
                 },
             }
         }
@@ -53,7 +51,7 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PRIVATE => {},
                 _ => {
-                    return Err(vec![create_nil_uuid_sharing_group_error()]);
+                    return Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
                 },
             }
         }
@@ -82,10 +80,10 @@ mod tests {
     fn test_test_6_1_41() {
         // Only CSAF 2.1 has this test with 6 test cases (4 error cases, 2 success cases)
         TESTS_2_1.test_6_1_41.expect(
-            Err(vec![create_max_uuid_sharing_group_error()]),
-            Err(vec![create_nil_uuid_sharing_group_error()]),
-            Err(vec![create_max_uuid_sharing_group_error()]),
-            Err(vec![create_nil_uuid_sharing_group_error()]),
+            Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]),
+            Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]),
+            Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]),
+            Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]),
             Ok(()),
             Ok(()),
         );

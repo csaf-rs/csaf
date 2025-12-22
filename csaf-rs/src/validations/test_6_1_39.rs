@@ -1,16 +1,16 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait, TrackingTrait};
 use crate::helpers::{MAX_UUID, NIL_UUID};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::validation::ValidationError;
 
-fn create_public_sharing_group_error() -> ValidationError {
-    ValidationError {
-        message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status."
-            .to_string(),
-        instance_path: "/document/distribution/sharing_group/id".to_string(),
-    }
-}
+static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status."
+        .to_string(),
+    instance_path: "/document/distribution/sharing_group/id".to_string(),
+});
 
 /// Validates that when a document is marked with TLP CLEAR, any associated sharing group
 /// must either have a `MAX_UUID` as its ID or a `NIL_UUID` accompanied by the document status being "Draft".
@@ -40,7 +40,7 @@ pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(doc: &impl CsafTrait) -
             {
                 Ok(())
             } else {
-                Err(vec![create_public_sharing_group_error()])
+                Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()])
             };
         }
     }
@@ -68,8 +68,8 @@ mod tests {
     fn test_test_6_1_39() {
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
         TESTS_2_1.test_6_1_39.expect(
-            Err(vec![create_public_sharing_group_error()]),
-            Err(vec![create_public_sharing_group_error()]),
+            Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
+            Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
             Ok(()),
             Ok(()),
         );

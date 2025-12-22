@@ -78,15 +78,17 @@ mod tests {
         let case_01 = Err(vec![create_missing_vulnerabilities_error(
             &DocumentCategory::CsafSecurityAdvisory,
         )]);
-        let case_02 = Err(vec![create_missing_vulnerabilities_error(&DocumentCategory::CsafVex)]);
-        let case_03 = Err(vec![create_missing_vulnerabilities_error(
-            &DocumentCategory::CsafDeprecatedSecurityAdvisory,
-        )]);
 
         // CSAF 2.0 has 1 test case
         TESTS_2_0.test_6_1_27_11.expect(case_01.clone());
 
         // CSAF 2.1 has 3 test cases
-        TESTS_2_1.test_6_1_27_11.expect(case_01, case_02, case_03);
+        TESTS_2_1.test_6_1_27_11.expect(
+            case_01,
+            Err(vec![create_missing_vulnerabilities_error(&DocumentCategory::CsafVex)]),
+            Err(vec![create_missing_vulnerabilities_error(
+                &DocumentCategory::CsafDeprecatedSecurityAdvisory,
+            )]),
+        );
     }
 }

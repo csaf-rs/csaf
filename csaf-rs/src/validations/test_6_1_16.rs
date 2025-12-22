@@ -135,11 +135,6 @@ mod tests {
             "2".to_string(),
             "final".to_string(),
         )]);
-        let case_09 = Err(vec![test_6_1_16_err_generator(
-            "2".to_string(),
-            "1".to_string(),
-            "final".to_string(),
-        )]);
 
         // CSAF 2.0 has 18 test cases (01-08, 11-19, 31)
         TESTS_2_0.test_6_1_16.expect(
@@ -173,7 +168,11 @@ mod tests {
             case_06,
             case_07,
             case_08,
-            case_09,
+            Err(vec![test_6_1_16_err_generator(
+                "2".to_string(),
+                "1".to_string(),
+                "final".to_string(),
+            )]),
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13

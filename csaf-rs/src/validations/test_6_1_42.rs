@@ -83,16 +83,18 @@ mod tests {
 
     #[test]
     fn test_test_6_1_42() {
-        let case_01 = Err(vec![create_purl_consistency_error(
-            "/product_tree/full_product_names/0",
-            1,
-        )]);
-        let case_02 = Err(vec![create_purl_consistency_error(
-            "/product_tree/branches/0/branches/0/branches/0/product",
-            2,
-        )]);
-
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
-        TESTS_2_1.test_6_1_42.expect(case_01, case_02, Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_42.expect(
+            Err(vec![create_purl_consistency_error(
+                "/product_tree/full_product_names/0",
+                1,
+            )]),
+            Err(vec![create_purl_consistency_error(
+                "/product_tree/branches/0/branches/0/branches/0/product",
+                2,
+            )]),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

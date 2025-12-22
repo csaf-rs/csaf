@@ -46,10 +46,12 @@ mod tests {
 
     #[test]
     fn test_test_6_1_46() {
-        let case_01 = Err(vec![create_invalid_ssvc_error("missing field `selections`", 0, 0)]);
-        let case_02 = Err(vec![create_invalid_ssvc_error("missing field `key`", 0, 0)]);
-
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
-        TESTS_2_1.test_6_1_46.expect(case_01, case_02, Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_46.expect(
+            Err(vec![create_invalid_ssvc_error("missing field `selections`", 0, 0)]),
+            Err(vec![create_invalid_ssvc_error("missing field `key`", 0, 0)]),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

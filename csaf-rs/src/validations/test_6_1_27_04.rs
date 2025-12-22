@@ -79,12 +79,14 @@ mod tests {
         let case_01 = Err(vec![test_6_1_27_04_err_generator(
             DocumentCategory::CsafSecurityAdvisory,
         )]);
-        let case_02 = Err(vec![test_6_1_27_04_err_generator(DocumentCategory::CsafVex)]);
-        let case_03 = Err(vec![test_6_1_27_04_err_generator(
-            DocumentCategory::CsafDeprecatedSecurityAdvisory,
-        )]);
 
         TESTS_2_0.test_6_1_27_4.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_4.expect(case_01, case_02, case_03);
+        TESTS_2_1.test_6_1_27_4.expect(
+            case_01,
+            Err(vec![test_6_1_27_04_err_generator(DocumentCategory::CsafVex)]),
+            Err(vec![test_6_1_27_04_err_generator(
+                DocumentCategory::CsafDeprecatedSecurityAdvisory,
+            )]),
+        );
     }
 }

@@ -124,34 +124,36 @@ mod tests {
 
     #[test]
     fn test_test_6_1_36() {
-        let case_01 = Err(vec![create_not_affected_conflict_error(
-            "CSAFPID-9080700",
-            &CategoryOfTheRemediation::VendorFix,
-            0,
-            0,
-        )]);
-        let case_02 = Err(vec![create_fixed_conflict_error(
-            "CSAFPID-9080703",
-            &CategoryOfTheRemediation::NoneAvailable,
-            0,
-            0,
-        )]);
-        let case_03 = Err(vec![create_affected_conflict_error(
-            "CSAFPID-9080700",
-            &CategoryOfTheRemediation::OptionalPatch,
-            0,
-            0,
-        )]);
-        let case_04 = Err(vec![create_fixed_conflict_error(
-            "CSAFPID-9080700",
-            &CategoryOfTheRemediation::NoFixPlanned,
-            0,
-            0,
-        )]);
-
         // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
-        TESTS_2_1
-            .test_6_1_36
-            .expect(case_01, case_02, case_03, case_04, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_36.expect(
+            Err(vec![create_not_affected_conflict_error(
+                "CSAFPID-9080700",
+                &CategoryOfTheRemediation::VendorFix,
+                0,
+                0,
+            )]),
+            Err(vec![create_fixed_conflict_error(
+                "CSAFPID-9080703",
+                &CategoryOfTheRemediation::NoneAvailable,
+                0,
+                0,
+            )]),
+            Err(vec![create_affected_conflict_error(
+                "CSAFPID-9080700",
+                &CategoryOfTheRemediation::OptionalPatch,
+                0,
+                0,
+            )]),
+            Err(vec![create_fixed_conflict_error(
+                "CSAFPID-9080700",
+                &CategoryOfTheRemediation::NoFixPlanned,
+                0,
+                0,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

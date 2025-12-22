@@ -126,28 +126,29 @@ mod tests {
 
     #[test]
     fn test_test_6_1_49() {
-        let case_01 = Err(vec![create_ssvc_timestamp_too_late_error(
-            "2024-07-13T10:00:00+00:00",
-            0,
-            "2024-01-24T10:00:00+00:00",
-            0,
-        )]);
-        let case_02 = Err(vec![create_ssvc_timestamp_too_late_error(
-            "2024-02-29T10:30:00+00:00",
-            0,
-            "2024-02-29T10:00:00+00:00",
-            0,
-        )]);
-        let case_03 = Err(vec![create_ssvc_timestamp_too_late_error(
-            "2024-02-29T10:30:00+00:00",
-            0,
-            "2024-02-29T10:00:00+00:00",
-            0,
-        )]);
-
         // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success cases)
-        TESTS_2_1
-            .test_6_1_49
-            .expect(case_01, case_02, case_03, Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_49.expect(
+            Err(vec![create_ssvc_timestamp_too_late_error(
+                "2024-07-13T10:00:00+00:00",
+                0,
+                "2024-01-24T10:00:00+00:00",
+                0,
+            )]),
+            Err(vec![create_ssvc_timestamp_too_late_error(
+                "2024-02-29T10:30:00+00:00",
+                0,
+                "2024-02-29T10:00:00+00:00",
+                0,
+            )]),
+            Err(vec![create_ssvc_timestamp_too_late_error(
+                "2024-02-29T10:30:00+00:00",
+                0,
+                "2024-02-29T10:00:00+00:00",
+                0,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

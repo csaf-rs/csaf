@@ -127,11 +127,6 @@ mod tests {
                 0,
             ),
         ]);
-        let case_06 = Err(vec![generate_err_msg(
-            "CSAFPID-9080700",
-            &[ProductStatusGroup::Affected, ProductStatusGroup::Unknown],
-            0,
-        )]);
 
         // CSAF 2.0 has 10 test cases (01-05, 11-15)
         TESTS_2_0.test_6_1_6.expect(
@@ -154,7 +149,11 @@ mod tests {
             case_03,
             case_04,
             case_05,
-            case_06,
+            Err(vec![generate_err_msg(
+                "CSAFPID-9080700",
+                &[ProductStatusGroup::Affected, ProductStatusGroup::Unknown],
+                0,
+            )]),
             Ok(()),
             Ok(()),
             Ok(()),

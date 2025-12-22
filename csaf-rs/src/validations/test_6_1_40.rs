@@ -77,12 +77,14 @@ mod tests {
 
     #[test]
     fn test_test_6_1_40() {
-        let case_01 = Err(vec![create_public_sharing_group_error()]);
-        let case_02 = Err(vec![create_private_sharing_group_error()]);
-
         // Only CSAF 2.1 has this test with 6 test cases (2 error cases, 4 success cases)
-        TESTS_2_1
-            .test_6_1_40
-            .expect(case_01, case_02, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_40.expect(
+            Err(vec![create_public_sharing_group_error()]),
+            Err(vec![create_private_sharing_group_error()]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

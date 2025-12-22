@@ -152,61 +152,50 @@ mod tests {
 
     #[test]
     fn test_test_6_1_37() {
-        let case_01 = Err(vec![create_invalid_format_error(
-            "2024-01-24 10:00:00.000Z",
-            "/document/tracking/initial_release_date",
-        )]);
-        let case_02 = Err(vec![create_invalid_format_error(
-            "2024-01-24T10:00:00.000z",
-            "/document/tracking/initial_release_date",
-        )]);
-        let case_03 = Err(vec![create_invalid_format_error(
-            "2017-01-01T02:59:60+04:00",
-            "/vulnerabilities/0/disclosure_date",
-        )]);
-        let case_04 = Err(vec![create_parsing_error(
-            "2023-04-31T00:00:00+01:00",
-            "input is out of range",
-            "/vulnerabilities/0/disclosure_date",
-        )]);
-        let case_05 = Err(vec![create_parsing_error(
-            "2023-02-29T00:00:00+01:00",
-            "input is out of range",
-            "/vulnerabilities/0/disclosure_date",
-        )]);
-        let case_06 = Err(vec![create_invalid_format_error(
-            "2016-12-31T00:00:60+23:59",
-            "/vulnerabilities/0/disclosure_date",
-        )]);
-        let case_07 = Err(vec![create_invalid_format_error(
-            "2015-06-30T10:29:60-13:30",
-            "/vulnerabilities/0/disclosure_date",
-        )]);
-        let case_08 = Err(vec![create_invalid_format_error(
-            "2015-06-30T10:29:60-13:30",
-            "/vulnerabilities/0/disclosure_date",
-        )]);
-        let case_09 = Err(vec![create_invalid_format_error(
-            "2016-12-31T23:59:60.0123+00:00",
-            "/vulnerabilities/0/disclosure_date",
-        )]);
-        let case_20 = Err(vec![create_invalid_format_error(
-            "2024-01-24t10:00:00.000Z",
-            "/vulnerabilities/0/first_known_exploitation_dates/0/date",
-        )]);
-
         // Only CSAF 2.1 has this test with 16 test cases (10 error cases, 6 success cases)
         TESTS_2_1.test_6_1_37.expect(
-            case_01,
-            case_02,
-            case_03,
-            case_04,
-            case_05,
-            case_06,
-            case_07,
-            case_08,
-            case_09,
-            case_20,
+            Err(vec![create_invalid_format_error(
+                "2024-01-24 10:00:00.000Z",
+                "/document/tracking/initial_release_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2024-01-24T10:00:00.000z",
+                "/document/tracking/initial_release_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2017-01-01T02:59:60+04:00",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_parsing_error(
+                "2023-04-31T00:00:00+01:00",
+                "input is out of range",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_parsing_error(
+                "2023-02-29T00:00:00+01:00",
+                "input is out of range",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2016-12-31T00:00:60+23:59",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2015-06-30T10:29:60-13:30",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2015-06-30T10:29:60-13:30",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2016-12-31T23:59:60.0123+00:00",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2024-01-24t10:00:00.000Z",
+                "/vulnerabilities/0/first_known_exploitation_dates/0/date",
+            )]),
             Ok(()),
             Ok(()),
             Ok(()),

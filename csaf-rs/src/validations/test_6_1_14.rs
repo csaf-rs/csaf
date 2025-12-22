@@ -105,10 +105,6 @@ mod tests {
             create_revision_history_error("2", 1),
             create_revision_history_error("1", 0),
         ]);
-        let case_09 = Err(vec![
-            create_revision_history_error("2", 0),
-            create_revision_history_error("1", 1),
-        ]);
 
         // CSAF 2.0 has 17 test cases (01-08, 11-19)
         TESTS_2_0.test_6_1_14.expect(
@@ -141,7 +137,10 @@ mod tests {
             case_06,
             case_07,
             case_08,
-            case_09,
+            Err(vec![
+                create_revision_history_error("2", 0),
+                create_revision_history_error("1", 1),
+            ]),
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13

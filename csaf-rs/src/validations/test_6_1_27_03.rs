@@ -74,12 +74,15 @@ mod tests {
     #[test]
     fn test_test_6_1_27_03() {
         let case_01 = Err(vec![create_vulnerabilities_error()]);
-        let case_02 = Err(vec![create_vulnerabilities_error()]);
-        let case_03 = Err(vec![create_vulnerabilities_error()]);
 
         TESTS_2_0.test_6_1_27_3.expect(case_01.clone());
-        TESTS_2_1
-            .test_6_1_27_3
-            .expect(case_01, case_02, case_03, Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_27_3.expect(
+            case_01,
+            Err(vec![create_vulnerabilities_error()]),
+            Err(vec![create_vulnerabilities_error()]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

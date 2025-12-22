@@ -108,13 +108,11 @@ mod tests {
 
     #[test]
     fn test_test_6_1_45() {
-        let expected_error = create_disclosure_date_too_late_error(0);
-
         // Only CSAF 2.1 has this test with 7 test cases (3 error cases, 4 success cases)
         TESTS_2_1.test_6_1_45.expect(
-            Err(vec![expected_error.clone()]),
-            Err(vec![expected_error.clone()]),
-            Err(vec![expected_error]),
+            Err(vec![create_disclosure_date_too_late_error(0)]),
+            Err(vec![create_disclosure_date_too_late_error(0)]),
+            Err(vec![create_disclosure_date_too_late_error(0)]),
             Ok(()),
             Ok(()),
             Ok(()),

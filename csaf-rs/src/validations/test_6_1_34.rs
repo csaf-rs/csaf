@@ -41,24 +41,25 @@ mod tests {
 
     #[test]
     fn test_test_6_1_34() {
-        let case_01 = Err(vec![create_excessive_branch_depth_error(
-            0,
-            "/branches/0/branches/0/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
-        )]);
-        let case_02 = Err(vec![create_excessive_branch_depth_error(
-            0,
-            "/branches/0/branches/1/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-            /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
-        )]);
-
         // Only CSAF 2.1 has this test with 3 test cases
-        TESTS_2_1.test_6_1_34.expect(case_01, case_02, Ok(()));
+        TESTS_2_1.test_6_1_34.expect(
+            Err(vec![create_excessive_branch_depth_error(
+                0,
+                "/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
+            )]),
+            Err(vec![create_excessive_branch_depth_error(
+                0,
+                "/branches/0/branches/1/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
+            )]),
+            Ok(()),
+        );
     }
 }

@@ -83,16 +83,18 @@ mod tests {
             &DocumentCategory::CsafSecurityAdvisory,
             &0,
         )]);
-        let case_02 = Err(vec![test_6_1_27_06_err_generator(
-            &DocumentCategory::CsafSecurityAdvisory,
-            &0,
-        )]);
-        let case_03 = Err(vec![test_6_1_27_06_err_generator(
-            &DocumentCategory::CsafDeprecatedSecurityAdvisory,
-            &0,
-        )]);
 
         TESTS_2_0.test_6_1_27_6.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_6.expect(case_01, case_02, case_03);
+        TESTS_2_1.test_6_1_27_6.expect(
+            case_01,
+            Err(vec![test_6_1_27_06_err_generator(
+                &DocumentCategory::CsafSecurityAdvisory,
+                &0,
+            )]),
+            Err(vec![test_6_1_27_06_err_generator(
+                &DocumentCategory::CsafDeprecatedSecurityAdvisory,
+                &0,
+            )]),
+        );
     }
 }

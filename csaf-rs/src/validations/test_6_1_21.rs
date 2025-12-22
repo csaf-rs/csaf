@@ -139,12 +139,6 @@ mod tests {
             VersionNumber::from_number("2"),
             "0".to_string(),
         )]);
-        let case_03 = Err(vec![test_6_1_21_err_missing_version_in_range(
-            VersionNumber::from_number("1"),
-            2,
-            1,
-            4,
-        )]);
 
         // CSAF 2.0 has 5 test cases (01-02, 11-13)
         TESTS_2_0.test_6_1_21.expect(
@@ -159,7 +153,12 @@ mod tests {
         TESTS_2_1.test_6_1_21.expect(
             case_01,
             case_02,
-            case_03,
+            Err(vec![test_6_1_21_err_missing_version_in_range(
+                VersionNumber::from_number("1"),
+                2,
+                1,
+                4,
+            )]),
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13

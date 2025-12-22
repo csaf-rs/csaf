@@ -89,38 +89,30 @@ mod tests {
 
     #[test]
     fn test_test_6_1_24() {
-        // Error cases for CSAF 2.0 (different dates than CSAF 2.1)
-        let case_01_v2_0 = Err(vec![
-            generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-            generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-        ]);
-        let case_02_v2_0 = Err(vec![
-            generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-            generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-        ]);
-
-        // Error cases for CSAF 2.1 (different dates than CSAF 2.0)
-        let case_01_v2_1 = Err(vec![
-            generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-            generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-        ]);
-        let case_02_v2_1 = Err(vec![
-            generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
-            generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
-        ]);
-
         // CSAF 2.0 has 4 test cases (01-02, 11-12)
         TESTS_2_0.test_6_1_24.expect(
-            case_01_v2_0,
-            case_02_v2_0,
+            Err(vec![
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
+            Err(vec![
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
             Ok(()), // case_11
             Ok(()), // case_12
         );
 
         // CSAF 2.1 has 4 test cases (01-02, 11-12)
         TESTS_2_1.test_6_1_24.expect(
-            case_01_v2_1,
-            case_02_v2_1,
+            Err(vec![
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
+            Err(vec![
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
             Ok(()), // case_11
             Ok(()), // case_12
         );

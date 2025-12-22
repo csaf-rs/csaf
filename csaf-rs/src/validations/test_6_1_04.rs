@@ -64,14 +64,16 @@ mod tests {
             "CSAFGID-1020301",
             "/vulnerabilities/0/threats/0/group_ids/0",
         )]);
-        let case_02 = Err(vec![
-            generate_err_msg("CSAFGID-1020300", "/vulnerabilities/0/flags/0/group_ids/0"),
-            generate_err_msg("CSAFGID-1020301", "/vulnerabilities/1/flags/0/group_ids/0"),
-        ]);
-        let case_11 = Ok(());
-        let case_12 = Ok(());
 
-        TESTS_2_0.test_6_1_4.expect(case_01.clone(), case_02, case_11, case_12);
+        TESTS_2_0.test_6_1_4.expect(
+            case_01.clone(),
+            Err(vec![
+                generate_err_msg("CSAFGID-1020300", "/vulnerabilities/0/flags/0/group_ids/0"),
+                generate_err_msg("CSAFGID-1020301", "/vulnerabilities/1/flags/0/group_ids/0"),
+            ]),
+            Ok(()),
+            Ok(()),
+        );
         TESTS_2_1.test_6_1_4.expect(case_01);
     }
 }

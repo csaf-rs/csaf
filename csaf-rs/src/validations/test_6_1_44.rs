@@ -49,12 +49,10 @@ mod tests {
 
     #[test]
     fn test_test_6_1_44() {
-        let expected_error = create_multiple_stars_error("/product_tree/full_product_names/0", 0);
-
         // Only CSAF 2.1 has this test with 5 test cases (2 error cases, 3 success cases)
         TESTS_2_1.test_6_1_44.expect(
-            Err(vec![expected_error.clone()]),
-            Err(vec![expected_error]),
+            Err(vec![create_multiple_stars_error("/product_tree/full_product_names/0", 0)]),
+            Err(vec![create_multiple_stars_error("/product_tree/full_product_names/0", 0)]),
             Ok(()),
             Ok(()),
             Ok(()),

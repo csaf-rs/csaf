@@ -98,44 +98,46 @@ mod tests {
 
     #[test]
     fn test_test_6_1_35() {
-        let case_01 = Err(vec![create_contradicting_remediations_error(
-            "CSAFPID-9080700",
-            &[CategoryOfTheRemediation::NoFixPlanned],
-            CategoryOfTheRemediation::VendorFix,
-            0,
-            1,
-        )]);
-        let case_02 = Err(vec![create_contradicting_remediations_error(
-            "CSAFPID-9080700",
-            &[CategoryOfTheRemediation::NoneAvailable],
-            CategoryOfTheRemediation::Mitigation,
-            0,
-            1,
-        )]);
-        let case_03 = Err(vec![create_contradicting_remediations_error(
-            "CSAFPID-9080702",
-            &[
-                CategoryOfTheRemediation::Workaround,
-                CategoryOfTheRemediation::FixPlanned,
-            ],
-            CategoryOfTheRemediation::OptionalPatch,
-            0,
-            2,
-        )]);
-        let case_04 = Err(vec![create_contradicting_remediations_error(
-            "CSAFPID-9080701",
-            &[
-                CategoryOfTheRemediation::Mitigation,
-                CategoryOfTheRemediation::FixPlanned,
-            ],
-            CategoryOfTheRemediation::OptionalPatch,
-            0,
-            2,
-        )]);
-
         // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
-        TESTS_2_1
-            .test_6_1_35
-            .expect(case_01, case_02, case_03, case_04, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_35.expect(
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080700",
+                &[CategoryOfTheRemediation::NoFixPlanned],
+                CategoryOfTheRemediation::VendorFix,
+                0,
+                1,
+            )]),
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080700",
+                &[CategoryOfTheRemediation::NoneAvailable],
+                CategoryOfTheRemediation::Mitigation,
+                0,
+                1,
+            )]),
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080702",
+                &[
+                    CategoryOfTheRemediation::Workaround,
+                    CategoryOfTheRemediation::FixPlanned,
+                ],
+                CategoryOfTheRemediation::OptionalPatch,
+                0,
+                2,
+            )]),
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080701",
+                &[
+                    CategoryOfTheRemediation::Mitigation,
+                    CategoryOfTheRemediation::FixPlanned,
+                ],
+                CategoryOfTheRemediation::OptionalPatch,
+                0,
+                2,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

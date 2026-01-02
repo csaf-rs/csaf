@@ -272,11 +272,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "csaf-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "csaf-rs"
 version = "0.3.1"
 dependencies = [
  "chrono",
  "console_error_panic_hook",
+ "csaf-macros",
  "glob",
  "json_dotpath",
  "jsonschema",

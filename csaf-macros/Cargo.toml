@@ -1,0 +1,16 @@
+[package]
+name = "csaf-macros"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85.1"
+description = "Procedural macros for CSAF validation"
+license = "Apache-2.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0", features = ["full", "parsing"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+

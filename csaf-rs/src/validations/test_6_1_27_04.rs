@@ -1,3 +1,4 @@
+use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
@@ -8,35 +9,20 @@ use crate::validation::ValidationError;
 /// value `csaf_deprecated_security_advisory` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with this category must have a `/product_tree` element.
+#[profile_test_applies_to_category(
+    all = [CsafSecurityAdvisory, CsafVex],
+    csaf21 = [CsafDeprecatedSecurityAdvisory]
+)]
 pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
-
-    // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-    {
-        return Ok(());
-    }
-
-    // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-        && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
-    {
-        return Ok(());
-    }
-
     // return error if there are there isn't a product tree
     if doc.get_product_tree().is_none() {
-        return Err(vec![test_6_1_27_04_err_generator(doc_category)]);
+        return Err(vec![test_6_1_27_04_err_generator(&doc.get_document().get_category())]);
     }
 
     Ok(())
 }
 
-fn test_6_1_27_04_err_generator(document_category: DocumentCategory) -> ValidationError {
+fn test_6_1_27_04_err_generator(document_category: &DocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{}' must have a '/product_tree' element",

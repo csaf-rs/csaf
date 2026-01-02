@@ -1,3 +1,4 @@
+use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait, DocumentTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
@@ -19,16 +20,10 @@ fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> V
 ///
 /// Documents with these categories must have at least one entry in `/document/notes` with `category` values
 /// of `description`, `details`, `general` or `summary`.
+#[profile_test_applies_to_category(
+    all = [CsafInformationalAdvisory, CsafSecurityIncidentResponse],
+)]
 pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
-
-    // check document category
-    if doc_category != DocumentCategory::CsafInformationalAdvisory
-        && doc_category != DocumentCategory::CsafSecurityIncidentResponse
-    {
-        return Ok(());
-    }
-
     // check if there is a document reference with category 'external'
     let mut found_external_reference = false;
     if let Some(references) = doc.get_document().get_references() {
@@ -42,7 +37,7 @@ pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Ve
 
     // if there isn't a reference with category 'external', return an error
     if !found_external_reference {
-        return Err(vec![create_missing_external_reference_error(&doc_category)]);
+        return Err(vec![create_missing_external_reference_error(&doc.get_document().get_category())]);
     }
 
     Ok(())

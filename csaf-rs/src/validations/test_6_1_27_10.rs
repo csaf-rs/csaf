@@ -2,6 +2,7 @@ use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStat
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
+use csaf_macros::profile_test_applies_to_category;
 
 /// 6.1.27.10 Action Statement
 ///
@@ -9,14 +10,14 @@ use std::collections::{HashMap, HashSet};
 ///
 /// Each item in `/vulnerabilities[]/product_status/known_affected` must have a corresponding
 /// action statement in `/vulnerabilities[]/remediations`
-///
+#[profile_test_applies_to_category(
+    all = [CsafVex],
+)]
 pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
     let vulnerabilities = doc.get_vulnerabilities();
 
-    // Only execute this test for documents with category 'csaf_vex'
-    // and if there are any vulnerabilities present
-    if doc_category != DocumentCategory::CsafVex || vulnerabilities.is_empty() {
+    // Only execute this test if there are any vulnerabilities present
+    if vulnerabilities.is_empty() {
         return Ok(());
     }
 
@@ -66,7 +67,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         // generate errors for all remaining known_affected product or group ids
         for known_not_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
             errors.get_or_insert_with(Vec::new).push(test_6_1_27_10_err_generator(
-                &doc_category,
+                &doc.get_document().get_category(),
                 known_not_affected_product_or_group_id.0.to_string(),
                 v_i,
                 *known_not_affected_product_or_group_id.1,

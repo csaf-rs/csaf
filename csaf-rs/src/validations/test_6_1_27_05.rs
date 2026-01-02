@@ -1,3 +1,4 @@
+use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 
@@ -8,33 +9,18 @@ use crate::validation::ValidationError;
 /// value `csaf_deprecated_security_advisory` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with these categories must have a `/vulnerabilities[]/notes` element.
+#[profile_test_applies_to_category(
+    all = [CsafSecurityAdvisory, CsafVex],
+    csaf21 = [CsafDeprecatedSecurityAdvisory]
+)]
 pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
-
-    // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-    {
-        return Ok(());
-    }
-
-    // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-        && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
-    {
-        return Ok(());
-    }
-
     let mut errors: Option<Vec<ValidationError>> = None;
     // return error if there are vulnerabilities without notes
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_notes().is_none() {
             errors
                 .get_or_insert_with(Vec::new)
-                .push(test_6_1_27_05_err_generator(&doc_category, &v_i));
+                .push(test_6_1_27_05_err_generator(&doc.get_document().get_category(), &v_i));
         }
     }
 

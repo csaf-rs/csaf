@@ -6,6 +6,7 @@ use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
+use csaf_macros::profile_test_applies_to_category;
 
 /// 6.1.27.9 Impact Statement
 ///
@@ -14,13 +15,14 @@ use std::collections::{HashMap, HashSet};
 /// Each item in `/vulnerabilities[]/product_status/known_not_affected` must have a corresponding
 /// impact statement in `/vulnerabilities[]/flags` or `/vulnerabilities[]/threats`. For impact statements under
 /// `threats`, the category must be `impact`.
+#[profile_test_applies_to_category(
+    all = [CsafVex],
+)]
 pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
     let vulnerabilities = doc.get_vulnerabilities();
 
-    // Only execute this test for documents with category 'csaf_vex'
-    // and if there are any vulnerabilities present
-    if doc_category != DocumentCategory::CsafVex || vulnerabilities.is_empty() {
+    // Only execute this test if there are any vulnerabilities present
+    if vulnerabilities.is_empty() {
         return Ok(());
     }
 
@@ -88,7 +90,7 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         // generate errors for all remaining known_not_affected product or group ids
         for known_not_affected_group_id in known_not_affected_product_or_group_ids.iter() {
             errors.get_or_insert_with(Vec::new).push(test_6_1_27_09_err_generator(
-                &doc_category,
+                &doc.get_document().get_category(),
                 known_not_affected_group_id.0.to_string(),
                 v_i,
                 *known_not_affected_group_id.1,

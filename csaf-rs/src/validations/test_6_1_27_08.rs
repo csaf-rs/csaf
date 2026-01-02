@@ -1,3 +1,4 @@
+use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 
@@ -7,20 +8,17 @@ use crate::validation::ValidationError;
 ///
 /// In documents with this category each `/vulnerabilities[]` item must have at the `cve` or the `ids`
 /// element.
+#[profile_test_applies_to_category(
+    all = [CsafVex],
+)]
 pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
-
-    if doc_category != DocumentCategory::CsafVex {
-        return Ok(());
-    }
-
     let mut errors: Option<Vec<ValidationError>> = None;
     // return error if there are vulnerabilities without either cve or ids
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_cve().is_none() && vulnerability.get_ids().is_none() {
             errors
                 .get_or_insert_with(Vec::new)
-                .push(test_6_1_27_08_err_generator(&doc_category, &v_i));
+                .push(test_6_1_27_08_err_generator(&doc.get_document().get_category(), &v_i));
         }
     }
 

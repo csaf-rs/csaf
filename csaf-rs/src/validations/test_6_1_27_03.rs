@@ -1,10 +1,10 @@
+use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
-fn create_vulnerabilities_error() -> ValidationError {
+fn create_vulnerabilities_error(doc_category: &DocumentCategory) -> ValidationError {
     ValidationError {
-        message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-            .to_string(),
+        message: format!("Document with category '{}' must not have a '/vulnerabilities' element", doc_category),
         instance_path: "/vulnerabilities".to_string(),
     }
 }
@@ -16,25 +16,11 @@ fn create_vulnerabilities_error() -> ValidationError {
 /// value `csaf_withdrawn` and `csaf_superseded` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with this category must not have a `/vulnerabilities` element.
+#[profile_test_applies_to_category(
+    all = [CsafInformationalAdvisory],
+    csaf21 = [CsafWithdrawn, CsafSuperseded]
+)]
 pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20
-        && doc.get_document().get_category() != DocumentCategory::CsafInformationalAdvisory
-    {
-        return Ok(());
-    }
-
-    // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21 {
-        let doc_category = doc.get_document().get_category();
-        if doc_category != DocumentCategory::CsafInformationalAdvisory
-            && doc_category != DocumentCategory::CsafWithdrawn
-            && doc_category != DocumentCategory::CsafSuperseded
-        {
-            return Ok(());
-        }
-    }
-
     // return error if there are elements in /vulnerabilities
     if !doc.get_vulnerabilities().is_empty() {
         return Err(vec![create_vulnerabilities_error()]);

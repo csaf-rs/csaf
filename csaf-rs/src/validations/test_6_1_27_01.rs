@@ -1,8 +1,9 @@
+use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
-fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError {
+fn create_missing_note_error(doc_category: &DocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{}' must have at least one document note with category 'description', 'details', 'general' or 'summary'",
@@ -19,16 +20,10 @@ fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError 
 ///
 /// Documents with these categories must have at least one entry in `/document/notes` with `category` values
 /// of `description`, `details`, `general` or `summary`.
+#[profile_test_applies_to_category(
+    all = [CsafInformationalAdvisory, CsafSecurityIncidentResponse],
+)]
 pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
-
-    // check document category
-    if doc_category != DocumentCategory::CsafInformationalAdvisory
-        && doc_category != DocumentCategory::CsafSecurityIncidentResponse
-    {
-        return Ok(());
-    }
-
     // check if there is a document note with the required category
     let mut found_valid_note = false;
     if let Some(notes) = doc.get_document().get_notes() {
@@ -47,7 +42,7 @@ pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Val
 
     // if there isn't a note with the required category, return an error
     if !found_valid_note {
-        return Err(vec![create_missing_note_error(doc_category)]);
+        return Err(vec![create_missing_note_error(&doc.get_document().get_category())]);
     }
 
     Ok(())

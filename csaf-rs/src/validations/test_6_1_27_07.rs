@@ -1,3 +1,4 @@
+use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 
@@ -7,13 +8,10 @@ use crate::validation::ValidationError;
 ///
 /// In documents with this category each `/vulnerabilities[]/product_status` must have at least one
 /// of the elements: `fixed`, `known_affected`, `known_not_affected` or `under_investigation`
+#[profile_test_applies_to_category(
+    all = [CsafVex],
+)]
 pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_category = doc.get_document().get_category();
-
-    if doc_category != DocumentCategory::CsafVex {
-        return Ok(());
-    }
-
     let mut errors: Option<Vec<ValidationError>> = None;
     // return error if there are vulnerabilities without fixed, known_affected, known_not_affected or under_investigation in product_status
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
@@ -25,7 +23,7 @@ pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec
             {
                 errors
                     .get_or_insert_with(Vec::new)
-                    .push(test_6_1_27_07_err_generator(&doc_category, &v_i));
+                    .push(test_6_1_27_07_err_generator(&doc.get_document().get_category(), &v_i));
             }
         }
     }

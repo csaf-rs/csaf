@@ -15,4 +15,3 @@ pub mod wasm;
 
 // Re-export the profile_test_applies_to_category macro for use in validation functions
 pub use csaf_macros::profile_test_applies_to_category;
-

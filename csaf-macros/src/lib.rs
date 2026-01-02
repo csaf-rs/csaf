@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, ItemFn};
+use syn::{ItemFn, parse_macro_input};
 
 /// Attribute macro for document category checks.
 ///
@@ -100,7 +100,7 @@ struct CategoryAttrs {
 impl syn::parse::Parse for CategoryAttrs {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let mut v20_categories = Vec::<syn::Ident>::new();
-        let mut v21_categories =  Vec::<syn::Ident>::new();
+        let mut v21_categories = Vec::<syn::Ident>::new();
 
         while !input.is_empty() {
             let key: syn::Ident = input.parse()?;
@@ -118,16 +118,13 @@ impl syn::parse::Parse for CategoryAttrs {
                     let cats: Vec<syn::Ident> = categories.into_iter().collect();
                     v20_categories.extend(cats.clone());
                     v21_categories.extend(cats);
-                }
+                },
                 _ => {
                     return Err(syn::Error::new(
                         key.span(),
-                        format!(
-                            "Unknown attribute key '{}'. Expected 'csaf20', 'csaf21', or 'all'",
-                            key
-                        ),
+                        format!("Unknown attribute key '{}'. Expected 'csaf20', 'csaf21', or 'all'", key),
                     ));
-                }
+                },
             }
 
             // Optional comma between attributes
@@ -151,8 +148,8 @@ impl syn::parse::Parse for CategoryAttrs {
         if v20_pre_dedup_count != v20_categories.len() {
             return Err(syn::Error::new(
                 proc_macro2::Span::call_site(),
-                "Duplicate definition of a profile test CSAF 2.0 category."
-            ))
+                "Duplicate definition of a profile test CSAF 2.0 category.",
+            ));
         }
 
         let v21_pre_dedup_count = v21_categories.len();
@@ -162,8 +159,8 @@ impl syn::parse::Parse for CategoryAttrs {
         if v21_pre_dedup_count != v21_categories.len() {
             return Err(syn::Error::new(
                 proc_macro2::Span::call_site(),
-                "Duplicate definition of a profile test CSAF 2.1 category."
-            ))
+                "Duplicate definition of a profile test CSAF 2.1 category.",
+            ));
         }
 
         Ok(CategoryAttrs {
@@ -174,9 +171,7 @@ impl syn::parse::Parse for CategoryAttrs {
 }
 
 /// Extracts the name of the first function parameter (expected to be `doc`)
-fn extract_doc_param(
-    inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::Token![,]>,
-) -> syn::Ident {
+fn extract_doc_param(inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::Token![,]>) -> syn::Ident {
     if let Some(syn::FnArg::Typed(pat_type)) = inputs.first() {
         if let syn::Pat::Ident(pat_ident) = &*pat_type.pat {
             return pat_ident.ident.clone();
@@ -187,10 +182,7 @@ fn extract_doc_param(
 }
 
 /// Generates the category check code
-fn generate_category_check(
-    doc_param: &syn::Ident,
-    attrs: &CategoryAttrs,
-) -> proc_macro2::TokenStream {
+fn generate_category_check(doc_param: &syn::Ident, attrs: &CategoryAttrs) -> proc_macro2::TokenStream {
     let v20_cats = &attrs.v20_categories;
     let v21_cats = &attrs.v21_categories;
 
@@ -280,8 +272,7 @@ mod tests {
 
     #[test]
     fn test_parse_error_duplicate_category_v20() {
-        let tokens: proc_macro2::TokenStream = "csaf20 = [CsafVex], all = [CsafVex]"
-            .parse().unwrap();
+        let tokens: proc_macro2::TokenStream = "csaf20 = [CsafVex], all = [CsafVex]".parse().unwrap();
         let result: syn::Result<CategoryAttrs> = syn::parse2(tokens);
 
         assert!(result.is_err());
@@ -289,11 +280,9 @@ mod tests {
 
     #[test]
     fn test_parse_error_duplicate_category_v21() {
-        let tokens: proc_macro2::TokenStream = "csaf21 = [CsafVex], all = [CsafVex]"
-            .parse().unwrap();
+        let tokens: proc_macro2::TokenStream = "csaf21 = [CsafVex], all = [CsafVex]".parse().unwrap();
         let result: syn::Result<CategoryAttrs> = syn::parse2(tokens);
 
         assert!(result.is_err());
     }
 }
-

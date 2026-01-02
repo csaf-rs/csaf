@@ -1,5 +1,5 @@
 use csaf_macros::profile_test_applies_to_category;
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory};
 use crate::validation::ValidationError;
 
 /// 6.1.27.4 Product Tree
@@ -43,13 +43,13 @@ mod tests {
         let errors = HashMap::from([
             (
                 "01",
-                vec![test_6_1_27_04_err_generator(DocumentCategory::CsafSecurityAdvisory)],
+                vec![test_6_1_27_04_err_generator(&DocumentCategory::CsafSecurityAdvisory)],
             ),
-            ("02", vec![test_6_1_27_04_err_generator(DocumentCategory::CsafVex)]),
+            ("02", vec![test_6_1_27_04_err_generator(&DocumentCategory::CsafVex)]),
             (
                 "03",
                 vec![test_6_1_27_04_err_generator(
-                    DocumentCategory::CsafDeprecatedSecurityAdvisory,
+                    &DocumentCategory::CsafDeprecatedSecurityAdvisory,
                 )],
             ),
         ]);

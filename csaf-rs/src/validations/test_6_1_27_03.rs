@@ -1,5 +1,5 @@
 use csaf_macros::profile_test_applies_to_category;
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory};
 use crate::validation::ValidationError;
 
 fn create_vulnerabilities_error(doc_category: &DocumentCategory) -> ValidationError {
@@ -23,7 +23,7 @@ fn create_vulnerabilities_error(doc_category: &DocumentCategory) -> ValidationEr
 pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // return error if there are elements in /vulnerabilities
     if !doc.get_vulnerabilities().is_empty() {
-        return Err(vec![create_vulnerabilities_error()]);
+        return Err(vec![create_vulnerabilities_error(&doc.get_document().get_category())]);
     }
 
     Ok(())
@@ -38,9 +38,9 @@ mod tests {
     #[test]
     fn test_test_6_1_27_03() {
         let errors = HashMap::from([
-            ("01", vec![create_vulnerabilities_error()]),
-            ("02", vec![create_vulnerabilities_error()]),
-            ("03", vec![create_vulnerabilities_error()]),
+            ("01", vec![create_vulnerabilities_error(&DocumentCategory::CsafSecurityAdvisory)]),
+            ("02", vec![create_vulnerabilities_error(&DocumentCategory::CsafSecurityAdvisory)]),
+            ("03", vec![create_vulnerabilities_error(&DocumentCategory::CsafSecurityAdvisory)]),
         ]);
         run_csaf20_tests("27-03", test_6_1_27_03_vulnerability, errors.clone());
         run_csaf21_tests("27-03", test_6_1_27_03_vulnerability, errors);

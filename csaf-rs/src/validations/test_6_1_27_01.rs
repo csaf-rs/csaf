@@ -1,5 +1,5 @@
 use csaf_macros::profile_test_applies_to_category;
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory, NoteTrait};
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 

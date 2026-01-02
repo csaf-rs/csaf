@@ -1,5 +1,5 @@
 use csaf_macros::profile_test_applies_to_category;
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory, VulnerabilityTrait};
 use crate::validation::ValidationError;
 
 /// 6.1.27.8 Vulnerability ID

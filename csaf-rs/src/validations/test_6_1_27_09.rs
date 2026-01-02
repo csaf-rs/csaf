@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait,
+    CsafTrait, DocumentCategory, ProductStatusTrait, ThreatTrait, VulnerabilityTrait,
     WithOptionalGroupIds, WithOptionalProductIds,
 };
 use crate::helpers::resolve_product_groups;

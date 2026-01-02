@@ -99,8 +99,8 @@ struct CategoryAttrs {
 
 impl syn::parse::Parse for CategoryAttrs {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let mut v20_categories = Vec::new();
-        let mut v21_categories = Vec::new();
+        let mut v20_categories = Vec::<syn::Ident>::new();
+        let mut v21_categories =  Vec::<syn::Ident>::new();
 
         while !input.is_empty() {
             let key: syn::Ident = input.parse()?;
@@ -112,12 +112,12 @@ impl syn::parse::Parse for CategoryAttrs {
                 content.parse_terminated(syn::Ident::parse, syn::Token![,])?;
 
             match key.to_string().as_str() {
-                "csaf20" => v20_categories = categories.into_iter().collect(),
-                "csaf21" => v21_categories = categories.into_iter().collect(),
+                "csaf20" => v20_categories.extend(categories.into_iter().collect::<Vec<syn::Ident>>()),
+                "csaf21" => v21_categories.extend(categories.into_iter().collect::<Vec<syn::Ident>>()),
                 "all" => {
-                    let cats: Vec<_> = categories.into_iter().collect();
-                    v20_categories = cats.clone();
-                    v21_categories = cats;
+                    let cats: Vec<syn::Ident> = categories.into_iter().collect();
+                    v20_categories.extend(cats.clone());
+                    v21_categories.extend(cats);
                 }
                 _ => {
                     return Err(syn::Error::new(
@@ -142,6 +142,28 @@ impl syn::parse::Parse for CategoryAttrs {
                 proc_macro2::Span::call_site(),
                 "Must specify categories for either CSAF 2.0 or 2.1. Use 'csaf20 = [...]', 'csaf21 = [...]' or 'all = [...]'",
             ));
+        }
+
+        let v20_pre_dedup_count = v20_categories.len();
+        v20_categories.sort_unstable();
+        v20_categories.dedup();
+
+        if v20_pre_dedup_count != v20_categories.len() {
+            return Err(syn::Error::new(
+                proc_macro2::Span::call_site(),
+                "Duplicate definition of a profile test CSAF 2.0 category."
+            ))
+        }
+
+        let v21_pre_dedup_count = v21_categories.len();
+        v21_categories.sort_unstable();
+        v21_categories.dedup();
+
+        if v21_pre_dedup_count != v21_categories.len() {
+            return Err(syn::Error::new(
+                proc_macro2::Span::call_site(),
+                "Duplicate definition of a profile test CSAF 2.1 category."
+            ))
         }
 
         Ok(CategoryAttrs {
@@ -221,6 +243,18 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_all_with_separate_versions() {
+        let tokens: proc_macro2::TokenStream =
+            "all = [CsafVex], csaf20 = [CsafSecurityAdvisory], csaf21 = [CsafSecurityAdvisory, CsafDeprecatedSecurityAdvisory]"
+                .parse()
+                .unwrap();
+        let attrs: CategoryAttrs = syn::parse2(tokens).unwrap();
+
+        assert_eq!(attrs.v20_categories.len(), 2);
+        assert_eq!(attrs.v21_categories.len(), 3);
+    }
+
+    #[test]
     fn test_parse_error_on_unknown_key() {
         let tokens: proc_macro2::TokenStream = "unknown = [CsafVex]".parse().unwrap();
         let result: syn::Result<CategoryAttrs> = syn::parse2(tokens);
@@ -231,6 +265,32 @@ mod tests {
     #[test]
     fn test_parse_error_empty_string() {
         let tokens: proc_macro2::TokenStream = "".parse().unwrap();
+        let result: syn::Result<CategoryAttrs> = syn::parse2(tokens);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_parse_error_empty_list() {
+        let tokens: proc_macro2::TokenStream = "csaf20 = []".parse().unwrap();
+        let result: syn::Result<CategoryAttrs> = syn::parse2(tokens);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_parse_error_duplicate_category_v20() {
+        let tokens: proc_macro2::TokenStream = "csaf20 = [CsafVex], all = [CsafVex]"
+            .parse().unwrap();
+        let result: syn::Result<CategoryAttrs> = syn::parse2(tokens);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_parse_error_duplicate_category_v21() {
+        let tokens: proc_macro2::TokenStream = "csaf21 = [CsafVex], all = [CsafVex]"
+            .parse().unwrap();
         let result: syn::Result<CategoryAttrs> = syn::parse2(tokens);
 
         assert!(result.is_err());

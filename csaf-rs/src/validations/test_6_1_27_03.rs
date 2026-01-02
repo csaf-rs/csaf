@@ -43,15 +43,17 @@ mod tests {
         let errors = HashMap::from([
             (
                 "01",
-                vec![create_vulnerabilities_error(&DocumentCategory::CsafSecurityAdvisory)],
+                vec![create_vulnerabilities_error(
+                    &DocumentCategory::CsafInformationalAdvisory,
+                )],
             ),
             (
                 "02",
-                vec![create_vulnerabilities_error(&DocumentCategory::CsafSecurityAdvisory)],
+                vec![create_vulnerabilities_error(&DocumentCategory::CsafWithdrawn)],
             ),
             (
                 "03",
-                vec![create_vulnerabilities_error(&DocumentCategory::CsafSecurityAdvisory)],
+                vec![create_vulnerabilities_error(&DocumentCategory::CsafSuperseded)],
             ),
         ]);
         run_csaf20_tests("27-03", test_6_1_27_03_vulnerability, errors.clone());

@@ -59,7 +59,7 @@ mod tests {
         let errors = HashMap::from([(
             "01",
             vec![create_missing_note_error(
-                DocumentCategory::CsafSecurityIncidentResponse,
+                &DocumentCategory::CsafSecurityIncidentResponse,
             )],
         )]);
         run_csaf20_tests("27-01", test_6_1_27_01_document_notes, errors.clone());

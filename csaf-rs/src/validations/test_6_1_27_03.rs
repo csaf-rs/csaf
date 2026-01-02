@@ -76,13 +76,8 @@ mod tests {
         let err = Err(vec![VULNERABILITIES_ERROR.clone()]);
 
         TESTS_2_0.test_6_1_27_3.expect(err.clone());
-        TESTS_2_1.test_6_1_27_3.expect(
-            err.clone(),
-            err.clone(),
-            err.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1
+            .test_6_1_27_3
+            .expect(err.clone(), err.clone(), err.clone(), Ok(()), Ok(()), Ok(()));
     }
 }

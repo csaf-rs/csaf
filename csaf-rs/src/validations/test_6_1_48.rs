@@ -166,7 +166,6 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
     }
 }
 
-
 /*
 #[cfg(test)]
 mod tests {

@@ -7,8 +7,7 @@ use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::validation::ValidationError;
 
 static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status."
-        .to_string(),
+    message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status.".to_string(),
     instance_path: "/document/distribution/sharing_group/id".to_string(),
 });
 
@@ -68,11 +67,6 @@ mod tests {
     fn test_test_6_1_39() {
         let err = Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
-        TESTS_2_1.test_6_1_39.expect(
-            err.clone(),
-            err.clone(),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_39.expect(err.clone(), err.clone(), Ok(()), Ok(()));
     }
 }

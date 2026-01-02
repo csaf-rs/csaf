@@ -1,8 +1,8 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, ProductStatusTrait, VulnerabilityTrait};
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
-use std::collections::{HashMap, HashSet};
 use csaf_macros::profile_test_applies_to_category;
+use std::collections::{HashMap, HashSet};
 
 /// 6.1.27.10 Action Statement
 ///

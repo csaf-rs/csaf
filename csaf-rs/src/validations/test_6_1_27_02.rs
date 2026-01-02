@@ -1,7 +1,7 @@
-use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
+use csaf_macros::profile_test_applies_to_category;
 
 fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> ValidationError {
     ValidationError {
@@ -37,7 +37,9 @@ pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Ve
 
     // if there isn't a reference with category 'external', return an error
     if !found_external_reference {
-        return Err(vec![create_missing_external_reference_error(&doc.get_document().get_category())]);
+        return Err(vec![create_missing_external_reference_error(
+            &doc.get_document().get_category(),
+        )]);
     }
 
     Ok(())

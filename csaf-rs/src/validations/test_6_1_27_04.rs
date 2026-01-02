@@ -1,6 +1,6 @@
-use csaf_macros::profile_test_applies_to_category;
 use crate::csaf_traits::{CsafTrait, DocumentCategory};
 use crate::validation::ValidationError;
+use csaf_macros::profile_test_applies_to_category;
 
 /// 6.1.27.4 Product Tree
 ///

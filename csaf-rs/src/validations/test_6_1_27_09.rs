@@ -1,12 +1,12 @@
 use crate::csaf_traits::{
-    CsafTrait, DocumentCategory, ProductStatusTrait, ThreatTrait, VulnerabilityTrait,
-    WithOptionalGroupIds, WithOptionalProductIds,
+    CsafTrait, DocumentCategory, ProductStatusTrait, ThreatTrait, VulnerabilityTrait, WithOptionalGroupIds,
+    WithOptionalProductIds,
 };
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
 use crate::validation::ValidationError;
-use std::collections::{HashMap, HashSet};
 use csaf_macros::profile_test_applies_to_category;
+use std::collections::{HashMap, HashSet};
 
 /// 6.1.27.9 Impact Statement
 ///

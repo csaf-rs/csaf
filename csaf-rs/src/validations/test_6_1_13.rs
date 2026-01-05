@@ -10,17 +10,20 @@ static PURL_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^pkg:[A-Za-z.
 fn generate_purl_regex_error(purl_str: &str, path: &str, index: usize) -> ValidationError {
     ValidationError {
         message: format!("PURL doesn't comply with CSAF PURL regex: {}", purl_str),
-        instance_path: format!("{}/product_identification_helper/purls/{}", path, index),
+        instance_path: format!("{}/product_identification_helper/purl/{}", path, index),
     }
 }
 
 fn generate_purl_format_error(purl_str: &str, error_msg: &str, path: &str, index: usize) -> ValidationError {
     ValidationError {
         message: format!("Invalid PURL format: {}, Error: {}", purl_str, error_msg),
-        instance_path: format!("{}/product_identification_helper/purls/{}", path, index),
+        instance_path: format!("{}/product_identification_helper/purl/{}", path, index),
     }
 }
 
+/// 6.1.13 PURL
+/// Checks the validity of PURLs in the document. Validation is done via a Regex specified in the standard and
+/// via the packageurl::purl parser.
 pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 

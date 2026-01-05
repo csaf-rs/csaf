@@ -610,7 +610,7 @@ impl BranchTrait<FullProductNameT> for Branch {
     }
 
     fn get_name(&self) -> &str {
-        &self.name.deref()
+        self.name.deref()
     }
 
     fn get_product(&self) -> &Option<FullProductNameT> {

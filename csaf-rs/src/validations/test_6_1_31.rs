@@ -40,7 +40,7 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
                                 errors
                                     .get_or_insert_with(Vec::new)
                                     .push(create_forbidden_strings_in_version_error(
-                                        &branch.get_name(),
+                                        branch.get_name(),
                                         forbidden,
                                         path,
                                     ));
@@ -53,7 +53,7 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
                                 errors
                                     .get_or_insert_with(Vec::new)
                                     .push(create_forbidden_strings_in_version_error(
-                                        &branch.get_name(),
+                                        branch.get_name(),
                                         token,
                                         path,
                                     ));

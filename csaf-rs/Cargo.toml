@@ -18,7 +18,7 @@ default = ["wasm"]
 wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:tsify", "dep:console_error_panic_hook"]
 
 [dependencies]
-csaf-macros = { path = "../csaf-macros" }
+csaf-macros = { path = "../csaf-macros", version = "1.0.0" }
 regress = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -47,6 +47,4 @@ glob = "0.3"
 syn = "2"
 prettyplease = "0.2"
 thiserror = "2"
-json_dotpath = "1"
 quote = "1"
-proc-macro2 = "1"

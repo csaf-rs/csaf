@@ -547,7 +547,7 @@ impl ProductTrait for FullProductNameT {
         self.product_id.deref()
     }
 
-    fn get_name(&self) -> &String {
+    fn get_name(&self) -> &str {
         self.name.deref()
     }
 

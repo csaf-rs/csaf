@@ -13,7 +13,7 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
         // Generate a hashmap of unique flag labels to product IDs in a hashset, which guarantees uniqueness of the product ids
         let mut flag_to_product_ids_map: HashMap<LabelOfTheFlag, HashSet<String>> = HashMap::new();
         // Generate a hashmap of product ids back to group ids and the flag labels for back-tracing in the error message
-        let mut product_id_to_group_id_map: HashMap<String, HashSet<(String, LabelOfTheFlag)>> = HashMap::new();
+        let mut product_id_to_group_id_map: HashMap<String, HashSet<String>> = HashMap::new();
         // if there are flags for the vuln, iterate over them
         if let Some(flags) = vulnerability.get_flags() {
             for flag in flags.iter() {
@@ -35,7 +35,7 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
                             for product_id in resolved_product_ids {
                                 let product_to_group_id_entry =
                                     product_id_to_group_id_map.entry(product_id).or_default();
-                                product_to_group_id_entry.insert((group_id.to_string(), flag.get_label()));
+                                product_to_group_id_entry.insert(group_id.to_string());
                             }
                         }
                     }
@@ -54,22 +54,11 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
         // Collect errors for products that appear in multiple flag labels
         for (product_id, labels) in product_id_to_flags {
             if labels.len() > 1 {
-                // from the back-tracing mapping, get the entries for this product id, filter on the multiple flags found
-                let mut group_ids: Option<Vec<String>> = None;
-                if let Some(group_ids_with_flags) = product_id_to_group_id_map.get(&product_id.clone()) {
-                    group_ids = Some(
-                        group_ids_with_flags
-                            .iter()
-                            .filter(|x| labels.contains(&x.1))
-                            .map(|x| x.0.clone())
-                            .collect(),
-                    );
-                }
                 // generate error
                 errors.get_or_insert_with(Vec::new).push(test_6_1_33_err_generator(
                     &product_id,
                     &labels,
-                    group_ids,
+                    product_id_to_group_id_map.get(&product_id),
                     vuln_i,
                 ));
             }
@@ -82,22 +71,21 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
 fn test_6_1_33_err_generator(
     product_id: &str,
     labels: &[LabelOfTheFlag],
-    group_ids: Option<Vec<String>>,
+    group_ids: Option<&HashSet<String>>,
     vuln_i: usize,
 ) -> ValidationError {
-    let mut labels_str_vec = labels.iter().map(|l| l.to_string()).collect::<Vec<_>>();
-    labels_str_vec.sort();
-    let labels_str = labels_str_vec.join(", ");
-    let group_ids_str: String;
-    if let Some(group_ids) = group_ids {
-        group_ids_str = format!(", via groups: {}", group_ids.join(", "));
-    } else {
-        group_ids_str = "".to_string();
-    }
+    let labels_joined = {
+        let mut labels_str: Vec<_> = labels.iter().map(|l| l.to_string()).collect();
+        labels_str.sort();
+        labels_str.join(", ")
+    };
+    let group_ids_joined = group_ids
+        .map(|ids| format!(", via groups: {}", ids.iter().cloned().collect::<Vec<_>>().join(", ")))
+        .unwrap_or_default();
     ValidationError {
         message: format!(
             "Product '{}' is associated with multiple flag labels: [{}], {}",
-            product_id, labels_str, group_ids_str
+            product_id, labels_joined, group_ids_joined
         ),
         instance_path: format!("/vulnerabilities/{}/flags", vuln_i),
     }
@@ -110,7 +98,7 @@ mod tests {
     use crate::validations::test_6_1_33::{
         test_6_1_33_err_generator, test_6_1_33_multiple_flags_with_vex_codes_per_product,
     };
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
 
     #[test]
     fn test_test_6_1_33() {
@@ -122,7 +110,7 @@ mod tests {
                     LabelOfTheFlag::ComponentNotPresent,
                     LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
                 ],
-                Option::from(vec!["CSAFGID-0001".to_string()]),
+                Option::from(&HashSet::from(["CSAFGID-0001".to_string()])),
                 0,
             )],
         )]);

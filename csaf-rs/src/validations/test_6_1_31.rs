@@ -39,8 +39,8 @@ fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&
             .get_or_insert_with(Vec::new)
             .push(FORBIDDEN_GREATER_EQUAL);
     }
-    // then check for `>`, then remove `>`
     branch_name = branch_name.replace(FORBIDDEN_GREATER_EQUAL, "");
+    // then check for `>`, then remove `>`
     if branch_name.contains(FORBIDDEN_GREATER) {
         forbidden_substrings
             .get_or_insert_with(Vec::new)

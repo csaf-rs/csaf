@@ -62,10 +62,11 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
                 for ((metric_type, _), paths) in metrics_map.iter() {
                     if paths.len() > 1 {
                         for path in paths {
-                            errors.get_or_insert_with(Vec::new).push(ValidationError {
-                                message: create_error_message(metric_type, p),
-                                instance_path: format!("{}/{}", path, get_metric_prop_name(metric_type.to_owned())),
-                            });
+                            errors.get_or_insert_with(Vec::new).push(create_validation_error(
+                                metric_type,
+                                p,
+                                path.to_owned(),
+                            ));
                         }
                     }
                 }
@@ -75,44 +76,40 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
     errors.map_or(Ok(()), Err)
 }
 
-fn create_error_message(score_type: &VulnerabilityMetric, product_id: &str) -> String {
-    format!("Multiple {} scores are given for {}.", score_type, product_id)
+fn create_validation_error(score_type: &VulnerabilityMetric, product_id: &str, path: String) -> ValidationError {
+    ValidationError {
+        message: format!("Multiple {} scores are given for {}.", score_type, product_id),
+        instance_path: format!("{}/{}", path, get_metric_prop_name(score_type.to_owned())),
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_07::{
-        VulnerabilityMetric, create_error_message, test_6_1_07_multiple_same_scores_per_product,
-    };
-    use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_07() {
-        let cvss_v31_error_message =
-            create_error_message(&VulnerabilityMetric::CvssV3("3.1".to_string()), "CSAFPID-9080700");
-
         run_csaf20_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,
             HashMap::from([(
                 "01",
                 vec![
-                    ValidationError {
-                        message: cvss_v31_error_message.to_string(),
-                        instance_path: "/vulnerabilities/0/scores/0/cvss_v3".to_string(),
-                    },
-                    ValidationError {
-                        message: cvss_v31_error_message.to_string(),
-                        instance_path: "/vulnerabilities/0/scores/1/cvss_v3".to_string(),
-                    },
+                    create_validation_error(
+                        &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                        "CSAFPID-9080700",
+                        "/vulnerabilities/0/scores/0".to_string(),
+                    ),
+                    create_validation_error(
+                        &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                        "CSAFPID-9080700",
+                        "/vulnerabilities/0/scores/1".to_string(),
+                    ),
                 ],
             )]),
         );
 
-        let cvss_v30_error_message =
-            create_error_message(&VulnerabilityMetric::CvssV3("3.0".to_string()), "CSAFPID-9080700");
         run_csaf21_tests(
             "07",
             test_6_1_07_multiple_same_scores_per_product,
@@ -120,90 +117,106 @@ mod tests {
                 (
                     "01",
                     vec![
-                        ValidationError {
-                            message: cvss_v31_error_message.to_string(),
-                            instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v3".to_string(),
-                        },
-                        ValidationError {
-                            message: cvss_v31_error_message.to_string(),
-                            instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v3".to_string(),
-                        },
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/0/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/1/content".to_string(),
+                        ),
                     ],
                 ),
                 (
                     "02",
                     vec![
-                        ValidationError {
-                            message: cvss_v30_error_message.to_string(),
-                            instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v3".to_string(),
-                        },
-                        ValidationError {
-                            message: cvss_v30_error_message.to_string(),
-                            instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v3".to_string(),
-                        },
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/0/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/1/content".to_string(),
+                        ),
                     ],
                 ),
                 (
                     "03",
                     vec![
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080700"),
-                            instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v2".to_string(),
-                        },
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080700"),
-                            instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v2".to_string(),
-                        },
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV2,
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/0/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV2,
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/1/content".to_string(),
+                        ),
                     ],
                 ),
                 (
                     "04",
                     vec![
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080700"),
-                            instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
-                        },
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080700"),
-                            instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v4".to_string(),
-                        },
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV4,
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/0/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV4,
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/1/content".to_string(),
+                        ),
                     ],
                 ),
                 (
                     "05",
                     vec![
-                        ValidationError {
-                            message: cvss_v31_error_message.to_string(),
-                            instance_path: "/vulnerabilities/0/metrics/0/content/cvss_v3".to_string(),
-                        },
-                        ValidationError {
-                            message: cvss_v31_error_message.to_string(),
-                            instance_path: "/vulnerabilities/0/metrics/1/content/cvss_v3".to_string(),
-                        },
-                        ValidationError {
-                            message: cvss_v30_error_message.to_string(),
-                            instance_path: "/vulnerabilities/1/metrics/1/content/cvss_v3".to_string(),
-                        },
-                        ValidationError {
-                            message: cvss_v30_error_message.to_string(),
-                            instance_path: "/vulnerabilities/1/metrics/2/content/cvss_v3".to_string(),
-                        },
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080701"),
-                            instance_path: "/vulnerabilities/2/metrics/0/content/cvss_v2".to_string(),
-                        },
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV2, "CSAFPID-9080701"),
-                            instance_path: "/vulnerabilities/2/metrics/1/content/cvss_v2".to_string(),
-                        },
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080701"),
-                            instance_path: "/vulnerabilities/3/metrics/0/content/cvss_v4".to_string(),
-                        },
-                        ValidationError {
-                            message: create_error_message(&VulnerabilityMetric::CvssV4, "CSAFPID-9080701"),
-                            instance_path: "/vulnerabilities/3/metrics/1/content/cvss_v4".to_string(),
-                        },
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/0/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/0/metrics/1/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/1/metrics/1/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                            "CSAFPID-9080700",
+                            "/vulnerabilities/1/metrics/2/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV2,
+                            "CSAFPID-9080701",
+                            "/vulnerabilities/2/metrics/0/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV2,
+                            "CSAFPID-9080701",
+                            "/vulnerabilities/2/metrics/1/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV4,
+                            "CSAFPID-9080701",
+                            "/vulnerabilities/3/metrics/0/content".to_string(),
+                        ),
+                        create_validation_error(
+                            &VulnerabilityMetric::CvssV4,
+                            "CSAFPID-9080701",
+                            "/vulnerabilities/3/metrics/1/content".to_string(),
+                        ),
                     ],
                 ),
             ]),

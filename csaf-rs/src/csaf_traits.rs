@@ -1,7 +1,8 @@
-use crate::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTheFlag,
-    LabelOfTlp, NoteCategory, PartyCategory,
+use crate::schema::csaf2_1::schema::{
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,
+    LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
 };
+
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
@@ -176,7 +177,7 @@ pub trait DocumentTrait {
 ///
 /// Contrary to other enums that are based on enums in the generated schemas, we are re-defining
 /// this enum in the trait. Each schema only contains an enum with "their" version, and merging them
-/// would be more complex then defining here and mapping in the implementations.
+/// would be more complex than defining them here and mapping to them in each implementation.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CsafVersion {
     X20,
@@ -921,6 +922,9 @@ pub fn get_metric_prop_name(metric: VulnerabilityMetric) -> &'static str {
 pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds {
     /// Returns the date associated with this threat
     fn get_date(&self) -> &Option<String>;
+
+    /// Returns the category of the threat
+    fn get_category(&self) -> CategoryOfTheThreat;
 }
 
 /// Trait representing an abstract product tree in a CSAF document.

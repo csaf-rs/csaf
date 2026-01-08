@@ -6,15 +6,15 @@ use crate::csaf_traits::{
     ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
     WithOptionalProductIds,
 };
-use crate::csaf2_1::schema::{
-    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CommonSecurityAdvisoryFramework,
-    Content, CryptographicHashes, CsafVersion as CsafVersion21, DocumentGenerator, DocumentLevelMetaData,
-    DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
-    Involvement, LabelOfTheFlag, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus,
-    ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup,
-    Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
-};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
+use crate::schema::csaf2_1::schema::{
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
+    CommonSecurityAdvisoryFramework, Content, CryptographicHashes, CsafVersion as CsafVersion21, DocumentGenerator,
+    DocumentLevelMetaData, DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag, FullProductNameT,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory,
+    ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
+    RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+};
 use crate::validation::ValidationError;
 use serde_json::{Map, Value};
 use std::ops::Deref;
@@ -155,6 +155,10 @@ impl WithOptionalProductIds for Threat {
 impl ThreatTrait for Threat {
     fn get_date(&self) -> &Option<String> {
         &self.date
+    }
+
+    fn get_category(&self) -> CategoryOfTheThreat {
+        self.category
     }
 }
 

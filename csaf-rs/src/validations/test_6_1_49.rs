@@ -1,9 +1,45 @@
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait,
 };
-use crate::csaf2_1::schema::DocumentStatus;
+use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
+
+fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Invalid date format in revision history: {}", date_str),
+        instance_path: format!("/document/tracking/revision_history/{}/date", i_r),
+    }
+}
+
+fn create_empty_revision_history_error() -> ValidationError {
+    ValidationError {
+        message: "Revision history must not be empty for status final or interim".to_string(),
+        instance_path: "/document/tracking/revision_history".to_string(),
+    }
+}
+
+fn create_ssvc_timestamp_too_late_error(
+    ssvc_timestamp: &str,
+    i_v: usize,
+    newest_revision_date: &str,
+    i_m: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
+            ssvc_timestamp, i_v, newest_revision_date
+        ),
+        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp", i_v, i_m),
+    }
+}
+
+fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Invalid SSVC object: {}", error),
+        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
+    }
+}
 
 /// 6.1.49 Inconsistent SSVC Timestamp
 ///
@@ -31,10 +67,7 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
                 };
             },
             Err(_) => {
-                return Err(vec![ValidationError {
-                    message: format!("Invalid date format in revision history: {}", date_str),
-                    instance_path: format!("/document/tracking/revision_history/{}/date", i_r),
-                }]);
+                return Err(vec![create_invalid_revision_date_error(date_str, i_r)]);
             },
         }
     }
@@ -43,10 +76,7 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
         Some(date) => date,
         // No entries in revision history
         None => {
-            return Err(vec![ValidationError {
-                message: "Revision history must not be empty for status final or interim".to_string(),
-                instance_path: "/document/tracking/revision_history".to_string(),
-            }]);
+            return Err(vec![create_empty_revision_history_error()]);
         },
     };
 
@@ -58,25 +88,16 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
                     match metric.get_content().get_ssvc() {
                         Ok(ssvc) => {
                             if ssvc.timestamp.fixed_offset() > newest_revision_date {
-                                return Err(vec![ValidationError {
-                                    message: format!(
-                                        "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
-                                        ssvc.timestamp.to_rfc3339(),
-                                        i_v,
-                                        newest_revision_date.to_rfc3339()
-                                    ),
-                                    instance_path: format!(
-                                        "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp",
-                                        i_v, i_m
-                                    ),
-                                }]);
+                                return Err(vec![create_ssvc_timestamp_too_late_error(
+                                    &ssvc.timestamp.to_rfc3339(),
+                                    i_v,
+                                    &newest_revision_date.to_rfc3339(),
+                                    i_m,
+                                )]);
                             }
                         },
                         Err(err) => {
-                            return Err(vec![ValidationError {
-                                message: format!("Invalid SSVC object: {}", err),
-                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
-                            }]);
+                            return Err(vec![create_invalid_ssvc_error(err, i_v, i_m)]);
                         },
                     }
                 }
@@ -89,32 +110,44 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_49::test_6_1_49_inconsistent_ssvc_timestamp;
     use std::collections::HashMap;
 
     #[test]
     fn test_test_6_1_49() {
-        let instance_path = "/vulnerabilities/0/metrics/0/content/ssvc_v2/timestamp".to_string();
-
         run_csaf21_tests(
             "49",
             test_6_1_49_inconsistent_ssvc_timestamp,
             HashMap::from([
-                ("01", vec![ValidationError {
-                    message: "SSVC timestamp (2024-07-13T10:00:00+00:00) for vulnerability at index 0 is later than the newest revision date (2024-01-24T10:00:00+00:00)".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("02", vec![ValidationError {
-                    message: "SSVC timestamp (2024-02-29T10:30:00+00:00) for vulnerability at index 0 is later than the newest revision date (2024-02-29T10:00:00+00:00)".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("03", vec![ValidationError {
-                    message: "SSVC timestamp (2024-02-29T10:30:00+00:00) for vulnerability at index 0 is later than the newest revision date (2024-02-29T10:00:00+00:00)".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-            ])
+                (
+                    "01",
+                    vec![create_ssvc_timestamp_too_late_error(
+                        "2024-07-13T10:00:00+00:00",
+                        0,
+                        "2024-01-24T10:00:00+00:00",
+                        0,
+                    )],
+                ),
+                (
+                    "02",
+                    vec![create_ssvc_timestamp_too_late_error(
+                        "2024-02-29T10:30:00+00:00",
+                        0,
+                        "2024-02-29T10:00:00+00:00",
+                        0,
+                    )],
+                ),
+                (
+                    "03",
+                    vec![create_ssvc_timestamp_too_late_error(
+                        "2024-02-29T10:30:00+00:00",
+                        0,
+                        "2024-02-29T10:00:00+00:00",
+                        0,
+                    )],
+                ),
+            ]),
         );
     }
 }

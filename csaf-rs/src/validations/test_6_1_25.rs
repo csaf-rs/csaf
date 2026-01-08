@@ -59,8 +59,8 @@ fn test_6_1_25_err_generator(algorithm: String, path: String, hash_i: String, fi
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_25::{test_6_1_25_err_generator, test_6_1_25_multiple_use_of_same_hash_algorithm};
     use std::collections::HashMap;
 
     #[test]

@@ -43,25 +43,43 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_22
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_22_multiple_definition_in_revision_history(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_22
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_22_multiple_definition_in_revision_history(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_22() {
-        let errors = std::collections::HashMap::from([(
-            "01",
-            vec![
-                generate_duplicate_revision_error("1", 0),
-                generate_duplicate_revision_error("1", 1),
-            ],
-        )]);
-        run_csaf20_tests(
-            "22",
-            test_6_1_22_multiple_definition_in_revision_history,
-            errors.clone(),
-        );
-        run_csaf21_tests("22", test_6_1_22_multiple_definition_in_revision_history, errors);
+        let case_01 = Err(vec![
+            generate_duplicate_revision_error("1", 0),
+            generate_duplicate_revision_error("1", 1),
+        ]);
+
+        // Both CSAF 2.0 and 2.1 have 1 test case
+        TESTS_2_0.test_6_1_22.expect(case_01.clone());
+        TESTS_2_1.test_6_1_22.expect(case_01);
     }
 }

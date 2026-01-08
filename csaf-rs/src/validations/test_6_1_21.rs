@@ -57,6 +57,28 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     errors.map_or(Ok(()), Err)
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_21
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_21_missing_item_in_revision_history(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_21
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_21_missing_item_in_revision_history(doc)
+    }
+}
+
 fn test_6_1_21_err_wrong_first_version_generator(version: VersionNumber, path: String) -> ValidationError {
     let version_error = match version {
         VersionNumber::Integer(_) => "integer version of 0 or 1",
@@ -101,38 +123,46 @@ fn test_6_1_21_err_missing_version_in_range(
 mod tests {
     use super::*;
     use crate::csaf_traits::VersionNumber;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_21() {
-        let errors = std::collections::HashMap::from([
-            (
-                "01",
-                vec![test_6_1_21_err_missing_version_in_range(
-                    VersionNumber::from_number("1"),
-                    2,
-                    1,
-                    3,
-                )],
-            ),
-            (
-                "02",
-                vec![test_6_1_21_err_wrong_first_version_generator(
-                    VersionNumber::from_number("2"),
-                    "0".to_string(),
-                )],
-            ),
-            (
-                "03",
-                vec![test_6_1_21_err_missing_version_in_range(
-                    VersionNumber::from_number("1"),
-                    2,
-                    1,
-                    4,
-                )],
-            ),
-        ]);
-        run_csaf20_tests("21", test_6_1_21_missing_item_in_revision_history, errors.clone());
-        run_csaf21_tests("21", test_6_1_21_missing_item_in_revision_history, errors);
+        // Error cases
+        let case_01 = Err(vec![test_6_1_21_err_missing_version_in_range(
+            VersionNumber::from_number("1"),
+            2,
+            1,
+            3,
+        )]);
+        let case_02 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
+            VersionNumber::from_number("2"),
+            "0".to_string(),
+        )]);
+
+        // CSAF 2.0 has 5 test cases (01-02, 11-13)
+        TESTS_2_0.test_6_1_21.expect(
+            case_01.clone(),
+            case_02.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+        );
+
+        // CSAF 2.1 has 7 test cases (01-03, 11-14)
+        TESTS_2_1.test_6_1_21.expect(
+            case_01,
+            case_02,
+            Err(vec![test_6_1_21_err_missing_version_in_range(
+                VersionNumber::from_number("1"),
+                2,
+                1,
+                4,
+            )]),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+        );
     }
 }

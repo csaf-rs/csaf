@@ -3,11 +3,11 @@ use crate::validation::ValidationError;
 use std::collections::HashSet;
 
 pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // Map to store each key with all of its paths
-    let mut products = HashSet::<String>::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
 
-    let mut errors: Option<Vec<ValidationError>> = Option::None;
     if let Some(tree) = doc.get_product_tree().as_ref() {
+        // Map to store each key with all of its paths
+        let mut products: HashSet<String> = HashSet::new();
         tree.visit_all_products(&mut |product, path| {
             if products.contains(product.get_product_id()) {
                 errors
@@ -29,22 +29,41 @@ fn generate_err_msg(product_id: &str, path: &str) -> ValidationError {
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_2
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_02_multiple_definition_of_product_id(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_2
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_02_multiple_definition_of_product_id(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_02() {
-        let errors = HashMap::from([(
-            "01",
-            vec![generate_err_msg(
-                "CSAFPID-9080700",
-                "/product_tree/full_product_names/1",
-            )],
+        let shared_error_01 = Err(vec![generate_err_msg(
+            "CSAFPID-9080700",
+            "/product_tree/full_product_names/1",
         )]);
-        run_csaf20_tests("02", test_6_1_02_multiple_definition_of_product_id, errors.clone());
-        run_csaf21_tests("02", test_6_1_02_multiple_definition_of_product_id, errors);
+        TESTS_2_0.test_6_1_2.expect(shared_error_01.clone());
+        TESTS_2_1.test_6_1_2.expect(shared_error_01.clone());
     }
 }

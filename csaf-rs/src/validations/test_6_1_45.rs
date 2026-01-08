@@ -90,22 +90,33 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_45
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_45_inconsistent_disclosure_date(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::run_csaf21_tests;
-    use std::collections::HashMap;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_45() {
-        run_csaf21_tests(
-            "45",
-            test_6_1_45_inconsistent_disclosure_date,
-            HashMap::from([
-                ("01", vec![create_disclosure_date_too_late_error(0)]),
-                ("02", vec![create_disclosure_date_too_late_error(0)]),
-                ("03", vec![create_disclosure_date_too_late_error(0)]),
-            ]),
+        // Only CSAF 2.1 has this test with 7 test cases (3 error cases, 4 success cases)
+        TESTS_2_1.test_6_1_45.expect(
+            Err(vec![create_disclosure_date_too_late_error(0)]),
+            Err(vec![create_disclosure_date_too_late_error(0)]),
+            Err(vec![create_disclosure_date_too_late_error(0)]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

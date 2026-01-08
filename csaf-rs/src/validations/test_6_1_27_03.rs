@@ -1,13 +1,13 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
-fn create_vulnerabilities_error() -> ValidationError {
-    ValidationError {
-        message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-            .to_string(),
-        instance_path: "/vulnerabilities".to_string(),
-    }
-}
+static VULNERABILITIES_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
+        .to_string(),
+    instance_path: "/vulnerabilities".to_string(),
+});
 
 /// 6.1.27.3 Vulnerabilities
 ///
@@ -37,26 +37,47 @@ pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 
     // return error if there are elements in /vulnerabilities
     if !doc.get_vulnerabilities().is_empty() {
-        return Err(vec![create_vulnerabilities_error()]);
+        return Err(vec![VULNERABILITIES_ERROR.clone()]);
     }
 
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_3
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_03_vulnerability(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_3
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_03_vulnerability(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_03() {
-        let errors = HashMap::from([
-            ("01", vec![create_vulnerabilities_error()]),
-            ("02", vec![create_vulnerabilities_error()]),
-            ("03", vec![create_vulnerabilities_error()]),
-        ]);
-        run_csaf20_tests("27-03", test_6_1_27_03_vulnerability, errors.clone());
-        run_csaf21_tests("27-03", test_6_1_27_03_vulnerability, errors);
+        let err = Err(vec![VULNERABILITIES_ERROR.clone()]);
+
+        TESTS_2_0.test_6_1_27_3.expect(err.clone());
+        TESTS_2_1
+            .test_6_1_27_3
+            .expect(err.clone(), err.clone(), err.clone(), Ok(()), Ok(()), Ok(()));
     }
 }

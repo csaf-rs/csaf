@@ -41,6 +41,28 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
     errors.map_or(Ok(()), Err)
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_6
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_06_contradicting_product_status(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_6
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_06_contradicting_product_status(doc)
+    }
+}
+
 fn generate_err_msg(product_id: &str, groups: &[ProductStatusGroup], vulnerability_index: usize) -> ValidationError {
     let group_names: Vec<String> = groups.iter().map(|g| format!("'{}'", g)).collect();
     ValidationError {
@@ -56,81 +78,88 @@ fn generate_err_msg(product_id: &str, groups: &[ProductStatusGroup], vulnerabili
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_06() {
-        let expected_errors = HashMap::from([
-            (
-                "01",
-                vec![generate_err_msg(
-                    "CSAFPID-9080700",
-                    &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
-                    0,
-                )],
+        let case_01 = Err(vec![generate_err_msg(
+            "CSAFPID-9080700",
+            &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+            0,
+        )]);
+        let case_02 = Err(vec![generate_err_msg(
+            "CSAFPID-9080700",
+            &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+            0,
+        )]);
+        let case_03 = Err(vec![generate_err_msg(
+            "CSAFPID-9080700",
+            &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+            0,
+        )]);
+        let case_04 = Err(vec![
+            generate_err_msg(
+                "CSAFPID-9080700",
+                &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
+                0,
             ),
-            (
-                "02",
-                vec![generate_err_msg(
-                    "CSAFPID-9080700",
-                    &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
-                    0,
-                )],
-            ),
-            (
-                "03",
-                vec![generate_err_msg(
-                    "CSAFPID-9080700",
-                    &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
-                    0,
-                )],
-            ),
-            (
-                "04",
-                vec![
-                    generate_err_msg(
-                        "CSAFPID-9080700",
-                        &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
-                        0,
-                    ),
-                    generate_err_msg(
-                        "CSAFPID-9080701",
-                        &[ProductStatusGroup::NotAffected, ProductStatusGroup::Fixed],
-                        0,
-                    ),
-                ],
-            ),
-            (
-                "05",
-                vec![
-                    generate_err_msg(
-                        "CSAFPID-9080700",
-                        &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
-                        0,
-                    ),
-                    generate_err_msg(
-                        "CSAFPID-9080701",
-                        &[ProductStatusGroup::NotAffected, ProductStatusGroup::UnderInvestigation],
-                        0,
-                    ),
-                    generate_err_msg(
-                        "CSAFPID-9080702",
-                        &[ProductStatusGroup::Affected, ProductStatusGroup::Fixed],
-                        0,
-                    ),
-                ],
-            ),
-            (
-                "06",
-                vec![generate_err_msg(
-                    "CSAFPID-9080700",
-                    &[ProductStatusGroup::Affected, ProductStatusGroup::Unknown],
-                    0,
-                )],
+            generate_err_msg(
+                "CSAFPID-9080701",
+                &[ProductStatusGroup::NotAffected, ProductStatusGroup::Fixed],
+                0,
             ),
         ]);
-        run_csaf20_tests("06", test_6_1_06_contradicting_product_status, expected_errors.clone());
-        run_csaf21_tests("06", test_6_1_06_contradicting_product_status, expected_errors);
+        let case_05 = Err(vec![
+            generate_err_msg(
+                "CSAFPID-9080700",
+                &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
+                0,
+            ),
+            generate_err_msg(
+                "CSAFPID-9080701",
+                &[ProductStatusGroup::NotAffected, ProductStatusGroup::UnderInvestigation],
+                0,
+            ),
+            generate_err_msg(
+                "CSAFPID-9080702",
+                &[ProductStatusGroup::Affected, ProductStatusGroup::Fixed],
+                0,
+            ),
+        ]);
+
+        // CSAF 2.0 has 10 test cases (01-05, 11-15)
+        TESTS_2_0.test_6_1_6.expect(
+            case_01.clone(),
+            case_02.clone(),
+            case_03.clone(),
+            case_04.clone(),
+            case_05.clone(),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
+
+        // CSAF 2.1 has 12 test cases (01-06, 11-16)
+        TESTS_2_1.test_6_1_6.expect(
+            case_01,
+            case_02,
+            case_03,
+            case_04,
+            case_05,
+            Err(vec![generate_err_msg(
+                "CSAFPID-9080700",
+                &[ProductStatusGroup::Affected, ProductStatusGroup::Unknown],
+                0,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

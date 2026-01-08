@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait,
 };
@@ -12,12 +14,10 @@ fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationE
     }
 }
 
-fn create_empty_revision_history_error() -> ValidationError {
-    ValidationError {
-        message: "Revision history must not be empty for status final or interim".to_string(),
-        instance_path: "/document/tracking/revision_history".to_string(),
-    }
-}
+static EMPTY_REVISION_HISTORY_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "Revision history must not be empty for status final or interim".to_string(),
+    instance_path: "/document/tracking/revision_history".to_string(),
+});
 
 fn create_ssvc_timestamp_too_late_error(
     ssvc_timestamp: &str,
@@ -76,7 +76,7 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
         Some(date) => date,
         // No entries in revision history
         None => {
-            return Err(vec![create_empty_revision_history_error()]);
+            return Err(vec![EMPTY_REVISION_HISTORY_ERROR.clone()]);
         },
     };
 
@@ -108,46 +108,47 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_49
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_49_inconsistent_ssvc_timestamp(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::run_csaf21_tests;
-    use std::collections::HashMap;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_49() {
-        run_csaf21_tests(
-            "49",
-            test_6_1_49_inconsistent_ssvc_timestamp,
-            HashMap::from([
-                (
-                    "01",
-                    vec![create_ssvc_timestamp_too_late_error(
-                        "2024-07-13T10:00:00+00:00",
-                        0,
-                        "2024-01-24T10:00:00+00:00",
-                        0,
-                    )],
-                ),
-                (
-                    "02",
-                    vec![create_ssvc_timestamp_too_late_error(
-                        "2024-02-29T10:30:00+00:00",
-                        0,
-                        "2024-02-29T10:00:00+00:00",
-                        0,
-                    )],
-                ),
-                (
-                    "03",
-                    vec![create_ssvc_timestamp_too_late_error(
-                        "2024-02-29T10:30:00+00:00",
-                        0,
-                        "2024-02-29T10:00:00+00:00",
-                        0,
-                    )],
-                ),
-            ]),
+        // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success cases)
+        TESTS_2_1.test_6_1_49.expect(
+            Err(vec![create_ssvc_timestamp_too_late_error(
+                "2024-07-13T10:00:00+00:00",
+                0,
+                "2024-01-24T10:00:00+00:00",
+                0,
+            )]),
+            Err(vec![create_ssvc_timestamp_too_late_error(
+                "2024-02-29T10:30:00+00:00",
+                0,
+                "2024-02-29T10:00:00+00:00",
+                0,
+            )]),
+            Err(vec![create_ssvc_timestamp_too_late_error(
+                "2024-02-29T10:30:00+00:00",
+                0,
+                "2024-02-29T10:00:00+00:00",
+                0,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

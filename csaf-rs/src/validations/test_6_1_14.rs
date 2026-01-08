@@ -42,80 +42,115 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_14
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_14_sorted_revision_history(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_14
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_14_sorted_revision_history(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_14() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![
-                    create_revision_history_error("2", 0),
-                    create_revision_history_error("1", 1),
-                ],
-            ),
-            (
-                "02",
-                vec![
-                    create_revision_history_error("2", 0),
-                    create_revision_history_error("1", 1),
-                ],
-            ),
-            (
-                "03",
-                vec![
-                    create_revision_history_error("2", 1),
-                    create_revision_history_error("1", 0),
-                ],
-            ),
-            (
-                "04",
-                vec![
-                    create_revision_history_error("2.0.0", 0),
-                    create_revision_history_error("1.0.0", 1),
-                ],
-            ),
-            (
-                "05",
-                vec![
-                    create_revision_history_error("2.0.0", 0),
-                    create_revision_history_error("1.0.0", 1),
-                ],
-            ),
-            (
-                "06",
-                vec![
-                    create_revision_history_error("10", 9),
-                    create_revision_history_error("9", 8),
-                ],
-            ),
-            (
-                "07",
-                vec![
-                    create_revision_history_error("1.10.0", 10),
-                    create_revision_history_error("1.9.0", 9),
-                ],
-            ),
-            (
-                "08",
-                vec![
-                    create_revision_history_error("2", 1),
-                    create_revision_history_error("1", 0),
-                ],
-            ),
-            (
-                "09",
-                vec![
-                    create_revision_history_error("2", 0),
-                    create_revision_history_error("1", 1),
-                ],
-            ),
+        // Error cases
+        let case_01 = Err(vec![
+            create_revision_history_error("2", 0),
+            create_revision_history_error("1", 1),
         ]);
-        run_csaf20_tests("14", test_6_1_14_sorted_revision_history, errors.clone());
-        run_csaf21_tests("14", test_6_1_14_sorted_revision_history, errors);
+        let case_02 = Err(vec![
+            create_revision_history_error("2", 0),
+            create_revision_history_error("1", 1),
+        ]);
+        let case_03 = Err(vec![
+            create_revision_history_error("2", 1),
+            create_revision_history_error("1", 0),
+        ]);
+        let case_04 = Err(vec![
+            create_revision_history_error("2.0.0", 0),
+            create_revision_history_error("1.0.0", 1),
+        ]);
+        let case_05 = Err(vec![
+            create_revision_history_error("2.0.0", 0),
+            create_revision_history_error("1.0.0", 1),
+        ]);
+        let case_06 = Err(vec![
+            create_revision_history_error("10", 9),
+            create_revision_history_error("9", 8),
+        ]);
+        let case_07 = Err(vec![
+            create_revision_history_error("1.10.0", 10),
+            create_revision_history_error("1.9.0", 9),
+        ]);
+        let case_08 = Err(vec![
+            create_revision_history_error("2", 1),
+            create_revision_history_error("1", 0),
+        ]);
+
+        // CSAF 2.0 has 17 test cases (01-08, 11-19)
+        TESTS_2_0.test_6_1_14.expect(
+            case_01.clone(),
+            case_02.clone(),
+            case_03.clone(),
+            case_04.clone(),
+            case_05.clone(),
+            case_06.clone(),
+            case_07.clone(),
+            case_08.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
+            Ok(()), // case_18
+            Ok(()), // case_19
+        );
+
+        // CSAF 2.1 has 19 test cases (01-09, 11-19, 31)
+        TESTS_2_1.test_6_1_14.expect(
+            case_01,
+            case_02,
+            case_03,
+            case_04,
+            case_05,
+            case_06,
+            case_07,
+            case_08,
+            Err(vec![
+                create_revision_history_error("2", 0),
+                create_revision_history_error("1", 1),
+            ]),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
+            Ok(()), // case_18
+            Ok(()), // case_19
+            Ok(()), // case_31
+        );
     }
 }

@@ -84,59 +84,63 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
     errors.map_or(Ok(()), Err)
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_13
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_13_purl(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_13
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_13_purl(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_13() {
-        let errors_x20 = HashMap::from([
-            (
-                "01",
-                vec![generate_purl_format_error(
-                    &CsafVersion::X20,
-                    "pkg:maven/@1.3.4",
-                    "missing name",
-                    "/product_tree/full_product_names/0",
-                    0,
-                )],
-            ),
-            (
-                "02",
-                vec![generate_purl_format_error(
-                    &CsafVersion::X20,
-                    "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
-                    "no namespace allowed for type \"oci\"",
-                    "/product_tree/full_product_names/0",
-                    0,
-                )],
-            ),
-        ]);
-        let errors_x21 = HashMap::from([
-            (
-                "01",
-                vec![generate_purl_format_error(
-                    &CsafVersion::X21,
-                    "pkg:maven/@1.3.4",
-                    "missing name",
-                    "/product_tree/full_product_names/0",
-                    0,
-                )],
-            ),
-            (
-                "02",
-                vec![generate_purl_format_error(
-                    &CsafVersion::X21,
-                    "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
-                    "no namespace allowed for type \"oci\"",
-                    "/product_tree/full_product_names/0",
-                    0,
-                )],
-            ),
-        ]);
-        run_csaf20_tests("13", test_6_1_13_purl, errors_x20);
-        run_csaf21_tests("13", test_6_1_13_purl, errors_x21);
+        // CSAF 2.0 has 1 test case (01)
+        TESTS_2_0.test_6_1_13.expect(Err(vec![generate_purl_format_error(
+            &CsafVersion::X20,
+            "pkg:maven/@1.3.4",
+            "missing name",
+            "/product_tree/full_product_names/0",
+            0,
+        )]));
+
+        // CSAF 2.1 has 4 test cases (01, 02, 11, 12)
+        TESTS_2_1.test_6_1_13.expect(
+            Err(vec![generate_purl_format_error(
+                &CsafVersion::X21,
+                "pkg:maven/@1.3.4",
+                "missing name",
+                "/product_tree/full_product_names/0",
+                0,
+            )]),
+            Err(vec![generate_purl_format_error(
+                &CsafVersion::X21,
+                "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
+                "no namespace allowed for type \"oci\"",
+                "/product_tree/full_product_names/0",
+                0,
+            )]),
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
     }
 }

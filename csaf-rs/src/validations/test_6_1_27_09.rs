@@ -119,71 +119,100 @@ fn test_6_1_27_09_err_generator(
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_9
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_09_impact_statement(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_9
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_09_impact_statement(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_09() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![test_6_1_27_09_err_generator(
-                    &DocumentCategory::CsafVex,
-                    "CSAFPID-9080702".to_string(),
-                    0,
-                    2,
-                )],
-            ),
-            (
-                "02",
-                vec![test_6_1_27_09_err_generator(
-                    &DocumentCategory::CsafVex,
-                    "CSAFPID-9080702".to_string(),
-                    0,
-                    2,
-                )],
-            ),
-            (
-                "03",
-                vec![test_6_1_27_09_err_generator(
-                    &DocumentCategory::CsafVex,
-                    "CSAFPID-9080700".to_string(),
-                    0,
-                    0,
-                )],
-            ),
-            (
-                "04",
-                vec![test_6_1_27_09_err_generator(
-                    &DocumentCategory::CsafVex,
-                    "CSAFPID-9080700".to_string(),
-                    0,
-                    0,
-                )],
-            ),
-            (
-                "05",
-                vec![test_6_1_27_09_err_generator(
-                    &DocumentCategory::CsafVex,
-                    "CSAFPID-9080700".to_string(),
-                    0,
-                    0,
-                )],
-            ),
-            (
-                "06",
-                vec![test_6_1_27_09_err_generator(
-                    &DocumentCategory::CsafVex,
-                    "CSAFPID-9080701".to_string(),
-                    1,
-                    1,
-                )],
-            ),
-        ]);
-        run_csaf20_tests("27-09", test_6_1_27_09_impact_statement, errors.clone());
-        run_csaf21_tests("27-09", test_6_1_27_09_impact_statement, errors);
+        let case_01 = Err(vec![test_6_1_27_09_err_generator(
+            &DocumentCategory::CsafVex,
+            "CSAFPID-9080702".to_string(),
+            0,
+            2,
+        )]);
+        let case_02 = Err(vec![test_6_1_27_09_err_generator(
+            &DocumentCategory::CsafVex,
+            "CSAFPID-9080702".to_string(),
+            0,
+            2,
+        )]);
+        let case_03 = Err(vec![test_6_1_27_09_err_generator(
+            &DocumentCategory::CsafVex,
+            "CSAFPID-9080700".to_string(),
+            0,
+            0,
+        )]);
+        let case_04 = Err(vec![test_6_1_27_09_err_generator(
+            &DocumentCategory::CsafVex,
+            "CSAFPID-9080700".to_string(),
+            0,
+            0,
+        )]);
+        let case_05 = Err(vec![test_6_1_27_09_err_generator(
+            &DocumentCategory::CsafVex,
+            "CSAFPID-9080700".to_string(),
+            0,
+            0,
+        )]);
+        let case_06 = Err(vec![test_6_1_27_09_err_generator(
+            &DocumentCategory::CsafVex,
+            "CSAFPID-9080701".to_string(),
+            1,
+            1,
+        )]);
+
+        TESTS_2_0.test_6_1_27_9.expect(
+            case_01.clone(),
+            case_02.clone(),
+            case_03.clone(),
+            case_04.clone(),
+            case_05.clone(),
+            case_06.clone(),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_1_27_9.expect(
+            case_01,
+            case_02,
+            case_03,
+            case_04,
+            case_05,
+            case_06,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

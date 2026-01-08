@@ -33,19 +33,41 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_17
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_17_document_status_draft(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_17
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_17_document_status_draft(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::schema::csaf2_1::schema::DocumentStatus;
 
     #[test]
-    fn test_test_6_1_14() {
-        let errors = HashMap::from([(
-            "01",
-            vec![generate_status_version_error("0.9.5", &DocumentStatus::Final)],
-        )]);
-        run_csaf20_tests("17", test_6_1_17_document_status_draft, errors.clone());
-        run_csaf21_tests("17", test_6_1_17_document_status_draft, errors);
+    fn test_test_6_1_17() {
+        let case_01 = Err(vec![generate_status_version_error("0.9.5", &DocumentStatus::Final)]);
+
+        // Both CSAF 2.0 and 2.1 have 1 test case
+        TESTS_2_0.test_6_1_17.expect(case_01.clone());
+        TESTS_2_1.test_6_1_17.expect(case_01);
     }
 }

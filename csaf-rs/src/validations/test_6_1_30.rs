@@ -41,16 +41,40 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_30
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_30_mixed_integer_and_semantic_versioning(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_30
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_30_mixed_integer_and_semantic_versioning(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_30() {
-        let errors = HashMap::from([("01", vec![create_mixed_versioning_error("2", "1.0.0", 0)])]);
-        run_csaf20_tests("30", test_6_1_30_mixed_integer_and_semantic_versioning, errors.clone());
-        run_csaf21_tests("30", test_6_1_30_mixed_integer_and_semantic_versioning, errors);
+        let case_01 = Err(vec![create_mixed_versioning_error("2", "1.0.0", 0)]);
+
+        // Both CSAF 2.0 and 2.1 have 2 test cases
+        TESTS_2_0.test_6_1_30.expect(case_01.clone(), Ok(()));
+        TESTS_2_1.test_6_1_30.expect(case_01, Ok(()));
     }
 }

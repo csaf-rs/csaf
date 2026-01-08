@@ -329,7 +329,7 @@ impl DocumentCategory {
     /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore
     ///
     /// Examples:
-    /// `csaf_base´ -> `base`
+    /// `csaf_base` -> `base`
     /// `csaf-basE` -> `base`
     /// ` csaf_base` -> `base`
     /// `_csaf_base` -> `base`

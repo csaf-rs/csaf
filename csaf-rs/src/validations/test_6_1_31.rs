@@ -223,7 +223,15 @@ mod tests {
             ("3.X Versions", vec!["versions"]),
             (">=2.0 and <=3.0", vec![FORBIDDEN_GREATER_EQUAL, FORBIDDEN_LESS_EQUAL]),
             (">=2.0 and before 3.0", vec![FORBIDDEN_GREATER_EQUAL, "before"]),
-            (">=2.0 and <=3.0 and >4.1 and <5.1", vec![FORBIDDEN_GREATER_EQUAL, FORBIDDEN_GREATER, FORBIDDEN_LESS_EQUAL, FORBIDDEN_LESS]),
+            (
+                ">=2.0 and <=3.0 and >4.1 and <5.1",
+                vec![
+                    FORBIDDEN_GREATER_EQUAL,
+                    FORBIDDEN_GREATER,
+                    FORBIDDEN_LESS_EQUAL,
+                    FORBIDDEN_LESS,
+                ],
+            ),
         ];
 
         for (branch_name, expected) in test_cases {
@@ -231,10 +239,14 @@ mod tests {
             match result {
                 Some(found) => {
                     assert_eq!(found, expected, "Failed for branch name: {}", branch_name);
-                }
+                },
                 None => {
-                    assert!(expected.is_empty(), "Expected no forbidden substrings for branch name: {}", branch_name);
-                }
+                    assert!(
+                        expected.is_empty(),
+                        "Expected no forbidden substrings for branch name: {}",
+                        branch_name
+                    );
+                },
             }
         }
     }

@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, FlagTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds};
-use crate::csaf2_1::schema::LabelOfTheFlag;
 use crate::helpers::resolve_product_groups;
+use crate::schema::csaf2_1::schema::LabelOfTheFlag;
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
@@ -79,11 +79,13 @@ fn test_6_1_33_err_generator(
     vuln_i: usize,
     flag_i: usize,
 ) -> ValidationError {
+    // sort labels and join them with ', ' for error message
     let labels_joined = {
         let mut labels_str: Vec<_> = labels.iter().map(|l| l.to_string()).collect();
         labels_str.sort();
         labels_str.join(", ")
     };
+    // prepare group id string for error message if present via group
     let group_id_str = {
         if let Some(group_id) = group_id {
             format!("(via group: {})", group_id)
@@ -100,49 +102,61 @@ fn test_6_1_33_err_generator(
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_33
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_33_multiple_flags_with_vex_codes_per_product(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_33
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_33_multiple_flags_with_vex_codes_per_product(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::csaf2_1::schema::LabelOfTheFlag;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_33::{
-        test_6_1_33_err_generator, test_6_1_33_multiple_flags_with_vex_codes_per_product,
-    };
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_33() {
-        let errors = HashMap::from([(
-            "01",
-            vec![
-                test_6_1_33_err_generator(
-                    "CSAFPID-9080700",
-                    &[
-                        LabelOfTheFlag::ComponentNotPresent,
-                        LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
-                    ],
+        let case_01 = Err(vec![
+            test_6_1_33_err_generator(
+                "CSAFPID-9080700",
+                &[
                     LabelOfTheFlag::ComponentNotPresent,
-                    Some("CSAFGID-0001".to_string()),
-                    0,
-                    0,
-                ),
-                test_6_1_33_err_generator(
-                    "CSAFPID-9080700",
-                    &[
-                        LabelOfTheFlag::ComponentNotPresent,
-                        LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
-                    ],
                     LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
-                    None,
-                    0,
-                    1,
-                ),
-            ],
-        )]);
-        run_csaf20_tests(
-            "33",
-            test_6_1_33_multiple_flags_with_vex_codes_per_product,
-            errors.clone(),
-        );
-        run_csaf21_tests("33", test_6_1_33_multiple_flags_with_vex_codes_per_product, errors);
+                ],
+                LabelOfTheFlag::ComponentNotPresent,
+                Some("CSAFGID-0001".to_string()),
+                0,
+                0,
+            ),
+            test_6_1_33_err_generator(
+                "CSAFPID-9080700",
+                &[
+                    LabelOfTheFlag::ComponentNotPresent,
+                    LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                ],
+                LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                None,
+                0,
+                1,
+            ),
+        ]);
+        TESTS_2_0.test_6_1_33.expect(case_01.clone(), Ok(()));
+        TESTS_2_1.test_6_1_33.expect(case_01, Ok(()));
     }
 }

@@ -1,7 +1,22 @@
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait};
-use crate::csaf2_1::schema::PartyCategory;
+use crate::schema::csaf2_1::schema::PartyCategory;
 use crate::validation::ValidationError;
 use std::collections::HashMap;
+
+fn generate_duplicate_involvement_error(
+    date: &str,
+    party: &PartyCategory,
+    vul_r: usize,
+    inv_r: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Duplicate usage of tuple of involvement date {} and party {}",
+            date, party
+        ),
+        instance_path: format!("/vulnerabilities/{}/involvements/{}", vul_r, inv_r),
+    }
+}
 
 /// Test 6.1.24: Multiple Definition in Involvements
 ///
@@ -27,15 +42,11 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
             // Generate errors for (date, party) tuples with multiple involvement paths indices
             for ((date, party), paths) in &date_party_paths_map {
                 if paths.len() > 1 {
-                    for path in paths.iter() {
-                        errors.push(ValidationError {
-                            message: format!(
-                                "Duplicate usage of tuple of involvement date {} and party {}",
-                                date, party
-                            ),
-                            instance_path: format!("/vulnerabilities/{}/involvements/{}", vul_r, path),
-                        });
-                    }
+                    errors.extend(
+                        paths
+                            .iter()
+                            .map(|path| generate_duplicate_involvement_error(date, party, vul_r, *path)),
+                    );
                 }
             }
         }
@@ -48,86 +59,62 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_24
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_24_multiple_definition_in_involvements(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_24
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_24_multiple_definition_in_involvements(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_24::test_6_1_24_multiple_definition_in_involvements;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_24() {
-        let errors_20 = std::collections::HashMap::from([
-            (
-                "01",
-                vec![
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2021-04-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/0".to_string(),
-                    },
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2021-04-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/1".to_string(),
-                    },
-                ],
-            ),
-            (
-                "02",
-                vec![
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2021-04-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/0".to_string(),
-                    },
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2021-04-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/1".to_string(),
-                    },
-                ],
-            ),
-        ]);
-        let errors_21 = std::collections::HashMap::from([
-            (
-                "01",
-                vec![
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2023-08-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/0".to_string(),
-                    },
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2023-08-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/1".to_string(),
-                    },
-                ],
-            ),
-            (
-                "02",
-                vec![
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2023-08-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/0".to_string(),
-                    },
-                    crate::validation::ValidationError {
-                        message:
-                            "Duplicate usage of tuple of involvement date 2023-08-23T10:00:00.000Z and party vendor"
-                                .to_string(),
-                        instance_path: "/vulnerabilities/0/involvements/1".to_string(),
-                    },
-                ],
-            ),
-        ]);
-        run_csaf20_tests("24", test_6_1_24_multiple_definition_in_involvements, errors_20);
-        run_csaf21_tests("24", test_6_1_24_multiple_definition_in_involvements, errors_21);
+        // CSAF 2.0 has 4 test cases (01-02, 11-12)
+        TESTS_2_0.test_6_1_24.expect(
+            Err(vec![
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
+            Err(vec![
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2021-04-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
+
+        // CSAF 2.1 has 4 test cases (01-02, 11-12)
+        TESTS_2_1.test_6_1_24.expect(
+            Err(vec![
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
+            Err(vec![
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 0),
+                generate_duplicate_involvement_error("2023-08-23T10:00:00.000Z", &PartyCategory::Vendor, 0, 1),
+            ]),
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
     }
 }

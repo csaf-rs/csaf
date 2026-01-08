@@ -57,32 +57,53 @@ fn test_6_1_25_err_generator(algorithm: String, path: String, hash_i: String, fi
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_25
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_25_multiple_use_of_same_hash_algorithm(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_25
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_25_multiple_use_of_same_hash_algorithm(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_25::{test_6_1_25_err_generator, test_6_1_25_multiple_use_of_same_hash_algorithm};
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_25() {
-        let errors = HashMap::from([(
-            "01",
-            vec![
-                test_6_1_25_err_generator(
-                    "sha256".to_string(),
-                    "/product_tree/full_product_names/0".to_string(),
-                    "0".to_string(),
-                    "0".to_string(),
-                ),
-                test_6_1_25_err_generator(
-                    "sha256".to_string(),
-                    "/product_tree/full_product_names/0".to_string(),
-                    "0".to_string(),
-                    "1".to_string(),
-                ),
-            ],
-        )]);
-        run_csaf20_tests("25", test_6_1_25_multiple_use_of_same_hash_algorithm, errors.clone());
-        run_csaf21_tests("25", test_6_1_25_multiple_use_of_same_hash_algorithm, errors);
+        let case_01 = Err(vec![
+            test_6_1_25_err_generator(
+                "sha256".to_string(),
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "0".to_string(),
+            ),
+            test_6_1_25_err_generator(
+                "sha256".to_string(),
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "1".to_string(),
+            ),
+        ]);
+
+        // Both CSAF 2.0 and 2.1 have 1 test case
+        TESTS_2_0.test_6_1_25.expect(case_01.clone());
+        TESTS_2_1.test_6_1_25.expect(case_01);
     }
 }

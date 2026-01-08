@@ -1,9 +1,15 @@
-use crate::csaf_traits::CsafTrait;
+use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_helpers::{
-    generate_revision_history_tuples, sort_revision_history_tuples_by_date_by_number,
-    sort_revision_history_tuples_by_number,
-};
+
+fn create_revision_history_error(revision_number: impl std::fmt::Display, path_index: usize) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Revision history is not sorted by date, revision with number {} is out of place",
+            revision_number
+        ),
+        instance_path: format!("/document/tracking/revision_history/{}", path_index),
+    }
+}
 
 /// 6.1.14 Sorted Revision History
 ///
@@ -11,27 +17,21 @@ use crate::version_helpers::{
 /// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Generate tuples of (revision history path index, date, number)
-    let mut rev_history_tuples_sort_by_date = generate_revision_history_tuples(doc);
+    let mut rev_history_tuples_sort_by_date = doc.get_document().get_tracking().get_revision_history_tuples();
     let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
 
     // Sort by date and by number
-    sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples_sort_by_date);
-    sort_revision_history_tuples_by_number(&mut rev_history_tuples_sort_by_number);
+    rev_history_tuples_sort_by_date.inplace_sort_by_date_then_number();
+    rev_history_tuples_sort_by_number.inplace_sort_by_number();
 
     // Generate errors if revision history items are sorted differently between sort by date and sort by number
     let mut errors = Vec::new();
     for i in 0..rev_history_tuples_sort_by_date.len() {
-        if rev_history_tuples_sort_by_date[i].1 != rev_history_tuples_sort_by_number[i].1 {
-            errors.push(ValidationError {
-                message: format!(
-                    "Revision history is not sorted by date, revision with number {} is out of place",
-                    rev_history_tuples_sort_by_date[i].2
-                ),
-                instance_path: format!(
-                    "/document/tracking/revision_history/{}",
-                    rev_history_tuples_sort_by_date[i].0
-                ),
-            });
+        if rev_history_tuples_sort_by_date[i].date != rev_history_tuples_sort_by_number[i].date {
+            errors.push(create_revision_history_error(
+                &rev_history_tuples_sort_by_date[i].number,
+                rev_history_tuples_sort_by_date[i].path_index,
+            ));
         }
     }
 
@@ -42,153 +42,115 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_14
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_14_sorted_revision_history(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_14
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_14_sorted_revision_history(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_14::test_6_1_14_sorted_revision_history;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_14() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 2 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/0".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/1".to_string(),
-                    },
-                ],
-            ),
-            (
-                "02",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 2 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/0".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/1".to_string(),
-                    },
-                ],
-            ),
-            (
-                "03",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 2 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/1".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/0".to_string(),
-                    },
-                ],
-            ),
-            (
-                "04",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 2.0.0 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/0".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1.0.0 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/1".to_string(),
-                    },
-                ],
-            ),
-            (
-                "05",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 2.0.0 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/0".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1.0.0 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/1".to_string(),
-                    },
-                ],
-            ),
-            (
-                "06",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 10 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/9".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 9 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/8".to_string(),
-                    },
-                ],
-            ),
-            (
-                "07",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1.10.0 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/10".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1.9.0 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/9".to_string(),
-                    },
-                ],
-            ),
-            (
-                "08",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 2 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/1".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/0".to_string(),
-                    },
-                ],
-            ),
-            (
-                "09",
-                vec![
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 2 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/0".to_string(),
-                    },
-                    ValidationError {
-                        message: "Revision history is not sorted by date, revision with number 1 is out of place"
-                            .to_string(),
-                        instance_path: "/document/tracking/revision_history/1".to_string(),
-                    },
-                ],
-            ),
+        // Error cases
+        let case_01 = Err(vec![
+            create_revision_history_error("2", 0),
+            create_revision_history_error("1", 1),
         ]);
-        run_csaf20_tests("14", test_6_1_14_sorted_revision_history, errors.clone());
-        run_csaf21_tests("14", test_6_1_14_sorted_revision_history, errors);
+        let case_02 = Err(vec![
+            create_revision_history_error("2", 0),
+            create_revision_history_error("1", 1),
+        ]);
+        let case_03 = Err(vec![
+            create_revision_history_error("2", 1),
+            create_revision_history_error("1", 0),
+        ]);
+        let case_04 = Err(vec![
+            create_revision_history_error("2.0.0", 0),
+            create_revision_history_error("1.0.0", 1),
+        ]);
+        let case_05 = Err(vec![
+            create_revision_history_error("2.0.0", 0),
+            create_revision_history_error("1.0.0", 1),
+        ]);
+        let case_06 = Err(vec![
+            create_revision_history_error("10", 9),
+            create_revision_history_error("9", 8),
+        ]);
+        let case_07 = Err(vec![
+            create_revision_history_error("1.10.0", 10),
+            create_revision_history_error("1.9.0", 9),
+        ]);
+        let case_08 = Err(vec![
+            create_revision_history_error("2", 1),
+            create_revision_history_error("1", 0),
+        ]);
+
+        // CSAF 2.0 has 17 test cases (01-08, 11-19)
+        TESTS_2_0.test_6_1_14.expect(
+            case_01.clone(),
+            case_02.clone(),
+            case_03.clone(),
+            case_04.clone(),
+            case_05.clone(),
+            case_06.clone(),
+            case_07.clone(),
+            case_08.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
+            Ok(()), // case_18
+            Ok(()), // case_19
+        );
+
+        // CSAF 2.1 has 19 test cases (01-09, 11-19, 31)
+        TESTS_2_1.test_6_1_14.expect(
+            case_01,
+            case_02,
+            case_03,
+            case_04,
+            case_05,
+            case_06,
+            case_07,
+            case_08,
+            Err(vec![
+                create_revision_history_error("2", 0),
+                create_revision_history_error("1", 1),
+            ]),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
+            Ok(()), // case_18
+            Ok(()), // case_19
+            Ok(()), // case_31
+        );
     }
 }

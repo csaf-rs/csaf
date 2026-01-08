@@ -10,3 +10,13 @@ rsync -c csaf/csaf_2.1/json_schema/csaf.json csaf-rs/assets/csaf_2.1_json_schema
 rsync -c ssvc/data/schema/v2/DecisionPoint_2_0_0.schema.json csaf-rs/assets/decision_point_json_schema.json
 rsync -c ssvc/data/schema/v2/SelectionList_2_0_0.schema.json csaf-rs/assets/decision_point_selection_list_json_schema.json
 rsync -cr --delete ssvc/data/json/decision_points/ csaf-rs/assets/ssvc_decision_points/
+
+rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0_strict.json csaf-rs/assets/cvss-v2.0.json
+rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.0_strict.json csaf-rs/assets/cvss-v3.0.json
+rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.1_strict.json csaf-rs/assets/cvss-v3.1.json
+rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v4.0.1_strict.json csaf-rs/assets/cvss-v4.0.1.json
+
+rsync -c csaf/csaf_2.0/json_schema/csaf_json_schema.json type-generator/assets/csaf_2.0_json_schema.json
+rsync -c csaf/csaf_2.1/json_schema/csaf.json type-generator/assets/csaf_2.1_json_schema.json
+rsync -c csaf/csaf_2.0/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.0_testcases_json_schema.json
+rsync -c csaf/csaf_2.1/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.1_testcases_json_schema.json

@@ -1,7 +1,20 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
-use crate::csaf2_1::schema::DocumentStatus;
+use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::version_helpers::{is_intver_is_zero, is_semver_is_major_zero};
+
+fn create_revision_history_error(
+    status: &DocumentStatus,
+    number: &impl std::fmt::Display,
+    index: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Document with status '{}' contains a revision history item with number '{}'",
+            status, number
+        ),
+        instance_path: format!("/document/tracking/revision_history/{}/number", index),
+    }
+}
 
 /// 6.1.18 Released Revision History
 ///
@@ -20,23 +33,8 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     let revision_history = doc.get_document().get_tracking().get_revision_history();
     for (i_r, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();
-        if is_intver_is_zero(&number) {
-            errors.push(ValidationError {
-                message: format!(
-                    "Document with status '{}' contains a revision history item with number '{}'",
-                    status, number
-                ),
-                instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
-            });
-        }
-        if is_semver_is_major_zero(&number) {
-            errors.push(ValidationError {
-                message: format!(
-                    "Document with status '{}' contains a revision history item with number '{}'",
-                    status, number
-                ),
-                instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
-            });
+        if number.is_intver_is_zero() || number.is_semver_is_major_zero() {
+            errors.push(create_revision_history_error(&status, &number, i_r));
         }
     }
 
@@ -47,23 +45,41 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_18
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_18_released_revision_history(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_18
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_18_released_revision_history(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_18::test_6_1_18_released_revision_history;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::schema::csaf2_1::schema::DocumentStatus;
 
     #[test]
-    fn test_test_6_1_14() {
-        let errors = HashMap::from([(
-            "01",
-            vec![ValidationError {
-                message: "Document with status 'final' contains a revision history item with number '0'".to_string(),
-                instance_path: "/document/tracking/revision_history/0/number".to_string(),
-            }],
-        )]);
-        run_csaf20_tests("18", test_6_1_18_released_revision_history, errors.clone());
-        run_csaf21_tests("18", test_6_1_18_released_revision_history, errors);
+    fn test_test_6_1_18() {
+        let case_01 = Err(vec![create_revision_history_error(&DocumentStatus::Final, &"0", 0)]);
+
+        // Both CSAF 2.0 and 2.1 have 1 test case
+        TESTS_2_0.test_6_1_18.expect(case_01.clone());
+        TESTS_2_1.test_6_1_18.expect(case_01);
     }
 }

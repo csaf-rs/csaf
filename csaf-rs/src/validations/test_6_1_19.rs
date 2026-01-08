@@ -1,6 +1,12 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_helpers::is_semver_has_prerelease;
+
+fn create_prerelease_version_error(number: impl std::fmt::Display, index: usize) -> ValidationError {
+    ValidationError {
+        message: format!("revision history item number '{}' contains a pre-release part", number),
+        instance_path: format!("/document/tracking/revision_history/{}/number", index),
+    }
+}
 
 /// 6.1.19 Revision History Entries for Pre-release Versions
 ///
@@ -13,11 +19,8 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     let revision_history = doc.get_document().get_tracking().get_revision_history();
     for (i_r, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();
-        if is_semver_has_prerelease(&number) {
-            errors.push(ValidationError {
-                message: format!("revision history item number '{}' contains a pre-release part", number),
-                instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
-            });
+        if number.is_semver_has_prerelease() {
+            errors.push(create_prerelease_version_error(number, i_r));
         }
     }
 
@@ -28,40 +31,41 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_19
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_19_revision_history_entries_for_prerelease_versions(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_19
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_19_revision_history_entries_for_prerelease_versions(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_19::test_6_1_19_revision_history_entries_for_prerelease_versions;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_1_14() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![ValidationError {
-                    message: "revision history item number '1.0.0-rc' contains a pre-release part".to_string(),
-                    instance_path: "/document/tracking/revision_history/0/number".to_string(),
-                }],
-            ),
-            (
-                "02",
-                vec![ValidationError {
-                    message: "revision history item number '1.0.0-rc' contains a pre-release part".to_string(),
-                    instance_path: "/document/tracking/revision_history/0/number".to_string(),
-                }],
-            ),
-        ]);
-        run_csaf20_tests(
-            "19",
-            test_6_1_19_revision_history_entries_for_prerelease_versions,
-            errors.clone(),
-        );
-        run_csaf21_tests(
-            "19",
-            test_6_1_19_revision_history_entries_for_prerelease_versions,
-            errors,
-        );
+    fn test_test_6_1_19() {
+        let case_01 = Err(vec![create_prerelease_version_error("1.0.0-rc", 0)]);
+        let case_02 = Err(vec![create_prerelease_version_error("1.0.0-rc", 0)]);
+
+        // Both CSAF 2.0 and 2.1 have 2 test cases
+        TESTS_2_0.test_6_1_19.expect(case_01.clone(), case_02.clone());
+        TESTS_2_1.test_6_1_19.expect(case_01, case_02);
     }
 }

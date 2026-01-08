@@ -2,6 +2,16 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::generated::language_subtags::is_valid_language_subtag;
 use crate::validation::ValidationError;
 
+fn generate_invalid_language_error(language: &str, subtag: &str, path: &str) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Invalid language code '{}': primary language subtag '{}' is not a valid language subtag",
+            language, subtag
+        ),
+        instance_path: path.to_string(),
+    }
+}
+
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
 
@@ -28,39 +38,49 @@ fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<Va
     let primary_subtag = lang_code.split('-').next().unwrap_or(lang_code);
 
     if !is_valid_language_subtag(primary_subtag) {
-        return Err(vec![ValidationError {
-            message: create_error_message(lang_code, primary_subtag),
-            instance_path: json_path.to_string(),
-        }]);
+        return Err(vec![generate_invalid_language_error(
+            lang_code,
+            primary_subtag,
+            json_path,
+        )]);
     }
 
     Ok(())
 }
 
-fn create_error_message(language: &str, subtag: &str) -> String {
-    format!(
-        "Invalid language code '{}': primary language subtag '{}' is not a valid language subtag",
-        language, subtag
-    )
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_12
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_12_language(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_12
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_12_language(doc)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_12::{create_error_message, test_6_1_12_language};
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_12() {
-        let errors = HashMap::from([(
-            "01",
-            vec![ValidationError {
-                message: create_error_message("EZ", "EZ"),
-                instance_path: "/document/lang".to_string(),
-            }],
-        )]);
-        run_csaf20_tests("12", test_6_1_12_language, errors.clone());
-        run_csaf21_tests("12", test_6_1_12_language, errors);
+        let case_01 = Err(vec![generate_invalid_language_error("EZ", "EZ", "/document/lang")]);
+
+        TESTS_2_0.test_6_1_12.expect(case_01.clone());
+        TESTS_2_1.test_6_1_12.expect(case_01);
     }
 }

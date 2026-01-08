@@ -2,6 +2,27 @@ use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait, Relationship
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
+fn generate_self_reference_product_error(index: usize) -> ValidationError {
+    ValidationError {
+        message: "Relationship references itself via product_reference".to_string(),
+        instance_path: format!("/product_tree/relationships/{}/product_reference", index),
+    }
+}
+
+fn generate_self_reference_relates_to_error(index: usize) -> ValidationError {
+    ValidationError {
+        message: "Relationship references itself via relates_to_product_reference".to_string(),
+        instance_path: format!("/product_tree/relationships/{}/relates_to_product_reference", index),
+    }
+}
+
+fn generate_cycle_error(cycle: &[String], relation_index: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
+        instance_path: format!("/product_tree/relationships/{}", relation_index),
+    }
+}
+
 /// Find the first cycle in the given `relation_map`, if any.
 ///
 /// # Returns
@@ -48,15 +69,13 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
         for (i_r, r) in tree.get_relationships().iter().enumerate() {
             let rel_prod_id = r.get_full_product_name().get_product_id();
             if r.get_product_reference() == rel_prod_id {
-                errors.get_or_insert_with(Vec::new).push(ValidationError {
-                    message: "Relationship references itself via product_reference".to_string(),
-                    instance_path: format!("/product_tree/relationships/{}/product_reference", i_r),
-                });
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(generate_self_reference_product_error(i_r));
             } else if r.get_relates_to_product_reference() == rel_prod_id {
-                errors.get_or_insert_with(Vec::new).push(ValidationError {
-                    message: "Relationship references itself via relates_to_product_reference".to_string(),
-                    instance_path: format!("/product_tree/relationships/{}/relates_to_product_reference", i_r),
-                });
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(generate_self_reference_relates_to_error(i_r));
             } else {
                 match relation_map.get_mut(r.get_product_reference()) {
                     Some(v) => {
@@ -76,10 +95,9 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
         let mut visited = HashSet::new();
         for product_id in relation_map.keys() {
             if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
-                errors.get_or_insert_with(Vec::new).push(ValidationError {
-                    message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
-                    instance_path: format!("/product_tree/relationships/{}", relation_index),
-                });
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(generate_cycle_error(&cycle, relation_index));
             }
         }
     }
@@ -87,24 +105,40 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
     errors.map_or(Ok(()), Err)
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_3
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_03_circular_definition_of_product_id(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_3
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_03_circular_definition_of_product_id(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_03::test_6_1_03_circular_definition_of_product_id;
-    use std::collections::{HashMap, HashSet};
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_03() {
-        let errors = HashMap::from([(
-            "01",
-            vec![ValidationError {
-                message: "Relationship references itself via relates_to_product_reference".to_string(),
-                instance_path: "/product_tree/relationships/0/relates_to_product_reference".to_string(),
-            }],
-        )]);
-        run_csaf20_tests("03", test_6_1_03_circular_definition_of_product_id, errors.clone());
-        run_csaf21_tests("03", test_6_1_03_circular_definition_of_product_id, errors);
+        let shared_error_01 = Err(vec![generate_self_reference_relates_to_error(0)]);
+
+        TESTS_2_0.test_6_1_3.expect(shared_error_01.clone());
+        TESTS_2_1.test_6_1_3.expect(shared_error_01.clone());
     }
 
     #[test]

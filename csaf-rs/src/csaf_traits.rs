@@ -1,10 +1,12 @@
-use crate::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, DocumentStatus, Epss, LabelOfTlp, NoteCategory,
-    PartyCategory,
+use crate::schema::csaf2_1::schema::{
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,
+    LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
 };
+
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
+use chrono::{DateTime, Utc};
 use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
@@ -28,11 +30,87 @@ pub trait CsafTrait {
     /// Returns the product tree of the CSAF document, if available.
     fn get_product_tree(&self) -> &Option<Self::ProductTreeType>;
 
+    fn get_product_tree_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        if let Some(product_tree) = self.get_product_tree() {
+            ids.append(&mut product_tree.get_product_groups_product_references());
+            ids.append(&mut product_tree.get_relationships_product_references());
+        }
+
+        ids
+    }
+
     /// Retrieves all vulnerabilities present in the CSAF document.
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType>;
 
+    /// Utility function to prepend a JSON path prefix to a list of (ID, path) tuples
+    fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
+        id_path_tuples
+            .iter()
+            .map(|(group_or_product_id, path)| {
+                (group_or_product_id.to_owned(), format!("/{}/{}/{}", prefix, idx, path))
+            })
+            .collect()
+    }
+
+    /// Utility function to get all group IDs referenced in vulnerabilities along with their JSON paths
+    fn get_vulnerability_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (vuln_index, vulnerability) in self.get_vulnerabilities().iter().enumerate() {
+            let getters = [
+                vulnerability.get_flags_group_references(),
+                vulnerability.get_involvement_group_references(),
+                vulnerability.get_notes_group_references(),
+                vulnerability.get_remediations_group_references(),
+                vulnerability.get_threats_group_references(),
+            ];
+            for getter in getters {
+                ids.append(&mut Self::prepend_path("vulnerabilities", &vuln_index, getter));
+            }
+        }
+        ids
+    }
+
+    /// Utility function to get all product IDs referenced in vulnerabilities along with their JSON paths
+    fn get_vulnerability_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (vuln_index, vulnerability) in self.get_vulnerabilities().iter().enumerate() {
+            let getters = [
+                vulnerability.get_flags_product_references(),
+                vulnerability.get_threats_product_references(),
+                vulnerability.get_remediations_product_references(),
+                vulnerability.get_product_status_product_references(),
+                vulnerability.get_metrics_product_references(),
+            ];
+
+            for getter in getters {
+                ids.append(&mut Self::prepend_path("vulnerabilities", &vuln_index, getter));
+            }
+        }
+        ids
+    }
     /// Retrieves the document meta present in the CSAF document.
     fn get_document(&self) -> &Self::DocumentType;
+
+    /// Utility function to get all group IDs referenced in the document along with their JSON paths
+    fn get_all_group_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        ids.append(&mut self.get_document().get_notes_group_references());
+        ids.append(&mut self.get_vulnerability_group_references());
+        ids
+    }
+
+    /// Utility function to get all product IDs referenced in the document along with their JSON paths
+    fn get_all_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        ids.append(&mut self.get_document().get_notes_product_references());
+        ids.append(&mut self.get_vulnerability_product_references());
+        ids.append(&mut self.get_product_tree_product_references());
+        ids
+    }
 }
 
 /// Trait representing document meta-level information
@@ -63,6 +141,15 @@ pub trait DocumentTrait {
     /// Returns the notes associated with this document
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 
+    /// Utility function to get all group IDs referenced in notes along with their JSON paths
+    fn get_notes_group_references(&self) -> Vec<(String, String)> {
+        self.get_notes().extract_group_references("/document/notes")
+    }
+
+    fn get_notes_product_references(&self) -> Vec<(String, String)> {
+        self.get_notes().extract_product_references("/document/notes")
+    }
+
     /// Returns the language associated with this document.
     fn get_lang(&self) -> Option<&String>;
 
@@ -90,7 +177,7 @@ pub trait DocumentTrait {
 ///
 /// Contrary to other enums that are based on enums in the generated schemas, we are re-defining
 /// this enum in the trait. Each schema only contains an enum with "their" version, and merging them
-/// would be more complex then defining here and mapping in the implementations.
+/// would be more complex than defining them here and mapping to them in each implementation.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CsafVersion {
     X20,
@@ -317,10 +404,7 @@ pub trait DistributionTrait {
     fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
 }
 
-pub trait NoteTrait: WithGroupIds {
-    /// Returns the product IDs associated with this vulnerability flag
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
-
+pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory;
 }
 
@@ -337,6 +421,43 @@ pub trait SharingGroupTrait {
 pub trait TlpTrait {
     /// Returns the TLP label
     fn get_label(&self) -> LabelOfTlp;
+}
+
+/// Type alias for a vector of revision history items
+pub type RevisionHistory = Vec<RevisionHistoryItem>;
+
+/// Struct representing a revision history item
+/// Includes the path index in the original revision history, the date, and the version number
+#[derive(Clone)]
+pub struct RevisionHistoryItem {
+    pub path_index: usize,
+    pub date: DateTime<Utc>,
+    pub number: VersionNumber,
+}
+
+/// Trait providing sorting functionality for revision history
+pub trait RevisionHistorySortable {
+    /// Sorts the revision history items first by date, second by number
+    ///
+    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
+    /// should be unique anyways, as long the second order key (revision history numbers) are unique
+    fn inplace_sort_by_date_then_number(&mut self);
+
+    /// Sorts the revision history items by number
+    ///
+    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
+    /// should be unique anyways, as long as the order key (revision history numbers) are unique
+    fn inplace_sort_by_number(&mut self);
+}
+
+impl RevisionHistorySortable for RevisionHistory {
+    fn inplace_sort_by_date_then_number(&mut self) {
+        self.sort_unstable_by_key(|item| (item.date, item.number.clone()));
+    }
+
+    fn inplace_sort_by_number(&mut self) {
+        self.sort_unstable_by(|a, b| a.number.cmp(&b.number));
+    }
 }
 
 pub trait TrackingTrait {
@@ -357,6 +478,27 @@ pub trait TrackingTrait {
 
     /// Returns the revision history for this document
     fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
+
+    /// Utility function to get revision history as structs containing revision history path index, date and number
+    fn get_revision_history_tuples(&self) -> RevisionHistory {
+        let mut revision_history: RevisionHistory = Vec::new();
+        for (i_r, revision) in self.get_revision_history().iter().enumerate() {
+            let date = DateTime::parse_from_rfc3339(revision.get_date()).map(|dt| dt.with_timezone(&Utc));
+            if let Ok(date) = date {
+                revision_history.push(RevisionHistoryItem {
+                    path_index: i_r,
+                    date,
+                    number: revision.get_number(),
+                });
+            } else {
+                panic!(
+                    "Encountered date that could not be parsed as RFC3339: {}",
+                    revision.get_date()
+                );
+            }
+        }
+        revision_history
+    }
 
     /// Returns the status of this document
     fn get_status(&self) -> DocumentStatus;
@@ -396,6 +538,33 @@ impl VersionNumber {
             VersionNumber::Integer(num) => *num,
             VersionNumber::Semver(semver) => semver.major,
         }
+    }
+
+    /// Checks whether the intver version is zero, always `false` for semver
+    /// Hard coupled check that version is intver and zero
+    pub fn is_intver_is_zero(&self) -> bool {
+        if let VersionNumber::Integer(version) = self {
+            return *version == 0;
+        }
+        false
+    }
+
+    /// Checks whether the semver major version is zero, always `false` for intver
+    /// Hard coupled check that version is semver and major is zero
+    pub fn is_semver_is_major_zero(&self) -> bool {
+        if let VersionNumber::Semver(version) = self {
+            return version.major == 0;
+        }
+        false
+    }
+
+    /// Checks whether the semver has a pre-release part, always `false` for intver
+    /// Hard coupled check that version is semver and has pre-release part
+    pub fn is_semver_has_prerelease(&self) -> bool {
+        if let VersionNumber::Semver(version) = self {
+            return !version.pre.is_empty();
+        }
+        false
     }
 }
 
@@ -504,14 +673,55 @@ pub trait VulnerabilityTrait {
     /// Retrieves a list of remediations associated with the vulnerability.
     fn get_remediations(&self) -> &Vec<Self::RemediationType>;
 
+    /// Utility function to get all group IDs referenced in remediations along with their JSON paths
+    fn get_remediations_group_references(&self) -> Vec<(String, String)> {
+        self.get_remediations().extract_group_references("remediations")
+    }
+
+    fn get_remediations_product_references(&self) -> Vec<(String, String)> {
+        self.get_remediations().extract_product_references("remediations")
+    }
+
     /// Retrieves the status of products affected by the vulnerability, if available.
     fn get_product_status(&self) -> &Option<Self::ProductStatusType>;
+
+    fn get_product_status_product_references(&self) -> Vec<(String, String)> {
+        if let Some(product_status) = self.get_product_status() {
+            product_status.get_all_product_references()
+        } else {
+            Vec::new()
+        }
+    }
 
     /// Returns an optional vector of metrics related to the vulnerability.
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>>;
 
+    /// Utility function to get all group IDs referenced in metrics along with their JSON paths
+    fn get_metrics_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        if let Some(metrics) = self.get_metrics().as_ref() {
+            for (metric_i, metric) in metrics.iter().enumerate() {
+                for (x_i, x) in metric.get_products().enumerate() {
+                    ids.push((x.to_owned(), format!("metrics/{}/products/{}", metric_i, x_i)));
+                }
+            }
+        }
+
+        ids
+    }
+
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
+
+    /// Utility function to get all group IDs referenced in threats along with their JSON paths
+    fn get_threats_group_references(&self) -> Vec<(String, String)> {
+        self.get_threats().extract_group_references("threats")
+    }
+
+    fn get_threats_product_references(&self) -> Vec<(String, String)> {
+        self.get_threats().extract_product_references("threats")
+    }
 
     /// Returns the date when this vulnerability was initially disclosed.
     fn get_disclosure_date(&self) -> &Option<String>;
@@ -522,8 +732,22 @@ pub trait VulnerabilityTrait {
     /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
 
+    /// Utility function to get all group IDs referenced in flags along with their JSON paths
+    fn get_flags_group_references(&self) -> Vec<(String, String)> {
+        self.get_flags().extract_group_references("flags")
+    }
+
+    fn get_flags_product_references(&self) -> Vec<(String, String)> {
+        self.get_flags().extract_product_references("flags")
+    }
+
     /// Returns all involvements associated with this vulnerability.
     fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>>;
+
+    /// Utility function to get all group IDs referenced in involvements along with their JSON paths
+    fn get_involvement_group_references(&self) -> Vec<(String, String)> {
+        self.get_involvements().extract_group_references("involvements")
+    }
 
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
@@ -533,6 +757,11 @@ pub trait VulnerabilityTrait {
 
     /// Returns the notes associated with this vulnerability.
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
+
+    /// Utility function to get all group IDs referenced in notes along with their JSON paths
+    fn get_notes_group_references(&self) -> Vec<(String, String)> {
+        self.get_notes().extract_group_references("notes")
+    }
 
     /// Returns the information about the first known exploitation dates of this vulnerability.
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
@@ -545,12 +774,12 @@ pub trait VulnerabilityIdTrait {
 }
 
 /// Trait for accessing vulnerability flags information
-pub trait FlagTrait: WithGroupIds {
+pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds {
     /// Returns the date associated with this vulnerability flag
     fn get_date(&self) -> &Option<String>;
 
-    /// Returns the product IDs associated with this vulnerability flag
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    /// Returns the label of the vulnerability flag
+    fn get_label(&self) -> LabelOfTheFlag;
 }
 
 pub trait FirstKnownExploitationDatesTrait {
@@ -558,7 +787,7 @@ pub trait FirstKnownExploitationDatesTrait {
 }
 
 /// Trait for accessing vulnerability involvement information
-pub trait InvolvementTrait: WithGroupIds {
+pub trait InvolvementTrait: WithOptionalGroupIds {
     /// Returns the date associated with this vulnerability involvement
     fn get_date(&self) -> &Option<String>;
 
@@ -570,14 +799,11 @@ pub trait InvolvementTrait: WithGroupIds {
 ///
 /// The `RemediationTrait` encapsulates the details of a remediation, such as its
 /// category and the affected products or groups.
-pub trait RemediationTrait: WithGroupIds {
+pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds {
     /// Returns the category of the remediation.
     ///
     /// Categories are defined by the CSAF schema.
     fn get_category(&self) -> CategoryOfTheRemediation;
-
-    /// Retrieves the product IDs directly affected by this remediation, if any.
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
     /// Computes a set of all product IDs affected by this remediation, either
     /// directly or through product groups.
@@ -680,6 +906,33 @@ pub trait ProductStatusTrait {
 
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
+
+    /// Helper method to add product references with a given label to the result vector.
+    fn extract_product_references<'a>(
+        &self,
+        ids: &mut Vec<(String, String)>,
+        products: Option<impl Iterator<Item = &'a String> + 'a>,
+        label: &str,
+    ) {
+        if let Some(iter) = products {
+            for (x_i, x) in iter.enumerate() {
+                ids.push(((*x).to_owned(), format!("product_status/{}/{}", label, x_i)));
+            }
+        }
+    }
+
+    fn get_all_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+        self.extract_product_references(&mut ids, self.get_first_affected(), "first_affected");
+        self.extract_product_references(&mut ids, self.get_first_fixed(), "first_fixed");
+        self.extract_product_references(&mut ids, self.get_fixed(), "fixed");
+        self.extract_product_references(&mut ids, self.get_known_affected(), "known_affected");
+        self.extract_product_references(&mut ids, self.get_known_not_affected(), "known_not_affected");
+        self.extract_product_references(&mut ids, self.get_last_affected(), "last_affected");
+        self.extract_product_references(&mut ids, self.get_recommended(), "recommended");
+        self.extract_product_references(&mut ids, self.get_under_investigation(), "under_investigation");
+        ids
+    }
 
     /// Returns a `HashMap` containing all product IDs grouped by their statuses.
     fn get_all_by_product_status(&self) -> HashMap<ProductStatusGroup, HashSet<&String>> {
@@ -810,12 +1063,12 @@ pub fn get_metric_prop_name(metric: VulnerabilityMetric) -> &'static str {
 }
 
 /// Trait representing an abstract threat in a CSAF document.
-pub trait ThreatTrait: WithGroupIds {
-    /// Retrieves a list of product IDs associated with this threat, if any.
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
-
+pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds {
     /// Returns the date associated with this threat
     fn get_date(&self) -> &Option<String>;
+
+    /// Returns the category of the threat
+    fn get_category(&self) -> CategoryOfTheThreat;
 }
 
 /// Trait representing an abstract product tree in a CSAF document.
@@ -841,8 +1094,42 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of product groups in the product tree.
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
 
+    /// Utility function to get all product references in product groups along with their JSON paths
+    fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (pg_i, pg) in self.get_product_groups().iter().enumerate() {
+            for (p_i, p) in pg.get_product_ids().enumerate() {
+                ids.push((
+                    (*p).to_owned(),
+                    format!("/product_tree/product_groups/{}/product_ids/{}", pg_i, p_i),
+                ));
+            }
+        }
+
+        ids
+    }
+
     /// Retrieves a reference to the list of relationships in the product tree.
     fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
+
+    /// Utility function to get all product references in relationships along with their JSON paths
+    fn get_relationships_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (rel_i, rel) in self.get_relationships().iter().enumerate() {
+            ids.push((
+                rel.get_product_reference().to_owned(),
+                format!("/product_tree/relationships/{}/product_reference", rel_i),
+            ));
+            ids.push((
+                rel.get_relates_to_product_reference().to_owned(),
+                format!("/product_tree/relationships/{}/relates_to_product_reference", rel_i),
+            ));
+        }
+
+        ids
+    }
 
     /// Retrieves a reference to the list of full product names in the product tree.
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
@@ -1045,7 +1332,146 @@ pub trait FileHashTrait {
     fn get_hash(&self) -> &String;
 }
 
-pub trait WithGroupIds {
-    /// Returns the product group IDs associated with this vulnerability flag
+pub trait WithOptionalGroupIds {
+    /// Returns the product group IDs associated with this entity
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+}
+
+pub trait WithOptionalProductIds {
+    /// Returns the product IDs associated with this entity
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+}
+
+/// Central helper function for extracting group references.
+///
+/// This function implements the core logic for extracting group IDs and their JSON paths
+/// from an iterator of items that implement `WithGroupIds`. This avoids code duplication
+/// across multiple trait implementations.
+///
+/// # Arguments
+///
+/// * `items` - An iterator over items that implement WithGroupIds
+/// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
+///
+/// # Returns
+///
+/// A vector of tuples containing (group_id, json_path) for each group reference found.
+fn extract_group_id_impl<'a, T: WithOptionalGroupIds + 'a>(
+    items: impl Iterator<Item = &'a T>,
+    path_prefix: &str,
+) -> Vec<(String, String)> {
+    let mut ids: Vec<(String, String)> = Vec::new();
+    for (index, item) in items.enumerate() {
+        if let Some(group_ids) = item.get_group_ids() {
+            for (group_index, group_id) in group_ids.enumerate() {
+                ids.push((
+                    group_id.to_owned(),
+                    format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
+                ))
+            }
+        }
+    }
+    ids
+}
+
+/// Central helper function for extracting group references.
+///
+/// This function implements the core logic for extracting group IDs and their JSON paths
+/// from an iterator of items that implement `WithProductIds`. This avoids code duplication
+/// across multiple trait implementations.
+///
+/// # Arguments
+///
+/// * `items` - An iterator over items that implement WithProductIds
+/// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
+///
+/// # Returns
+///
+/// A vector of tuples containing (product_id, json_path) for each product reference found.
+fn extract_product_id_impl<'a, T: WithOptionalProductIds + 'a>(
+    items: impl Iterator<Item = &'a T>,
+    path_prefix: &str,
+) -> Vec<(String, String)> {
+    let mut ids: Vec<(String, String)> = Vec::new();
+    for (index, item) in items.enumerate() {
+        if let Some(product_ids) = item.get_product_ids() {
+            for (product_index, product_id) in product_ids.enumerate() {
+                ids.push((
+                    product_id.to_owned(),
+                    format!("{}/{}/product_ids/{}", path_prefix, index, product_index),
+                ))
+            }
+        }
+    }
+    ids
+}
+
+/// Extension trait for extracting group references from collections where T implements WithOptionalGroupIds.
+///
+/// This trait provides a generic method to extract group IDs from collections of objects
+/// that implement the `WithOptionalGroupIds` trait, returning them as tuples of (group_id, json_path).
+///
+/// Implemented for:
+/// - `Option<&Vec<T>>`
+/// - `&Option<Vec<T>>`
+/// - `Vec<T>`
+///
+/// TODO: As already discussed, we should simplify / align our return params here.
+/// It does not make sense to have the same functionality return either `Option<&Vec<T>>` or
+/// `&Option<Vec<T>>` in some cases. When this is done, we can remove the unused case.
+pub trait ExtractGroupReferences<T: WithOptionalGroupIds> {
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
+}
+
+impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for Option<&Vec<T>> {
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        extract_group_id_impl(self.iter().flat_map(|x| x.iter()), path_prefix)
+    }
+}
+
+impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for &Option<Vec<T>> {
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        extract_group_id_impl(self.iter().flatten(), path_prefix)
+    }
+}
+
+impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for Vec<T> {
+    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        extract_group_id_impl(self.iter(), path_prefix)
+    }
+}
+
+/// Extension trait for extracting group references from collections where T implements WithOptionalProductIds.
+///
+/// This trait provides a generic method to extract group IDs from collections of objects
+/// that implement the `WithOptionalProductIds` trait, returning them as tuples of (product_id, json_path).
+///
+/// Implemented for:
+/// - `Option<&Vec<T>>`
+/// - `&Option<Vec<T>>`
+/// - `Vec<T>`
+///
+/// TODO: As already discussed, we should simplify / align our return params here.
+/// It does not make sense to have the same functionality return either `Option<&Vec<T>>` or
+/// `&Option<Vec<T>>` in some cases. When this is done, we can remove the unused case.
+pub trait ExtractProductReferences<T: WithOptionalProductIds> {
+    fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)>;
+}
+
+impl<T: WithOptionalProductIds> ExtractProductReferences<T> for Option<&Vec<T>> {
+    fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        extract_product_id_impl(self.iter().flat_map(|x| x.iter()), path_prefix)
+    }
+}
+
+impl<T: WithOptionalProductIds> ExtractProductReferences<T> for &Option<Vec<T>> {
+    fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        extract_product_id_impl(self.iter().flatten(), path_prefix)
+    }
+}
+
+impl<T: WithOptionalProductIds> ExtractProductReferences<T> for Vec<T> {
+    fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)> {
+        extract_product_id_impl(self.iter(), path_prefix)
+    }
 }

@@ -1,6 +1,5 @@
-use crate::csaf_traits::{CsafTrait, VersionNumber};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait, VersionNumber};
 use crate::validation::ValidationError;
-use crate::version_helpers::{generate_revision_history_tuples, sort_revision_history_tuples_by_date_by_number};
 
 /// 6.1.21 Missing Item in Revision History
 ///
@@ -12,8 +11,8 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // Generate and sort the revision history tuples by date first and by number second
-    let mut rev_history_tuples = generate_revision_history_tuples(doc);
-    sort_revision_history_tuples_by_date_by_number(&mut rev_history_tuples);
+    let mut rev_history_tuples = doc.get_document().get_tracking().get_revision_history_tuples();
+    rev_history_tuples.inplace_sort_by_date_then_number();
 
     if rev_history_tuples.is_empty() {
         // This should not be able to happen as revision history is a required property with 1..* items
@@ -22,26 +21,23 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 
     // We can safely unwrap here, as there has to be at least one item in rev_history_tuples
     let first_tuple = rev_history_tuples.first().unwrap();
-    let first_version = first_tuple.2.clone();
+    let first_version = first_tuple.number.clone();
     let first_number = first_version.get_major();
 
     // Throw error if first version is not 0 or 1
     if first_number > 1 {
         return Err(vec![test_6_1_21_err_wrong_first_version_generator(
             first_version,
-            first_tuple.0.to_string(),
+            first_tuple.path_index.to_string(),
         )]);
     }
 
-    let last_number = rev_history_tuples.last().unwrap().2.clone().get_major();
+    let last_number = rev_history_tuples.last().unwrap().number.clone().get_major();
 
-    println!("First number: {}", first_number);
-    println!("Last number: {}", last_number);
     for expected_number in first_number + 1..last_number {
-        println!("Checking for expected number: {}", expected_number);
         let mut found = false;
-        for (_, _, number) in rev_history_tuples.iter() {
-            if number.clone().get_major() == expected_number {
+        for revision_history_item in rev_history_tuples.iter() {
+            if revision_history_item.number.clone().get_major() == expected_number {
                 found = true;
                 break;
             }
@@ -59,6 +55,28 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         }
     }
     errors.map_or(Ok(()), Err)
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_21
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_21_missing_item_in_revision_history(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_21
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_21_missing_item_in_revision_history(doc)
+    }
 }
 
 fn test_6_1_21_err_wrong_first_version_generator(version: VersionNumber, path: String) -> ValidationError {
@@ -103,43 +121,48 @@ fn test_6_1_21_err_missing_version_in_range(
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::csaf_traits::VersionNumber;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_21::{
-        test_6_1_21_err_missing_version_in_range, test_6_1_21_err_wrong_first_version_generator,
-        test_6_1_21_missing_item_in_revision_history,
-    };
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_21() {
-        let errors = std::collections::HashMap::from([
-            (
-                "01",
-                vec![test_6_1_21_err_missing_version_in_range(
-                    VersionNumber::from_number("1"),
-                    2,
-                    1,
-                    3,
-                )],
-            ),
-            (
-                "02",
-                vec![test_6_1_21_err_wrong_first_version_generator(
-                    VersionNumber::from_number("2"),
-                    "0".to_string(),
-                )],
-            ),
-            (
-                "03",
-                vec![test_6_1_21_err_missing_version_in_range(
-                    VersionNumber::from_number("1"),
-                    2,
-                    1,
-                    4,
-                )],
-            ),
-        ]);
-        run_csaf20_tests("21", test_6_1_21_missing_item_in_revision_history, errors.clone());
-        run_csaf21_tests("21", test_6_1_21_missing_item_in_revision_history, errors);
+        // Error cases
+        let case_01 = Err(vec![test_6_1_21_err_missing_version_in_range(
+            VersionNumber::from_number("1"),
+            2,
+            1,
+            3,
+        )]);
+        let case_02 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
+            VersionNumber::from_number("2"),
+            "0".to_string(),
+        )]);
+
+        // CSAF 2.0 has 5 test cases (01-02, 11-13)
+        TESTS_2_0.test_6_1_21.expect(
+            case_01.clone(),
+            case_02.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+        );
+
+        // CSAF 2.1 has 7 test cases (01-03, 11-14)
+        TESTS_2_1.test_6_1_21.expect(
+            case_01,
+            case_02,
+            Err(vec![test_6_1_21_err_missing_version_in_range(
+                VersionNumber::from_number("1"),
+                2,
+                1,
+                4,
+            )]),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+        );
     }
 }

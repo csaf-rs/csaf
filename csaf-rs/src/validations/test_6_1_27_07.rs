@@ -7,7 +7,7 @@ use crate::validation::ValidationError;
 ///
 /// In documents with this category each `/vulnerabilities[]/product_status` must have at least one
 /// of the elements: `fixed`, `known_affected`, `known_not_affected` or `under_investigation`
-pub fn test_6_1_27_7_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
     if doc_category != DocumentCategory::CsafVex {
@@ -25,7 +25,7 @@ pub fn test_6_1_27_7_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec<
             {
                 errors
                     .get_or_insert_with(Vec::new)
-                    .push(test_6_1_27_7_err_generator(&doc_category, &v_i));
+                    .push(test_6_1_27_07_err_generator(&doc_category, &v_i));
             }
         }
     }
@@ -33,7 +33,7 @@ pub fn test_6_1_27_7_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec<
     errors.map_or(Ok(()), Err)
 }
 
-fn test_6_1_27_7_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
+fn test_6_1_27_07_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{}' must provide at least one fixed, known_affected, known_unaffected or under_investigation product_status in each vulnerability",
@@ -43,17 +43,39 @@ fn test_6_1_27_7_err_generator(document_category: &DocumentCategory, vuln_path_i
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_7
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_07_vex_product_status(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_7
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_27_07_vex_product_status(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::csaf_traits::DocumentCategory;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_27_7::{test_6_1_27_7_err_generator, test_6_1_27_7_vex_product_status};
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_1_27_7() {
-        let errors = HashMap::from([("01", vec![test_6_1_27_7_err_generator(&DocumentCategory::CsafVex, &0)])]);
-        run_csaf20_tests("27-07", test_6_1_27_7_vex_product_status, errors.clone());
-        run_csaf21_tests("27-07", test_6_1_27_7_vex_product_status, errors);
+    fn test_test_6_1_27_07() {
+        let case_01 = Err(vec![test_6_1_27_07_err_generator(&DocumentCategory::CsafVex, &0)]);
+
+        TESTS_2_0.test_6_1_27_7.expect(case_01.clone());
+        TESTS_2_1.test_6_1_27_7.expect(case_01);
     }
 }

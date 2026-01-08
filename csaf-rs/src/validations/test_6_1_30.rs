@@ -2,6 +2,16 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::validation::ValidationError;
 use std::mem::discriminant;
 
+fn create_mixed_versioning_error(doc_version: &str, rev_number: &str, revision_index: usize) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "The document version '{}' and revision history number '{}' use different versioning schemes",
+            doc_version, rev_number
+        ),
+        instance_path: format!("/document/tracking/revision_history/{}/number", revision_index),
+    }
+}
+
 /// 6.1.30 Mixed Integer and Semantic Versioning
 ///
 /// `/document/tracking/version` and `document/tracking/revision_history[]/number` need to use
@@ -16,13 +26,11 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     for (i_r, revision) in revision_history.iter().enumerate() {
         let rev_number = revision.get_number();
         if doc_version_disc != discriminant(&rev_number) {
-            errors.push(ValidationError {
-                message: format!(
-                    "The document version '{}' and revision history number '{}' use different versioning schemes",
-                    doc_version, rev_number
-                ),
-                instance_path: format!("/document/tracking/revision_history/{}/number", i_r),
-            });
+            errors.push(create_mixed_versioning_error(
+                &doc_version.to_string(),
+                &rev_number.to_string(),
+                i_r,
+            ));
         }
     }
 
@@ -33,25 +41,40 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_30
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_30_mixed_integer_and_semantic_versioning(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_30
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_30_mixed_integer_and_semantic_versioning(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_30::test_6_1_30_mixed_integer_and_semantic_versioning;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_30() {
-        let errors = HashMap::from([(
-            "01",
-            vec![ValidationError {
-                message:
-                    "The document version '2' and revision history number '1.0.0' use different versioning schemes"
-                        .to_string(),
-                instance_path: "/document/tracking/revision_history/0/number".to_string(),
-            }],
-        )]);
-        run_csaf20_tests("30", test_6_1_30_mixed_integer_and_semantic_versioning, errors.clone());
-        run_csaf21_tests("30", test_6_1_30_mixed_integer_and_semantic_versioning, errors);
+        let case_01 = Err(vec![create_mixed_versioning_error("2", "1.0.0", 0)]);
+
+        // Both CSAF 2.0 and 2.1 have 2 test cases
+        TESTS_2_0.test_6_1_30.expect(case_01.clone(), Ok(()));
+        TESTS_2_1.test_6_1_30.expect(case_01, Ok(()));
     }
 }

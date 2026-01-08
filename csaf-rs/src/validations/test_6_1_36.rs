@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusTrait, RemediationTrait, VulnerabilityTrait};
-use crate::csaf2_1::schema::CategoryOfTheRemediation;
+use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::ValidationError;
 
 /// Remediation categories that conflict with the product status "not affected".
@@ -19,6 +19,51 @@ const FIXED_CONFLICTS: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::Mitigation,
     CategoryOfTheRemediation::Workaround,
 ];
+
+fn create_affected_conflict_error(
+    product_id: &str,
+    category: &CategoryOfTheRemediation,
+    v_i: usize,
+    r_i: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Product {} is listed as affected but has conflicting remediation category {}",
+            product_id, category
+        ),
+        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+    }
+}
+
+fn create_not_affected_conflict_error(
+    product_id: &str,
+    category: &CategoryOfTheRemediation,
+    v_i: usize,
+    r_i: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Product {} is listed as not affected but has conflicting remediation category {}",
+            product_id, category
+        ),
+        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+    }
+}
+
+fn create_fixed_conflict_error(
+    product_id: &str,
+    category: &CategoryOfTheRemediation,
+    v_i: usize,
+    r_i: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Product {} is listed as fixed but has conflicting remediation category {}",
+            product_id, category
+        ),
+        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+    }
+}
 
 pub fn test_6_1_36_status_group_contradicting_remediation_categories(
     doc: &impl CsafTrait,
@@ -40,35 +85,17 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                     for p in product_ids {
                         if let Some(affected_products) = affected_products {
                             if affected_products.contains(&p) && cat == CategoryOfTheRemediation::OptionalPatch {
-                                return Err(vec![ValidationError {
-                                    message: format!(
-                                        "Product {} is listed as affected but has conflicting remediation category {}",
-                                        p, cat
-                                    ),
-                                    instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                                }]);
+                                return Err(vec![create_affected_conflict_error(&p, &cat, v_i, r_i)]);
                             }
                         }
                         if let Some(not_affected_products) = not_affected_products {
                             if not_affected_products.contains(&p) && NOT_AFFECTED_CONFLICTS.contains(&cat) {
-                                return Err(vec![ValidationError {
-                                    message: format!(
-                                        "Product {} is listed as not affected but has conflicting remediation category {}",
-                                        p, cat
-                                    ),
-                                    instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                                }]);
+                                return Err(vec![create_not_affected_conflict_error(&p, &cat, v_i, r_i)]);
                             }
                         }
                         if let Some(fixed_products) = fixed_products {
                             if fixed_products.contains(&p) && FIXED_CONFLICTS.contains(&cat) {
-                                return Err(vec![ValidationError {
-                                    message: format!(
-                                        "Product {} is listed as fixed but has conflicting remediation category {}",
-                                        p, cat
-                                    ),
-                                    instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                                }]);
+                                return Err(vec![create_fixed_conflict_error(&p, &cat, v_i, r_i)]);
                             }
                         }
                     }
@@ -79,36 +106,54 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_36
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_36_status_group_contradicting_remediation_categories(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_36::test_6_1_36_status_group_contradicting_remediation_categories;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_36() {
-        run_csaf21_tests(
-            "36",
-            test_6_1_36_status_group_contradicting_remediation_categories,
-            HashMap::from([
-                ("01", vec![ValidationError {
-                    message: "Product CSAFPID-9080700 is listed as not affected but has conflicting remediation category vendor_fix".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/0".to_string()
-                }]),
-                ("02", vec![ValidationError {
-                    message: "Product CSAFPID-9080703 is listed as fixed but has conflicting remediation category none_available".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/0".to_string()
-                }]),
-                ("03", vec![ValidationError {
-                    message: "Product CSAFPID-9080700 is listed as affected but has conflicting remediation category optional_patch".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/0".to_string(),
-                }]),
-                ("04", vec![ValidationError {
-                    message: "Product CSAFPID-9080700 is listed as fixed but has conflicting remediation category no_fix_planned".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/0".to_string(),
-                }]),
-            ]),
+        // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
+        TESTS_2_1.test_6_1_36.expect(
+            Err(vec![create_not_affected_conflict_error(
+                "CSAFPID-9080700",
+                &CategoryOfTheRemediation::VendorFix,
+                0,
+                0,
+            )]),
+            Err(vec![create_fixed_conflict_error(
+                "CSAFPID-9080703",
+                &CategoryOfTheRemediation::NoneAvailable,
+                0,
+                0,
+            )]),
+            Err(vec![create_affected_conflict_error(
+                "CSAFPID-9080700",
+                &CategoryOfTheRemediation::OptionalPatch,
+                0,
+                0,
+            )]),
+            Err(vec![create_fixed_conflict_error(
+                "CSAFPID-9080700",
+                &CategoryOfTheRemediation::NoFixPlanned,
+                0,
+                0,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

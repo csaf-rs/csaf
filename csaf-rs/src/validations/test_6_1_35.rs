@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
-use crate::csaf2_1::schema::CategoryOfTheRemediation;
+use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::ValidationError;
 use std::collections::BTreeMap;
 
@@ -15,6 +15,31 @@ static MUT_EX_STATES: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::FixPlanned,
     CategoryOfTheRemediation::VendorFix,
 ];
+
+fn create_contradicting_remediations_error(
+    product_id: &str,
+    existing_categories: &[CategoryOfTheRemediation],
+    new_category: CategoryOfTheRemediation,
+    vulnerability_index: usize,
+    remediation_index: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Product {} has contradicting remediations: {} and {}",
+            product_id,
+            existing_categories
+                .iter()
+                .map(|c| c.to_string())
+                .collect::<Vec<String>>()
+                .join(", "),
+            new_category
+        ),
+        instance_path: format!(
+            "/vulnerabilities/{}/remediations/{}",
+            vulnerability_index, remediation_index
+        ),
+    }
+}
 
 pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
@@ -36,19 +61,13 @@ pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<()
                             // Checks if the current category conflicts with any other in the group of mutually exclusive ones.
                             || MUT_EX_STATES.contains(&cat) && exist_cat_set.iter().any(|e_cat| MUT_EX_STATES.contains(e_cat))
                         {
-                            return Err(vec![ValidationError {
-                                message: format!(
-                                    "Product {} has contradicting remediations: {} and {}",
-                                    p,
-                                    exist_cat_set
-                                        .iter()
-                                        .map(|c| c.to_string())
-                                        .collect::<Vec<String>>()
-                                        .join(", "),
-                                    cat
-                                ),
-                                instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
-                            }]);
+                            return Err(vec![create_contradicting_remediations_error(
+                                &p,
+                                exist_cat_set,
+                                cat,
+                                v_i,
+                                r_i,
+                            )]);
                         }
                         exist_cat_set.push(cat);
                     } else {
@@ -61,36 +80,64 @@ pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<()
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_35
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_35_contradicting_remediations(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_35::test_6_1_35_contradicting_remediations;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_35() {
-        run_csaf21_tests(
-            "35",
-            test_6_1_35_contradicting_remediations,
-            HashMap::from([
-                ("01", vec![ValidationError {
-                    message: "Product CSAFPID-9080700 has contradicting remediations: no_fix_planned and vendor_fix".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/1".to_string(),
-                }]),
-                ("02", vec![ValidationError {
-                    message: "Product CSAFPID-9080700 has contradicting remediations: none_available and mitigation".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/1".to_string(),
-                }]),
-                ("03", vec![ValidationError {
-                    message: "Product CSAFPID-9080702 has contradicting remediations: workaround, fix_planned and optional_patch".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/2".to_string(),
-                }]),
-                ("04", vec![ValidationError {
-                    message: "Product CSAFPID-9080701 has contradicting remediations: mitigation, fix_planned and optional_patch".to_string(),
-                    instance_path: "/vulnerabilities/0/remediations/2".to_string(),
-                }]),
-            ]),
+        // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
+        TESTS_2_1.test_6_1_35.expect(
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080700",
+                &[CategoryOfTheRemediation::NoFixPlanned],
+                CategoryOfTheRemediation::VendorFix,
+                0,
+                1,
+            )]),
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080700",
+                &[CategoryOfTheRemediation::NoneAvailable],
+                CategoryOfTheRemediation::Mitigation,
+                0,
+                1,
+            )]),
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080702",
+                &[
+                    CategoryOfTheRemediation::Workaround,
+                    CategoryOfTheRemediation::FixPlanned,
+                ],
+                CategoryOfTheRemediation::OptionalPatch,
+                0,
+                2,
+            )]),
+            Err(vec![create_contradicting_remediations_error(
+                "CSAFPID-9080701",
+                &[
+                    CategoryOfTheRemediation::Mitigation,
+                    CategoryOfTheRemediation::FixPlanned,
+                ],
+                CategoryOfTheRemediation::OptionalPatch,
+                0,
+                2,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

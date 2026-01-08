@@ -1,6 +1,13 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{CsafTrait, DocumentTrait, PublisherTrait};
-use crate::csaf2_1::schema::CategoryOfPublisher;
+use crate::schema::csaf2_1::schema::CategoryOfPublisher;
 use crate::validation::ValidationError;
+
+static MISSING_SOURCE_LANG_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "source_lang is required when the publisher category is 'translator'".to_string(),
+    instance_path: "/document/source_lang".to_string(),
+});
 
 /// 6.1.15 Translator
 ///
@@ -15,41 +22,58 @@ pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<Validation
 
     // Check if source_lang is present
     if document.get_source_lang().is_none() {
-        return Err(vec![ValidationError {
-            message: "source_lang is required when the publisher category is 'translator'".to_string(),
-            instance_path: "/document/source_lang".to_string(),
-        }]);
+        return Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
     }
 
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_15
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_15_translator(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_15
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_15_translator(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_15::test_6_1_15_translator;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_15() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![ValidationError {
-                    message: "source_lang is required when the publisher category is 'translator'".to_string(),
-                    instance_path: "/document/source_lang".to_string(),
-                }],
-            ),
-            (
-                "02",
-                vec![ValidationError {
-                    message: "source_lang is required when the publisher category is 'translator'".to_string(),
-                    instance_path: "/document/source_lang".to_string(),
-                }],
-            ),
-        ]);
-        run_csaf20_tests("15", test_6_1_15_translator, errors.clone());
-        run_csaf21_tests("15", test_6_1_15_translator, errors);
+        // Error cases
+        let err = Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
+
+        // Both CSAF 2.0 and 2.1 have 4 test cases (01, 02, 11, 12)
+        TESTS_2_0.test_6_1_15.expect(
+            err.clone(),
+            err.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
+
+        TESTS_2_1.test_6_1_15.expect(
+            err.clone(),
+            err.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+        );
     }
 }

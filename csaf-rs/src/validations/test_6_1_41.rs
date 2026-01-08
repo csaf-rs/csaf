@@ -1,6 +1,18 @@
+use std::sync::LazyLock;
+
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
 use crate::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
 use crate::validation::ValidationError;
+
+static MAX_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
+    instance_path: "/document/distribution/sharing_group/name".to_string(),
+});
+
+static NIL_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
+    instance_path: "/document/distribution/sharing_group/name".to_string(),
+});
 
 /// Validates that a CSAF document with specific sharing group IDs has the correct corresponding name.
 ///
@@ -29,10 +41,7 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PUBLIC => {},
                 _ => {
-                    return Err(vec![ValidationError {
-                        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }]);
+                    return Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
                 },
             }
         }
@@ -42,10 +51,7 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
             match sharing_group.get_name() {
                 Some(name) if name == SG_NAME_PRIVATE => {},
                 _ => {
-                    return Err(vec![ValidationError {
-                        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }]);
+                    return Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
                 },
             }
         }
@@ -54,48 +60,35 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_41
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_41_missing_sharing_group_name(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_41::{SG_NAME_PRIVATE, SG_NAME_PUBLIC, test_6_1_41_missing_sharing_group_name};
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_41() {
-        run_csaf21_tests(
-            "41",
-            test_6_1_41_missing_sharing_group_name,
-            HashMap::from([
-                (
-                    "01",
-                    vec![ValidationError {
-                        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
-                (
-                    "02",
-                    vec![ValidationError {
-                        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
-                (
-                    "03",
-                    vec![ValidationError {
-                        message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
-                (
-                    "04",
-                    vec![ValidationError {
-                        message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
-                        instance_path: "/document/distribution/sharing_group/name".to_string(),
-                    }],
-                ),
-            ]),
+        let max_uuid_err = Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
+        let nil_uuid_err = Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
+
+        // Only CSAF 2.1 has this test with 6 test cases (4 error cases, 2 success cases)
+        TESTS_2_1.test_6_1_41.expect(
+            max_uuid_err.clone(),
+            nil_uuid_err.clone(),
+            max_uuid_err.clone(),
+            nil_uuid_err.clone(),
+            Ok(()),
+            Ok(()),
         );
     }
 }

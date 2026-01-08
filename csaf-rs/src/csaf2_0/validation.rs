@@ -1,7 +1,8 @@
-use super::schema::CommonSecurityAdvisoryFramework;
-use crate::validation::{Test, Validatable, ValidationPreset};
-use crate::validations::test_6_1_01::test_6_1_01_missing_definition_of_product_id;
-use crate::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
+use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
+use crate::{
+    csaf2_0::testcases::TESTS_2_0,
+    validation::{Test, Validatable, ValidationPreset},
+};
 use std::collections::HashMap;
 
 impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
@@ -20,11 +21,10 @@ impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFram
     }
 
     fn tests(&self) -> HashMap<&str, Test<CommonSecurityAdvisoryFramework>> {
-        type CsafTest = Test<CommonSecurityAdvisoryFramework>;
-        HashMap::from([
-            ("6.1.1", test_6_1_01_missing_definition_of_product_id as CsafTest),
-            ("6.1.2", test_6_1_02_multiple_definition_of_product_id as CsafTest),
-        ])
+        HashMap::from([(
+            TESTS_2_0.test_6_1_1.id(),
+            (|doc| TESTS_2_0.test_6_1_1.validate(doc)) as Test<_>,
+        )])
     }
 
     fn doc(&self) -> &CommonSecurityAdvisoryFramework {

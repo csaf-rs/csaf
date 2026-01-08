@@ -1,5 +1,12 @@
-use crate::csaf_traits::{CsafTrait, FlagTrait, VulnerabilityTrait, WithGroupIds};
+use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::validation::ValidationError;
+
+fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> ValidationError {
+    ValidationError {
+        message: "Each flag must reference at least one group_id or product_id".to_string(),
+        instance_path: format!("/vulnerabilities/{}/flags/{}", vulnerability_index, flag_index),
+    }
+}
 
 /// 6.1.32 Flag without Product Reference
 ///
@@ -23,10 +30,7 @@ pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Resul
                 {
                     continue;
                 }
-                errors.push(ValidationError {
-                    message: "Each flag must reference at least one group_id or product_id".to_string(),
-                    instance_path: format!("/vulnerabilities/{}/flags/{}", v_r, f_r),
-                });
+                errors.push(create_flag_without_product_reference_error(v_r, f_r));
             }
         }
     }
@@ -38,23 +42,40 @@ pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Resul
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_32
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_32_flag_without_product_reference(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_32
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_32_flag_without_product_reference(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_32::test_6_1_32_flag_without_product_reference;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_32() {
-        let errors = HashMap::from([(
-            "01",
-            vec![ValidationError {
-                message: "Each flag must reference at least one group_id or product_id".to_string(),
-                instance_path: "/vulnerabilities/0/flags/0".to_string(),
-            }],
-        )]);
-        run_csaf20_tests("32", test_6_1_32_flag_without_product_reference, errors.clone());
-        run_csaf21_tests("32", test_6_1_32_flag_without_product_reference, errors);
+        let case_01 = Err(vec![create_flag_without_product_reference_error(0, 0)]);
+
+        // Both CSAF 2.0 and 2.1 have 2 test cases
+        TESTS_2_0.test_6_1_32.expect(case_01.clone(), Ok(()));
+        TESTS_2_1.test_6_1_32.expect(case_01, Ok(()));
     }
 }

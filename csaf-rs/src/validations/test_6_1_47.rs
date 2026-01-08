@@ -3,6 +3,44 @@ use crate::csaf_traits::{
 };
 use crate::validation::ValidationError;
 
+fn create_document_id_multiple_vulnerabilities_error(
+    document_id: &str,
+    i_v: usize,
+    i_m: usize,
+    i_t: usize,
+) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "The SSVC target ID equals the document ID '{}' and the document contains multiple vulnerabilities",
+            document_id
+        ),
+        instance_path: format!(
+            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
+            i_v, i_m, i_t
+        ),
+    }
+}
+
+fn create_target_id_mismatch_error(target_id: &str, i_v: usize, i_m: usize, i_t: usize) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "The SSVC target ID '{}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability",
+            target_id
+        ),
+        instance_path: format!(
+            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
+            i_v, i_m, i_t
+        ),
+    }
+}
+
+fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Invalid SSVC object: {}", error),
+        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
+    }
+}
+
 pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
@@ -22,16 +60,12 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
                                     if target_id == document_id {
                                         // If there are multiple vulnerabilities, the validation must fail here.
                                         if vulnerabilities.len() > 1 {
-                                            return Err(vec![ValidationError {
-                                                message: format!(
-                                                    "The SSVC target ID equals the document ID '{}' and the document contains multiple vulnerabilities",
-                                                    document_id
-                                                ),
-                                                instance_path: format!(
-                                                    "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
-                                                    i_v, i_m, i_t
-                                                ),
-                                            }]);
+                                            return Err(vec![create_document_id_multiple_vulnerabilities_error(
+                                                document_id,
+                                                i_v,
+                                                i_m,
+                                                i_t,
+                                            )]);
                                         }
                                         // Target ID is valid, continue to next
                                         continue;
@@ -52,24 +86,12 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
                                     }
 
                                     // Return error if target ID is not valid
-                                    return Err(vec![ValidationError {
-                                        message: format!(
-                                            "The SSVC target ID '{}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability",
-                                            target_id
-                                        ),
-                                        instance_path: format!(
-                                            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
-                                            i_v, i_m, i_t
-                                        ),
-                                    }]);
+                                    return Err(vec![create_target_id_mismatch_error(target_id, i_v, i_m, i_t)]);
                                 }
                             }
                         },
                         Err(err) => {
-                            return Err(vec![ValidationError {
-                                message: format!("Invalid SSVC object: {}", err),
-                                instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
-                            }]);
+                            return Err(vec![create_invalid_ssvc_error(err, i_v, i_m)]);
                         },
                     }
                 }
@@ -80,46 +102,47 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_47
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_47_inconsistent_ssvc_id(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_47::test_6_1_47_inconsistent_ssvc_id;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_47() {
-        let instance_path = "/vulnerabilities/0/metrics/0/content/ssvc_v2/target_ids/0".to_string();
-
-        run_csaf21_tests(
-            "47",
-            test_6_1_47_inconsistent_ssvc_id,
-            HashMap::from([
-                ("01", vec![ValidationError {
-                    message: "The SSVC target ID 'CVE-1900-0002' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("02", vec![ValidationError {
-                    message: "The SSVC target ID 'CVE-1900-0001' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("03", vec![ValidationError {
-                    message: "The SSVC target ID '2723' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("04", vec![ValidationError {
-                    message: "The SSVC target ID 'Bug#2723' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("05", vec![ValidationError {
-                    message: "The SSVC target ID 'OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-15' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability".to_string(),
-                    instance_path: instance_path.clone(),
-                }]),
-                ("06", vec![ValidationError {
-                    message: "The SSVC target ID equals the document ID 'OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-06' and the document contains multiple vulnerabilities".to_string(),
-                    instance_path: "/vulnerabilities/1/metrics/0/content/ssvc_v2/target_ids/0".to_string(),
-                }]),
-            ])
+        // Only CSAF 2.1 has this test with 11 test cases (6 error cases, 5 success cases)
+        TESTS_2_1.test_6_1_47.expect(
+            Err(vec![create_target_id_mismatch_error("CVE-1900-0002", 0, 0, 0)]),
+            Err(vec![create_target_id_mismatch_error("CVE-1900-0001", 0, 0, 0)]),
+            Err(vec![create_target_id_mismatch_error("2723", 0, 0, 0)]),
+            Err(vec![create_target_id_mismatch_error("Bug#2723", 0, 0, 0)]),
+            Err(vec![create_target_id_mismatch_error(
+                "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-15",
+                0,
+                0,
+                0,
+            )]),
+            Err(vec![create_document_id_multiple_vulnerabilities_error(
+                "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-47-06",
+                1,
+                0,
+                0,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

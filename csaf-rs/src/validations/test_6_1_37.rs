@@ -102,83 +102,106 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
     Ok(())
 }
 
-fn check_datetime(date_time: &String, instance_path: &str) -> Result<(), Vec<ValidationError>> {
+fn create_invalid_format_error(date_time: &str, instance_path: &str) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Invalid date-time string {}, expected RFC3339-compliant format with non-empty timezone and no leap seconds",
+            date_time
+        ),
+        instance_path: instance_path.to_string(),
+    }
+}
+
+fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Date-time string {} matched RFC3339 regex but failed chrono parsing: {}",
+            date_time, error
+        ),
+        instance_path: instance_path.to_string(),
+    }
+}
+
+fn check_datetime(date_time: &str, instance_path: &str) -> Result<(), Vec<ValidationError>> {
     if CSAF_RFC3339_REGEX.is_match(date_time) {
         // Add chrono-based plausibility check
         match chrono::DateTime::parse_from_rfc3339(date_time) {
             Ok(_) => Ok(()), // Successfully parsed as a valid RFC3339 datetime
-            Err(e) => Err(vec![ValidationError {
-                message: format!(
-                    "Date-time string {} matched RFC3339 regex but failed chrono parsing: {}",
-                    date_time, e
-                ),
-                instance_path: instance_path.to_string(),
-            }]),
+            Err(e) => Err(vec![create_parsing_error(date_time, e, instance_path)]),
         }
     } else {
-        Err(vec![ValidationError {
-            message: format!(
-                "Invalid date-time string {}, expected RFC3339-compliant format with non-empty timezone and no leap seconds",
-                date_time
-            ),
-            instance_path: instance_path.to_string(),
-        }])
+        Err(vec![create_invalid_format_error(date_time, instance_path)])
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_37
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_37_date_and_time(doc)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::run_csaf21_tests;
-    use crate::validation::ValidationError;
-    use crate::validations::test_6_1_37::test_6_1_37_date_and_time;
-    use std::collections::HashMap;
+    use super::*;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_37() {
-        run_csaf21_tests(
-            "37",
-            test_6_1_37_date_and_time, HashMap::from([
-                ("01", vec![ValidationError {
-                    message: "Invalid date-time string 2024-01-24 10:00:00.000Z, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/document/tracking/initial_release_date".to_string(),
-                }]),
-                ("02", vec![ValidationError {
-                    message: "Invalid date-time string 2024-01-24T10:00:00.000z, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/document/tracking/initial_release_date".to_string(),
-                }]),
-                ("03", vec![ValidationError {
-                    message: "Invalid date-time string 2017-01-01T02:59:60+04:00, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }]),
-                ("04", vec![ValidationError {
-                    message: "Date-time string 2023-04-31T00:00:00+01:00 matched RFC3339 regex but failed chrono parsing: input is out of range".to_string(),
-                    instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }]),
-                ("05", vec![ValidationError {
-                    message: "Date-time string 2023-02-29T00:00:00+01:00 matched RFC3339 regex but failed chrono parsing: input is out of range".to_string(),
-                    instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }]),
-                ("06", vec![ValidationError {
-                    message: "Invalid date-time string 2016-12-31T00:00:60+23:59, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }]),
-                ("07", vec![ValidationError {
-                    message: "Invalid date-time string 2015-06-30T10:29:60-13:30, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }]),
-                ("08", vec![ValidationError {
-                    message: "Invalid date-time string 2015-06-30T10:29:60-13:30, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }]),
-                ("09", vec![ValidationError {
-                    message: "Invalid date-time string 2016-12-31T23:59:60.0123+00:00, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/vulnerabilities/0/disclosure_date".to_string(),
-                }]),
-                ("20", vec![ValidationError {
-                    message: "Invalid date-time string 2024-01-24t10:00:00.000Z, expected RFC3339-compliant format with non-empty timezone and no leap seconds".to_string(),
-                    instance_path: "/vulnerabilities/0/first_known_exploitation_dates/0/date".to_string(),
-                }]),
-            ])
+        // Only CSAF 2.1 has this test with 16 test cases (10 error cases, 6 success cases)
+        TESTS_2_1.test_6_1_37.expect(
+            Err(vec![create_invalid_format_error(
+                "2024-01-24 10:00:00.000Z",
+                "/document/tracking/initial_release_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2024-01-24T10:00:00.000z",
+                "/document/tracking/initial_release_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2017-01-01T02:59:60+04:00",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_parsing_error(
+                "2023-04-31T00:00:00+01:00",
+                "input is out of range",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_parsing_error(
+                "2023-02-29T00:00:00+01:00",
+                "input is out of range",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2016-12-31T00:00:60+23:59",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2015-06-30T10:29:60-13:30",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2015-06-30T10:29:60-13:30",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2016-12-31T23:59:60.0123+00:00",
+                "/vulnerabilities/0/disclosure_date",
+            )]),
+            Err(vec![create_invalid_format_error(
+                "2024-01-24t10:00:00.000Z",
+                "/vulnerabilities/0/first_known_exploitation_dates/0/date",
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

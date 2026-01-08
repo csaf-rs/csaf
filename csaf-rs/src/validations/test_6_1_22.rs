@@ -2,6 +2,13 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
+fn generate_duplicate_revision_error(number: &str, path: usize) -> ValidationError {
+    ValidationError {
+        message: format!("Duplicate definition of revision history number {}", number),
+        instance_path: format!("/document/tracking/revision_history/{}/number", path),
+    }
+}
+
 /// Test 6.1.22: Multiple Definition in Revision History
 ///
 /// Items of the revision history must not contain the same string in the
@@ -21,12 +28,11 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
     let mut errors = Vec::new();
     for (number, paths) in &number_paths {
         if paths.len() > 1 {
-            for path in paths.iter() {
-                errors.push(ValidationError {
-                    message: format!("Duplicate definition of revision history number {}", number),
-                    instance_path: format!("/document/tracking/revision_history/{}/number", path),
-                });
-            }
+            errors.extend(
+                paths
+                    .iter()
+                    .map(|path| generate_duplicate_revision_error(number, *path)),
+            );
         }
     }
 
@@ -37,31 +43,43 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
     Ok(())
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_0::testcases::ValidatorForTest6_1_22
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_22_multiple_definition_in_revision_history(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_22
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_22_multiple_definition_in_revision_history(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_22::test_6_1_22_multiple_definition_in_revision_history;
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_22() {
-        let errors = std::collections::HashMap::from([(
-            "01",
-            vec![
-                crate::validation::ValidationError {
-                    message: "Duplicate definition of revision history number 1".to_string(),
-                    instance_path: "/document/tracking/revision_history/0/number".to_string(),
-                },
-                crate::validation::ValidationError {
-                    message: "Duplicate definition of revision history number 1".to_string(),
-                    instance_path: "/document/tracking/revision_history/1/number".to_string(),
-                },
-            ],
-        )]);
-        run_csaf20_tests(
-            "22",
-            test_6_1_22_multiple_definition_in_revision_history,
-            errors.clone(),
-        );
-        run_csaf21_tests("22", test_6_1_22_multiple_definition_in_revision_history, errors);
+        let case_01 = Err(vec![
+            generate_duplicate_revision_error("1", 0),
+            generate_duplicate_revision_error("1", 1),
+        ]);
+
+        // Both CSAF 2.0 and 2.1 have 1 test case
+        TESTS_2_0.test_6_1_22.expect(case_01.clone());
+        TESTS_2_1.test_6_1_22.expect(case_01);
     }
 }

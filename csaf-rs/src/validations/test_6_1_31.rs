@@ -47,7 +47,7 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
                                 break;
                             }
                         }
-                        let product_name_tokenized = branch_name.split(' ').collect::<Vec<&str>>();
+                        let product_name_tokenized = branch_name.split_whitespace().collect::<Vec<&str>>();
                         for token in product_name_tokenized {
                             if FORBIDDEN_KEYWORDS.contains(&token) {
                                 errors

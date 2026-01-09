@@ -8,18 +8,18 @@ use crate::csaf_traits::{
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_0::schema::{
-    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
-    CommonSecurityAdvisoryFramework, CryptographicHashes, CsafVersion as CsafVersion20, DocumentGenerator,
-    DocumentLevelMetaData, DocumentStatus, FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
-    Involvement, LabelOfTheFlag, LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus,
-    ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat,
-    Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheBranch, CategoryOfTheRemediation,
+    CategoryOfTheThreat, CommonSecurityAdvisoryFramework, CryptographicHashes, CsafVersion as CsafVersion20,
+    DocumentGenerator, DocumentLevelMetaData, DocumentStatus, FileHash, Flag, FullProductNameT,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Note, NoteCategory, PartyCategory,
+    ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
+    RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::schema::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
-    CategoryOfTheRemediation as Remediation21, CategoryOfTheThreat as CategoryOfTheThreat21,
-    DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21, LabelOfTlp as Tlp21,
-    NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
+    CategoryOfTheBranch as CategoryOfTheBranch21, CategoryOfTheRemediation as Remediation21,
+    CategoryOfTheThreat as CategoryOfTheThreat21, DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21,
+    LabelOfTlp as Tlp21, NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
 use crate::validation::ValidationError;
 use serde::de::Error;
@@ -592,6 +592,27 @@ impl BranchTrait<FullProductNameT> for Branch {
         self.branches.as_deref()
     }
 
+    fn get_category(&self) -> &CategoryOfTheBranch21 {
+        match self.category {
+            CategoryOfTheBranch::Architecture => &CategoryOfTheBranch21::Architecture,
+            CategoryOfTheBranch::HostName => &CategoryOfTheBranch21::HostName,
+            CategoryOfTheBranch::Language => &CategoryOfTheBranch21::Language,
+            CategoryOfTheBranch::Legacy => &CategoryOfTheBranch21::Legacy,
+            CategoryOfTheBranch::PatchLevel => &CategoryOfTheBranch21::PatchLevel,
+            CategoryOfTheBranch::ProductFamily => &CategoryOfTheBranch21::ProductFamily,
+            CategoryOfTheBranch::ProductName => &CategoryOfTheBranch21::ProductName,
+            CategoryOfTheBranch::ProductVersion => &CategoryOfTheBranch21::ProductVersion,
+            CategoryOfTheBranch::ProductVersionRange => &CategoryOfTheBranch21::ProductVersionRange,
+            CategoryOfTheBranch::ServicePack => &CategoryOfTheBranch21::ServicePack,
+            CategoryOfTheBranch::Specification => &CategoryOfTheBranch21::Specification,
+            CategoryOfTheBranch::Vendor => &CategoryOfTheBranch21::Vendor,
+        }
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.deref()
+    }
+
     fn get_product(&self) -> &Option<FullProductNameT> {
         &self.product
     }
@@ -625,6 +646,10 @@ impl ProductTrait for FullProductNameT {
 
     fn get_product_id(&self) -> &String {
         self.product_id.deref()
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.deref()
     }
 
     fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType> {

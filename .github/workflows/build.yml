@@ -16,8 +16,11 @@ env:
 
 jobs:
   build:
+    permissions:
+      contents: write
     strategy:
       matrix:
+        version: [msrv, stable]
         target:
           - arch: x86_64-unknown-linux-gnu
             runs-on: ubuntu-latest
@@ -36,14 +39,19 @@ jobs:
           submodules: 'true'
       - name: Prepare target
         run: rustup target add ${{ matrix.target.arch }}
+      - name: Set Rust version if not MSRV
+        if: ${{ matrix.version == 'stable' }}
+        run: rustup override set stable
       - name: Update assets
         run: ./update_assets.sh
       - name: Format check
         run: cargo fmt --all --check -- -l
       - name: Clippy check
         run: cargo clippy --all-targets -- -D warnings
+      - name: Install cargo-auditable
+        run: cargo install cargo-auditable
       - name: Build
-        run: cargo build --target=${{ matrix.target.arch }} --release --verbose
+        run: cargo auditable build --target=${{ matrix.target.arch }} --release --verbose
       - name: Build WASM bindings
         run: |
           if [ "${{ matrix.target.arch }}" = "wasm32-wasip2" ]; then
@@ -59,8 +67,22 @@ jobs:
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         uses: actions/upload-artifact@v4
         with:
-          name: csaf-validator-${{ matrix.target.arch }}
+          name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          format: cyclonedx-json
+          artifact-name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-sbom.cdx.json
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          format: spdx-json
+          artifact-name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-sbom.spdx.json
+
+
   publish-crates:
     runs-on: ubuntu-latest
     permissions:

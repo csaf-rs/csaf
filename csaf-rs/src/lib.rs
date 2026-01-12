@@ -4,7 +4,6 @@ pub mod csaf_traits;
 pub mod generated;
 pub mod helpers;
 pub mod schema;
-pub mod test_helper;
 pub mod test_result_comparison;
 pub mod test_structure;
 pub mod test_validation;

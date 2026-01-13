@@ -28,7 +28,7 @@ const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&
 pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    if !PROFILE_TEST_CONFIG.applies_to_for_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
+    if PROFILE_TEST_CONFIG.is_ignored_for_on_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 

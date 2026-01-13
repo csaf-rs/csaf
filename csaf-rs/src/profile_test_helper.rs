@@ -43,13 +43,13 @@ impl ProfileTestConfig {
         self
     }
 
-    /// Checks if a profile test applies based on the CSAF version and document category.
+    /// Checks if a profile test should be ignored based on the CSAF version and document category.
     ///
-    /// Returns `true` if the test should be executed (i.e., the document category
-    /// is relevant for the given CSAF version).
+    /// Returns `true` if the test should be ignored (i.e., the document category
+    /// is not relevant for the given CSAF version).
     ///
     /// The check includes both shared categories and version-specific categories.
-    pub fn applies_to_for_csaf_version(
+    pub fn is_ignored_for_on_csaf_version(
         &self,
         csaf_version: &CsafVersion,
         document_category: &DocumentCategory,
@@ -57,12 +57,12 @@ impl ProfileTestConfig {
         // First check shared categories
         if let Some(shared) = self.shared_categories {
             if shared.contains(document_category) {
-                return true;
+                return false;
             }
         }
 
         // Then check version-specific categories
-        match csaf_version {
+        !match csaf_version {
             CsafVersion::X20 => self
                 .csaf20_categories
                 .map(|cats| cats.contains(document_category))
@@ -84,12 +84,14 @@ impl ProfileTestConfig {
         }
     }
 
-    pub fn applies_to(&self, document_category: &DocumentCategory) -> bool {
+    /// Checks if a profile test should be ignored based on the document category only,
+    /// irrespective of the CSAF version.
+    pub fn is_ignored_for(&self, document_category: &DocumentCategory) -> bool {
         if let Some(shared) = self.shared_categories {
             if shared.contains(document_category) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
         panic!(
             "Profile test applicability without a specified CSAF doc version was checked on a config that does not specify version-independent categories. (This looks like a dev error.)"
@@ -109,23 +111,23 @@ mod tests {
             .csaf21(&[DocumentCategory::CsafWithdrawn]);
 
         // Shared applies to both
-        assert!(TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafSecurityAdvisory));
-        assert!(TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafSecurityAdvisory));
+        assert!(!TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafSecurityAdvisory));
+        assert!(!TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafSecurityAdvisory));
 
         // CSAF 2.0-specific applies only to 2.0
-        assert!(TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafVex));
-        assert!(!TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafVex));
+        assert!(!TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafVex));
+        assert!(TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafVex));
 
         // CSAF 2.1-specific applies only to 2.1
-        assert!(!TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafWithdrawn));
-        assert!(TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafWithdrawn));
+        assert!(TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafWithdrawn));
+        assert!(!TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafWithdrawn));
 
         // Other categories do not apply
         assert!(
-            !TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafInformationalAdvisory)
+            TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafInformationalAdvisory)
         );
         assert!(
-            !TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafInformationalAdvisory)
+            TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafInformationalAdvisory)
         );
     }
 
@@ -137,42 +139,42 @@ mod tests {
         ]);
 
         // Shared categories apply
-        assert!(TEST_CONFIG.applies_to(&DocumentCategory::CsafSecurityAdvisory));
-        assert!(TEST_CONFIG.applies_to(&DocumentCategory::CsafInformationalAdvisory));
+        assert!(!TEST_CONFIG.is_ignored_for(&DocumentCategory::CsafSecurityAdvisory));
+        assert!(!TEST_CONFIG.is_ignored_for(&DocumentCategory::CsafInformationalAdvisory));
 
         // Other categories do not apply
-        assert!(!TEST_CONFIG.applies_to(&DocumentCategory::CsafVex));
-        assert!(!TEST_CONFIG.applies_to(&DocumentCategory::CsafWithdrawn));
+        assert!(TEST_CONFIG.is_ignored_for(&DocumentCategory::CsafVex));
+        assert!(TEST_CONFIG.is_ignored_for(&DocumentCategory::CsafWithdrawn));
     }
 
     #[test]
-    fn test_config_without_shared_categories_panic_on_applies() {
+    fn test_config_without_shared_categories_panic_on_is_ignored_for() {
         const TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new()
             .csaf20(&[DocumentCategory::CsafVex])
             .csaf21(&[DocumentCategory::CsafWithdrawn]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.applies_to(&DocumentCategory::CsafSecurityAdvisory);
+            TEST_CONFIG.is_ignored_for(&DocumentCategory::CsafSecurityAdvisory);
         });
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_config_without_shared_or_csaf_20_categories_panics_on_applies_for_csaf_version() {
+    fn test_config_without_shared_or_csaf_20_categories_panics_on_is_ignored_for_on_csaf_version() {
         const TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().csaf21(&[DocumentCategory::CsafWithdrawn]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafVex);
+            TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafVex);
         });
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_config_without_shared_or_csaf_21_categories_panics_on_applies_for_csaf_version() {
+    fn test_config_without_shared_or_csaf_21_categories_panics_on_is_ignored_for_on_csaf_version() {
         const TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().csaf20(&[DocumentCategory::CsafVex]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.applies_to_for_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafWithdrawn);
+            TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafWithdrawn);
         });
         assert!(result.is_err());
     }

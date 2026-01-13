@@ -26,7 +26,7 @@ const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new()
 pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
     // check if document has a relevant category for this test
-    if !PROFILE_TEST_CONFIG.applies_to_for_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
+    if PROFILE_TEST_CONFIG.is_ignored_for_on_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 

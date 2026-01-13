@@ -17,7 +17,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 
     // Only execute this test for documents with category 'csaf_vex'
     // and if there are any vulnerabilities present
-    if !PROFILE_TEST_CONFIG.applies_to(&doc_category) || vulnerabilities.is_empty() {
+    if PROFILE_TEST_CONFIG.is_ignored_for(&doc_category) || vulnerabilities.is_empty() {
         return Ok(());
     }
 

@@ -5,7 +5,6 @@ pub mod generated;
 pub mod helpers;
 pub mod profile_test_helper;
 pub mod schema;
-pub mod test_helper;
 pub mod test_result_comparison;
 pub mod test_structure;
 pub mod test_validation;

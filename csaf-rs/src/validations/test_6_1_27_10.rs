@@ -1,5 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::helpers::resolve_product_groups;
+use crate::profile_test_helper::ProfileTestConfig;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
@@ -16,7 +17,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 
     // Only execute this test for documents with category 'csaf_vex'
     // and if there are any vulnerabilities present
-    if doc_category != DocumentCategory::CsafVex || vulnerabilities.is_empty() {
+    if !PROFILE_TEST_CONFIG.applies_to(&doc_category) || vulnerabilities.is_empty() {
         return Ok(());
     }
 
@@ -76,6 +77,8 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 
     errors.map_or(Ok(()), Err)
 }
+
+const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&[DocumentCategory::CsafVex]);
 
 fn test_6_1_27_10_err_generator(
     document_category: &DocumentCategory,

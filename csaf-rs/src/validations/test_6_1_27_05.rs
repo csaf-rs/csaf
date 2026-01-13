@@ -1,4 +1,5 @@
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
+use crate::profile_test_helper::ProfileTestConfig;
 use crate::validation::ValidationError;
 
 /// 6.1.27.5 Vulnerability Notes
@@ -11,20 +12,7 @@ use crate::validation::ValidationError;
 pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-    {
-        return Ok(());
-    }
-
-    // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-        && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
-    {
+    if !PROFILE_TEST_CONFIG.applies_to_for_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 
@@ -40,6 +28,10 @@ pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Ve
 
     errors.map_or(Ok(()), Err)
 }
+
+const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new()
+    .shared(&[DocumentCategory::CsafSecurityAdvisory, DocumentCategory::CsafVex])
+    .csaf21(&[DocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
 fn test_6_1_27_05_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {

@@ -1,4 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait, DocumentTrait};
+use crate::profile_test_helper::ProfileTestConfig;
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
 
@@ -12,6 +13,11 @@ fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> V
     }
 }
 
+const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&[
+    DocumentCategory::CsafInformationalAdvisory,
+    DocumentCategory::CsafSecurityIncidentResponse,
+]);
+
 /// 6.1.27.2 Document References
 ///
 /// This test only applies to documents with `/document/category` with value `csaf_informational_advisory`
@@ -22,10 +28,7 @@ fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> V
 pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    // check document category
-    if doc_category != DocumentCategory::CsafInformationalAdvisory
-        && doc_category != DocumentCategory::CsafSecurityIncidentResponse
-    {
+    if !PROFILE_TEST_CONFIG.applies_to_for_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 

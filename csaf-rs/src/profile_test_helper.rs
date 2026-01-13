@@ -111,8 +111,12 @@ mod tests {
             .csaf21(&[DocumentCategory::CsafWithdrawn]);
 
         // Shared applies to both
-        assert!(!TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafSecurityAdvisory));
-        assert!(!TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafSecurityAdvisory));
+        assert!(
+            !TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafSecurityAdvisory)
+        );
+        assert!(
+            !TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafSecurityAdvisory)
+        );
 
         // CSAF 2.0-specific applies only to 2.0
         assert!(!TEST_CONFIG.is_ignored_for_on_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafVex));

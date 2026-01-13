@@ -8,12 +8,13 @@ use crate::csaf_traits::{
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_1::schema::{
-    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
-    CommonSecurityAdvisoryFramework, Content, CryptographicHashes, CsafVersion as CsafVersion21, DocumentGenerator,
-    DocumentLevelMetaData, DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag, FullProductNameT,
-    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Metric, Note, NoteCategory, PartyCategory,
-    ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
-    RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheBranch, CategoryOfTheRemediation,
+    CategoryOfTheThreat, CommonSecurityAdvisoryFramework, Content, CryptographicHashes, CsafVersion as CsafVersion21,
+    DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag,
+    FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Metric, Note,
+    NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship,
+    Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp,
+    Vulnerability,
 };
 use crate::validation::ValidationError;
 use serde_json::{Map, Value};
@@ -502,6 +503,14 @@ impl BranchTrait<FullProductNameT> for Branch {
         self.branches.as_deref()
     }
 
+    fn get_category(&self) -> &CategoryOfTheBranch {
+        &self.category
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.deref()
+    }
+
     fn get_product(&self) -> &Option<FullProductNameT> {
         &self.product
     }
@@ -536,6 +545,10 @@ impl ProductTrait for FullProductNameT {
 
     fn get_product_id(&self) -> &String {
         self.product_id.deref()
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.deref()
     }
 
     fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType> {

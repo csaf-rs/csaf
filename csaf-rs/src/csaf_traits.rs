@@ -1,6 +1,6 @@
 use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,
-    LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheBranch, CategoryOfTheRemediation, CategoryOfTheThreat,
+    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
 };
 
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
@@ -1062,6 +1062,10 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// Returns an optional reference to the child branches of this branch.
     fn get_branches(&self) -> Option<&Vec<Self>>;
 
+    fn get_category(&self) -> &CategoryOfTheBranch;
+
+    fn get_name(&self) -> &str;
+
     /// Retrieves the full product name associated with this branch, if available.
     fn get_product(&self) -> &Option<FPN>;
 
@@ -1149,6 +1153,9 @@ pub trait ProductTrait {
 
     /// Returns the product ID from the full product name.
     fn get_product_id(&self) -> &String;
+
+    /// Returns the textual description of the product
+    fn get_name(&self) -> &str;
 
     /// Returns the product identification helper associated with the full product name.
     fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType>;

@@ -1,13 +1,20 @@
-use std::sync::LazyLock;
-
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait};
+use crate::profile_test_helper::ProfileTestConfig;
 use crate::validation::ValidationError;
 
-static VULNERABILITIES_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Document with category 'csaf_informational_advisory' must not have a '/vulnerabilities' element"
-        .to_string(),
-    instance_path: "/vulnerabilities".to_string(),
-});
+fn create_must_not_have_vuln_element_error(doc_category: &DocumentCategory) -> ValidationError {
+    ValidationError {
+        message: format!(
+            "Document with category '{}' must not have a '/vulnerabilities' element",
+            doc_category
+        ),
+        instance_path: "/vulnerabilities".to_string(),
+    }
+}
+
+const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new()
+    .shared(&[DocumentCategory::CsafInformationalAdvisory])
+    .csaf21(&[DocumentCategory::CsafWithdrawn, DocumentCategory::CsafSuperseded]);
 
 /// 6.1.27.3 Vulnerabilities
 ///
@@ -17,27 +24,15 @@ static VULNERABILITIES_ERROR: LazyLock<ValidationError> = LazyLock::new(|| Valid
 ///
 /// Documents with this category must not have a `/vulnerabilities` element.
 pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20
-        && doc.get_document().get_category() != DocumentCategory::CsafInformationalAdvisory
-    {
+    let doc_category = doc.get_document().get_category();
+    // check if document has a relevant category for this test
+    if PROFILE_TEST_CONFIG.is_ignored_for_on_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
-    }
-
-    // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21 {
-        let doc_category = doc.get_document().get_category();
-        if doc_category != DocumentCategory::CsafInformationalAdvisory
-            && doc_category != DocumentCategory::CsafWithdrawn
-            && doc_category != DocumentCategory::CsafSuperseded
-        {
-            return Ok(());
-        }
     }
 
     // return error if there are elements in /vulnerabilities
     if !doc.get_vulnerabilities().is_empty() {
-        return Err(vec![VULNERABILITIES_ERROR.clone()]);
+        return Err(vec![create_must_not_have_vuln_element_error(&doc_category)]);
     }
 
     Ok(())
@@ -73,11 +68,24 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_03() {
-        let err = Err(vec![VULNERABILITIES_ERROR.clone()]);
-
-        TESTS_2_0.test_6_1_27_3.expect(err.clone());
-        TESTS_2_1
+        TESTS_2_0
             .test_6_1_27_3
-            .expect(err.clone(), err.clone(), err.clone(), Ok(()), Ok(()), Ok(()));
+            .expect(Err(vec![create_must_not_have_vuln_element_error(
+                &DocumentCategory::CsafInformationalAdvisory,
+            )]));
+        TESTS_2_1.test_6_1_27_3.expect(
+            Err(vec![create_must_not_have_vuln_element_error(
+                &DocumentCategory::CsafInformationalAdvisory,
+            )]),
+            Err(vec![create_must_not_have_vuln_element_error(
+                &DocumentCategory::CsafWithdrawn,
+            )]),
+            Err(vec![create_must_not_have_vuln_element_error(
+                &DocumentCategory::CsafSuperseded,
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

@@ -42,13 +42,16 @@ jobs:
       - name: Set Rust version
         run: rustup override set ${{ matrix.version }}
       - name: Install rustfmt
+        if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: rustup component add --toolchain ${{ matrix.version}}-${{ matrix.target.arch }} rustfmt
-      - name: Update assets
-        run: ./update_assets.sh
       - name: Format check
+        if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo fmt --all --check -- -l
       - name: Clippy check
+        if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo clippy --all-targets -- -D warnings
+      - name: Update assets
+        run: ./update_assets.sh
       - name: Install cargo-auditable
         run: cargo install cargo-auditable
       - name: Build

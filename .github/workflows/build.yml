@@ -20,7 +20,7 @@ jobs:
       contents: write
     strategy:
       matrix:
-        version: [msrv, stable]
+        version: [1.85.1, stable]
         target:
           - arch: x86_64-unknown-linux-gnu
             runs-on: ubuntu-latest
@@ -39,8 +39,7 @@ jobs:
           submodules: 'true'
       - name: Prepare target
         run: rustup target add ${{ matrix.target.arch }}
-      - name: Set Rust version if not MSRV
-       
+      - name: Set Rust version
         run: rustup override set ${{ matrix.version }}
       - name: Update assets
         run: ./update_assets.sh

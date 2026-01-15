@@ -1,6 +1,4 @@
-use crate::csaf_traits::{
-    CsafTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait
-};
+use crate::csaf_traits::{CsafTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 
 /// 6.2.8 Use of MD5 as the only Hash Algorithm
@@ -65,14 +63,15 @@ mod tests {
 
     #[test]
     fn test_test_6_2_08() {
-        let case_01_and_02 = Err(vec![create_md5_only_hash_error("/product_tree/full_product_names/0", 0)]);
+        let case_01_and_02 = Err(vec![create_md5_only_hash_error(
+            "/product_tree/full_product_names/0",
+            0,
+        )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0
             .test_6_2_8
             .expect(case_01_and_02.clone(), case_01_and_02.clone());
-        TESTS_2_1
-            .test_6_2_8
-            .expect(case_01_and_02.clone(), case_01_and_02);
+        TESTS_2_1.test_6_2_8.expect(case_01_and_02.clone(), case_01_and_02);
     }
 }

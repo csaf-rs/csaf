@@ -1,4 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductTrait, ProductTreeTrait};
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
 fn create_unused_product_id_error(product_id: &str, path: &str) -> ValidationError {
@@ -11,6 +12,9 @@ fn create_unused_product_id_error(product_id: &str, path: &str) -> ValidationErr
     }
 }
 
+const SKIP_TEST_CONFIG: DocumentCategoryTestConfig =
+    DocumentCategoryTestConfig::new().shared(&[DocumentCategory::CsafInformationalAdvisory]);
+
 /// 6.2.1 Unused Definition of Product ID
 ///
 /// All defined product IDs need to be referenced at least once in the document.
@@ -18,7 +22,7 @@ pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Resu
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // Skips the test for profile "Informational Advisory"
-    if doc.get_document().get_category() == DocumentCategory::CsafInformationalAdvisory {
+    if SKIP_TEST_CONFIG.matches_category(&doc.get_document().get_category()) {
         return Ok(());
     }
 

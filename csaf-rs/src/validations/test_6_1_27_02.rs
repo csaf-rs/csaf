@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait, DocumentTrait};
-use crate::profile_test_helper::ProfileTestConfig;
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
 
@@ -13,7 +13,7 @@ fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> V
     }
 }
 
-const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&[
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
     DocumentCategory::CsafInformationalAdvisory,
     DocumentCategory::CsafSecurityIncidentResponse,
 ]);
@@ -28,7 +28,7 @@ const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&
 pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    if PROFILE_TEST_CONFIG.is_ignored_for_on_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
+    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 

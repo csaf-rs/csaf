@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
-use crate::profile_test_helper::ProfileTestConfig;
+use crate::document_category_test_helper::ProfileTestConfig;
 use crate::validation::ValidationError;
 
 /// 6.1.27.8 Vulnerability ID
@@ -11,7 +11,7 @@ use crate::validation::ValidationError;
 pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    if PROFILE_TEST_CONFIG.is_ignored_for(&doc_category) {
+    if !PROFILE_TEST_CONFIG.matches_category(&doc_category) {
         return Ok(());
     }
 
@@ -28,7 +28,8 @@ pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<V
     errors.map_or(Ok(()), Err)
 }
 
-const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&[DocumentCategory::CsafVex]);
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
+    DocumentCategoryTestConfig::new().shared(&[DocumentCategory::CsafVex]);
 
 fn test_6_1_27_08_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {

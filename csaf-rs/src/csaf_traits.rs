@@ -1242,7 +1242,7 @@ pub enum HashAlgorithm {
     Ssl3Md5,
     Ssl3Sha1,
     Whirlpool,
-    Other(String)
+    Other(String),
 }
 
 impl HashAlgorithm {
@@ -1275,7 +1275,7 @@ impl HashAlgorithm {
             HashAlgorithm::Ssl3Md5 => "ssl3-md5",
             HashAlgorithm::Ssl3Sha1 => "ssl3-sha1",
             HashAlgorithm::Whirlpool => "whirlpool",
-            HashAlgorithm::Other(other) => other.as_str()
+            HashAlgorithm::Other(other) => other.as_str(),
         }
     }
 

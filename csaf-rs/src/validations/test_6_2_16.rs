@@ -59,7 +59,7 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_2_10() {
+    fn test_test_6_2_16() {
         let case_01 = Err(vec![create_missing_product_identification_helper_error(
             "/product_tree/full_product_names/0",
         )]);

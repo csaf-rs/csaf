@@ -30,8 +30,11 @@ pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result
 
 fn create_sha1_only_hash_error(path: &str, hash_index: usize) -> ValidationError {
     ValidationError {
-        message: "Product identification helper via hashes uses SHA-1 as the only hash algorithm".to_string(),
-        instance_path: format!("{}/product_identification_helper/hashes/{}", path, hash_index),
+        message: "hashes product identification helper uses SHA-1 as the only hash algorithm".to_string(),
+        instance_path: format!(
+            "{}/product_identification_helper/hashes/{}/file_hashes",
+            path, hash_index
+        ),
     }
 }
 

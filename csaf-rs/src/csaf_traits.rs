@@ -172,7 +172,7 @@ pub trait DocumentTrait {
 
     /// Returns the category of the document as an enum
     fn get_category(&self) -> DocumentCategory {
-        DocumentCategory::from_string(self.get_category_string())
+        DocumentCategory::from(self.get_category_string())
     }
 
     /// Returns the references of this document
@@ -215,10 +215,9 @@ pub enum DocumentCategory {
     CsafSuperseded,
     CsafDeprecatedSecurityAdvisory,
 }
-
-impl DocumentCategory {
-    pub fn from_string(category: &str) -> Self {
-        match category {
+impl From<&String> for DocumentCategory {
+    fn from(category: &String) -> Self {
+        match category.as_str() {
             "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
             "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
             "csaf_security_advisory" => DocumentCategory::CsafSecurityAdvisory,
@@ -226,7 +225,7 @@ impl DocumentCategory {
             "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
             "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
             "csaf_superseded" => DocumentCategory::CsafSuperseded,
-            _ => DocumentCategory::Other("_".to_string()),
+            other => DocumentCategory::Other(other.to_string()),
         }
     }
 }
@@ -374,7 +373,7 @@ pub trait TrackingTrait {
     fn get_version_string(&self) -> &String;
 
     fn get_version(&self) -> VersionNumber {
-        VersionNumber::from_number(self.get_version_string())
+        VersionNumber::from(self.get_version_string())
     }
 }
 
@@ -384,10 +383,15 @@ pub enum VersionNumber {
     Semver(Version),
 }
 
-impl VersionNumber {
+impl From<&str> for VersionNumber {
+    fn from(value: &str) -> Self {
+        VersionNumber::from(&value.to_string())
+    }
+}
+impl From<&String> for VersionNumber {
     /// Parses a string to either intver or semver
     /// Will panic if not parseable
-    pub fn from_number(number: &str) -> Self {
+    fn from(number: &String) -> Self {
         if let Ok(number) = number.parse::<u64>() {
             return VersionNumber::Integer(number);
         } else if let Ok(number) = Version::parse(number) {
@@ -395,7 +399,9 @@ impl VersionNumber {
         }
         panic!("Version could not be parsed as intver or semver")
     }
+}
 
+impl VersionNumber {
     /// Gets the version number for intver / the major version for semver
     pub fn get_major(&self) -> u64 {
         match self {
@@ -505,7 +511,7 @@ pub trait RevisionTrait {
     fn get_number_string(&self) -> &String;
 
     fn get_number(&self) -> VersionNumber {
-        VersionNumber::from_number(self.get_number_string())
+        VersionNumber::from(self.get_number_string())
     }
 
     /// Returns the summary of changes in this revision
@@ -1245,43 +1251,9 @@ pub enum HashAlgorithm {
     Other(String),
 }
 
-impl HashAlgorithm {
-    /// Converts the enum variant to its string representation
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            HashAlgorithm::Blake2b512 => "blake2b512",
-            HashAlgorithm::Blake2s256 => "blake2s256",
-            HashAlgorithm::Md4 => "md4",
-            HashAlgorithm::Md5 => "md5",
-            HashAlgorithm::Md5Sha1 => "md5-sha1",
-            HashAlgorithm::Mdc2 => "mdc2",
-            HashAlgorithm::Ripemd => "ripemd",
-            HashAlgorithm::Ripemd160 => "ripemd160",
-            HashAlgorithm::Rmd160 => "rmd160",
-            HashAlgorithm::Sha1 => "sha1",
-            HashAlgorithm::Sha224 => "sha224",
-            HashAlgorithm::Sha256 => "sha256",
-            HashAlgorithm::Sha3_224 => "sha3-224",
-            HashAlgorithm::Sha3_256 => "sha3-256",
-            HashAlgorithm::Sha3_384 => "sha3-384",
-            HashAlgorithm::Sha3_512 => "sha3-512",
-            HashAlgorithm::Sha384 => "sha384",
-            HashAlgorithm::Sha512 => "sha512",
-            HashAlgorithm::Sha512_224 => "sha512-224",
-            HashAlgorithm::Sha512_256 => "sha512-256",
-            HashAlgorithm::Shake128 => "shake128",
-            HashAlgorithm::Shake256 => "shake256",
-            HashAlgorithm::Sm3 => "sm3",
-            HashAlgorithm::Ssl3Md5 => "ssl3-md5",
-            HashAlgorithm::Ssl3Sha1 => "ssl3-sha1",
-            HashAlgorithm::Whirlpool => "whirlpool",
-            HashAlgorithm::Other(other) => other.as_str(),
-        }
-    }
-
-    /// Parses a string into a HashAlgorithm enum variant (case-insensitive)
-    pub fn from_str(s: &str) -> HashAlgorithm {
-        match s.to_lowercase().as_str() {
+impl From<&String> for HashAlgorithm {
+    fn from(algo: &String) -> Self {
+        match algo.as_str() {
             "blake2b512" => HashAlgorithm::Blake2b512,
             "blake2s256" => HashAlgorithm::Blake2s256,
             "md4" => HashAlgorithm::Md4,
@@ -1315,7 +1287,39 @@ impl HashAlgorithm {
 
 impl Display for HashAlgorithm {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "{}", self.as_str())
+        write!(
+            f,
+            "{}",
+            match self {
+                HashAlgorithm::Blake2b512 => "blake2b512",
+                HashAlgorithm::Blake2s256 => "blake2s256",
+                HashAlgorithm::Md4 => "md4",
+                HashAlgorithm::Md5 => "md5",
+                HashAlgorithm::Md5Sha1 => "md5-sha1",
+                HashAlgorithm::Mdc2 => "mdc2",
+                HashAlgorithm::Ripemd => "ripemd",
+                HashAlgorithm::Ripemd160 => "ripemd160",
+                HashAlgorithm::Rmd160 => "rmd160",
+                HashAlgorithm::Sha1 => "sha1",
+                HashAlgorithm::Sha224 => "sha224",
+                HashAlgorithm::Sha256 => "sha256",
+                HashAlgorithm::Sha3_224 => "sha3-224",
+                HashAlgorithm::Sha3_256 => "sha3-256",
+                HashAlgorithm::Sha3_384 => "sha3-384",
+                HashAlgorithm::Sha3_512 => "sha3-512",
+                HashAlgorithm::Sha384 => "sha384",
+                HashAlgorithm::Sha512 => "sha512",
+                HashAlgorithm::Sha512_224 => "sha512-224",
+                HashAlgorithm::Sha512_256 => "sha512-256",
+                HashAlgorithm::Shake128 => "shake128",
+                HashAlgorithm::Shake256 => "shake256",
+                HashAlgorithm::Sm3 => "sm3",
+                HashAlgorithm::Ssl3Md5 => "ssl3-md5",
+                HashAlgorithm::Ssl3Sha1 => "ssl3-sha1",
+                HashAlgorithm::Whirlpool => "whirlpool",
+                HashAlgorithm::Other(other) => other.as_str(),
+            }
+        )
     }
 }
 
@@ -1329,7 +1333,7 @@ pub trait FileHashTrait {
 
     /// Returns the hashing algorithm as HashAlgorithm enum
     fn get_algorithm(&self) -> HashAlgorithm {
-        HashAlgorithm::from_str(self.get_hash())
+        HashAlgorithm::from(self.get_algorithm_string())
     }
 }
 

@@ -690,7 +690,7 @@ impl HashTrait for CryptographicHashes {
 }
 
 impl FileHashTrait for FileHash {
-    fn get_algorithm(&self) -> &String {
+    fn get_algorithm_string(&self) -> &String {
         self.algorithm.deref()
     }
 

@@ -69,7 +69,7 @@ mod tests {
     fn test_test_6_2_04() {
         let case_01 = Err(vec![create_build_metadata_in_rev_history_error(
             0,
-            VersionNumber::from_number("1.0.0+exp.sha.ac00785"),
+            VersionNumber::from("1.0.0+exp.sha.ac00785"),
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases

@@ -122,7 +122,6 @@ fn test_6_1_21_err_missing_version_in_range(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf_traits::VersionNumber;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
@@ -130,13 +129,13 @@ mod tests {
     fn test_test_6_1_21() {
         // Error cases
         let case_01 = Err(vec![test_6_1_21_err_missing_version_in_range(
-            VersionNumber::from_number("1"),
+            VersionNumber::from("1"),
             2,
             1,
             3,
         )]);
         let case_02 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            VersionNumber::from_number("2"),
+            VersionNumber::from("2"),
             "0".to_string(),
         )]);
 
@@ -154,7 +153,7 @@ mod tests {
             case_01,
             case_02,
             Err(vec![test_6_1_21_err_missing_version_in_range(
-                VersionNumber::from_number("1"),
+                VersionNumber::from("1"),
                 2,
                 1,
                 4,

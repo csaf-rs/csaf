@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
-use crate::profile_test_helper::ProfileTestConfig;
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
@@ -13,7 +13,7 @@ fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError 
     }
 }
 
-const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&[
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
     DocumentCategory::CsafInformationalAdvisory,
     DocumentCategory::CsafSecurityIncidentResponse,
 ]);
@@ -28,7 +28,7 @@ const PROFILE_TEST_CONFIG: ProfileTestConfig = ProfileTestConfig::new().shared(&
 pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    if PROFILE_TEST_CONFIG.is_ignored_for_on_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
+    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 

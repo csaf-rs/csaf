@@ -40,8 +40,8 @@ jobs:
       - name: Prepare target
         run: rustup target add ${{ matrix.target.arch }}
       - name: Set Rust version if not MSRV
-        if: ${{ matrix.version == 'stable' }}
-        run: rustup override set stable
+       
+        run: rustup override set ${{ matrix.version }}
       - name: Update assets
         run: ./update_assets.sh
       - name: Format check

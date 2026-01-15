@@ -48,11 +48,13 @@ jobs:
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: rustup component add --toolchain ${{ matrix.version}}-${{ matrix.target.arch }} clippy
       - name: Install cargo-auditable
-        run: cargo install cargo-auditable
+        run: cargo install cargo-auditable --locked --version '~0.6'
       - name: Use cache
         uses: Swatinem/rust-cache@v2
         with:
           key: build-${{ matrix.target.arch }}
+      - name: Check compilation
+        run: cargo check --target=${{ matrix.target.arch }} --verbose
       - name: Format check
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo fmt --all --check -- -l
@@ -64,11 +66,10 @@ jobs:
       - name: Build
         run: cargo auditable build --target=${{ matrix.target.arch }} --release --verbose
       - name: Build WASM bindings
+        if: ${{ matrix.target.arch == 'wasm32-wasip2' }}
         run: |
-          if [ "${{ matrix.target.arch }}" = "wasm32-wasip2" ]; then
             cargo install wasm-pack
             wasm-pack build csaf-rs --scope csaf-rs
-          fi
       - name: Run tests
         run: cargo test --target=${{ matrix.target.arch }} --verbose
         if: ${{ matrix.target.skip-test != true }}

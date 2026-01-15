@@ -41,6 +41,8 @@ jobs:
         run: rustup target add ${{ matrix.target.arch }}
       - name: Set Rust version
         run: rustup override set ${{ matrix.version }}
+      - name: Install rustfmt
+        run: rustup component add --toolchain ${{ matrix.version}}-${{ matrix.target.arch }} rustfmt
       - name: Update assets
         run: ./update_assets.sh
       - name: Format check

@@ -111,6 +111,14 @@ pub trait CsafTrait {
         ids.append(&mut self.get_product_tree_product_references());
         ids
     }
+
+    /// Utility function to get all product IDs referenced (expect those explicitly defined) in the document.
+    fn get_all_product_references_ids(&self) -> Vec<String> {
+        self.get_all_product_references()
+            .iter()
+            .map(|(id, _)| id.to_owned())
+            .collect()
+    }
 }
 
 /// Trait representing document meta-level information
@@ -419,6 +427,15 @@ impl VersionNumber {
     pub fn is_semver_has_prerelease(&self) -> bool {
         if let VersionNumber::Semver(version) = self {
             return !version.pre.is_empty();
+        }
+        false
+    }
+
+    /// Checks whether the semver has build metadata, always `false` for intver
+    /// Hard coupled check that version is semver and has build metadata
+    pub fn is_semver_has_build_metadata(&self) -> bool {
+        if let VersionNumber::Semver(version) = self {
+            return !version.build.is_empty();
         }
         false
     }

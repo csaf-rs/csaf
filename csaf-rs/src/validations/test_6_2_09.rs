@@ -16,7 +16,7 @@ pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result
                     if hash.contains_only_sha1_hash() {
                         errors
                             .get_or_insert_with(Vec::new)
-                            .push(create_md5_only_hash_error(path, h_i));
+                            .push(create_sha1_only_hash_error(path, h_i));
                     }
                 }
             }
@@ -26,9 +26,9 @@ pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result
     errors.map_or(Ok(()), Err)
 }
 
-fn create_md5_only_hash_error(path: &str, hash_index: usize) -> ValidationError {
+fn create_sha1_only_hash_error(path: &str, hash_index: usize) -> ValidationError {
     ValidationError {
-        message: "Product identification helper via hashes uses MD5 as the only hash algorithm".to_string(),
+        message: "Product identification helper via hashes uses SHA-1 as the only hash algorithm".to_string(),
         instance_path: format!("{}/product_identification_helper/hashes/{}", path, hash_index),
     }
 }
@@ -63,7 +63,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_09() {
-        let case_01_and_02 = Err(vec![create_md5_only_hash_error(
+        let case_01_and_02 = Err(vec![create_sha1_only_hash_error(
             "/product_tree/full_product_names/0",
             0,
         )]);

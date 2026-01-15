@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
-use crate::document_category_test_helper::ProfileTestConfig;
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
 /// 6.1.27.5 Vulnerability Notes

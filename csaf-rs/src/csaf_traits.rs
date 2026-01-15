@@ -1201,6 +1201,26 @@ pub trait HashTrait {
 
     /// returns
     fn get_file_hashes(&self) -> &Vec<Self::FileHashType>;
+
+    /// Returns true if only a single SHA1 hash is present
+    fn contains_only_sha1_hash(&self) -> bool {
+        for hash in self.get_file_hashes() {
+            if hash.get_algorithm().to_lowercase() != "sha1" {
+                return false;
+            }
+        }
+        true
+    }
+
+    /// Returns true if only a single MD5 hash is present
+    fn contains_only_md5_hash(&self) -> bool {
+        for hash in self.get_file_hashes() {
+            if hash.get_algorithm().to_lowercase() != "md5" {
+                return false;
+            }
+        }
+        true
+    }
 }
 
 /// Trait representing a file_hash, identified by the used hash algorithm and the hash

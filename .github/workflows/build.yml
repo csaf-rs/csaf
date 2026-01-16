@@ -71,7 +71,7 @@ jobs:
       - name: Install cargo-auditable
         run: cargo install cargo-auditable --locked
       - name: Build
-        run: cargo auditable build --target=${{ matrix.target.arch }} --release --verbose
+        run: cargo auditable build --target=${{ matrix.version}}-${{ matrix.target.arch }} --release --verbose
       - name: Build WASM bindings
         if: ${{ matrix.target.arch == 'wasm32-wasip2' }}
         run: |

@@ -4,7 +4,7 @@ use crate::csaf_traits::{
     MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
     ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
     ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
-    WithOptionalProductIds,
+    WithOptionalProductIds, CategoryOfTheBranch as CategoryOfTheBranchTrait
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_0::schema::{
@@ -16,8 +16,7 @@ use crate::schema::csaf2_0::schema::{
     RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
-    CategoryOfTheBranch as CategoryOfTheBranch21, CategoryOfTheRemediation as Remediation21,
+    CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21, CategoryOfTheRemediation as Remediation21,
     CategoryOfTheThreat as CategoryOfTheThreat21, DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21,
     LabelOfTlp as Tlp21, NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
@@ -592,20 +591,20 @@ impl BranchTrait<FullProductNameT> for Branch {
         self.branches.as_deref()
     }
 
-    fn get_category(&self) -> &CategoryOfTheBranch21 {
+    fn get_category(&self) -> &CategoryOfTheBranchTrait {
         match self.category {
-            CategoryOfTheBranch::Architecture => &CategoryOfTheBranch21::Architecture,
-            CategoryOfTheBranch::HostName => &CategoryOfTheBranch21::HostName,
-            CategoryOfTheBranch::Language => &CategoryOfTheBranch21::Language,
-            CategoryOfTheBranch::Legacy => &CategoryOfTheBranch21::Legacy,
-            CategoryOfTheBranch::PatchLevel => &CategoryOfTheBranch21::PatchLevel,
-            CategoryOfTheBranch::ProductFamily => &CategoryOfTheBranch21::ProductFamily,
-            CategoryOfTheBranch::ProductName => &CategoryOfTheBranch21::ProductName,
-            CategoryOfTheBranch::ProductVersion => &CategoryOfTheBranch21::ProductVersion,
-            CategoryOfTheBranch::ProductVersionRange => &CategoryOfTheBranch21::ProductVersionRange,
-            CategoryOfTheBranch::ServicePack => &CategoryOfTheBranch21::ServicePack,
-            CategoryOfTheBranch::Specification => &CategoryOfTheBranch21::Specification,
-            CategoryOfTheBranch::Vendor => &CategoryOfTheBranch21::Vendor,
+            CategoryOfTheBranch::Architecture => &CategoryOfTheBranchTrait::Architecture,
+            CategoryOfTheBranch::HostName => &CategoryOfTheBranchTrait::HostName,
+            CategoryOfTheBranch::Language => &CategoryOfTheBranchTrait::Language,
+            CategoryOfTheBranch::Legacy => &CategoryOfTheBranchTrait::Legacy,
+            CategoryOfTheBranch::PatchLevel => &CategoryOfTheBranchTrait::PatchLevel,
+            CategoryOfTheBranch::ProductFamily => &CategoryOfTheBranchTrait::ProductFamily,
+            CategoryOfTheBranch::ProductName => &CategoryOfTheBranchTrait::ProductName,
+            CategoryOfTheBranch::ProductVersion => &CategoryOfTheBranchTrait::ProductVersion,
+            CategoryOfTheBranch::ProductVersionRange => &CategoryOfTheBranchTrait::ProductVersionRange,
+            CategoryOfTheBranch::ServicePack => &CategoryOfTheBranchTrait::ServicePack,
+            CategoryOfTheBranch::Specification => &CategoryOfTheBranchTrait::Specification,
+            CategoryOfTheBranch::Vendor => &CategoryOfTheBranchTrait::Vendor,
         }
     }
 

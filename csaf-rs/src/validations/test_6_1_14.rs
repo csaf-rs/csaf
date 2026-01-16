@@ -4,10 +4,9 @@ use crate::validation::ValidationError;
 fn create_revision_history_error(revision_number: impl std::fmt::Display, path_index: usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "Revision history is not sorted by date, revision with number {} is out of place",
-            revision_number
+            "Revision history is not sorted by date, revision with number {revision_number} is out of place"
         ),
-        instance_path: format!("/document/tracking/revision_history/{}", path_index),
+        instance_path: format!("/document/tracking/revision_history/{path_index}"),
     }
 }
 

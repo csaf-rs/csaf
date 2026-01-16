@@ -5,8 +5,7 @@ use crate::validation::ValidationError;
 fn create_must_not_have_vuln_element_error(doc_category: &DocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must not have a '/vulnerabilities' element",
-            doc_category
+            "Document with category '{doc_category}' must not have a '/vulnerabilities' element"
         ),
         instance_path: "/vulnerabilities".to_string(),
     }

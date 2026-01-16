@@ -35,8 +35,7 @@ fn create_contradicting_remediations_error(
             new_category
         ),
         instance_path: format!(
-            "/vulnerabilities/{}/remediations/{}",
-            vulnerability_index, remediation_index
+            "/vulnerabilities/{vulnerability_index}/remediations/{remediation_index}"
         ),
     }
 }

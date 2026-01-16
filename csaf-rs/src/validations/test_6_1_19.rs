@@ -3,8 +3,8 @@ use crate::validation::ValidationError;
 
 fn create_prerelease_version_error(number: impl std::fmt::Display, index: usize) -> ValidationError {
     ValidationError {
-        message: format!("revision history item number '{}' contains a pre-release part", number),
-        instance_path: format!("/document/tracking/revision_history/{}/number", index),
+        message: format!("revision history item number '{number}' contains a pre-release part"),
+        instance_path: format!("/document/tracking/revision_history/{index}/number"),
     }
 }
 

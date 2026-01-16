@@ -6,8 +6,7 @@ use crate::validation::ValidationError;
 fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must have at least one document note with category 'description', 'details', 'general' or 'summary'",
-            doc_category
+            "Document with category '{doc_category}' must have at least one document note with category 'description', 'details', 'general' or 'summary'"
         ),
         instance_path: "/document/notes".to_string(),
     }

@@ -137,7 +137,7 @@ impl ContentTrait for Content {
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
-        format!("/vulnerabilities/{}/metrics/{}/content", vulnerability_idx, metric_idx,)
+        format!("/vulnerabilities/{vulnerability_idx}/metrics/{metric_idx}/content",)
     }
 }
 

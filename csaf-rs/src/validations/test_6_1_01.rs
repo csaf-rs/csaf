@@ -24,7 +24,7 @@ fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<Vali
 
 fn generate_err_msg(ref_id: &str, ref_path: &str) -> ValidationError {
     ValidationError {
-        message: format!("Missing definition of product_id: {}", ref_id),
+        message: format!("Missing definition of product_id: {ref_id}"),
         instance_path: ref_path.to_string(),
     }
 }

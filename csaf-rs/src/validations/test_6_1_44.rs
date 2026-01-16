@@ -5,7 +5,7 @@ use crate::validation::ValidationError;
 fn create_multiple_stars_error(path: &str, index: usize) -> ValidationError {
     ValidationError {
         message: "Serial number must not contain multiple unescaped asterisks (stars)".to_string(),
-        instance_path: format!("{}/product_identification_helper/serial_numbers/{}", path, index),
+        instance_path: format!("{path}/product_identification_helper/serial_numbers/{index}"),
     }
 }
 

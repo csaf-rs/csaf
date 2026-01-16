@@ -18,7 +18,7 @@ fn get_purl_instance_path_substring(csaf_version: &CsafVersion) -> &'static str 
 
 fn generate_purl_regex_error(csaf_version: &CsafVersion, purl_str: &str, path: &str, index: usize) -> ValidationError {
     ValidationError {
-        message: format!("PURL doesn't comply with CSAF PURL regex: {}", purl_str),
+        message: format!("PURL doesn't comply with CSAF PURL regex: {purl_str}"),
         instance_path: format!(
             "{}/product_identification_helper/{}/{}",
             path,
@@ -36,7 +36,7 @@ fn generate_purl_format_error(
     index: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!("Invalid PURL format: {}, Error: {}", purl_str, error_msg),
+        message: format!("Invalid PURL format: {purl_str}, Error: {error_msg}"),
         instance_path: format!(
             "{}/product_identification_helper/{}/{}",
             path,

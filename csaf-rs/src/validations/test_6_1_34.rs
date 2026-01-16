@@ -5,8 +5,8 @@ static MAX_DEPTH: u32 = 30;
 
 fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("Branches recursion depth too big (> {})", MAX_DEPTH),
-        instance_path: format!("/product_tree/branches/{}{}", branch_index, path),
+        message: format!("Branches recursion depth too big (> {MAX_DEPTH})"),
+        instance_path: format!("/product_tree/branches/{branch_index}{path}"),
     }
 }
 

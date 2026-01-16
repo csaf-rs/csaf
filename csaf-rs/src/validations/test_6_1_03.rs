@@ -5,21 +5,21 @@ use std::collections::{HashMap, HashSet};
 fn generate_self_reference_product_error(index: usize) -> ValidationError {
     ValidationError {
         message: "Relationship references itself via product_reference".to_string(),
-        instance_path: format!("/product_tree/relationships/{}/product_reference", index),
+        instance_path: format!("/product_tree/relationships/{index}/product_reference"),
     }
 }
 
 fn generate_self_reference_relates_to_error(index: usize) -> ValidationError {
     ValidationError {
         message: "Relationship references itself via relates_to_product_reference".to_string(),
-        instance_path: format!("/product_tree/relationships/{}/relates_to_product_reference", index),
+        instance_path: format!("/product_tree/relationships/{index}/relates_to_product_reference"),
     }
 }
 
 fn generate_cycle_error(cycle: &[String], relation_index: usize) -> ValidationError {
     ValidationError {
         message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
-        instance_path: format!("/product_tree/relationships/{}", relation_index),
+        instance_path: format!("/product_tree/relationships/{relation_index}"),
     }
 }
 

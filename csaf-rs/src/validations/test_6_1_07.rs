@@ -100,7 +100,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 
 fn create_validation_error(score_type: &VulnerabilityMetric, product_id: &str, path: String) -> ValidationError {
     ValidationError {
-        message: format!("Multiple {} scores are given for {}.", score_type, product_id),
+        message: format!("Multiple {score_type} scores are given for {product_id}."),
         instance_path: format!("{}/{}", path, get_metric_prop_name(score_type.to_owned())),
     }
 }

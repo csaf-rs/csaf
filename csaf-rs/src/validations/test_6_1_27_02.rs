@@ -6,8 +6,7 @@ use crate::validation::ValidationError;
 fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must have at least one reference with category 'external'",
-            doc_category
+            "Document with category '{doc_category}' must have at least one reference with category 'external'"
         ),
         instance_path: "/document/references".to_string(),
     }

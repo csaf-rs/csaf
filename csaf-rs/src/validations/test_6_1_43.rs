@@ -5,7 +5,7 @@ use crate::validation::ValidationError;
 fn create_validation_error(path: &str, index: usize) -> ValidationError {
     ValidationError {
         message: "Model number must not contain multiple unescaped asterisks (stars)".to_string(),
-        instance_path: format!("{}/product_identification_helper/model_numbers/{}", path, index),
+        instance_path: format!("{path}/product_identification_helper/model_numbers/{index}"),
     }
 }
 

@@ -6,16 +6,14 @@ use crate::validation::ValidationError;
 
 static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
     message: format!(
-        "Sharing group name \"{}\" is prohibited without max UUID.",
-        SG_NAME_PUBLIC
+        "Sharing group name \"{SG_NAME_PUBLIC}\" is prohibited without max UUID."
     ),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });
 
 static PRIVATE_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
     message: format!(
-        "Sharing group name \"{}\" is prohibited without nil UUID.",
-        SG_NAME_PRIVATE
+        "Sharing group name \"{SG_NAME_PRIVATE}\" is prohibited without nil UUID."
     ),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });

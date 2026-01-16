@@ -5,10 +5,9 @@ use std::mem::discriminant;
 fn create_mixed_versioning_error(doc_version: &str, rev_number: &str, revision_index: usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "The document version '{}' and revision history number '{}' use different versioning schemes",
-            doc_version, rev_number
+            "The document version '{doc_version}' and revision history number '{rev_number}' use different versioning schemes"
         ),
-        instance_path: format!("/document/tracking/revision_history/{}/number", revision_index),
+        instance_path: format!("/document/tracking/revision_history/{revision_index}/number"),
     }
 }
 

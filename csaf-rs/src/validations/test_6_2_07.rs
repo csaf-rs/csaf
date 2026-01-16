@@ -28,8 +28,7 @@ fn create_missing_date_in_involvements_error(vulnerability_index: usize, involve
     ValidationError {
         message: "Involvement item is missing required 'date' field".to_string(),
         instance_path: format!(
-            "/vulnerabilities/{}/involvements/{}",
-            vulnerability_index, involvement_index
+            "/vulnerabilities/{vulnerability_index}/involvements/{involvement_index}"
         ),
     }
 }

@@ -67,11 +67,12 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
             for remediation in vuln.get_remediations() {
                 if (remediation.get_category() == CategoryOfTheRemediation::NoneAvailable
                     || remediation.get_category() == CategoryOfTheRemediation::NoFixPlanned)
-                    && let Some(product_ids) = remediation.get_product_ids() {
-                        for product_id in product_ids {
-                            remediation_product_ids.insert(product_id.clone());
-                        }
+                    && let Some(product_ids) = remediation.get_product_ids()
+                {
+                    for product_id in product_ids {
+                        remediation_product_ids.insert(product_id.clone());
                     }
+                }
             }
 
             // check each relevant product status group for missing remediations

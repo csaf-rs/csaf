@@ -56,9 +56,10 @@ impl DocumentCategoryTestConfig {
     ) -> bool {
         // First check shared categories
         if let Some(shared) = self.shared_categories
-            && shared.contains(document_category) {
-                return true;
-            }
+            && shared.contains(document_category)
+        {
+            return true;
+        }
 
         // Then check version-specific categories
         match csaf_version {

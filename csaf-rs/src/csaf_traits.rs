@@ -48,9 +48,7 @@ pub trait CsafTrait {
     fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
         id_path_tuples
             .iter()
-            .map(|(group_or_product_id, path)| {
-                (group_or_product_id.to_owned(), format!("/{prefix}/{idx}/{path}"))
-            })
+            .map(|(group_or_product_id, path)| (group_or_product_id.to_owned(), format!("/{prefix}/{idx}/{path}")))
             .collect()
     }
 
@@ -695,9 +693,10 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds {
                 None => BTreeSet::new(),
             };
             if let Some(product_groups) = self.get_group_ids()
-                && let Some(product_ids) = resolve_product_groups(doc, product_groups) {
-                    product_set.extend(product_ids.iter().map(|id| id.to_owned()));
-                }
+                && let Some(product_ids) = resolve_product_groups(doc, product_groups)
+            {
+                product_set.extend(product_ids.iter().map(|id| id.to_owned()));
+            }
             Some(product_set)
         }
     }

@@ -13,9 +13,7 @@ fn create_document_id_multiple_vulnerabilities_error(
         message: format!(
             "The SSVC target ID equals the document ID '{document_id}' and the document contains multiple vulnerabilities"
         ),
-        instance_path: format!(
-            "/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"
-        ),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"),
     }
 }
 
@@ -24,9 +22,7 @@ fn create_target_id_mismatch_error(target_id: &str, i_v: usize, i_m: usize, i_t:
         message: format!(
             "The SSVC target ID '{target_id}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability"
         ),
-        instance_path: format!(
-            "/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"
-        ),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"),
     }
 }
 
@@ -69,15 +65,17 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
 
                                     // Check if it matches CVE
                                     if let Some(cve) = v.get_cve()
-                                        && target_id == cve {
-                                            continue;
-                                        }
+                                        && target_id == cve
+                                    {
+                                        continue;
+                                    }
 
                                     // Check if it matches any ID in id array
                                     if let Some(ids) = v.get_ids()
-                                        && ids.iter().any(|id| id.get_text() == target_id) {
-                                            continue;
-                                        }
+                                        && ids.iter().any(|id| id.get_text() == target_id)
+                                    {
+                                        continue;
+                                    }
 
                                     // Return error if target ID is not valid
                                     return Err(vec![create_target_id_mismatch_error(target_id, i_v, i_m, i_t)]);

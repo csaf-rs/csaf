@@ -10,9 +10,7 @@ fn generate_duplicate_involvement_error(
     inv_r: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Duplicate usage of tuple of involvement date {date} and party {party}"
-        ),
+        message: format!("Duplicate usage of tuple of involvement date {date} and party {party}"),
         instance_path: format!("/vulnerabilities/{vul_r}/involvements/{inv_r}"),
     }
 }

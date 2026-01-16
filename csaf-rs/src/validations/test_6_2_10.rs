@@ -9,9 +9,10 @@ pub fn test_6_2_10_missing_tlp_label(doc: &impl CsafTrait) -> Result<(), Vec<Val
     // We just need to consider get_distribution_20 / get_tlp_20 here, in CSAF 2.1 this field is mandatory and
     // validated via the schema. This test will not run for CSAF 2.1 documents.
     if let Some(distribution_20) = doc.get_document().get_distribution_20()
-        && distribution_20.get_tlp_20().is_some() {
-            return Ok(());
-        }
+        && distribution_20.get_tlp_20().is_some()
+    {
+        return Ok(());
+    }
     Err(vec![MISSING_TLP_LABEL_ERROR.clone()])
 }
 

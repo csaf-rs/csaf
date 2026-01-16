@@ -30,9 +30,11 @@ pub fn test_6_1_38_non_public_sharing_group_max_uuid(doc: &impl CsafTrait) -> Re
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group()
-        && sharing_group.get_id() == MAX_UUID && distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() != Clear {
-            return Err(vec![NON_PUBLIC_SHARING_GROUP_ERROR.clone()]);
-        }
+        && sharing_group.get_id() == MAX_UUID
+        && distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() != Clear
+    {
+        return Err(vec![NON_PUBLIC_SHARING_GROUP_ERROR.clone()]);
+    }
 
     Ok(())
 }

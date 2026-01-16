@@ -124,9 +124,10 @@ fn generate_language_subtags() -> Result<(), BuildError> {
 
         if let Some(ref entry_type) = current_entry_type
             && entry_type == "language"
-                && let Some(subtag) = line.strip_prefix("Subtag: ") {
-                    subtags.push(subtag.to_lowercase().to_string());
-                }
+            && let Some(subtag) = line.strip_prefix("Subtag: ")
+        {
+            subtags.push(subtag.to_lowercase().to_string());
+        }
     }
 
     subtags.sort_unstable();

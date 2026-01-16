@@ -15,9 +15,10 @@ pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<Validatio
     let document = doc.get_document();
     if let Some(lang) = document.get_lang()
         && let Some(source_lang) = document.get_source_lang()
-            && lang.to_lowercase() == source_lang.to_lowercase() {
-                return Err(vec![create_same_language_error(lang)]);
-            }
+        && lang.to_lowercase() == source_lang.to_lowercase()
+    {
+        return Err(vec![create_same_language_error(lang)]);
+    }
 
     Ok(())
 }

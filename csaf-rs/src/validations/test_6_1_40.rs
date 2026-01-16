@@ -5,16 +5,12 @@ use crate::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
 use crate::validation::ValidationError;
 
 static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!(
-        "Sharing group name \"{SG_NAME_PUBLIC}\" is prohibited without max UUID."
-    ),
+    message: format!("Sharing group name \"{SG_NAME_PUBLIC}\" is prohibited without max UUID."),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });
 
 static PRIVATE_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!(
-        "Sharing group name \"{SG_NAME_PRIVATE}\" is prohibited without nil UUID."
-    ),
+    message: format!("Sharing group name \"{SG_NAME_PRIVATE}\" is prohibited without nil UUID."),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });
 
@@ -41,15 +37,16 @@ pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<()
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group()
-        && let Some(sharing_group_name) = sharing_group.get_name() {
-            if sharing_group_name == SG_NAME_PUBLIC {
-                if sharing_group.get_id() != MAX_UUID {
-                    return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
-                }
-            } else if sharing_group_name == SG_NAME_PRIVATE && sharing_group.get_id() != NIL_UUID {
-                return Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]);
+        && let Some(sharing_group_name) = sharing_group.get_name()
+    {
+        if sharing_group_name == SG_NAME_PUBLIC {
+            if sharing_group.get_id() != MAX_UUID {
+                return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
             }
+        } else if sharing_group_name == SG_NAME_PRIVATE && sharing_group.get_id() != NIL_UUID {
+            return Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]);
         }
+    }
 
     Ok(())
 }

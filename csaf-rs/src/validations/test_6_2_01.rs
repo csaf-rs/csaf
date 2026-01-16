@@ -4,9 +4,7 @@ use crate::validation::ValidationError;
 
 fn create_unused_product_id_error(product_id: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Product ID '{product_id}' is defined but not referenced in the document"
-        ),
+        message: format!("Product ID '{product_id}' is defined but not referenced in the document"),
         instance_path: format!("{path}/product_id"),
     }
 }

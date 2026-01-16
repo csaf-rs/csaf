@@ -23,11 +23,11 @@ pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec
                 || product_status.get_known_affected().is_some()
                 || product_status.get_known_not_affected().is_some()
                 || product_status.get_under_investigation().is_some())
-            {
-                errors
-                    .get_or_insert_with(Vec::new)
-                    .push(test_6_1_27_07_err_generator(&doc_category, &v_i));
-            }
+        {
+            errors
+                .get_or_insert_with(Vec::new)
+                .push(test_6_1_27_07_err_generator(&doc_category, &v_i));
+        }
     }
 
     errors.map_or(Ok(()), Err)

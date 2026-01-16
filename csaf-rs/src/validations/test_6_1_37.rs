@@ -32,9 +32,10 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
 
     // Check the generator date if present
     if let Some(generator) = tracking.get_generator()
-        && let Some(date) = generator.get_date() {
-            check_datetime(date, "/document/tracking/generator/date")?;
-        }
+        && let Some(date) = generator.get_date()
+    {
+        check_datetime(date, "/document/tracking/generator/date")?;
+    }
 
     // Check revision history dates if present
     for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
@@ -112,9 +113,7 @@ fn create_invalid_format_error(date_time: &str, instance_path: &str) -> Validati
 
 fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Date-time string {date_time} matched RFC3339 regex but failed chrono parsing: {error}"
-        ),
+        message: format!("Date-time string {date_time} matched RFC3339 regex but failed chrono parsing: {error}"),
         instance_path: instance_path.to_string(),
     }
 }

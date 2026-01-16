@@ -86,9 +86,7 @@ fn test_6_1_21_err_wrong_first_version_generator(version: VersionNumber, path: S
     }
     .to_string();
     ValidationError {
-        message: format!(
-            "The first revision history item should have {version_error}, but was {version}"
-        ),
+        message: format!("The first revision history item should have {version_error}, but was {version}"),
         instance_path: format!("/document/tracking/revision_history/{path}"),
     }
 }
@@ -110,9 +108,7 @@ fn test_6_1_21_err_missing_version_in_range(
     }
     .to_string();
     ValidationError {
-        message: format!(
-            "Missing revision history item with {version_error} number {version_error_range}"
-        ),
+        message: format!("Missing revision history item with {version_error} number {version_error_range}"),
         instance_path: "/document/tracking/revision_history".to_string(),
     }
 }

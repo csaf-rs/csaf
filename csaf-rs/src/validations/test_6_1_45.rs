@@ -53,9 +53,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     for (i_rev, rev) in revision_history.iter().enumerate() {
         chrono::DateTime::parse_from_rfc3339(rev.get_date())
             .map(|rev_datetime| {
-                println!(
-                    "rev_datetime: {rev_datetime:?}, newest_revision_date: {newest_revision_date:?}"
-                );
+                println!("rev_datetime: {rev_datetime:?}, newest_revision_date: {newest_revision_date:?}");
                 newest_revision_date = match newest_revision_date {
                     None => Some(rev_datetime),
                     Some(prev_max) => Some(prev_max.max(rev_datetime)),
@@ -70,9 +68,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
             if let Some(disclosure_date) = v.get_disclosure_date() {
                 match chrono::DateTime::parse_from_rfc3339(disclosure_date) {
                     Ok(disclosure_datetime) => {
-                        println!(
-                            "disclosure_datetime: {disclosure_datetime:?}, newest_date: {newest_date:?}"
-                        );
+                        println!("disclosure_datetime: {disclosure_datetime:?}, newest_date: {newest_date:?}");
                         if disclosure_datetime > newest_date {
                             return Err(vec![create_disclosure_date_too_late_error(i_v)]);
                         }

@@ -48,7 +48,7 @@ jobs:
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: rustup component add --toolchain ${{ matrix.version}}-${{ matrix.target.arch }} clippy
       - name: Install cargo-auditable
-        run: cargo install cargo-auditable --locked --version '~0.6'
+        run: cargo install cargo-auditable --locked
       - name: Use cache
         uses: Swatinem/rust-cache@v2
         with:

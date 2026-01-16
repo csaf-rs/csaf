@@ -92,7 +92,7 @@ fn get_testcases_schemas() -> Vec<SchemaInfo> {
 /// Patches (unsupported) external schemas to the plain object type for CSAF 2.0.
 fn fix_2_0_schema(value: &mut Value) {
     let prefix = "properties.vulnerabilities.items.properties.scores.items.properties";
-    let fix_paths = [format!("{}.cvss_v2", prefix), format!("{}.cvss_v3", prefix)];
+    let fix_paths = [format!("{prefix}.cvss_v2"), format!("{prefix}.cvss_v3")];
     for path in fix_paths {
         value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
     }
@@ -103,11 +103,11 @@ fn fix_2_0_schema(value: &mut Value) {
 fn fix_2_1_schema(value: &mut Value) {
     let prefix = "properties.vulnerabilities.items.properties.metrics.items.properties.content.properties";
     let fix_paths = [
-        format!("{}.cvss_v2", prefix),
-        format!("{}.cvss_v3", prefix),
-        format!("{}.cvss_v4", prefix),
-        format!("{}.ssvc_v1", prefix),
-        format!("{}.ssvc_v2", prefix),
+        format!("{prefix}.cvss_v2"),
+        format!("{prefix}.cvss_v3"),
+        format!("{prefix}.cvss_v4"),
+        format!("{prefix}.ssvc_v1"),
+        format!("{prefix}.ssvc_v2"),
     ];
     for path in fix_paths {
         value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();

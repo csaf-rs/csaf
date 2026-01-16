@@ -22,8 +22,8 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
-            if let Some(helper) = product.get_product_identification_helper() {
-                if let Some(purls) = helper.get_purls() {
+            if let Some(helper) = product.get_product_identification_helper()
+                && let Some(purls) = helper.get_purls() {
                     if purls.len() <= 1 {
                         return;
                     }
@@ -58,7 +58,6 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
                         }
                     }
                 }
-            }
         });
     }
 

@@ -122,13 +122,11 @@ fn generate_language_subtags() -> Result<(), BuildError> {
             continue;
         }
 
-        if let Some(ref entry_type) = current_entry_type {
-            if entry_type == "language" {
-                if let Some(subtag) = line.strip_prefix("Subtag: ") {
+        if let Some(ref entry_type) = current_entry_type
+            && entry_type == "language"
+                && let Some(subtag) = line.strip_prefix("Subtag: ") {
                     subtags.push(subtag.to_lowercase().to_string());
                 }
-            }
-        }
     }
 
     subtags.sort_unstable();

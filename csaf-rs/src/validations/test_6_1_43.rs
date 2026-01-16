@@ -14,8 +14,8 @@ pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Resul
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
-            if let Some(helper) = product.get_product_identification_helper() {
-                if let Some(model_numbers) = helper.get_model_numbers() {
+            if let Some(helper) = product.get_product_identification_helper()
+                && let Some(model_numbers) = helper.get_model_numbers() {
                     for (index, model_number) in model_numbers.enumerate() {
                         if count_unescaped_stars(model_number) > 1 {
                             errors
@@ -24,7 +24,6 @@ pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Resul
                         }
                     }
                 }
-            }
         });
     }
 

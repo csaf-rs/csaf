@@ -694,11 +694,10 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds {
                 Some(product_ids) => product_ids.map(|id| (*id).to_owned()).collect(),
                 None => BTreeSet::new(),
             };
-            if let Some(product_groups) = self.get_group_ids() {
-                if let Some(product_ids) = resolve_product_groups(doc, product_groups) {
+            if let Some(product_groups) = self.get_group_ids()
+                && let Some(product_ids) = resolve_product_groups(doc, product_groups) {
                     product_set.extend(product_ids.iter().map(|id| id.to_owned()));
                 }
-            }
             Some(product_set)
         }
     }

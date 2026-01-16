@@ -30,13 +30,12 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         // generate hashmap of all known_not_affected product or group ids with value of known_not_affected path index
         let mut known_not_affected_product_or_group_ids: HashMap<String, usize> = HashMap::new();
-        if let Some(product_status) = vulnerability.get_product_status() {
-            if let Some(known_not_affected) = product_status.get_known_not_affected() {
+        if let Some(product_status) = vulnerability.get_product_status()
+            && let Some(known_not_affected) = product_status.get_known_not_affected() {
                 for (kna_i, known_not_affected_entry) in known_not_affected.into_iter().enumerate() {
                     known_not_affected_product_or_group_ids.insert(known_not_affected_entry.to_owned(), kna_i);
                 }
             }
-        }
 
         // generate all unique product ids and group ids found in flags and threats with category impact
         let mut found_product_ids: HashSet<String> = HashSet::new();

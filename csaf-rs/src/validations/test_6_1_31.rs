@@ -75,8 +75,8 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
-    if let Some(product_tree) = doc.get_product_tree().as_ref() {
-        if let Some(branches) = product_tree.get_branches().as_ref() {
+    if let Some(product_tree) = doc.get_product_tree().as_ref()
+        && let Some(branches) = product_tree.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
                 branch.visit_branches_rec(&format!("/product_tree/branches/{i}"), &mut |branch, path| {
                     if branch.get_category() == &CategoryOfTheBranch::ProductVersion {
@@ -96,7 +96,6 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
                 });
             }
         }
-    }
 
     errors.map_or(Ok(()), Err)
 }

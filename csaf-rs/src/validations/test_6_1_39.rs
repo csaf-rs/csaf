@@ -30,8 +30,8 @@ static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| 
 pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
-    if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() == Clear {
-        if let Some(sharing_group) = distribution.get_sharing_group() {
+    if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() == Clear
+        && let Some(sharing_group) = distribution.get_sharing_group() {
             let sharing_group_id = sharing_group.get_id();
             return if sharing_group_id == MAX_UUID
                 || (sharing_group_id == NIL_UUID
@@ -42,7 +42,6 @@ pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(doc: &impl CsafTrait) -
                 Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()])
             };
         }
-    }
 
     Ok(())
 }

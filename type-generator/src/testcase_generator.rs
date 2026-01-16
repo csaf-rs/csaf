@@ -54,20 +54,20 @@ fn generate_test_cases_from_json(
 
         if let Some(failures) = test["failures"].as_array() {
             for failure in failures {
-                if let Some(name) = failure["name"].as_str() {
-                    if let Some(case_num) = extract_test_case_number(name) {
-                        failure_docs.push((case_num, name.to_string()));
-                    }
+                if let Some(name) = failure["name"].as_str()
+                    && let Some(case_num) = extract_test_case_number(name)
+                {
+                    failure_docs.push((case_num, name.to_string()));
                 }
             }
         }
 
         if let Some(valid_cases) = test.get("valid").and_then(|v| v.as_array()) {
             for valid in valid_cases {
-                if let Some(name) = valid["name"].as_str() {
-                    if let Some(case_num) = extract_test_case_number(name) {
-                        valid_docs.push((case_num, name.to_string()));
-                    }
+                if let Some(name) = valid["name"].as_str()
+                    && let Some(case_num) = extract_test_case_number(name)
+                {
+                    valid_docs.push((case_num, name.to_string()));
                 }
             }
         }
@@ -84,7 +84,7 @@ fn generate_test_cases_from_json(
         let all_docs: Vec<_> = failure_docs.iter().chain(valid_docs.iter()).collect();
 
         for (case_num, _) in &all_docs {
-            param_names.push(Ident::new(&format!("case_{}", case_num), Span::call_site()));
+            param_names.push(Ident::new(&format!("case_{case_num}"), Span::call_site()));
             param_types.push(quote! { Result<(), Vec<crate::validation::ValidationError>> });
         }
 
@@ -93,7 +93,7 @@ fn generate_test_cases_from_json(
             .iter()
             .enumerate()
             .map(|(idx, (case_num, path))| {
-                let full_path = format!("{}/{}", base_dir, path);
+                let full_path = format!("{base_dir}/{path}");
                 let param_name = &param_names[idx];
                 quote! {
                     (
@@ -112,7 +112,7 @@ fn generate_test_cases_from_json(
             .collect();
 
         // Generate validator struct name
-        let validator_name = format!("ValidatorFor{}", struct_name);
+        let validator_name = format!("ValidatorFor{struct_name}");
         let validator_ident = Ident::new(&validator_name, Span::call_site());
 
         // Generate the struct definition using the shared TestValidator trait
@@ -219,7 +219,7 @@ pub fn generate_testcases(
     csaf_version: CsafVersion,
     target_path: &str,
 ) -> Result<(), BuildError> {
-    println!("cargo:rerun-if-changed={}", input);
+    println!("cargo:rerun-if-changed={input}");
 
     let content = fs::read_to_string(input)?;
 

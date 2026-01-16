@@ -24,11 +24,11 @@ fn gather_product_metrics(
         if content.get_cvss_v2().is_some() {
             present_metric_types.insert(CvssV2);
         }
-        if let Some(cvss_v3) = content.get_cvss_v3() {
-            if let Some(version) = cvss_v3.get("version").and_then(|v| v.as_str()) {
-                // Use as_str because otherwise additional quotation marks would be included
-                present_metric_types.insert(CvssV3(version.to_owned()));
-            }
+        if let Some(cvss_v3) = content.get_cvss_v3()
+            && let Some(version) = cvss_v3.get("version").and_then(|v| v.as_str())
+        {
+            // Use as_str because otherwise additional quotation marks would be included
+            present_metric_types.insert(CvssV3(version.to_owned()));
         }
         if content.get_cvss_v4().is_some() {
             present_metric_types.insert(CvssV4);
@@ -100,7 +100,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 
 fn create_validation_error(score_type: &VulnerabilityMetric, product_id: &str, path: String) -> ValidationError {
     ValidationError {
-        message: format!("Multiple {} scores are given for {}.", score_type, product_id),
+        message: format!("Multiple {score_type} scores are given for {product_id}."),
         instance_path: format!("{}/{}", path, get_metric_prop_name(score_type.to_owned())),
     }
 }

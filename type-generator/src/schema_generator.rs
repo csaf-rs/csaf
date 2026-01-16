@@ -10,7 +10,7 @@ pub fn build_from_schema(
     schema_patch: &Option<&dyn Fn(&mut Value)>,
     target_folder: String,
 ) -> std::path::PathBuf {
-    println!("Building types from schema: {}", input);
+    println!("Building types from schema: {input}");
     let content = fs::read_to_string(input).unwrap();
     let mut schema_value = serde_json::from_str(&content).unwrap();
 

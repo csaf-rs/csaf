@@ -4,10 +4,7 @@ use crate::validation::ValidationError;
 
 fn create_missing_vulnerabilities_error(document_category: &DocumentCategory) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Document with category '{}' must have a '/vulnerabilities' element",
-            document_category
-        ),
+        message: format!("Document with category '{document_category}' must have a '/vulnerabilities' element"),
         instance_path: "/vulnerabilities".to_string(),
     }
 }

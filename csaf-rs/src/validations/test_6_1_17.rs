@@ -4,10 +4,7 @@ use crate::validation::ValidationError;
 
 fn generate_status_version_error(version: &str, status: &DocumentStatus) -> ValidationError {
     ValidationError {
-        message: format!(
-            "The document version is '{}' but the document status is '{}'",
-            version, status
-        ),
+        message: format!("The document version is '{version}' but the document status is '{status}'"),
         instance_path: "/document/tracking/version".to_string(),
     }
 }

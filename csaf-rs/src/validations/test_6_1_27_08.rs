@@ -34,10 +34,9 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
 fn test_6_1_27_08_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must provide at at least either cve or ids  in each vulnerability",
-            document_category
+            "Document with category '{document_category}' must provide at at least either cve or ids  in each vulnerability"
         ),
-        instance_path: format!("/vulnerabilities/{}/product_status", vuln_path_index),
+        instance_path: format!("/vulnerabilities/{vuln_path_index}/product_status"),
     }
 }
 

@@ -106,23 +106,23 @@ fn print_test_result(test_result: &TestResult) {
     match &test_result.status {
         Success => {
             // Yay, success!
-            println!("{}✅ Success", prefix);
+            println!("{prefix}✅ Success");
         },
         Failure { errors } => {
             // We want to print multiple errors nicely indented
             let error_msg = "❌ ";
-            print!("{}{}", prefix, error_msg);
+            print!("{prefix}{error_msg}");
             let indent = " ".repeat(prefix.len() + error_msg.len());
             for (i, error) in errors.iter().enumerate() {
                 if i > 0 {
-                    print!("{}", indent);
+                    print!("{indent}");
                 }
                 println!("Error: {}", error.message);
             }
         },
         NotFound => {
             // Test not found
-            println!("{}⚠️  Test not found", prefix);
+            println!("{prefix}⚠️  Test not found");
         },
     }
 }

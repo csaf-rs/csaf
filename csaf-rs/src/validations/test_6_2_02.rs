@@ -11,12 +11,10 @@ fn create_missing_remediation_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Missing at least a remediation of category 'none_available' or 'no_fix_planned' for product ID '{}' in product status group '{}'",
-            product_id, status_group_name,
+            "Missing at least a remediation of category 'none_available' or 'no_fix_planned' for product ID '{product_id}' in product status group '{status_group_name}'",
         ),
         instance_path: format!(
-            "/vulnerabilities/{}/product_status/{}/{}",
-            vulnerability_index, status_group_name, status_group_product_index
+            "/vulnerabilities/{vulnerability_index}/product_status/{status_group_name}/{status_group_product_index}"
         ),
     }
 }
@@ -67,13 +65,12 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
             // collect all product IDs referenced in remediations of category none_available or no_fix_planned
             let mut remediation_product_ids = HashSet::<String>::new();
             for remediation in vuln.get_remediations() {
-                if remediation.get_category() == CategoryOfTheRemediation::NoneAvailable
-                    || remediation.get_category() == CategoryOfTheRemediation::NoFixPlanned
+                if (remediation.get_category() == CategoryOfTheRemediation::NoneAvailable
+                    || remediation.get_category() == CategoryOfTheRemediation::NoFixPlanned)
+                    && let Some(product_ids) = remediation.get_product_ids()
                 {
-                    if let Some(product_ids) = remediation.get_product_ids() {
-                        for product_id in product_ids {
-                            remediation_product_ids.insert(product_id.clone());
-                        }
+                    for product_id in product_ids {
+                        remediation_product_ids.insert(product_id.clone());
                     }
                 }
             }

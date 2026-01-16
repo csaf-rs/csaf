@@ -30,10 +30,7 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
 
 fn test_6_1_27_04_err_generator(document_category: DocumentCategory) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Document with category '{}' must have a '/product_tree' element",
-            document_category
-        ),
+        message: format!("Document with category '{document_category}' must have a '/product_tree' element"),
         instance_path: "/product_tree".to_string(),
     }
 }

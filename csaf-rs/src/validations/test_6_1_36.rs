@@ -28,10 +28,9 @@ fn create_affected_conflict_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Product {} is listed as affected but has conflicting remediation category {}",
-            product_id, category
+            "Product {product_id} is listed as affected but has conflicting remediation category {category}"
         ),
-        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+        instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
     }
 }
 
@@ -43,10 +42,9 @@ fn create_not_affected_conflict_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Product {} is listed as not affected but has conflicting remediation category {}",
-            product_id, category
+            "Product {product_id} is listed as not affected but has conflicting remediation category {category}"
         ),
-        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+        instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
     }
 }
 
@@ -57,11 +55,8 @@ fn create_fixed_conflict_error(
     r_i: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Product {} is listed as fixed but has conflicting remediation category {}",
-            product_id, category
-        ),
-        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+        message: format!("Product {product_id} is listed as fixed but has conflicting remediation category {category}"),
+        instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
     }
 }
 
@@ -83,20 +78,23 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                     let cat = r.get_category();
                     // Iterate over product IDs
                     for p in product_ids {
-                        if let Some(affected_products) = affected_products {
-                            if affected_products.contains(&p) && cat == CategoryOfTheRemediation::OptionalPatch {
-                                return Err(vec![create_affected_conflict_error(&p, &cat, v_i, r_i)]);
-                            }
+                        if let Some(affected_products) = affected_products
+                            && affected_products.contains(&p)
+                            && cat == CategoryOfTheRemediation::OptionalPatch
+                        {
+                            return Err(vec![create_affected_conflict_error(&p, &cat, v_i, r_i)]);
                         }
-                        if let Some(not_affected_products) = not_affected_products {
-                            if not_affected_products.contains(&p) && NOT_AFFECTED_CONFLICTS.contains(&cat) {
-                                return Err(vec![create_not_affected_conflict_error(&p, &cat, v_i, r_i)]);
-                            }
+                        if let Some(not_affected_products) = not_affected_products
+                            && not_affected_products.contains(&p)
+                            && NOT_AFFECTED_CONFLICTS.contains(&cat)
+                        {
+                            return Err(vec![create_not_affected_conflict_error(&p, &cat, v_i, r_i)]);
                         }
-                        if let Some(fixed_products) = fixed_products {
-                            if fixed_products.contains(&p) && FIXED_CONFLICTS.contains(&cat) {
-                                return Err(vec![create_fixed_conflict_error(&p, &cat, v_i, r_i)]);
-                            }
+                        if let Some(fixed_products) = fixed_products
+                            && fixed_products.contains(&p)
+                            && FIXED_CONFLICTS.contains(&cat)
+                        {
+                            return Err(vec![create_fixed_conflict_error(&p, &cat, v_i, r_i)]);
                         }
                     }
                 }

@@ -18,7 +18,7 @@ fn get_purl_instance_path_substring(csaf_version: &CsafVersion) -> &'static str 
 
 fn generate_purl_regex_error(csaf_version: &CsafVersion, purl_str: &str, path: &str, index: usize) -> ValidationError {
     ValidationError {
-        message: format!("PURL doesn't comply with CSAF PURL regex: {}", purl_str),
+        message: format!("PURL doesn't comply with CSAF PURL regex: {purl_str}"),
         instance_path: format!(
             "{}/product_identification_helper/{}/{}",
             path,
@@ -36,7 +36,7 @@ fn generate_purl_format_error(
     index: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!("Invalid PURL format: {}, Error: {}", purl_str, error_msg),
+        message: format!("Invalid PURL format: {purl_str}, Error: {error_msg}"),
         instance_path: format!(
             "{}/product_identification_helper/{}/{}",
             path,
@@ -55,26 +55,26 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
     if let Some(product_tree) = doc.get_product_tree() {
         let version = doc.get_document().get_csaf_version();
         product_tree.visit_all_products(&mut |product, path| {
-            if let Some(helper) = product.get_product_identification_helper() {
-                if let Some(purls) = helper.get_purls() {
-                    for (i, purl_str) in purls.iter().enumerate() {
-                        // Check against PURL regex
-                        if !PURL_REGEX.is_match(purl_str) {
-                            errors
-                                .get_or_insert_with(Vec::new)
-                                .push(generate_purl_regex_error(version, purl_str, path, i));
-                            continue;
-                        }
-                        // Parse the PURL
-                        if let Err(e) = PackageUrl::from_str(purl_str) {
-                            errors.get_or_insert_with(Vec::new).push(generate_purl_format_error(
-                                version,
-                                purl_str,
-                                &e.to_string(),
-                                path,
-                                i,
-                            ));
-                        }
+            if let Some(helper) = product.get_product_identification_helper()
+                && let Some(purls) = helper.get_purls()
+            {
+                for (i, purl_str) in purls.iter().enumerate() {
+                    // Check against PURL regex
+                    if !PURL_REGEX.is_match(purl_str) {
+                        errors
+                            .get_or_insert_with(Vec::new)
+                            .push(generate_purl_regex_error(version, purl_str, path, i));
+                        continue;
+                    }
+                    // Parse the PURL
+                    if let Err(e) = PackageUrl::from_str(purl_str) {
+                        errors.get_or_insert_with(Vec::new).push(generate_purl_format_error(
+                            version,
+                            purl_str,
+                            &e.to_string(),
+                            path,
+                            i,
+                        ));
                     }
                 }
             }

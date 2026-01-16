@@ -30,11 +30,11 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         // generate hashmap of all known_not_affected product or group ids with value of known_not_affected path index
         let mut known_not_affected_product_or_group_ids: HashMap<String, usize> = HashMap::new();
-        if let Some(product_status) = vulnerability.get_product_status() {
-            if let Some(known_not_affected) = product_status.get_known_not_affected() {
-                for (kna_i, known_not_affected_entry) in known_not_affected.into_iter().enumerate() {
-                    known_not_affected_product_or_group_ids.insert(known_not_affected_entry.to_owned(), kna_i);
-                }
+        if let Some(product_status) = vulnerability.get_product_status()
+            && let Some(known_not_affected) = product_status.get_known_not_affected()
+        {
+            for (kna_i, known_not_affected_entry) in known_not_affected.into_iter().enumerate() {
+                known_not_affected_product_or_group_ids.insert(known_not_affected_entry.to_owned(), kna_i);
             }
         }
 
@@ -111,14 +111,12 @@ fn test_6_1_27_09_err_generator(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "In documents with category '{}', vulnerability product status 'known_not_affected' entries \
+            "In documents with category '{document_category}', vulnerability product status 'known_not_affected' entries \
             must have a corresponding impact statement in 'flags' or 'threats' with category 'impact'. \
-            Found 'known_not_affected' product status entry '{}' without impact statement.",
-            document_category, product_or_group_id
+            Found 'known_not_affected' product status entry '{product_or_group_id}' without impact statement."
         ),
         instance_path: format!(
-            "/vulnerabilities/{}/product_status/known_not_affected/{}",
-            vuln_path_index, known_not_affected_path_index
+            "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_not_affected_path_index}"
         ),
     }
 }

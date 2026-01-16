@@ -4,7 +4,7 @@ use crate::validation::ValidationError;
 fn create_missing_product_reference_error(vuln_index: usize, rem_index: usize) -> ValidationError {
     ValidationError {
         message: "Remediations need to at least have one of the elements group_ids or product_ids".to_string(),
-        instance_path: format!("/vulnerabilities/{}/remediations/{}", vuln_index, rem_index),
+        instance_path: format!("/vulnerabilities/{vuln_index}/remediations/{rem_index}"),
     }
 }
 

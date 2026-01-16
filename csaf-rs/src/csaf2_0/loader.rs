@@ -2,7 +2,7 @@ use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use std::{fs::File, io::BufReader};
 
 pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {
-    println!("Trying to load document {}", path);
+    println!("Trying to load document {path}");
 
     let f = File::open(path)?;
     let reader = BufReader::new(f);

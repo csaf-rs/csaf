@@ -5,8 +5,7 @@ use crate::validation::ValidationError;
 fn create_validation_error(status: &DocumentStatus, version: &str) -> ValidationError {
     ValidationError {
         message: format!(
-            "The document status is {} but the document version {} contains a pre-release part",
-            status, version
+            "The document status is {status} but the document version {version} contains a pre-release part"
         ),
         instance_path: "/document/version".to_string(),
     }

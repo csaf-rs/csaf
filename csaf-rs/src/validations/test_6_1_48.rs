@@ -15,13 +15,9 @@ fn create_unknown_value_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "The SSVC decision point '{}::{}' (version {}) doesn't have a value with key '{}'",
-            namespace, dp_name, version, value_key
+            "The SSVC decision point '{namespace}::{dp_name}' (version {version}) doesn't have a value with key '{value_key}'"
         ),
-        instance_path: format!(
-            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
-            i_v, i_m, i_s, i_val
-        ),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/selections/{i_s}/values/{i_val}"),
     }
 }
 
@@ -36,13 +32,9 @@ fn create_incorrect_order_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "The values for SSVC decision point '{}::{}' (version {}) are not in correct order",
-            namespace, dp_name, version
+            "The values for SSVC decision point '{namespace}::{dp_name}' (version {version}) are not in correct order"
         ),
-        instance_path: format!(
-            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}/values/{}",
-            i_v, i_m, i_s, i_val
-        ),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/selections/{i_s}/values/{i_val}"),
     }
 }
 
@@ -55,21 +47,15 @@ fn create_unknown_decision_point_error(
     i_s: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Unknown SSVC decision point '{}::{}' with version '{}'",
-            namespace, key, version
-        ),
-        instance_path: format!(
-            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/selections/{}",
-            i_v, i_m, i_s
-        ),
+        message: format!("Unknown SSVC decision point '{namespace}::{key}' with version '{version}'"),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/selections/{i_s}"),
     }
 }
 
 fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid SSVC object: {}", error),
-        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
+        message: format!("Invalid SSVC object: {error}"),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
     }
 }
 

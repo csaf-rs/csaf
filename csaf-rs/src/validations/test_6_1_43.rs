@@ -5,7 +5,7 @@ use crate::validation::ValidationError;
 fn create_validation_error(path: &str, index: usize) -> ValidationError {
     ValidationError {
         message: "Model number must not contain multiple unescaped asterisks (stars)".to_string(),
-        instance_path: format!("{}/product_identification_helper/model_numbers/{}", path, index),
+        instance_path: format!("{path}/product_identification_helper/model_numbers/{index}"),
     }
 }
 
@@ -14,14 +14,14 @@ pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Resul
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
-            if let Some(helper) = product.get_product_identification_helper() {
-                if let Some(model_numbers) = helper.get_model_numbers() {
-                    for (index, model_number) in model_numbers.enumerate() {
-                        if count_unescaped_stars(model_number) > 1 {
-                            errors
-                                .get_or_insert_with(Vec::new)
-                                .push(create_validation_error(path, index));
-                        }
+            if let Some(helper) = product.get_product_identification_helper()
+                && let Some(model_numbers) = helper.get_model_numbers()
+            {
+                for (index, model_number) in model_numbers.enumerate() {
+                    if count_unescaped_stars(model_number) > 1 {
+                        errors
+                            .get_or_insert_with(Vec::new)
+                            .push(create_validation_error(path, index));
                     }
                 }
             }

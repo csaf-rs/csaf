@@ -8,19 +8,19 @@ pub fn test_6_2_15_use_of_default_language(doc: &impl CsafTrait) -> Result<(), V
     let mut errors: Option<Vec<ValidationError>> = None;
     let default_lang_tag = "i-default";
     let document = doc.get_document();
-    if let Some(lang) = document.get_lang() {
-        if lang == default_lang_tag {
-            errors
-                .get_or_insert_with(Vec::new)
-                .push(create_default_language_error("/document/lang"));
-        }
+    if let Some(lang) = document.get_lang()
+        && lang == default_lang_tag
+    {
+        errors
+            .get_or_insert_with(Vec::new)
+            .push(create_default_language_error("/document/lang"));
     }
-    if let Some(source_lang) = document.get_source_lang() {
-        if source_lang == default_lang_tag {
-            errors
-                .get_or_insert_with(Vec::new)
-                .push(create_default_language_error("/document/source_lang"));
-        }
+    if let Some(source_lang) = document.get_source_lang()
+        && source_lang == default_lang_tag
+    {
+        errors
+            .get_or_insert_with(Vec::new)
+            .push(create_default_language_error("/document/source_lang"));
     }
 
     errors.map_or(Ok(()), Err)

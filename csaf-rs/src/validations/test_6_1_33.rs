@@ -88,17 +88,16 @@ fn test_6_1_33_err_generator(
     // prepare group id string for error message if present via group
     let group_id_str = {
         if let Some(group_id) = group_id {
-            format!("(via group: {})", group_id)
+            format!("(via group: {group_id})")
         } else {
             "".to_string()
         }
     };
     ValidationError {
         message: format!(
-            "Product '{}' is associated with multiple flag labels: [{}] {}, it has flag label {} on this path",
-            product_id, labels_joined, group_id_str, label
+            "Product '{product_id}' is associated with multiple flag labels: [{labels_joined}] {group_id_str}, it has flag label {label} on this path"
         ),
-        instance_path: format!("/vulnerabilities/{}/flags/{}", vuln_i, flag_i),
+        instance_path: format!("/vulnerabilities/{vuln_i}/flags/{flag_i}"),
     }
 }
 

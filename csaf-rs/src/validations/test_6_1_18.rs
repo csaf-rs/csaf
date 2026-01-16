@@ -8,11 +8,8 @@ fn create_revision_history_error(
     index: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Document with status '{}' contains a revision history item with number '{}'",
-            status, number
-        ),
-        instance_path: format!("/document/tracking/revision_history/{}/number", index),
+        message: format!("Document with status '{status}' contains a revision history item with number '{number}'"),
+        instance_path: format!("/document/tracking/revision_history/{index}/number"),
     }
 }
 

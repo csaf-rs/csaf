@@ -16,3 +16,14 @@ pub trait TestValidator<Doc> {
     /// * `Err(Vec<ValidationError>)` if validation fails
     fn validate(&self, doc: &Doc) -> Result<(), Vec<ValidationError>>;
 }
+
+pub trait TestValidatorWithRawString {
+    /// Validate a CSAF document according to this test's requirements, with access to the raw string content.
+    ///
+    /// # Arguments
+    /// * `raw` - The raw string content of the document
+    /// # Returns
+    /// * `Ok(())` if validation passes
+    /// * `Err(Vec<ValidationError>)` if validation fails
+    fn validate(&self, raw: &str) -> Result<(), Vec<ValidationError>>;
+}

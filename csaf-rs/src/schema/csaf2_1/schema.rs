@@ -652,7 +652,6 @@ impl<'de> ::serde::Deserialize<'de> for AudienceOfNote {
 ///        "architecture",
 ///        "host_name",
 ///        "language",
-///        "legacy",
 ///        "patch_level",
 ///        "platform",
 ///        "product_family",
@@ -741,7 +740,6 @@ impl Branch {
 ///          "architecture",
 ///          "host_name",
 ///          "language",
-///          "legacy",
 ///          "patch_level",
 ///          "platform",
 ///          "product_family",
@@ -1131,7 +1129,6 @@ impl ::std::convert::TryFrom<::std::string::String> for CategoryOfRestart {
 ///    "architecture",
 ///    "host_name",
 ///    "language",
-///    "legacy",
 ///    "patch_level",
 ///    "platform",
 ///    "product_family",
@@ -1164,8 +1161,6 @@ pub enum CategoryOfTheBranch {
     HostName,
     #[serde(rename = "language")]
     Language,
-    #[serde(rename = "legacy")]
-    Legacy,
     #[serde(rename = "patch_level")]
     PatchLevel,
     #[serde(rename = "platform")]
@@ -1196,7 +1191,6 @@ impl ::std::fmt::Display for CategoryOfTheBranch {
             Self::Architecture => f.write_str("architecture"),
             Self::HostName => f.write_str("host_name"),
             Self::Language => f.write_str("language"),
-            Self::Legacy => f.write_str("legacy"),
             Self::PatchLevel => f.write_str("patch_level"),
             Self::Platform => f.write_str("platform"),
             Self::ProductFamily => f.write_str("product_family"),
@@ -1218,7 +1212,6 @@ impl ::std::str::FromStr for CategoryOfTheBranch {
             "architecture" => Ok(Self::Architecture),
             "host_name" => Ok(Self::HostName),
             "language" => Ok(Self::Language),
-            "legacy" => Ok(Self::Legacy),
             "patch_level" => Ok(Self::PatchLevel),
             "platform" => Ok(Self::Platform),
             "product_family" => Ok(Self::ProductFamily),

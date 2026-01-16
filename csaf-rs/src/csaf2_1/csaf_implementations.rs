@@ -1,10 +1,10 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
-    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
-    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
-    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
-    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
-    WithOptionalProductIds,
+    BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion,
+    DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
+    FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
+    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
+    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
+    VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_1::schema::{
@@ -503,8 +503,21 @@ impl BranchTrait<FullProductNameT> for Branch {
         self.branches.as_deref()
     }
 
-    fn get_category(&self) -> &CategoryOfTheBranch {
-        &self.category
+    fn get_category(&self) -> &CategoryOfTheBranchTrait {
+        match self.category {
+            CategoryOfTheBranch::Architecture => &CategoryOfTheBranchTrait::Architecture,
+            CategoryOfTheBranch::HostName => &CategoryOfTheBranchTrait::HostName,
+            CategoryOfTheBranch::Language => &CategoryOfTheBranchTrait::Language,
+            CategoryOfTheBranch::PatchLevel => &CategoryOfTheBranchTrait::PatchLevel,
+            CategoryOfTheBranch::ProductFamily => &CategoryOfTheBranchTrait::ProductFamily,
+            CategoryOfTheBranch::ProductName => &CategoryOfTheBranchTrait::ProductName,
+            CategoryOfTheBranch::ProductVersion => &CategoryOfTheBranchTrait::ProductVersion,
+            CategoryOfTheBranch::ProductVersionRange => &CategoryOfTheBranchTrait::ProductVersionRange,
+            CategoryOfTheBranch::ServicePack => &CategoryOfTheBranchTrait::ServicePack,
+            CategoryOfTheBranch::Specification => &CategoryOfTheBranchTrait::Specification,
+            CategoryOfTheBranch::Vendor => &CategoryOfTheBranchTrait::Vendor,
+            CategoryOfTheBranch::Platform => &CategoryOfTheBranchTrait::Platform,
+        }
     }
 
     fn get_name(&self) -> &str {

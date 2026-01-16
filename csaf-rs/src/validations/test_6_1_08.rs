@@ -184,7 +184,7 @@ mod tests {
             ]),
             Err(vec![
                 create_validation_error(
-                    "Unevaluated properties are not allowed ('environmentalScore', 'environmentalSeverity', 'threatScore', 'threatSeverity' were unexpected)".to_string(),
+                    "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
                     VulnerabilityMetric::CvssV4,
                 ),

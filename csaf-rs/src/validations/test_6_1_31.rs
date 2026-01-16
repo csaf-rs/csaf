@@ -1,5 +1,4 @@
-use crate::csaf_traits::{BranchTrait, CsafTrait, ProductTreeTrait};
-use crate::schema::csaf2_1::schema::CategoryOfTheBranch;
+use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 
 fn create_forbidden_strings_in_version_error(

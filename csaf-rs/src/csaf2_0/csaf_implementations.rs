@@ -1,10 +1,10 @@
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
-    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
-    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
-    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
-    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
-    WithOptionalProductIds, CategoryOfTheBranch as CategoryOfTheBranchTrait
+    BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion,
+    DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
+    FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
+    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
+    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
+    VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_0::schema::{
@@ -16,9 +16,10 @@ use crate::schema::csaf2_0::schema::{
     RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21, CategoryOfTheRemediation as Remediation21,
-    CategoryOfTheThreat as CategoryOfTheThreat21, DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21,
-    LabelOfTlp as Tlp21, NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
+    CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
+    CategoryOfTheRemediation as Remediation21, CategoryOfTheThreat as CategoryOfTheThreat21,
+    DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21, LabelOfTlp as Tlp21,
+    NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
 use crate::validation::ValidationError;
 use serde::de::Error;

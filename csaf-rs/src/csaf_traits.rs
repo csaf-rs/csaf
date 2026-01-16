@@ -1,6 +1,6 @@
 use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
-    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,
+    LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
 };
 
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;

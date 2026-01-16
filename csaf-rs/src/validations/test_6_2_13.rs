@@ -32,11 +32,11 @@ fn check_sorted_recursive(value: &Value) -> bool {
                 }
             }
             true
-        }
+        },
         Value::Array(arr) => {
             // array -> check for each item
             arr.iter().all(|item| check_sorted_recursive(item))
-        }
+        },
         // primitive types are always sorted
         _ => true,
     }
@@ -47,24 +47,14 @@ static KEYS_NOT_SORTED: LazyLock<ValidationError> = LazyLock::new(|| ValidationE
     instance_path: "/".to_string(),
 });
 
-impl crate::test_validation::TestValidatorWithRawString
-for crate::csaf2_0::testcases::ValidatorForTest6_2_13
-{
-    fn validate(
-        &self,
-        raw: &str,
-    ) -> Result<(), Vec<ValidationError>> {
+impl crate::test_validation::TestValidatorWithRawString for crate::csaf2_0::testcases::ValidatorForTest6_2_13 {
+    fn validate(&self, raw: &str) -> Result<(), Vec<ValidationError>> {
         test_6_2_13_sorting(raw)
     }
 }
 
-impl crate::test_validation::TestValidatorWithRawString
-for crate::csaf2_1::testcases::ValidatorForTest6_2_13
-{
-    fn validate(
-        &self,
-        raw: &str,
-    ) -> Result<(), Vec<ValidationError>> {
+impl crate::test_validation::TestValidatorWithRawString for crate::csaf2_1::testcases::ValidatorForTest6_2_13 {
+    fn validate(&self, raw: &str) -> Result<(), Vec<ValidationError>> {
         test_6_2_13_sorting(raw)
     }
 }

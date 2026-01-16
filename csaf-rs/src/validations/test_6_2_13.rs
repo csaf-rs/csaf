@@ -35,7 +35,7 @@ fn check_sorted_recursive(value: &Value) -> bool {
         },
         Value::Array(arr) => {
             // array -> check for each item
-            arr.iter().all(|item| check_sorted_recursive(item))
+            arr.iter().all(check_sorted_recursive)
         },
         // primitive types are always sorted
         _ => true,

@@ -37,10 +37,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - name: Prepare target
-        run: rustup target add ${{ matrix.target.arch }}
       - name: Set Rust version
         run: rustup override set ${{ matrix.version }}
+      - name: Prepare target
+        run: rustup target add ${{ matrix.target.arch }}
       - name: Install rustfmt
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: rustup component add --toolchain ${{ matrix.version}}-${{ matrix.target.arch }} rustfmt

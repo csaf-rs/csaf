@@ -67,7 +67,7 @@ jobs:
         run: cargo check --target=${{ matrix.target.arch }} --verbose
       - name: Clippy check
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --all-targets --target=${{ matrix.target.arch }} -- -D warnings
       - name: Install cargo-auditable
         run: cargo install cargo-auditable --locked
       - name: Build

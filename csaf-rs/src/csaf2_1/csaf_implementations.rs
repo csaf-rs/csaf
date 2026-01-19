@@ -424,11 +424,11 @@ impl TrackingTrait for Tracking {
     type GeneratorType = DocumentGenerator;
     type RevisionType = Revision;
 
-    fn get_current_release_date(&self) -> &String {
+    fn get_current_release_date_string(&self) -> &String {
         &self.current_release_date
     }
 
-    fn get_initial_release_date(&self) -> &String {
+    fn get_initial_release_date_string(&self) -> &String {
         &self.initial_release_date
     }
 

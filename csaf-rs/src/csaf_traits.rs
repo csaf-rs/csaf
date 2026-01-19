@@ -295,6 +295,7 @@ pub type RevisionHistory = Vec<RevisionHistoryItem>;
 #[derive(Clone)]
 pub struct RevisionHistoryItem {
     pub path_index: usize,
+    pub date_string: String,
     pub date: DateTime<Utc>,
     pub number: VersionNumber,
 }
@@ -332,10 +333,36 @@ pub trait TrackingTrait {
     type RevisionType: RevisionTrait;
 
     /// The release date of this document's latest version
-    fn get_current_release_date(&self) -> &String;
+    fn get_current_release_date_string(&self) -> &String;
+
+    fn get_current_release_date(&self) -> DateTime<Utc> {
+        let date =
+            DateTime::parse_from_rfc3339(self.get_current_release_date_string()).map(|dt| dt.with_timezone(&Utc));
+        if let Ok(date) = date {
+            date
+        } else {
+            panic!(
+                "Encountered date that could not be parsed as RFC3339: {}",
+                self.get_current_release_date_string()
+            );
+        }
+    }
 
     /// The initial release date of this document
-    fn get_initial_release_date(&self) -> &String;
+    fn get_initial_release_date_string(&self) -> &String;
+
+    fn get_initial_release_date(&self) -> DateTime<Utc> {
+        let date =
+            DateTime::parse_from_rfc3339(self.get_initial_release_date_string()).map(|dt| dt.with_timezone(&Utc));
+        if let Ok(date) = date {
+            date
+        } else {
+            panic!(
+                "Encountered date that could not be parsed as RFC3339: {}",
+                self.get_initial_release_date_string()
+            );
+        }
+    }
 
     /// Returns the generator information for this document
     fn get_generator(&self) -> &Option<Self::GeneratorType>;
@@ -352,6 +379,7 @@ pub trait TrackingTrait {
                 revision_history.push(RevisionHistoryItem {
                     path_index: i_r,
                     date,
+                    date_string: revision.get_date().clone(),
                     number: revision.get_number(),
                 });
             } else {

@@ -3,7 +3,7 @@ use crate::csaf_traits::{
 };
 use crate::validation::ValidationError;
 
-/// 6.2.8 Use of SHA1 as the only Hash Algorithm
+/// 6.2.9 Use of SHA1 as the only Hash Algorithm
 ///
 /// When hashes are provided as product identification helpers for a product, another hash
 /// besides a SHA1 hash must be provided.

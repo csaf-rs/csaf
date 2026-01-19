@@ -384,20 +384,23 @@ pub enum VersionNumber {
 }
 
 impl From<&str> for VersionNumber {
-    fn from(value: &str) -> Self {
-        VersionNumber::from(&value.to_string())
-    }
-}
-impl From<&String> for VersionNumber {
     /// Parses a string to either intver or semver
     /// Will panic if not parseable
-    fn from(number: &String) -> Self {
+    fn from(number: &str) -> Self {
         if let Ok(number) = number.parse::<u64>() {
             return VersionNumber::Integer(number);
         } else if let Ok(number) = Version::parse(number) {
             return VersionNumber::Semver(number);
         }
         panic!("Version could not be parsed as intver or semver")
+    }
+}
+
+impl From<&String> for VersionNumber {
+    /// Parses a string to either intver or semver
+    /// Will panic if not parseable
+    fn from(value: &String) -> Self {
+        VersionNumber::from(value.as_str())
     }
 }
 

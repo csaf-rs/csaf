@@ -10,7 +10,7 @@ use crate::validation::ValidationError;
 pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    // for each vuln and each of its involvements, check if date is set
+    // For each product and its product identification helpers, check if any hash uses SHA-1 as the only hash algorithm.
     if let Some(tree) = doc.get_product_tree().as_ref() {
         tree.visit_all_products(&mut |fpn, path| {
             if let Some(helper) = fpn.get_product_identification_helper() {

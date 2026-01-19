@@ -10,7 +10,7 @@ use crate::validation::ValidationError;
 pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    // for each vuln and each of its involvements, check if date is set
+    // for each product in the product tree, check all product identification helper hashes for MD5 as the only hash algorithm
     if let Some(tree) = doc.get_product_tree().as_ref() {
         tree.visit_all_products(&mut |fpn, path| {
             if let Some(helper) = fpn.get_product_identification_helper() {

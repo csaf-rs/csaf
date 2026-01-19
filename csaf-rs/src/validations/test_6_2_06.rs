@@ -14,7 +14,7 @@ fn create_older_current_release_date_error(
     }
 }
 
-/// 6.2.5 Older Current Release Date than Revision History
+/// 6.2.6 Older Current Release Date than Revision History
 ///
 pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let current_release_date = doc.get_document().get_tracking().get_current_release_date();

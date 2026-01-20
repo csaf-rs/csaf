@@ -20,7 +20,7 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
         // generate a map of each product to the set of vulnerability metrics used for it
         let mut product_metrics_map: HashMap<String, HashSet<VulnerabilityMetric>> =
             HashMap::<String, HashSet<VulnerabilityMetric>>::new();
-        // generate a map of each product to the paths were it was encountered
+        // generate a map of each product to the paths where it was encountered
         let mut product_path_map: HashMap<String, HashSet<String>> = HashMap::<String, HashSet<String>>::new();
         // for each metric and each product in it
         if let Some(metrics) = vuln.get_metrics() {
@@ -89,8 +89,8 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_3_3() {
-        // Both CSAF 2.0 and 2.1 have 4 test cases
+    fn test_test_6_3_1() {
+        // CSAF 2.0 has 4 test cases and CSAF 2.1 has 8 test cases
         TESTS_2_0.test_6_3_1.expect(
             Err(vec![create_cvss_v2_only_error(
                 "/vulnerabilities/0/scores/0".to_string(),

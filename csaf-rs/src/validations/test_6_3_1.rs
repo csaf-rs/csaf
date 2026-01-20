@@ -1,6 +1,6 @@
-use std::collections::{HashMap, HashSet};
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityMetric, VulnerabilityTrait};
 use crate::validation::ValidationError;
+use std::collections::{HashMap, HashSet};
 
 fn create_cvss_v2_only_error(instance_path: String) -> ValidationError {
     ValidationError {
@@ -18,7 +18,8 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
     // for each vuln
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         // generate a map of each product to the set of vulnerability metrics used for it
-        let mut product_metrics_map: HashMap<String, HashSet<VulnerabilityMetric>> = HashMap::<String, HashSet<VulnerabilityMetric>>::new();
+        let mut product_metrics_map: HashMap<String, HashSet<VulnerabilityMetric>> =
+            HashMap::<String, HashSet<VulnerabilityMetric>>::new();
         // generate a map of each product to the paths were it was encountered
         let mut product_path_map: HashMap<String, HashSet<String>> = HashMap::<String, HashSet<String>>::new();
         // for each metric and each product in it
@@ -28,10 +29,16 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
                 for product in metric.get_products() {
                     // add all vulnerability metrics of this metric to the product -> vulnerability metrics map
                     for vulnerability_metric in content.get_vulnerability_metric_types() {
-                        product_metrics_map.entry(product.to_string()).or_insert_with(HashSet::new).insert(vulnerability_metric);
+                        product_metrics_map
+                            .entry(product.to_string())
+                            .or_default()
+                            .insert(vulnerability_metric);
                     }
                     // add the path of this metric to the product -> paths map
-                    product_path_map.entry(product.to_string()).or_insert_with(HashSet::new).insert(content.get_content_json_path(v_i, m_i));
+                    product_path_map
+                        .entry(product.to_string())
+                        .or_default()
+                        .insert(content.get_content_json_path(v_i, m_i));
                 }
             }
         }

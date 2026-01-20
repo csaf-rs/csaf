@@ -856,7 +856,6 @@ pub trait MetricTrait {
 
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
-
     fn get_vulnerability_metric_types(&self) -> Vec<VulnerabilityMetric> {
         let mut types: Vec<VulnerabilityMetric> = Vec::new();
         if self.has_ssvc() {

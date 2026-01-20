@@ -52,7 +52,7 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_2_16() {
+    fn test_test_6_3_3() {
         let case_01 = Err(vec![create_missing_cve_error(0)]);
         let case_02 = Err(vec![create_missing_cve_error(0), create_missing_cve_error(2)]);
 

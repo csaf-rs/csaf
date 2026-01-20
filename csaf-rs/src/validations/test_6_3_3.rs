@@ -56,7 +56,7 @@ mod tests {
         let case_01 = Err(vec![create_missing_cve_error(0)]);
         let case_02 = Err(vec![create_missing_cve_error(0), create_missing_cve_error(2)]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
+        // Both CSAF 2.0 and 2.1 have 4 test cases
         TESTS_2_0
             .test_6_3_3
             .expect(case_01.clone(), case_02.clone(), Ok(()), Ok(()));

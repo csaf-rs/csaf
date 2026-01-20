@@ -15,7 +15,7 @@ fn create_short_hash_error(
             hash_length
         ),
         instance_path: format!(
-            "{}/product_identification_helper/hashes/{}/file_hashes/{}",
+            "{}/product_identification_helper/hashes/{}/file_hashes/{}/value",
             path, hash_index, file_hash_index
         ),
     }

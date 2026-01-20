@@ -70,13 +70,13 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_3_3() {
+    fn test_test_6_3_11() {
         let case_01 = Err(vec![create_v_version_indicator_error(
             "v4.2",
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 4 test cases
+        // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_3_11.expect(case_01.clone(), Ok(()));
         TESTS_2_1.test_6_3_11.expect(case_01, Ok(()));
     }

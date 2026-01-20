@@ -83,7 +83,7 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_3_3() {
+    fn test_test_6_3_5() {
         let case_01 = Err(vec![create_short_hash_error(
             "/product_tree/full_product_names/0",
             0,

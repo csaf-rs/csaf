@@ -17,7 +17,7 @@ fn create_v_version_indicator_error(version: &str, path: &str) -> ValidationErro
 
 /// 6.3.11 Usage of V as Version Indicator
 ///
-/// Tests that product in the product tree with the `product_version` branch category do not start
+/// Tests that products in the product tree with the `product_version` branch category do not start
 /// with a `v` or `V` before their version.
 pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;

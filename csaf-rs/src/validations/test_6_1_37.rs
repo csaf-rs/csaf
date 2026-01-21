@@ -20,13 +20,13 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
 
     // Check the initial release date
     check_datetime(
-        tracking.get_initial_release_date(),
+        tracking.get_initial_release_date_string(),
         "/document/tracking/initial_release_date",
     )?;
 
     // Check the current release date
     check_datetime(
-        tracking.get_current_release_date(),
+        tracking.get_current_release_date_string(),
         "/document/tracking/current_release_date",
     )?;
 

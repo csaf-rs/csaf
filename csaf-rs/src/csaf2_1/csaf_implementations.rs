@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion,
+    BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
     DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
     FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
     ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
@@ -208,6 +208,10 @@ impl VulnerabilityTrait for Vulnerability {
 
     fn get_cve(&self) -> Option<&String> {
         self.cve.as_deref()
+    }
+
+    fn get_cwe(&self) -> Option<Vec<Cwe>> {
+        self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())
     }
 
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {

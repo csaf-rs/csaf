@@ -888,6 +888,32 @@ pub trait MetricTrait {
 
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
+    fn get_vulnerability_metric_types(&self) -> Vec<VulnerabilityMetric> {
+        let mut types: Vec<VulnerabilityMetric> = Vec::new();
+        if self.has_ssvc() {
+            types.push(VulnerabilityMetric::SsvcV1);
+        }
+        if self.has_cvss_v2() {
+            types.push(VulnerabilityMetric::CvssV2);
+        }
+        if let Some(cvss_v3) = self.get_cvss_v3() {
+            if let Some(version) = cvss_v3.get("version").and_then(|v| v.as_str()) {
+                if version == "3.0" || version == "3.1" {
+                    types.push(VulnerabilityMetric::CvssV3(version.to_string()));
+                } else {
+                    panic!("Unsupported cvss v3 version: {}", version);
+                }
+            }
+        }
+        if self.has_cvss_v4() {
+            types.push(VulnerabilityMetric::CvssV4);
+        }
+        if self.has_epss() {
+            types.push(VulnerabilityMetric::Epss);
+        }
+        types
+    }
+
     /// Returns whether this content contains a non-empty SSVC metric.
     fn has_ssvc(&self) -> bool;
 
@@ -898,14 +924,34 @@ pub trait ContentTrait {
     /// Returns a JSON representation of the contained CVSS 2.0 metric, if any.
     fn get_cvss_v2(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
 
+    /// Returns whether this content contains a CVSS 2.0 metric.
+    fn has_cvss_v2(&self) -> bool {
+        self.get_cvss_v2().is_some()
+    }
+
     /// Returns a JSON representation of the contained CVSS 3.0/3.1 metric, if any.
     fn get_cvss_v3(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
+
+    /// Returns whether this content contains a CVSS 3.0/3.1 metric.
+    fn has_cvss_v3(&self) -> bool {
+        self.get_cvss_v3().is_some()
+    }
 
     /// Returns a JSON representation of the contained CVSS 4.0 metric, if any.
     fn get_cvss_v4(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
 
+    /// Returns whether this content contains a CVSS 4.0 metric.
+    fn has_cvss_v4(&self) -> bool {
+        self.get_cvss_v4().is_some()
+    }
+
     /// Returns a reference to the contained EPSS metric if it exists.
     fn get_epss(&self) -> &Option<Epss>;
+
+    /// Returns whether this content contains an EPSS metric.
+    fn has_epss(&self) -> bool {
+        self.get_epss().is_some()
+    }
 
     /// This function constructs a JSON path string that can be used to locate the specific
     /// content object within a CSAF document's JSON structure. The path format varies between

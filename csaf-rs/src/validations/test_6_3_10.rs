@@ -15,17 +15,13 @@ pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Resul
     let mut errors: Option<Vec<ValidationError>> = None;
 
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
-        if let Some(branches) = product_tree.get_branches().as_ref() {
-            for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), &mut |branch, path| {
-                    if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange {
-                        errors
-                            .get_or_insert_with(Vec::new)
-                            .push(create_product_version_range_error(path));
-                    }
-                });
+        product_tree.visit_all_branches(&mut |branch, path| {
+            if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange {
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(create_product_version_range_error(path));
             }
-        }
+        });
     }
 
     errors.map_or(Ok(()), Err)

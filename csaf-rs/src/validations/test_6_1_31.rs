@@ -76,26 +76,20 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
 ) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
-        if let Some(branches) = product_tree.get_branches().as_ref() {
-            for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), &mut |branch, path| {
-                    if branch.get_category() == &CategoryOfTheBranch::ProductVersion {
-                        // if there are any forbidden substrings found, create an error
-                        if let Some(forbidden_substrings) =
-                            check_branch_name_for_forbidden_substrings(branch.get_name())
-                        {
-                            errors
-                                .get_or_insert_with(Vec::new)
-                                .push(create_forbidden_strings_in_version_error(
-                                    branch.get_name(),
-                                    forbidden_substrings,
-                                    path,
-                                ));
-                        }
-                    }
-                });
+        product_tree.visit_all_branches(&mut |branch, path| {
+            if branch.get_category() == &CategoryOfTheBranch::ProductVersion {
+                // if there are any forbidden substrings found, create an error
+                if let Some(forbidden_substrings) = check_branch_name_for_forbidden_substrings(branch.get_name()) {
+                    errors
+                        .get_or_insert_with(Vec::new)
+                        .push(create_forbidden_strings_in_version_error(
+                            branch.get_name(),
+                            forbidden_substrings,
+                            path,
+                        ));
+                }
             }
-        }
+        })
     }
 
     errors.map_or(Ok(()), Err)

@@ -23,19 +23,15 @@ pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Resu
     let mut errors: Option<Vec<ValidationError>> = None;
 
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
-        if let Some(branches) = product_tree.get_branches().as_ref() {
-            for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), &mut |branch, path| {
-                    if branch.get_category() == &CategoryOfTheBranch::ProductVersion
-                        && V_AS_VERSION_INDICATOR_REGEX.is_match(branch.get_name())
-                    {
-                        errors
-                            .get_or_insert_with(Vec::new)
-                            .push(create_v_version_indicator_error(branch.get_name(), path));
-                    }
-                });
+        product_tree.visit_all_branches(&mut |branch, path| {
+            if branch.get_category() == &CategoryOfTheBranch::ProductVersion
+                && V_AS_VERSION_INDICATOR_REGEX.is_match(branch.get_name())
+            {
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(create_v_version_indicator_error(branch.get_name(), path));
             }
-        }
+        });
     }
 
     errors.map_or(Ok(()), Err)

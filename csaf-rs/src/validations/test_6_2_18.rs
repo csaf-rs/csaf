@@ -20,19 +20,15 @@ pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> R
     let mut errors: Option<Vec<ValidationError>> = None;
 
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
-        if let Some(branches) = product_tree.get_branches().as_ref() {
-            for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), &mut |branch, path| {
-                    if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange
-                        && !VERS_REGEX.is_match(branch.get_name())
-                    {
-                        errors
-                            .get_or_insert_with(Vec::new)
-                            .push(create_product_version_range_without_vers_error(branch.get_name(), path));
-                    }
-                });
+        product_tree.visit_all_branches(&mut |branch, path| {
+            if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange
+                && !VERS_REGEX.is_match(branch.get_name())
+            {
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(create_product_version_range_without_vers_error(branch.get_name(), path));
             }
-        }
+        });
     }
 
     errors.map_or(Ok(()), Err)

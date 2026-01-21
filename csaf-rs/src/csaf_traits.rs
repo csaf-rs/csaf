@@ -1,10 +1,10 @@
-use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,
-    LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
-};
-
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
+use crate::schema::csaf2_0::schema::Cwe as Cwe20;
+use crate::schema::csaf2_1::schema::{
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, Cwe as Cwe21,
+    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
+};
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};
 use semver::Version;
@@ -512,6 +512,35 @@ pub trait RevisionTrait {
     fn get_summary(&self) -> &String;
 }
 
+pub struct Cwe {
+    ///Holds the ID for the weakness associated.
+    pub id: String,
+    ///Holds the full name of the weakness as given in the CWE specification.
+    pub name: String,
+    ///Holds the version string of the CWE specification this weakness was extracted from.
+    pub version: Option<String>,
+}
+
+impl From<&Cwe21> for Cwe {
+    fn from(cwe: &Cwe21) -> Self {
+        Cwe {
+            id: cwe.id.to_string(),
+            name: cwe.name.to_string(),
+            version: Some(cwe.version.to_string()),
+        }
+    }
+}
+
+impl From<&Cwe20> for Cwe {
+    fn from(cwe: &Cwe20) -> Self {
+        Cwe {
+            id: cwe.id.to_string(),
+            name: cwe.name.to_string(),
+            version: None,
+        }
+    }
+}
+
 /// Trait representing an abstract vulnerability in a CSAF document.
 ///
 /// The `VulnerabilityTrait` defines the structure of a vulnerability and includes
@@ -624,6 +653,9 @@ pub trait VulnerabilityTrait {
 
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
+
+    /// Returns the CWE associated with the vulnerability.
+    fn get_cwe(&self) -> Option<Vec<Cwe>>;
 
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>>;

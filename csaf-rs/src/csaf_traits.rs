@@ -1055,6 +1055,8 @@ pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds {
 /// The `ProductTreeTrait` defines the structure of a product tree and allows
 /// access to its product groups.
 pub trait ProductTreeTrait {
+    // Type Associations
+
     /// The associated type representing the type of branch in the product tree.
     type BranchType: BranchTrait<Self::FullProductNameType>;
 
@@ -1067,11 +1069,21 @@ pub trait ProductTreeTrait {
     /// The associated type representing the type of the full product name.
     type FullProductNameType: ProductTrait;
 
+    // Simple Getter methods
+
     /// Returns an optional reference to the list of branches in the product tree.
     fn get_branches(&self) -> Option<&Vec<Self::BranchType>>;
 
     /// Retrieves a reference to the list of product groups in the product tree.
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
+
+    /// Retrieves a reference to the list of relationships in the product tree.
+    fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
+
+    /// Retrieves a reference to the list of full product names in the product tree.
+    fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
+
+    // Aggregator functions for product references
 
     /// Utility function to get all product references in product groups along with their JSON paths
     fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
@@ -1088,9 +1100,6 @@ pub trait ProductTreeTrait {
 
         ids
     }
-
-    /// Retrieves a reference to the list of relationships in the product tree.
-    fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
 
     /// Utility function to get all product references in relationships along with their JSON paths
     fn get_relationships_product_references(&self) -> Vec<(String, String)> {
@@ -1110,53 +1119,7 @@ pub trait ProductTreeTrait {
         ids
     }
 
-    /// Retrieves a reference to the list of full product names in the product tree.
-    fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
-
-    /// Visits all product references in the product tree by invoking the provided callback for each
-    /// product. Returns with collected error Results provided by `callback`, if occurring.
-    ///
-    /// This method traverses all locations in the product tree where products can be referenced:
-    /// - Products within branches (recursively)
-    /// - Full product names at the top level
-    /// - Full product names within relationships
-    ///
-    /// # Parameters
-    /// * `callback` - A mutable function that takes a reference to a product and its path string
-    ///   and returns a `Result<(), Vec<ValidationError>>`. The path string represents the JSON
-    ///   pointer to the product's location in the document.
-    ///
-    /// # Returns
-    /// * `Ok(())` if all products were visited successfully
-    /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
-    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
-        // Visit products in branches
-        if let Some(branches) = self.get_branches().as_ref() {
-            for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(
-                    &format!("/product_tree/branches/{}", i),
-                    &mut |branch: &Self::BranchType, path| {
-                        if let Some(product_ref) = branch.get_product() {
-                            callback(product_ref, &format!("{}/product", path));
-                        }
-                    },
-                );
-            }
-        }
-
-        // Visit full_product_names
-        for (i, fpn) in self.get_full_product_names().iter().enumerate() {
-            callback(fpn, &format!("/product_tree/full_product_names/{}", i));
-        }
-
-        // Visit relationships
-        for (i, rel) in self.get_relationships().iter().enumerate() {
-            callback(
-                rel.get_full_product_name(),
-                &format!("/product_tree/relationships/{}/full_product_name", i),
-            );
-        }
-    }
+    // Visitors for node types in the tree
 
     /// A trait wrapper for `visit_all_products_generic()` that allows implementations to provide
     /// type-specific callbacks for product traversal.
@@ -1178,6 +1141,60 @@ pub trait ProductTreeTrait {
     /// Trait implementers should typically implement this by delegating to
     /// `visit_all_products_generic()` with the same callback.
     fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str));
+
+    /// Visits all product references in the product tree by invoking the provided callback for each
+    /// product. Returns with collected error Results provided by `callback`, if occurring.
+    ///
+    /// This method traverses all locations in the product tree where products can be referenced:
+    /// - Products within branches (recursively)
+    /// - Full product names at the top level
+    /// - Full product names within relationships
+    ///
+    /// # Parameters
+    /// * `callback` - A mutable function that takes a reference to a product and its path string
+    ///   and returns a `Result<(), Vec<ValidationError>>`. The path string represents the JSON
+    ///   pointer to the product's location in the document.
+    ///
+    /// # Returns
+    /// * `Ok(())` if all products were visited successfully
+    /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
+    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
+        // Visit products in branches
+        self.visit_all_branches(&mut |branch: &Self::BranchType, path| {
+            if let Some(product_ref) = branch.get_product() {
+                callback(product_ref, &format!("{}/product", path));
+            }
+        });
+
+        // Visit full_product_names
+        for (i, fpn) in self.get_full_product_names().iter().enumerate() {
+            callback(fpn, &format!("/product_tree/full_product_names/{}", i));
+        }
+
+        // Visit relationships
+        for (i, rel) in self.get_relationships().iter().enumerate() {
+            callback(
+                rel.get_full_product_name(),
+                &format!("/product_tree/relationships/{}/full_product_name", i),
+            );
+        }
+    }
+
+    /// Visits all branches in the product tree by invoking the provided callback for each branch.
+    ///
+    /// This method traverses all branches in the product tree recursively, calling the callback
+    /// function for each branch with its path.
+    ///
+    /// # Parameters
+    /// * `callback` - A mutable function that takes a reference to a branch and its path string.
+    ///   The path string represents the JSON pointer to the branch's location in the document.
+    fn visit_all_branches(&self, callback: &mut impl FnMut(&Self::BranchType, &str)) {
+        if let Some(branches) = self.get_branches().as_ref() {
+            for (i, branch) in branches.iter().enumerate() {
+                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), callback);
+            }
+        }
+    }
 }
 
 /// Enum representing the category of a branch in a product tree.

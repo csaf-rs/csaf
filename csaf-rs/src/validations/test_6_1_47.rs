@@ -64,17 +64,17 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
                                     }
 
                                     // Check if it matches CVE
-                                    if let Some(cve) = v.get_cve() {
-                                        if target_id == cve {
-                                            continue;
-                                        }
+                                    if let Some(cve) = v.get_cve()
+                                        && target_id == cve
+                                    {
+                                        continue;
                                     }
 
                                     // Check if it matches any ID in id array
-                                    if let Some(ids) = v.get_ids() {
-                                        if ids.iter().any(|id| id.get_text() == target_id) {
-                                            continue;
-                                        }
+                                    if let Some(ids) = v.get_ids()
+                                        && ids.iter().any(|id| id.get_text() == target_id)
+                                    {
+                                        continue;
                                     }
 
                                     // Return error if target ID is not valid

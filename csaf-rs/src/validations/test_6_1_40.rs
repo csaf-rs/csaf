@@ -36,15 +36,15 @@ static PRIVATE_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(||
 pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
-    if let Some(sharing_group) = distribution.get_sharing_group() {
-        if let Some(sharing_group_name) = sharing_group.get_name() {
-            if sharing_group_name == SG_NAME_PUBLIC {
-                if sharing_group.get_id() != MAX_UUID {
-                    return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
-                }
-            } else if sharing_group_name == SG_NAME_PRIVATE && sharing_group.get_id() != NIL_UUID {
-                return Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]);
+    if let Some(sharing_group) = distribution.get_sharing_group()
+        && let Some(sharing_group_name) = sharing_group.get_name()
+    {
+        if sharing_group_name == SG_NAME_PUBLIC {
+            if sharing_group.get_id() != MAX_UUID {
+                return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
             }
+        } else if sharing_group_name == SG_NAME_PRIVATE && sharing_group.get_id() != NIL_UUID {
+            return Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]);
         }
     }
 

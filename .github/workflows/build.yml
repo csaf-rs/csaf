@@ -47,7 +47,7 @@ jobs:
       matrix:
         version: 
           - ${{ needs.prepare.outputs.msrv-version }}
-          - stable
+          - 1.93.0
         target:
           - arch: x86_64-unknown-linux-gnu
             runs-on: ubuntu-latest

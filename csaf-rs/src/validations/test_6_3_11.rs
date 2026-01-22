@@ -8,10 +8,9 @@ static V_AS_VERSION_INDICATOR_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::n
 fn create_v_version_indicator_error(version: &str, path: &str) -> ValidationError {
     ValidationError {
         message: format!(
-            "Product version name {} starting with 'v' or 'V' as version indicator is not recommended",
-            version
+            "Product version name {version} starting with 'v' or 'V' as version indicator is not recommended"
         ),
-        instance_path: format!("{}/name", path),
+        instance_path: format!("{path}/name"),
     }
 }
 

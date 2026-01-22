@@ -24,8 +24,8 @@ pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Re
 
 fn generate_err_msg(product_id: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("Duplicate definition for product ID {}", product_id),
-        instance_path: format!("{}/product_id", path),
+        message: format!("Duplicate definition for product ID {product_id}"),
+        instance_path: format!("{path}/product_id"),
     }
 }
 

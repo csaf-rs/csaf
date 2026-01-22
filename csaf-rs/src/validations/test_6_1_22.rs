@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 fn generate_duplicate_revision_error(number: &str, path: usize) -> ValidationError {
     ValidationError {
-        message: format!("Duplicate definition of revision history number {}", number),
-        instance_path: format!("/document/tracking/revision_history/{}/number", path),
+        message: format!("Duplicate definition of revision history number {number}"),
+        instance_path: format!("/document/tracking/revision_history/{path}/number"),
     }
 }
 

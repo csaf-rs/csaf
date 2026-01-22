@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 fn generate_duplicate_cve_error(cve: &str, path: usize) -> ValidationError {
     ValidationError {
-        message: format!("Duplicate usage of same CVE identifier '{}'", cve),
-        instance_path: format!("/vulnerabilities/{}/cve", path),
+        message: format!("Duplicate usage of same CVE identifier '{cve}'"),
+        instance_path: format!("/vulnerabilities/{path}/cve"),
     }
 }
 

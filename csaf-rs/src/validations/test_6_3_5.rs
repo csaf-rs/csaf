@@ -10,13 +10,9 @@ fn create_short_hash_error(
     hash_length: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Too short hash found (length: {}), expected to be >= 64 chars",
-            hash_length
-        ),
+        message: format!("Too short hash found (length: {hash_length}), expected to be >= 64 chars"),
         instance_path: format!(
-            "{}/product_identification_helper/hashes/{}/file_hashes/{}/value",
-            path, hash_index, file_hash_index
+            "{path}/product_identification_helper/hashes/{hash_index}/file_hashes/{file_hash_index}/value"
         ),
     }
 }

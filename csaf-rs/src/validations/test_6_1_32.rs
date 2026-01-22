@@ -4,7 +4,7 @@ use crate::validation::ValidationError;
 fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> ValidationError {
     ValidationError {
         message: "Each flag must reference at least one group_id or product_id".to_string(),
-        instance_path: format!("/vulnerabilities/{}/flags/{}", vulnerability_index, flag_index),
+        instance_path: format!("/vulnerabilities/{vulnerability_index}/flags/{flag_index}"),
     }
 }
 

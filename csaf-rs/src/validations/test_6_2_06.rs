@@ -7,8 +7,7 @@ fn create_older_current_release_date_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Current release date '{}' is older than the newest revision history date '{}'",
-            current_release_date, newest_rev_history_release_date
+            "Current release date '{current_release_date}' is older than the newest revision history date '{newest_rev_history_release_date}'"
         ),
         instance_path: "/document/tracking/current_release_date".to_string(),
     }

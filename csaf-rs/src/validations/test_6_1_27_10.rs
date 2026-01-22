@@ -89,14 +89,12 @@ fn test_6_1_27_10_err_generator(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "In documents with category '{}', vulnerability product status 'known_affected' entries \
+            "In documents with category '{document_category}', vulnerability product status 'known_affected' entries \
             must have a corresponding action statement in 'remediations'. \
-            Found 'known_affected' product status entry '{}' without action statement.",
-            document_category, product_or_group_id
+            Found 'known_affected' product status entry '{product_or_group_id}' without action statement."
         ),
         instance_path: format!(
-            "/vulnerabilities/{}/product_status/known_not_affected/{}",
-            vuln_path_index, known_affected_path_index
+            "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_affected_path_index}"
         ),
     }
 }

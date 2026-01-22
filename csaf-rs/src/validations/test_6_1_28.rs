@@ -3,7 +3,7 @@ use crate::validation::ValidationError;
 
 fn create_same_language_error(lang: &str) -> ValidationError {
     ValidationError {
-        message: format!("document language and source language have the same value {}", lang),
+        message: format!("document language and source language have the same value {lang}"),
         instance_path: "/document/source_lang".to_string(),
     }
 }

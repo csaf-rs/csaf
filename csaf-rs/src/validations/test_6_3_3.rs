@@ -4,7 +4,7 @@ use crate::validation::ValidationError;
 fn create_missing_cve_error(vulnerability_index: usize) -> ValidationError {
     ValidationError {
         message: "Vulnerability is missing 'cve' property".to_string(),
-        instance_path: format!("/vulnerabilities/{}", vulnerability_index),
+        instance_path: format!("/vulnerabilities/{vulnerability_index}"),
     }
 }
 

@@ -11,7 +11,7 @@ This is work-in-progress.
 
 ## Minimum required Rust version (MSRV)
 
-1.85.1
+1.88.0
 
 ## Build
 

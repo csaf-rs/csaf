@@ -54,20 +54,20 @@ fn generate_test_cases_from_json(
 
         if let Some(failures) = test["failures"].as_array() {
             for failure in failures {
-                if let Some(name) = failure["name"].as_str() {
-                    if let Some(case_num) = extract_test_case_number(name) {
-                        failure_docs.push((case_num, name.to_string()));
-                    }
+                if let Some(name) = failure["name"].as_str()
+                    && let Some(case_num) = extract_test_case_number(name)
+                {
+                    failure_docs.push((case_num, name.to_string()));
                 }
             }
         }
 
         if let Some(valid_cases) = test.get("valid").and_then(|v| v.as_array()) {
             for valid in valid_cases {
-                if let Some(name) = valid["name"].as_str() {
-                    if let Some(case_num) = extract_test_case_number(name) {
-                        valid_docs.push((case_num, name.to_string()));
-                    }
+                if let Some(name) = valid["name"].as_str()
+                    && let Some(case_num) = extract_test_case_number(name)
+                {
+                    valid_docs.push((case_num, name.to_string()));
                 }
             }
         }

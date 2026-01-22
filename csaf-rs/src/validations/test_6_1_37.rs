@@ -31,10 +31,10 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
     )?;
 
     // Check the generator date if present
-    if let Some(generator) = tracking.get_generator() {
-        if let Some(date) = generator.get_date() {
-            check_datetime(date, "/document/tracking/generator/date")?;
-        }
+    if let Some(generator) = tracking.get_generator()
+        && let Some(date) = generator.get_date()
+    {
+        check_datetime(date, "/document/tracking/generator/date")?;
     }
 
     // Check revision history dates if present

@@ -36,10 +36,9 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
 fn test_6_1_27_05_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must have a notes element in each vulnerability",
-            document_category
+            "Document with category '{document_category}' must have a notes element in each vulnerability"
         ),
-        instance_path: format!("/vulnerabilities/{}/notes", vuln_path_index),
+        instance_path: format!("/vulnerabilities/{vuln_path_index}/notes"),
     }
 }
 

@@ -64,14 +64,14 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 }
 
 fn generate_err_msg(product_id: &str, groups: &[ProductStatusGroup], vulnerability_index: usize) -> ValidationError {
-    let group_names: Vec<String> = groups.iter().map(|g| format!("'{}'", g)).collect();
+    let group_names: Vec<String> = groups.iter().map(|g| format!("'{g}'")).collect();
     ValidationError {
         message: format!(
             "Product {} is member of contradicting product status groups: {}",
             product_id,
             group_names.join(", ")
         ),
-        instance_path: format!("/vulnerabilities/{}/product_status", vulnerability_index),
+        instance_path: format!("/vulnerabilities/{vulnerability_index}/product_status"),
     }
 }
 

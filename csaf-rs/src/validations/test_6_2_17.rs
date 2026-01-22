@@ -7,8 +7,8 @@ static CVE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^CVE-[0-9]{4}-
 
 fn create_cve_in_ids_error(id: &str, vuln_index: usize, id_index: usize) -> ValidationError {
     ValidationError {
-        message: format!("Vulnerability ID text '{}' matches CVE format", id),
-        instance_path: format!("/vulnerabilities/{}/ids/{}/text", vuln_index, id_index),
+        message: format!("Vulnerability ID text '{id}' matches CVE format"),
+        instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/text"),
     }
 }
 

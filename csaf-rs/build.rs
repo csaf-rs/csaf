@@ -39,7 +39,7 @@ fn main() -> Result<(), BuildError> {
 
     // Register watching for all inputs
     for (input, _, _) in &schema_configs {
-        println!("cargo:rerun-if-changed={}", input);
+        println!("cargo:rerun-if-changed={input}");
     }
 
     // Execute all listed schema builds

@@ -29,11 +29,8 @@ pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result
 
 fn create_build_metadata_in_rev_history_error(revision_index: usize, number: VersionNumber) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Revision history item with  number '{}' contains build metadata",
-            number
-        ),
-        instance_path: format!("/document/tracking/revision_history/{}/number", revision_index),
+        message: format!("Revision history item with  number '{number}' contains build metadata"),
+        instance_path: format!("/document/tracking/revision_history/{revision_index}/number"),
     }
 }
 

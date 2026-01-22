@@ -9,8 +9,8 @@ use chrono::{DateTime, FixedOffset};
 
 fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid date format in revision history: {}", date_str),
-        instance_path: format!("/document/tracking/revision_history/{}/date", i_r),
+        message: format!("Invalid date format in revision history: {date_str}"),
+        instance_path: format!("/document/tracking/revision_history/{i_r}/date"),
     }
 }
 
@@ -27,17 +27,16 @@ fn create_ssvc_timestamp_too_late_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
-            ssvc_timestamp, i_v, newest_revision_date
+            "SSVC timestamp ({ssvc_timestamp}) for vulnerability at index {i_v} is later than the newest revision date ({newest_revision_date})"
         ),
-        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp", i_v, i_m),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp"),
     }
 }
 
 fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid SSVC object: {}", error),
-        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
+        message: format!("Invalid SSVC object: {error}"),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
     }
 }
 

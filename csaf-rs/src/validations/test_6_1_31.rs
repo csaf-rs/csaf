@@ -14,11 +14,8 @@ fn create_forbidden_strings_in_version_error(
         }
     };
     ValidationError {
-        message: format!(
-            "Product version '{}' contains forbidden {}",
-            product_name, forbidden_substrings_str
-        ),
-        instance_path: format!("{}/name", product_path),
+        message: format!("Product version '{product_name}' contains forbidden {forbidden_substrings_str}"),
+        instance_path: format!("{product_path}/name"),
     }
 }
 const FORBIDDEN_LESS_EQUAL: &str = "<=";
@@ -231,13 +228,12 @@ mod tests {
             let result = check_branch_name_for_forbidden_substrings(branch_name);
             match result {
                 Some(found) => {
-                    assert_eq!(found, expected, "Failed for branch name: {}", branch_name);
+                    assert_eq!(found, expected, "Failed for branch name: {branch_name}");
                 },
                 None => {
                     assert!(
                         expected.is_empty(),
-                        "Expected no forbidden substrings for branch name: {}",
-                        branch_name
+                        "Expected no forbidden substrings for branch name: {branch_name}"
                     );
                 },
             }

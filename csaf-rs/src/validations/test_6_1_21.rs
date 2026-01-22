@@ -86,11 +86,8 @@ fn test_6_1_21_err_wrong_first_version_generator(version: VersionNumber, path: S
     }
     .to_string();
     ValidationError {
-        message: format!(
-            "The first revision history item should have {}, but was {}",
-            version_error, version
-        ),
-        instance_path: format!("/document/tracking/revision_history/{}", path),
+        message: format!("The first revision history item should have {version_error}, but was {version}"),
+        instance_path: format!("/document/tracking/revision_history/{path}"),
     }
 }
 
@@ -101,20 +98,17 @@ fn test_6_1_21_err_missing_version_in_range(
     last_number: u64,
 ) -> ValidationError {
     let version_error = match version {
-        VersionNumber::Integer(_) => format!("integer version {}", expected_number),
-        VersionNumber::Semver(_) => format!("semver version {}.y.z", expected_number),
+        VersionNumber::Integer(_) => format!("integer version {expected_number}"),
+        VersionNumber::Semver(_) => format!("semver version {expected_number}.y.z"),
     }
     .to_string();
     let version_error_range = match version {
-        VersionNumber::Integer(_) => format!("integer version range {} to {}", first_number, last_number),
-        VersionNumber::Semver(_) => format!("semver version range {}.y.z to {}.y.z", first_number, last_number),
+        VersionNumber::Integer(_) => format!("integer version range {first_number} to {last_number}"),
+        VersionNumber::Semver(_) => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
     }
     .to_string();
     ValidationError {
-        message: format!(
-            "Missing revision history item with {} number {}",
-            version_error, version_error_range
-        ),
+        message: format!("Missing revision history item with {version_error} number {version_error_range}"),
         instance_path: "/document/tracking/revision_history".to_string(),
     }
 }

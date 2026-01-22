@@ -11,33 +11,25 @@ fn create_document_id_multiple_vulnerabilities_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "The SSVC target ID equals the document ID '{}' and the document contains multiple vulnerabilities",
-            document_id
+            "The SSVC target ID equals the document ID '{document_id}' and the document contains multiple vulnerabilities"
         ),
-        instance_path: format!(
-            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
-            i_v, i_m, i_t
-        ),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"),
     }
 }
 
 fn create_target_id_mismatch_error(target_id: &str, i_v: usize, i_m: usize, i_t: usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "The SSVC target ID '{}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability",
-            target_id
+            "The SSVC target ID '{target_id}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability"
         ),
-        instance_path: format!(
-            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2/target_ids/{}",
-            i_v, i_m, i_t
-        ),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"),
     }
 }
 
 fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid SSVC object: {}", error),
-        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
+        message: format!("Invalid SSVC object: {error}"),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
     }
 }
 

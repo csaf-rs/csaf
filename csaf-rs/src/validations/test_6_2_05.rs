@@ -7,8 +7,7 @@ fn create_older_initial_release_date_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Initial release date '{}' is older than the earliest revision history date '{}'",
-            initial_release_date, earliest_rev_history_release_date
+            "Initial release date '{initial_release_date}' is older than the earliest revision history date '{earliest_rev_history_release_date}'"
         ),
         instance_path: "/document/tracking/initial_release_date".to_string(),
     }

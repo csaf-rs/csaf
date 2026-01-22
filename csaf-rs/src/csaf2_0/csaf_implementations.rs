@@ -158,7 +158,7 @@ impl ContentTrait for Score {
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
-        format!("/vulnerabilities/{}/scores/{}", vulnerability_idx, metric_idx)
+        format!("/vulnerabilities/{vulnerability_idx}/scores/{metric_idx}")
     }
 }
 

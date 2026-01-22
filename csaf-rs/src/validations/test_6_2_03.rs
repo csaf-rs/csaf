@@ -10,12 +10,10 @@ fn create_missing_metric_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Missing at least one metric for product ID '{}' in product status group '{}'",
-            product_id, status_group_name,
+            "Missing at least one metric for product ID '{product_id}' in product status group '{status_group_name}'",
         ),
         instance_path: format!(
-            "/vulnerabilities/{}/product_status/{}/{}",
-            vulnerability_index, status_group_name, status_group_product_index
+            "/vulnerabilities/{vulnerability_index}/product_status/{status_group_name}/{status_group_product_index}"
         ),
     }
 }

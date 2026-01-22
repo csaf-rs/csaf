@@ -5,8 +5,8 @@ use std::sync::LazyLock;
 
 fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("Product version range {} does not match vers syntax", version_range),
-        instance_path: format!("{}/name", path),
+        message: format!("Product version range {version_range} does not match vers syntax"),
+        instance_path: format!("{path}/name"),
     }
 }
 

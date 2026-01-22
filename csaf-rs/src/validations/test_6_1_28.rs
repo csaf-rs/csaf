@@ -13,12 +13,11 @@ fn create_same_language_error(lang: &str) -> ValidationError {
 /// `/document/lang` and `/document/source_lang` must have different values
 pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
-    if let Some(lang) = document.get_lang() {
-        if let Some(source_lang) = document.get_source_lang() {
-            if lang.to_lowercase() == source_lang.to_lowercase() {
-                return Err(vec![create_same_language_error(lang)]);
-            }
-        }
+    if let Some(lang) = document.get_lang()
+        && let Some(source_lang) = document.get_source_lang()
+        && lang.to_lowercase() == source_lang.to_lowercase()
+    {
+        return Err(vec![create_same_language_error(lang)]);
     }
 
     Ok(())

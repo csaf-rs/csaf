@@ -86,10 +86,7 @@ pub static SSVC_DECISION_POINTS: LazyLock<SsvcDecisionPointsMap> = LazyLock::new
                     );
                     decision_points.insert(key, dp);
                 },
-                Err(err) => eprintln!(
-                    "Warning: Failed to parse decision point from file {}: {}",
-                    filename, err
-                ),
+                Err(err) => eprintln!("Warning: Failed to parse decision point from file {filename}: {err}"),
             }
         }
     }

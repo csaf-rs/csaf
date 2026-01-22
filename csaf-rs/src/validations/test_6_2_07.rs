@@ -27,10 +27,7 @@ pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<
 fn create_missing_date_in_involvements_error(vulnerability_index: usize, involvement_index: usize) -> ValidationError {
     ValidationError {
         message: "Involvement item is missing required 'date' field".to_string(),
-        instance_path: format!(
-            "/vulnerabilities/{}/involvements/{}",
-            vulnerability_index, involvement_index
-        ),
+        instance_path: format!("/vulnerabilities/{vulnerability_index}/involvements/{involvement_index}"),
     }
 }
 

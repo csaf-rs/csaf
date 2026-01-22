@@ -7,22 +7,22 @@ use chrono::{DateTime, FixedOffset};
 
 fn create_invalid_revision_date_error(date: &str, i_rev: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid date format in revision history: {}", date),
-        instance_path: format!("/document/tracking/revision_history/{}", i_rev),
+        message: format!("Invalid date format in revision history: {date}"),
+        instance_path: format!("/document/tracking/revision_history/{i_rev}"),
     }
 }
 
 fn create_disclosure_date_too_late_error(i_v: usize) -> ValidationError {
     ValidationError {
         message: "Disclosure date must not be later than the newest revision history date for TLP:CLEAR documents with final or interim status".to_string(),
-        instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
+        instance_path: format!("/vulnerabilities/{i_v}/discovery_date"),
     }
 }
 
 fn create_invalid_disclosure_date_error(date: &str, i_v: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid disclosure date format: {}", date),
-        instance_path: format!("/vulnerabilities/{}/discovery_date", i_v),
+        message: format!("Invalid disclosure date format: {date}"),
+        instance_path: format!("/vulnerabilities/{i_v}/discovery_date"),
     }
 }
 
@@ -53,10 +53,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     for (i_rev, rev) in revision_history.iter().enumerate() {
         chrono::DateTime::parse_from_rfc3339(rev.get_date())
             .map(|rev_datetime| {
-                println!(
-                    "rev_datetime: {:?}, newest_revision_date: {:?}",
-                    rev_datetime, newest_revision_date
-                );
+                println!("rev_datetime: {rev_datetime:?}, newest_revision_date: {newest_revision_date:?}");
                 newest_revision_date = match newest_revision_date {
                     None => Some(rev_datetime),
                     Some(prev_max) => Some(prev_max.max(rev_datetime)),
@@ -71,10 +68,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
             if let Some(disclosure_date) = v.get_disclosure_date() {
                 match chrono::DateTime::parse_from_rfc3339(disclosure_date) {
                     Ok(disclosure_datetime) => {
-                        println!(
-                            "disclosure_datetime: {:?}, newest_date: {:?}",
-                            disclosure_datetime, newest_date
-                        );
+                        println!("disclosure_datetime: {disclosure_datetime:?}, newest_date: {newest_date:?}");
                         if disclosure_datetime > newest_date {
                             return Err(vec![create_disclosure_date_too_late_error(i_v)]);
                         }

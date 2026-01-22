@@ -28,10 +28,9 @@ fn create_affected_conflict_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Product {} is listed as affected but has conflicting remediation category {}",
-            product_id, category
+            "Product {product_id} is listed as affected but has conflicting remediation category {category}"
         ),
-        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+        instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
     }
 }
 
@@ -43,10 +42,9 @@ fn create_not_affected_conflict_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Product {} is listed as not affected but has conflicting remediation category {}",
-            product_id, category
+            "Product {product_id} is listed as not affected but has conflicting remediation category {category}"
         ),
-        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+        instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
     }
 }
 
@@ -57,11 +55,8 @@ fn create_fixed_conflict_error(
     r_i: usize,
 ) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Product {} is listed as fixed but has conflicting remediation category {}",
-            product_id, category
-        ),
-        instance_path: format!("/vulnerabilities/{}/remediations/{}", v_i, r_i),
+        message: format!("Product {product_id} is listed as fixed but has conflicting remediation category {category}"),
+        instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
     }
 }
 

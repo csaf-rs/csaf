@@ -48,9 +48,7 @@ pub trait CsafTrait {
     fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
         id_path_tuples
             .iter()
-            .map(|(group_or_product_id, path)| {
-                (group_or_product_id.to_owned(), format!("/{}/{}/{}", prefix, idx, path))
-            })
+            .map(|(group_or_product_id, path)| (group_or_product_id.to_owned(), format!("/{prefix}/{idx}/{path}")))
             .collect()
     }
 
@@ -241,7 +239,7 @@ impl Display for DocumentCategory {
             DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
             DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
             DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
-            DocumentCategory::Other(other) => write!(f, "{}", other),
+            DocumentCategory::Other(other) => write!(f, "{other}"),
         }
     }
 }
@@ -484,8 +482,8 @@ impl PartialEq for VersionNumber {
 impl Display for VersionNumber {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            VersionNumber::Integer(num) => write!(f, "{}", num),
-            VersionNumber::Semver(version) => write!(f, "{}", version),
+            VersionNumber::Integer(num) => write!(f, "{num}"),
+            VersionNumber::Semver(version) => write!(f, "{version}"),
         }
     }
 }
@@ -504,14 +502,12 @@ impl Ord for VersionNumber {
             // Panic if intver and semver are compared against each other
             (VersionNumber::Integer(a), VersionNumber::Semver(b)) => {
                 panic!(
-                    "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",
-                    a, b
+                    "While comparing versions, you tried to compare integer versioning {a} and semantic versioning {b}"
                 )
             },
             (VersionNumber::Semver(a), VersionNumber::Integer(b)) => {
                 panic!(
-                    "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",
-                    b, a
+                    "While comparing versions, you tried to compare integer versioning {b} and semantic versioning {a}"
                 )
             },
         }
@@ -633,7 +629,7 @@ pub trait VulnerabilityTrait {
         if let Some(metrics) = self.get_metrics().as_ref() {
             for (metric_i, metric) in metrics.iter().enumerate() {
                 for (x_i, x) in metric.get_products().enumerate() {
-                    ids.push((x.to_owned(), format!("metrics/{}/products/{}", metric_i, x_i)));
+                    ids.push((x.to_owned(), format!("metrics/{metric_i}/products/{x_i}")));
                 }
             }
         }
@@ -849,7 +845,7 @@ pub trait ProductStatusTrait {
     ) {
         if let Some(iter) = products {
             for (x_i, x) in iter.enumerate() {
-                ids.push(((*x).to_owned(), format!("product_status/{}/{}", label, x_i)));
+                ids.push(((*x).to_owned(), format!("product_status/{label}/{x_i}")));
             }
         }
     }
@@ -929,7 +925,7 @@ pub trait ContentTrait {
                 if version == "3.0" || version == "3.1" {
                     types.push(VulnerabilityMetric::CvssV3(version.to_string()));
                 } else {
-                    panic!("Unsupported cvss v3 version: {}", version);
+                    panic!("Unsupported cvss v3 version: {version}");
                 }
             }
         }
@@ -1093,7 +1089,7 @@ pub trait ProductTreeTrait {
             for (p_i, p) in pg.get_product_ids().enumerate() {
                 ids.push((
                     (*p).to_owned(),
-                    format!("/product_tree/product_groups/{}/product_ids/{}", pg_i, p_i),
+                    format!("/product_tree/product_groups/{pg_i}/product_ids/{p_i}"),
                 ));
             }
         }
@@ -1108,11 +1104,11 @@ pub trait ProductTreeTrait {
         for (rel_i, rel) in self.get_relationships().iter().enumerate() {
             ids.push((
                 rel.get_product_reference().to_owned(),
-                format!("/product_tree/relationships/{}/product_reference", rel_i),
+                format!("/product_tree/relationships/{rel_i}/product_reference"),
             ));
             ids.push((
                 rel.get_relates_to_product_reference().to_owned(),
-                format!("/product_tree/relationships/{}/relates_to_product_reference", rel_i),
+                format!("/product_tree/relationships/{rel_i}/relates_to_product_reference"),
             ));
         }
 
@@ -1162,20 +1158,20 @@ pub trait ProductTreeTrait {
         // Visit products in branches
         self.visit_all_branches(&mut |branch: &Self::BranchType, path| {
             if let Some(product_ref) = branch.get_product() {
-                callback(product_ref, &format!("{}/product", path));
+                callback(product_ref, &format!("{path}/product"));
             }
         });
 
         // Visit full_product_names
         for (i, fpn) in self.get_full_product_names().iter().enumerate() {
-            callback(fpn, &format!("/product_tree/full_product_names/{}", i));
+            callback(fpn, &format!("/product_tree/full_product_names/{i}"));
         }
 
         // Visit relationships
         for (i, rel) in self.get_relationships().iter().enumerate() {
             callback(
                 rel.get_full_product_name(),
-                &format!("/product_tree/relationships/{}/full_product_name", i),
+                &format!("/product_tree/relationships/{i}/full_product_name"),
             );
         }
     }
@@ -1191,7 +1187,7 @@ pub trait ProductTreeTrait {
     fn visit_all_branches(&self, callback: &mut impl FnMut(&Self::BranchType, &str)) {
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{}", i), callback);
+                branch.visit_branches_rec(&format!("/product_tree/branches/{i}"), callback);
             }
         }
     }
@@ -1249,7 +1245,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
         callback(self, path);
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("{}/branches/{}", path, i), callback);
+                branch.visit_branches_rec(&format!("{path}/branches/{i}"), callback);
             }
         }
     }
@@ -1275,7 +1271,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
             }
             for (i, branch) in branches.iter().enumerate() {
                 if let Some(sub_path) = branch.find_excessive_branch_depth(remaining_depth - 1) {
-                    return Some(format!("/branches/{}{}", i, sub_path));
+                    return Some(format!("/branches/{i}{sub_path}"));
                 }
             }
         }
@@ -1390,7 +1386,7 @@ fn extract_group_id_impl<'a, T: WithOptionalGroupIds + 'a>(
             for (group_index, group_id) in group_ids.enumerate() {
                 ids.push((
                     group_id.to_owned(),
-                    format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
+                    format!("{path_prefix}/{index}/group_ids/{group_index}"),
                 ))
             }
         }
@@ -1422,7 +1418,7 @@ fn extract_product_id_impl<'a, T: WithOptionalProductIds + 'a>(
             for (product_index, product_id) in product_ids.enumerate() {
                 ids.push((
                     product_id.to_owned(),
-                    format!("{}/{}/product_ids/{}", path_prefix, index, product_index),
+                    format!("{path_prefix}/{index}/product_ids/{product_index}"),
                 ))
             }
         }

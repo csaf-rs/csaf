@@ -111,14 +111,12 @@ fn test_6_1_27_09_err_generator(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "In documents with category '{}', vulnerability product status 'known_not_affected' entries \
+            "In documents with category '{document_category}', vulnerability product status 'known_not_affected' entries \
             must have a corresponding impact statement in 'flags' or 'threats' with category 'impact'. \
-            Found 'known_not_affected' product status entry '{}' without impact statement.",
-            document_category, product_or_group_id
+            Found 'known_not_affected' product status entry '{product_or_group_id}' without impact statement."
         ),
         instance_path: format!(
-            "/vulnerabilities/{}/product_status/known_not_affected/{}",
-            vuln_path_index, known_not_affected_path_index
+            "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_not_affected_path_index}"
         ),
     }
 }

@@ -84,7 +84,7 @@ fn generate_test_cases_from_json(
         let all_docs: Vec<_> = failure_docs.iter().chain(valid_docs.iter()).collect();
 
         for (case_num, _) in &all_docs {
-            param_names.push(Ident::new(&format!("case_{}", case_num), Span::call_site()));
+            param_names.push(Ident::new(&format!("case_{case_num}"), Span::call_site()));
             param_types.push(quote! { Result<(), Vec<crate::validation::ValidationError>> });
         }
 
@@ -96,7 +96,7 @@ fn generate_test_cases_from_json(
             .iter()
             .enumerate()
             .map(|(idx, (case_num, path))| {
-                let full_path = format!("{}/{}", base_dir, path);
+                let full_path = format!("{base_dir}/{path}");
                 let param_name = &param_names[idx];
                 if uses_raw_string {
                     quote! {
@@ -105,7 +105,7 @@ fn generate_test_cases_from_json(
                             {
                                 let path = #full_path;
                                 std::fs::read_to_string(path)
-                                    .unwrap_or_else(|e| panic!("Failed to load {} (case {}): {}", #path, #case_num, e))
+                                    .unwrap_or_else(|e| panic!("Failed to load {#path} (case {#case_num}): {e}"))
                             },
                             #param_name
                         )
@@ -117,9 +117,9 @@ fn generate_test_cases_from_json(
                             {
                                 let path = #full_path;
                                 let content = std::fs::read_to_string(path)
-                                    .unwrap_or_else(|e| panic!("Failed to load {} (case {}): {}", #path, #case_num, e));
+                                    .unwrap_or_else(|e| panic!("Failed to load {#path} (case {#case_num}): {e}"));
                                 serde_json::from_str::<#csaf_doc_type>(&content)
-                                    .unwrap_or_else(|e| panic!("Failed to parse {} (case {}): {}", #path, #case_num, e))
+                                    .unwrap_or_else(|e| panic!("Failed to parse {#path} (case {#case_num}): {e}"))
                             },
                             #param_name
                         )
@@ -129,7 +129,7 @@ fn generate_test_cases_from_json(
             .collect();
 
         // Generate validator struct name
-        let validator_name = format!("ValidatorFor{}", struct_name);
+        let validator_name = format!("ValidatorFor{struct_name}");
         let validator_ident = Ident::new(&validator_name, Span::call_site());
 
         // Generate the struct definition using the shared TestValidator trait
@@ -315,7 +315,7 @@ pub fn generate_testcases(
     csaf_version: CsafVersion,
     target_path: &str,
 ) -> Result<(), BuildError> {
-    println!("cargo:rerun-if-changed={}", input);
+    println!("cargo:rerun-if-changed={input}");
 
     let content = fs::read_to_string(input)?;
 

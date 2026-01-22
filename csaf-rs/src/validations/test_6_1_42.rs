@@ -5,15 +5,15 @@ use std::str::FromStr;
 
 fn create_invalid_purl_error(purl_str: &str, path: &str, index: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid PURL format: {}", purl_str),
-        instance_path: format!("{}/product_identification_helper/purls/{}", path, index),
+        message: format!("Invalid PURL format: {purl_str}"),
+        instance_path: format!("{path}/product_identification_helper/purls/{index}"),
     }
 }
 
 fn create_purl_consistency_error(path: &str, index: usize) -> ValidationError {
     ValidationError {
         message: String::from("PURLs within the same product_identification_helper must only differ in qualifiers"),
-        instance_path: format!("{}/product_identification_helper/purls/{}", path, index),
+        instance_path: format!("{path}/product_identification_helper/purls/{index}"),
     }
 }
 

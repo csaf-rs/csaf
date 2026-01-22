@@ -40,10 +40,9 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
 fn test_6_1_27_07_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must provide at least one fixed, known_affected, known_unaffected or under_investigation product_status in each vulnerability",
-            document_category
+            "Document with category '{document_category}' must provide at least one fixed, known_affected, known_unaffected or under_investigation product_status in each vulnerability"
         ),
-        instance_path: format!("/vulnerabilities/{}/product_status", vuln_path_index),
+        instance_path: format!("/vulnerabilities/{vuln_path_index}/product_status"),
     }
 }
 

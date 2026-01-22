@@ -11,21 +11,17 @@ use std::sync::LazyLock;
 /// - url starts with "https://"
 /// - url ends with the valid filename according to section 5.1
 pub fn test_6_2_11_missing_canonical_url(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let document = doc.get_document();
-
     // Get the expected filename from tracking ID
-    let tracking = document.get_tracking();
-    let tracking_id = tracking.get_id();
-    let expected_filename = generate_filename(tracking_id);
+    let expected_filename = generate_filename(doc.get_document().get_tracking().get_id());
 
     // Check if any reference meets the criteria
-    if let Some(references) = document.get_references() {
+    if let Some(references) = doc.get_document().get_references() {
         for reference in references {
-            if CategoryOfReference::Self_ == *reference.get_category() {
-                let url = reference.get_url();
-                if url.starts_with("https://") && url.ends_with(&expected_filename) {
-                    return Ok(());
-                }
+            if CategoryOfReference::Self_ == *reference.get_category()
+                && reference.get_url().starts_with("https://")
+                && reference.get_url().ends_with(&expected_filename)
+            {
+                return Ok(());
             }
         }
     }

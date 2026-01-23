@@ -16,9 +16,10 @@ env:
 
 jobs:
   prepare:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     outputs:
-      msrv-version: ${{ steps.get-version.outputs.msrv-version }}
+      msrv-version: ${{ steps.get-versions.outputs.msrv-version }}
+      stable-version: ${{ steps.get-versions.outputs.stable-version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,14 +28,13 @@ jobs:
         run: |
           rustup component add rustfmt
           cargo fmt --all -- --check -l
-      - name: Extract version
-        id: get-version
+      - name: Extract versions
+        id: get-versions
         run: |
           MSRV=$(cargo metadata --no-deps --format-version=1 --locked | jq -r '.packages[0].rust_version')
           echo "msrv-version=$MSRV" >> $GITHUB_OUTPUT
-      - name: Show version
-        run: |
-          echo "MSRV: ${{ steps.get-version.outputs.msrv-version }}"
+          STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
+          echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
       - name: Publish dry-run 
         run: |
           cargo publish --dry-run -p csaf-rs --verbose --no-verify --locked
@@ -47,7 +47,7 @@ jobs:
       matrix:
         version: 
           - ${{ needs.prepare.outputs.msrv-version }}
-          - 1.93.0
+          - ${{ needs.prepare.outputs.stable-version }}
         target:
           - arch: x86_64-unknown-linux-gnu
             runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
           - arch: aarch64-apple-darwin
             runs-on: macos-latest
           - arch: x86_64-apple-darwin
-            runs-on: macos-15-intel
+            runs-on: macos-latest
           - arch: x86_64-pc-windows-msvc
             runs-on: windows-latest
             ext: .exe

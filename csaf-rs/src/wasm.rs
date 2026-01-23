@@ -36,6 +36,7 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResul
     // First, try to detect the version by parsing the JSON
     let json_value: serde_json::Value =
         serde_json::from_str(json_str).map_err(|e| JsValue::from_str(&format!("Invalid JSON: {e}")))?;
+
     // Try to get the CSAF version from the document
     let version = json_value
         .get("document")

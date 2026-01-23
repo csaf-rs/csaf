@@ -15,16 +15,51 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      msrv-version: ${{ steps.get-versions.outputs.msrv-version }}
+      stable-version: ${{ steps.get-versions.outputs.stable-version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Format check
+        run: |
+          rustup component add rustfmt
+          cargo fmt --all -- --check -l
+      - name: Extract versions
+        id: get-versions
+        run: |
+          MSRV=$(cargo metadata --no-deps --format-version=1 --locked | jq -r '.packages[0].rust_version')
+          echo "msrv-version=$MSRV" >> $GITHUB_OUTPUT
+          STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
+          echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
+      - name: Publish dry-run 
+        run: |
+          cargo publish --dry-run -p csaf-rs --verbose --no-verify --locked
+
   build:
+    needs: prepare
+    permissions:
+      contents: write
     strategy:
       matrix:
+        version: 
+          - ${{ needs.prepare.outputs.msrv-version }}
+          - ${{ needs.prepare.outputs.stable-version }}
         target:
           - arch: x86_64-unknown-linux-gnu
             runs-on: ubuntu-latest
+          - arch:  aarch64-unknown-linux-gnu
+            runs-on: ubuntu-24.04-arm
           - arch: aarch64-apple-darwin
             runs-on: macos-latest
           - arch: x86_64-apple-darwin
             runs-on: macos-latest
+          - arch: x86_64-pc-windows-msvc
+            runs-on: windows-latest
+            ext: .exe
           - arch: wasm32-wasip2
             runs-on: macos-latest
             skip-test: true
@@ -34,35 +69,62 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
+      - name: Update rustup
+        run: rustup update stable --no-self-update
+      - name: Set Rust version
+        run: |
+          rustup override set ${{ matrix.version }}
+          rustup default ${{ matrix.version }}
       - name: Prepare target
         run: rustup target add ${{ matrix.target.arch }}
+      - name: Install clippy
+        if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
+        run: |
+          # this is necesary because clippy ignores the target flag
+          rustup component add clippy 
+          rustup component add --toolchain ${{ matrix.version }}-${{ matrix.target.arch }} clippy
+      - name: Use cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: build-${{matrix.version}}-${{ matrix.target.arch }}
       - name: Update assets
         run: ./update_assets.sh
-      - name: Format check
-        run: cargo fmt --all --check -- -l
+      - name: Check compilation
+        run: cargo check --locked --target=${{ matrix.target.arch }} --verbose
       - name: Clippy check
-        run: |
-          cargo clippy --version
-          cargo clippy --all-targets -- -D warnings
+        if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
+        run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} -- -D warnings
+      - name: Install cargo-auditable
+        run: cargo install cargo-auditable --locked
       - name: Build
-        run: cargo build --target=${{ matrix.target.arch }} --release --verbose
+        run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
       - name: Build WASM bindings
+        if: ${{ matrix.target.arch == 'wasm32-wasip2' }}
         run: |
-          if [ "${{ matrix.target.arch }}" = "wasm32-wasip2" ]; then
-            cargo install wasm-pack
+            cargo install wasm-pack --locked
             wasm-pack build csaf-rs --scope csaf-rs
-          fi
       - name: Run tests
-        run: cargo test --target=${{ matrix.target.arch }} --verbose
-        if: ${{ matrix.target.skip-test != true }}
-      - name: Publish dry-run
-        run: cargo publish --dry-run -p csaf-rs --target=${{ matrix.target.arch }} --verbose
+        run: cargo test --locked --target=${{ matrix.target.arch }} --verbose
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         uses: actions/upload-artifact@v4
         with:
-          name: csaf-validator-${{ matrix.target.arch }}
+          name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          format: cyclonedx-json
+          artifact-name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-sbom.cdx.json
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          format: spdx-json
+          artifact-name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-sbom.spdx.json
+
+
   publish-crates:
     runs-on: ubuntu-latest
     permissions:
@@ -75,9 +137,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
+      - name: Update assets
+        run: ./update_assets.sh
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
-      - run: cargo publish
+      - name: Publish
+        run: cargo publish --locked -p csaf-rs --verbose
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
       - name: Determine Version
@@ -97,8 +162,8 @@ jobs:
         with:
           path: csaf-validator
           pattern: csaf-validator-*
-      - run: |
-          # zip each folder
+      - name: Zip Artifacts
+        run: |
           ls csaf-validator | xargs -I {} zip {}.zip -rj csaf-validator/{}
           ls csaf-validator-*.zip
       - name: Create Release
@@ -112,6 +177,7 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             csaf-validator-*.zip
+
   publish-npm:
     runs-on: ubuntu-latest
     permissions:
@@ -124,14 +190,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
+      - name: Update assets
+        run: ./update_assets.sh
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
       - name: Build WASM bindings
         run: |
-          cargo install wasm-pack
+          cargo install wasm-pack --locked
           wasm-pack build csaf-rs --scope csaf-rs    
       - name: Publish to NPM
         working-directory: ./csaf-rs/pkg

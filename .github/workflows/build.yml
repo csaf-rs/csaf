@@ -172,7 +172,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ env.version }}
-          draft: false
+          draft: true
           prerelease: false
           fail_on_unmatched_files: true
           files: |

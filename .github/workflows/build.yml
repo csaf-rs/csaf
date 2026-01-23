@@ -41,7 +41,7 @@ jobs:
         run: |
           cargo publish --dry-run -p csaf-rs --verbose --no-verify --locked
 
-  build-platforms:
+  build-matrix:
     needs: prepare
     permissions:
       contents: write
@@ -127,6 +127,20 @@ jobs:
           artifact-name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-sbom.spdx.json
 
 
+  build-platforms:
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check build status
+        run: |
+          if [ ${{ needs.build-matrix.result }} == 'success' ]; then
+            echo "All matrix builds succeeded."
+          else
+            echo "Some matrix builds failed."
+            exit 1
+          fi
+          
   publish-crates:
     runs-on: ubuntu-latest
     permissions:
@@ -176,7 +190,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ env.version }}
-          draft: true
+          draft: false
           prerelease: false
           fail_on_unmatched_files: true
           files: |

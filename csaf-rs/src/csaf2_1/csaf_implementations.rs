@@ -4,7 +4,7 @@ use crate::csaf_traits::{
     FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
     ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
     RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
-    VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds,
+    VulnerabilityIdTrait, VulnerabilityTrait, WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_1::schema::{
@@ -37,7 +37,9 @@ impl RemediationTrait for Remediation {
     fn get_category(&self) -> CategoryOfTheRemediation {
         self.category
     }
+}
 
+impl WithOptionalDate for Remediation {
     fn get_date(&self) -> &Option<String> {
         &self.date
     }
@@ -154,12 +156,14 @@ impl WithOptionalProductIds for Threat {
 }
 
 impl ThreatTrait for Threat {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
-    }
-
     fn get_category(&self) -> CategoryOfTheThreat {
         self.category
+    }
+}
+
+impl WithOptionalDate for Threat {
+    fn get_date(&self) -> &Option<String> {
+        &self.date
     }
 }
 
@@ -250,28 +254,34 @@ impl WithOptionalProductIds for Flag {
 }
 
 impl FlagTrait for Flag {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
-    }
-
     fn get_label(&self) -> LabelOfTheFlag {
         self.label
     }
 }
 
-impl FirstKnownExploitationDatesTrait for FirstKnownExploitationDate {
+impl WithOptionalDate for Flag {
+    fn get_date(&self) -> &Option<String> {
+        &self.date
+    }
+}
+
+impl FirstKnownExploitationDatesTrait for FirstKnownExploitationDate {}
+
+impl WithDate for FirstKnownExploitationDate {
     fn get_date(&self) -> &String {
         &self.date
     }
 }
 
 impl InvolvementTrait for Involvement {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
-    }
-
     fn get_party(&self) -> PartyCategory {
         self.party
+    }
+}
+
+impl WithOptionalDate for Involvement {
+    fn get_date(&self) -> &Option<String> {
+        &self.date
     }
 }
 
@@ -457,21 +467,26 @@ impl TrackingTrait for Tracking {
     }
 }
 
-impl GeneratorTrait for DocumentGenerator {
+impl GeneratorTrait for DocumentGenerator {}
+
+impl WithOptionalDate for DocumentGenerator {
     fn get_date(&self) -> &Option<String> {
         &self.date
     }
 }
 
 impl RevisionTrait for Revision {
-    fn get_date(&self) -> &String {
-        &self.date
-    }
     fn get_number_string(&self) -> &String {
         &self.number
     }
     fn get_summary(&self) -> &String {
         &self.summary
+    }
+}
+
+impl WithDate for Revision {
+    fn get_date(&self) -> &String {
+        &self.date
     }
 }
 

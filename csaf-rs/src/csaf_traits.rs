@@ -515,16 +515,10 @@ impl Ord for VersionNumber {
 }
 
 /// Trait for accessing document generator information
-pub trait GeneratorTrait {
-    /// Returns the date when this document was generated
-    fn get_date(&self) -> &Option<String>;
-}
+pub trait GeneratorTrait: WithOptionalDate {}
 
 /// Trait for accessing revision history entry information
-pub trait RevisionTrait {
-    /// Returns the date associated with this revision entry
-    fn get_date(&self) -> &String;
-
+pub trait RevisionTrait: WithDate {
     /// Returns the number/identifier of this revision
     fn get_number_string(&self) -> &String;
 
@@ -703,23 +697,15 @@ pub trait VulnerabilityIdTrait {
 }
 
 /// Trait for accessing vulnerability flags information
-pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds {
-    /// Returns the date associated with this vulnerability flag
-    fn get_date(&self) -> &Option<String>;
-
+pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the label of the vulnerability flag
     fn get_label(&self) -> LabelOfTheFlag;
 }
 
-pub trait FirstKnownExploitationDatesTrait {
-    fn get_date(&self) -> &String;
-}
+pub trait FirstKnownExploitationDatesTrait: WithDate {}
 
 /// Trait for accessing vulnerability involvement information
-pub trait InvolvementTrait: WithOptionalGroupIds {
-    /// Returns the date associated with this vulnerability involvement
-    fn get_date(&self) -> &Option<String>;
-
+pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate {
     /// Returns the party associated with this vulnerability involvement
     fn get_party(&self) -> PartyCategory;
 }
@@ -728,7 +714,7 @@ pub trait InvolvementTrait: WithOptionalGroupIds {
 ///
 /// The `RemediationTrait` encapsulates the details of a remediation, such as its
 /// category and the affected products or groups.
-pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds {
+pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the category of the remediation.
     ///
     /// Categories are defined by the CSAF schema.
@@ -760,9 +746,6 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds {
             Some(product_set)
         }
     }
-
-    /// Returns the date associated with this remediation
-    fn get_date(&self) -> &Option<String>;
 }
 
 /// Enum representing product status groups
@@ -1038,10 +1021,7 @@ pub fn get_metric_prop_name(metric: VulnerabilityMetric) -> &'static str {
 }
 
 /// Trait representing an abstract threat in a CSAF document.
-pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds {
-    /// Returns the date associated with this threat
-    fn get_date(&self) -> &Option<String>;
-
+pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the category of the threat
     fn get_category(&self) -> CategoryOfTheThreat;
 }
@@ -1360,6 +1340,16 @@ pub trait WithOptionalGroupIds {
 pub trait WithOptionalProductIds {
     /// Returns the product IDs associated with this entity
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+}
+
+pub trait WithDate {
+    /// Returns the date associated with this entity
+    fn get_date(&self) -> &String;
+}
+
+pub trait WithOptionalDate {
+    /// Returns the date associated with this entity
+    fn get_date(&self) -> &Option<String>;
 }
 
 /// Central helper function for extracting group references.

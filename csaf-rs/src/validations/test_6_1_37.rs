@@ -123,7 +123,7 @@ fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), V
             Ok(())
         } else {
             // TODO: Will be changed after revision history refactor, which will introduce
-            // generisch parsing error handling
+            // generic parsing error handling
             Err(vec![create_parsing_error(
                 date_time.get_str(),
                 date_time.get_error().unwrap(),

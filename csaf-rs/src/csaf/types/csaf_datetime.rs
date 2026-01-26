@@ -53,7 +53,7 @@ impl std::error::Error for Rfc3339ParseError {}
 // ============================================================================
 
 impl CsafDateTime {
-    /// Creates a new CsafDate by parsing the given string.
+    /// Creates a new CsafDateTime by parsing the given string.
     fn parse(raw: String) -> Self {
         let parsed = DateTime::parse_from_rfc3339(&raw).map_err(|e| Rfc3339ParseError { message: e.to_string() });
         CsafDateTime { raw, parsed }
@@ -136,7 +136,7 @@ impl Display for CsafDateTime {
 /// Valid dates are compared by their parsed values.
 /// If either or both dates are invalid, they are always unequal.
 ///
-/// Also, we do not implement Eq here, as invalid values are also not reflexiv, i.e. some invalid value
+/// Also, we do not implement Eq here, as invalid values are also not reflexive, i.e. some invalid value
 /// is not equal to itself, or we rather do not care if they are.
 impl PartialEq for CsafDateTime {
     fn eq(&self, other: &Self) -> bool {

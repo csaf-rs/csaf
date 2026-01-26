@@ -53,7 +53,7 @@ impl std::error::Error for Rfc3339ParseError {}
 // ============================================================================
 
 impl CsafDateTime {
-    /// Creates a new CsafDate by parsing the given string.
+    /// Creates a new CsafDateTime by parsing the given string.
     fn parse(raw: String) -> Self {
         let parsed = DateTime::parse_from_rfc3339(&raw).map_err(|e| Rfc3339ParseError { message: e.to_string() });
         CsafDateTime { raw, parsed }

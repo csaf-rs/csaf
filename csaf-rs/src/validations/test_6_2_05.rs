@@ -18,7 +18,7 @@ fn create_older_initial_release_date_error(
 pub fn test_6_2_05_older_init_release_than_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let initial_release_date = doc.get_document().get_tracking().get_initial_release_date();
     // TODO: Check for invalid dates here, will be done after revision history refactor, which will introduce
-    // generisch parsing error handling
+    // generic parsing error handling
 
     let mut rev_history = doc.get_document().get_tracking().get_revision_history_tuples();
     rev_history.inplace_sort_by_date_then_number();

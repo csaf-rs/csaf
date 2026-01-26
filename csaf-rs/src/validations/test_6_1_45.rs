@@ -51,7 +51,9 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
     let revision_history = document.get_tracking().get_revision_history();
     for (i_rev, rev) in revision_history.iter().enumerate() {
-        chrono::DateTime::parse_from_rfc3339(rev.get_date())
+        // TODO: Rewrite this after revision history refactor
+        let date = rev.get_date();
+        chrono::DateTime::parse_from_rfc3339(date.get_str())
             .map(|rev_datetime| {
                 println!("rev_datetime: {rev_datetime:?}, newest_revision_date: {newest_revision_date:?}");
                 newest_revision_date = match newest_revision_date {
@@ -59,14 +61,14 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
                     Some(prev_max) => Some(prev_max.max(rev_datetime)),
                 }
             })
-            .map_err(|_| vec![create_invalid_revision_date_error(rev.get_date(), i_rev)])?;
+            .map_err(|_| vec![create_invalid_revision_date_error(date.get_str(), i_rev)])?;
     }
 
     if let Some(newest_date) = newest_revision_date {
         // Check each vulnerability's disclosure date
         for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
             if let Some(disclosure_date) = v.get_disclosure_date() {
-                match chrono::DateTime::parse_from_rfc3339(disclosure_date) {
+                match chrono::DateTime::parse_from_rfc3339(disclosure_date.get_str()) {
                     Ok(disclosure_datetime) => {
                         println!("disclosure_datetime: {disclosure_datetime:?}, newest_date: {newest_date:?}");
                         if disclosure_datetime > newest_date {
@@ -74,7 +76,10 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
                         }
                     },
                     Err(_) => {
-                        return Err(vec![create_invalid_disclosure_date_error(disclosure_date, i_v)]);
+                        return Err(vec![create_invalid_disclosure_date_error(
+                            disclosure_date.get_str(),
+                            i_v,
+                        )]);
                     },
                 }
             }

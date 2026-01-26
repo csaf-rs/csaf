@@ -57,16 +57,17 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
     // Parse the date of each revision and find the newest one
     let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
     for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
-        let date_str = revision.get_date();
-        match DateTime::parse_from_rfc3339(date_str) {
-            Ok(date) => {
+        // TODO: Rewrite this after revision history refactor
+        let date = revision.get_date();
+        match DateTime::parse_from_rfc3339(date.get_str()) {
+            Ok(parsed_date) => {
                 newest_revision_date = match newest_revision_date {
-                    None => Some(date),
-                    Some(newest_date) => Some(newest_date.max(date)),
+                    None => Some(parsed_date),
+                    Some(newest_date) => Some(newest_date.max(parsed_date)),
                 };
             },
             Err(_) => {
-                return Err(vec![create_invalid_revision_date_error(date_str, i_r)]);
+                return Err(vec![create_invalid_revision_date_error(date.get_str(), i_r)]);
             },
         }
     }

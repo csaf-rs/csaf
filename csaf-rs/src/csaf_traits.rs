@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
@@ -331,36 +332,10 @@ pub trait TrackingTrait {
     type RevisionType: RevisionTrait;
 
     /// The release date of this document's latest version
-    fn get_current_release_date_string(&self) -> &String;
-
-    fn get_current_release_date(&self) -> DateTime<Utc> {
-        let date =
-            DateTime::parse_from_rfc3339(self.get_current_release_date_string()).map(|dt| dt.with_timezone(&Utc));
-        if let Ok(date) = date {
-            date
-        } else {
-            panic!(
-                "Encountered date that could not be parsed as RFC3339: {}",
-                self.get_current_release_date_string()
-            );
-        }
-    }
+    fn get_current_release_date(&self) -> CsafDateTime;
 
     /// The initial release date of this document
-    fn get_initial_release_date_string(&self) -> &String;
-
-    fn get_initial_release_date(&self) -> DateTime<Utc> {
-        let date =
-            DateTime::parse_from_rfc3339(self.get_initial_release_date_string()).map(|dt| dt.with_timezone(&Utc));
-        if let Ok(date) = date {
-            date
-        } else {
-            panic!(
-                "Encountered date that could not be parsed as RFC3339: {}",
-                self.get_initial_release_date_string()
-            );
-        }
-    }
+    fn get_initial_release_date(&self) -> CsafDateTime;
 
     /// Returns the generator information for this document
     fn get_generator(&self) -> &Option<Self::GeneratorType>;
@@ -372,18 +347,18 @@ pub trait TrackingTrait {
     fn get_revision_history_tuples(&self) -> RevisionHistory {
         let mut revision_history: RevisionHistory = Vec::new();
         for (i_r, revision) in self.get_revision_history().iter().enumerate() {
-            let date = DateTime::parse_from_rfc3339(revision.get_date()).map(|dt| dt.with_timezone(&Utc));
-            if let Ok(date) = date {
+            let csaf_date = revision.get_date();
+            if let Some(date) = csaf_date.get_as_utc() {
                 revision_history.push(RevisionHistoryItem {
                     path_index: i_r,
                     date,
-                    date_string: revision.get_date().clone(),
+                    date_string: csaf_date.get_str().to_string(),
                     number: revision.get_number(),
                 });
             } else {
                 panic!(
                     "Encountered date that could not be parsed as RFC3339: {}",
-                    revision.get_date()
+                    csaf_date.get_str()
                 );
             }
         }
@@ -644,10 +619,10 @@ pub trait VulnerabilityTrait {
     }
 
     /// Returns the date when this vulnerability was initially disclosed.
-    fn get_disclosure_date(&self) -> &Option<String>;
+    fn get_disclosure_date(&self) -> Option<CsafDateTime>;
 
     /// Returns the date when this vulnerability was initially discovered.
-    fn get_discovery_date(&self) -> &Option<String>;
+    fn get_discovery_date(&self) -> Option<CsafDateTime>;
 
     /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
@@ -1344,12 +1319,12 @@ pub trait WithOptionalProductIds {
 
 pub trait WithDate {
     /// Returns the date associated with this entity
-    fn get_date(&self) -> &String;
+    fn get_date(&self) -> CsafDateTime;
 }
 
 pub trait WithOptionalDate {
     /// Returns the date associated with this entity
-    fn get_date(&self) -> &Option<String>;
+    fn get_date(&self) -> Option<CsafDateTime>;
 }
 
 /// Central helper function for extracting group references.

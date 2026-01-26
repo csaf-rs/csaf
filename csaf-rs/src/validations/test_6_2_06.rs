@@ -26,7 +26,7 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     let newest_rev_history_item_date = rev_history.last().unwrap();
     if current_release_date.get_as_utc().unwrap() < newest_rev_history_item_date.date {
         return Err(vec![create_older_current_release_date_error(
-            doc.get_document().get_tracking().get_current_release_date().get_str(),
+            current_release_date.get_str(),
             &newest_rev_history_item_date.date_string,
         )]);
     }

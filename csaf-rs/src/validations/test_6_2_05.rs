@@ -26,7 +26,7 @@ pub fn test_6_2_05_older_init_release_than_rev_history(doc: &impl CsafTrait) -> 
     let earliest_rev_history_item_date = rev_history.first().unwrap();
     if initial_release_date.get_as_utc().unwrap() < earliest_rev_history_item_date.date {
         return Err(vec![create_older_initial_release_date_error(
-            doc.get_document().get_tracking().get_initial_release_date().get_str(),
+            initial_release_date.get_str(),
             &earliest_rev_history_item_date.date_string,
         )]);
     }

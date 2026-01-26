@@ -330,7 +330,7 @@ mod tests {
     #[test]
     fn test_display_valid() {
         let dt = CsafDateTime::from("2024-01-15T10:30:00Z");
-        let display = format!("{}", dt);
+        let display = format!("{dt}");
         assert!(display.contains("raw: 2024-01-15T10:30:00Z"));
         assert!(display.contains("parsed:"));
     }
@@ -338,7 +338,7 @@ mod tests {
     #[test]
     fn test_display_invalid() {
         let dt = CsafDateTime::from("not-a-date");
-        let display = format!("{}", dt);
+        let display = format!("{dt}");
         assert!(display.contains("raw: not-a-date"));
         assert!(display.contains("parsing failed with:"));
     }

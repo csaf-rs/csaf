@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    CsafTrait, DistributionTrait, DocumentTrait, RevisionTrait, TlpTrait, TrackingTrait, VulnerabilityTrait,
+    CsafTrait, DistributionTrait, DocumentTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
 use crate::schema::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
 use crate::validation::ValidationError;

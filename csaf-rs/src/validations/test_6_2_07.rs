@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithOptionalDate};
 use crate::validation::ValidationError;
 
 /// 6.2.7 Missing Date in Involvements

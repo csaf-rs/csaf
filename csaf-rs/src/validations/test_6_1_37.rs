@@ -3,6 +3,7 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityT
 use crate::validation::ValidationError;
 use regex::Regex;
 use std::sync::LazyLock;
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^((\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:(?:[0-4]\d|5[0-9])(?:\.\d+)?)(Z|[+-]\d{2}:\d{2}))$").unwrap()
@@ -117,21 +118,24 @@ fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance
 }
 
 fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), Vec<ValidationError>> {
-    if CSAF_RFC3339_REGEX.is_match(date_time.get_str()) {
+    let date = match date_time {
+        Valid(date) => date.get_raw_string(),
+        Invalid(err) => err.get_raw_string()
+    };
+    if CSAF_RFC3339_REGEX.is_match(date) {
         // Add chrono-based plausibility check
-        if date_time.is_valid() {
-            Ok(())
-        } else {
-            // TODO: Will be changed after revision history refactor, which will introduce
-            // generic parsing error handling
-            Err(vec![create_parsing_error(
-                date_time.get_str(),
-                date_time.get_error().unwrap(),
-                instance_path,
-            )])
+        match date_time {
+            Valid(_) => Ok(()),
+            Invalid(err) => {
+                Err(vec![create_parsing_error(
+                    date,
+                    err,
+                    instance_path,
+                )])
+            }
         }
     } else {
-        Err(vec![create_invalid_format_error(date_time.get_str(), instance_path)])
+        Err(vec![create_invalid_format_error(date, instance_path)])
     }
 }
 
@@ -169,12 +173,12 @@ mod tests {
             )]),
             Err(vec![create_parsing_error(
                 "2023-04-31T00:00:00+01:00",
-                "Failed to parse as RFC3339: 'input is out of range'",
+                "Failed to parse '2023-04-31T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
                 "/vulnerabilities/0/disclosure_date",
             )]),
             Err(vec![create_parsing_error(
                 "2023-02-29T00:00:00+01:00",
-                "Failed to parse as RFC3339: 'input is out of range'",
+                "Failed to parse '2023-02-29T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
                 "/vulnerabilities/0/disclosure_date",
             )]),
             Err(vec![create_invalid_format_error(

@@ -12,6 +12,7 @@ use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use uuid::Uuid;
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -347,19 +348,18 @@ pub trait TrackingTrait {
     fn get_revision_history_tuples(&self) -> RevisionHistory {
         let mut revision_history: RevisionHistory = Vec::new();
         for (i_r, revision) in self.get_revision_history().iter().enumerate() {
-            let csaf_date = revision.get_date();
-            if let Some(date) = csaf_date.get_as_utc() {
-                revision_history.push(RevisionHistoryItem {
-                    path_index: i_r,
-                    date,
-                    date_string: csaf_date.get_str().to_string(),
-                    number: revision.get_number(),
-                });
-            } else {
-                panic!(
-                    "Encountered date that could not be parsed as RFC3339: {}",
-                    csaf_date.get_str()
-                );
+            match revision.get_date() {
+                Valid(valid) => {
+                    revision_history.push(RevisionHistoryItem {
+                        path_index: i_r,
+                        date: valid.get_as_utc().to_owned(),
+                        date_string: valid.get_raw_string().to_string(),
+                        number: revision.get_number(),
+                    });
+                }
+                Invalid(error) => {
+                    panic!("{}", error)
+                }
             }
         }
         revision_history

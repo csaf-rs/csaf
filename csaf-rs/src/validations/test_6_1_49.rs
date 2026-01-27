@@ -6,6 +6,7 @@ use crate::csaf_traits::{
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationError {
     ValidationError {
@@ -58,8 +59,11 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
     let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
     for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
         // TODO: Rewrite this after revision history refactor
-        let date = revision.get_date();
-        match DateTime::parse_from_rfc3339(date.get_str()) {
+        let date = match revision.get_date() {
+            Valid(date) => date.get_raw_string().to_owned(),
+            Invalid(err) => err.get_raw_string().to_owned()
+        };
+        match DateTime::parse_from_rfc3339(date.as_str()) {
             Ok(parsed_date) => {
                 newest_revision_date = match newest_revision_date {
                     None => Some(parsed_date),
@@ -67,7 +71,7 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
                 };
             },
             Err(_) => {
-                return Err(vec![create_invalid_revision_date_error(date.get_str(), i_r)]);
+                return Err(vec![create_invalid_revision_date_error(date.as_str(), i_r)]);
             },
         }
     }

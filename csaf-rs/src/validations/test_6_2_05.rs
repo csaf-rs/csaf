@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 
@@ -24,9 +25,12 @@ pub fn test_6_2_05_older_init_release_than_rev_history(doc: &impl CsafTrait) -> 
     rev_history.inplace_sort_by_date_then_number();
     // We can safely unwrap here because empty revision histories would not parse schema validation
     let earliest_rev_history_item_date = rev_history.first().unwrap();
-    if initial_release_date.get_as_utc().unwrap() < earliest_rev_history_item_date.date {
+    let Valid(initial_release_date) = initial_release_date else {
+        panic!();
+    };
+    if initial_release_date.get_as_utc() < earliest_rev_history_item_date.date {
         return Err(vec![create_older_initial_release_date_error(
-            initial_release_date.get_str(),
+            initial_release_date.get_raw_string(),
             &earliest_rev_history_item_date.date_string,
         )]);
     }

@@ -66,7 +66,6 @@ impl PartialOrd for CsafDateTime {
     }
 }
 
-
 // ============================================================================
 // Error Stuff
 // ============================================================================
@@ -80,7 +79,10 @@ pub struct CsafDateTimeParseError {
 impl CsafDateTimeParseError {
     /// Creates a new CsafDateTimeParseError.
     pub fn new(raw_string: &str, source: ParseError) -> Self {
-        CsafDateTimeParseError { raw_string: raw_string.to_owned(), source }
+        CsafDateTimeParseError {
+            raw_string: raw_string.to_owned(),
+            source,
+        }
     }
 
     pub fn get_raw_string(&self) -> &str {
@@ -90,7 +92,11 @@ impl CsafDateTimeParseError {
 
 impl Display for CsafDateTimeParseError {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "Failed to parse '{}' as RFC3339 with reason '{}'", self.raw_string, self.source)
+        write!(
+            f,
+            "Failed to parse '{}' as RFC3339 with reason '{}'",
+            self.raw_string, self.source
+        )
     }
 }
 
@@ -109,7 +115,10 @@ pub struct ValidCsafDateTime {
 impl ValidCsafDateTime {
     /// Creates a new ValidCsafDateTime from a parsed DateTime.
     fn new(raw_string: &str, parsed: DateTime<FixedOffset>) -> Self {
-        ValidCsafDateTime { raw_string: raw_string.to_owned(), parsed }
+        ValidCsafDateTime {
+            raw_string: raw_string.to_owned(),
+            parsed,
+        }
     }
 
     pub fn get_raw_string(&self) -> &str {
@@ -168,9 +177,9 @@ impl PartialOrd for ValidCsafDateTime {
 
 #[cfg(test)]
 mod tests {
-    use chrono::format::ParseErrorKind;
     use super::*;
     use chrono::Timelike;
+    use chrono::format::ParseErrorKind;
 
     // From<> Stuff
 
@@ -195,7 +204,9 @@ mod tests {
                 assert_eq!(err.get_raw_string(), "not-a-date");
                 matches!(err.source.kind(), ParseErrorKind::Invalid);
             },
-            CsafDateTime::Valid(valid) => panic!("DateTime should have been invalid, but returned valid with: {}", valid),
+            CsafDateTime::Valid(valid) => {
+                panic!("DateTime should have been invalid, but returned valid with: {}", valid)
+            },
         }
     }
 

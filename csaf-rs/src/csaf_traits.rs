@@ -1,4 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
@@ -12,7 +13,6 @@ use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use uuid::Uuid;
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -356,10 +356,10 @@ pub trait TrackingTrait {
                         date_string: valid.get_raw_string().to_string(),
                         number: revision.get_number(),
                     });
-                }
+                },
                 Invalid(error) => {
                     panic!("{}", error)
-                }
+                },
             }
         }
         revision_history

@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait, WithDate, WithOptionalDate};
 use crate::validation::ValidationError;
 use regex::Regex;
 use std::sync::LazyLock;
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^((\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:(?:[0-4]\d|5[0-9])(?:\.\d+)?)(Z|[+-]\d{2}:\d{2}))$").unwrap()
@@ -120,19 +120,13 @@ fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance
 fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), Vec<ValidationError>> {
     let date = match date_time {
         Valid(date) => date.get_raw_string(),
-        Invalid(err) => err.get_raw_string()
+        Invalid(err) => err.get_raw_string(),
     };
     if CSAF_RFC3339_REGEX.is_match(date) {
         // Add chrono-based plausibility check
         match date_time {
             Valid(_) => Ok(()),
-            Invalid(err) => {
-                Err(vec![create_parsing_error(
-                    date,
-                    err,
-                    instance_path,
-                )])
-            }
+            Invalid(err) => Err(vec![create_parsing_error(date, err, instance_path)]),
         }
     } else {
         Err(vec![create_invalid_format_error(date, instance_path)])

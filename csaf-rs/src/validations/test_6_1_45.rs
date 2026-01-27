@@ -1,10 +1,10 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
     CsafTrait, DistributionTrait, DocumentTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
 use crate::schema::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
 use crate::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 fn create_invalid_revision_date_error(date: &str, i_rev: usize) -> ValidationError {
     ValidationError {
@@ -56,7 +56,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
         let date = rev.get_date();
         let date = match date {
             Valid(date) => date.get_raw_string().to_owned(),
-            Invalid(err) => err.get_raw_string().to_owned()
+            Invalid(err) => err.get_raw_string().to_owned(),
         };
         chrono::DateTime::parse_from_rfc3339(&date)
             .map(|rev_datetime| {
@@ -75,7 +75,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
             if let Some(disclosure_date) = v.get_disclosure_date() {
                 let disclosure_date = match disclosure_date {
                     Valid(date) => date.get_raw_string().to_owned(),
-                    Invalid(err) => err.get_raw_string().to_owned()
+                    Invalid(err) => err.get_raw_string().to_owned(),
                 };
                 match chrono::DateTime::parse_from_rfc3339(&disclosure_date) {
                     Ok(disclosure_datetime) => {
@@ -85,10 +85,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
                         }
                     },
                     Err(_) => {
-                        return Err(vec![create_invalid_disclosure_date_error(
-                            &disclosure_date,
-                            i_v,
-                        )]);
+                        return Err(vec![create_invalid_disclosure_date_error(&disclosure_date, i_v)]);
                     },
                 }
             }

@@ -1,12 +1,12 @@
 use std::sync::LazyLock;
 
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationError {
     ValidationError {
@@ -61,7 +61,7 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
         // TODO: Rewrite this after revision history refactor
         let date = match revision.get_date() {
             Valid(date) => date.get_raw_string().to_owned(),
-            Invalid(err) => err.get_raw_string().to_owned()
+            Invalid(err) => err.get_raw_string().to_owned(),
         };
         match DateTime::parse_from_rfc3339(date.as_str()) {
             Ok(parsed_date) => {

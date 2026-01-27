@@ -1,8 +1,8 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
 use crate::schema::csaf2_1::schema::PartyCategory;
 use crate::validation::ValidationError;
 use std::collections::HashMap;
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 
 fn generate_duplicate_involvement_error(
     date: &str,
@@ -34,12 +34,10 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
                 if let Some(date) = involvement.get_date() {
                     let date = match date {
                         Valid(date) => date.get_raw_string().to_owned(),
-                        Invalid(err) => err.get_raw_string().to_owned()
+                        Invalid(err) => err.get_raw_string().to_owned(),
                     };
                     let party = involvement.get_party();
-                    let paths = date_party_paths_map
-                        .entry((date, party))
-                        .or_default();
+                    let paths = date_party_paths_map.entry((date, party)).or_default();
                     paths.push(inv_r);
                 }
             }

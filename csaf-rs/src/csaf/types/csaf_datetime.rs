@@ -191,7 +191,7 @@ mod tests {
             CsafDateTime::Valid(valid) => {
                 assert_eq!(valid.get_raw_string(), "2024-01-15T10:30:00Z");
             },
-            CsafDateTime::Invalid(err) => panic!("DateTime should have been valid, but returned invalid with: {}", err),
+            CsafDateTime::Invalid(err) => panic!("DateTime should have been valid, but returned invalid with: {err}"),
         }
     }
 
@@ -205,7 +205,7 @@ mod tests {
                 matches!(err.source.kind(), ParseErrorKind::Invalid);
             },
             CsafDateTime::Valid(valid) => {
-                panic!("DateTime should have been invalid, but returned valid with: {}", valid)
+                panic!("DateTime should have been invalid, but returned valid with: {valid}")
             },
         }
     }
@@ -220,7 +220,7 @@ mod tests {
             CsafDateTime::Valid(valid) => {
                 assert_eq!(valid.get_as_utc().hour(), 10); // 12:00 +02:00 = 10:00 UTC
             },
-            CsafDateTime::Invalid(err) => panic!("DateTime should have been valid, but returned invalid with: {}", err),
+            CsafDateTime::Invalid(err) => panic!("DateTime should have been valid, but returned invalid with: {err}"),
         }
     }
 
@@ -234,7 +234,7 @@ mod tests {
                 assert_eq!(fixed.hour(), 10);
                 assert_eq!(fixed.minute(), 30);
             },
-            CsafDateTime::Invalid(err) => panic!("DateTime should have been valid, but returned invalid with: {}", err),
+            CsafDateTime::Invalid(err) => panic!("DateTime should have been valid, but returned invalid with: {err}"),
         }
     }
 

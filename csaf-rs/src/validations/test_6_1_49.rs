@@ -1,5 +1,6 @@
 use std::sync::LazyLock;
 
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
@@ -57,16 +58,20 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
     // Parse the date of each revision and find the newest one
     let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
     for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
-        let date_str = revision.get_date();
-        match DateTime::parse_from_rfc3339(date_str) {
-            Ok(date) => {
+        // TODO: Rewrite this after revision history refactor
+        let date = match revision.get_date() {
+            Valid(date) => date.get_raw_string().to_owned(),
+            Invalid(err) => err.get_raw_string().to_owned(),
+        };
+        match DateTime::parse_from_rfc3339(date.as_str()) {
+            Ok(parsed_date) => {
                 newest_revision_date = match newest_revision_date {
-                    None => Some(date),
-                    Some(newest_date) => Some(newest_date.max(date)),
+                    None => Some(parsed_date),
+                    Some(newest_date) => Some(newest_date.max(parsed_date)),
                 };
             },
             Err(_) => {
-                return Err(vec![create_invalid_revision_date_error(date_str, i_r)]);
+                return Err(vec![create_invalid_revision_date_error(date.as_str(), i_r)]);
             },
         }
     }

@@ -1,3 +1,5 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait, WithDate, WithOptionalDate};
 use crate::validation::ValidationError;
 use regex::Regex;
@@ -17,13 +19,13 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
 
     // Check the initial release date
     check_datetime(
-        tracking.get_initial_release_date_string(),
+        &tracking.get_initial_release_date(),
         "/document/tracking/initial_release_date",
     )?;
 
     // Check the current release date
     check_datetime(
-        tracking.get_current_release_date_string(),
+        &tracking.get_current_release_date(),
         "/document/tracking/current_release_date",
     )?;
 
@@ -31,13 +33,13 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
     if let Some(generator) = tracking.get_generator()
         && let Some(date) = generator.get_date()
     {
-        check_datetime(date, "/document/tracking/generator/date")?;
+        check_datetime(&date, "/document/tracking/generator/date")?;
     }
 
     // Check revision history dates if present
     for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
         check_datetime(
-            revision.get_date(),
+            &revision.get_date(),
             &format!("/document/tracking/revision_history/{i_r}/date"),
         )?;
     }
@@ -46,19 +48,19 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
     for (i_v, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         // Check disclosure date if present
         if let Some(date) = vuln.get_disclosure_date() {
-            check_datetime(date, &format!("/vulnerabilities/{i_v}/disclosure_date"))?;
+            check_datetime(&date, &format!("/vulnerabilities/{i_v}/disclosure_date"))?;
         }
 
         // Check the discovery date if present
         if let Some(date) = vuln.get_discovery_date() {
-            check_datetime(date, &format!("/vulnerabilities/{i_v}/discovery_date"))?;
+            check_datetime(&date, &format!("/vulnerabilities/{i_v}/discovery_date"))?;
         }
 
         // Check flags dates if present
         if let Some(flags) = vuln.get_flags() {
             for (i_f, flag) in flags.iter().enumerate() {
                 if let Some(date) = flag.get_date() {
-                    check_datetime(date, &format!("/vulnerabilities/{i_v}/flags/{i_f}/date"))?;
+                    check_datetime(&date, &format!("/vulnerabilities/{i_v}/flags/{i_f}/date"))?;
                 }
             }
         }
@@ -67,7 +69,7 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
         if let Some(involvements) = vuln.get_involvements() {
             for (i_i, involvement) in involvements.iter().enumerate() {
                 if let Some(date) = involvement.get_date() {
-                    check_datetime(date, &format!("/vulnerabilities/{i_v}/involvements/{i_i}/date"))?;
+                    check_datetime(&date, &format!("/vulnerabilities/{i_v}/involvements/{i_i}/date"))?;
                 }
             }
         }
@@ -75,21 +77,21 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
         // Check remediation dates if present
         for (i_r, remediation) in vuln.get_remediations().iter().enumerate() {
             if let Some(date) = remediation.get_date() {
-                check_datetime(date, &format!("/vulnerabilities/{i_v}/remediations/{i_r}/date"))?;
+                check_datetime(&date, &format!("/vulnerabilities/{i_v}/remediations/{i_r}/date"))?;
             }
         }
 
         // Check threat dates if present
         for (i_t, threat) in vuln.get_threats().iter().enumerate() {
             if let Some(date) = threat.get_date() {
-                check_datetime(date, &format!("/vulnerabilities/{i_v}/threats/{i_t}/date"))?;
+                check_datetime(&date, &format!("/vulnerabilities/{i_v}/threats/{i_t}/date"))?;
             }
         }
 
         if let Some(first_known_exploitation_dates) = vuln.get_first_known_exploitation_dates() {
             for (i_d, date) in first_known_exploitation_dates.iter().enumerate() {
                 check_datetime(
-                    date.get_date(),
+                    &date.get_date(),
                     &format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/date"),
                 )?;
             }
@@ -115,15 +117,19 @@ fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance
     }
 }
 
-fn check_datetime(date_time: &str, instance_path: &str) -> Result<(), Vec<ValidationError>> {
-    if CSAF_RFC3339_REGEX.is_match(date_time) {
+fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), Vec<ValidationError>> {
+    let date = match date_time {
+        Valid(date) => date.get_raw_string(),
+        Invalid(err) => err.get_raw_string(),
+    };
+    if CSAF_RFC3339_REGEX.is_match(date) {
         // Add chrono-based plausibility check
-        match chrono::DateTime::parse_from_rfc3339(date_time) {
-            Ok(_) => Ok(()), // Successfully parsed as a valid RFC3339 datetime
-            Err(e) => Err(vec![create_parsing_error(date_time, e, instance_path)]),
+        match date_time {
+            Valid(_) => Ok(()),
+            Invalid(err) => Err(vec![create_parsing_error(date, err, instance_path)]),
         }
     } else {
-        Err(vec![create_invalid_format_error(date_time, instance_path)])
+        Err(vec![create_invalid_format_error(date, instance_path)])
     }
 }
 
@@ -161,12 +167,12 @@ mod tests {
             )]),
             Err(vec![create_parsing_error(
                 "2023-04-31T00:00:00+01:00",
-                "input is out of range",
+                "Failed to parse '2023-04-31T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
                 "/vulnerabilities/0/disclosure_date",
             )]),
             Err(vec![create_parsing_error(
                 "2023-02-29T00:00:00+01:00",
-                "input is out of range",
+                "Failed to parse '2023-02-29T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
                 "/vulnerabilities/0/disclosure_date",
             )]),
             Err(vec![create_invalid_format_error(

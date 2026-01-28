@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
     DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
@@ -62,8 +63,8 @@ impl RemediationTrait for Remediation {
 }
 
 impl WithOptionalDate for Remediation {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
@@ -187,8 +188,8 @@ impl ThreatTrait for Threat {
 }
 
 impl WithOptionalDate for Threat {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
@@ -221,12 +222,12 @@ impl VulnerabilityTrait for Vulnerability {
         &self.threats
     }
 
-    fn get_disclosure_date(&self) -> &Option<String> {
-        &self.release_date
+    fn get_disclosure_date(&self) -> Option<CsafDateTime> {
+        self.release_date.as_ref().map(CsafDateTime::from)
     }
 
-    fn get_discovery_date(&self) -> &Option<String> {
-        &self.discovery_date
+    fn get_discovery_date(&self) -> Option<CsafDateTime> {
+        self.discovery_date.as_ref().map(CsafDateTime::from)
     }
 
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>> {
@@ -295,15 +296,15 @@ impl FlagTrait for Flag {
 }
 
 impl WithOptionalDate for Flag {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
 impl FirstKnownExploitationDatesTrait for () {}
 
 impl WithDate for () {
-    fn get_date(&self) -> &String {
+    fn get_date(&self) -> CsafDateTime {
         panic!("First known exploitation dates are not implemented in CSAF 2.0");
     }
 }
@@ -321,8 +322,8 @@ impl InvolvementTrait for Involvement {
 }
 
 impl WithOptionalDate for Involvement {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
@@ -523,12 +524,12 @@ impl TrackingTrait for Tracking {
     type GeneratorType = DocumentGenerator;
     type RevisionType = Revision;
 
-    fn get_current_release_date_string(&self) -> &String {
-        &self.current_release_date
+    fn get_current_release_date(&self) -> CsafDateTime {
+        CsafDateTime::from(&self.current_release_date)
     }
 
-    fn get_initial_release_date_string(&self) -> &String {
-        &self.initial_release_date
+    fn get_initial_release_date(&self) -> CsafDateTime {
+        CsafDateTime::from(&self.initial_release_date)
     }
 
     fn get_generator(&self) -> &Option<Self::GeneratorType> {
@@ -559,8 +560,8 @@ impl TrackingTrait for Tracking {
 impl GeneratorTrait for DocumentGenerator {}
 
 impl WithOptionalDate for DocumentGenerator {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
@@ -574,8 +575,8 @@ impl RevisionTrait for Revision {
 }
 
 impl WithDate for Revision {
-    fn get_date(&self) -> &String {
-        &self.date
+    fn get_date(&self) -> CsafDateTime {
+        CsafDateTime::from(&self.date)
     }
 }
 

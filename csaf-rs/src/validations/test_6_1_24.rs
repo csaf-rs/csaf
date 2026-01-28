@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
 use crate::schema::csaf2_1::schema::PartyCategory;
 use crate::validation::ValidationError;
@@ -31,8 +32,12 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
             let mut date_party_paths_map: HashMap<(String, PartyCategory), Vec<usize>> = HashMap::new();
             for (inv_r, involvement) in involvements.iter().enumerate() {
                 if let Some(date) = involvement.get_date() {
+                    let date = match date {
+                        Valid(date) => date.get_raw_string().to_owned(),
+                        Invalid(err) => err.get_raw_string().to_owned(),
+                    };
                     let party = involvement.get_party();
-                    let paths = date_party_paths_map.entry((date.clone(), party)).or_default();
+                    let paths = date_party_paths_map.entry((date, party)).or_default();
                     paths.push(inv_r);
                 }
             }

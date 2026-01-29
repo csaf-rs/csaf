@@ -230,13 +230,16 @@ impl FromStr for ValidVersionNumber {
     type Err = VersionNumberParsingError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // Try to parse as integer
-        if let Ok(num) = s.parse::<u64>() {
+        // Try to parse as intver, which needs to comply to regex ^(0|[1-9][0-9]*)$
+        // This is implemented by checking for '0' as first char
+        if !(s.len() > 1 && s.starts_with('0'))
+            && let Ok(num) = s.parse::<u64>()
+        {
             return Ok(ValidVersionNumber::IntVer(IntVerVersion(num)));
         }
 
         // Try to parse as semver
-        if let Ok(semver) = semver::Version::parse(s) {
+        if let Ok(semver) = Version::parse(s) {
             return Ok(ValidVersionNumber::SemVer(SemVerVersion(semver)));
         }
 
@@ -364,6 +367,18 @@ mod tests {
     #[test]
     fn test_version_number_invalid_parsing() {
         let v_str = "invalid_version";
+        let v = CsafVersionNumber::from(v_str);
+        match v {
+            CsafVersionNumber::Invalid(err) => {
+                assert_eq!(err.raw_string, v_str);
+            },
+            _ => panic!("Expected Invalid variant"),
+        }
+    }
+
+    #[test]
+    fn test_version_number_invalid_intver_with_leading_0s() {
+        let v_str = "01";
         let v = CsafVersionNumber::from(v_str);
         match v {
             CsafVersionNumber::Invalid(err) => {

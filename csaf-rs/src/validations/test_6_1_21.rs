@@ -1,4 +1,4 @@
-use crate::csaf::types::version_number::ValidVersionNumber;
+use crate::csaf::types::csaf_version_number::ValidVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 

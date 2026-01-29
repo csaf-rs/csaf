@@ -1,2 +1,2 @@
 pub mod csaf_datetime;
-pub mod version_number;
+pub mod csaf_version_number;

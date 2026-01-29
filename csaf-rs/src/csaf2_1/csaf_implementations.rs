@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::version_number::CsafVersionNumber;
+use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
     DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,

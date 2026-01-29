@@ -1,6 +1,6 @@
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
 
 /// 6.2.4 Build Metadata in Revision History
 ///
@@ -71,9 +71,9 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::version_number::SemVerVersion;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::csaf::types::version_number::SemVerVersion;
     use semver::Version;
     use std::str::FromStr;
 

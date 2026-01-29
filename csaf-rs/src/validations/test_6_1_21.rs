@@ -1,6 +1,6 @@
+use crate::csaf::types::version_number::ValidVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::ValidVersionNumber;
 
 /// 6.1.21 Missing Item in Revision History
 ///
@@ -75,7 +75,10 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
     }
 }
 
-fn test_6_1_21_err_wrong_first_version_generator(version: &ValidVersionNumber, revision_index: &usize) -> ValidationError {
+fn test_6_1_21_err_wrong_first_version_generator(
+    version: &ValidVersionNumber,
+    revision_index: &usize,
+) -> ValidationError {
     let version_error = match version {
         ValidVersionNumber::IntVer(_) => "integer version of 0 or 1",
         ValidVersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",

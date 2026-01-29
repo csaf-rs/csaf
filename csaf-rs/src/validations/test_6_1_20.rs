@@ -1,7 +1,7 @@
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
 
 fn create_validation_error(status: &DocumentStatus, version: &SemVerVersion) -> ValidationError {
     ValidationError {
@@ -69,10 +69,10 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::version_number::SemVerVersion;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::schema::csaf2_1::schema::DocumentStatus;
-    use crate::csaf::types::version_number::SemVerVersion;
     use semver::Version;
     use std::str::FromStr;
 

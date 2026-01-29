@@ -1,7 +1,7 @@
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 
 /// 6.1.16 Latest Document Version
 ///

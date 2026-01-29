@@ -1,9 +1,13 @@
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 
-fn create_revision_history_error(status: &DocumentStatus, number: &ValidVersionNumber, index: &usize) -> ValidationError {
+fn create_revision_history_error(
+    status: &DocumentStatus,
+    number: &ValidVersionNumber,
+    index: &usize,
+) -> ValidationError {
     let reason = match number {
         ValidVersionNumber::IntVer(_) => "Version 0 is",
         ValidVersionNumber::SemVer(_) => "Versions 0.y.z are",

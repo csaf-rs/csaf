@@ -1,4 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
     DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
@@ -23,7 +24,6 @@ use crate::schema::csaf2_1::schema::{
     NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::CsafVersionNumber;
 use serde::de::Error;
 use serde_json::{Map, Value};
 use std::ops::Deref;

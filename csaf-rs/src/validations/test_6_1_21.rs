@@ -17,7 +17,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 
     // We can safely unwrap here, as there has to be at least one item in rev_history_tuples
     let first_tuple = rev_history_tuples.first().unwrap();
-    let first_version = first_tuple.number.clone();
+    let first_version = &first_tuple.number;
     let first_number = first_version.get_major();
 
     // Throw error if first version is not 0 or 1
@@ -28,7 +28,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         )]);
     }
 
-    let last_number = rev_history_tuples.last().unwrap().number.clone().get_major();
+    let last_number = (&rev_history_tuples.last().unwrap().number).get_major();
 
     for expected_number in first_number + 1..last_number {
         let mut found = false;

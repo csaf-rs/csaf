@@ -308,7 +308,7 @@ impl PartialOrd for VersionNumber {
         Some(self.cmp(other))
     }
 }
-/**
+/*
 TODO: Uncomment this once revisionhistory has been typified to only allow one variant
 /// VersionNumbers can be ordered if they are of the same variant
 /// Otherwise, there is no ordering
@@ -324,7 +324,7 @@ impl PartialOrd for VersionNumber {
         }
     }
 }
-**/
+*/
 
 #[cfg(test)]
 mod tests {

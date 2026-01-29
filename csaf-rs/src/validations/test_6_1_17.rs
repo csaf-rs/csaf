@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
 use std::fmt::{Display, Formatter};
 
 pub enum DocumentStatusDraftErrorReason {

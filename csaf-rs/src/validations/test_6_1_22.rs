@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
 use std::collections::HashMap;
 
 fn generate_duplicate_revision_error(number: &VersionNumber, path: &usize) -> ValidationError {

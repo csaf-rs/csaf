@@ -8,7 +8,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
 };
 use crate::validation::ValidationError;
-use crate::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
 use chrono::{DateTime, Utc};
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};

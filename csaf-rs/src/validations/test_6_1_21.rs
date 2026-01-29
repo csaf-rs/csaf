@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_number::VersionNumber;
+use crate::csaf::types::version_number::VersionNumber;
 
 /// 6.1.21 Missing Item in Revision History
 ///

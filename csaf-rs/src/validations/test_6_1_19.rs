@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_number::{CsafVersionNumber, SemVerVersion, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, VersionNumber};
 
 fn create_prerelease_version_error(number: &SemVerVersion, index: &usize) -> ValidationError {
     ValidationError {

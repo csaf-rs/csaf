@@ -18,7 +18,7 @@ use crate::schema::csaf2_1::schema::{
     Vulnerability,
 };
 use crate::validation::ValidationError;
-use crate::version_number::CsafVersionNumber;
+use crate::csaf::types::version_number::CsafVersionNumber;
 use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;

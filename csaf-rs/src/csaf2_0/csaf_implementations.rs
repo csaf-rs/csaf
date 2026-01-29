@@ -23,7 +23,7 @@ use crate::schema::csaf2_1::schema::{
     NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
 };
 use crate::validation::ValidationError;
-use crate::version_number::CsafVersionNumber;
+use crate::csaf::types::version_number::CsafVersionNumber;
 use serde::de::Error;
 use serde_json::{Map, Value};
 use std::ops::Deref;

@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
 use std::mem::discriminant;
 
 fn create_mixed_versioning_error(

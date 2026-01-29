@@ -15,7 +15,7 @@ impl Display for DocumentStatusDraftErrorReason {
         match &self {
             DocumentStatusDraftErrorReason::IntVerZero => write!(f, "Version 0 is"),
             DocumentStatusDraftErrorReason::SemVerMajorZero => write!(f, "Versions 0.y.z are"),
-            DocumentStatusDraftErrorReason::SemVerHasPre => write!(f, "Version with prerelease are"),
+            DocumentStatusDraftErrorReason::SemVerHasPre => write!(f, "Versions with prerelease are"),
         }
     }
 }

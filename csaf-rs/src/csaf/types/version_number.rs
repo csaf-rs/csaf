@@ -48,7 +48,7 @@ impl From<&VersionTCsaf21> for CsafVersionNumber {
 }
 
 /// Valid version numbers are compared by their parsed values
-/// If either or both dates are invalid, they are considered unequal
+/// If either or both values are invalid, they are considered unequal
 ///
 /// Also, we do not implement Eq here, as invalid values are also not reflexive, i.e. some invalid value
 /// is not equal to itself, or we rather do not care if they are.
@@ -62,7 +62,7 @@ impl PartialEq for CsafVersionNumber {
 }
 
 /// Valid version numbers are ordered by their parsed values
-/// If either or both dates are invalid, there is no ordering
+/// If either or both values are invalid, there is no ordering
 ///
 /// Also, we do not implement Ord here, as invalid values can't be ordered, or we rather do not care
 /// about their ordering.

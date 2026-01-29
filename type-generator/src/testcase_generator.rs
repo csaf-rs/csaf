@@ -96,16 +96,15 @@ fn generate_test_cases_from_json(
             .iter()
             .enumerate()
             .map(|(idx, (case_num, path))| {
-                let full_path = format!("{base_dir}/{path}");
+                let full_path = format!("/{base_dir}/{path}");
                 let param_name = &param_names[idx];
+                let parse_error = format!("Failed to parse {path} (case {case_num}): {{e}}");
                 if uses_raw_string {
                     quote! {
                         (
                             #case_num,
                             {
-                                let path = #full_path;
-                                std::fs::read_to_string(path)
-                                    .unwrap_or_else(|e| panic!("Failed to load {#path} (case {#case_num}): {e}"))
+                                std::include_str!(concat!(env!("CARGO_MANIFEST_DIR"), #full_path))
                             },
                             #param_name
                         )
@@ -115,11 +114,9 @@ fn generate_test_cases_from_json(
                         (
                             #case_num,
                             {
-                                let path = #full_path;
-                                let content = std::fs::read_to_string(path)
-                                    .unwrap_or_else(|e| panic!("Failed to load {#path} (case {#case_num}): {e}"));
+                                let content = std::include_str!(concat!(env!("CARGO_MANIFEST_DIR"), #full_path));
                                 serde_json::from_str::<#csaf_doc_type>(&content)
-                                    .unwrap_or_else(|e| panic!("Failed to parse {#path} (case {#case_num}): {e}"))
+                                    .unwrap_or_else(|e| panic!(#parse_error))
                             },
                             #param_name
                         )
@@ -177,7 +174,7 @@ fn generate_test_cases_from_json(
                     /// * One parameter per test case document with the expected result
                     ///
                     /// # Panics
-                    /// Panics if any test case fails to load, parse, or doesn't match the expected result
+                    /// Panics if any test case fails to parse, or doesn't match the expected result
                     ///
                     pub fn expect(
                         &self,

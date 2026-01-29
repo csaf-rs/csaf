@@ -235,9 +235,9 @@ impl FromStr for ValidVersionNumber {
         // 1. Checking that all chars are digits
         // 2. Checking for '0' as first char in strings with more than 1 char
         // 3. Parsing to u64
-        if s.chars().all(|c| c.is_ascii_digit()) &&
-            !(s.len() > 1 && s.starts_with('0')) &&
-            let Ok(num) = s.parse::<u64>()
+        if s.chars().all(|c| c.is_ascii_digit())
+            && !(s.len() > 1 && s.starts_with('0'))
+            && let Ok(num) = s.parse::<u64>()
         {
             return Ok(ValidVersionNumber::IntVer(IntVerVersion(num)));
         }

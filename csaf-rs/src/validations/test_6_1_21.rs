@@ -23,12 +23,12 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     // Throw error if first version is not 0 or 1
     if first_number > 1 {
         return Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            &first_version,
+            first_version,
             &first_tuple.path_index,
         )]);
     }
 
-    let last_number = (&rev_history_tuples.last().unwrap().number).get_major();
+    let last_number = rev_history_tuples.last().unwrap().number.get_major();
 
     for expected_number in first_number + 1..last_number {
         let mut found = false;

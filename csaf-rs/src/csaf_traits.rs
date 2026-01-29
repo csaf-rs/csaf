@@ -1,5 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
+use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
@@ -9,7 +10,6 @@ use crate::schema::csaf2_1::schema::{
 };
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};
-use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use uuid::Uuid;
@@ -297,7 +297,7 @@ pub struct RevisionHistoryItem {
     pub path_index: usize,
     pub date_string: String,
     pub date: DateTime<Utc>,
-    pub number: VersionNumber,
+    pub number: ValidVersionNumber,
 }
 
 /// Trait providing sorting functionality for revision history
@@ -349,13 +349,18 @@ pub trait TrackingTrait {
         let mut revision_history: RevisionHistory = Vec::new();
         for (i_r, revision) in self.get_revision_history().iter().enumerate() {
             match revision.get_date() {
-                Valid(valid) => {
-                    revision_history.push(RevisionHistoryItem {
-                        path_index: i_r,
-                        date: valid.get_as_utc().to_owned(),
-                        date_string: valid.get_raw_string().to_string(),
-                        number: revision.get_number(),
-                    });
+                Valid(valid_date) => match revision.get_number() {
+                    CsafVersionNumber::Valid(valid_number) => {
+                        revision_history.push(RevisionHistoryItem {
+                            path_index: i_r,
+                            date: valid_date.get_as_utc().to_owned(),
+                            date_string: valid_date.get_raw_string().to_string(),
+                            number: valid_number,
+                        });
+                    },
+                    CsafVersionNumber::Invalid(error) => {
+                        panic!("{}", error)
+                    },
                 },
                 Invalid(error) => {
                     panic!("{}", error)
@@ -371,122 +376,7 @@ pub trait TrackingTrait {
     /// Returns the tracking ID of this document
     fn get_id(&self) -> &String;
 
-    /// Returns the version of this document
-    fn get_version_string(&self) -> &String;
-
-    fn get_version(&self) -> VersionNumber {
-        VersionNumber::from_number(self.get_version_string())
-    }
-}
-
-#[derive(Debug, Clone, Eq)]
-pub enum VersionNumber {
-    Integer(u64),
-    Semver(Version),
-}
-
-impl VersionNumber {
-    /// Parses a string to either intver or semver
-    /// Will panic if not parseable
-    pub fn from_number(number: &str) -> Self {
-        if let Ok(number) = number.parse::<u64>() {
-            return VersionNumber::Integer(number);
-        } else if let Ok(number) = Version::parse(number) {
-            return VersionNumber::Semver(number);
-        }
-        panic!("Version could not be parsed as intver or semver")
-    }
-
-    /// Gets the version number for intver / the major version for semver
-    pub fn get_major(&self) -> u64 {
-        match self {
-            VersionNumber::Integer(num) => *num,
-            VersionNumber::Semver(semver) => semver.major,
-        }
-    }
-
-    /// Checks whether the intver version is zero, always `false` for semver
-    /// Hard coupled check that version is intver and zero
-    pub fn is_intver_is_zero(&self) -> bool {
-        if let VersionNumber::Integer(version) = self {
-            return *version == 0;
-        }
-        false
-    }
-
-    /// Checks whether the semver major version is zero, always `false` for intver
-    /// Hard coupled check that version is semver and major is zero
-    pub fn is_semver_is_major_zero(&self) -> bool {
-        if let VersionNumber::Semver(version) = self {
-            return version.major == 0;
-        }
-        false
-    }
-
-    /// Checks whether the semver has a pre-release part, always `false` for intver
-    /// Hard coupled check that version is semver and has pre-release part
-    pub fn is_semver_has_prerelease(&self) -> bool {
-        if let VersionNumber::Semver(version) = self {
-            return !version.pre.is_empty();
-        }
-        false
-    }
-
-    /// Checks whether the semver has build metadata, always `false` for intver
-    /// Hard coupled check that version is semver and has build metadata
-    pub fn is_semver_has_build_metadata(&self) -> bool {
-        if let VersionNumber::Semver(version) = self {
-            return !version.build.is_empty();
-        }
-        false
-    }
-}
-
-impl PartialEq for VersionNumber {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a == b,
-            (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a == b,
-            // Integer and Semver are always unequal
-            (VersionNumber::Integer(_), VersionNumber::Semver(_)) => false,
-            (VersionNumber::Semver(_), VersionNumber::Integer(_)) => false,
-        }
-    }
-}
-
-impl Display for VersionNumber {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        match self {
-            VersionNumber::Integer(num) => write!(f, "{num}"),
-            VersionNumber::Semver(version) => write!(f, "{version}"),
-        }
-    }
-}
-
-impl PartialOrd for VersionNumber {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for VersionNumber {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match (self, other) {
-            (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a.cmp(b),
-            (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a.cmp(b),
-            // Panic if intver and semver are compared against each other
-            (VersionNumber::Integer(a), VersionNumber::Semver(b)) => {
-                panic!(
-                    "While comparing versions, you tried to compare integer versioning {a} and semantic versioning {b}"
-                )
-            },
-            (VersionNumber::Semver(a), VersionNumber::Integer(b)) => {
-                panic!(
-                    "While comparing versions, you tried to compare integer versioning {b} and semantic versioning {a}"
-                )
-            },
-        }
-    }
+    fn get_version(&self) -> CsafVersionNumber;
 }
 
 /// Trait for accessing document generator information
@@ -495,11 +385,7 @@ pub trait GeneratorTrait: WithOptionalDate {}
 /// Trait for accessing revision history entry information
 pub trait RevisionTrait: WithDate {
     /// Returns the number/identifier of this revision
-    fn get_number_string(&self) -> &String;
-
-    fn get_number(&self) -> VersionNumber {
-        VersionNumber::from_number(self.get_number_string())
-    }
+    fn get_number(&self) -> CsafVersionNumber;
 
     /// Returns the summary of changes in this revision
     fn get_summary(&self) -> &String;

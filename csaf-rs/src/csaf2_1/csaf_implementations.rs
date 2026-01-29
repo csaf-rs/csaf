@@ -1,4 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
     DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
@@ -463,8 +464,8 @@ impl TrackingTrait for Tracking {
         self.id.deref()
     }
 
-    fn get_version_string(&self) -> &String {
-        self.version.deref()
+    fn get_version(&self) -> CsafVersionNumber {
+        CsafVersionNumber::from(&self.version)
     }
 }
 
@@ -477,9 +478,10 @@ impl WithOptionalDate for DocumentGenerator {
 }
 
 impl RevisionTrait for Revision {
-    fn get_number_string(&self) -> &String {
-        &self.number
+    fn get_number(&self) -> CsafVersionNumber {
+        CsafVersionNumber::from(&self.number)
     }
+
     fn get_summary(&self) -> &String {
         &self.summary
     }

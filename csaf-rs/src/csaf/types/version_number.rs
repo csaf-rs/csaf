@@ -13,7 +13,7 @@ use std::str::FromStr;
 
 #[derive(Debug, Clone)]
 pub enum CsafVersionNumber {
-    Valid(VersionNumber),
+    Valid(ValidVersionNumber),
     Invalid(VersionNumberParsingError),
 }
 
@@ -212,32 +212,32 @@ impl From<Version> for SemVerVersion {
 
 /// Enum representing version numbers (integer versioning or semantic versioning)
 #[derive(Debug, Clone)]
-pub enum VersionNumber {
+pub enum ValidVersionNumber {
     IntVer(IntVerVersion),
     SemVer(SemVerVersion),
 }
 
-impl VersionNumber {
+impl ValidVersionNumber {
     pub fn get_major(&self) -> u64 {
         match &self {
-            VersionNumber::IntVer(intver) => intver.get(),
-            VersionNumber::SemVer(semver) => semver.get_major(),
+            ValidVersionNumber::IntVer(intver) => intver.get(),
+            ValidVersionNumber::SemVer(semver) => semver.get_major(),
         }
     }
 }
 
-impl FromStr for VersionNumber {
+impl FromStr for ValidVersionNumber {
     type Err = VersionNumberParsingError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Try to parse as integer
         if let Ok(num) = s.parse::<u64>() {
-            return Ok(VersionNumber::IntVer(IntVerVersion(num)));
+            return Ok(ValidVersionNumber::IntVer(IntVerVersion(num)));
         }
 
         // Try to parse as semver
         if let Ok(semver) = semver::Version::parse(s) {
-            return Ok(VersionNumber::SemVer(SemVerVersion(semver)));
+            return Ok(ValidVersionNumber::SemVer(SemVerVersion(semver)));
         }
 
         // If both fail, return error
@@ -248,25 +248,25 @@ impl FromStr for VersionNumber {
     }
 }
 
-impl Display for VersionNumber {
+impl Display for ValidVersionNumber {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            VersionNumber::IntVer(num) => write!(f, "{num}"),
-            VersionNumber::SemVer(version) => write!(f, "{version}"),
+            ValidVersionNumber::IntVer(num) => write!(f, "{num}"),
+            ValidVersionNumber::SemVer(version) => write!(f, "{version}"),
         }
     }
 }
 
-impl Eq for VersionNumber {}
+impl Eq for ValidVersionNumber {}
 
-impl Hash for VersionNumber {
+impl Hash for ValidVersionNumber {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         match self {
-            VersionNumber::IntVer(num) => {
+            ValidVersionNumber::IntVer(num) => {
                 0u8.hash(state); // Discriminator for IntVer
                 num.hash(state);
             },
-            VersionNumber::SemVer(version) => {
+            ValidVersionNumber::SemVer(version) => {
                 1u8.hash(state); // Discriminator for SemVer
                 version.hash(state);
             },
@@ -277,24 +277,24 @@ impl Hash for VersionNumber {
 /// VersionNumbers are equal if they are of the same variant and their values are equal
 /// Otherwise, they are unequal
 /// Also, this relationship is reflexive
-impl PartialEq for VersionNumber {
+impl PartialEq for ValidVersionNumber {
     fn eq(&self, other: &Self) -> bool {
         match (&self, &other) {
-            (VersionNumber::IntVer(a), VersionNumber::IntVer(b)) => a == b,
-            (VersionNumber::SemVer(a), VersionNumber::SemVer(b)) => a == b,
+            (ValidVersionNumber::IntVer(a), ValidVersionNumber::IntVer(b)) => a == b,
+            (ValidVersionNumber::SemVer(a), ValidVersionNumber::SemVer(b)) => a == b,
             // Integer and Semver are always unequal
-            (VersionNumber::IntVer(_), VersionNumber::SemVer(_)) => false,
-            (VersionNumber::SemVer(_), VersionNumber::IntVer(_)) => false,
+            (ValidVersionNumber::IntVer(_), ValidVersionNumber::SemVer(_)) => false,
+            (ValidVersionNumber::SemVer(_), ValidVersionNumber::IntVer(_)) => false,
         }
     }
 }
 
 // TODO: This can be removed once revisionhistory has been typified to only allow one variant
-impl Ord for VersionNumber {
+impl Ord for ValidVersionNumber {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (&self, &other) {
-            (VersionNumber::IntVer(a), VersionNumber::IntVer(b)) => a.cmp(b),
-            (VersionNumber::SemVer(a), VersionNumber::SemVer(b)) => a.cmp(b),
+            (ValidVersionNumber::IntVer(a), ValidVersionNumber::IntVer(b)) => a.cmp(b),
+            (ValidVersionNumber::SemVer(a), ValidVersionNumber::SemVer(b)) => a.cmp(b),
             _ => {
                 panic!("TODO This can be removed once revisionhistory has been typified to only allow one variant");
             },
@@ -303,7 +303,7 @@ impl Ord for VersionNumber {
 }
 
 // TODO: This can be removed once revisionhistory has been typified to only allow one variant
-impl PartialOrd for VersionNumber {
+impl PartialOrd for ValidVersionNumber {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
@@ -335,7 +335,7 @@ mod tests {
         let v_str = "42";
         let v = CsafVersionNumber::from(v_str);
         match v {
-            CsafVersionNumber::Valid(VersionNumber::IntVer(int_ver)) => {
+            CsafVersionNumber::Valid(ValidVersionNumber::IntVer(int_ver)) => {
                 assert_eq!(int_ver.0, 42);
                 assert_eq!(int_ver.get(), 42);
             },
@@ -348,7 +348,7 @@ mod tests {
         let v_str = "1.2.3-alpha+001";
         let v = CsafVersionNumber::from(v_str);
         match v {
-            CsafVersionNumber::Valid(VersionNumber::SemVer(semver)) => {
+            CsafVersionNumber::Valid(ValidVersionNumber::SemVer(semver)) => {
                 assert_eq!(semver.get_major(), 1);
                 assert_eq!(semver.get_minor(), 2);
                 assert_eq!(semver.get_patch(), 3);

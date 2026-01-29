@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 
 /// 6.1.16 Latest Document Version
 ///
@@ -26,12 +26,12 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
         // TODO also add validation errors for invalid revision history numbers here
         let doc_status = tracking.get_status();
         match (&latest_number, &doc_version) {
-            (VersionNumber::IntVer(last_number), VersionNumber::IntVer(doc_version)) => {
+            (ValidVersionNumber::IntVer(last_number), ValidVersionNumber::IntVer(doc_version)) => {
                 if doc_version == last_number {
                     return Ok(());
                 }
             },
-            (VersionNumber::SemVer(last_number), VersionNumber::SemVer(doc_version)) => {
+            (ValidVersionNumber::SemVer(last_number), ValidVersionNumber::SemVer(doc_version)) => {
                 // Manually compare the semver objs according to test req
                 let mut equal = true;
                 equal &= equal && doc_version.get_major() == last_number.get_major();
@@ -55,8 +55,8 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
 }
 
 fn test_6_1_16_err_generator(
-    doc_version: &VersionNumber,
-    latest_number: &VersionNumber,
+    doc_version: &ValidVersionNumber,
+    latest_number: &ValidVersionNumber,
     doc_status: &DocumentStatus,
 ) -> ValidationError {
     ValidationError {
@@ -100,43 +100,43 @@ mod tests {
     fn test_test_6_1_16() {
         // Error cases
         let case_01 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("1").unwrap(),
-            &VersionNumber::from_str("2").unwrap(),
+            &ValidVersionNumber::from_str("1").unwrap(),
+            &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
         let case_02 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("1").unwrap(),
-            &VersionNumber::from_str("2").unwrap(),
+            &ValidVersionNumber::from_str("1").unwrap(),
+            &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
         let case_03 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("1").unwrap(),
-            &VersionNumber::from_str("2").unwrap(),
+            &ValidVersionNumber::from_str("1").unwrap(),
+            &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
         let case_04 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("1.0.0").unwrap(),
-            &VersionNumber::from_str("2.0.0").unwrap(),
+            &ValidVersionNumber::from_str("1.0.0").unwrap(),
+            &ValidVersionNumber::from_str("2.0.0").unwrap(),
             &DocumentStatus::Final,
         )]);
         let case_05 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("1.0.0").unwrap(),
-            &VersionNumber::from_str("2.0.0").unwrap(),
+            &ValidVersionNumber::from_str("1.0.0").unwrap(),
+            &ValidVersionNumber::from_str("2.0.0").unwrap(),
             &DocumentStatus::Final,
         )]);
         let case_06 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("9").unwrap(),
-            &VersionNumber::from_str("10").unwrap(),
+            &ValidVersionNumber::from_str("9").unwrap(),
+            &ValidVersionNumber::from_str("10").unwrap(),
             &DocumentStatus::Final,
         )]);
         let case_07 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("1.9.0").unwrap(),
-            &VersionNumber::from_str("1.10.0").unwrap(),
+            &ValidVersionNumber::from_str("1.9.0").unwrap(),
+            &ValidVersionNumber::from_str("1.10.0").unwrap(),
             &DocumentStatus::Final,
         )]);
         let case_08 = Err(vec![test_6_1_16_err_generator(
-            &VersionNumber::from_str("1").unwrap(),
-            &VersionNumber::from_str("2").unwrap(),
+            &ValidVersionNumber::from_str("1").unwrap(),
+            &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
 
@@ -173,8 +173,8 @@ mod tests {
             case_07,
             case_08,
             Err(vec![test_6_1_16_err_generator(
-                &VersionNumber::from_str("2").unwrap(),
-                &VersionNumber::from_str("1").unwrap(),
+                &ValidVersionNumber::from_str("2").unwrap(),
+                &ValidVersionNumber::from_str("1").unwrap(),
                 &DocumentStatus::Final,
             )]),
             Ok(()), // case_11

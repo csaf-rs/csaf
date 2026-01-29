@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
 
 fn create_validation_error(status: &DocumentStatus, version: &SemVerVersion) -> ValidationError {
     ValidationError {
@@ -33,8 +33,8 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
 
     match doc_version {
         // If version is integer versioning, this test does not apply
-        VersionNumber::IntVer(_) => {},
-        VersionNumber::SemVer(semver) => {
+        ValidVersionNumber::IntVer(_) => {},
+        ValidVersionNumber::SemVer(semver) => {
             if semver.has_prerelease() {
                 return Err(vec![create_validation_error(&status, &semver)]);
             }

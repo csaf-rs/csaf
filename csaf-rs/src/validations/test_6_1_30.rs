@@ -1,11 +1,11 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 use std::mem::discriminant;
 
 fn create_mixed_versioning_error(
-    doc_version: &VersionNumber,
-    revision_number: &VersionNumber,
+    doc_version: &ValidVersionNumber,
+    revision_number: &ValidVersionNumber,
     revision_index: &usize,
 ) -> ValidationError {
     ValidationError {
@@ -86,8 +86,8 @@ mod tests {
     #[test]
     fn test_test_6_1_30() {
         let case_01 = Err(vec![create_mixed_versioning_error(
-            &VersionNumber::from_str("2").unwrap(),
-            &VersionNumber::from_str("1.0.0").unwrap(),
+            &ValidVersionNumber::from_str("2").unwrap(),
+            &ValidVersionNumber::from_str("1.0.0").unwrap(),
             &0,
         )]);
 

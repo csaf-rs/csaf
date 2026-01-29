@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 use std::fmt::{Display, Formatter};
 
 pub enum DocumentStatusDraftErrorReason {
@@ -21,7 +21,7 @@ impl Display for DocumentStatusDraftErrorReason {
 }
 
 fn generate_status_version_error(
-    version: &VersionNumber,
+    version: &ValidVersionNumber,
     status: &DocumentStatus,
     reason: &DocumentStatusDraftErrorReason,
 ) -> ValidationError {
@@ -53,7 +53,7 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
     };
 
     match &doc_version {
-        VersionNumber::IntVer(intver) => {
+        ValidVersionNumber::IntVer(intver) => {
             if intver.get() == 0 {
                 Err(vec![generate_status_version_error(
                     &doc_version,
@@ -64,7 +64,7 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
                 Ok(())
             }
         },
-        VersionNumber::SemVer(semver) => {
+        ValidVersionNumber::SemVer(semver) => {
             let mut errors: Option<Vec<ValidationError>> = None;
             if semver.get_major() == 0 {
                 errors.get_or_insert_default().push(generate_status_version_error(
@@ -121,7 +121,7 @@ mod tests {
         // TODO: Add unit test for unparseable version
         // TODO: Add unit tests here to check for intver 0, semver pre and semver major 0 + pre
         let case_01 = Err(vec![generate_status_version_error(
-            &VersionNumber::from_str("0.9.5").unwrap(),
+            &ValidVersionNumber::from_str("0.9.5").unwrap(),
             &DocumentStatus::Final,
             &DocumentStatusDraftErrorReason::SemVerMajorZero,
         )]);

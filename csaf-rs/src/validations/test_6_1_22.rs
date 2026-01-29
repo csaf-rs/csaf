@@ -1,9 +1,9 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 use std::collections::HashMap;
 
-fn generate_duplicate_revision_error(number: &VersionNumber, path: &usize) -> ValidationError {
+fn generate_duplicate_revision_error(number: &ValidVersionNumber, path: &usize) -> ValidationError {
     ValidationError {
         message: format!("Duplicate definition of revision history number {number}"),
         instance_path: format!("/document/tracking/revision_history/{path}/number"),
@@ -19,7 +19,7 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
 
     let mut errors: Option<Vec<ValidationError>> = None;
     // Map occurrence paths indexes to revision numbers
-    let mut number_revision_index_map: HashMap<VersionNumber, Vec<usize>> = HashMap::new();
+    let mut number_revision_index_map: HashMap<ValidVersionNumber, Vec<usize>> = HashMap::new();
     for (i_r, revision) in revision_history.iter().enumerate() {
         let number = match revision.get_number() {
             CsafVersionNumber::Valid(number) => number,
@@ -81,8 +81,8 @@ mod tests {
     fn test_test_6_1_22() {
         // TODO: Add unit test for semver, more than two duplicates, invalid number
         let case_01 = Err(vec![
-            generate_duplicate_revision_error(&VersionNumber::from_str("1").unwrap(), &0),
-            generate_duplicate_revision_error(&VersionNumber::from_str("1").unwrap(), &1),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &0),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &1),
         ]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case

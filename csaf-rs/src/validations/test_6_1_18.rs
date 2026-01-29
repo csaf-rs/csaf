@@ -1,12 +1,12 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 
-fn create_revision_history_error(status: &DocumentStatus, number: &VersionNumber, index: &usize) -> ValidationError {
+fn create_revision_history_error(status: &DocumentStatus, number: &ValidVersionNumber, index: &usize) -> ValidationError {
     let reason = match number {
-        VersionNumber::IntVer(_) => "Version 0 is",
-        VersionNumber::SemVer(_) => "Versions 0.y.z are",
+        ValidVersionNumber::IntVer(_) => "Version 0 is",
+        ValidVersionNumber::SemVer(_) => "Versions 0.y.z are",
     };
     ValidationError {
         message: format!(
@@ -44,8 +44,8 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
         };
 
         let is_zero = match &number {
-            VersionNumber::IntVer(intver) => intver.get() == 0,
-            VersionNumber::SemVer(semver) => semver.get_major() == 0,
+            ValidVersionNumber::IntVer(intver) => intver.get() == 0,
+            ValidVersionNumber::SemVer(semver) => semver.get_major() == 0,
         };
         if is_zero {
             errors
@@ -93,7 +93,7 @@ mod tests {
         // TODO for semver with major 0
         let case_01 = Err(vec![create_revision_history_error(
             &DocumentStatus::Final,
-            &VersionNumber::from_str("0").unwrap(),
+            &ValidVersionNumber::from_str("0").unwrap(),
             &0,
         )]);
 

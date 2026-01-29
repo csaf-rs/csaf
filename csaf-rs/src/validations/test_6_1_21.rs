@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::VersionNumber;
+use crate::csaf::types::version_number::ValidVersionNumber;
 
 /// 6.1.21 Missing Item in Revision History
 ///
@@ -75,10 +75,10 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
     }
 }
 
-fn test_6_1_21_err_wrong_first_version_generator(version: &VersionNumber, revision_index: &usize) -> ValidationError {
+fn test_6_1_21_err_wrong_first_version_generator(version: &ValidVersionNumber, revision_index: &usize) -> ValidationError {
     let version_error = match version {
-        VersionNumber::IntVer(_) => "integer version of 0 or 1",
-        VersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",
+        ValidVersionNumber::IntVer(_) => "integer version of 0 or 1",
+        ValidVersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",
     }
     .to_string();
     ValidationError {
@@ -88,19 +88,19 @@ fn test_6_1_21_err_wrong_first_version_generator(version: &VersionNumber, revisi
 }
 
 fn test_6_1_21_err_missing_version_in_range(
-    version: &VersionNumber,
+    version: &ValidVersionNumber,
     expected_number: &u64,
     first_number: &u64,
     last_number: &u64,
 ) -> ValidationError {
     let version_error = match version {
-        VersionNumber::IntVer(_) => format!("integer version {expected_number}"),
-        VersionNumber::SemVer(_) => format!("semver version {expected_number}.y.z"),
+        ValidVersionNumber::IntVer(_) => format!("integer version {expected_number}"),
+        ValidVersionNumber::SemVer(_) => format!("semver version {expected_number}.y.z"),
     }
     .to_string();
     let version_error_range = match version {
-        VersionNumber::IntVer(_) => format!("integer version range {first_number} to {last_number}"),
-        VersionNumber::SemVer(_) => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
+        ValidVersionNumber::IntVer(_) => format!("integer version range {first_number} to {last_number}"),
+        ValidVersionNumber::SemVer(_) => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
     }
     .to_string();
     ValidationError {
@@ -121,13 +121,13 @@ mod tests {
         // TODO: Unit Tests with semver
         // Error cases
         let case_01 = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &VersionNumber::from_str("1").unwrap(),
+            &ValidVersionNumber::from_str("1").unwrap(),
             &2,
             &1,
             &3,
         )]);
         let case_02 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            &VersionNumber::from_str("2").unwrap(),
+            &ValidVersionNumber::from_str("2").unwrap(),
             &0,
         )]);
 
@@ -145,7 +145,7 @@ mod tests {
             case_01,
             case_02,
             Err(vec![test_6_1_21_err_missing_version_in_range(
-                &VersionNumber::from_str("1").unwrap(),
+                &ValidVersionNumber::from_str("1").unwrap(),
                 &2,
                 &1,
                 &4,

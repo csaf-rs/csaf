@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
 
 fn create_prerelease_version_error(number: &SemVerVersion, index: &usize) -> ValidationError {
     ValidationError {
@@ -29,8 +29,8 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
             },
         };
         match number {
-            VersionNumber::IntVer(_) => {},
-            VersionNumber::SemVer(semver) => {
+            ValidVersionNumber::IntVer(_) => {},
+            ValidVersionNumber::SemVer(semver) => {
                 if semver.has_prerelease() {
                     errors
                         .get_or_insert_default()

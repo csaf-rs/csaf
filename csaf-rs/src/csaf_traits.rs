@@ -8,7 +8,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
 };
 use crate::validation::ValidationError;
-use crate::csaf::types::version_number::{CsafVersionNumber, VersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidVersionNumber};
 use chrono::{DateTime, Utc};
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
@@ -297,7 +297,7 @@ pub struct RevisionHistoryItem {
     pub path_index: usize,
     pub date_string: String,
     pub date: DateTime<Utc>,
-    pub number: VersionNumber,
+    pub number: ValidVersionNumber,
 }
 
 /// Trait providing sorting functionality for revision history

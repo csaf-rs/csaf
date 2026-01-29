@@ -18,6 +18,7 @@ use crate::schema::csaf2_1::schema::{
     Vulnerability,
 };
 use crate::validation::ValidationError;
+use crate::version_number::CsafVersionNumber;
 use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
@@ -463,8 +464,8 @@ impl TrackingTrait for Tracking {
         self.id.deref()
     }
 
-    fn get_version_string(&self) -> &String {
-        self.version.deref()
+    fn get_version(&self) -> CsafVersionNumber {
+        CsafVersionNumber::from(&self.version)
     }
 }
 
@@ -477,9 +478,10 @@ impl WithOptionalDate for DocumentGenerator {
 }
 
 impl RevisionTrait for Revision {
-    fn get_number_string(&self) -> &String {
-        &self.number
+    fn get_number(&self) -> CsafVersionNumber {
+        CsafVersionNumber::from(&self.number)
     }
+
     fn get_summary(&self) -> &String {
         &self.summary
     }

@@ -1,8 +1,14 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
+use crate::version_number::CsafVersionNumber;
+use std::fmt::Display;
 use std::mem::discriminant;
 
-fn create_mixed_versioning_error(doc_version: &str, rev_number: &str, revision_index: usize) -> ValidationError {
+fn create_mixed_versioning_error(
+    doc_version: impl Display,
+    rev_number: impl Display,
+    revision_index: impl Display,
+) -> ValidationError {
     ValidationError {
         message: format!(
             "The document version '{doc_version}' and revision history number '{rev_number}' use different versioning schemes"
@@ -17,27 +23,36 @@ fn create_mixed_versioning_error(doc_version: &str, rev_number: &str, revision_i
 /// the same versioning scheme (either integer versioning or semantic versioning) across the document.
 /// For this test, we take the document version as authoritative for the versioning scheme used in the document.
 pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let doc_version = doc.get_document().get_tracking().get_version();
-    let doc_version_disc = discriminant(&doc_version);
+    let tracking = doc.get_document().get_tracking();
 
-    let mut errors = Vec::new();
-    let revision_history = doc.get_document().get_tracking().get_revision_history();
-    for (i_r, revision) in revision_history.iter().enumerate() {
-        let rev_number = revision.get_number();
-        if doc_version_disc != discriminant(&rev_number) {
-            errors.push(create_mixed_versioning_error(
-                &doc_version.to_string(),
-                &rev_number.to_string(),
-                i_r,
-            ));
+    let doc_version = match tracking.get_version() {
+        CsafVersionNumber::Valid(doc_version) => doc_version,
+        CsafVersionNumber::Invalid(err) => {
+            return Err(vec![err.get_validation_error("/document/version")]);
+        },
+    };
+    let doc_version_discriminant = discriminant(&doc_version);
+
+    let mut errors: Option<Vec<ValidationError>> = None;
+    for (revision_index, revision) in tracking.get_revision_history().iter().enumerate() {
+        let number = match revision.get_number() {
+            CsafVersionNumber::Valid(number) => number,
+            CsafVersionNumber::Invalid(err) => {
+                errors.get_or_insert_default().push(err.get_validation_error(
+                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
+                ));
+                continue;
+            },
+        };
+
+        if doc_version_discriminant != discriminant(&number) {
+            errors
+                .get_or_insert_default()
+                .push(create_mixed_versioning_error(&doc_version, &number, revision_index));
         }
     }
 
-    if !errors.is_empty() {
-        return Err(errors);
-    }
-
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>

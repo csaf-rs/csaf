@@ -3,6 +3,7 @@ use crate::schema::csaf2_1::schema::VersionT as VersionTCsaf21;
 use crate::validation::ValidationError;
 use semver::{BuildMetadata, Prerelease, Version};
 use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::hash::Hash;
 use std::ops::Deref;
 use std::str::FromStr;
 
@@ -210,7 +211,7 @@ impl From<Version> for SemVerVersion {
 // --------------------------------------------------------------------------
 
 /// Enum representing version numbers (integer versioning or semantic versioning)
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone)]
 pub enum VersionNumber {
     IntVer(IntVerVersion),
     SemVer(SemVerVersion),
@@ -258,6 +259,21 @@ impl Display for VersionNumber {
 
 impl Eq for VersionNumber {}
 
+impl Hash for VersionNumber {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        match self {
+            VersionNumber::IntVer(num) => {
+                0u8.hash(state); // Discriminator for IntVer
+                num.hash(state);
+            },
+            VersionNumber::SemVer(version) => {
+                1u8.hash(state); // Discriminator for SemVer
+                version.hash(state);
+            },
+        }
+    }
+}
+
 /// VersionNumbers are equal if they are of the same variant and their values are equal
 /// Otherwise, they are unequal
 /// Also, this relationship is reflexive
@@ -273,6 +289,7 @@ impl PartialEq for VersionNumber {
     }
 }
 
+// TODO: This can be removed once revisionhistory has been typified to only allow one variant
 impl Ord for VersionNumber {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (&self, &other) {
@@ -285,6 +302,14 @@ impl Ord for VersionNumber {
     }
 }
 
+// TODO: This can be removed once revisionhistory has been typified to only allow one variant
+impl PartialOrd for VersionNumber {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+/**
+TODO: Uncomment this once revisionhistory has been typified to only allow one variant
 /// VersionNumbers can be ordered if they are of the same variant
 /// Otherwise, there is no ordering
 ///
@@ -299,6 +324,7 @@ impl PartialOrd for VersionNumber {
         }
     }
 }
+**/
 
 #[cfg(test)]
 mod tests {

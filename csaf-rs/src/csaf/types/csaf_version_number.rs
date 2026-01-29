@@ -231,9 +231,13 @@ impl FromStr for ValidVersionNumber {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Try to parse as intver, which needs to comply to regex ^(0|[1-9][0-9]*)$
-        // This is implemented by checking for '0' as first char
-        if !(s.len() > 1 && s.starts_with('0'))
-            && let Ok(num) = s.parse::<u64>()
+        // This is implemented by:
+        // 1. Checking that all chars are digits
+        // 2. Checking for '0' as first char in strings with more than 1 char
+        // 3. Parsing to u64
+        if s.chars().all(|c| c.is_ascii_digit()) &&
+            !(s.len() > 1 && s.starts_with('0')) &&
+            let Ok(num) = s.parse::<u64>()
         {
             return Ok(ValidVersionNumber::IntVer(IntVerVersion(num)));
         }
@@ -379,6 +383,17 @@ mod tests {
     #[test]
     fn test_version_number_invalid_intver_with_leading_0s() {
         let v_str = "01";
+        let v = CsafVersionNumber::from(v_str);
+        match v {
+            CsafVersionNumber::Invalid(err) => {
+                assert_eq!(err.raw_string, v_str);
+            },
+            _ => panic!("Expected Invalid variant"),
+        }
+    }
+    #[test]
+    fn test_version_number_invalid_intver_but_valid_u64() {
+        let v_str = "+5";
         let v = CsafVersionNumber::from(v_str);
         match v {
             CsafVersionNumber::Invalid(err) => {

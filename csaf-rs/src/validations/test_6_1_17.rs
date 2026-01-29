@@ -20,7 +20,11 @@ impl Display for DocumentStatusDraftErrorReason {
     }
 }
 
-fn generate_status_version_error(version: impl Display, status: impl Display, reason: impl Display) -> ValidationError {
+fn generate_status_version_error(
+    version: &VersionNumber,
+    status: &DocumentStatus,
+    reason: &DocumentStatusDraftErrorReason,
+) -> ValidationError {
     ValidationError {
         message: format!(
             "The document version is '{version}' but the document status is '{status}'. {reason} reserved for document status 'Draft'"
@@ -48,40 +52,37 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
         CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/version")]),
     };
 
-    match doc_version {
+    match &doc_version {
         VersionNumber::IntVer(intver) => {
             if intver.get() == 0 {
-                return Err(vec![generate_status_version_error(
-                    &intver,
+                Err(vec![generate_status_version_error(
+                    &doc_version,
                     &doc_status,
-                    DocumentStatusDraftErrorReason::IntVerZero,
-                )]);
+                    &DocumentStatusDraftErrorReason::IntVerZero,
+                )])
+            } else {
+                Ok(())
             }
         },
         VersionNumber::SemVer(semver) => {
             let mut errors: Option<Vec<ValidationError>> = None;
             if semver.get_major() == 0 {
                 errors.get_or_insert_default().push(generate_status_version_error(
-                    &semver,
+                    &doc_version,
                     &doc_status,
-                    DocumentStatusDraftErrorReason::SemVerMajorZero,
+                    &DocumentStatusDraftErrorReason::SemVerMajorZero,
                 ))
             }
             if semver.has_prerelease() {
                 errors.get_or_insert_default().push(generate_status_version_error(
-                    &semver,
+                    &doc_version,
                     &doc_status,
-                    DocumentStatusDraftErrorReason::SemVerHasPre,
+                    &DocumentStatusDraftErrorReason::SemVerHasPre,
                 ))
             }
-            // TODO simply this
-            if let Some(errors) = errors {
-                return Err(errors);
-            }
+            errors.map_or(Ok(()), Err)
         },
     }
-
-    Ok(())
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
@@ -112,6 +113,7 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::schema::csaf2_1::schema::DocumentStatus;
+    use std::str::FromStr;
 
     #[test]
     fn test_test_6_1_17() {
@@ -119,9 +121,9 @@ mod tests {
         // TODO: Add unit test for unparseable version
         // TODO: Add unit tests here to check for intver 0, semver pre and semver major 0 + pre
         let case_01 = Err(vec![generate_status_version_error(
-            "0.9.5",
+            &VersionNumber::from_str("0.9.5").unwrap(),
             &DocumentStatus::Final,
-            DocumentStatusDraftErrorReason::SemVerMajorZero,
+            &DocumentStatusDraftErrorReason::SemVerMajorZero,
         )]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case

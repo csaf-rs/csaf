@@ -1,17 +1,16 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use crate::version_number::CsafVersionNumber;
-use std::fmt::Display;
+use crate::version_number::{CsafVersionNumber, VersionNumber};
 use std::mem::discriminant;
 
 fn create_mixed_versioning_error(
-    doc_version: impl Display,
-    rev_number: impl Display,
-    revision_index: impl Display,
+    doc_version: &VersionNumber,
+    revision_number: &VersionNumber,
+    revision_index: &usize,
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "The document version '{doc_version}' and revision history number '{rev_number}' use different versioning schemes"
+            "The document version '{doc_version}' and revision history number '{revision_number}' use different versioning schemes"
         ),
         instance_path: format!("/document/tracking/revision_history/{revision_index}/number"),
     }
@@ -48,7 +47,7 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
         if doc_version_discriminant != discriminant(&number) {
             errors
                 .get_or_insert_default()
-                .push(create_mixed_versioning_error(&doc_version, &number, revision_index));
+                .push(create_mixed_versioning_error(&doc_version, &number, &revision_index));
         }
     }
 
@@ -82,10 +81,15 @@ mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use std::str::FromStr;
 
     #[test]
     fn test_test_6_1_30() {
-        let case_01 = Err(vec![create_mixed_versioning_error("2", "1.0.0", 0)]);
+        let case_01 = Err(vec![create_mixed_versioning_error(
+            &VersionNumber::from_str("2").unwrap(),
+            &VersionNumber::from_str("1.0.0").unwrap(),
+            &0,
+        )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_1_30.expect(case_01.clone(), Ok(()));

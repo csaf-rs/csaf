@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait}
 use crate::validation::ValidationError;
 use crate::version_number::{CsafVersionNumber, SemVerVersion, VersionNumber};
 
-fn create_prerelease_version_error(number: SemVerVersion, index: usize) -> ValidationError {
+fn create_prerelease_version_error(number: &SemVerVersion, index: &usize) -> ValidationError {
     ValidationError {
         message: format!("revision history item number '{number}' contains a pre-release part"),
         instance_path: format!("/document/tracking/revision_history/{index}/number"),
@@ -34,7 +34,7 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
                 if semver.has_prerelease() {
                     errors
                         .get_or_insert_default()
-                        .push(create_prerelease_version_error(semver, revision_index));
+                        .push(create_prerelease_version_error(&semver, &revision_index));
                 }
             },
         }
@@ -76,12 +76,12 @@ mod tests {
     #[test]
     fn test_test_6_1_19() {
         let case_01 = Err(vec![create_prerelease_version_error(
-            SemVerVersion::from(Version::from_str("1.0.0-rc").unwrap()),
-            0,
+            &SemVerVersion::from(Version::from_str("1.0.0-rc").unwrap()),
+            &0,
         )]);
         let case_02 = Err(vec![create_prerelease_version_error(
-            SemVerVersion::from(Version::from_str("1.0.0-rc").unwrap()),
-            0,
+            &SemVerVersion::from(Version::from_str("1.0.0-rc").unwrap()),
+            &0,
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases

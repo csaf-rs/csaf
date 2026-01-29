@@ -223,16 +223,6 @@ impl VersionNumber {
             VersionNumber::SemVer(semver) => semver.get_major(),
         }
     }
-
-    /// Returns true if this is an Integer variant
-    pub fn is_integer(&self) -> bool {
-        matches!(self, VersionNumber::IntVer(_))
-    }
-
-    /// Returns true if this is a Semver variant
-    pub fn is_semver(&self) -> bool {
-        matches!(self, VersionNumber::SemVer(_))
-    }
 }
 
 impl FromStr for VersionNumber {
@@ -343,17 +333,6 @@ mod tests {
             },
             _ => panic!("Expected Semver variant with value 1.2.3-alpha+001"),
         }
-    }
-
-    #[test]
-    fn test_version_number_is() {
-        let int_ver: VersionNumber = "42".parse().unwrap();
-        assert!(int_ver.is_integer());
-        assert!(!int_ver.is_semver());
-
-        let sem_ver: VersionNumber = "1.0.0".parse().unwrap();
-        assert!(!sem_ver.is_integer());
-        assert!(sem_ver.is_semver());
     }
 
     #[test]

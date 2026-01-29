@@ -11,6 +11,7 @@ use crate::version_number::{CsafVersionNumber, VersionNumber};
 pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
+    // Check if doc version is valid, if not return an error and skip this test
     let doc_version = match tracking.get_version() {
         CsafVersionNumber::Valid(version_number) => version_number,
         CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/version")]),
@@ -49,7 +50,6 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
         errors
             .get_or_insert_default()
             .push(test_6_1_16_err_generator(&doc_version, &latest_number, &doc_status));
-        // This should not be able to happen as revision history is a required property with 1..* items
     }
     errors.map_or(Ok(()), Err)
 }

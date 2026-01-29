@@ -1,10 +1,9 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use crate::version_number::{CsafVersionNumber, VersionNumber};
-use std::fmt::Display;
+use crate::version_number::{CsafVersionNumber, SemVerVersion, VersionNumber};
 
-fn create_validation_error(status: impl Display, version: impl Display) -> ValidationError {
+fn create_validation_error(status: &DocumentStatus, version: &SemVerVersion) -> ValidationError {
     ValidationError {
         message: format!(
             "The document status is {status} but the document version {version} contains a pre-release part"
@@ -79,6 +78,7 @@ mod tests {
 
     #[test]
     fn test_test_6_1_20() {
+        // TODO Unit tests for other Doc status
         let case_01 = Err(vec![create_validation_error(
             &DocumentStatus::Interim,
             &SemVerVersion::from(Version::from_str("1.0.0-alpha").unwrap()),

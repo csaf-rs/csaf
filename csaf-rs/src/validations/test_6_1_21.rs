@@ -23,8 +23,8 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     // Throw error if first version is not 0 or 1
     if first_number > 1 {
         return Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            first_version,
-            first_tuple.path_index.to_string(),
+            &first_version,
+            &first_tuple.path_index,
         )]);
     }
 
@@ -43,10 +43,10 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
             errors
                 .get_or_insert_with(Vec::new)
                 .push(test_6_1_21_err_missing_version_in_range(
-                    first_version.clone(),
-                    expected_number,
-                    first_number,
-                    last_number,
+                    &first_version.clone(),
+                    &expected_number,
+                    &first_number,
+                    &last_number,
                 ));
         }
     }
@@ -75,7 +75,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
     }
 }
 
-fn test_6_1_21_err_wrong_first_version_generator(version: VersionNumber, path: String) -> ValidationError {
+fn test_6_1_21_err_wrong_first_version_generator(version: &VersionNumber, revision_index: &usize) -> ValidationError {
     let version_error = match version {
         VersionNumber::IntVer(_) => "integer version of 0 or 1",
         VersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",
@@ -83,15 +83,15 @@ fn test_6_1_21_err_wrong_first_version_generator(version: VersionNumber, path: S
     .to_string();
     ValidationError {
         message: format!("The first revision history item should have {version_error}, but was {version}"),
-        instance_path: format!("/document/tracking/revision_history/{path}"),
+        instance_path: format!("/document/tracking/revision_history/{revision_index}"),
     }
 }
 
 fn test_6_1_21_err_missing_version_in_range(
-    version: VersionNumber,
-    expected_number: u64,
-    first_number: u64,
-    last_number: u64,
+    version: &VersionNumber,
+    expected_number: &u64,
+    first_number: &u64,
+    last_number: &u64,
 ) -> ValidationError {
     let version_error = match version {
         VersionNumber::IntVer(_) => format!("integer version {expected_number}"),
@@ -118,16 +118,17 @@ mod tests {
 
     #[test]
     fn test_test_6_1_21() {
+        // TODO: Unit Tests with semver
         // Error cases
         let case_01 = Err(vec![test_6_1_21_err_missing_version_in_range(
-            VersionNumber::from_str("1").unwrap(),
-            2,
-            1,
-            3,
+            &VersionNumber::from_str("1").unwrap(),
+            &2,
+            &1,
+            &3,
         )]);
         let case_02 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            VersionNumber::from_str("2").unwrap(),
-            "0".to_string(),
+            &VersionNumber::from_str("2").unwrap(),
+            &0,
         )]);
 
         // CSAF 2.0 has 5 test cases (01-02, 11-13)
@@ -144,10 +145,10 @@ mod tests {
             case_01,
             case_02,
             Err(vec![test_6_1_21_err_missing_version_in_range(
-                VersionNumber::from_str("1").unwrap(),
-                2,
-                1,
-                4,
+                &VersionNumber::from_str("1").unwrap(),
+                &2,
+                &1,
+                &4,
             )]),
             Ok(()), // case_11
             Ok(()), // case_12

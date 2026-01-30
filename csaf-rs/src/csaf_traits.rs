@@ -1,6 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
+use crate::csaf::types::csaf_version_number::{CsafVersionNumber};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
@@ -9,10 +8,10 @@ use crate::schema::csaf2_1::schema::{
     DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
 };
 use crate::validation::ValidationError;
-use chrono::{DateTime, Utc};
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use uuid::Uuid;
+use crate::csaf::aggregation::csaf_revision_history::revision_history::RevisionHistory;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -287,43 +286,6 @@ pub trait TlpTrait {
     fn get_label(&self) -> LabelOfTlp;
 }
 
-/// Type alias for a vector of revision history items
-pub type RevisionHistory = Vec<RevisionHistoryItem>;
-
-/// Struct representing a revision history item
-/// Includes the path index in the original revision history, the date, and the version number
-#[derive(Clone)]
-pub struct RevisionHistoryItem {
-    pub path_index: usize,
-    pub date_string: String,
-    pub date: DateTime<Utc>,
-    pub number: ValidVersionNumber,
-}
-
-/// Trait providing sorting functionality for revision history
-pub trait RevisionHistorySortable {
-    /// Sorts the revision history items first by date, second by number
-    ///
-    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
-    /// should be unique anyways, as long the second order key (revision history numbers) are unique
-    fn inplace_sort_by_date_then_number(&mut self);
-
-    /// Sorts the revision history items by number
-    ///
-    /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
-    /// should be unique anyways, as long as the order key (revision history numbers) are unique
-    fn inplace_sort_by_number(&mut self);
-}
-
-impl RevisionHistorySortable for RevisionHistory {
-    fn inplace_sort_by_date_then_number(&mut self) {
-        self.sort_unstable_by_key(|item| (item.date, item.number.clone()));
-    }
-
-    fn inplace_sort_by_number(&mut self) {
-        self.sort_unstable_by(|a, b| a.number.cmp(&b.number));
-    }
-}
 
 pub trait TrackingTrait {
     /// Type representing document generator information
@@ -342,33 +304,7 @@ pub trait TrackingTrait {
     fn get_generator(&self) -> &Option<Self::GeneratorType>;
 
     /// Returns the revision history for this document
-    fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
-
-    /// Utility function to get revision history as structs containing revision history path index, date and number
-    fn get_revision_history_tuples(&self) -> RevisionHistory {
-        let mut revision_history: RevisionHistory = Vec::new();
-        for (i_r, revision) in self.get_revision_history().iter().enumerate() {
-            match revision.get_date() {
-                Valid(valid_date) => match revision.get_number() {
-                    CsafVersionNumber::Valid(valid_number) => {
-                        revision_history.push(RevisionHistoryItem {
-                            path_index: i_r,
-                            date: valid_date.get_as_utc().to_owned(),
-                            date_string: valid_date.get_raw_string().to_string(),
-                            number: valid_number,
-                        });
-                    },
-                    CsafVersionNumber::Invalid(error) => {
-                        panic!("{}", error)
-                    },
-                },
-                Invalid(error) => {
-                    panic!("{}", error)
-                },
-            }
-        }
-        revision_history
-    }
+    fn get_revision_history(&self) -> RevisionHistory;
 
     /// Returns the status of this document
     fn get_status(&self) -> DocumentStatus;

@@ -37,10 +37,10 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
     }
 
     // Check revision history dates if present
-    for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
+    for item in tracking.get_revision_history() {
         check_datetime(
-            &revision.get_date(),
-            &format!("/document/tracking/revision_history/{i_r}/date"),
+            &item.date,
+            &format!("/document/tracking/revision_history/{}/date", item.path_index),
         )?;
     }
 

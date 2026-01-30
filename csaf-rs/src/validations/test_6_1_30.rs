@@ -1,18 +1,17 @@
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use std::mem::discriminant;
+use crate::csaf::aggregation::csaf_revision_history::validated_revision_history_numbers::ValidatedRevisionHistoryNumbers;
 
 fn create_mixed_versioning_error(
     doc_version: &ValidVersionNumber,
     revision_number: &ValidVersionNumber,
-    revision_index: &usize,
 ) -> ValidationError {
     ValidationError {
         message: format!(
             "The document version '{doc_version}' and revision history number '{revision_number}' use different versioning schemes"
         ),
-        instance_path: format!("/document/tracking/revision_history/{revision_index}/number"),
+        instance_path: "/document/tracking/revision_history/0/number".to_string(),
     }
 }
 
@@ -24,34 +23,34 @@ fn create_mixed_versioning_error(
 pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
+    // Get the document version
     let doc_version = match tracking.get_version() {
         CsafVersionNumber::Valid(doc_version) => doc_version,
         CsafVersionNumber::Invalid(err) => {
+            // If the document version is invalid, return an error
             return Err(vec![err.get_validation_error("/document/version")]);
         },
     };
-    let doc_version_discriminant = discriminant(&doc_version);
 
-    let mut errors: Option<Vec<ValidationError>> = None;
-    for (revision_index, revision) in tracking.get_revision_history().iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
-            CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
-                continue;
-            },
-        };
-
-        if doc_version_discriminant != discriminant(&number) {
-            errors
-                .get_or_insert_default()
-                .push(create_mixed_versioning_error(&doc_version, &number, &revision_index));
+    // Get the revision history numbers
+    match ValidatedRevisionHistoryNumbers::from(&tracking.get_revision_history()) {
+        // If the revision history numbers are invalid for any reason, return the errors
+        ValidatedRevisionHistoryNumbers::Invalid(err) => { Err(err.into()) }
+        // If the revision history numbers are valid, check if the versioning scheme of
+        // the first revision history number matches the document version.
+        ValidatedRevisionHistoryNumbers::Valid(numbers) => {
+            let first = numbers.first().unwrap_or_else(||
+                unreachable!("At this point, the revision history numbers should contain at least one element, with all numbers being valid and of the same schema"));
+            match (&first, &doc_version) {
+                (ValidVersionNumber::IntVer(_), ValidVersionNumber::SemVer(_)) |
+                (ValidVersionNumber::SemVer(_), ValidVersionNumber::IntVer(_)) => {
+                    // If the versioning scheme of the first revision history number does not match the document version, add an error for the first revision history item and skip this test
+                    Err(vec![create_mixed_versioning_error(&doc_version, first)])
+                }
+                _ => { Ok(()) }
+            }
         }
     }
-
-    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
@@ -88,7 +87,6 @@ mod tests {
         let case_01 = Err(vec![create_mixed_versioning_error(
             &ValidVersionNumber::from_str("2").unwrap(),
             &ValidVersionNumber::from_str("1.0.0").unwrap(),
-            &0,
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
@@ -96,3 +94,4 @@ mod tests {
         TESTS_2_1.test_6_1_30.expect(case_01, Ok(()));
     }
 }
+

@@ -22,6 +22,7 @@ use crate::validation::ValidationError;
 use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
+use crate::csaf::aggregation::csaf_revision_history::revision_history::RevisionHistory;
 
 impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
@@ -452,8 +453,8 @@ impl TrackingTrait for Tracking {
         &self.generator
     }
 
-    fn get_revision_history(&self) -> &Vec<Self::RevisionType> {
-        &self.revision_history
+    fn get_revision_history(&self) -> RevisionHistory {
+        RevisionHistory::from(&self.revision_history)
     }
 
     fn get_status(&self) -> DocumentStatus {

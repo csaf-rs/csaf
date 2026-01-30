@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
@@ -15,33 +15,36 @@ fn generate_duplicate_revision_error(number: &ValidVersionNumber, path: &usize) 
 /// Items of the revision history must not contain the same string in the
 /// `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let revision_history = doc.get_document().get_tracking().get_revision_history();
-
     let mut errors: Option<Vec<ValidationError>> = None;
-    // Map occurrence paths indexes to revision numbers
-    let mut number_revision_index_map: HashMap<ValidVersionNumber, Vec<usize>> = HashMap::new();
-    for (i_r, revision) in revision_history.iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
+    // Map of VersionNumbers to the revision history indices that have that version number
+    let mut number_revision_index_map: Option<HashMap<ValidVersionNumber, Vec<usize>>> = None;
+    for item in doc.get_document().get_tracking().get_revision_history() {
+        match item.number {
             CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(
-                    err.get_validation_error(format!("/document/tracking/revision_history/{i_r}/number").as_str()),
-                );
-                continue;
-            },
-        };
-        let path = number_revision_index_map.entry(number.clone()).or_default();
-        path.push(i_r);
+                // if number is invalid, add an error
+                errors.get_or_insert_default().push(err.get_validation_error(format!("/document/tracking/revision_history/{}/number", item.path_index).as_str()));
+            }
+            CsafVersionNumber::Valid(number) => {
+                // if number is valid, add the revision history index to the map for that version number
+                number_revision_index_map.get_or_insert_default().entry(
+                    number
+                ).or_default().push(item.path_index);
+            }
+        }
     }
 
-    // Generate errors for revision numbers with multiple occurrence paths indexes
-    for (number, paths) in &number_revision_index_map {
-        if paths.len() > 1 {
-            errors.get_or_insert_default().extend(
-                paths
-                    .iter()
-                    .map(|revision_index| generate_duplicate_revision_error(number, revision_index)),
-            );
+    // If there have been any valid numbers and the map is therefore not empty
+    if let Some(number_revision_index_map) = number_revision_index_map {
+        // Check for each version number if there are multiple revision history items with that version number
+        for (number, revision_indices) in &number_revision_index_map {
+            if revision_indices.len() > 1 {
+                // if there are multiple revision history items with the same version number, add an error for each of them
+                errors.get_or_insert_default().extend(
+                    revision_indices
+                        .iter()
+                        .map(|revision_index| generate_duplicate_revision_error(number, revision_index)),
+                );
+            }
         }
     }
 

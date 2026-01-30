@@ -1,5 +1,7 @@
+use std::fmt::Display;
+use crate::csaf::aggregation::csaf_revision_history::validated_revision_history::{ValidRevisionHistory, ValidatedRevisionHistory};
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
@@ -10,6 +12,7 @@ use crate::validation::ValidationError;
 /// if `/document/status` is "draft".
 pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
+    let doc_status = tracking.get_status();
 
     // Check if doc version is valid, if not return an error and skip this test
     let doc_version = match tracking.get_version() {
@@ -17,51 +20,81 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
         CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/version")]),
     };
 
-    let mut revision_history = tracking.get_revision_history_tuples();
-    revision_history.inplace_sort_by_date_then_number();
+    // Check if revision history is valid, if not return the errors and skip this test
+    let revision_history = tracking.get_revision_history();
+    let validated_revision_history = ValidatedRevisionHistory::from(&revision_history);
+    let valid_revision_history = match validated_revision_history {
+        ValidatedRevisionHistory::Valid(valid) => {valid}
+        ValidatedRevisionHistory::Invalid(errors) => {return Err(errors.into())}
+    };
 
     let mut errors: Option<Vec<ValidationError>> = None;
-    if let Some(latest_revision_history_item) = revision_history.last() {
-        let latest_number = latest_revision_history_item.number.clone();
-        // TODO also add validation errors for invalid revision history numbers here
-        let doc_status = tracking.get_status();
-        match (&latest_number, &doc_version) {
-            (ValidVersionNumber::IntVer(last_number), ValidVersionNumber::IntVer(doc_version)) => {
-                if doc_version == last_number {
-                    return Ok(());
-                }
-            },
-            (ValidVersionNumber::SemVer(last_number), ValidVersionNumber::SemVer(doc_version)) => {
-                // Manually compare the semver objs according to test req
-                let mut equal = true;
-                equal &= equal && doc_version.get_major() == last_number.get_major();
-                equal &= equal && doc_version.get_minor() == last_number.get_minor();
-                equal &= equal && doc_version.get_patch() == last_number.get_patch();
-                if doc_status != DocumentStatus::Draft {
-                    equal &= equal && doc_version.get_prerelease() == last_number.get_prerelease();
-                }
-                if equal {
-                    return Ok(());
-                }
-            },
-            // Mixed version number types cannot be equal
-            _ => {},
-        };
-        errors
-            .get_or_insert_default()
-            .push(test_6_1_16_err_generator(&doc_version, &latest_number, &doc_status));
-    }
+    match (&doc_version, &valid_revision_history) {
+        (ValidVersionNumber::IntVer(doc_number), ValidRevisionHistory::IntVer(revision_history)) => {
+            let last_number = revision_history.get_sorted_by_date_by_number().last().number;
+            // For integer versioning, it is sufficient to compare the integers
+            if doc_number != last_number {
+                errors
+                    .get_or_insert_default()
+                    .push(test_6_1_16_err_last_version_number_unequal(&doc_version, last_number, &doc_status));
+            }
+        }
+        (ValidVersionNumber::SemVer(doc_number), ValidRevisionHistory::SemVer(revision_history)) => {
+            let last_number = revision_history.get_sorted_by_date_by_number().last().number;
+            // For semantic versioning, we need to compare major, minor and patch, and prerelease if document status is not draft. Build metadata is ignored in all cases
+
+            let mut equal = true;
+            equal &= equal && doc_number.get_major() == last_number.get_major();
+            equal &= equal && doc_number.get_minor() == last_number.get_minor();
+            equal &= equal && doc_number.get_patch() == last_number.get_patch();
+            if doc_status != DocumentStatus::Draft {
+                equal &= equal && doc_number.get_prerelease() == last_number.get_prerelease();
+            }
+            if !equal {
+                errors
+                    .get_or_insert_default()
+                    .push(test_6_1_16_err_last_version_number_unequal(&doc_version, last_number, &doc_status));
+            }
+        }
+        // If the version number type of document version and revision history do not match, generate an error and skip this test
+        _ => {
+            return Err(vec![test_6_1_16_err_revision_history_type_mismatch(&doc_version, &valid_revision_history)]);
+        },
+    };
+
     errors.map_or(Ok(()), Err)
 }
 
-fn test_6_1_16_err_generator(
+fn test_6_1_16_err_last_version_number_unequal(
     doc_version: &ValidVersionNumber,
-    latest_number: &ValidVersionNumber,
+    latest_number: impl Display,
     doc_status: &DocumentStatus,
 ) -> ValidationError {
     ValidationError {
         message: format!(
             "The document version '{doc_version}' is not equal to the latest revision history number '{latest_number}' in document with status '{doc_status}'"
+        ),
+        instance_path: "/document/tracking/version".to_string(),
+    }
+}
+
+fn test_6_1_16_err_revision_history_type_mismatch(
+    doc_version: &ValidVersionNumber,
+    revision_history: &ValidRevisionHistory,
+) -> ValidationError {
+    let doc_version_string: &str = match doc_version {
+        ValidVersionNumber::IntVer(_) => "integer versioning",
+        ValidVersionNumber::SemVer(_) => "semantic versioning",
+    };
+
+    let revision_history_string: &str = match revision_history {
+        ValidRevisionHistory::IntVer(_) => "integer versioning",
+        ValidRevisionHistory::SemVer(_) => "semantic versioning",
+    };
+
+    ValidationError {
+        message: format!(
+            "The document version '{doc_version}' is using  {doc_version_string} while revision history is using {revision_history_string}"
         ),
         instance_path: "/document/tracking/version".to_string(),
     }
@@ -99,42 +132,42 @@ mod tests {
     #[test]
     fn test_test_6_1_16() {
         // Error cases
-        let case_01 = Err(vec![test_6_1_16_err_generator(
+        let case_01 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("1").unwrap(),
             &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_02 = Err(vec![test_6_1_16_err_generator(
+        let case_02 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("1").unwrap(),
             &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_03 = Err(vec![test_6_1_16_err_generator(
+        let case_03 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("1").unwrap(),
             &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_04 = Err(vec![test_6_1_16_err_generator(
+        let case_04 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("1.0.0").unwrap(),
             &ValidVersionNumber::from_str("2.0.0").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_05 = Err(vec![test_6_1_16_err_generator(
+        let case_05 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("1.0.0").unwrap(),
             &ValidVersionNumber::from_str("2.0.0").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_06 = Err(vec![test_6_1_16_err_generator(
+        let case_06 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("9").unwrap(),
             &ValidVersionNumber::from_str("10").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_07 = Err(vec![test_6_1_16_err_generator(
+        let case_07 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("1.9.0").unwrap(),
             &ValidVersionNumber::from_str("1.10.0").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_08 = Err(vec![test_6_1_16_err_generator(
+        let case_08 = Err(vec![test_6_1_16_err_last_version_number_unequal(
             &ValidVersionNumber::from_str("1").unwrap(),
             &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
@@ -172,7 +205,7 @@ mod tests {
             case_06,
             case_07,
             case_08,
-            Err(vec![test_6_1_16_err_generator(
+            Err(vec![test_6_1_16_err_last_version_number_unequal(
                 &ValidVersionNumber::from_str("2").unwrap(),
                 &ValidVersionNumber::from_str("1").unwrap(),
                 &DocumentStatus::Final,

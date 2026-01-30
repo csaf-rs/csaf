@@ -1,5 +1,6 @@
-use crate::csaf::types::csaf_version_number::ValidVersionNumber;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use std::fmt::Display;
+use crate::csaf::aggregation::csaf_revision_history::validated_revision_history::{TypedValidCsafRevisionHistory, ValidRevisionHistory, ValidatedRevisionHistory, VersionNumberKind};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 /// 6.1.21 Missing Item in Revision History
@@ -9,44 +10,60 @@ use crate::validation::ValidationError;
 /// Also, it has to be ensured that the first item has either a version 0 or 1.
 /// This applies to the version number for integer versioning and to the major version for semantic versioning.
 pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
-
     // Generate and sort the revision history tuples by date first and by number second
-    let mut rev_history_tuples = doc.get_document().get_tracking().get_revision_history_tuples();
-    rev_history_tuples.inplace_sort_by_date_then_number();
+    // Get the revision history
+    let revision_history = doc.get_document().get_tracking().get_revision_history();
+    let validated = ValidatedRevisionHistory::from(&revision_history);
+    // Check if revision history is valid, if not return the errors and skip this test
+    let valid = match validated {
+        ValidatedRevisionHistory::Valid(valid) => {valid}
+        ValidatedRevisionHistory::Invalid(errors) => {return Err(errors.into())}
+    };
 
-    // We can safely unwrap here, as there has to be at least one item in rev_history_tuples
-    let first_tuple = rev_history_tuples.first().unwrap();
-    let first_version = &first_tuple.number;
-    let first_number = first_version.get_major();
+    match valid {
+        ValidRevisionHistory::IntVer(intver) => {
+            check_for_missing_versions_numbers_in_revision_history(intver, VersionNumberTypeSpecificEnum::IntVer)
+        }
+        ValidRevisionHistory::SemVer(semver) => {
+            check_for_missing_versions_numbers_in_revision_history(semver, VersionNumberTypeSpecificEnum::SemVer)
+        }
+    }
+}
+
+fn check_for_missing_versions_numbers_in_revision_history<V: VersionNumberKind>(history: TypedValidCsafRevisionHistory<V>, error_message: VersionNumberTypeSpecificEnum) -> Result<(), Vec<ValidationError>> {
+    // sort the revision history by first by date, then by number
+    let sorted = history.get_sorted_by_date_by_number();
+
+    // get first version in sorted array
+    let first = sorted.first();
+    let first_major = first.number.get_major();
 
     // Throw error if first version is not 0 or 1
-    if first_number > 1 {
+    if first_major > 1 {
         return Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            first_version,
-            &first_tuple.path_index,
+            &error_message,
+            first.number,
+            &first.path_index,
         )]);
     }
 
-    let last_number = rev_history_tuples.last().unwrap().number.get_major();
+    // get last version
+    let last_major = sorted.last().number.get_major();
+    // extract all major version numbers from the sorted revision history
+    let major_numbers: Vec<u64> = sorted.iter().map(|item| item.number.get_major()).collect();
 
-    for expected_number in first_number + 1..last_number {
-        let mut found = false;
-        for revision_history_item in rev_history_tuples.iter() {
-            if revision_history_item.number.clone().get_major() == expected_number {
-                found = true;
-                break;
-            }
-        }
-        if !found {
-            // We can just take the first tuple here, they are the same anyway (or violate 6.1.30)
+    let mut errors: Option<Vec<ValidationError>> = None;
+    // check if all integers in the range between first and last version are present in the extracted major version numbers
+    // if not generate an error
+    for expected_number in first_major + 1..last_major {
+        if !major_numbers.contains(&expected_number) {
             errors
                 .get_or_insert_with(Vec::new)
                 .push(test_6_1_21_err_missing_version_in_range(
-                    &first_version.clone(),
+                    &error_message,
                     &expected_number,
-                    &first_number,
-                    &last_number,
+                    &first_major,
+                    &last_major,
                 ));
         }
     }
@@ -75,37 +92,42 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
     }
 }
 
+// This enum is used to generate specific error messages for integer versioning and semantic versioning
+enum VersionNumberTypeSpecificEnum {
+    IntVer,
+    SemVer,
+}
+
 fn test_6_1_21_err_wrong_first_version_generator(
-    version: &ValidVersionNumber,
+    version_number_type: &VersionNumberTypeSpecificEnum,
+    first_item: impl Display,
     revision_index: &usize,
 ) -> ValidationError {
-    let version_error = match version {
-        ValidVersionNumber::IntVer(_) => "integer version of 0 or 1",
-        ValidVersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",
+    let version_error = match version_number_type {
+        VersionNumberTypeSpecificEnum::IntVer => "integer version of 0 or 1",
+        VersionNumberTypeSpecificEnum::SemVer => "semver version of 0.y.z or 1.y.z",
     }
     .to_string();
     ValidationError {
-        message: format!("The first revision history item should have {version_error}, but was {version}"),
+        message: format!("The first revision history item should have {version_error}, but was {first_item}"),
         instance_path: format!("/document/tracking/revision_history/{revision_index}"),
     }
 }
 
 fn test_6_1_21_err_missing_version_in_range(
-    version: &ValidVersionNumber,
+    version_number_type: &VersionNumberTypeSpecificEnum,
     expected_number: &u64,
     first_number: &u64,
     last_number: &u64,
 ) -> ValidationError {
-    let version_error = match version {
-        ValidVersionNumber::IntVer(_) => format!("integer version {expected_number}"),
-        ValidVersionNumber::SemVer(_) => format!("semver version {expected_number}.y.z"),
-    }
-    .to_string();
-    let version_error_range = match version {
-        ValidVersionNumber::IntVer(_) => format!("integer version range {first_number} to {last_number}"),
-        ValidVersionNumber::SemVer(_) => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
-    }
-    .to_string();
+    let version_error = match version_number_type {
+        VersionNumberTypeSpecificEnum::IntVer => format!("integer version {expected_number}"),
+        VersionNumberTypeSpecificEnum::SemVer => format!("semver version {expected_number}.y.z"),
+    };
+    let version_error_range = match version_number_type {
+        VersionNumberTypeSpecificEnum::IntVer => format!("integer version range {first_number} to {last_number}"),
+        VersionNumberTypeSpecificEnum::SemVer => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
+    };
     ValidationError {
         message: format!("Missing revision history item with {version_error} number {version_error_range}"),
         instance_path: "/document/tracking/revision_history".to_string(),
@@ -117,20 +139,20 @@ mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use std::str::FromStr;
 
     #[test]
     fn test_test_6_1_21() {
         // TODO: Unit Tests with semver
         // Error cases
         let case_01 = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &ValidVersionNumber::from_str("1").unwrap(),
+            &VersionNumberTypeSpecificEnum::IntVer,
             &2,
             &1,
             &3,
         )]);
         let case_02 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            &ValidVersionNumber::from_str("2").unwrap(),
+            &VersionNumberTypeSpecificEnum::IntVer,
+            &2,
             &0,
         )]);
 
@@ -148,7 +170,7 @@ mod tests {
             case_01,
             case_02,
             Err(vec![test_6_1_21_err_missing_version_in_range(
-                &ValidVersionNumber::from_str("1").unwrap(),
+                &VersionNumberTypeSpecificEnum::IntVer,
                 &2,
                 &1,
                 &4,

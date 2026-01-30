@@ -2,10 +2,11 @@ use crate::schema::csaf2_0::schema::VersionT as VersionTCsaf20;
 use crate::schema::csaf2_1::schema::VersionT as VersionTCsaf21;
 use crate::validation::ValidationError;
 use semver::{BuildMetadata, Prerelease, Version};
-use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::hash::Hash;
 use std::ops::Deref;
 use std::str::FromStr;
+
 
 // ============================================================================
 // CsafVersionNumber implementation

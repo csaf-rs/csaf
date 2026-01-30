@@ -88,6 +88,13 @@ impl CsafDateTimeParseError {
     pub fn get_raw_string(&self) -> &str {
         &self.raw_string
     }
+
+    pub fn get_validation_error(&self, instance_path: &str) -> crate::validation::ValidationError {
+        crate::validation::ValidationError {
+            message: self.to_string(),
+            instance_path: instance_path.to_string(),
+        }
+    }
 }
 
 impl Display for CsafDateTimeParseError {

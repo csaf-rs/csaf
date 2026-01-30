@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 fn create_prerelease_version_error(number: &SemVerVersion, index: &usize) -> ValidationError {
@@ -15,28 +15,30 @@ fn create_prerelease_version_error(number: &SemVerVersion, index: &usize) -> Val
 pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
-    // Check that no revision history item has a pre-release part
     let mut errors: Option<Vec<ValidationError>> = None;
-    let revision_history = doc.get_document().get_tracking().get_revision_history();
-    for (revision_index, revision) in revision_history.iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
+    // get version numbers from revision history
+    let revision_history_numbers = doc.get_document().get_tracking().get_revision_history();
+    for item in revision_history_numbers {
+        match item.number {
             CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
-                continue;
-            },
-        };
-        match number {
-            ValidVersionNumber::IntVer(_) => {},
-            ValidVersionNumber::SemVer(semver) => {
-                if semver.has_prerelease() {
-                    errors
-                        .get_or_insert_default()
-                        .push(create_prerelease_version_error(&semver, &revision_index));
+                // if number is invalid, add an error
+                errors.get_or_insert_default().push(err.get_validation_error(format!("/document/tracking/revision_history/{}/number", item.path_index).as_str()));
+            }
+            CsafVersionNumber::Valid(number) => {
+                match &number {
+                    ValidVersionNumber::IntVer(_) => {
+                        // Integer versions cannot have prerelease parts, so nothing to do here
+                    },
+                    ValidVersionNumber::SemVer(semver) => {
+                        // If the semver version has a prerelease part, add an error
+                        if semver.has_prerelease() {
+                            errors
+                                .get_or_insert_default()
+                                .push(create_prerelease_version_error(semver, &item.path_index));
+                        }
+                    },
                 }
-            },
+            }
         }
     }
 

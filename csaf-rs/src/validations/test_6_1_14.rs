@@ -1,4 +1,6 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use std::ops::Deref;
+use crate::csaf::aggregation::csaf_revision_history::validated_revision_history::{TypedValidCsafRevisionHistory, ValidRevisionHistory, ValidatedRevisionHistory, VersionNumberKind};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 fn create_revision_history_error(revision_number: impl std::fmt::Display, path_index: usize) -> ValidationError {
@@ -15,30 +17,45 @@ fn create_revision_history_error(revision_number: impl std::fmt::Display, path_i
 /// The revision history items, when sorted by their `/document/tracking/revision_history[]/date` field,
 /// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // Generate tuples of (revision history path index, date, number)
-    let mut rev_history_tuples_sort_by_date = doc.get_document().get_tracking().get_revision_history_tuples();
-    let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
+    // Get the revision history
+    let revision_history = doc.get_document().get_tracking().get_revision_history();
+    let validated = ValidatedRevisionHistory::from(&revision_history);
+    // Check if revision history is valid, if not return the errors and skip this test
+    let valid = match validated {
+        ValidatedRevisionHistory::Valid(valid) => {valid}
+        ValidatedRevisionHistory::Invalid(errors) => {return Err(errors.into())}
+    };
 
-    // Sort by date and by number
-    rev_history_tuples_sort_by_date.inplace_sort_by_date_then_number();
-    rev_history_tuples_sort_by_number.inplace_sort_by_number();
+    match valid {
+        ValidRevisionHistory::IntVer(intver) => {
+            check_for_sorting_errors(intver)
+        }
+        ValidRevisionHistory::SemVer(semver) => {
+            check_for_sorting_errors(semver)
+        }
+    }
+}
+
+// not getting the inner type is what we want here, as we want to compare the ptrs
+#[allow(clippy::suspicious_double_ref_op)]
+fn check_for_sorting_errors<V: VersionNumberKind>(history: TypedValidCsafRevisionHistory<V>) -> Result<(), Vec<ValidationError>> {
+    let sorted_by_date_by_number = history.get_sorted_by_date_by_number();
+    let sorted_by_number = history.get_sorted_by_number();
+    let mut errors :Option<Vec<ValidationError>> = None;
 
     // Generate errors if revision history items are sorted differently between sort by date and sort by number
-    let mut errors = Vec::new();
-    for i in 0..rev_history_tuples_sort_by_date.len() {
-        if rev_history_tuples_sort_by_date[i].date != rev_history_tuples_sort_by_number[i].date {
-            errors.push(create_revision_history_error(
-                &rev_history_tuples_sort_by_date[i].number,
-                rev_history_tuples_sort_by_date[i].path_index,
+    for (idx, by_date_by_number ) in sorted_by_date_by_number.iter().enumerate() {
+        let by_date_by_number = by_date_by_number.deref();
+        let by_number = &sorted_by_number[idx];
+        // Compare the two references, if they point to different items, it means that the order is different
+        if !std::ptr::eq(by_date_by_number, by_number) {
+            errors.get_or_insert_default().push(create_revision_history_error(
+                by_date_by_number.number,
+                by_date_by_number.path_index,
             ));
         }
     }
-
-    if !errors.is_empty() {
-        return Err(errors);
-    }
-
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>

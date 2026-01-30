@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 /// 6.2.4 Build Metadata in Revision History
@@ -8,31 +8,28 @@ use crate::validation::ValidationError;
 pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    for (revision_index, revision) in doc
-        .get_document()
-        .get_tracking()
-        .get_revision_history()
-        .iter()
-        .enumerate()
-    {
-        let version_number = match revision.get_number() {
-            CsafVersionNumber::Valid(version_number) => version_number,
+    let revision_history = doc.get_document().get_tracking().get_revision_history();
+    for revision in revision_history {
+        // Get the revision number
+        let number = match &revision.number {
+            CsafVersionNumber::Valid(number) => {number}
             CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
+                // if the number is invalid, add an error and skip the check for this revision history item
+                errors.get_or_insert_default().push(err.get_validation_error(format!("/document/tracking/revision_history/{}/number", revision.path_index).as_str()));
                 continue;
-            },
+            }
         };
-        match version_number {
-            ValidVersionNumber::IntVer(_) => {},
+        match &number {
+            ValidVersionNumber::IntVer(_) => {
+                // Integer versions cannot have build metadata, so nothing to do here
+            }
             ValidVersionNumber::SemVer(semver) => {
                 if semver.has_build_metadata() {
                     errors
                         .get_or_insert_default()
-                        .push(create_build_metadata_in_rev_history_error(&semver, &revision_index));
+                        .push(create_build_metadata_in_rev_history_error(semver, &revision.path_index));
                 }
-            },
+            }
         }
     }
 

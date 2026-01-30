@@ -1,29 +1,16 @@
-use std::sync::LazyLock;
+use std::fmt::Display;
 
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait, WithDate,
+    ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use chrono::{DateTime, FixedOffset};
-
-fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationError {
-    ValidationError {
-        message: format!("Invalid date format in revision history: {date_str}"),
-        instance_path: format!("/document/tracking/revision_history/{i_r}/date"),
-    }
-}
-
-static EMPTY_REVISION_HISTORY_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Revision history must not be empty for status final or interim".to_string(),
-    instance_path: "/document/tracking/revision_history".to_string(),
-});
+use crate::csaf::aggregation::csaf_revision_history::validated_revision_history_dates::ValidatedRevisionHistoryDates;
 
 fn create_ssvc_timestamp_too_late_error(
-    ssvc_timestamp: &str,
+    ssvc_timestamp: impl Display,
     i_v: usize,
-    newest_revision_date: &str,
+    newest_revision_date: impl Display,
     i_m: usize,
 ) -> ValidationError {
     ValidationError {
@@ -34,7 +21,7 @@ fn create_ssvc_timestamp_too_late_error(
     }
 }
 
-fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
+fn create_invalid_ssvc_error(error: impl Display, i_v: usize, i_m: usize) -> ValidationError {
     ValidationError {
         message: format!("Invalid SSVC object: {error}"),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
@@ -55,34 +42,18 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
         return Ok(());
     }
 
-    // Parse the date of each revision and find the newest one
-    let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
-    for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
-        // TODO: Rewrite this after revision history refactor
-        let date = match revision.get_date() {
-            Valid(date) => date.get_raw_string().to_owned(),
-            Invalid(err) => err.get_raw_string().to_owned(),
-        };
-        match DateTime::parse_from_rfc3339(date.as_str()) {
-            Ok(parsed_date) => {
-                newest_revision_date = match newest_revision_date {
-                    None => Some(parsed_date),
-                    Some(newest_date) => Some(newest_date.max(parsed_date)),
-                };
-            },
-            Err(_) => {
-                return Err(vec![create_invalid_revision_date_error(date.as_str(), i_r)]);
-            },
-        }
-    }
-
-    let newest_revision_date = match newest_revision_date {
-        Some(date) => date,
-        // No entries in revision history
-        None => {
-            return Err(vec![EMPTY_REVISION_HISTORY_ERROR.clone()]);
-        },
+    // Get valid revision history dates, if there are invalid dates, return the errors and skip this test
+    // As correct sorting can not be guaranteed if there are invalid dates
+    let revision_history = tracking.get_revision_history();
+    let mut valid_revision_dates = match ValidatedRevisionHistoryDates::from(&revision_history) {
+        ValidatedRevisionHistoryDates::Invalid(err) => {return Err(err.into())}
+        ValidatedRevisionHistoryDates::Valid(dates) => {dates}
     };
+
+    // sort the valid revision dates and get the newest one
+    valid_revision_dates.sort();
+    let newest_revision_date = valid_revision_dates.get_newest().date_time;
+
 
     // Check each vulnerability's SSVC timestamp
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
@@ -91,11 +62,11 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
                 if metric.get_content().has_ssvc() {
                     match metric.get_content().get_ssvc() {
                         Ok(ssvc) => {
-                            if ssvc.timestamp.fixed_offset() > newest_revision_date {
+                            if ssvc.timestamp > newest_revision_date.get_as_utc() {
                                 return Err(vec![create_ssvc_timestamp_too_late_error(
-                                    &ssvc.timestamp.to_rfc3339(),
+                                    ssvc.timestamp.fixed_offset(),
                                     i_v,
-                                    &newest_revision_date.to_rfc3339(),
+                                    newest_revision_date.get_as_fixed_offset(),
                                     i_m,
                                 )]);
                             }
@@ -133,21 +104,21 @@ mod tests {
         // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success cases)
         TESTS_2_1.test_6_1_49.expect(
             Err(vec![create_ssvc_timestamp_too_late_error(
-                "2024-07-13T10:00:00+00:00",
+                "2024-07-13 10:00:00 +00:00",
                 0,
-                "2024-01-24T10:00:00+00:00",
-                0,
-            )]),
-            Err(vec![create_ssvc_timestamp_too_late_error(
-                "2024-02-29T10:30:00+00:00",
-                0,
-                "2024-02-29T10:00:00+00:00",
+                "2024-01-24 10:00:00 +00:00",
                 0,
             )]),
             Err(vec![create_ssvc_timestamp_too_late_error(
-                "2024-02-29T10:30:00+00:00",
+                "2024-02-29 10:30:00 +00:00",
                 0,
-                "2024-02-29T10:00:00+00:00",
+                "2024-02-29 10:00:00 +00:00",
+                0,
+            )]),
+            Err(vec![create_ssvc_timestamp_too_late_error(
+                "2024-02-29 10:30:00 +00:00",
+                0,
+                "2024-02-29 10:00:00 +00:00",
                 0,
             )]),
             Ok(()),

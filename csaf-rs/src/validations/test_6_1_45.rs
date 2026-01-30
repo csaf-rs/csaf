@@ -1,17 +1,10 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
-    CsafTrait, DistributionTrait, DocumentTrait, TlpTrait, TrackingTrait, VulnerabilityTrait, WithDate,
+    CsafTrait, DistributionTrait, DocumentTrait, TlpTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::schema::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
 use crate::validation::ValidationError;
-use chrono::{DateTime, FixedOffset};
-
-fn create_invalid_revision_date_error(date: &str, i_rev: usize) -> ValidationError {
-    ValidationError {
-        message: format!("Invalid date format in revision history: {date}"),
-        instance_path: format!("/document/tracking/revision_history/{i_rev}"),
-    }
-}
+use crate::csaf::aggregation::csaf_revision_history::validated_revision_history_dates::ValidatedRevisionHistoryDates;
 
 fn create_disclosure_date_too_late_error(i_v: usize) -> ValidationError {
     ValidationError {
@@ -20,18 +13,11 @@ fn create_disclosure_date_too_late_error(i_v: usize) -> ValidationError {
     }
 }
 
-fn create_invalid_disclosure_date_error(date: &str, i_v: usize) -> ValidationError {
-    ValidationError {
-        message: format!("Invalid disclosure date format: {date}"),
-        instance_path: format!("/vulnerabilities/{i_v}/discovery_date"),
-    }
-}
-
 pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // Only check if document is TLP:CLEAR and status is final or interim
     let document = doc.get_document();
     let status = document.get_tracking().get_status();
 
+    // Only run this test if the document status is final or interim
     if status != DocumentStatus::Final && status != DocumentStatus::Interim {
         return Ok(());
     }
@@ -44,55 +30,43 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
         Err(_) => false,
     };
 
+    // And if the TLP is not CLEAR, skip this test
     if !is_tlp_clear {
         return Ok(());
     }
 
-    // Get the newest revision history date
-    let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
+    // Get valid revision history dates, if there are invalid dates, return the errors and skip this test
+    // As correct sorting can not be guaranteed if there are invalid dates
     let revision_history = document.get_tracking().get_revision_history();
-    for (i_rev, rev) in revision_history.iter().enumerate() {
-        // TODO: Rewrite this after revision history refactor
-        let date = rev.get_date();
-        let date = match date {
-            Valid(date) => date.get_raw_string().to_owned(),
-            Invalid(err) => err.get_raw_string().to_owned(),
-        };
-        chrono::DateTime::parse_from_rfc3339(&date)
-            .map(|rev_datetime| {
-                println!("rev_datetime: {rev_datetime:?}, newest_revision_date: {newest_revision_date:?}");
-                newest_revision_date = match newest_revision_date {
-                    None => Some(rev_datetime),
-                    Some(prev_max) => Some(prev_max.max(rev_datetime)),
-                }
-            })
-            .map_err(|_| vec![create_invalid_revision_date_error(&date, i_rev)])?;
-    }
+    let mut valid_revision_dates = match ValidatedRevisionHistoryDates::from(&revision_history) {
+        ValidatedRevisionHistoryDates::Invalid(err) => {return Err(err.into())}
+        ValidatedRevisionHistoryDates::Valid(dates) => {dates}
+    };
 
-    if let Some(newest_date) = newest_revision_date {
-        // Check each vulnerability's disclosure date
-        for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
-            if let Some(disclosure_date) = v.get_disclosure_date() {
-                let disclosure_date = match disclosure_date {
-                    Valid(date) => date.get_raw_string().to_owned(),
-                    Invalid(err) => err.get_raw_string().to_owned(),
-                };
-                match chrono::DateTime::parse_from_rfc3339(&disclosure_date) {
-                    Ok(disclosure_datetime) => {
-                        println!("disclosure_datetime: {disclosure_datetime:?}, newest_date: {newest_date:?}");
-                        if disclosure_datetime > newest_date {
-                            return Err(vec![create_disclosure_date_too_late_error(i_v)]);
-                        }
-                    },
-                    Err(_) => {
-                        return Err(vec![create_invalid_disclosure_date_error(&disclosure_date, i_v)]);
-                    },
+    // sort the valid revision dates and get the newest one
+    valid_revision_dates.sort();
+    let newest_revision_date = valid_revision_dates.get_newest().date_time;
+
+    let mut errors: Option<Vec<ValidationError>> = None;
+
+    for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
+        // Get the disclosure date, if provided and valid
+        if let Some(disclosure_date) = v.get_disclosure_date() {
+            let disclosure_date = match &disclosure_date {
+                Valid(date) => date,
+                Invalid(err) => {
+                    // If the disclosure date is invalid, add an error and skip this vulnerability
+                    errors.get_or_insert_default().push(err.get_validation_error(&format!("/vulnerabilities/{i_v}/disclosure_date")));
+                    continue;
                 }
+            };
+            // If the disclosure date is later than the newest revision history date, add an error
+            if disclosure_date > newest_revision_date {
+                errors.get_or_insert_default().push(create_disclosure_date_too_late_error(i_v));
             }
         }
     }
-
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>

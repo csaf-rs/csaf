@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
@@ -33,28 +33,23 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
         return Ok(());
     }
 
-    // Check that no revision history item has version 0 or 0.y.z
     let mut errors: Option<Vec<ValidationError>> = None;
-    let revision_history = tracking.get_revision_history();
-    for (revision_index, revision) in revision_history.iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
+    // get version numbers from revision history
+    let revision_history_numbers = tracking.get_revision_history();
+    for item in revision_history_numbers {
+        match item.number {
             CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
-                continue;
-            },
-        };
-
-        let is_zero = match &number {
-            ValidVersionNumber::IntVer(intver) => intver.get() == 0,
-            ValidVersionNumber::SemVer(semver) => semver.get_major() == 0,
-        };
-        if is_zero {
-            errors
-                .get_or_insert_default()
-                .push(create_revision_history_error(&status, &number, &revision_index));
+                // if number is invalid, add an error
+                errors.get_or_insert_default().push(err.get_validation_error(format!("/document/tracking/revision_history/{}/number", item.path_index).as_str()));
+            }
+            CsafVersionNumber::Valid(number) => {
+                // if number is valid and if major version is 0, add an error
+                if number.get_major() == 0 {
+                    errors
+                        .get_or_insert_default()
+                        .push(create_revision_history_error(&status, &number, &item.path_index));
+                }
+            }
         }
     }
 

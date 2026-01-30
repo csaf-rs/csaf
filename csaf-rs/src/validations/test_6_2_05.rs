@@ -1,5 +1,6 @@
-use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf::aggregation::csaf_revision_history::validated_revision_history_dates::ValidatedRevisionHistoryDates;
+use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 fn create_older_initial_release_date_error(
@@ -17,21 +18,31 @@ fn create_older_initial_release_date_error(
 /// 6.2.5 Older Initial Release Date than Revision History
 ///
 pub fn test_6_2_05_older_init_release_than_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let initial_release_date = doc.get_document().get_tracking().get_initial_release_date();
-    // TODO: Check for invalid dates here, will be done after revision history refactor, which will introduce
-    // generic parsing error handling
+    let tracking = doc.get_document().get_tracking();
 
-    let mut rev_history = doc.get_document().get_tracking().get_revision_history_tuples();
-    rev_history.inplace_sort_by_date_then_number();
-    // We can safely unwrap here because empty revision histories would not parse schema validation
-    let earliest_rev_history_item_date = rev_history.first().unwrap();
-    let Valid(initial_release_date) = initial_release_date else {
-        panic!();
+    // get initial release date
+    let initial_release_date = match tracking.get_initial_release_date() {
+        CsafDateTime::Valid(initial_release_date) => initial_release_date,
+        // if initial release date is invalid, return an error and skip this test
+        CsafDateTime::Invalid(err) => return Err(vec![err.get_validation_error("/document/tracking/initial_release_date")]),
     };
-    if initial_release_date.get_as_utc() < earliest_rev_history_item_date.date {
+
+    // get revision history dates
+    let revision_history = tracking.get_revision_history();
+    let mut revision_history_dates = match ValidatedRevisionHistoryDates::from(&revision_history) {
+        ValidatedRevisionHistoryDates::Valid(dates) => dates,
+        ValidatedRevisionHistoryDates::Invalid(err) => {return Err(err.into())}
+    };
+
+    // sort revision history
+    revision_history_dates.sort();
+    let oldest_revision_history_date = revision_history_dates.get_oldest().date_time;
+
+    // if initial release date is older than the oldest revision history date, return an error
+    if &initial_release_date < oldest_revision_history_date {
         return Err(vec![create_older_initial_release_date_error(
             initial_release_date.get_raw_string(),
-            &earliest_rev_history_item_date.date_string,
+            oldest_revision_history_date.get_raw_string()
         )]);
     }
     Ok(())

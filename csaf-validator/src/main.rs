@@ -1,5 +1,6 @@
 use anyhow::{Result, bail};
 use clap::Parser;
+use csaf::csaf::loader::detect_version;
 use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf::validation::{
@@ -18,7 +19,7 @@ struct Args {
     path: Option<String>,
 
     /// Version of CSAF to use
-    #[arg(short, long, default_value = "2.0")]
+    #[arg(short, long, default_value = "auto")]
     csaf_version: String,
 
     /// The validation preset to use
@@ -43,7 +44,13 @@ fn main() -> Result<()> {
 
 /// Try to validate a file as a CSAF document based on the specified version.
 fn validate_file(path: &str, args: &Args) -> Result<()> {
-    match args.csaf_version.as_str() {
+    match if args.csaf_version == "auto" {
+        detect_version(path)?
+    } else {
+        args.csaf_version.clone()
+    }
+    .as_str()
+    {
         "2.0" => {
             let document = load_document_2_0(path)?;
             validate_document(document, "2.0", args)
@@ -91,38 +98,73 @@ pub fn print_validation_result(result: &ValidationResult) {
 
     // Print summary
     println!();
-    if result.success {
-        println!("✅ Validation passed! No errors found.\n");
+    println!();
+    if result.num_errors == 0 && result.num_warnings == 0 && result.num_infos == 0 {
+        println!("✅  Validation passed! No errors found.\n");
+    } else if result.num_errors == 0 && result.num_warnings == 0 {
+        println!("💡  Validation passed with {} info(s)\n", result.num_infos);
+    } else if result.num_errors == 0 {
+        println!(
+            "⚠️  Validation passed with {} warning(s) and {} info(s)\n",
+            result.num_warnings, result.num_infos
+        );
     } else {
-        println!("❌ Validation failed with {} error(s)\n", result.num_errors,);
+        println!(
+            "❌  Validation failed with {} error(s), {} warning(s) and {} info(s)\n",
+            result.num_errors, result.num_warnings, result.num_infos
+        );
+    }
+
+    if result.num_not_found > 0 {
+        println!(
+            "Note: {} test(s) were not found during validation.\n",
+            result.num_not_found
+        );
     }
 }
 
 /// Print individual test result to stdout.
 fn print_test_result(test_result: &TestResult) {
     // Common prefix for all test statuses
-    let prefix = format!("Executing Test {} ... ", test_result.test_id);
+    let prefix = format!("Executing Test {:10} ... ", test_result.test_id);
+    print!("{prefix}");
 
     match &test_result.status {
         Success => {
             // Yay, success!
-            println!("{prefix}✅ Success");
+            println!("✅  Success");
         },
-        Failure { errors } => {
-            // We want to print multiple errors nicely indented
-            let error_msg = "❌ ";
-            print!("{prefix}{error_msg}");
-            let indent = " ".repeat(prefix.len() + error_msg.len());
-            for (i, error) in errors.iter().enumerate() {
-                if i > 0 {
-                    print!("{indent}");
-                }
-                println!("Error: {}", error.message);
+        Failure {
+            errors,
+            warnings,
+            infos,
+        } => {
+            if !errors.is_empty() {
+                println!("❌ {} error(s) found", errors.len());
+            } else if !warnings.is_empty() {
+                println!("⚠️  {} warning(s) found", warnings.len());
+            } else {
+                println!("💡  {} info(s) found", infos.len());
+            };
+            for error in errors {
+                println!(
+                    "❌  {}: {} [{}]",
+                    test_result.test_id, error.message, error.instance_path
+                );
+            }
+            for warning in warnings {
+                println!(
+                    "⚠️  {}: {} [{}]",
+                    test_result.test_id, warning.message, warning.instance_path
+                );
+            }
+            for info in infos {
+                println!("💡  {}: {} [{}]", test_result.test_id, info.message, info.instance_path);
             }
         },
         NotFound => {
             // Test not found
-            println!("{prefix}⚠️  Test not found");
+            println!("❓  Test not found");
         },
     }
 }

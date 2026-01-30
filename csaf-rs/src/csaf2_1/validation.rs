@@ -1,54 +1,213 @@
+use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
-use crate::validation::{Test, Validatable, ValidationPreset};
-use crate::validations::test_6_1_02::test_6_1_02_multiple_definition_of_product_id;
-use crate::validations::test_6_1_34::test_6_1_34_branches_recursion_depth;
-use crate::validations::test_6_1_35::test_6_1_35_contradicting_remediations;
-use crate::validations::test_6_1_36::test_6_1_36_status_group_contradicting_remediation_categories;
-use crate::validations::test_6_1_37::test_6_1_37_date_and_time;
-use crate::validations::test_6_1_38::test_6_1_38_non_public_sharing_group_max_uuid;
-use crate::validations::test_6_1_39::test_6_1_39_public_sharing_group_with_no_max_uuid;
-use crate::validations::test_6_1_40::test_6_1_40_invalid_sharing_group_name;
-use crate::validations::test_6_1_41::test_6_1_41_missing_sharing_group_name;
-use crate::validations::test_6_1_42::test_6_1_42_purl_consistency;
-use std::collections::HashMap;
+use crate::test_validation::TestValidator;
+use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationPreset};
 
 impl Validatable<CommonSecurityAdvisoryFramework> for CommonSecurityAdvisoryFramework {
-    fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>> {
-        let basic_tests = Vec::from([
-            "6.1.1", "6.1.2", "6.1.34", "6.1.35", "6.1.36", "6.1.37", "6.1.38", "6.1.39", "6.1.40", "6.1.41", "6.1.42",
-        ]);
-        // More tests may be added in extend() here later
-        let extended_tests: Vec<&str> = basic_tests.clone();
-        // extended_tests.extend(["foo"].iter());
-        let full_tests: Vec<&str> = extended_tests.clone();
-        // full_tests.extend(["bar"].iter());
-        HashMap::from([
-            (ValidationPreset::Basic, basic_tests),
-            (ValidationPreset::Extended, extended_tests),
-            (ValidationPreset::Full, full_tests),
-        ])
+    fn tests_in_preset(&self, preset: &ValidationPreset) -> Vec<&str> {
+        match preset {
+            ValidationPreset::Basic => mandatory_tests(),
+            ValidationPreset::Extended => [mandatory_tests(), recommended_tests()].concat(),
+            ValidationPreset::Full => [mandatory_tests(), recommended_tests(), informative_tests()].concat(),
+        }
     }
 
-    fn tests(&self) -> HashMap<&str, Test<CommonSecurityAdvisoryFramework>> {
-        type CsafTest = Test<CommonSecurityAdvisoryFramework>;
-        HashMap::from([
-            ("6.1.2", test_6_1_02_multiple_definition_of_product_id as CsafTest),
-            ("6.1.34", test_6_1_34_branches_recursion_depth as CsafTest),
-            ("6.1.35", test_6_1_35_contradicting_remediations as CsafTest),
-            (
-                "6.1.36",
-                test_6_1_36_status_group_contradicting_remediation_categories as CsafTest,
-            ),
-            ("6.1.37", test_6_1_37_date_and_time as CsafTest),
-            ("6.1.38", test_6_1_38_non_public_sharing_group_max_uuid as CsafTest),
-            ("6.1.39", test_6_1_39_public_sharing_group_with_no_max_uuid as CsafTest),
-            ("6.1.40", test_6_1_40_invalid_sharing_group_name as CsafTest),
-            ("6.1.41", test_6_1_41_missing_sharing_group_name as CsafTest),
-            ("6.1.42", test_6_1_42_purl_consistency as CsafTest),
-        ])
-    }
+    fn run_test(&self, test_id: &str) -> TestResult {
+        let mandatory_result = match test_id {
+            // mandatory tests
+            "6.1.1" => Some(ValidatorForTest6_1_1.validate(self)),
+            "6.1.2" => Some(ValidatorForTest6_1_2.validate(self)),
+            "6.1.3" => Some(ValidatorForTest6_1_3.validate(self)),
+            "6.1.4" => Some(ValidatorForTest6_1_4.validate(self)),
+            "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
+            "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),
+            "6.1.7" => Some(ValidatorForTest6_1_7.validate(self)),
+            "6.1.8" => Some(ValidatorForTest6_1_8.validate(self)),
+            "6.1.9" => None,  // Some(ValidatorForTest6_1_9.validate(self)),
+            "6.1.10" => None, // Some(ValidatorForTest6_1_10.validate(self)),
+            "6.1.11" => None, // Some(ValidatorForTest6_1_11.validate(self)),
+            "6.1.12" => Some(ValidatorForTest6_1_12.validate(self)),
+            "6.1.13" => Some(ValidatorForTest6_1_13.validate(self)),
+            "6.1.14" => Some(ValidatorForTest6_1_14.validate(self)),
+            "6.1.15" => Some(ValidatorForTest6_1_15.validate(self)),
+            "6.1.16" => Some(ValidatorForTest6_1_16.validate(self)),
+            "6.1.17" => Some(ValidatorForTest6_1_17.validate(self)),
+            "6.1.18" => Some(ValidatorForTest6_1_18.validate(self)),
+            "6.1.19" => Some(ValidatorForTest6_1_19.validate(self)),
+            "6.1.20" => Some(ValidatorForTest6_1_20.validate(self)),
+            "6.1.21" => Some(ValidatorForTest6_1_21.validate(self)),
+            "6.1.22" => Some(ValidatorForTest6_1_22.validate(self)),
+            "6.1.23" => Some(ValidatorForTest6_1_23.validate(self)),
+            "6.1.24" => Some(ValidatorForTest6_1_24.validate(self)),
+            "6.1.25" => Some(ValidatorForTest6_1_25.validate(self)),
+            "6.1.26" => None, // Some(ValidatorForTest6_1_26.validate(self)),
+            "6.1.27.1" => Some(ValidatorForTest6_1_27_1.validate(self)),
+            "6.1.27.2" => Some(ValidatorForTest6_1_27_2.validate(self)),
+            "6.1.27.3" => Some(ValidatorForTest6_1_27_3.validate(self)),
+            "6.1.27.4" => Some(ValidatorForTest6_1_27_4.validate(self)),
+            "6.1.27.5" => Some(ValidatorForTest6_1_27_5.validate(self)),
+            "6.1.27.6" => Some(ValidatorForTest6_1_27_6.validate(self)),
+            "6.1.27.7" => Some(ValidatorForTest6_1_27_7.validate(self)),
+            "6.1.27.8" => Some(ValidatorForTest6_1_27_8.validate(self)),
+            "6.1.27.9" => Some(ValidatorForTest6_1_27_9.validate(self)),
+            "6.1.27.10" => Some(ValidatorForTest6_1_27_10.validate(self)),
+            "6.1.27.11" => Some(ValidatorForTest6_1_27_11.validate(self)),
+            "6.1.27.12" => None, // Some(ValidatorForTest6_1_27_12.validate(self)),
+            "6.1.27.13" => None, // Some(ValidatorForTest6_1_27_13.validate(self)),
+            "6.1.27.14" => None, // Some(ValidatorForTest6_1_27_14.validate(self)),
+            "6.1.27.15" => None, // Some(ValidatorForTest6_1_27_15.validate(self)),
+            "6.1.27.16" => None, // Some(ValidatorForTest6_1_27_16.validate(self)),
+            "6.1.27.17" => None, // Some(ValidatorForTest6_1_27_17.validate(self)),
+            "6.1.27.18" => None, // Some(ValidatorForTest6_1_27_18.validate(self)),
+            "6.1.27.19" => None, // Some(ValidatorForTest6_1_27_19.validate(self)),
+            "6.1.28" => Some(ValidatorForTest6_1_28.validate(self)),
+            "6.1.29" => Some(ValidatorForTest6_1_29.validate(self)),
+            "6.1.30" => Some(ValidatorForTest6_1_30.validate(self)),
+            "6.1.31" => Some(ValidatorForTest6_1_31.validate(self)),
+            "6.1.32" => Some(ValidatorForTest6_1_32.validate(self)),
+            "6.1.33" => Some(ValidatorForTest6_1_33.validate(self)),
+            "6.1.34" => Some(ValidatorForTest6_1_34.validate(self)),
+            "6.1.35" => Some(ValidatorForTest6_1_35.validate(self)),
+            "6.1.36" => Some(ValidatorForTest6_1_36.validate(self)),
+            "6.1.37" => Some(ValidatorForTest6_1_37.validate(self)),
+            "6.1.38" => Some(ValidatorForTest6_1_38.validate(self)),
+            "6.1.39" => Some(ValidatorForTest6_1_39.validate(self)),
+            "6.1.40" => Some(ValidatorForTest6_1_40.validate(self)),
+            "6.1.41" => Some(ValidatorForTest6_1_41.validate(self)),
+            "6.1.42" => Some(ValidatorForTest6_1_42.validate(self)),
+            "6.1.43" => Some(ValidatorForTest6_1_43.validate(self)),
+            "6.1.44" => Some(ValidatorForTest6_1_44.validate(self)),
+            "6.1.45" => Some(ValidatorForTest6_1_45.validate(self)),
+            "6.1.46" => Some(ValidatorForTest6_1_46.validate(self)),
+            "6.1.47" => Some(ValidatorForTest6_1_47.validate(self)),
+            "6.1.48" => Some(ValidatorForTest6_1_48.validate(self)),
+            "6.1.49" => Some(ValidatorForTest6_1_49.validate(self)),
+            "6.1.50" => None, // Some(ValidatorForTest6_1_50.validate(self)),
+            "6.1.51" => None, // Some(ValidatorForTest6_1_51.validate(self)),
+            "6.1.52" => None, // Some(ValidatorForTest6_1_52.validate(self)),
+            "6.1.53" => None, // Some(ValidatorForTest6_1_53.validate(self)),
+            "6.1.54" => None, // Some(ValidatorForTest6_1_54.validate(self)),
+            "6.1.55" => None, // Some(ValidatorForTest6_1_55.validate(self)),
+            "6.1.56" => None, // Some(ValidatorForTest6_1_56.validate(self)),
+            _ => None,
+        };
 
-    fn doc(&self) -> &CommonSecurityAdvisoryFramework {
-        self
+        if let Some(res) = mandatory_result {
+            return TestResult {
+                test_id: test_id.to_string(),
+                status: match res {
+                    Ok(()) => TestResultStatus::Success,
+                    Err(errors) => TestResultStatus::Failure {
+                        errors,
+                        warnings: vec![],
+                        infos: vec![],
+                    },
+                },
+            };
+        }
+
+        let recommended_result = match test_id {
+            // recommended tests
+            "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
+            "6.2.2" => Some(ValidatorForTest6_2_2.validate(self)),
+            "6.2.3" => Some(ValidatorForTest6_2_3.validate(self)),
+            "6.2.4" => Some(ValidatorForTest6_2_4.validate(self)),
+            "6.2.5" => Some(ValidatorForTest6_2_5.validate(self)),
+            "6.2.6" => Some(ValidatorForTest6_2_6.validate(self)),
+            "6.2.7" => Some(ValidatorForTest6_2_7.validate(self)),
+            "6.2.8" => None, // Some(ValidatorForTest6_2_8.validate(self)),
+            "6.2.9" => None, // Some(ValidatorForTest6_2_9.validate(self)),
+            "6.2.11" => Some(ValidatorForTest6_2_11.validate(self)),
+            "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
+            "6.2.13" => None, // Some(ValidatorForTest6_2_13.validate(self)),
+            "6.2.14" => None, // Some(ValidatorForTest6_2_14.validate(self)),
+            "6.2.15" => Some(ValidatorForTest6_2_15.validate(self)),
+            "6.2.16" => Some(ValidatorForTest6_2_16.validate(self)),
+            "6.2.17" => Some(ValidatorForTest6_2_17.validate(self)),
+            "6.2.18" => Some(ValidatorForTest6_2_18.validate(self)),
+            "6.2.19" => None,   // Some(ValidatorForTest6_2_19.validate(self)),
+            "6.2.20" => None,   // Some(ValidatorForTest6_2_20.validate(self)),
+            "6.2.21" => None,   // Some(ValidatorForTest6_2_21.validate(self)),
+            "6.2.22" => None,   // Some(ValidatorForTest6_2_22.validate(self)),
+            "6.2.23" => None,   // Some(ValidatorForTest6_2_23.validate(self)),
+            "6.2.24" => None,   // Some(ValidatorForTest6_2_24.validate(self)),
+            "6.2.25" => None,   // Some(ValidatorForTest6_2_25.validate(self)),
+            "6.2.26" => None,   // Some(ValidatorForTest6_2_26.validate(self)),
+            "6.2.27" => None,   // Some(ValidatorForTest6_2_27.validate(self)),
+            "6.2.28" => None,   // Some(ValidatorForTest6_2_28.validate(self)),
+            "6.2.29" => None,   // Some(ValidatorForTest6_2_29.validate(self)),
+            "6.2.30" => None,   // Some(ValidatorForTest6_2_30.validate(self)),
+            "6.2.31" => None,   // Some(ValidatorForTest6_2_31.validate(self)),
+            "6.2.32" => None,   // Some(ValidatorForTest6_2_32.validate(self)),
+            "6.2.33" => None,   // Some(ValidatorForTest6_2_33.validate(self)),
+            "6.2.34" => None,   // Some(ValidatorForTest6_2_34.validate(self)),
+            "6.2.35" => None,   // Some(ValidatorForTest6_2_35.validate(self)),
+            "6.2.36" => None,   // Some(ValidatorForTest6_2_36.validate(self)),
+            "6.2.37" => None,   // Some(ValidatorForTest6_2_37.validate(self)),
+            "6.2.38" => None,   // Some(ValidatorForTest6_2_38.validate(self)),
+            "6.2.39.1" => None, // Some(ValidatorForTest6_2_39_1.validate(self)),
+            "6.2.39.2" => None, // Some(ValidatorForTest6_2_39_2.validate(self)),
+            "6.2.39.3" => None, // Some(ValidatorForTest6_2_39_3.validate(self)),
+            "6.2.39.4" => None, // Some(ValidatorForTest6_2_39_4.validate(self)),
+            "6.2.40" => None,   // Some(ValidatorForTest6_2_40.validate(self)),
+            "6.2.41" => None,   // Some(ValidatorForTest6_2_41.validate(self)),
+            "6.2.42" => None,   // Some(ValidatorForTest6_2_42.validate(self)),
+            "6.2.43" => None,   // Some(ValidatorForTest6_2_43.validate(self)),
+            "6.2.44" => None,   // Some(ValidatorForTest6_2_44.validate(self)),
+            "6.2.45" => None,   // Some(ValidatorForTest6_2_45.validate(self)),
+            "6.2.46" => None,   // Some(ValidatorForTest6_2_46.validate(self)),
+            "6.2.47" => None,   // Some(ValidatorForTest6_2_47.validate(self)),
+            _ => None,
+        };
+
+        if let Some(res) = recommended_result {
+            return TestResult {
+                test_id: test_id.to_string(),
+                status: match res {
+                    Ok(()) => TestResultStatus::Success,
+                    Err(warnings) => TestResultStatus::Failure {
+                        errors: vec![],
+                        warnings,
+                        infos: vec![],
+                    },
+                },
+            };
+        }
+
+        let informative_result = match test_id {
+            // informative tests
+            "6.3.1" => None,  // Some(ValidatorForTests6_3_1.validate(self)),
+            "6.3.2" => None,  // Some(ValidatorForTests6_3_2.validate(self)),
+            "6.3.3" => None,  // Some(ValidatorForTests6_3_3.validate(self)),
+            "6.3.4" => None,  // Some(ValidatorForTests6_3_4.validate(self)),
+            "6.3.5" => None,  // Some(ValidatorForTests6_3_5.validate(self)),
+            "6.3.6" => None,  // Some(ValidatorForTests6_3_6.validate(self)),
+            "6.3.7" => None,  // Some(ValidatorForTests6_3_7.validate(self)),
+            "6.3.8" => None,  // Some(ValidatorForTests6_3_8.validate(self)),
+            "6.3.9" => None,  // Some(ValidatorForTests6_3_9.validate(self)),
+            "6.3.10" => None, // Some(ValidatorForTests6_3_10.validate(self)),
+            "6.3.11" => None, // Some(ValidatorForTests6_3_11.validate(self)),
+            "6.3.12" => None, // Some(ValidatorForTests6_3_12.validate(self)),
+            "6.3.13" => None, // Some(ValidatorForTests6_3_13.validate(self)),
+            "6.3.14" => None, // Some(ValidatorForTests6_3_14.validate(self)),
+            "6.3.15" => None, // Some(ValidatorForTests6_3_15.validate(self)),
+            "6.3.16" => None, // Some(ValidatorForTests6_3_16.validate(self)),
+            "6.3.17" => None, // Some(ValidatorForTests6_3_17.validate(self)),
+            "6.3.18" => None, // Some(ValidatorForTests6_3_18.validate(self)),
+            _ => None,
+        };
+
+        TestResult {
+            test_id: test_id.to_string(),
+            status: match informative_result {
+                None => TestResultStatus::NotFound,
+                Some(Ok(())) => TestResultStatus::Success,
+                Some(Err(infos)) => TestResultStatus::Failure {
+                    errors: vec![],
+                    warnings: vec![],
+                    infos,
+                },
+            },
+        }
     }
 }

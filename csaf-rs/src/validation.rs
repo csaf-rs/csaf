@@ -1,6 +1,5 @@
 use TestResultStatus::*;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use tsify::Tsify;
@@ -33,7 +32,11 @@ pub struct TestResult {
 #[serde(rename_all = "camelCase")]
 pub enum TestResultStatus {
     Success,
-    Failure { errors: Vec<ValidationError> },
+    Failure {
+        errors: Vec<ValidationError>,
+        warnings: Vec<ValidationError>,
+        infos: Vec<ValidationError>,
+    },
     NotFound,
 }
 
@@ -52,6 +55,12 @@ pub struct ValidationResult {
     pub test_results: Vec<TestResult>,
     /// The total number of errors found during validation
     pub num_errors: usize,
+    /// The total number of warnings found during validation
+    pub num_warnings: usize,
+    /// The total number of infos found during validation
+    pub num_infos: usize,
+    /// The total number of tests not found
+    pub num_not_found: usize,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, Tsify)]
@@ -96,9 +105,6 @@ pub trait Validate {
     fn validate_by_preset(&self, version: &str, preset: ValidationPreset) -> ValidationResult;
 }
 
-/// This type represents a validation test function for a specific CSAF versioned document.
-pub type Test<VersionedDocument> = fn(&VersionedDocument) -> Result<(), Vec<ValidationError>>;
-
 /// Represents something which is validatable according to the CSAF standard.
 /// This trait MUST be implemented by the struct that represents a CSAF document
 /// in the respective version.
@@ -106,13 +112,11 @@ pub type Test<VersionedDocument> = fn(&VersionedDocument) -> Result<(), Vec<Vali
 /// It can then be used to validate documents with [validate_by_preset], [validate_by_tests],
 /// or [validate_by_test].
 pub trait Validatable<VersionedDocument> {
-    /// Returns a hashmap containing the test ID per preset
-    fn presets(&self) -> HashMap<ValidationPreset, Vec<&str>>;
+    /// Returns the test IDs belonging to a preset
+    fn tests_in_preset(&self, preset: &ValidationPreset) -> Vec<&str>;
 
-    /// Returns a hashmap containing the test function per test ID
-    fn tests(&self) -> HashMap<&str, Test<VersionedDocument>>;
-
-    fn doc(&self) -> &VersionedDocument;
+    /// Runs a test by test ID
+    fn run_test(&self, test_id: &str) -> TestResult;
 }
 
 /// Execute a single test and return the test result.
@@ -121,23 +125,8 @@ pub trait Validatable<VersionedDocument> {
 /// tests. If it does, it will execute the test function and return the result.
 /// If not, it will return a TestResult indicating that the test was not found.
 pub fn validate_by_test<VersionedDocument>(target: &impl Validatable<VersionedDocument>, test_id: &str) -> TestResult {
-    // Fetch tests from the validatable
-    let tests = target.tests();
-
-    // Try to find and execute the test specified by the test_id
-    let status = if let Some(test_fn) = tests.get(test_id) {
-        match test_fn(target.doc()) {
-            Ok(()) => Success,
-            Err(errors) => Failure { errors },
-        }
-    } else {
-        NotFound
-    };
-
-    TestResult {
-        test_id: test_id.to_string(),
-        status,
-    }
+    // Try to execute the test specified by the test_id
+    target.run_test(test_id)
 }
 
 /// Validate document with specific tests and return detailed results.
@@ -148,23 +137,39 @@ pub fn validate_by_tests<VersionedDocument>(
     test_ids: &[&str],
 ) -> ValidationResult {
     let mut test_results = Vec::new();
-    let mut success = true;
     let mut num_errors: usize = 0;
+    let mut num_warnings: usize = 0;
+    let mut num_infos: usize = 0;
+    let mut num_not_found: usize = 0;
 
     // Loop through tests and gather all results and errors
     for test_id in test_ids {
         let test_result = validate_by_test(target, test_id);
-        if let Failure { errors } = &test_result.status {
-            success = false;
-            num_errors += errors.len();
+        match &test_result.status {
+            Failure {
+                errors,
+                warnings,
+                infos,
+            } => {
+                num_errors += errors.len();
+                num_warnings += warnings.len();
+                num_infos += infos.len();
+            },
+            NotFound => {
+                num_not_found += 1;
+            },
+            _ => {},
         }
         test_results.push(test_result);
     }
 
     ValidationResult {
-        success,
+        success: num_errors == 0,
         version: version.to_string(),
         num_errors,
+        num_warnings,
+        num_infos,
+        num_not_found,
         preset,
         test_results,
     }
@@ -177,11 +182,7 @@ pub fn validate_by_preset<VersionedDocument>(
     preset: ValidationPreset,
 ) -> ValidationResult {
     // Retrieve the test IDs for the given preset
-    let test_ids: Vec<&str> = target
-        .presets()
-        .get(&preset)
-        .map(|ids| ids.to_vec())
-        .unwrap_or_default();
+    let test_ids: Vec<&str> = target.tests_in_preset(&preset);
 
     // Forward them to validate_by_tests
     validate_by_tests(target, version, preset, &test_ids)

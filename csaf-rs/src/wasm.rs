@@ -89,6 +89,9 @@ mod tests {
             success: true,
             version: "2.0".to_string(),
             num_errors: 0,
+            num_warnings: 0,
+            num_infos: 0,
+            num_not_found: 0,
             preset: ValidationPreset::Basic,
             test_results: vec![],
         };

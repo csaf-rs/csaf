@@ -1,10 +1,11 @@
+pub mod csaf;
 pub mod csaf2_0;
 pub mod csaf2_1;
 pub mod csaf_traits;
+pub mod document_category_test_helper;
 pub mod generated;
 pub mod helpers;
 pub mod schema;
-pub mod test_helper;
 pub mod test_result_comparison;
 pub mod test_structure;
 pub mod test_validation;

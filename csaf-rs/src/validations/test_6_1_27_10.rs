@@ -1,4 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
@@ -16,7 +17,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 
     // Only execute this test for documents with category 'csaf_vex'
     // and if there are any vulnerabilities present
-    if doc_category != DocumentCategory::CsafVex || vulnerabilities.is_empty() {
+    if !PROFILE_TEST_CONFIG.matches_category(&doc_category) || vulnerabilities.is_empty() {
         return Ok(());
     }
 
@@ -25,11 +26,11 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         // generate hashmap of all known_affected product or group ids with value of known_not_affected path index
         let mut known_affected_product_or_group_ids: HashMap<String, usize> = HashMap::new();
-        if let Some(product_status) = vulnerability.get_product_status() {
-            if let Some(known_affected) = product_status.get_known_affected() {
-                for (kna_i, known_affected_entry) in known_affected.into_iter().enumerate() {
-                    known_affected_product_or_group_ids.insert(known_affected_entry.to_owned(), kna_i);
-                }
+        if let Some(product_status) = vulnerability.get_product_status()
+            && let Some(known_affected) = product_status.get_known_affected()
+        {
+            for (kna_i, known_affected_entry) in known_affected.into_iter().enumerate() {
+                known_affected_product_or_group_ids.insert(known_affected_entry.to_owned(), kna_i);
             }
         }
 
@@ -77,6 +78,9 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
     errors.map_or(Ok(()), Err)
 }
 
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
+    DocumentCategoryTestConfig::new().shared(&[DocumentCategory::CsafVex]);
+
 fn test_6_1_27_10_err_generator(
     document_category: &DocumentCategory,
     product_or_group_id: String,
@@ -85,14 +89,12 @@ fn test_6_1_27_10_err_generator(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "In documents with category '{}', vulnerability product status 'known_affected' entries \
+            "In documents with category '{document_category}', vulnerability product status 'known_affected' entries \
             must have a corresponding action statement in 'remediations'. \
-            Found 'known_affected' product status entry '{}' without action statement.",
-            document_category, product_or_group_id
+            Found 'known_affected' product status entry '{product_or_group_id}' without action statement."
         ),
         instance_path: format!(
-            "/vulnerabilities/{}/product_status/known_not_affected/{}",
-            vuln_path_index, known_affected_path_index
+            "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_affected_path_index}"
         ),
     }
 }

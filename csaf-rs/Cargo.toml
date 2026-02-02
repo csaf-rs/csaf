@@ -7,7 +7,7 @@ keywords = ["csaf"]
 readme = "../README.md"
 version = "0.3.1"
 edition = "2024"
-rust-version = "1.85.1"
+rust-version = "1.88.0"
 
 [lib]
 name = "csaf"
@@ -20,7 +20,7 @@ wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:tsify", "dep:console_
 [dependencies]
 regress = "0.10"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde_json = {  version = "1",  features = ["preserve_order"]}
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
 glob = "0.3"
@@ -41,7 +41,7 @@ uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 schemars = "0.8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-typify = "0.4"
+typify = "0.5"
 glob = "0.3"
 syn = "2"
 prettyplease = "0.2"

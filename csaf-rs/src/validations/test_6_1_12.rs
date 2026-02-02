@@ -5,8 +5,7 @@ use crate::validation::ValidationError;
 fn generate_invalid_language_error(language: &str, subtag: &str, path: &str) -> ValidationError {
     ValidationError {
         message: format!(
-            "Invalid language code '{}': primary language subtag '{}' is not a valid language subtag",
-            language, subtag
+            "Invalid language code '{language}': primary language subtag '{subtag}' is not a valid language subtag"
         ),
         instance_path: path.to_string(),
     }

@@ -1,4 +1,5 @@
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
 /// 6.1.27.5 Vulnerability Notes
@@ -11,20 +12,7 @@ use crate::validation::ValidationError;
 pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-    {
-        return Ok(());
-    }
-
-    // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-        && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
-    {
+    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 
@@ -41,13 +29,16 @@ pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Ve
     errors.map_or(Ok(()), Err)
 }
 
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
+    .shared(&[DocumentCategory::CsafSecurityAdvisory, DocumentCategory::CsafVex])
+    .csaf21(&[DocumentCategory::CsafDeprecatedSecurityAdvisory]);
+
 fn test_6_1_27_05_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must have a notes element in each vulnerability",
-            document_category
+            "Document with category '{document_category}' must have a notes element in each vulnerability"
         ),
-        instance_path: format!("/vulnerabilities/{}/notes", vuln_path_index),
+        instance_path: format!("/vulnerabilities/{vuln_path_index}/notes"),
     }
 }
 

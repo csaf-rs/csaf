@@ -1,13 +1,15 @@
-use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,
-    LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
-};
-
+use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
+use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
+use crate::schema::csaf2_0::schema::Cwe as Cwe20;
+use crate::schema::csaf2_1::schema::{
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, Cwe as Cwe21,
+    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
+};
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};
-use semver::Version;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use uuid::Uuid;
@@ -48,9 +50,7 @@ pub trait CsafTrait {
     fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
         id_path_tuples
             .iter()
-            .map(|(group_or_product_id, path)| {
-                (group_or_product_id.to_owned(), format!("/{}/{}/{}", prefix, idx, path))
-            })
+            .map(|(group_or_product_id, path)| (group_or_product_id.to_owned(), format!("/{prefix}/{idx}/{path}")))
             .collect()
     }
 
@@ -110,6 +110,14 @@ pub trait CsafTrait {
         ids.append(&mut self.get_vulnerability_product_references());
         ids.append(&mut self.get_product_tree_product_references());
         ids
+    }
+
+    /// Utility function to get all product IDs referenced (expect those explicitly defined) in the document.
+    fn get_all_product_references_ids(&self) -> Vec<String> {
+        self.get_all_product_references()
+            .iter()
+            .map(|(id, _)| id.to_owned())
+            .collect()
     }
 }
 
@@ -377,7 +385,7 @@ impl Display for DocumentCategory {
             DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
             DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
             DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
-            DocumentCategory::CsafBaseOther(other) => write!(f, "{}", other),
+            DocumentCategory::CsafBaseOther(other) => write!(f, "{other}"),
         }
     }
 }
@@ -431,8 +439,9 @@ pub type RevisionHistory = Vec<RevisionHistoryItem>;
 #[derive(Clone)]
 pub struct RevisionHistoryItem {
     pub path_index: usize,
+    pub date_string: String,
     pub date: DateTime<Utc>,
-    pub number: VersionNumber,
+    pub number: ValidVersionNumber,
 }
 
 /// Trait providing sorting functionality for revision history
@@ -468,10 +477,10 @@ pub trait TrackingTrait {
     type RevisionType: RevisionTrait;
 
     /// The release date of this document's latest version
-    fn get_current_release_date(&self) -> &String;
+    fn get_current_release_date(&self) -> CsafDateTime;
 
     /// The initial release date of this document
-    fn get_initial_release_date(&self) -> &String;
+    fn get_initial_release_date(&self) -> CsafDateTime;
 
     /// Returns the generator information for this document
     fn get_generator(&self) -> &Option<Self::GeneratorType>;
@@ -483,18 +492,23 @@ pub trait TrackingTrait {
     fn get_revision_history_tuples(&self) -> RevisionHistory {
         let mut revision_history: RevisionHistory = Vec::new();
         for (i_r, revision) in self.get_revision_history().iter().enumerate() {
-            let date = DateTime::parse_from_rfc3339(revision.get_date()).map(|dt| dt.with_timezone(&Utc));
-            if let Ok(date) = date {
-                revision_history.push(RevisionHistoryItem {
-                    path_index: i_r,
-                    date,
-                    number: revision.get_number(),
-                });
-            } else {
-                panic!(
-                    "Encountered date that could not be parsed as RFC3339: {}",
-                    revision.get_date()
-                );
+            match revision.get_date() {
+                Valid(valid_date) => match revision.get_number() {
+                    CsafVersionNumber::Valid(valid_number) => {
+                        revision_history.push(RevisionHistoryItem {
+                            path_index: i_r,
+                            date: valid_date.get_as_utc().to_owned(),
+                            date_string: valid_date.get_raw_string().to_string(),
+                            number: valid_number,
+                        });
+                    },
+                    CsafVersionNumber::Invalid(error) => {
+                        panic!("{}", error)
+                    },
+                },
+                Invalid(error) => {
+                    panic!("{}", error)
+                },
             }
         }
         revision_history
@@ -506,137 +520,48 @@ pub trait TrackingTrait {
     /// Returns the tracking ID of this document
     fn get_id(&self) -> &String;
 
-    /// Returns the version of this document
-    fn get_version_string(&self) -> &String;
-
-    fn get_version(&self) -> VersionNumber {
-        VersionNumber::from_number(self.get_version_string())
-    }
-}
-
-#[derive(Debug, Clone, Eq)]
-pub enum VersionNumber {
-    Integer(u64),
-    Semver(Version),
-}
-
-impl VersionNumber {
-    /// Parses a string to either intver or semver
-    /// Will panic if not parseable
-    pub fn from_number(number: &str) -> Self {
-        if let Ok(number) = number.parse::<u64>() {
-            return VersionNumber::Integer(number);
-        } else if let Ok(number) = Version::parse(number) {
-            return VersionNumber::Semver(number);
-        }
-        panic!("Version could not be parsed as intver or semver")
-    }
-
-    /// Gets the version number for intver / the major version for semver
-    pub fn get_major(&self) -> u64 {
-        match self {
-            VersionNumber::Integer(num) => *num,
-            VersionNumber::Semver(semver) => semver.major,
-        }
-    }
-
-    /// Checks whether the intver version is zero, always `false` for semver
-    /// Hard coupled check that version is intver and zero
-    pub fn is_intver_is_zero(&self) -> bool {
-        if let VersionNumber::Integer(version) = self {
-            return *version == 0;
-        }
-        false
-    }
-
-    /// Checks whether the semver major version is zero, always `false` for intver
-    /// Hard coupled check that version is semver and major is zero
-    pub fn is_semver_is_major_zero(&self) -> bool {
-        if let VersionNumber::Semver(version) = self {
-            return version.major == 0;
-        }
-        false
-    }
-
-    /// Checks whether the semver has a pre-release part, always `false` for intver
-    /// Hard coupled check that version is semver and has pre-release part
-    pub fn is_semver_has_prerelease(&self) -> bool {
-        if let VersionNumber::Semver(version) = self {
-            return !version.pre.is_empty();
-        }
-        false
-    }
-}
-
-impl PartialEq for VersionNumber {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a == b,
-            (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a == b,
-            // Integer and Semver are always unequal
-            (VersionNumber::Integer(_), VersionNumber::Semver(_)) => false,
-            (VersionNumber::Semver(_), VersionNumber::Integer(_)) => false,
-        }
-    }
-}
-
-impl Display for VersionNumber {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        match self {
-            VersionNumber::Integer(num) => write!(f, "{}", num),
-            VersionNumber::Semver(version) => write!(f, "{}", version),
-        }
-    }
-}
-
-impl PartialOrd for VersionNumber {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for VersionNumber {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match (self, other) {
-            (VersionNumber::Integer(a), VersionNumber::Integer(b)) => a.cmp(b),
-            (VersionNumber::Semver(a), VersionNumber::Semver(b)) => a.cmp(b),
-            // Panic if intver and semver are compared against each other
-            (VersionNumber::Integer(a), VersionNumber::Semver(b)) => {
-                panic!(
-                    "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",
-                    a, b
-                )
-            },
-            (VersionNumber::Semver(a), VersionNumber::Integer(b)) => {
-                panic!(
-                    "While comparing versions, you tried to compare integer versioning {} and semantic versioning {}",
-                    b, a
-                )
-            },
-        }
-    }
+    fn get_version(&self) -> CsafVersionNumber;
 }
 
 /// Trait for accessing document generator information
-pub trait GeneratorTrait {
-    /// Returns the date when this document was generated
-    fn get_date(&self) -> &Option<String>;
-}
+pub trait GeneratorTrait: WithOptionalDate {}
 
 /// Trait for accessing revision history entry information
-pub trait RevisionTrait {
-    /// Returns the date associated with this revision entry
-    fn get_date(&self) -> &String;
-
+pub trait RevisionTrait: WithDate {
     /// Returns the number/identifier of this revision
-    fn get_number_string(&self) -> &String;
-
-    fn get_number(&self) -> VersionNumber {
-        VersionNumber::from_number(self.get_number_string())
-    }
+    fn get_number(&self) -> CsafVersionNumber;
 
     /// Returns the summary of changes in this revision
     fn get_summary(&self) -> &String;
+}
+
+pub struct Cwe {
+    ///Holds the ID for the weakness associated.
+    pub id: String,
+    ///Holds the full name of the weakness as given in the CWE specification.
+    pub name: String,
+    ///Holds the version string of the CWE specification this weakness was extracted from.
+    pub version: Option<String>,
+}
+
+impl From<&Cwe21> for Cwe {
+    fn from(cwe: &Cwe21) -> Self {
+        Cwe {
+            id: cwe.id.to_string(),
+            name: cwe.name.to_string(),
+            version: Some(cwe.version.to_string()),
+        }
+    }
+}
+
+impl From<&Cwe20> for Cwe {
+    fn from(cwe: &Cwe20) -> Self {
+        Cwe {
+            id: cwe.id.to_string(),
+            name: cwe.name.to_string(),
+            version: None,
+        }
+    }
 }
 
 /// Trait representing an abstract vulnerability in a CSAF document.
@@ -703,7 +628,7 @@ pub trait VulnerabilityTrait {
         if let Some(metrics) = self.get_metrics().as_ref() {
             for (metric_i, metric) in metrics.iter().enumerate() {
                 for (x_i, x) in metric.get_products().enumerate() {
-                    ids.push((x.to_owned(), format!("metrics/{}/products/{}", metric_i, x_i)));
+                    ids.push((x.to_owned(), format!("metrics/{metric_i}/products/{x_i}")));
                 }
             }
         }
@@ -724,10 +649,10 @@ pub trait VulnerabilityTrait {
     }
 
     /// Returns the date when this vulnerability was initially disclosed.
-    fn get_disclosure_date(&self) -> &Option<String>;
+    fn get_disclosure_date(&self) -> Option<CsafDateTime>;
 
     /// Returns the date when this vulnerability was initially discovered.
-    fn get_discovery_date(&self) -> &Option<String>;
+    fn get_discovery_date(&self) -> Option<CsafDateTime>;
 
     /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
@@ -752,6 +677,9 @@ pub trait VulnerabilityTrait {
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
 
+    /// Returns the CWE associated with the vulnerability.
+    fn get_cwe(&self) -> Option<Vec<Cwe>>;
+
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>>;
 
@@ -774,23 +702,15 @@ pub trait VulnerabilityIdTrait {
 }
 
 /// Trait for accessing vulnerability flags information
-pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds {
-    /// Returns the date associated with this vulnerability flag
-    fn get_date(&self) -> &Option<String>;
-
+pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the label of the vulnerability flag
     fn get_label(&self) -> LabelOfTheFlag;
 }
 
-pub trait FirstKnownExploitationDatesTrait {
-    fn get_date(&self) -> &String;
-}
+pub trait FirstKnownExploitationDatesTrait: WithDate {}
 
 /// Trait for accessing vulnerability involvement information
-pub trait InvolvementTrait: WithOptionalGroupIds {
-    /// Returns the date associated with this vulnerability involvement
-    fn get_date(&self) -> &Option<String>;
-
+pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate {
     /// Returns the party associated with this vulnerability involvement
     fn get_party(&self) -> PartyCategory;
 }
@@ -799,7 +719,7 @@ pub trait InvolvementTrait: WithOptionalGroupIds {
 ///
 /// The `RemediationTrait` encapsulates the details of a remediation, such as its
 /// category and the affected products or groups.
-pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds {
+pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the category of the remediation.
     ///
     /// Categories are defined by the CSAF schema.
@@ -823,17 +743,14 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds {
                 Some(product_ids) => product_ids.map(|id| (*id).to_owned()).collect(),
                 None => BTreeSet::new(),
             };
-            if let Some(product_groups) = self.get_group_ids() {
-                if let Some(product_ids) = resolve_product_groups(doc, product_groups) {
-                    product_set.extend(product_ids.iter().map(|id| id.to_owned()));
-                }
+            if let Some(product_groups) = self.get_group_ids()
+                && let Some(product_ids) = resolve_product_groups(doc, product_groups)
+            {
+                product_set.extend(product_ids.iter().map(|id| id.to_owned()));
             }
             Some(product_set)
         }
     }
-
-    /// Returns the date associated with this remediation
-    fn get_date(&self) -> &Option<String>;
 }
 
 /// Enum representing product status groups
@@ -916,7 +833,7 @@ pub trait ProductStatusTrait {
     ) {
         if let Some(iter) = products {
             for (x_i, x) in iter.enumerate() {
-                ids.push(((*x).to_owned(), format!("product_status/{}/{}", label, x_i)));
+                ids.push(((*x).to_owned(), format!("product_status/{label}/{x_i}")));
             }
         }
     }
@@ -983,6 +900,32 @@ pub trait MetricTrait {
 
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
+    fn get_vulnerability_metric_types(&self) -> Vec<VulnerabilityMetric> {
+        let mut types: Vec<VulnerabilityMetric> = Vec::new();
+        if self.has_ssvc() {
+            types.push(VulnerabilityMetric::SsvcV1);
+        }
+        if self.has_cvss_v2() {
+            types.push(VulnerabilityMetric::CvssV2);
+        }
+        if let Some(cvss_v3) = self.get_cvss_v3()
+            && let Some(version) = cvss_v3.get("version").and_then(|v| v.as_str())
+        {
+            if version == "3.0" || version == "3.1" {
+                types.push(VulnerabilityMetric::CvssV3(version.to_string()));
+            } else {
+                panic!("Unsupported cvss v3 version: {version}");
+            }
+        }
+        if self.has_cvss_v4() {
+            types.push(VulnerabilityMetric::CvssV4);
+        }
+        if self.has_epss() {
+            types.push(VulnerabilityMetric::Epss);
+        }
+        types
+    }
+
     /// Returns whether this content contains a non-empty SSVC metric.
     fn has_ssvc(&self) -> bool;
 
@@ -993,14 +936,34 @@ pub trait ContentTrait {
     /// Returns a JSON representation of the contained CVSS 2.0 metric, if any.
     fn get_cvss_v2(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
 
+    /// Returns whether this content contains a CVSS 2.0 metric.
+    fn has_cvss_v2(&self) -> bool {
+        self.get_cvss_v2().is_some()
+    }
+
     /// Returns a JSON representation of the contained CVSS 3.0/3.1 metric, if any.
     fn get_cvss_v3(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
+
+    /// Returns whether this content contains a CVSS 3.0/3.1 metric.
+    fn has_cvss_v3(&self) -> bool {
+        self.get_cvss_v3().is_some()
+    }
 
     /// Returns a JSON representation of the contained CVSS 4.0 metric, if any.
     fn get_cvss_v4(&self) -> Option<&serde_json::Map<String, serde_json::Value>>;
 
+    /// Returns whether this content contains a CVSS 4.0 metric.
+    fn has_cvss_v4(&self) -> bool {
+        self.get_cvss_v4().is_some()
+    }
+
     /// Returns a reference to the contained EPSS metric if it exists.
     fn get_epss(&self) -> &Option<Epss>;
+
+    /// Returns whether this content contains an EPSS metric.
+    fn has_epss(&self) -> bool {
+        self.get_epss().is_some()
+    }
 
     /// This function constructs a JSON path string that can be used to locate the specific
     /// content object within a CSAF document's JSON structure. The path format varies between
@@ -1063,10 +1026,7 @@ pub fn get_metric_prop_name(metric: VulnerabilityMetric) -> &'static str {
 }
 
 /// Trait representing an abstract threat in a CSAF document.
-pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds {
-    /// Returns the date associated with this threat
-    fn get_date(&self) -> &Option<String>;
-
+pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the category of the threat
     fn get_category(&self) -> CategoryOfTheThreat;
 }
@@ -1076,6 +1036,8 @@ pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds {
 /// The `ProductTreeTrait` defines the structure of a product tree and allows
 /// access to its product groups.
 pub trait ProductTreeTrait {
+    // Type Associations
+
     /// The associated type representing the type of branch in the product tree.
     type BranchType: BranchTrait<Self::FullProductNameType>;
 
@@ -1088,11 +1050,21 @@ pub trait ProductTreeTrait {
     /// The associated type representing the type of the full product name.
     type FullProductNameType: ProductTrait;
 
+    // Simple Getter methods
+
     /// Returns an optional reference to the list of branches in the product tree.
     fn get_branches(&self) -> Option<&Vec<Self::BranchType>>;
 
     /// Retrieves a reference to the list of product groups in the product tree.
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
+
+    /// Retrieves a reference to the list of relationships in the product tree.
+    fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
+
+    /// Retrieves a reference to the list of full product names in the product tree.
+    fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
+
+    // Aggregator functions for product references
 
     /// Utility function to get all product references in product groups along with their JSON paths
     fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
@@ -1102,16 +1074,13 @@ pub trait ProductTreeTrait {
             for (p_i, p) in pg.get_product_ids().enumerate() {
                 ids.push((
                     (*p).to_owned(),
-                    format!("/product_tree/product_groups/{}/product_ids/{}", pg_i, p_i),
+                    format!("/product_tree/product_groups/{pg_i}/product_ids/{p_i}"),
                 ));
             }
         }
 
         ids
     }
-
-    /// Retrieves a reference to the list of relationships in the product tree.
-    fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
 
     /// Utility function to get all product references in relationships along with their JSON paths
     fn get_relationships_product_references(&self) -> Vec<(String, String)> {
@@ -1120,64 +1089,18 @@ pub trait ProductTreeTrait {
         for (rel_i, rel) in self.get_relationships().iter().enumerate() {
             ids.push((
                 rel.get_product_reference().to_owned(),
-                format!("/product_tree/relationships/{}/product_reference", rel_i),
+                format!("/product_tree/relationships/{rel_i}/product_reference"),
             ));
             ids.push((
                 rel.get_relates_to_product_reference().to_owned(),
-                format!("/product_tree/relationships/{}/relates_to_product_reference", rel_i),
+                format!("/product_tree/relationships/{rel_i}/relates_to_product_reference"),
             ));
         }
 
         ids
     }
 
-    /// Retrieves a reference to the list of full product names in the product tree.
-    fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
-
-    /// Visits all product references in the product tree by invoking the provided callback for each
-    /// product. Returns with collected error Results provided by `callback`, if occurring.
-    ///
-    /// This method traverses all locations in the product tree where products can be referenced:
-    /// - Products within branches (recursively)
-    /// - Full product names at the top level
-    /// - Full product names within relationships
-    ///
-    /// # Parameters
-    /// * `callback` - A mutable function that takes a reference to a product and its path string
-    ///   and returns a `Result<(), Vec<ValidationError>>`. The path string represents the JSON
-    ///   pointer to the product's location in the document.
-    ///
-    /// # Returns
-    /// * `Ok(())` if all products were visited successfully
-    /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
-    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
-        // Visit products in branches
-        if let Some(branches) = self.get_branches().as_ref() {
-            for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(
-                    &format!("/product_tree/branches/{}", i),
-                    &mut |branch: &Self::BranchType, path| {
-                        if let Some(product_ref) = branch.get_product() {
-                            callback(product_ref, &format!("{}/product", path));
-                        }
-                    },
-                );
-            }
-        }
-
-        // Visit full_product_names
-        for (i, fpn) in self.get_full_product_names().iter().enumerate() {
-            callback(fpn, &format!("/product_tree/full_product_names/{}", i));
-        }
-
-        // Visit relationships
-        for (i, rel) in self.get_relationships().iter().enumerate() {
-            callback(
-                rel.get_full_product_name(),
-                &format!("/product_tree/relationships/{}/full_product_name", i),
-            );
-        }
-    }
+    // Visitors for node types in the tree
 
     /// A trait wrapper for `visit_all_products_generic()` that allows implementations to provide
     /// type-specific callbacks for product traversal.
@@ -1199,12 +1122,91 @@ pub trait ProductTreeTrait {
     /// Trait implementers should typically implement this by delegating to
     /// `visit_all_products_generic()` with the same callback.
     fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str));
+
+    /// Visits all product references in the product tree by invoking the provided callback for each
+    /// product. Returns with collected error Results provided by `callback`, if occurring.
+    ///
+    /// This method traverses all locations in the product tree where products can be referenced:
+    /// - Products within branches (recursively)
+    /// - Full product names at the top level
+    /// - Full product names within relationships
+    ///
+    /// # Parameters
+    /// * `callback` - A mutable function that takes a reference to a product and its path string
+    ///   and returns a `Result<(), Vec<ValidationError>>`. The path string represents the JSON
+    ///   pointer to the product's location in the document.
+    ///
+    /// # Returns
+    /// * `Ok(())` if all products were visited successfully
+    /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
+    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
+        // Visit products in branches
+        self.visit_all_branches(&mut |branch: &Self::BranchType, path| {
+            if let Some(product_ref) = branch.get_product() {
+                callback(product_ref, &format!("{path}/product"));
+            }
+        });
+
+        // Visit full_product_names
+        for (i, fpn) in self.get_full_product_names().iter().enumerate() {
+            callback(fpn, &format!("/product_tree/full_product_names/{i}"));
+        }
+
+        // Visit relationships
+        for (i, rel) in self.get_relationships().iter().enumerate() {
+            callback(
+                rel.get_full_product_name(),
+                &format!("/product_tree/relationships/{i}/full_product_name"),
+            );
+        }
+    }
+
+    /// Visits all branches in the product tree by invoking the provided callback for each branch.
+    ///
+    /// This method traverses all branches in the product tree recursively, calling the callback
+    /// function for each branch with its path.
+    ///
+    /// # Parameters
+    /// * `callback` - A mutable function that takes a reference to a branch and its path string.
+    ///   The path string represents the JSON pointer to the branch's location in the document.
+    fn visit_all_branches(&self, callback: &mut impl FnMut(&Self::BranchType, &str)) {
+        if let Some(branches) = self.get_branches().as_ref() {
+            for (i, branch) in branches.iter().enumerate() {
+                branch.visit_branches_rec(&format!("/product_tree/branches/{i}"), callback);
+            }
+        }
+    }
+}
+
+/// Enum representing the category of a branch in a product tree.
+/// We need a shared type on the trait, as CSAF version 2.0 have fully divergent definitions.
+/// CSAF 2.0 has legacy, which 2.1 has not.
+/// CSAF 2.1 has platform, which 2.0 has not.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum CategoryOfTheBranch {
+    Architecture,
+    HostName,
+    Language,
+    Legacy,
+    PatchLevel,
+    Platform,
+    ProductFamily,
+    ProductName,
+    ProductVersion,
+    ProductVersionRange,
+    ServicePack,
+    Specification,
+    Vendor,
 }
 
 /// Trait representing an abstract branch in a product tree.
 pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// Returns an optional reference to the child branches of this branch.
     fn get_branches(&self) -> Option<&Vec<Self>>;
+
+    fn get_category(&self) -> &CategoryOfTheBranch;
+
+    fn get_name(&self) -> &str;
 
     /// Retrieves the full product name associated with this branch, if available.
     fn get_product(&self) -> &Option<FPN>;
@@ -1228,7 +1230,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
         callback(self, path);
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("{}/branches/{}", path, i), callback);
+                branch.visit_branches_rec(&format!("{path}/branches/{i}"), callback);
             }
         }
     }
@@ -1254,7 +1256,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
             }
             for (i, branch) in branches.iter().enumerate() {
                 if let Some(sub_path) = branch.find_excessive_branch_depth(remaining_depth - 1) {
-                    return Some(format!("/branches/{}{}", i, sub_path));
+                    return Some(format!("/branches/{i}{sub_path}"));
                 }
             }
         }
@@ -1293,6 +1295,9 @@ pub trait ProductTrait {
 
     /// Returns the product ID from the full product name.
     fn get_product_id(&self) -> &String;
+
+    /// Returns the textual description of the product
+    fn get_name(&self) -> &str;
 
     /// Returns the product identification helper associated with the full product name.
     fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType>;
@@ -1342,6 +1347,16 @@ pub trait WithOptionalProductIds {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }
 
+pub trait WithDate {
+    /// Returns the date associated with this entity
+    fn get_date(&self) -> CsafDateTime;
+}
+
+pub trait WithOptionalDate {
+    /// Returns the date associated with this entity
+    fn get_date(&self) -> Option<CsafDateTime>;
+}
+
 /// Central helper function for extracting group references.
 ///
 /// This function implements the core logic for extracting group IDs and their JSON paths
@@ -1366,7 +1381,7 @@ fn extract_group_id_impl<'a, T: WithOptionalGroupIds + 'a>(
             for (group_index, group_id) in group_ids.enumerate() {
                 ids.push((
                     group_id.to_owned(),
-                    format!("{}/{}/group_ids/{}", path_prefix, index, group_index),
+                    format!("{path_prefix}/{index}/group_ids/{group_index}"),
                 ))
             }
         }
@@ -1398,7 +1413,7 @@ fn extract_product_id_impl<'a, T: WithOptionalProductIds + 'a>(
             for (product_index, product_id) in product_ids.enumerate() {
                 ids.push((
                     product_id.to_owned(),
-                    format!("{}/{}/product_ids/{}", path_prefix, index, product_index),
+                    format!("{path_prefix}/{index}/product_ids/{product_index}"),
                 ))
             }
         }

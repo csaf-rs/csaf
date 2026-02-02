@@ -3,7 +3,7 @@ name = "type-generator"
 description = "A generator for Rust types from CSAF JSON Schema definitions"
 license = "Apache-2.0"
 edition = "2024"
-rust-version = "1.85.1"
+rust-version = "1.88.0"
 publish = false
 
 [dependencies]
@@ -15,7 +15,7 @@ jsonschema = { version = "0.37.4", default-features = false }
 syn = "2"
 thiserror = "2"
 json_dotpath = "1"
-typify = "0.4"
+typify = "0.5"
 prettyplease = "0.2"
 quote = "1"
 proc-macro2 = "1"

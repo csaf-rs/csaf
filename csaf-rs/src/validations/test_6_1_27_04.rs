@@ -1,4 +1,5 @@
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait};
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
 /// 6.1.27.4 Product Tree
@@ -11,20 +12,7 @@ use crate::validation::ValidationError;
 pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    // check if document is relevant document category in csaf 2.0
-    if *doc.get_document().get_csaf_version() == CsafVersion::X20
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-    {
-        return Ok(());
-    }
-
-    // check if document is relevant document category in csaf 2.1
-    if *doc.get_document().get_csaf_version() == CsafVersion::X21
-        && doc_category != DocumentCategory::CsafSecurityAdvisory
-        && doc_category != DocumentCategory::CsafVex
-        && doc_category != DocumentCategory::CsafDeprecatedSecurityAdvisory
-    {
+    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 
@@ -36,12 +24,13 @@ pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<Valid
     Ok(())
 }
 
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
+    .shared(&[DocumentCategory::CsafSecurityAdvisory, DocumentCategory::CsafVex])
+    .csaf21(&[DocumentCategory::CsafDeprecatedSecurityAdvisory]);
+
 fn test_6_1_27_04_err_generator(document_category: DocumentCategory) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Document with category '{}' must have a '/product_tree' element",
-            document_category
-        ),
+        message: format!("Document with category '{document_category}' must have a '/product_tree' element"),
         instance_path: "/product_tree".to_string(),
     }
 }

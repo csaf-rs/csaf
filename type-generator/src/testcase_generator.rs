@@ -54,20 +54,20 @@ fn generate_test_cases_from_json(
 
         if let Some(failures) = test["failures"].as_array() {
             for failure in failures {
-                if let Some(name) = failure["name"].as_str() {
-                    if let Some(case_num) = extract_test_case_number(name) {
-                        failure_docs.push((case_num, name.to_string()));
-                    }
+                if let Some(name) = failure["name"].as_str()
+                    && let Some(case_num) = extract_test_case_number(name)
+                {
+                    failure_docs.push((case_num, name.to_string()));
                 }
             }
         }
 
         if let Some(valid_cases) = test.get("valid").and_then(|v| v.as_array()) {
             for valid in valid_cases {
-                if let Some(name) = valid["name"].as_str() {
-                    if let Some(case_num) = extract_test_case_number(name) {
-                        valid_docs.push((case_num, name.to_string()));
-                    }
+                if let Some(name) = valid["name"].as_str()
+                    && let Some(case_num) = extract_test_case_number(name)
+                {
+                    valid_docs.push((case_num, name.to_string()));
                 }
             }
         }
@@ -84,112 +84,208 @@ fn generate_test_cases_from_json(
         let all_docs: Vec<_> = failure_docs.iter().chain(valid_docs.iter()).collect();
 
         for (case_num, _) in &all_docs {
-            param_names.push(Ident::new(&format!("case_{}", case_num), Span::call_site()));
+            param_names.push(Ident::new(&format!("case_{case_num}"), Span::call_site()));
             param_types.push(quote! { Result<(), Vec<crate::validation::ValidationError>> });
         }
 
-        // Generate tuples of (case_num, doc_expr, expected_param)
+        // Check if this test requires raw string content (not parsed JSON)
+        let uses_raw_string = id == "6.2.13";
+
+        // Generate tuples of (case_num, doc_expr, expected_param) - with or without raw string
         let test_cases: Vec<_> = all_docs
             .iter()
             .enumerate()
             .map(|(idx, (case_num, path))| {
-                let full_path = format!("{}/{}", base_dir, path);
+                let full_path = format!("{base_dir}/{path}");
                 let param_name = &param_names[idx];
-                quote! {
-                    (
-                        #case_num,
-                        {
-                            let path = #full_path;
-                            let content = std::fs::read_to_string(path)
-                                .unwrap_or_else(|e| panic!("Failed to load {} (case {}): {}", #path, #case_num, e));
-                            serde_json::from_str::<#csaf_doc_type>(&content)
-                                .unwrap_or_else(|e| panic!("Failed to parse {} (case {}): {}", #path, #case_num, e))
-                        },
-                        #param_name
-                    )
+                if uses_raw_string {
+                    quote! {
+                        (
+                            #case_num,
+                            {
+                                let path = #full_path;
+                                std::fs::read_to_string(path)
+                                    .unwrap_or_else(|e| panic!("Failed to load {#path} (case {#case_num}): {e}"))
+                            },
+                            #param_name
+                        )
+                    }
+                } else {
+                    quote! {
+                        (
+                            #case_num,
+                            {
+                                let path = #full_path;
+                                let content = std::fs::read_to_string(path)
+                                    .unwrap_or_else(|e| panic!("Failed to load {#path} (case {#case_num}): {e}"));
+                                serde_json::from_str::<#csaf_doc_type>(&content)
+                                    .unwrap_or_else(|e| panic!("Failed to parse {#path} (case {#case_num}): {e}"))
+                            },
+                            #param_name
+                        )
+                    }
                 }
             })
             .collect();
 
         // Generate validator struct name
-        let validator_name = format!("ValidatorFor{}", struct_name);
+        let validator_name = format!("ValidatorFor{struct_name}");
         let validator_ident = Ident::new(&validator_name, Span::call_site());
 
         // Generate the struct definition using the shared TestValidator trait
-        let struct_def = quote! {
-            #[derive(Debug, Clone, Copy)]
-            pub struct #struct_ident<V>(std::marker::PhantomData<V>);
+        // For test 6.2.13, use TestValidatorWithRawString; for all others, use TestValidator
+        let struct_def = if uses_raw_string {
+            quote! {
+                #[derive(Debug, Clone, Copy)]
+                pub struct #struct_ident<V>(std::marker::PhantomData<V>);
 
-            impl<V> #struct_ident<V> {
-                /// Test ID
-                pub const ID: &'static str = #test_id;
+                impl<V> #struct_ident<V> {
+                    /// Test ID
+                    pub const ID: &'static str = #test_id;
 
-                /// Create a new test instance
-                pub const fn new() -> Self {
-                    Self(std::marker::PhantomData)
-                }
+                    /// Create a new test instance
+                    pub const fn new() -> Self {
+                        Self(std::marker::PhantomData)
+                    }
 
-                /// Get the test ID
-                pub fn id(&self) -> &'static str {
-                    Self::ID
-                }
-            }
-
-            impl<V: crate::test_validation::TestValidator<#csaf_doc_type> + Default> #struct_ident<V> {
-                /// Validate a CSAF document using this test's validator.
-                ///
-                /// # Arguments
-                /// * `doc` - The CSAF document to validate
-                ///
-                /// # Returns
-                /// * `Ok(())` if validation passes
-                /// * `Err(Vec<ValidationError>)` if validation fails
-                pub fn validate(&self, doc: &#csaf_doc_type) -> Result<(), Vec<crate::validation::ValidationError>> {
-                    let validator = V::default();
-                    validator.validate(doc)
-                }
-
-                /// Run the test with expected results for each test case.
-                ///
-                /// The method automatically loads test documents from the file system and runs
-                /// the validation function on each one, comparing actual vs expected results.
-                ///
-                /// # Arguments
-                /// * One parameter per test case document with the expected result
-                ///
-                /// # Panics
-                /// Panics if any test case fails to load, parse, or doesn't match the expected result
-                ///
-                pub fn expect(
-                    &self,
-                    #(#param_names: #param_types),*
-                ) {
-                    // Create test cases as tuples of (case_num, doc, expected)
-                    let test_cases = vec![#(#test_cases),*];
-
-                    // Create validator instance
-                    let validator = V::default();
-
-                    // Run test on each document and compare with expected result
-                    for (case_num, doc, expected) in test_cases {
-                        let actual = validator.validate(&doc);
-
-                        // Use the extracted comparison function, panic on error
-                        crate::test_result_comparison::compare_test_results(
-                            &actual,
-                            &expected,
-                            Self::ID,
-                            case_num
-                        ).unwrap_or_else(|e| panic!("{}", e));
+                    /// Get the test ID
+                    pub fn id(&self) -> &'static str {
+                        Self::ID
                     }
                 }
-            }
 
-            /// Validator for test case #test_id
-            ///
-            /// Implement `TestValidator<#csaf_doc_type>` on this struct to provide validation logic.
-            #[derive(Debug, Clone, Copy, Default)]
-            pub struct #validator_ident;
+                impl<V: crate::test_validation::TestValidatorWithRawString + Default> #struct_ident<V> {
+                    /// Validate a CSAF document using this test's validator.
+                    ///
+                    /// # Arguments
+                    /// * `raw` - The raw string content of the document
+                    ///
+                    /// # Returns
+                    /// * `Ok(())` if validation passes
+                    /// * `Err(Vec<ValidationError>)` if validation fails
+                    pub fn validate(&self, raw: &str) -> Result<(), Vec<crate::validation::ValidationError>> {
+                        let validator = V::default();
+                        validator.validate(raw)
+                    }
+
+                    /// Run the test with expected results for each test case.
+                    ///
+                    /// The method automatically loads test documents from the file system and runs
+                    /// the validation function on each one, comparing actual vs expected results.
+                    ///
+                    /// # Arguments
+                    /// * One parameter per test case document with the expected result
+                    ///
+                    /// # Panics
+                    /// Panics if any test case fails to load, parse, or doesn't match the expected result
+                    ///
+                    pub fn expect(
+                        &self,
+                        #(#param_names: #param_types),*
+                    ) {
+                        // Create test cases as tuples of (case_num, raw_content, expected)
+                        let test_cases = vec![#(#test_cases),*];
+
+                        // Create validator instance
+                        let validator = V::default();
+
+                        // Run test on each document and compare with expected result
+                        for (case_num, raw, expected) in test_cases {
+                            let actual = validator.validate(&raw);
+
+                            // Use the extracted comparison function, panic on error
+                            crate::test_result_comparison::compare_test_results(
+                                &actual,
+                                &expected,
+                                Self::ID,
+                                case_num
+                            ).unwrap_or_else(|e| panic!("{}", e));
+                        }
+                    }
+                }
+
+                /// Validator for test case #test_id
+                ///
+                /// Implement `TestValidatorWithRawString` on this struct to provide validation logic.
+                #[derive(Debug, Clone, Copy, Default)]
+                pub struct #validator_ident;
+            }
+        } else {
+            quote! {
+                #[derive(Debug, Clone, Copy)]
+                pub struct #struct_ident<V>(std::marker::PhantomData<V>);
+
+                impl<V> #struct_ident<V> {
+                    /// Test ID
+                    pub const ID: &'static str = #test_id;
+
+                    /// Create a new test instance
+                    pub const fn new() -> Self {
+                        Self(std::marker::PhantomData)
+                    }
+
+                    /// Get the test ID
+                    pub fn id(&self) -> &'static str {
+                        Self::ID
+                    }
+                }
+
+                impl<V: crate::test_validation::TestValidator<#csaf_doc_type> + Default> #struct_ident<V> {
+                    /// Validate a CSAF document using this test's validator.
+                    ///
+                    /// # Arguments
+                    /// * `doc` - The CSAF document to validate
+                    ///
+                    /// # Returns
+                    /// * `Ok(())` if validation passes
+                    /// * `Err(Vec<ValidationError>)` if validation fails
+                    pub fn validate(&self, doc: &#csaf_doc_type) -> Result<(), Vec<crate::validation::ValidationError>> {
+                        let validator = V::default();
+                        validator.validate(doc)
+                    }
+
+                    /// Run the test with expected results for each test case.
+                    ///
+                    /// The method automatically loads test documents from the file system and runs
+                    /// the validation function on each one, comparing actual vs expected results.
+                    ///
+                    /// # Arguments
+                    /// * One parameter per test case document with the expected result
+                    ///
+                    /// # Panics
+                    /// Panics if any test case fails to load, parse, or doesn't match the expected result
+                    ///
+                    pub fn expect(
+                        &self,
+                        #(#param_names: #param_types),*
+                    ) {
+                        // Create test cases as tuples of (case_num, doc, expected)
+                        let test_cases = vec![#(#test_cases),*];
+
+                        // Create validator instance
+                        let validator = V::default();
+
+                        // Run test on each document and compare with expected result
+                        for (case_num, doc, expected) in test_cases {
+                            let actual = validator.validate(&doc);
+
+                            // Use the extracted comparison function, panic on error
+                            crate::test_result_comparison::compare_test_results(
+                                &actual,
+                                &expected,
+                                Self::ID,
+                                case_num
+                            ).unwrap_or_else(|e| panic!("{}", e));
+                        }
+                    }
+                }
+
+                /// Validator for test case #test_id
+                ///
+                /// Implement `TestValidator<#csaf_doc_type>` on this struct to provide validation logic.
+                #[derive(Debug, Clone, Copy, Default)]
+                pub struct #validator_ident;
+            }
         };
 
         test_struct_defs.push(struct_def);
@@ -219,7 +315,7 @@ pub fn generate_testcases(
     csaf_version: CsafVersion,
     target_path: &str,
 ) -> Result<(), BuildError> {
-    println!("cargo:rerun-if-changed={}", input);
+    println!("cargo:rerun-if-changed={input}");
 
     let content = fs::read_to_string(input)?;
 

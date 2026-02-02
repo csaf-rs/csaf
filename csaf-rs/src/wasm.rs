@@ -31,11 +31,11 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResul
     // Parse the preset
     let preset = preset_str
         .parse::<ValidationPreset>()
-        .map_err(|_| JsValue::from_str(&format!("Invalid preset: {}", preset_str)))?;
+        .map_err(|_| JsValue::from_str(&format!("Invalid preset: {preset_str}")))?;
 
     // First, try to detect the version by parsing the JSON
     let json_value: serde_json::Value =
-        serde_json::from_str(json_str).map_err(|e| JsValue::from_str(&format!("Invalid JSON: {}", e)))?;
+        serde_json::from_str(json_str).map_err(|e| JsValue::from_str(&format!("Invalid JSON: {e}")))?;
 
     // Try to get the CSAF version from the document
     let version = json_value
@@ -53,8 +53,7 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResul
         "2.0" => validate_2_0(json_str, preset),
         "2.1" => validate_2_1(json_str, preset),
         _ => Err(format!(
-            "Unsupported CSAF version: {}. Supported versions: 2.0, 2.1",
-            version
+            "Unsupported CSAF version: {version}. Supported versions: 2.0, 2.1"
         )),
     };
 
@@ -67,7 +66,7 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResul
 /// Validate a CSAF 2.0 document
 fn validate_2_0(json_str: &str, preset: ValidationPreset) -> Result<ValidationResult, String> {
     let document =
-        load_document_from_str_2_0(json_str).map_err(|e| format!("Failed to load CSAF 2.0 document: {}", e))?;
+        load_document_from_str_2_0(json_str).map_err(|e| format!("Failed to load CSAF 2.0 document: {e}"))?;
 
     Ok(validate_by_preset(&document, "2.0", preset))
 }
@@ -75,7 +74,7 @@ fn validate_2_0(json_str: &str, preset: ValidationPreset) -> Result<ValidationRe
 /// Validate a CSAF 2.1 document
 fn validate_2_1(json_str: &str, preset: ValidationPreset) -> Result<ValidationResult, String> {
     let document =
-        load_document_from_str_2_1(json_str).map_err(|e| format!("Failed to load CSAF 2.1 document: {}", e))?;
+        load_document_from_str_2_1(json_str).map_err(|e| format!("Failed to load CSAF 2.1 document: {e}"))?;
 
     Ok(validate_by_preset(&document, "2.1", preset))
 }
@@ -90,6 +89,9 @@ mod tests {
             success: true,
             version: "2.0".to_string(),
             num_errors: 0,
+            num_warnings: 0,
+            num_infos: 0,
+            num_not_found: 0,
             preset: ValidationPreset::Basic,
             test_results: vec![],
         };

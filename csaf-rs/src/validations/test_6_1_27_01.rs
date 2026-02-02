@@ -1,16 +1,21 @@
 use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
+use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
 fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must have at least one document note with category 'description', 'details', 'general' or 'summary'",
-            doc_category
+            "Document with category '{doc_category}' must have at least one document note with category 'description', 'details', 'general' or 'summary'"
         ),
         instance_path: "/document/notes".to_string(),
     }
 }
+
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
+    DocumentCategory::CsafInformationalAdvisory,
+    DocumentCategory::CsafSecurityIncidentResponse,
+]);
 
 /// 6.1.27.1 Document Notes
 ///
@@ -22,10 +27,7 @@ fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError 
 pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
-    // check document category
-    if doc_category != DocumentCategory::CsafInformationalAdvisory
-        && doc_category != DocumentCategory::CsafSecurityIncidentResponse
-    {
+    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(());
     }
 

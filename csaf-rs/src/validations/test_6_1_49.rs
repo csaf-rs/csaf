@@ -1,7 +1,8 @@
 use std::sync::LazyLock;
 
+use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionTrait, TrackingTrait, VulnerabilityTrait,
+    ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
@@ -9,8 +10,8 @@ use chrono::{DateTime, FixedOffset};
 
 fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid date format in revision history: {}", date_str),
-        instance_path: format!("/document/tracking/revision_history/{}/date", i_r),
+        message: format!("Invalid date format in revision history: {date_str}"),
+        instance_path: format!("/document/tracking/revision_history/{i_r}/date"),
     }
 }
 
@@ -27,17 +28,16 @@ fn create_ssvc_timestamp_too_late_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "SSVC timestamp ({}) for vulnerability at index {} is later than the newest revision date ({})",
-            ssvc_timestamp, i_v, newest_revision_date
+            "SSVC timestamp ({ssvc_timestamp}) for vulnerability at index {i_v} is later than the newest revision date ({newest_revision_date})"
         ),
-        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2/timestamp", i_v, i_m),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp"),
     }
 }
 
 fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid SSVC object: {}", error),
-        instance_path: format!("/vulnerabilities/{}/metrics/{}/content/ssvc_v2", i_v, i_m),
+        message: format!("Invalid SSVC object: {error}"),
+        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
     }
 }
 
@@ -58,16 +58,20 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
     // Parse the date of each revision and find the newest one
     let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
     for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
-        let date_str = revision.get_date();
-        match DateTime::parse_from_rfc3339(date_str) {
-            Ok(date) => {
+        // TODO: Rewrite this after revision history refactor
+        let date = match revision.get_date() {
+            Valid(date) => date.get_raw_string().to_owned(),
+            Invalid(err) => err.get_raw_string().to_owned(),
+        };
+        match DateTime::parse_from_rfc3339(date.as_str()) {
+            Ok(parsed_date) => {
                 newest_revision_date = match newest_revision_date {
-                    None => Some(date),
-                    Some(newest_date) => Some(newest_date.max(date)),
+                    None => Some(parsed_date),
+                    Some(newest_date) => Some(newest_date.max(parsed_date)),
                 };
             },
             Err(_) => {
-                return Err(vec![create_invalid_revision_date_error(date_str, i_r)]);
+                return Err(vec![create_invalid_revision_date_error(date.as_str(), i_r)]);
             },
         }
     }

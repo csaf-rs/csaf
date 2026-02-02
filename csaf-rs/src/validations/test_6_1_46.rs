@@ -3,11 +3,8 @@ use crate::validation::ValidationError;
 
 fn create_invalid_ssvc_error(error_message: &str, vulnerability_index: usize, metric_index: usize) -> ValidationError {
     ValidationError {
-        message: format!("Invalid SSVC object: {}", error_message),
-        instance_path: format!(
-            "/vulnerabilities/{}/metrics/{}/content/ssvc_v2",
-            vulnerability_index, metric_index
-        ),
+        message: format!("Invalid SSVC object: {error_message}"),
+        instance_path: format!("/vulnerabilities/{vulnerability_index}/metrics/{metric_index}/content/ssvc_v2"),
     }
 }
 

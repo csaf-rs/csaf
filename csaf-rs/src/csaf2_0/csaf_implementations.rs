@@ -1,19 +1,21 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentReferenceTrait, DocumentTrait,
-    FileHashTrait, FirstKnownExploitationDatesTrait, FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait,
-    MetricTrait, NoteTrait, ProductGroupTrait, ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait,
-    ProductTreeTrait, PublisherTrait, RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait,
-    ThreatTrait, TlpTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait, WithOptionalGroupIds,
-    WithOptionalProductIds,
+    BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
+    DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
+    FlagTrait, GeneratorTrait, HashTrait, InvolvementTrait, MetricTrait, NoteTrait, ProductGroupTrait,
+    ProductIdentificationHelperTrait, ProductStatusTrait, ProductTrait, ProductTreeTrait, PublisherTrait,
+    RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
+    VulnerabilityIdTrait, VulnerabilityTrait, WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_0::schema::{
-    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
-    CommonSecurityAdvisoryFramework, CryptographicHashes, CsafVersion as CsafVersion20, DocumentGenerator,
-    DocumentLevelMetaData, DocumentStatus, FileHash, Flag, FullProductNameT, HelperToIdentifyTheProduct, Id,
-    Involvement, LabelOfTheFlag, LabelOfTlp, Note, NoteCategory, PartyCategory, ProductGroup, ProductStatus,
-    ProductTree, Publisher, Reference, Relationship, Remediation, Revision, RulesForSharingDocument, Score, Threat,
-    Tracking, TrafficLightProtocolTlp, Vulnerability,
+    Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheBranch, CategoryOfTheRemediation,
+    CategoryOfTheThreat, CommonSecurityAdvisoryFramework, CryptographicHashes, CsafVersion as CsafVersion20,
+    DocumentGenerator, DocumentLevelMetaData, DocumentStatus, FileHash, Flag, FullProductNameT,
+    HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Note, NoteCategory, PartyCategory,
+    ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship, Remediation, Revision,
+    RulesForSharingDocument, Score, Threat, Tracking, TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::schema::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
@@ -59,9 +61,11 @@ impl RemediationTrait for Remediation {
             CategoryOfTheRemediation::NoneAvailable => Remediation21::NoneAvailable,
         }
     }
+}
 
-    fn get_date(&self) -> &Option<String> {
-        &self.date
+impl WithOptionalDate for Remediation {
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
@@ -158,7 +162,7 @@ impl ContentTrait for Score {
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
-        format!("/vulnerabilities/{}/scores/{}", vulnerability_idx, metric_idx)
+        format!("/vulnerabilities/{vulnerability_idx}/scores/{metric_idx}")
     }
 }
 
@@ -175,16 +179,18 @@ impl WithOptionalProductIds for Threat {
 }
 
 impl ThreatTrait for Threat {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
-    }
-
     fn get_category(&self) -> CategoryOfTheThreat21 {
         match self.category {
             CategoryOfTheThreat::ExploitStatus => CategoryOfTheThreat21::ExploitStatus,
             CategoryOfTheThreat::Impact => CategoryOfTheThreat21::Impact,
             CategoryOfTheThreat::TargetSet => CategoryOfTheThreat21::TargetSet,
         }
+    }
+}
+
+impl WithOptionalDate for Threat {
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
@@ -217,12 +223,12 @@ impl VulnerabilityTrait for Vulnerability {
         &self.threats
     }
 
-    fn get_disclosure_date(&self) -> &Option<String> {
-        &self.release_date
+    fn get_disclosure_date(&self) -> Option<CsafDateTime> {
+        self.release_date.as_ref().map(CsafDateTime::from)
     }
 
-    fn get_discovery_date(&self) -> &Option<String> {
-        &self.discovery_date
+    fn get_discovery_date(&self) -> Option<CsafDateTime> {
+        self.discovery_date.as_ref().map(CsafDateTime::from)
     }
 
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>> {
@@ -235,6 +241,10 @@ impl VulnerabilityTrait for Vulnerability {
 
     fn get_cve(&self) -> Option<&String> {
         self.cve.as_deref()
+    }
+
+    fn get_cwe(&self) -> Option<Vec<Cwe>> {
+        self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
     }
 
     fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
@@ -273,10 +283,6 @@ impl WithOptionalProductIds for Flag {
 }
 
 impl FlagTrait for Flag {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
-    }
-
     fn get_label(&self) -> LabelOfTheFlag21 {
         match self.label {
             LabelOfTheFlag::ComponentNotPresent => LabelOfTheFlag21::ComponentNotPresent,
@@ -290,17 +296,21 @@ impl FlagTrait for Flag {
     }
 }
 
-impl FirstKnownExploitationDatesTrait for () {
-    fn get_date(&self) -> &String {
+impl WithOptionalDate for Flag {
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
+    }
+}
+
+impl FirstKnownExploitationDatesTrait for () {}
+
+impl WithDate for () {
+    fn get_date(&self) -> CsafDateTime {
         panic!("First known exploitation dates are not implemented in CSAF 2.0");
     }
 }
 
 impl InvolvementTrait for Involvement {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
-    }
-
     fn get_party(&self) -> PartyCategory21 {
         match self.party {
             PartyCategory::Coordinator => PartyCategory21::Coordinator,
@@ -309,6 +319,12 @@ impl InvolvementTrait for Involvement {
             PartyCategory::User => PartyCategory21::User,
             PartyCategory::Vendor => PartyCategory21::Vendor,
         }
+    }
+}
+
+impl WithOptionalDate for Involvement {
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
@@ -509,12 +525,12 @@ impl TrackingTrait for Tracking {
     type GeneratorType = DocumentGenerator;
     type RevisionType = Revision;
 
-    fn get_current_release_date(&self) -> &String {
-        &self.current_release_date
+    fn get_current_release_date(&self) -> CsafDateTime {
+        CsafDateTime::from(&self.current_release_date)
     }
 
-    fn get_initial_release_date(&self) -> &String {
-        &self.initial_release_date
+    fn get_initial_release_date(&self) -> CsafDateTime {
+        CsafDateTime::from(&self.initial_release_date)
     }
 
     fn get_generator(&self) -> &Option<Self::GeneratorType> {
@@ -537,26 +553,32 @@ impl TrackingTrait for Tracking {
         self.id.deref()
     }
 
-    fn get_version_string(&self) -> &String {
-        self.version.deref()
+    fn get_version(&self) -> CsafVersionNumber {
+        CsafVersionNumber::from(&self.version)
     }
 }
 
-impl GeneratorTrait for DocumentGenerator {
-    fn get_date(&self) -> &Option<String> {
-        &self.date
+impl GeneratorTrait for DocumentGenerator {}
+
+impl WithOptionalDate for DocumentGenerator {
+    fn get_date(&self) -> Option<CsafDateTime> {
+        self.date.as_ref().map(CsafDateTime::from)
     }
 }
 
 impl RevisionTrait for Revision {
-    fn get_date(&self) -> &String {
-        &self.date
+    fn get_number(&self) -> CsafVersionNumber {
+        CsafVersionNumber::from(&self.number)
     }
-    fn get_number_string(&self) -> &String {
-        &self.number
-    }
+
     fn get_summary(&self) -> &String {
         &self.summary
+    }
+}
+
+impl WithDate for Revision {
+    fn get_date(&self) -> CsafDateTime {
+        CsafDateTime::from(&self.date)
     }
 }
 
@@ -592,6 +614,27 @@ impl BranchTrait<FullProductNameT> for Branch {
         self.branches.as_deref()
     }
 
+    fn get_category(&self) -> &CategoryOfTheBranchTrait {
+        match self.category {
+            CategoryOfTheBranch::Architecture => &CategoryOfTheBranchTrait::Architecture,
+            CategoryOfTheBranch::HostName => &CategoryOfTheBranchTrait::HostName,
+            CategoryOfTheBranch::Language => &CategoryOfTheBranchTrait::Language,
+            CategoryOfTheBranch::Legacy => &CategoryOfTheBranchTrait::Legacy,
+            CategoryOfTheBranch::PatchLevel => &CategoryOfTheBranchTrait::PatchLevel,
+            CategoryOfTheBranch::ProductFamily => &CategoryOfTheBranchTrait::ProductFamily,
+            CategoryOfTheBranch::ProductName => &CategoryOfTheBranchTrait::ProductName,
+            CategoryOfTheBranch::ProductVersion => &CategoryOfTheBranchTrait::ProductVersion,
+            CategoryOfTheBranch::ProductVersionRange => &CategoryOfTheBranchTrait::ProductVersionRange,
+            CategoryOfTheBranch::ServicePack => &CategoryOfTheBranchTrait::ServicePack,
+            CategoryOfTheBranch::Specification => &CategoryOfTheBranchTrait::Specification,
+            CategoryOfTheBranch::Vendor => &CategoryOfTheBranchTrait::Vendor,
+        }
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.deref()
+    }
+
     fn get_product(&self) -> &Option<FullProductNameT> {
         &self.product
     }
@@ -625,6 +668,10 @@ impl ProductTrait for FullProductNameT {
 
     fn get_product_id(&self) -> &String {
         self.product_id.deref()
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.deref()
     }
 
     fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType> {

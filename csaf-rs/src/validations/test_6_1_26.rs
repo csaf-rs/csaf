@@ -22,15 +22,17 @@ fn validate_document_category(
     // throw error, as only known profiles are allowed to start with "csaf_"
     if doc_category.starts_with_csaf_underscore() {
         return Err(vec![test_6_1_27_6_err_generator_starts_with_csaf(
-            &doc_category,
+            doc_category,
             doc_version,
         )]);
     }
+
+    // normalize and compare against known profiles
     let normalized_doc_category = doc_category.normalize();
     for (normalized_known_category, known_category) in CsafDocumentCategory::known_profiles_normalized(doc_version) {
         if normalized_doc_category == normalized_known_category {
             return Err(vec![test_6_1_27_6_err_generator_too_similar(
-                &doc_category,
+                doc_category,
                 &known_category,
             )]);
         }

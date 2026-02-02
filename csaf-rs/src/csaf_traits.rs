@@ -13,6 +13,7 @@ use chrono::{DateTime, Utc};
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use uuid::Uuid;
+pub(crate) use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -1184,7 +1185,7 @@ pub trait HashTrait {
     fn get_file_hashes(&self) -> &Vec<Self::FileHashType>;
 
     /// Returns true if only hashes with the specified algorithm are present
-    fn contains_only_hash_algorithm(&self, algorithm: HashAlgorithm) -> bool {
+    fn contains_only_hash_algorithm(&self, algorithm: CsafHashAlgorithm) -> bool {
         for hash in self.get_file_hashes() {
             if hash.get_algorithm() != algorithm {
                 return false;
@@ -1194,122 +1195,15 @@ pub trait HashTrait {
     }
 }
 
-/// Enum representing supported hash algorithms
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum HashAlgorithm {
-    Blake2b512,
-    Blake2s256,
-    Md4,
-    Md5,
-    Md5Sha1,
-    Mdc2,
-    Ripemd,
-    Ripemd160,
-    Rmd160,
-    Sha1,
-    Sha224,
-    Sha256,
-    Sha3_224,
-    Sha3_256,
-    Sha3_384,
-    Sha3_512,
-    Sha384,
-    Sha512,
-    Sha512_224,
-    Sha512_256,
-    Shake128,
-    Shake256,
-    Sm3,
-    Ssl3Md5,
-    Ssl3Sha1,
-    Whirlpool,
-    Other(String),
-}
 
-impl From<&String> for HashAlgorithm {
-    fn from(algo: &String) -> Self {
-        match algo.as_str() {
-            "blake2b512" => HashAlgorithm::Blake2b512,
-            "blake2s256" => HashAlgorithm::Blake2s256,
-            "md4" => HashAlgorithm::Md4,
-            "md5" => HashAlgorithm::Md5,
-            "md5-sha1" => HashAlgorithm::Md5Sha1,
-            "mdc2" => HashAlgorithm::Mdc2,
-            "ripemd" => HashAlgorithm::Ripemd,
-            "ripemd160" => HashAlgorithm::Ripemd160,
-            "rmd160" => HashAlgorithm::Rmd160,
-            "sha1" => HashAlgorithm::Sha1,
-            "sha224" => HashAlgorithm::Sha224,
-            "sha256" => HashAlgorithm::Sha256,
-            "sha3-224" => HashAlgorithm::Sha3_224,
-            "sha3-256" => HashAlgorithm::Sha3_256,
-            "sha3-384" => HashAlgorithm::Sha3_384,
-            "sha3-512" => HashAlgorithm::Sha3_512,
-            "sha384" => HashAlgorithm::Sha384,
-            "sha512" => HashAlgorithm::Sha512,
-            "sha512-224" => HashAlgorithm::Sha512_224,
-            "sha512-256" => HashAlgorithm::Sha512_256,
-            "shake128" => HashAlgorithm::Shake128,
-            "shake256" => HashAlgorithm::Shake256,
-            "sm3" => HashAlgorithm::Sm3,
-            "ssl3-md5" => HashAlgorithm::Ssl3Md5,
-            "ssl3-sha1" => HashAlgorithm::Ssl3Sha1,
-            "whirlpool" => HashAlgorithm::Whirlpool,
-            other => HashAlgorithm::Other(other.to_string()),
-        }
-    }
-}
-
-impl Display for HashAlgorithm {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(
-            f,
-            "{}",
-            match self {
-                HashAlgorithm::Blake2b512 => "blake2b512",
-                HashAlgorithm::Blake2s256 => "blake2s256",
-                HashAlgorithm::Md4 => "md4",
-                HashAlgorithm::Md5 => "md5",
-                HashAlgorithm::Md5Sha1 => "md5-sha1",
-                HashAlgorithm::Mdc2 => "mdc2",
-                HashAlgorithm::Ripemd => "ripemd",
-                HashAlgorithm::Ripemd160 => "ripemd160",
-                HashAlgorithm::Rmd160 => "rmd160",
-                HashAlgorithm::Sha1 => "sha1",
-                HashAlgorithm::Sha224 => "sha224",
-                HashAlgorithm::Sha256 => "sha256",
-                HashAlgorithm::Sha3_224 => "sha3-224",
-                HashAlgorithm::Sha3_256 => "sha3-256",
-                HashAlgorithm::Sha3_384 => "sha3-384",
-                HashAlgorithm::Sha3_512 => "sha3-512",
-                HashAlgorithm::Sha384 => "sha384",
-                HashAlgorithm::Sha512 => "sha512",
-                HashAlgorithm::Sha512_224 => "sha512-224",
-                HashAlgorithm::Sha512_256 => "sha512-256",
-                HashAlgorithm::Shake128 => "shake128",
-                HashAlgorithm::Shake256 => "shake256",
-                HashAlgorithm::Sm3 => "sm3",
-                HashAlgorithm::Ssl3Md5 => "ssl3-md5",
-                HashAlgorithm::Ssl3Sha1 => "ssl3-sha1",
-                HashAlgorithm::Whirlpool => "whirlpool",
-                HashAlgorithm::Other(other) => other.as_str(),
-            }
-        )
-    }
-}
 
 /// Trait representing a file_hash, identified by the used hash algorithm and the hash
 pub trait FileHashTrait {
-    /// Returns the hashing algorithm of this hash
-    fn get_algorithm_string(&self) -> &String;
-
     /// Returns the hash
     fn get_hash(&self) -> &String;
 
     /// Returns the hashing algorithm as HashAlgorithm enum
-    fn get_algorithm(&self) -> HashAlgorithm {
-        HashAlgorithm::from(self.get_algorithm_string())
-    }
+    fn get_algorithm(&self) -> CsafHashAlgorithm;
 }
 
 pub trait WithOptionalGroupIds {

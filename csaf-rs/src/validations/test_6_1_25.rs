@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    CsafTrait, FileHashTrait, HashAlgorithm, HashTrait, ProductIdentificationHelperTrait, ProductTrait,
+    CsafTrait, FileHashTrait, CsafHashAlgorithm, HashTrait, ProductIdentificationHelperTrait, ProductTrait,
     ProductTreeTrait,
 };
 use crate::validation::ValidationError;
@@ -23,7 +23,7 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
             if let Some(helper) = product.get_product_identification_helper() {
                 for (hash_i, hash) in helper.get_hashes().iter().enumerate() {
                     // Iterate over file_hashes, build hashmap of all encountered algos and their indices
-                    let mut algorithms = HashMap::<HashAlgorithm, Vec<usize>>::new();
+                    let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<usize>>::new();
                     for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
                         let file_hash_is = algorithms.entry(file_hash.get_algorithm()).or_default();
                         file_hash_is.push(file_hash_i);
@@ -49,7 +49,7 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
 }
 
 fn test_6_1_25_err_generator(
-    algorithm: &HashAlgorithm,
+    algorithm: &CsafHashAlgorithm,
     path: String,
     hash_i: String,
     file_hash_i: String,
@@ -94,13 +94,13 @@ mod tests {
     fn test_test_6_1_25() {
         let case_01 = Err(vec![
             test_6_1_25_err_generator(
-                &HashAlgorithm::Sha256,
+                &CsafHashAlgorithm::Sha256,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "0".to_string(),
             ),
             test_6_1_25_err_generator(
-                &HashAlgorithm::Sha256,
+                &CsafHashAlgorithm::Sha256,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "1".to_string(),

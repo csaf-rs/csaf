@@ -22,6 +22,7 @@ use crate::validation::ValidationError;
 use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 
 impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
@@ -624,11 +625,11 @@ impl HashTrait for CryptographicHashes {
 }
 
 impl FileHashTrait for FileHash {
-    fn get_algorithm_string(&self) -> &String {
-        self.algorithm.deref()
-    }
-
     fn get_hash(&self) -> &String {
         self.value.deref()
+    }
+
+    fn get_algorithm(&self) -> CsafHashAlgorithm {
+        CsafHashAlgorithm::from(&self.algorithm)
     }
 }

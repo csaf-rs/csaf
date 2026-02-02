@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    CsafTrait, HashAlgorithm, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
+    CsafTrait, CsafHashAlgorithm, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
 };
 use crate::validation::ValidationError;
 
@@ -15,7 +15,7 @@ pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<
         tree.visit_all_products(&mut |fpn, path| {
             if let Some(helper) = fpn.get_product_identification_helper() {
                 for (h_i, hash) in helper.get_hashes().iter().enumerate() {
-                    if hash.contains_only_hash_algorithm(HashAlgorithm::Md5) {
+                    if hash.contains_only_hash_algorithm(CsafHashAlgorithm::Md5) {
                         errors
                             .get_or_insert_with(Vec::new)
                             .push(create_md5_only_hash_error(path, h_i));

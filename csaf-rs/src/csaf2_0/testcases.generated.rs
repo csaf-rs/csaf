@@ -5253,25 +5253,21 @@ impl<V> Test6_2_13<V> {
         Self::ID
     }
 }
-impl<
-    V: crate::test_validation::TestValidator<
-            crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-        > + Default,
-> Test6_2_13<V> {
+impl<V: crate::test_validation::TestValidatorWithRawString + Default> Test6_2_13<V> {
     /// Validate a CSAF document using this test's validator.
     ///
     /// # Arguments
-    /// * `doc` - The CSAF document to validate
+    /// * `raw` - The raw string content of the document
     ///
     /// # Returns
     /// * `Ok(())` if validation passes
     /// * `Err(Vec<ValidationError>)` if validation fails
     pub fn validate(
         &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+        raw: &str,
     ) -> Result<(), Vec<crate::validation::ValidationError>> {
         let validator = V::default();
-        validator.validate(doc)
+        validator.validate(raw)
     }
     /// Run the test with expected results for each test case.
     ///
@@ -5288,17 +5284,13 @@ impl<
         let test_cases = vec![
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-13-01.json";
-            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
+            std::fs::read_to_string(path).unwrap_or_else(| e |
             panic!("Failed to load {} (case {}): {}",
-            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-13-01.json", "01", e));
-            serde_json::from_str:: < crate
-            ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework > (& content)
-            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
             "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-13-01.json", "01", e)) }, case_01)
         ];
         let validator = V::default();
-        for (case_num, doc, expected) in test_cases {
-            let actual = validator.validate(&doc);
+        for (case_num, raw, expected) in test_cases {
+            let actual = validator.validate(&raw);
             crate::test_result_comparison::compare_test_results(
                     &actual,
                     &expected,
@@ -5311,7 +5303,7 @@ impl<
 }
 /// Validator for test case #test_id
 ///
-/// Implement `TestValidator<#csaf_doc_type>` on this struct to provide validation logic.
+/// Implement `TestValidatorWithRawString` on this struct to provide validation logic.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatorForTest6_2_13;
 #[derive(Debug, Clone, Copy)]

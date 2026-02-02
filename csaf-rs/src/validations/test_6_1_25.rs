@@ -55,10 +55,9 @@ fn test_6_1_25_err_generator(
     file_hash_i: String,
 ) -> ValidationError {
     ValidationError {
-        message: format!("Multiple use of the same hash algorithm '{}' in file_hashes", algorithm),
+        message: format!("Multiple use of the same hash algorithm '{algorithm}' in file_hashes"),
         instance_path: format!(
-            "{}/product_identification_helper/hashes/{}/file_hashes/{}",
-            path, hash_i, file_hash_i
+            "{path}/product_identification_helper/hashes/{hash_i}/file_hashes/{file_hash_i} /algorithm"
         ),
     }
 }

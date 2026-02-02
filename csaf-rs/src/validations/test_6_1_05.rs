@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 fn generate_err_msg(group_id: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("Duplicate definition for product group ID {}", group_id),
+        message: format!("Duplicate definition for product group ID {group_id}"),
         instance_path: path.to_owned(),
     }
 }
@@ -17,7 +17,7 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
             product_group_ids_with_paths
                 .entry(g.get_group_id().to_owned())
                 .or_default()
-                .push(format!("/product_tree/product_groups/{}/group_id", i_g));
+                .push(format!("/product_tree/product_groups/{i_g}/group_id"));
         }
     }
 

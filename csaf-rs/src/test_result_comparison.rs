@@ -65,8 +65,7 @@ pub fn compare_test_results(
         (Ok(()), Err(expected_errors)) => {
             let mut errors: Vec<String> = Vec::new();
             errors.push(format!(
-                "Test {} case {}: Expected failure but validation passed.",
-                test_id, case_num
+                "Test {test_id} case {case_num}: Expected failure but validation passed."
             ));
             for err in expected_errors {
                 errors.push(format!(

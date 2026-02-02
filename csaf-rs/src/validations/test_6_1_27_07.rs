@@ -18,16 +18,15 @@ pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec
     let mut errors: Option<Vec<ValidationError>> = None;
     // return error if there are vulnerabilities without fixed, known_affected, known_not_affected or under_investigation in product_status
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
-        if let Some(product_status) = vulnerability.get_product_status() {
-            if !(product_status.get_fixed().is_some()
+        if let Some(product_status) = vulnerability.get_product_status()
+            && !(product_status.get_fixed().is_some()
                 || product_status.get_known_affected().is_some()
                 || product_status.get_known_not_affected().is_some()
                 || product_status.get_under_investigation().is_some())
-            {
-                errors
-                    .get_or_insert_with(Vec::new)
-                    .push(test_6_1_27_07_err_generator(&doc_category, &v_i));
-            }
+        {
+            errors
+                .get_or_insert_with(Vec::new)
+                .push(test_6_1_27_07_err_generator(&doc_category, &v_i));
         }
     }
 
@@ -40,10 +39,9 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
 fn test_6_1_27_07_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document with category '{}' must provide at least one fixed, known_affected, known_unaffected or under_investigation product_status in each vulnerability",
-            document_category
+            "Document with category '{document_category}' must provide at least one fixed, known_affected, known_unaffected or under_investigation product_status in each vulnerability"
         ),
-        instance_path: format!("/vulnerabilities/{}/product_status", vuln_path_index),
+        instance_path: format!("/vulnerabilities/{vuln_path_index}/product_status"),
     }
 }
 

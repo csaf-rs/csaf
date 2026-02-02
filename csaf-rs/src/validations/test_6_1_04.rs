@@ -4,7 +4,7 @@ use std::collections::HashSet;
 
 fn generate_err_msg(ref_id: &str, ref_path: &str) -> ValidationError {
     ValidationError {
-        message: format!("Missing definition of product_group_id: {}", ref_id),
+        message: format!("Missing definition of product_group_id: {ref_id}"),
         instance_path: ref_path.to_owned(),
     }
 }

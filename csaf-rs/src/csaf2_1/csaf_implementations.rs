@@ -1,4 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
@@ -22,7 +23,6 @@ use crate::validation::ValidationError;
 use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
-use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 
 impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {

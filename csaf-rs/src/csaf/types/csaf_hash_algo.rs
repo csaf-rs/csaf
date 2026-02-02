@@ -1,6 +1,6 @@
-use std::fmt::{Display, Formatter, Result as FmtResult};
 use crate::schema::csaf2_0::schema::AlgorithmOfTheCryptographicHash as AlgorithmOfTheCryptographicHash20;
 use crate::schema::csaf2_1::schema::AlgorithmOfTheCryptographicHash as AlgorithmOfTheCryptographicHash21;
+use std::fmt::{Display, Formatter, Result as FmtResult};
 
 /// Enum representing supported hash algorithms
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -35,7 +35,6 @@ pub enum CsafHashAlgorithm {
 }
 
 impl CsafHashAlgorithm {
-
     /// Checks if the original algorithm string is lowercase
     pub fn is_lowercase(&self) -> bool {
         if let CsafHashAlgorithm::Other(algo) = self {
@@ -156,7 +155,10 @@ mod tests {
         assert_eq!(CsafHashAlgorithm::from("sha256"), CsafHashAlgorithm::Sha256);
 
         // Test from string for unknown algorithm
-        assert_eq!(CsafHashAlgorithm::from("custom-algo"), CsafHashAlgorithm::Other("custom-algo".to_string()));
+        assert_eq!(
+            CsafHashAlgorithm::from("custom-algo"),
+            CsafHashAlgorithm::Other("custom-algo".to_string())
+        );
     }
 
     #[test]

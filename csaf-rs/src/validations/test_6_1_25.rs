@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    CsafTrait, FileHashTrait, CsafHashAlgorithm, HashTrait, ProductIdentificationHelperTrait, ProductTrait,
+    CsafHashAlgorithm, CsafTrait, FileHashTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait,
     ProductTreeTrait,
 };
 use crate::validation::ValidationError;

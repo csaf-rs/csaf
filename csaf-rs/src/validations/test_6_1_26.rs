@@ -61,8 +61,7 @@ fn test_6_1_27_6_err_generator_too_similar(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document category '{}' is prohibited. It is too similar to the known category: {}",
-            doc_category, known_category
+            "Document category '{doc_category}' is prohibited. It is too similar to the known category: {known_category}",
         ),
         instance_path: "/document/category".to_string(),
     }
@@ -98,7 +97,6 @@ mod tests {
 
     #[test]
     fn test_test_6_1_26() {
-        // TODO: Additional 2.0 unit test that checks that 2.1 known profiles fail this test (they start with csaf_ by definition)
         let case_01 = Err(vec![test_6_1_27_6_err_generator_too_similar(
             &CsafDocumentCategory::from("Security_Incident_Response"),
             &CsafDocumentCategory::CsafSecurityIncidentResponse,

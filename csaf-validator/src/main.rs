@@ -99,20 +99,13 @@ pub fn print_validation_result(result: &ValidationResult) {
     // Print summary
     println!();
     println!();
-    if result.num_errors == 0 && result.num_warnings == 0 && result.num_infos == 0 {
-        println!("✅  Validation passed! No errors found.\n");
-    } else if result.num_errors == 0 && result.num_warnings == 0 {
-        println!("💡  Validation passed with {} info(s)\n", result.num_infos);
-    } else if result.num_errors == 0 {
-        println!(
-            "⚠️  Validation passed with {} warning(s) and {} info(s)\n",
-            result.num_warnings, result.num_infos
-        );
-    } else {
-        println!(
-            "❌  Validation failed with {} error(s), {} warning(s) and {} info(s)\n",
-            result.num_errors, result.num_warnings, result.num_infos
-        );
+    match (result.num_errors, result.num_warnings, result.num_infos) {
+        (0, 0, 0) => println!("✅  Validation passed! No errors found.\n"),
+        (0, 0, infos) => println!("💡  Validation passed with {infos} info(s)\n"),
+        (0, warnings, infos) => println!("⚠️  Validation passed with {warnings} warning(s) and {infos} info(s)\n"),
+        (errors, warnings, infos) => {
+            println!("❌  Validation failed with {errors} error(s), {warnings} warning(s) and {infos} info(s)\n")
+        },
     }
 
     if result.num_not_found > 0 {

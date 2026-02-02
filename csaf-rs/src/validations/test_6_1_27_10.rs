@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafDocumentCategory, CsafTrait, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;

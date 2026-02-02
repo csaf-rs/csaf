@@ -1,5 +1,5 @@
 use crate::csaf_traits::{
-    CsafTrait, CsafDocumentCategory, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait,
+    CsafDocumentCategory, CsafTrait, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait,
     WithOptionalGroupIds, WithOptionalProductIds,
 };
 use crate::document_category_test_helper::DocumentCategoryTestConfig;

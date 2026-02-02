@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafDocumentCategory, CsafTrait, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
@@ -25,7 +25,10 @@ pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<Valid
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-    .shared(&[CsafDocumentCategory::CsafSecurityAdvisory, CsafDocumentCategory::CsafVex])
+    .shared(&[
+        CsafDocumentCategory::CsafSecurityAdvisory,
+        CsafDocumentCategory::CsafVex,
+    ])
     .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
 fn test_6_1_27_04_err_generator(document_category: CsafDocumentCategory) -> ValidationError {

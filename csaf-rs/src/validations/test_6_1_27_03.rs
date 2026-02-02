@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafDocumentCategory, CsafTrait, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
@@ -11,7 +11,10 @@ fn create_must_not_have_vuln_element_error(doc_category: &CsafDocumentCategory) 
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
     .shared(&[CsafDocumentCategory::CsafInformationalAdvisory])
-    .csaf21(&[CsafDocumentCategory::CsafWithdrawn, CsafDocumentCategory::CsafSuperseded]);
+    .csaf21(&[
+        CsafDocumentCategory::CsafWithdrawn,
+        CsafDocumentCategory::CsafSuperseded,
+    ]);
 
 /// 6.1.27.3 Vulnerabilities
 ///

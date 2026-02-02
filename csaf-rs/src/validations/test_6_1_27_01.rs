@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait, NoteTrait};
+use crate::csaf_traits::{CsafDocumentCategory, CsafTrait, DocumentTrait, NoteTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;

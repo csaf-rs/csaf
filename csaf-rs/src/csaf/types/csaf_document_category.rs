@@ -1,7 +1,7 @@
-use std::fmt::{Display, Formatter, Result as FmtResult};
 use crate::csaf_traits::CsafVersion;
 use crate::schema::csaf2_0::schema::DocumentCategory as DocumentCategory20;
 use crate::schema::csaf2_1::schema::DocumentCategory as DocumentCategory21;
+use std::fmt::{Display, Formatter, Result as FmtResult};
 
 /// Shared Enum representing document categories
 /// Contains well-known categories of CSAF version 2.0 and 2.1 as enum variants
@@ -82,7 +82,10 @@ impl CsafDocumentCategory {
 
     /// Checks if the category is DocumentCategory::CsafBase or DocumentCategory::CsafBaseOther
     pub fn is_base(&self) -> bool {
-        matches!(self, CsafDocumentCategory::CsafBase | CsafDocumentCategory::CsafBaseOther(_))
+        matches!(
+            self,
+            CsafDocumentCategory::CsafBase | CsafDocumentCategory::CsafBaseOther(_)
+        )
     }
 
     /// Checks if the document category is a known profile for the given CSAF version
@@ -191,7 +194,6 @@ impl CsafDocumentCategory {
         Self::string_starts_with_csaf_underscore(&self.to_string())
     }
 
-
     /// Helper function to normalize a category string
     #[inline]
     fn string_normalize(s: &str) -> String {
@@ -247,7 +249,6 @@ mod tests {
         fn test_exact_csaf_underscore_prefix_returns_true() {
             // `csaf_basE` -> true
             assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("csaf_basE"));
-
         }
 
         #[test]
@@ -283,13 +284,25 @@ mod tests {
         #[test]
         fn test_known_profiles_normalize_correctly() {
             assert_eq!(CsafDocumentCategory::string_normalize("csaf_base"), "base");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_informational_advisory"), "informationaladvisory");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_security_incident_response"), "securityincidentresponse");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_security_advisory"), "securityadvisory");
+            assert_eq!(
+                CsafDocumentCategory::string_normalize("csaf_informational_advisory"),
+                "informationaladvisory"
+            );
+            assert_eq!(
+                CsafDocumentCategory::string_normalize("csaf_security_incident_response"),
+                "securityincidentresponse"
+            );
+            assert_eq!(
+                CsafDocumentCategory::string_normalize("csaf_security_advisory"),
+                "securityadvisory"
+            );
             assert_eq!(CsafDocumentCategory::string_normalize("csaf_vex"), "vex");
             assert_eq!(CsafDocumentCategory::string_normalize("csaf_withdrawn"), "withdrawn");
             assert_eq!(CsafDocumentCategory::string_normalize("csaf_superseded"), "superseded");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_deprecated_security_advisory"), "deprecatedsecurityadvisory");
+            assert_eq!(
+                CsafDocumentCategory::string_normalize("csaf_deprecated_security_advisory"),
+                "deprecatedsecurityadvisory"
+            );
         }
 
         #[test]
@@ -321,7 +334,6 @@ mod tests {
 
             // multiple
             assert_eq!(CsafDocumentCategory::string_normalize("csaf__base--"), "base");
-
         }
 
         #[test]
@@ -338,13 +350,15 @@ mod tests {
             assert_eq!(CsafDocumentCategory::string_normalize("saf_base"), "safbase");
             // `_saf_base` -> `safbase`
             assert_eq!(CsafDocumentCategory::string_normalize("_saf_base"), "safbase");
-
         }
 
         #[test]
         fn test_other_category_normalizes_correctly() {
             // `Some_Other-Category` -> `someothercategory`
-            assert_eq!(CsafDocumentCategory::string_normalize("Some_Other-Category"), "someothercategory");
+            assert_eq!(
+                CsafDocumentCategory::string_normalize("Some_Other-Category"),
+                "someothercategory"
+            );
         }
 
         #[test]
@@ -352,6 +366,5 @@ mod tests {
             // `Csaf_` -> ``
             assert_eq!(CsafDocumentCategory::string_normalize("Csaf_"), "");
         }
-
     }
 }

@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafDocumentCategory, CsafTrait, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
@@ -31,7 +31,10 @@ pub fn test_6_1_27_11_vulnerabilities(doc: &impl CsafTrait) -> Result<(), Vec<Va
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-    .shared(&[CsafDocumentCategory::CsafSecurityAdvisory, CsafDocumentCategory::CsafVex])
+    .shared(&[
+        CsafDocumentCategory::CsafSecurityAdvisory,
+        CsafDocumentCategory::CsafVex,
+    ])
     .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
@@ -74,7 +77,9 @@ mod tests {
         // CSAF 2.1 has 3 test cases
         TESTS_2_1.test_6_1_27_11.expect(
             case_01,
-            Err(vec![create_missing_vulnerabilities_error(&CsafDocumentCategory::CsafVex)]),
+            Err(vec![create_missing_vulnerabilities_error(
+                &CsafDocumentCategory::CsafVex,
+            )]),
             Err(vec![create_missing_vulnerabilities_error(
                 &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
             )]),

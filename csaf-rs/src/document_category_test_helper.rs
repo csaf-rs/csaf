@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafVersion, CsafDocumentCategory};
+use crate::csaf_traits::{CsafDocumentCategory, CsafVersion};
 
 /// Configuration for tests that need to check document categories per CSAF version.
 ///
@@ -109,10 +109,12 @@ mod tests {
 
         // Shared applies to both
         assert!(
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafSecurityAdvisory)
+            TEST_CONFIG
+                .matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafSecurityAdvisory)
         );
         assert!(
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafSecurityAdvisory)
+            TEST_CONFIG
+                .matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafSecurityAdvisory)
         );
 
         // CSAF 2.0-specific applies only to 2.0
@@ -120,17 +122,25 @@ mod tests {
         assert!(!TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafVex));
 
         // CSAF 2.1-specific applies only to 2.1
-        assert!(!TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafWithdrawn));
-        assert!(TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn));
+        assert!(
+            !TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafWithdrawn)
+        );
+        assert!(
+            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn)
+        );
 
         // Other categories do not apply
         assert!(
-            !TEST_CONFIG
-                .matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafInformationalAdvisory)
+            !TEST_CONFIG.matches_category_with_csaf_version(
+                &CsafVersion::X20,
+                &CsafDocumentCategory::CsafInformationalAdvisory
+            )
         );
         assert!(
-            !TEST_CONFIG
-                .matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafInformationalAdvisory)
+            !TEST_CONFIG.matches_category_with_csaf_version(
+                &CsafVersion::X21,
+                &CsafDocumentCategory::CsafInformationalAdvisory
+            )
         );
     }
 

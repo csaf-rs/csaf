@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
@@ -34,9 +34,9 @@ pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[DocumentCategory::CsafVex]);
+    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]);
 
-fn test_6_1_27_07_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
+fn test_6_1_27_07_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{document_category}' must provide at least one fixed, known_affected, known_unaffected or under_investigation product_status in each vulnerability"
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_07() {
-        let case_01 = Err(vec![test_6_1_27_07_err_generator(&DocumentCategory::CsafVex, &0)]);
+        let case_01 = Err(vec![test_6_1_27_07_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
 
         TESTS_2_0.test_6_1_27_7.expect(case_01.clone());
         TESTS_2_1.test_6_1_27_7.expect(case_01);

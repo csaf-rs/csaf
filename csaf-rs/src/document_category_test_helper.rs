@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafVersion, DocumentCategory};
+use crate::csaf_traits::{CsafVersion, CsafDocumentCategory};
 
 /// Configuration for tests that need to check document categories per CSAF version.
 ///
@@ -8,11 +8,11 @@ use crate::csaf_traits::{CsafVersion, DocumentCategory};
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct DocumentCategoryTestConfig {
     /// Categories that apply to both CSAF 2.0 and 2.1 (optional)
-    pub shared_categories: Option<&'static [DocumentCategory]>,
+    pub shared_categories: Option<&'static [CsafDocumentCategory]>,
     /// Additional categories specific to CSAF 2.0 (optional)
-    pub csaf20_categories: Option<&'static [DocumentCategory]>,
+    pub csaf20_categories: Option<&'static [CsafDocumentCategory]>,
     /// Additional categories specific to CSAF 2.1 (optional)
-    pub csaf21_categories: Option<&'static [DocumentCategory]>,
+    pub csaf21_categories: Option<&'static [CsafDocumentCategory]>,
 }
 
 impl DocumentCategoryTestConfig {
@@ -26,19 +26,19 @@ impl DocumentCategoryTestConfig {
     }
 
     /// Sets categories that apply to both CSAF 2.0 and 2.1.
-    pub const fn shared(mut self, categories: &'static [DocumentCategory]) -> Self {
+    pub const fn shared(mut self, categories: &'static [CsafDocumentCategory]) -> Self {
         self.shared_categories = Some(categories);
         self
     }
 
     /// Sets additional categories specific to CSAF 2.0.
-    pub const fn csaf20(mut self, categories: &'static [DocumentCategory]) -> Self {
+    pub const fn csaf20(mut self, categories: &'static [CsafDocumentCategory]) -> Self {
         self.csaf20_categories = Some(categories);
         self
     }
 
     /// Sets additional categories specific to CSAF 2.1.
-    pub const fn csaf21(mut self, categories: &'static [DocumentCategory]) -> Self {
+    pub const fn csaf21(mut self, categories: &'static [CsafDocumentCategory]) -> Self {
         self.csaf21_categories = Some(categories);
         self
     }
@@ -52,7 +52,7 @@ impl DocumentCategoryTestConfig {
     pub fn matches_category_with_csaf_version(
         &self,
         csaf_version: &CsafVersion,
-        document_category: &DocumentCategory,
+        document_category: &CsafDocumentCategory,
     ) -> bool {
         // First check shared categories
         if let Some(shared) = self.shared_categories
@@ -86,7 +86,7 @@ impl DocumentCategoryTestConfig {
 
     /// Checks if a profile test should run based on the document category only,
     /// irrespective of the CSAF version.
-    pub fn matches_category(&self, document_category: &DocumentCategory) -> bool {
+    pub fn matches_category(&self, document_category: &CsafDocumentCategory) -> bool {
         if let Some(shared) = self.shared_categories {
             return shared.contains(document_category);
         }
@@ -103,61 +103,61 @@ mod tests {
     #[test]
     fn test_config_with_csaf20_csaf_21_specific_categories() {
         const TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-            .shared(&[DocumentCategory::CsafSecurityAdvisory])
-            .csaf20(&[DocumentCategory::CsafVex])
-            .csaf21(&[DocumentCategory::CsafWithdrawn]);
+            .shared(&[CsafDocumentCategory::CsafSecurityAdvisory])
+            .csaf20(&[CsafDocumentCategory::CsafVex])
+            .csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
         // Shared applies to both
         assert!(
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafSecurityAdvisory)
+            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafSecurityAdvisory)
         );
         assert!(
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafSecurityAdvisory)
+            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafSecurityAdvisory)
         );
 
         // CSAF 2.0-specific applies only to 2.0
-        assert!(TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafVex));
-        assert!(!TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafVex));
+        assert!(TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafVex));
+        assert!(!TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafVex));
 
         // CSAF 2.1-specific applies only to 2.1
-        assert!(!TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafWithdrawn));
-        assert!(TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafWithdrawn));
+        assert!(!TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafWithdrawn));
+        assert!(TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn));
 
         // Other categories do not apply
         assert!(
             !TEST_CONFIG
-                .matches_category_with_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafInformationalAdvisory)
+                .matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafInformationalAdvisory)
         );
         assert!(
             !TEST_CONFIG
-                .matches_category_with_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafInformationalAdvisory)
+                .matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafInformationalAdvisory)
         );
     }
 
     #[test]
     fn test_config_with_only_shared_categories() {
         const TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
-            DocumentCategory::CsafSecurityAdvisory,
-            DocumentCategory::CsafInformationalAdvisory,
+            CsafDocumentCategory::CsafSecurityAdvisory,
+            CsafDocumentCategory::CsafInformationalAdvisory,
         ]);
 
         // Shared categories apply
-        assert!(TEST_CONFIG.matches_category(&DocumentCategory::CsafSecurityAdvisory));
-        assert!(TEST_CONFIG.matches_category(&DocumentCategory::CsafInformationalAdvisory));
+        assert!(TEST_CONFIG.matches_category(&CsafDocumentCategory::CsafSecurityAdvisory));
+        assert!(TEST_CONFIG.matches_category(&CsafDocumentCategory::CsafInformationalAdvisory));
 
         // Other categories do not apply
-        assert!(!TEST_CONFIG.matches_category(&DocumentCategory::CsafVex));
-        assert!(!TEST_CONFIG.matches_category(&DocumentCategory::CsafWithdrawn));
+        assert!(!TEST_CONFIG.matches_category(&CsafDocumentCategory::CsafVex));
+        assert!(!TEST_CONFIG.matches_category(&CsafDocumentCategory::CsafWithdrawn));
     }
 
     #[test]
     fn test_config_without_shared_categories_panic_on_is_ignored_for() {
         const TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-            .csaf20(&[DocumentCategory::CsafVex])
-            .csaf21(&[DocumentCategory::CsafWithdrawn]);
+            .csaf20(&[CsafDocumentCategory::CsafVex])
+            .csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category(&DocumentCategory::CsafSecurityAdvisory);
+            TEST_CONFIG.matches_category(&CsafDocumentCategory::CsafSecurityAdvisory);
         });
         assert!(result.is_err());
     }
@@ -165,10 +165,10 @@ mod tests {
     #[test]
     fn test_config_without_shared_or_csaf_20_categories_panics_on_is_ignored_for_on_csaf_version() {
         const TEST_CONFIG: DocumentCategoryTestConfig =
-            DocumentCategoryTestConfig::new().csaf21(&[DocumentCategory::CsafWithdrawn]);
+            DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &DocumentCategory::CsafVex);
+            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafVex);
         });
         assert!(result.is_err());
     }
@@ -176,10 +176,10 @@ mod tests {
     #[test]
     fn test_config_without_shared_or_csaf_21_categories_panics_on_is_ignored_for_on_csaf_version() {
         const TEST_CONFIG: DocumentCategoryTestConfig =
-            DocumentCategoryTestConfig::new().csaf20(&[DocumentCategory::CsafVex]);
+            DocumentCategoryTestConfig::new().csaf20(&[CsafDocumentCategory::CsafVex]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &DocumentCategory::CsafWithdrawn);
+            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn);
         });
         assert!(result.is_err());
     }

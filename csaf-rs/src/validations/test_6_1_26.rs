@@ -1,13 +1,18 @@
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, CsafVersion, CsafDocumentCategory, DocumentTrait};
 use crate::validation::ValidationError;
 
 /// 6.1.26 Prohibited Document Category Name
 pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let version = doc.get_document().get_csaf_version();
+    let doc_version = doc.get_document().get_csaf_version();
     let doc_category = doc.get_document().get_category();
 
+    validate_document_category(&doc_category, doc_version)
+}
+
+#[inline]
+fn validate_document_category(doc_category: &CsafDocumentCategory, doc_version: &CsafVersion) -> Result<(), Vec<ValidationError>> {
     // skip test for known profiles and categories
-    if doc_category.is_known_profile(version) {
+    if doc_category.is_known_profile(doc_version) {
         return Ok(());
     }
 
@@ -15,17 +20,15 @@ pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<
     if doc_category.starts_with_csaf_underscore() {
         return Err(vec![test_6_1_27_6_err_generator_starts_with_csaf(
             &doc_category,
-            version,
+            doc_version,
         )]);
     }
-
-    // throw error if document category is too similar to known categories
-    // this is done by comparing normalized versions of the categories
-    for normalized_known_category in DocumentCategory::known_profiles_normalized(version) {
-        if doc_category.normalize() == normalized_known_category.0 {
+    let normalized_doc_category = doc_category.normalize();
+    for (normalized_known_category, known_category) in CsafDocumentCategory::known_profiles_normalized(doc_version) {
+        if normalized_doc_category == normalized_known_category {
             return Err(vec![test_6_1_27_6_err_generator_too_similar(
                 &doc_category,
-                &normalized_known_category.1,
+                &known_category,
             )]);
         }
     }
@@ -34,22 +37,22 @@ pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<
 }
 
 fn test_6_1_27_6_err_generator_starts_with_csaf(
-    doc_category: &DocumentCategory,
+    doc_category: &CsafDocumentCategory,
     version: &CsafVersion,
 ) -> ValidationError {
     ValidationError {
         message: format!(
             "Document category '{}' is prohibited. Only the following values are allowed to starting with 'csaf_' are allowed: {}",
             doc_category,
-            DocumentCategory::known_profile_concat(version)
+            CsafDocumentCategory::known_profile_concat(version)
         ),
         instance_path: "/document/category".to_string(),
     }
 }
 
 fn test_6_1_27_6_err_generator_too_similar(
-    doc_category: &DocumentCategory,
-    known_category: &DocumentCategory,
+    doc_category: &CsafDocumentCategory,
+    known_category: &CsafDocumentCategory,
 ) -> ValidationError {
     ValidationError {
         message: format!(
@@ -60,48 +63,79 @@ fn test_6_1_27_6_err_generator_too_similar(
     }
 }
 
+impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
+for crate::csaf2_0::testcases::ValidatorForTest6_1_26
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_26_prohibited_document_category(doc)
+    }
+}
+
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+for crate::csaf2_1::testcases::ValidatorForTest6_1_26
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_26_prohibited_document_category(doc)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::csaf_traits::DocumentCategory;
-    use crate::test_helper::{run_csaf20_tests, run_csaf21_tests};
-    use crate::validations::test_6_1_26::{
-        test_6_1_26_prohibited_document_category, test_6_1_27_6_err_generator_too_similar,
-    };
-    use std::collections::HashMap;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+    use super::*;
 
     #[test]
     fn test_test_6_1_26() {
-        let errors = HashMap::from([
-            (
-                "01",
-                vec![test_6_1_27_6_err_generator_too_similar(
-                    &DocumentCategory::from_string("Security_Incident_Response"),
-                    &DocumentCategory::CsafSecurityIncidentResponse,
-                )],
-            ),
-            (
-                "02",
-                vec![test_6_1_27_6_err_generator_too_similar(
-                    &DocumentCategory::from_string("Deprecated Security Advisory"),
-                    &DocumentCategory::CsafDeprecatedSecurityAdvisory,
-                )],
-            ),
-            (
-                "03",
-                vec![test_6_1_27_6_err_generator_too_similar(
-                    &DocumentCategory::from_string("withdrawn"),
-                    &DocumentCategory::CsafWithdrawn,
-                )],
-            ),
-            (
-                "04",
-                vec![test_6_1_27_6_err_generator_too_similar(
-                    &DocumentCategory::from_string("superseded"),
-                    &DocumentCategory::CsafSuperseded,
-                )],
-            ),
-        ]);
-        run_csaf20_tests("26", test_6_1_26_prohibited_document_category, errors.clone());
-        run_csaf21_tests("26", test_6_1_26_prohibited_document_category, errors);
+        // TODO: Additional 2.0 unit test that checks that 2.1 known profiles fail this test (they start with csaf_ by definition)
+        let case_01 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+            &CsafDocumentCategory::from("Security_Incident_Response"),
+            &CsafDocumentCategory::CsafSecurityIncidentResponse,
+        )]);
+        let case_02 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+            &CsafDocumentCategory::from("Deprecated Security Advisory"),
+            &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+        )]);
+        let case_03 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+            &CsafDocumentCategory::from("withdrawn"),
+            &CsafDocumentCategory::CsafWithdrawn,
+        )]);
+        let case_04 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+            &CsafDocumentCategory::from("superseded"),
+            &CsafDocumentCategory::CsafSuperseded,
+        )]);
+
+        TESTS_2_0.test_6_1_26.expect(case_01.clone());
+        TESTS_2_1.test_6_1_26.expect(case_01, case_02, case_03, case_04, Ok(()), Ok(()), Ok(()), Ok(()));
+    }
+
+    // Additional unit tests from the editorial version of CSAF 2.1
+    #[test]
+    fn test_validate_document_category_v21() {
+        let version = CsafVersion::X21;
+        assert!(validate_document_category(&CsafDocumentCategory::from("Csaf_a"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("CsaF_VeX"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("CSafDeprecatedSecurity—Advisory"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("csafvex"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("Informational Advisory"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("Security      Advisory"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("security-incident-response"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("Superseded"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("V_eX"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("veX"), &version).is_err());
+    }
+
+    #[test]
+    fn test_csaf_21_known_categories_fail_on_csaf_20() {
+        let version_20 = CsafVersion::X20;
+        assert!(validate_document_category(&CsafDocumentCategory::CsafDeprecatedSecurityAdvisory, &version_20).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::CsafWithdrawn, &version_20).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::CsafSuperseded, &version_20).is_err());
     }
 }

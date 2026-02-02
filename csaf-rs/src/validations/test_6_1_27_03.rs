@@ -1,8 +1,8 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
-fn create_must_not_have_vuln_element_error(doc_category: &DocumentCategory) -> ValidationError {
+fn create_must_not_have_vuln_element_error(doc_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
         message: format!("Document with category '{doc_category}' must not have a '/vulnerabilities' element"),
         instance_path: "/vulnerabilities".to_string(),
@@ -10,8 +10,8 @@ fn create_must_not_have_vuln_element_error(doc_category: &DocumentCategory) -> V
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-    .shared(&[DocumentCategory::CsafInformationalAdvisory])
-    .csaf21(&[DocumentCategory::CsafWithdrawn, DocumentCategory::CsafSuperseded]);
+    .shared(&[CsafDocumentCategory::CsafInformationalAdvisory])
+    .csaf21(&[CsafDocumentCategory::CsafWithdrawn, CsafDocumentCategory::CsafSuperseded]);
 
 /// 6.1.27.3 Vulnerabilities
 ///
@@ -68,17 +68,17 @@ mod tests {
         TESTS_2_0
             .test_6_1_27_3
             .expect(Err(vec![create_must_not_have_vuln_element_error(
-                &DocumentCategory::CsafInformationalAdvisory,
+                &CsafDocumentCategory::CsafInformationalAdvisory,
             )]));
         TESTS_2_1.test_6_1_27_3.expect(
             Err(vec![create_must_not_have_vuln_element_error(
-                &DocumentCategory::CsafInformationalAdvisory,
+                &CsafDocumentCategory::CsafInformationalAdvisory,
             )]),
             Err(vec![create_must_not_have_vuln_element_error(
-                &DocumentCategory::CsafWithdrawn,
+                &CsafDocumentCategory::CsafWithdrawn,
             )]),
             Err(vec![create_must_not_have_vuln_element_error(
-                &DocumentCategory::CsafSuperseded,
+                &CsafDocumentCategory::CsafSuperseded,
             )]),
             Ok(()),
             Ok(()),

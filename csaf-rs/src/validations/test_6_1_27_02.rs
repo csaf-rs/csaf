@@ -1,9 +1,9 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentReferenceTrait, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentReferenceTrait, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
 
-fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> ValidationError {
+fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{doc_category}' must have at least one reference with category 'external'"
@@ -13,8 +13,8 @@ fn create_missing_external_reference_error(doc_category: &DocumentCategory) -> V
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
-    DocumentCategory::CsafInformationalAdvisory,
-    DocumentCategory::CsafSecurityIncidentResponse,
+    CsafDocumentCategory::CsafInformationalAdvisory,
+    CsafDocumentCategory::CsafSecurityIncidentResponse,
 ]);
 
 /// 6.1.27.2 Document References
@@ -81,7 +81,7 @@ mod tests {
     #[test]
     fn test_test_6_1_27_02() {
         let case_01 = Err(vec![create_missing_external_reference_error(
-            &DocumentCategory::CsafInformationalAdvisory,
+            &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
 
         TESTS_2_0.test_6_1_27_2.expect(case_01.clone());

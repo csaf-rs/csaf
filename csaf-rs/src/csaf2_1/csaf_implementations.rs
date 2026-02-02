@@ -22,6 +22,7 @@ use crate::validation::ValidationError;
 use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 
 impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
@@ -348,8 +349,8 @@ impl DocumentTrait for DocumentLevelMetaData {
         &self.publisher
     }
 
-    fn get_category_string(&self) -> &String {
-        self.category.deref()
+    fn get_category(&self) -> CsafDocumentCategory {
+        CsafDocumentCategory::from(&self.category)
     }
 
     fn get_references(&self) -> Option<&Vec<Reference>> {

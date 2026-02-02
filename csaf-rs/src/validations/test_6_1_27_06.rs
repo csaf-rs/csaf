@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait, VulnerabilityTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
@@ -30,10 +30,10 @@ pub fn test_6_1_27_06_product_status(doc: &impl CsafTrait) -> Result<(), Vec<Val
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-    .shared(&[DocumentCategory::CsafSecurityAdvisory])
-    .csaf21(&[DocumentCategory::CsafDeprecatedSecurityAdvisory]);
+    .shared(&[CsafDocumentCategory::CsafSecurityAdvisory])
+    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
-fn test_6_1_27_06_err_generator(document_category: &DocumentCategory, vuln_path_index: &usize) -> ValidationError {
+fn test_6_1_27_06_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{document_category}' must have a product_status element in each vulnerability"
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn test_test_6_1_27_06() {
         let case_01 = Err(vec![test_6_1_27_06_err_generator(
-            &DocumentCategory::CsafSecurityAdvisory,
+            &CsafDocumentCategory::CsafSecurityAdvisory,
             &0,
         )]);
 
@@ -81,11 +81,11 @@ mod tests {
         TESTS_2_1.test_6_1_27_6.expect(
             case_01,
             Err(vec![test_6_1_27_06_err_generator(
-                &DocumentCategory::CsafSecurityAdvisory,
+                &CsafDocumentCategory::CsafSecurityAdvisory,
                 &0,
             )]),
             Err(vec![test_6_1_27_06_err_generator(
-                &DocumentCategory::CsafDeprecatedSecurityAdvisory,
+                &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
                 &0,
             )]),
         );

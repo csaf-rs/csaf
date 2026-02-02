@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductTrait, ProductTreeTrait};
+use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait, ProductTrait, ProductTreeTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
@@ -10,7 +10,7 @@ fn create_unused_product_id_error(product_id: &str, path: &str) -> ValidationErr
 }
 
 const SKIP_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[DocumentCategory::CsafInformationalAdvisory]);
+    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafInformationalAdvisory]);
 
 /// 6.2.1 Unused Definition of Product ID
 ///

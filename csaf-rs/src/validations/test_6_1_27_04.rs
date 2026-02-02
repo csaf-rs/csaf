@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, CsafDocumentCategory, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
@@ -25,10 +25,10 @@ pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<Valid
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-    .shared(&[DocumentCategory::CsafSecurityAdvisory, DocumentCategory::CsafVex])
-    .csaf21(&[DocumentCategory::CsafDeprecatedSecurityAdvisory]);
+    .shared(&[CsafDocumentCategory::CsafSecurityAdvisory, CsafDocumentCategory::CsafVex])
+    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
-fn test_6_1_27_04_err_generator(document_category: DocumentCategory) -> ValidationError {
+fn test_6_1_27_04_err_generator(document_category: CsafDocumentCategory) -> ValidationError {
     ValidationError {
         message: format!("Document with category '{document_category}' must have a '/product_tree' element"),
         instance_path: "/product_tree".to_string(),
@@ -66,15 +66,15 @@ mod tests {
     #[test]
     fn test_test_6_1_27_04() {
         let case_01 = Err(vec![test_6_1_27_04_err_generator(
-            DocumentCategory::CsafSecurityAdvisory,
+            CsafDocumentCategory::CsafSecurityAdvisory,
         )]);
 
         TESTS_2_0.test_6_1_27_4.expect(case_01.clone());
         TESTS_2_1.test_6_1_27_4.expect(
             case_01,
-            Err(vec![test_6_1_27_04_err_generator(DocumentCategory::CsafVex)]),
+            Err(vec![test_6_1_27_04_err_generator(CsafDocumentCategory::CsafVex)]),
             Err(vec![test_6_1_27_04_err_generator(
-                DocumentCategory::CsafDeprecatedSecurityAdvisory,
+                CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
             )]),
         );
     }

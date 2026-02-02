@@ -21,7 +21,7 @@ fn validate_document_category(
 
     // throw error, as only known profiles are allowed to start with "csaf_"
     if doc_category.starts_with_csaf_underscore() {
-        return Err(vec![test_6_1_27_6_err_generator_starts_with_csaf(
+        return Err(vec![test_6_1_26_6_err_generator_starts_with_csaf(
             doc_category,
             doc_version,
         )]);
@@ -31,7 +31,7 @@ fn validate_document_category(
     let normalized_doc_category = doc_category.normalize();
     for (normalized_known_category, known_category) in CsafDocumentCategory::known_profiles_normalized(doc_version) {
         if normalized_doc_category == normalized_known_category {
-            return Err(vec![test_6_1_27_6_err_generator_too_similar(
+            return Err(vec![test_6_1_26_6_err_generator_too_similar(
                 doc_category,
                 &known_category,
             )]);
@@ -41,21 +41,20 @@ fn validate_document_category(
     Ok(())
 }
 
-fn test_6_1_27_6_err_generator_starts_with_csaf(
+fn test_6_1_26_6_err_generator_starts_with_csaf(
     doc_category: &CsafDocumentCategory,
     version: &CsafVersion,
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document category '{}' is prohibited. Only the following values are allowed to starting with 'csaf_' are allowed: {}",
-            doc_category,
+            "Document category '{doc_category}' is prohibited. Only the following values starting with 'csaf_' are allowed: {}",
             CsafDocumentCategory::known_profile_concat(version)
         ),
         instance_path: "/document/category".to_string(),
     }
 }
 
-fn test_6_1_27_6_err_generator_too_similar(
+fn test_6_1_26_6_err_generator_too_similar(
     doc_category: &CsafDocumentCategory,
     known_category: &CsafDocumentCategory,
 ) -> ValidationError {
@@ -97,19 +96,19 @@ mod tests {
 
     #[test]
     fn test_test_6_1_26() {
-        let case_01 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+        let case_01 = Err(vec![test_6_1_26_6_err_generator_too_similar(
             &CsafDocumentCategory::from("Security_Incident_Response"),
             &CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
-        let case_02 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+        let case_02 = Err(vec![test_6_1_26_6_err_generator_too_similar(
             &CsafDocumentCategory::from("Deprecated Security Advisory"),
             &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
-        let case_03 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+        let case_03 = Err(vec![test_6_1_26_6_err_generator_too_similar(
             &CsafDocumentCategory::from("withdrawn"),
             &CsafDocumentCategory::CsafWithdrawn,
         )]);
-        let case_04 = Err(vec![test_6_1_27_6_err_generator_too_similar(
+        let case_04 = Err(vec![test_6_1_26_6_err_generator_too_similar(
             &CsafDocumentCategory::from("superseded"),
             &CsafDocumentCategory::CsafSuperseded,
         )]);

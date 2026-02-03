@@ -32,8 +32,7 @@ fn create_sha1_only_hash_error(path: &str, hash_index: usize) -> ValidationError
     ValidationError {
         message: "hashes product identification helper uses SHA-1 as the only hash algorithm".to_string(),
         instance_path: format!(
-            "{}/product_identification_helper/hashes/{}/file_hashes",
-            path, hash_index
+            "{path}/product_identification_helper/hashes/{hash_index}/file_hashes",
         ),
     }
 }

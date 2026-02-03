@@ -1,4 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
@@ -624,11 +625,11 @@ impl HashTrait for CryptographicHashes {
 }
 
 impl FileHashTrait for FileHash {
-    fn get_algorithm(&self) -> &String {
-        self.algorithm.deref()
-    }
-
     fn get_hash(&self) -> &String {
         self.value.deref()
+    }
+
+    fn get_algorithm(&self) -> CsafHashAlgorithm {
+        CsafHashAlgorithm::from(&self.algorithm)
     }
 }

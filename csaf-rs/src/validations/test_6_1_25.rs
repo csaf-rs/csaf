@@ -1,6 +1,6 @@
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf_traits::{
-    CsafHashAlgorithm, CsafTrait, FileHashTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait,
-    ProductTreeTrait,
+    CsafTrait, FileHashTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
 };
 use crate::validation::ValidationError;
 use std::collections::HashMap;

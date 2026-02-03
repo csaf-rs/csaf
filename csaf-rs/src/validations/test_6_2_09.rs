@@ -1,6 +1,5 @@
-use crate::csaf_traits::{
-    CsafHashAlgorithm, CsafTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
-};
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
+use crate::csaf_traits::{CsafTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 
 /// 6.2.9 Use of SHA1 as the only Hash Algorithm

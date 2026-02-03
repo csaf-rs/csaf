@@ -272,6 +272,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "csaf-converter"
+version = "0.3.1"
+dependencies = [
+ "anyhow",
+ "clap",
+ "csaf-rs",
+]
+
+[[package]]
 name = "csaf-rs"
 version = "0.3.1"
 dependencies = [

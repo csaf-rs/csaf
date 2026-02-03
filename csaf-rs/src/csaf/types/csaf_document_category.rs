@@ -126,6 +126,11 @@ impl CsafDocumentCategory {
     // --------------------------------------------------------------------------
 
     /// Helper function to remove whitespace, underscores and (various unicode) dashes / hyphens from a string
+    ///
+    /// There is a known issue in CSAF 2.0 around thsese forbidden chars, i.e. it only states "dash, whitespace, and underscore"
+    /// characters. In CSAF 2.1, this was clarified to include "[...] minus, white space, and underscore [...] and
+    /// "[...] Dash and hyphen characters (independent of their graphical variants) [...]". This is a best-effort
+    /// implementation to cover as many of these characters as possible (and might need to be updated).
     fn get_with_forbidden_chars_removed(s: &str) -> String {
         const FORBIDDEN_CHARS: &[char] = &[
             '\u{002D}', // hyphen-minus U+002D

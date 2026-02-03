@@ -1,4 +1,5 @@
-use crate::csaf_traits::{CsafDocumentCategory, CsafTrait, DocumentTrait, NoteTrait};
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
@@ -80,7 +81,6 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf_traits::CsafDocumentCategory;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 

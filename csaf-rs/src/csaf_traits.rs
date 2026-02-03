@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
-pub(crate) use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;

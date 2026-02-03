@@ -1,4 +1,5 @@
-use crate::csaf_traits::{CsafDocumentCategory, CsafTrait, CsafVersion, DocumentTrait};
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait};
 use crate::validation::ValidationError;
 
 /// 6.1.26 Prohibited Document Category Name

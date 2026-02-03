@@ -1,3 +1,5 @@
+#[cfg(feature = "converter")]
+pub mod converter;
 pub mod csaf;
 pub mod csaf2_0;
 pub mod csaf2_1;

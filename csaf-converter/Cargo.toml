@@ -1,0 +1,16 @@
+[package]
+name = "csaf-converter"
+description = "A converter for the CSAF standard written in Rust (converts 2.0 to 2.1)"
+license = "Apache-2.0"
+repository = "https://github.com/csaf-rs/csaf"
+keywords = ["csaf", "converter"]
+readme = "../README.md"
+version = "0.3.1"
+edition = "2024"
+rust-version = "1.88.0"
+publish = false
+
+[dependencies]
+csaf-rs = { path = "../csaf-rs", version = "0.3.1", features = ["default", "converter"] }
+anyhow = "1.0.93"
+clap = { version = "4.5.23", features = ["derive"] }

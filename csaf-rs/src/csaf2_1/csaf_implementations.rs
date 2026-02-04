@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,

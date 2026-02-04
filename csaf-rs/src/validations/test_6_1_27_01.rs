@@ -1,9 +1,10 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, NoteTrait};
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
-fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError {
+fn create_missing_note_error(doc_category: CsafDocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
             "Document with category '{doc_category}' must have at least one document note with category 'description', 'details', 'general' or 'summary'"
@@ -13,8 +14,8 @@ fn create_missing_note_error(doc_category: DocumentCategory) -> ValidationError 
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
-    DocumentCategory::CsafInformationalAdvisory,
-    DocumentCategory::CsafSecurityIncidentResponse,
+    CsafDocumentCategory::CsafInformationalAdvisory,
+    CsafDocumentCategory::CsafSecurityIncidentResponse,
 ]);
 
 /// 6.1.27.1 Document Notes
@@ -80,14 +81,13 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf_traits::DocumentCategory;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_01() {
         let case_01 = Err(vec![create_missing_note_error(
-            DocumentCategory::CsafSecurityIncidentResponse,
+            CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case

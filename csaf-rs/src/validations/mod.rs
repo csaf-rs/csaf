@@ -23,7 +23,7 @@ pub mod test_6_1_22;
 pub mod test_6_1_23;
 pub mod test_6_1_24;
 pub mod test_6_1_25;
-// pub mod test_6_1_26;
+pub mod test_6_1_26;
 pub mod test_6_1_27_01;
 pub mod test_6_1_27_02;
 pub mod test_6_1_27_03;

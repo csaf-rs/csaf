@@ -1,5 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
@@ -12,7 +13,7 @@ use crate::schema::csaf2_1::schema::{
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};
 use std::collections::{BTreeSet, HashMap, HashSet};
-use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
@@ -168,13 +169,8 @@ pub trait DocumentTrait {
     /// Returns the publisher information for this document
     fn get_publisher(&self) -> &Self::PublisherType;
 
-    /// Returns the category of the document as a string
-    fn get_category_string(&self) -> &String;
-
     /// Returns the category of the document as an enum
-    fn get_category(&self) -> DocumentCategory {
-        DocumentCategory::from_string(self.get_category_string())
-    }
+    fn get_category(&self) -> CsafDocumentCategory;
 
     /// Returns the references of this document
     fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
@@ -201,50 +197,6 @@ pub trait DocumentReferenceTrait {
     fn get_summary(&self) -> &String;
     // Returns the URL of the document reference
     fn get_url(&self) -> &String;
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub enum DocumentCategory {
-    CsafInformationalAdvisory,
-    CsafSecurityIncidentResponse,
-    CsafSecurityAdvisory,
-    CsafVex,
-    Other(String),
-    // These categories are only mentioned in CSAF 2.1, but as this is just a string wrapper used
-    // for syntactic sugar, we don't need to make this distinction here
-    CsafWithdrawn,
-    CsafSuperseded,
-    CsafDeprecatedSecurityAdvisory,
-}
-
-impl DocumentCategory {
-    pub fn from_string(category: &str) -> Self {
-        match category {
-            "csaf_informational_advisory" => DocumentCategory::CsafInformationalAdvisory,
-            "csaf_security_incident_response" => DocumentCategory::CsafSecurityIncidentResponse,
-            "csaf_security_advisory" => DocumentCategory::CsafSecurityAdvisory,
-            "csaf_vex" => DocumentCategory::CsafVex,
-            "csaf_deprecated_security_advisory" => DocumentCategory::CsafDeprecatedSecurityAdvisory,
-            "csaf_withdrawn" => DocumentCategory::CsafWithdrawn,
-            "csaf_superseded" => DocumentCategory::CsafSuperseded,
-            _ => DocumentCategory::Other("_".to_string()),
-        }
-    }
-}
-
-impl Display for DocumentCategory {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        match self {
-            DocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
-            DocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
-            DocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
-            DocumentCategory::CsafVex => write!(f, "csaf_vex"),
-            DocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
-            DocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
-            DocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
-            DocumentCategory::Other(other) => write!(f, "{other}"),
-        }
-    }
 }
 
 pub trait PublisherTrait {

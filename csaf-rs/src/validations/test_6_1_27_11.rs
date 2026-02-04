@@ -1,8 +1,9 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait};
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
 
-fn create_missing_vulnerabilities_error(document_category: &DocumentCategory) -> ValidationError {
+fn create_missing_vulnerabilities_error(document_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
         message: format!("Document with category '{document_category}' must have a '/vulnerabilities' element"),
         instance_path: "/vulnerabilities".to_string(),
@@ -31,8 +32,11 @@ pub fn test_6_1_27_11_vulnerabilities(doc: &impl CsafTrait) -> Result<(), Vec<Va
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-    .shared(&[DocumentCategory::CsafSecurityAdvisory, DocumentCategory::CsafVex])
-    .csaf21(&[DocumentCategory::CsafDeprecatedSecurityAdvisory]);
+    .shared(&[
+        CsafDocumentCategory::CsafSecurityAdvisory,
+        CsafDocumentCategory::CsafVex,
+    ])
+    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
     for crate::csaf2_0::testcases::ValidatorForTest6_1_27_11
@@ -65,7 +69,7 @@ mod tests {
     #[test]
     fn test_test_6_1_27_11() {
         let case_01 = Err(vec![create_missing_vulnerabilities_error(
-            &DocumentCategory::CsafSecurityAdvisory,
+            &CsafDocumentCategory::CsafSecurityAdvisory,
         )]);
 
         // CSAF 2.0 has 1 test case
@@ -74,9 +78,11 @@ mod tests {
         // CSAF 2.1 has 3 test cases
         TESTS_2_1.test_6_1_27_11.expect(
             case_01,
-            Err(vec![create_missing_vulnerabilities_error(&DocumentCategory::CsafVex)]),
             Err(vec![create_missing_vulnerabilities_error(
-                &DocumentCategory::CsafDeprecatedSecurityAdvisory,
+                &CsafDocumentCategory::CsafVex,
+            )]),
+            Err(vec![create_missing_vulnerabilities_error(
+                &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
             )]),
         );
     }

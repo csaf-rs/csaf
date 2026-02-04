@@ -66,7 +66,7 @@ impl DocumentCategoryTestConfig {
         match csaf_version {
             CsafVersion::X20 => self
                 .csaf20_categories
-                .map(|cats: &[CsafDocumentCategory]| cats.contains(document_category))
+                .map(|cats| cats.contains(document_category))
                 .unwrap_or_else(|| {
                     if self.shared_categories.is_none() {
                         panic!("Test applicability was checked for CSAF 2.0 on a config that does not contain CSAF 2.0-specific categories or shared categories. (This looks like a dev error)")
@@ -75,7 +75,7 @@ impl DocumentCategoryTestConfig {
                 }),
             CsafVersion::X21 => self
                 .csaf21_categories
-                .map(|cats: &[CsafDocumentCategory]| cats.contains(document_category))
+                .map(|cats| cats.contains(document_category))
                 .unwrap_or_else(|| {
                     if self.shared_categories.is_none() {
                         panic!("Test applicability was checked for CSAF 2.1 on a config that does not contain CSAF 2.1-specific categories or shared categories. (This looks like a dev error.)")

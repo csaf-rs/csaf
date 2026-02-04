@@ -404,6 +404,7 @@ mod tests {
             assert_eq!(CsafDocumentCategory::string_normalize("saf_base"), "safbase");
             // `_saf_base` -> `safbase`
             assert_eq!(CsafDocumentCategory::string_normalize("_saf_base"), "safbase");
+            // `Some_Other-Category` -> `someothercategory`
             assert_eq!(
                 CsafDocumentCategory::string_normalize("Some_Other-Category"),
                 "someothercategory"

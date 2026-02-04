@@ -28,7 +28,7 @@ pub struct TestResult {
     pub status: TestResultStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Tsify)]
 #[serde(rename_all = "camelCase")]
 pub enum TestResultStatus {
     Success,
@@ -38,6 +38,7 @@ pub enum TestResultStatus {
         infos: Vec<ValidationError>,
     },
     NotFound,
+    Skipped,
 }
 
 /// Result of a CSAF validation
@@ -63,7 +64,7 @@ pub struct ValidationResult {
     pub num_not_found: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, Tsify)]
 #[serde(rename_all = "camelCase")]
 pub enum ValidationPreset {
     Basic,
@@ -96,7 +97,7 @@ impl Display for ValidationPreset {
 
 pub trait Validate {
     /// Validates this object according to
-    fn validate_by_test<VersionedDocument>(&self, test_id: &str) -> TestResult;
+    fn validate_by_test(&self, test_id: &str) -> TestResult;
 
     /// Validates this object according to specific test IDs and returns detailed results
     fn validate_by_tests(&self, version: &str, preset: ValidationPreset, test_ids: &[&str]) -> ValidationResult;
@@ -109,11 +110,10 @@ pub trait Validate {
 /// This trait MUST be implemented by the struct that represents a CSAF document
 /// in the respective version.
 ///
-/// It can then be used to validate documents with [validate_by_preset], [validate_by_tests],
-/// or [validate_by_test].
-pub trait Validatable<VersionedDocument> {
+/// It can then be used to validate documents with [validate_by_preset] or [validate_by_tests].
+pub trait Validatable {
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(&self, preset: &ValidationPreset) -> Vec<&str>;
+    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&str>;
 
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
@@ -124,14 +124,14 @@ pub trait Validatable<VersionedDocument> {
 /// This function will check, whether the test_id exists in the Validatable's
 /// tests. If it does, it will execute the test function and return the result.
 /// If not, it will return a TestResult indicating that the test was not found.
-pub fn validate_by_test<VersionedDocument>(target: &impl Validatable<VersionedDocument>, test_id: &str) -> TestResult {
+pub fn validate_by_test(target: &impl Validatable, test_id: &str) -> TestResult {
     // Try to execute the test specified by the test_id
     target.run_test(test_id)
 }
 
 /// Validate document with specific tests and return detailed results.
-pub fn validate_by_tests<VersionedDocument>(
-    target: &impl Validatable<VersionedDocument>,
+pub fn validate_by_tests(
+    target: &impl Validatable,
     version: &str,
     preset: ValidationPreset,
     test_ids: &[&str],
@@ -176,13 +176,9 @@ pub fn validate_by_tests<VersionedDocument>(
 }
 
 /// Validate document with a preset and return detailed results.
-pub fn validate_by_preset<VersionedDocument>(
-    target: &impl Validatable<VersionedDocument>,
-    version: &str,
-    preset: ValidationPreset,
-) -> ValidationResult {
+pub fn validate_by_preset<V: Validatable>(target: &V, version: &str, preset: ValidationPreset) -> ValidationResult {
     // Retrieve the test IDs for the given preset
-    let test_ids: Vec<&str> = target.tests_in_preset(&preset);
+    let test_ids: Vec<&str> = V::tests_in_preset(&preset);
 
     // Forward them to validate_by_tests
     validate_by_tests(target, version, preset, &test_ids)

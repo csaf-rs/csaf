@@ -5,7 +5,7 @@ use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf::validation::{
     TestResult,
-    TestResultStatus::{Failure, NotFound, Success},
+    TestResultStatus::{Failure, NotFound, Skipped, Success},
     Validatable, ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
 };
 use std::str::FromStr;
@@ -68,7 +68,7 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
 /// This prints the results of the tests on stdout.
 fn validate_document<T>(document: T, version: &str, args: &Args) -> Result<()>
 where
-    T: Validatable<T>,
+    T: Validatable,
 {
     let preset = ValidationPreset::from_str(args.preset.as_str())
         .map_err(|_| anyhow::anyhow!("Invalid validation preset: {}", args.preset))?;
@@ -158,6 +158,10 @@ fn print_test_result(test_result: &TestResult) {
         NotFound => {
             // Test not found
             println!("❓  Test not found");
+        },
+        Skipped => {
+            // Test skipped
+            println!("⏭️  Test skipped");
         },
     }
 }

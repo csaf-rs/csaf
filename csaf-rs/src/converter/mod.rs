@@ -10,6 +10,7 @@ pub fn is_csaf_2_0<Doc: CsafTrait>(doc: &Doc) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::raw::HasParsed;
     use crate::csaf2_0::loader::load_document as load_document_2_0;
     use crate::csaf2_1::loader::load_document as load_document_2_1;
 
@@ -19,7 +20,8 @@ mod tests {
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json",
         )
         .expect("Failed to load CSAF 2.0 test document");
-        assert!(is_csaf_2_0(&doc));
+        let parsed = doc.get_parsed().as_ref().expect("Failed to parse CSAF 2.0 document");
+        assert!(is_csaf_2_0(parsed));
     }
 
     #[test]
@@ -28,6 +30,7 @@ mod tests {
             "../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-06-11.json",
         )
         .expect("Failed to load CSAF 2.1 test document");
-        assert!(!is_csaf_2_0(&doc));
+        let parsed = doc.get_parsed().as_ref().expect("Failed to parse CSAF 2.1 document");
+        assert!(!is_csaf_2_0(parsed));
     }
 }

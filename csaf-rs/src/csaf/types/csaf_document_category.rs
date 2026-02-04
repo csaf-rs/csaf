@@ -19,8 +19,8 @@ pub enum CsafDocumentCategory {
     CsafSuperseded,
     CsafDeprecatedSecurityAdvisory,
     // By definition of the standard, everything that is not an exact match for the categories above,
-    // is also csaf_base. This variants represents this case, saving the original string for later
-    // validation (see test test 6.1.26).
+    // is also csaf_base. This variant represents this case, saving the original string for later
+    // validation (see test 6.1.26).
     CsafBaseOther(String),
 }
 
@@ -231,10 +231,10 @@ impl CsafDocumentCategory {
     }
 
     /// Checks if the category string starts with `csaf_` (case-insensitive)
-    /// also checks if everything before `csaf_` whitespace, underscores and hyphens
+    /// also checks that everything before `csaf_` consists only of whitespace, underscores and hyphens
     ///
     /// Examples:
-    /// `csaf_base´ -> true
+    /// `csaf_base` -> true
     /// `csaf_basE` -> true
     /// ` csaf_base` -> true
     /// `_csaf_base` -> true

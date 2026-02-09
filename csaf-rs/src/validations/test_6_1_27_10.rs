@@ -1,4 +1,5 @@
-use crate::csaf_traits::{CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
@@ -79,10 +80,10 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[DocumentCategory::CsafVex]);
+    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]);
 
 fn test_6_1_27_10_err_generator(
-    document_category: &DocumentCategory,
+    document_category: &CsafDocumentCategory,
     product_or_group_id: String,
     vuln_path_index: usize,
     known_affected_path_index: usize,
@@ -130,7 +131,7 @@ mod tests {
     #[test]
     fn test_test_6_1_27_10() {
         let case_01 = Err(vec![test_6_1_27_10_err_generator(
-            &DocumentCategory::CsafVex,
+            &CsafDocumentCategory::CsafVex,
             "CSAFPID-9080702".to_string(),
             0,
             2,

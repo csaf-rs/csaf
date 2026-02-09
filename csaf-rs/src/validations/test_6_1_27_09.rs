@@ -1,6 +1,7 @@
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{
-    CsafTrait, DocumentCategory, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait,
-    WithOptionalGroupIds, WithOptionalProductIds,
+    CsafTrait, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait, WithOptionalGroupIds,
+    WithOptionalProductIds,
 };
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::helpers::resolve_product_groups;
@@ -101,10 +102,10 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[DocumentCategory::CsafVex]);
+    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]);
 
 fn test_6_1_27_09_err_generator(
-    document_category: &DocumentCategory,
+    document_category: &CsafDocumentCategory,
     product_or_group_id: String,
     vuln_path_index: usize,
     known_not_affected_path_index: usize,
@@ -152,37 +153,37 @@ mod tests {
     #[test]
     fn test_test_6_1_27_09() {
         let case_01 = Err(vec![test_6_1_27_09_err_generator(
-            &DocumentCategory::CsafVex,
+            &CsafDocumentCategory::CsafVex,
             "CSAFPID-9080702".to_string(),
             0,
             2,
         )]);
         let case_02 = Err(vec![test_6_1_27_09_err_generator(
-            &DocumentCategory::CsafVex,
+            &CsafDocumentCategory::CsafVex,
             "CSAFPID-9080702".to_string(),
             0,
             2,
         )]);
         let case_03 = Err(vec![test_6_1_27_09_err_generator(
-            &DocumentCategory::CsafVex,
+            &CsafDocumentCategory::CsafVex,
             "CSAFPID-9080700".to_string(),
             0,
             0,
         )]);
         let case_04 = Err(vec![test_6_1_27_09_err_generator(
-            &DocumentCategory::CsafVex,
+            &CsafDocumentCategory::CsafVex,
             "CSAFPID-9080700".to_string(),
             0,
             0,
         )]);
         let case_05 = Err(vec![test_6_1_27_09_err_generator(
-            &DocumentCategory::CsafVex,
+            &CsafDocumentCategory::CsafVex,
             "CSAFPID-9080700".to_string(),
             0,
             0,
         )]);
         let case_06 = Err(vec![test_6_1_27_09_err_generator(
-            &DocumentCategory::CsafVex,
+            &CsafDocumentCategory::CsafVex,
             "CSAFPID-9080701".to_string(),
             1,
             1,

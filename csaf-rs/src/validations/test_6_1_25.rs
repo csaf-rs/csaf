@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf_traits::{
     CsafTrait, FileHashTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
 };
@@ -22,9 +23,9 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
             if let Some(helper) = product.get_product_identification_helper() {
                 for (hash_i, hash) in helper.get_hashes().iter().enumerate() {
                     // Iterate over file_hashes, build hashmap of all encountered algos and their indices
-                    let mut algorithms = HashMap::<String, Vec<usize>>::new();
+                    let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<usize>>::new();
                     for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                        let file_hash_is = algorithms.entry(file_hash.get_algorithm().to_string()).or_default();
+                        let file_hash_is = algorithms.entry(file_hash.get_algorithm()).or_default();
                         file_hash_is.push(file_hash_i);
                     }
                     // For each algo found multiple times, generate error message for all indices with the algo
@@ -32,7 +33,7 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
                         if file_hash_is.len() > 1 {
                             for file_hash_i in file_hash_is.iter() {
                                 errors.get_or_insert_with(Vec::new).push(test_6_1_25_err_generator(
-                                    algo.to_string(),
+                                    algo,
                                     path.to_string(),
                                     hash_i.to_string(),
                                     file_hash_i.to_string(),
@@ -47,11 +48,16 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
     errors.map_or(Ok(()), Err)
 }
 
-fn test_6_1_25_err_generator(algorithm: String, path: String, hash_i: String, file_hash_i: String) -> ValidationError {
+fn test_6_1_25_err_generator(
+    algorithm: &CsafHashAlgorithm,
+    path: String,
+    hash_i: String,
+    file_hash_i: String,
+) -> ValidationError {
     ValidationError {
         message: format!("Multiple use of the same hash algorithm '{algorithm}' in file_hashes"),
         instance_path: format!(
-            "{path}/product_identification_helper/hashes/{hash_i}/file_hashes/{file_hash_i} /algorithm"
+            "{path}/product_identification_helper/hashes/{hash_i}/file_hashes/{file_hash_i}/algorithm"
         ),
     }
 }
@@ -88,13 +94,13 @@ mod tests {
     fn test_test_6_1_25() {
         let case_01 = Err(vec![
             test_6_1_25_err_generator(
-                "sha256".to_string(),
+                &CsafHashAlgorithm::Sha256,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "0".to_string(),
             ),
             test_6_1_25_err_generator(
-                "sha256".to_string(),
+                &CsafHashAlgorithm::Sha256,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "1".to_string(),

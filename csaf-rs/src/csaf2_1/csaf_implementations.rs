@@ -1,4 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
@@ -348,8 +350,8 @@ impl DocumentTrait for DocumentLevelMetaData {
         &self.publisher
     }
 
-    fn get_category_string(&self) -> &String {
-        self.category.deref()
+    fn get_category(&self) -> CsafDocumentCategory {
+        CsafDocumentCategory::from(&self.category)
     }
 
     fn get_references(&self) -> Option<&Vec<Reference>> {
@@ -624,11 +626,11 @@ impl HashTrait for CryptographicHashes {
 }
 
 impl FileHashTrait for FileHash {
-    fn get_algorithm(&self) -> &String {
-        self.algorithm.deref()
-    }
-
     fn get_hash(&self) -> &String {
         self.value.deref()
+    }
+
+    fn get_algorithm(&self) -> CsafHashAlgorithm {
+        CsafHashAlgorithm::from(&self.algorithm)
     }
 }

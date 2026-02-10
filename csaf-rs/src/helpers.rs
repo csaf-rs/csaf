@@ -122,3 +122,40 @@ pub static REGISTERED_SSVC_NAMESPACES: LazyLock<HashSet<String>> = LazyLock::new
 
     namespaces
 });
+
+#[derive(RustEmbed)]
+#[folder = "assets/cwe/"]
+#[include = "*.csv"]
+struct CweCsvFiles;
+
+pub static CWE_ENTRIES: LazyLock<HashMap<String, HashMap<String, String>>> = LazyLock::new(|| {
+    let mut entries = HashMap::new();
+
+    for filename in CweCsvFiles::iter() {
+        if let Some(file) = CweCsvFiles::get(&filename) {
+            let version = &filename
+                .strip_prefix("cwe-")
+                .expect("Filenames in assets/cwe should start with 'cwe-'.")
+                .strip_suffix(".csv")
+                .expect("Filenames in assets/cwe should end with '.csv'.");
+            let version = match version.starts_with("v") {
+                true => &version[1..],
+                false => version,
+            };
+            let mut versioned_data: HashMap<String, String> = HashMap::new();
+            let content =
+                std::str::from_utf8(&file.data).expect("Files in assets/cwe should be valid UTF-8 encoded text files.");
+            for line in content.lines() {
+                let parts: Vec<&str> = line.split('\t').collect();
+                if parts.len() >= 2 {
+                    let id = format!("CWE-{}", parts[0].trim());
+                    let name = parts[1].trim().to_string();
+                    versioned_data.insert(id, name);
+                }
+            }
+            entries.insert(version.to_string(), versioned_data);
+        }
+    }
+
+    entries
+});

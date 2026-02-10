@@ -64,39 +64,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -170,12 +175,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-02-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-02-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-02-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -249,12 +256,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-03-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-03-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-03-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -334,39 +343,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-04-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -440,12 +454,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-05-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-05-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-05-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -531,93 +547,104 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-05.json", "05", e))) },
+            case_05), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13),
-            ("14", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-13.json", "13", e))) },
+            case_13), ("14", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-14.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-14.json", "14", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_14),
-            ("15", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-14.json", "14", e))) },
+            case_14), ("15", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-15.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-15.json", "15", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_15)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-06-15.json", "15", e))) },
+            case_15)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -696,30 +723,34 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-07-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -802,66 +833,74 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-03.json", "03", e))) },
+            case_03), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13),
-            ("14", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-13.json", "13", e))) },
+            case_13), ("14", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-14.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-14.json", "14", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_14)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-08-14.json", "14", e))) },
+            case_14)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -943,57 +982,64 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-03.json", "03", e))) },
+            case_03), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-09-13.json", "13", e))) },
+            case_13)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1067,12 +1113,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-10-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-10-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-10-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1146,12 +1194,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-11-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-11-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-11-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1225,12 +1275,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-12-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-12-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-12-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1304,12 +1356,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-13-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-13-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-13-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1402,156 +1456,174 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("06", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-05.json", "05", e))) },
+            case_05), ("06", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-06.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-06.json", "06", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_06),
-            ("07", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-06.json", "06", e))) },
+            case_06), ("07", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-07.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-07.json", "07", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_07),
-            ("08", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-07.json", "07", e))) },
+            case_07), ("08", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-08.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-08.json", "08", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_08),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-08.json", "08", e))) },
+            case_08), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13),
-            ("14", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-13.json", "13", e))) },
+            case_13), ("14", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-14.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-14.json", "14", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_14),
-            ("15", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-14.json", "14", e))) },
+            case_14), ("15", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-15.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-15.json", "15", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_15),
-            ("16", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-15.json", "15", e))) },
+            case_15), ("16", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-16.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-16.json", "16", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_16),
-            ("17", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-16.json", "16", e))) },
+            case_16), ("17", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-17.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-17.json", "17", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_17),
-            ("18", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-17.json", "17", e))) },
+            case_17), ("18", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-18.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-18.json", "18", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_18),
-            ("19", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-18.json", "18", e))) },
+            case_18), ("19", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-19.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-19.json", "19", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_19)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-14-19.json", "19", e))) },
+            case_19)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1631,39 +1703,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-15-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1757,165 +1834,184 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("06", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-05.json", "05", e))) },
+            case_05), ("06", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-06.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-06.json", "06", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_06),
-            ("07", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-06.json", "06", e))) },
+            case_06), ("07", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-07.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-07.json", "07", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_07),
-            ("08", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-07.json", "07", e))) },
+            case_07), ("08", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-08.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-08.json", "08", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_08),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-08.json", "08", e))) },
+            case_08), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13),
-            ("14", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-13.json", "13", e))) },
+            case_13), ("14", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-14.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-14.json", "14", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_14),
-            ("15", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-14.json", "14", e))) },
+            case_14), ("15", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-15.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-15.json", "15", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_15),
-            ("16", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-15.json", "15", e))) },
+            case_15), ("16", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-16.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-16.json", "16", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_16),
-            ("17", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-16.json", "16", e))) },
+            case_16), ("17", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-17.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-17.json", "17", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_17),
-            ("18", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-17.json", "17", e))) },
+            case_17), ("18", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-18.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-18.json", "18", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_18),
-            ("19", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-18.json", "18", e))) },
+            case_18), ("19", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-19.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-19.json", "19", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_19),
-            ("31", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-19.json", "19", e))) },
+            case_19), ("31", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-31.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-31.json", "31", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_31)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-16-31.json", "31", e))) },
+            case_31)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -1989,12 +2085,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-17-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-17-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-17-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2068,12 +2166,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-18-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-18-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-18-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2151,21 +2251,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-19-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-19-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-19-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-19-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-19-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-19-02.json", "02", e))) },
+            case_02)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2239,12 +2342,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-20-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-20-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-20-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2325,48 +2430,54 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-21-13.json", "13", e))) },
+            case_13)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2440,12 +2551,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-22-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-22-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-22-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2519,12 +2632,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-23-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-23-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-23-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2604,39 +2719,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-24-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2710,12 +2830,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-25-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-25-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-25-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2789,12 +2911,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-26-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-26-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-26-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2868,12 +2992,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-01-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-01-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-01-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -2947,12 +3073,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-02-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-02-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-02-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3026,12 +3154,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-03-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-03-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-03-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3105,12 +3235,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-04-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-04-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-04-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3184,12 +3316,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-05-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-05-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-05-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3263,12 +3397,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-06-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-06-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-06-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3342,12 +3478,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-07-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-07-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-07-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3421,12 +3559,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-08-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-08-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-08-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3514,111 +3654,124 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("06", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-05.json", "05", e))) },
+            case_05), ("06", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-06.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-06.json", "06", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_06),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-06.json", "06", e))) },
+            case_06), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13),
-            ("14", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-13.json", "13", e))) },
+            case_13), ("14", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-14.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-14.json", "14", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_14),
-            ("15", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-14.json", "14", e))) },
+            case_14), ("15", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-15.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-15.json", "15", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_15),
-            ("16", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-15.json", "15", e))) },
+            case_15), ("16", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-16.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-16.json", "16", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_16)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-09-16.json", "16", e))) },
+            case_16)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3692,12 +3845,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-10-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-10-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-10-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3771,12 +3926,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-11-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-11-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-27-11-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3854,21 +4011,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-28-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-28-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-28-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-28-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-28-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-28-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -3947,30 +4107,34 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-29-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4048,21 +4212,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-30-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-30-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-30-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-30-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-30-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-30-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4149,102 +4316,114 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("06", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-05.json", "05", e))) },
+            case_05), ("06", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-06.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-06.json", "06", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_06),
-            ("07", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-06.json", "06", e))) },
+            case_06), ("07", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-07.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-07.json", "07", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_07),
-            ("08", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-07.json", "07", e))) },
+            case_07), ("08", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-08.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-08.json", "08", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_08),
-            ("09", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-08.json", "08", e))) },
+            case_08), ("09", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-09.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-09.json", "09", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_09),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-09.json", "09", e))) },
+            case_09), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-31-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4322,21 +4501,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-32-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-32-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-32-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-32-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-32-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-32-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4414,21 +4596,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-33-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-33-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-33-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-33-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-33-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-33-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4506,21 +4691,23 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-01-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-01-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-01-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-01-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-01-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-01-11.json", "11", e))) }, case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4594,12 +4781,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-02-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-02-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-02-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4673,12 +4861,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-03-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-03-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-03-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4752,12 +4941,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-04-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-04-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-04-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4831,12 +5021,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-05-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-05-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-05-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4910,12 +5101,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-06-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-06-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-06-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -4989,12 +5181,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-07-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-07-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-07-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5072,21 +5265,23 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-08-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-08-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-08-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-08-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-08-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-08-02.json", "02", e))) }, case_02)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5164,21 +5359,23 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-09-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-09-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-09-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-09-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-09-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-09-02.json", "02", e))) }, case_02)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5252,12 +5449,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-10-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-10-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-10-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5335,21 +5533,23 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-11-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-11-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-11-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-11-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-11-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-11-11.json", "11", e))) }, case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5423,12 +5623,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-12-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-12-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-12-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5502,12 +5703,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-13-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-13-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-13-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5593,93 +5795,103 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("06", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-05.json", "05", e))) },
+            case_05), ("06", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-06.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-06.json", "06", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_06),
-            ("07", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-06.json", "06", e))) },
+            case_06), ("07", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-07.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-07.json", "07", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_07),
-            ("08", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-07.json", "07", e))) },
+            case_07), ("08", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-08.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-08.json", "08", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_08),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-08.json", "08", e))) },
+            case_08), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-12.json", "12", e))) }, case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5758,30 +5970,33 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-15-11.json", "11", e))) }, case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5860,30 +6075,33 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-16-11.json", "11", e))) }, case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -5961,21 +6179,23 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-11.json", "11", e))) }, case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6053,21 +6273,23 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-18-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-18-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-18-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-18-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-18-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-18-11.json", "11", e))) }, case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6156,120 +6378,133 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("06", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-05.json", "05", e))) },
+            case_05), ("06", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-06.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-06.json", "06", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_06),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-06.json", "06", e))) },
+            case_06), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13),
-            ("14", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-13.json", "13", e))) },
+            case_13), ("14", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-14.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-14.json", "14", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_14),
-            ("15", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-14.json", "14", e))) },
+            case_14), ("15", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-15.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-15.json", "15", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_15),
-            ("16", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-15.json", "15", e))) },
+            case_15), ("16", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-16.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-16.json", "16", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_16),
-            ("17", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-16.json", "16", e))) },
+            case_16), ("17", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-17.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-17.json", "17", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_17)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-19-17.json", "17", e))) }, case_17)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6343,12 +6578,13 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-20-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-20-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-20-01.json", "01", e))) }, case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6428,39 +6664,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-01-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6540,39 +6781,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-02-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6652,39 +6898,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-03-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6764,39 +7015,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-04-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6870,12 +7126,14 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-05-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-05-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-05-01.json", "01", e))) },
+            case_01)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -6954,30 +7212,34 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-06-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -7055,21 +7317,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-07-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-07-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-07-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-07-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-07-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-07-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -7149,39 +7414,44 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-02.json", "02", e))) },
+            case_02), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-08-12.json", "12", e))) },
+            case_12)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -7268,102 +7538,114 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("02", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-01.json", "01", e))) },
+            case_01), ("02", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-02.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-02.json", "02", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_02),
-            ("03", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-02.json", "02", e))) },
+            case_02), ("03", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-03.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-03.json", "03", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_03),
-            ("04", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-03.json", "03", e))) },
+            case_03), ("04", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-04.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-04.json", "04", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_04),
-            ("05", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-04.json", "04", e))) },
+            case_04), ("05", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-05.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-05.json", "05", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_05),
-            ("06", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-05.json", "05", e))) },
+            case_05), ("06", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-06.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-06.json", "06", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_06),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-06.json", "06", e))) },
+            case_06), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11),
-            ("12", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-11.json", "11", e))) },
+            case_11), ("12", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-12.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-12.json", "12", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_12),
-            ("13", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-12.json", "12", e))) },
+            case_12), ("13", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-13.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-13.json", "13", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_13),
-            ("14", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-13.json", "13", e))) },
+            case_13), ("14", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-14.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-14.json", "14", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_14),
-            ("15", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-14.json", "14", e))) },
+            case_14), ("15", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-15.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-15.json", "15", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_15)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-09-15.json", "15", e))) },
+            case_15)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -7441,21 +7723,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-10-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-10-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-10-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-10-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-10-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-10-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {
@@ -7533,21 +7818,24 @@ impl<
             ("01", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-01.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-01.json", "01", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_01),
-            ("11", { let path =
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-01.json", "01", e))) },
+            case_01), ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {{#path}} (case {{#case_num}}): {e}")); crate
+            panic!("Failed to load {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-11.json", "11", e)); crate
             ::csaf::raw::RawDocument:: < crate
             ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e |
-            panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}"))) }, case_11)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-11.json", "11", e))) },
+            case_11)
         ];
         let validator = V::default();
         for (case_num, doc, expected) in test_cases {

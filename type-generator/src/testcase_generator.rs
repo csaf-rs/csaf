@@ -101,9 +101,9 @@ fn generate_test_cases_from_json(
                         {
                             let path = #full_path;
                             let content = std::fs::read_to_string(path)
-                                .unwrap_or_else(|e| panic!("Failed to load {{#path}} (case {{#case_num}}): {e}"));
+                                .unwrap_or_else(|e| panic!("Failed to load {} (case {}): {}", #path, #case_num, e));
                             crate::csaf::raw::RawDocument::<#csaf_doc_type>::new(serde_json::from_str::<serde_json::Value>(&content)
-                                .unwrap_or_else(|e| panic!("Failed to parse {{#path}} (case {{#case_num}}): {e}")))
+                                .unwrap_or_else(|e| panic!("Failed to parse {} (case {}): {}", #path, #case_num, e)))
                         },
                         #param_name
                     )

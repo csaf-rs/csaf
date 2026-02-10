@@ -1,20 +1,18 @@
-use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
+use crate::{csaf::raw::RawDocument, schema::csaf2_1::schema::CommonSecurityAdvisoryFramework};
 use std::{fs::File, io::BufReader};
 
-pub fn load_document(path: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {
+pub fn load_document(path: &str) -> std::io::Result<RawDocument<CommonSecurityAdvisoryFramework>> {
     println!("Trying to load document {path}");
 
     let f = File::open(path)?;
     let reader = BufReader::new(f);
-    let doc: CommonSecurityAdvisoryFramework = serde_json::from_reader(reader)?;
-    println!("Successfully parsed document '{}'", *doc.document.title);
-
+    let doc: RawDocument<CommonSecurityAdvisoryFramework> = RawDocument::new(serde_json::from_reader(reader)?);
     Ok(doc)
 }
 
 /// Load a CSAF document from a JSON string
-pub fn load_document_from_str(json_str: &str) -> std::io::Result<CommonSecurityAdvisoryFramework> {
-    let doc: CommonSecurityAdvisoryFramework = serde_json::from_str(json_str)?;
+pub fn load_document_from_str(json_str: &str) -> std::io::Result<RawDocument<CommonSecurityAdvisoryFramework>> {
+    let doc: RawDocument<CommonSecurityAdvisoryFramework> = RawDocument::new(serde_json::from_str(json_str)?);
     Ok(doc)
 }
 

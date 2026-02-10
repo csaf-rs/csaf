@@ -88,7 +88,7 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 
 | Test specification | 2.0 | 2.1 (experimental) |
 | --- | --- | --- |
-| 6.1.1 | :white_check_mark:  | |
+| 6.1.1 | :white_check_mark:  | :white_check_mark: |
 | 6.1.2 | :white_check_mark:  | |
 | 6.1.3 | :white_check_mark:  | |
 | 6.1.4 | :white_check_mark:  | |

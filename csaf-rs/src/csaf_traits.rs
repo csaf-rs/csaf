@@ -1,5 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber};
+use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
@@ -1118,15 +1119,25 @@ pub trait HashTrait {
 
     /// returns
     fn get_file_hashes(&self) -> &Vec<Self::FileHashType>;
+
+    /// Returns true if only hashes with the specified algorithm are present
+    fn contains_only_hash_algorithm(&self, algorithm: CsafHashAlgorithm) -> bool {
+        for hash in self.get_file_hashes() {
+            if hash.get_algorithm() != algorithm {
+                return false;
+            }
+        }
+        true
+    }
 }
 
 /// Trait representing a file_hash, identified by the used hash algorithm and the hash
 pub trait FileHashTrait {
-    /// Returns the hashing algorithm of this hash
-    fn get_algorithm(&self) -> &String;
-
     /// Returns the hash
     fn get_hash(&self) -> &String;
+
+    /// Returns the hashing algorithm as HashAlgorithm enum
+    fn get_algorithm(&self) -> CsafHashAlgorithm;
 }
 
 pub trait WithOptionalGroupIds {

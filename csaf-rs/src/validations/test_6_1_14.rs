@@ -37,7 +37,7 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
 }
 
 // not getting the inner type is what we want here, as we want to compare the ptrs
-#[allow(clippy::suspicious_double_ref_op)]
+#[allow(suspicious_double_ref_op)]
 fn check_for_sorting_errors<V: VersionNumberKind>(history: TypedValidCsafRevisionHistory<V>) -> Result<(), Vec<ValidationError>> {
     let sorted_by_date_by_number = history.get_sorted_by_date_by_number();
     let sorted_by_number = history.get_sorted_by_number();

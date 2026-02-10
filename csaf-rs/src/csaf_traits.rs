@@ -86,6 +86,8 @@ pub trait CsafTrait {
                 vulnerability.get_remediations_product_references(),
                 vulnerability.get_product_status_product_references(),
                 vulnerability.get_metrics_product_references(),
+                vulnerability.get_notes_product_references(),
+                vulnerability.get_involvements_product_references(),
             ];
 
             for getter in getters {
@@ -430,14 +432,18 @@ pub trait VulnerabilityTrait {
     /// Returns an optional vector of metrics related to the vulnerability.
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>>;
 
+    /// Return the path in the JSON document where the metrics are located, used for error reporting
+    fn get_metrics_path(&self) -> String;
+
     /// Utility function to get all group IDs referenced in metrics along with their JSON paths
     fn get_metrics_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
         if let Some(metrics) = self.get_metrics().as_ref() {
+            let metric_path = self.get_metrics_path();
             for (metric_i, metric) in metrics.iter().enumerate() {
                 for (x_i, x) in metric.get_products().enumerate() {
-                    ids.push((x.to_owned(), format!("metrics/{metric_i}/products/{x_i}")));
+                    ids.push((x.to_owned(), format!("{metric_path}/{metric_i}/products/{x_i}")));
                 }
             }
         }
@@ -483,6 +489,10 @@ pub trait VulnerabilityTrait {
         self.get_involvements().extract_group_references("involvements")
     }
 
+    fn get_involvements_product_references(&self) -> Vec<(String, String)> {
+        self.get_involvements().extract_product_references("involvements")
+    }
+
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
 
@@ -498,6 +508,10 @@ pub trait VulnerabilityTrait {
     /// Utility function to get all group IDs referenced in notes along with their JSON paths
     fn get_notes_group_references(&self) -> Vec<(String, String)> {
         self.get_notes().extract_group_references("notes")
+    }
+
+    fn get_notes_product_references(&self) -> Vec<(String, String)> {
+        self.get_notes().extract_product_references("notes")
     }
 
     /// Returns the information about the first known exploitation dates of this vulnerability.
@@ -519,7 +533,7 @@ pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptiona
 pub trait FirstKnownExploitationDatesTrait: WithDate {}
 
 /// Trait for accessing vulnerability involvement information
-pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate {
+pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate + WithOptionalProductIds {
     /// Returns the party associated with this vulnerability involvement
     fn get_party(&self) -> PartyCategory;
 }
@@ -1275,9 +1289,9 @@ impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for Vec<T> {
     }
 }
 
-/// Extension trait for extracting group references from collections where T implements WithOptionalProductIds.
+/// Extension trait for extracting product references from collections where T implements WithOptionalProductIds.
 ///
-/// This trait provides a generic method to extract group IDs from collections of objects
+/// This trait provides a generic method to extract product IDs from collections of objects
 /// that implement the `WithOptionalProductIds` trait, returning them as tuples of (product_id, json_path).
 ///
 /// Implemented for:

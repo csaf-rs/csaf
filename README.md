@@ -1,4 +1,4 @@
-# csaf-rust
+# csaf-rust [![build](https://github.com/csaf-rs/csaf/actions/workflows/build.yml/badge.svg)](https://github.com/csaf-rs/csaf/actions/workflows/build.yml) [![CVSS](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)
 
 This repository is a reference implementation for the CSAF standard in Rust that relies on automatically generating CSAF document structs from the JSON schema.
 

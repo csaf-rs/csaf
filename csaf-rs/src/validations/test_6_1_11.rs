@@ -5,32 +5,24 @@ use crate::csaf_traits::{CsafTrait, Cwe, DocumentTrait, TrackingTrait, Vulnerabi
 use crate::helpers::CWE_ENTRIES;
 use crate::validation::ValidationError;
 
-fn generate_incorrect_cwe_name_error(
-    cwe: &str,
-    given_name: &str,
-    correct_name: &str,
-    version: &str,
-    path: &str,
-) -> ValidationError {
+fn generate_incorrect_cwe_name_error(cwe: &str, name: &str, version: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!(
-            "CWE '{cwe}' exists, but is '{correct_name}' instead of '{given_name}' in version '{version}'."
-        ),
-        instance_path: path.to_string(),
+        message: format!("CWE '{cwe}' exists in version {version}, however its name is '{name}'."),
+        instance_path: format!("{path}/name"),
     }
 }
 
 fn generate_incorrect_cwe_error(cwe: &str, version: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("CWE '{cwe}' does not exist in version '{version}'."),
-        instance_path: path.to_string(),
+        message: format!("CWE '{cwe}' does not exist in version {version}."),
+        instance_path: format!("{path}/id"),
     }
 }
 
 fn generate_incorrect_cwe_version_error(version: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("Unknown CWE version '{version}'."),
-        instance_path: path.to_string(),
+        message: format!("Unknown CWE version {version}."),
+        instance_path: format!("{path}/version"),
     }
 }
 
@@ -39,9 +31,7 @@ fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Vec<ValidationEr
         errors.push(generate_incorrect_cwe_version_error(version, path));
     } else if let Some(cwe_name) = CWE_ENTRIES[version].1.get(&cwe.id) {
         if *cwe_name != cwe.name {
-            errors.push(generate_incorrect_cwe_name_error(
-                &cwe.id, &cwe.name, cwe_name, version, path,
-            ));
+            errors.push(generate_incorrect_cwe_name_error(&cwe.id, cwe_name, version, path));
         }
     } else {
         errors.push(generate_incorrect_cwe_error(&cwe.id, version, path));
@@ -134,7 +124,6 @@ mod tests {
     fn test_test_6_1_11() {
         TESTS_2_0.test_6_1_11.expect(Err(vec![generate_incorrect_cwe_name_error(
             "CWE-79",
-            "Improper Input Validation",
             "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
             "4.5",
             "/vulnerabilities/0/cwe",
@@ -142,7 +131,6 @@ mod tests {
         TESTS_2_1.test_6_1_11.expect(
             Err(vec![generate_incorrect_cwe_name_error(
                 "CWE-79",
-                "Improper Input Validation",
                 "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
                 "4.13",
                 "/vulnerabilities/0/cwes/0",
@@ -154,14 +142,12 @@ mod tests {
             )]),
             Err(vec![generate_incorrect_cwe_name_error(
                 "CWE-1324",
-                "Sensitive Information Accessible by Physical Probing of JTAG Interface",
                 "DEPRECATED: Sensitive Information Accessible by Physical Probing of JTAG Interface",
                 "4.10",
                 "/vulnerabilities/0/cwes/0",
             )]),
             Err(vec![generate_incorrect_cwe_name_error(
                 "CWE-1192",
-                "Improper Identifier for IP Block used in System-On-Chip (SOC)",
                 "System-on-Chip (SoC) Using Components without Unique, Immutable Identifiers",
                 "4.13",
                 "/vulnerabilities/0/cwes/0",

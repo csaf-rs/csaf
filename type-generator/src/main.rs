@@ -43,14 +43,14 @@ fn main() -> Result<(), BuildError> {
     if args.create_test_definitions {
         _ = generate_testcases(
             "../csaf/csaf_2.0/test/validator/data/testcases.json",
-            "assets/tests/csaf_2.0/testcases.json",
+            "../type-generator/assets/tests/csaf_2.0/testcases.json",
             "csaf2_0/testcases.generated.rs",
             CsafVersion::V2_0,
             &args.target_folder,
         );
         _ = generate_testcases(
             "../csaf/csaf_2.1/test/validator/data/testcases.json",
-            "assets/tests/csaf_2.1/testcases.json",
+            "../type-generator/assets/tests/csaf_2.1/testcases.json",
             "csaf2_1/testcases.generated.rs",
             CsafVersion::V2_1,
             &args.target_folder,

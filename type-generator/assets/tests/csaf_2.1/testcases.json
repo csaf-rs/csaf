@@ -1,6 +1,26 @@
 {
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.1/test/validator/testcases_json_schema.json",
   "testschema_version": "2.1",
   "tests": [
-
+    {
+      "id": "6.1.1",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-01-80.json",
+          "valid": false
+        }
+      ]
+    },
+    {
+      "id": "6.1.2",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-02-80.json",
+          "valid": false
+        }
+      ]
+    }
   ]
 }

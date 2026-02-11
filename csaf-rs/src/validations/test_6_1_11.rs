@@ -1,4 +1,7 @@
-use crate::csaf_traits::{CsafTrait, Cwe, VulnerabilityTrait};
+use chrono::NaiveDate;
+
+use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf_traits::{CsafTrait, Cwe, DocumentTrait, TrackingTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
 use crate::validation::ValidationError;
 
@@ -34,7 +37,7 @@ fn generate_incorrect_cwe_version_error(version: &str, path: &str) -> Validation
 fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Vec<ValidationError>) {
     if !CWE_ENTRIES.contains_key(version) {
         errors.push(generate_incorrect_cwe_version_error(version, path));
-    } else if let Some(cwe_name) = CWE_ENTRIES[version].get(&cwe.id) {
+    } else if let Some(cwe_name) = CWE_ENTRIES[version].1.get(&cwe.id) {
         if *cwe_name != cwe.name {
             errors.push(generate_incorrect_cwe_name_error(
                 &cwe.id, &cwe.name, cwe_name, version, path,
@@ -43,6 +46,18 @@ fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Vec<ValidationEr
     } else {
         errors.push(generate_incorrect_cwe_error(&cwe.id, version, path));
     }
+}
+
+fn get_latest_cwe_version(date: NaiveDate) -> Option<&'static str> {
+    let mut latest: Option<(&'static str, &NaiveDate)> = None;
+
+    for (version, (release_date, _)) in CWE_ENTRIES.iter() {
+        if *release_date <= date && (latest.is_none() || *release_date > *latest.unwrap().1) {
+            latest = Some((version, release_date));
+        }
+    }
+
+    latest.map(|(version, _)| version)
 }
 
 pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<ValidationError>> {
@@ -54,16 +69,25 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Va
         let cwe = vulnerability.get_cwe();
         if let Some(cwe) = cwe {
             for (i_cwe, cwe_item) in cwe.iter().enumerate() {
+                let cwe_version = match use_2_1 {
+                    true => cwe_item.version.as_deref().unwrap_or("<empty>"),
+                    false => match doc.get_document().get_tracking().get_current_release_date() {
+                        CsafDateTime::Valid(date) => {
+                            get_latest_cwe_version(date.get_as_utc().date_naive()).unwrap_or("<empty>")
+                        },
+                        _ => "<empty>",
+                    },
+                };
                 match use_2_1 {
                     true => check_cwe(
                         cwe_item,
-                        cwe_item.version.as_deref().unwrap_or("<empty>"),
+                        cwe_version,
                         format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
                         &mut errors,
                     ),
                     false => check_cwe(
                         cwe_item,
-                        "latest",
+                        cwe_version,
                         format!("/vulnerabilities/{i_r}/cwe").as_str(),
                         &mut errors,
                     ),
@@ -112,7 +136,7 @@ mod tests {
             "CWE-79",
             "Improper Input Validation",
             "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
-            "latest",
+            "4.5",
             "/vulnerabilities/0/cwe",
         )]));
         TESTS_2_1.test_6_1_11.expect(

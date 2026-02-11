@@ -152,7 +152,9 @@ jobs:
           fi
    
   devguard-secret-scanning: # uses gitleaks
-    needs: prepare
+    needs: 
+      - prepare
+      - build-platforms
     runs-on: ubuntu-latest
     steps:
       - name: Run devguard-scanner secret-scanning
@@ -160,7 +162,9 @@ jobs:
         with:
           args: devguard-scanner secret-scanning --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" --defaultRef="${{ needs.prepare.outputs.git-version }}"  --ref="${{ needs.prepare.outputs.git-version }}" --isTag=${{ github.ref_type == 'tag' }}
   devguard-sast: #uses semgrep
-    needs: prepare
+    needs: 
+      - prepare
+      - build-platforms
     runs-on: ubuntu-latest
     steps:
       - name: Run devguard-scanner sast
@@ -168,7 +172,9 @@ jobs:
         with:
           args: devguard-scanner sast --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" --defaultRef="${{ needs.prepare.outputs.git-version }}"  --ref="${{ needs.prepare.outputs.git-version }}"  --isTag=${{ github.ref_type == 'tag' }}
   devguard-iac: # uses checkov
-    needs: prepare
+    needs: 
+      - prepare
+      - build-platforms
     runs-on: ubuntu-latest
     steps:
       - name: Run devguard-scanner iac
@@ -177,8 +183,8 @@ jobs:
           args: devguard-scanner iac --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" --defaultRef="${{ needs.prepare.outputs.git-version }}"  --ref="${{ needs.prepare.outputs.git-version }}"  --isTag=${{ github.ref_type == 'tag' }}
   process-sboms:
     needs: 
-      - build-matrix
       - prepare
+      - build-platforms
     runs-on: ubuntu-latest
     steps:
       - name: Add Go bin to PATH

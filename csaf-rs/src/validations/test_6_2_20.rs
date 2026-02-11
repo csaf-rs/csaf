@@ -57,7 +57,7 @@ const CVSS_V3_0_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.0.json";
 static CVSS_V3_0_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
     let schema_str = include_str!("../../assets/cvss-v3.0.json");
     let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-     // we may not make this strict, otherwise the oneOf does not match
+    // we may not make this strict, otherwise the oneOf does not match
     Resource::from_contents(schema_json)
 });
 
@@ -65,7 +65,7 @@ const CVSS_V3_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.1.json";
 static CVSS_V3_1_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
     let schema_str = include_str!("../../assets/cvss-v3.1.json");
     let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-     // we may not make this strict, otherwise the oneOf does not match
+    // we may not make this strict, otherwise the oneOf does not match
     Resource::from_contents(schema_json)
 });
 
@@ -100,17 +100,13 @@ pub fn test_6_2_20_additional_properties(json: &Value, schema: Resource) -> Resu
 
     let results: Vec<_> = validator
         .iter_errors(json)
-        .map(|error| match error.kind() {
-            ValidationErrorKind::UnevaluatedProperties { unexpected } => {
-                unexpected
+        .flat_map(|error| match error.kind() {
+            ValidationErrorKind::UnevaluatedProperties { unexpected } => unexpected
                 .iter()
                 .map(|property| create_additional_properties_error(property, error.instance_path().as_str()))
-                .collect()},
-            _ => {
-                vec![]
-            },
+                .collect(),
+            _ => vec![],
         })
-        .flatten()
         .collect();
 
     if results.is_empty() { Ok(()) } else { Err(results) }
@@ -118,7 +114,7 @@ pub fn test_6_2_20_additional_properties(json: &Value, schema: Resource) -> Resu
 
 fn create_additional_properties_error(key: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("The key {key} is not defined in the JSON schema."),
+        message: format!("The key '{key}' is not defined in the JSON schema."),
         instance_path: path.to_string(),
     }
 }

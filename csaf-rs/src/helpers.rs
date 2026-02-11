@@ -1,5 +1,6 @@
 use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use crate::csaf2_1::ssvc_dp::DecisionPoint;
+use chrono::NaiveDate;
 use rust_embed::RustEmbed;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::ops::Deref;
@@ -128,19 +129,23 @@ pub static REGISTERED_SSVC_NAMESPACES: LazyLock<HashSet<String>> = LazyLock::new
 #[include = "*.csv"]
 struct CweCsvFiles;
 
-pub static CWE_ENTRIES: LazyLock<HashMap<String, HashMap<String, String>>> = LazyLock::new(|| {
+pub type CweReleaseDateAndData = (NaiveDate, HashMap<String, String>);
+pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyLock::new(|| {
     let mut entries = HashMap::new();
 
     for filename in CweCsvFiles::iter() {
         if let Some(file) = CweCsvFiles::get(&filename) {
-            let version = &filename
-                .strip_prefix("cwe-")
-                .expect("Filenames in assets/cwe should start with 'cwe-'.")
+            let version_and_date = &filename
+                .strip_prefix("cwe_")
+                .expect("Filenames in assets/cwe should start with 'cwe_'.")
                 .strip_suffix(".csv")
                 .expect("Filenames in assets/cwe should end with '.csv'.");
-            let version = match version.starts_with("v") {
-                true => &version[1..],
-                false => version,
+            let version_parts = version_and_date.split("_").collect::<Vec<&str>>();
+            let version = version_parts[0];
+            let release_date = match version_parts[1] {
+                "" => NaiveDate::from_ymd_opt(1970, 1, 1).expect("Fallback date should be valid."),
+                date_str => NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
+                    .expect("Date part of filenames in assets/cwe should be in 'YYYY-MM-DD' format."),
             };
             let mut versioned_data: HashMap<String, String> = HashMap::new();
             let content =
@@ -153,7 +158,7 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, HashMap<String, String>>> = Laz
                     versioned_data.insert(id, name);
                 }
             }
-            entries.insert(version.to_string(), versioned_data);
+            entries.insert(version.to_string(), (release_date, versioned_data));
         }
     }
 

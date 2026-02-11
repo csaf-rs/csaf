@@ -92,8 +92,8 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
         }
 
         // Perform cycle check
-        let mut visited = HashSet::new();
         for product_id in relation_map.keys() {
+            let mut visited = HashSet::new();
             if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
                 errors
                     .get_or_insert_with(Vec::new)
@@ -136,9 +136,14 @@ mod tests {
     #[test]
     fn test_test_6_1_03() {
         let shared_error_01 = Err(vec![generate_self_reference_relates_to_error(0)]);
+        let shared_error_02 = Err(vec![generate_self_reference_product_error(0)]);
 
-        TESTS_2_0.test_6_1_3.expect(shared_error_01.clone());
-        TESTS_2_1.test_6_1_3.expect(shared_error_01.clone());
+        TESTS_2_0
+            .test_6_1_3
+            .expect(shared_error_01.clone(), shared_error_02.clone());
+        TESTS_2_1
+            .test_6_1_3
+            .expect(shared_error_01.clone(), shared_error_02.clone());
     }
 
     #[test]

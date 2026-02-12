@@ -10,13 +10,13 @@
     },
     "publisher": {
       "category": "other",
-      "name": "OASIS CSAF TC",
-      "namespace": "https://csaf.io"
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
     "title": "Mandatory Test: Multiple Definition of Product ID (failing example 1)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-02-01",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-02-80",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {
@@ -50,8 +50,8 @@
         }
       },
       {
-        "category": "product_name",
-        "name": "Product B",
+        "category": "vendor",
+        "name": "Vendor 1",
         "branches": [
           {
             "category": "product_name",

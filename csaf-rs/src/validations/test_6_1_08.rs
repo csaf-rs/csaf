@@ -14,7 +14,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
     let cvss20_validator = create_validator(include_str!("../../assets/cvss-v2.0.json"));
     let cvss30_validator = create_validator(include_str!("../../assets/cvss-v3.0.json"));
     let cvss31_validator = create_validator(include_str!("../../assets/cvss-v3.1.json"));
-    let cvss40_validator = create_validator(include_str!("../../assets/cvss-v4.0.1.json"));
+    let cvss40_validator = create_draft_validator(include_str!("../../assets/cvss-v4.0.rev.json"));
 
     let mut errors: Vec<ValidationError> = Vec::new();
 
@@ -82,8 +82,11 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 }
 
 fn create_validator(schema_str: &str) -> Validator {
-    let parsed_schema: Value = serde_json::from_str(schema_str).unwrap();
-    jsonschema::validator_for(&parsed_schema).unwrap()
+    jsonschema::validator_for(&serde_json::from_str(schema_str).unwrap()).unwrap()
+}
+
+fn create_draft_validator(schema_str: &str) -> Validator {
+    jsonschema::draft202012::new(&serde_json::from_str(schema_str).unwrap()).unwrap()
 }
 
 /// Run the CVSS through json schema validation, add every error during validation to `errors`
@@ -95,13 +98,8 @@ fn evaluate_cvss(
     errors: &mut Vec<ValidationError>,
 ) {
     let value = serde_json::to_value(cvss_value).unwrap();
-    let evaluation = validator.evaluate(&value);
-    for error in evaluation.iter_errors() {
-        errors.push(create_validation_error(
-            error.error.to_string(),
-            base_path,
-            metric.clone(),
-        ));
+    for error in validator.iter_errors(&value) {
+        errors.push(create_validation_error(error.to_string(), base_path, metric.clone()));
     }
 }
 
@@ -171,40 +169,10 @@ mod tests {
                     "/vulnerabilities/0/metrics/0/content",
                     VulnerabilityMetric::CvssV4,
                 ),
-                create_validation_error(
-                    "False schema does not allow \"CRITICAL\"".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
-                ),
-                create_validation_error(
-                    "False schema does not allow 9.3".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
-                ),
             ]),
             Err(vec![
                 create_validation_error(
                     "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
-                ),
-                create_validation_error(
-                    "False schema does not allow \"CRITICAL\"".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
-                ),
-                create_validation_error(
-                    "False schema does not allow \"MEDIUM\"".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
-                ),
-                create_validation_error(
-                    "False schema does not allow 9.3".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
-                ),
-                create_validation_error(
-                    "False schema does not allow 5.4".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
                     VulnerabilityMetric::CvssV4,
                 ),

@@ -38,11 +38,11 @@ fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Vec<ValidationEr
     }
 }
 
-fn get_latest_cwe_version(date: NaiveDate) -> Option<&'static str> {
-    let mut latest: Option<(&'static str, &NaiveDate)> = None;
+fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static String> {
+    let mut latest: Option<(&'static String, &NaiveDate)> = None;
 
     for (version, (release_date, _)) in CWE_ENTRIES.iter() {
-        if *release_date <= date && (latest.is_none() || *release_date > *latest.unwrap().1) {
+        if date.is_none_or(|date| *release_date <= date) && latest.is_none_or(|latest| *release_date > *latest.1) {
             latest = Some((version, release_date));
         }
     }
@@ -59,17 +59,23 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Va
         let cwe = vulnerability.get_cwe();
         if let Some(cwe) = cwe {
             for (i_cwe, cwe_item) in cwe.iter().enumerate() {
-                let cwe_version = match use_2_1 {
-                    true => cwe_item
-                        .version
-                        .as_deref()
-                        .unwrap_or("<invalid document, missing required field for CWE version>"),
-                    false => match doc.get_document().get_tracking().get_current_release_date() {
-                        CsafDateTime::Valid(date) => get_latest_cwe_version(date.get_as_utc().date_naive())
-                            .unwrap_or("<no CWE version available for the given release date>"),
-                        _ => "<missing or invalid current release date, cannot determine CWE version>",
-                    },
-                };
+                let cwe_version = cwe_item
+                    .version
+                    .as_ref()
+                    .or_else(|| {
+                        (match doc.get_document().get_tracking().get_current_release_date() {
+                            // CSAF 2.0 does not require a CWE version, so we need to determine the CWE version
+                            // based on the document's tracking current release date
+                            CsafDateTime::Valid(date) => Some(date.get_as_utc().date_naive()),
+                            // if date is invalid, use latest available CWE version as fallback
+                            _ => None,
+                        })
+                        .and_then(|date| get_latest_cwe_version(Some(date)))
+                        // if no CWE version is available for the given date, use the latest available CWE version as fallback
+                        .or_else(|| get_latest_cwe_version(None))
+                    })
+                    .expect("At least one CWE version should be available in the data source.");
+
                 match use_2_1 {
                     true => check_cwe(
                         cwe_item,

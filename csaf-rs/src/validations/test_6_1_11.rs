@@ -60,12 +60,14 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Va
         if let Some(cwe) = cwe {
             for (i_cwe, cwe_item) in cwe.iter().enumerate() {
                 let cwe_version = match use_2_1 {
-                    true => cwe_item.version.as_deref().unwrap_or("<empty>"),
+                    true => cwe_item
+                        .version
+                        .as_deref()
+                        .unwrap_or("<invalid document, missing required field for CWE version>"),
                     false => match doc.get_document().get_tracking().get_current_release_date() {
-                        CsafDateTime::Valid(date) => {
-                            get_latest_cwe_version(date.get_as_utc().date_naive()).unwrap_or("<empty>")
-                        },
-                        _ => "<empty>",
+                        CsafDateTime::Valid(date) => get_latest_cwe_version(date.get_as_utc().date_naive())
+                            .unwrap_or("<no CWE version available for the given release date>"),
+                        _ => "<missing or invalid current release date, cannot determine CWE version>",
                     },
                 };
                 match use_2_1 {

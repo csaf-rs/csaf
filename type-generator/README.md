@@ -31,7 +31,7 @@ By default the target folder is set to `../csaf-rs` and the generator is creatin
 
 You can always see the available options by running `cargo run -- --help`.
 
-## Custom test cases
+## Custom test cases (see [supplementary tests](assets/tests/supplementary_tests.md))
 
 If you want to add custom test cases, you can put them in `assets/tests` in the same manner as they are in the `csaf` folder (JSON file + listed in `testcases.json`)
 > Make sure to run the generator with `-i -c` afterwards, to the new cases get picked up and the code is upated.

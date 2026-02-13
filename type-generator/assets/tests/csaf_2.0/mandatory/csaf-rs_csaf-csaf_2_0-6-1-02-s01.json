@@ -7,7 +7,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory test: Multiple Definition of Product ID (failing example 1)",
+    "title": "Mandatory test: Multiple Definition of Product ID (failing supplementary example 1 covers all relevant paths)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-02-S01",

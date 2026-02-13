@@ -8,7 +8,7 @@ pub mod test_6_1_07;
 pub mod test_6_1_08;
 // pub mod test_6_1_09;
 // pub mod test_6_1_10;
-// pub mod test_6_1_11;
+pub mod test_6_1_11;
 pub mod test_6_1_12;
 pub mod test_6_1_13;
 pub mod test_6_1_14;

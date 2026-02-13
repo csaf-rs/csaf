@@ -8,6 +8,15 @@
         "label": "CLEAR"
       }
     },
+    "notes": [
+      {
+        "category": "general",
+        "product_ids": [
+          "CSAFPID-9080701"
+        ],
+        "text": "This is some note."
+      }
+    ],
     "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
@@ -27,41 +36,23 @@
       ],
       "status": "final",
       "version": "1"
-    },
-    "notes": [
-      {
-        "category": "general",
-        "text": "This is some note.",
-        "product_ids": [
-          "CSAFPID-9080701"
-        ]
-      }
-    ]
+    }
   },
   "product_tree": {
     "relationships": [
       {
         "category": "default_component_of",
-        "product_reference": "CSAFPID-9080703",
-        "relates_to_product_reference": "CSAFPID-9080704",
         "full_product_name": {
           "name": "Cisco AnyConnect Secure Mobility Client 2.3.185",
           "product_id": "CSAFPID-0004"
-        }
+        },
+        "product_reference": "CSAFPID-9080703",
+        "relates_to_product_reference": "CSAFPID-9080704"
       }
     ]
   },
   "vulnerabilities": [
     {
-      "involvements": [
-        {
-          "party": "other",
-          "status": "open",
-          "product_ids": [
-            "CSAFPID-9080705"
-          ]
-        }
-      ],
       "flags": [
         {
           "label": "component_not_present",
@@ -70,13 +61,22 @@
           ]
         }
       ],
+      "involvements": [
+        {
+          "party": "other",
+          "product_ids": [
+            "CSAFPID-9080705"
+          ],
+          "status": "open"
+        }
+      ],
       "metrics": [
         {
           "content": {
             "cvss_v2": {
-              "baseScore": 0,
-              "version": "2.0",
-              "vectorString": "AV:A/AC:H/Au:N/C:C/I:C/A:C"
+              "baseScore": 6.8,
+              "vectorString": "AV:A/AC:H/Au:N/C:C/I:C/A:C",
+              "version": "2.0"
             }
           },
           "products": [
@@ -87,10 +87,10 @@
       "notes": [
         {
           "category": "other",
-          "text": "Some text",
           "product_ids": [
             "CSAFPID-9080708"
-          ]
+          ],
+          "text": "Some text"
         }
       ],
       "product_status": {
@@ -109,13 +109,16 @@
         "known_not_affected": [
           "CSAFPID-9080709"
         ],
+        "last_affected": [
+          "CSAFPID-9080709"
+        ],
         "recommended": [
           "CSAFPID-9080709"
         ],
         "under_investigation": [
           "CSAFPID-9080709"
         ],
-        "last_affected": [
+        "unknown": [
           "CSAFPID-9080709"
         ]
       },

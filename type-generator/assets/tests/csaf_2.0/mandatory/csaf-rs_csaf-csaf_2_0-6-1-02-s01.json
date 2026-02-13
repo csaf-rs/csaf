@@ -24,46 +24,42 @@
     }
   },
   "product_tree": {
-    "full_product_names": [
-      {
-        "product_id": "CSAFPID-9080700",
-        "name": "Product A"
-      },
-      {
-        "product_id": "CSAFPID-9080700",
-        "name": "Product A"
-      }
-    ],
     "branches": [
       {
         "category": "product_name",
         "name": "Product B",
         "product": {
-          "product_id": "CSAFPID-9080701",
-          "name": "Product B"
+          "name": "Product B",
+          "product_id": "CSAFPID-9080701"
         }
       },
       {
-        "category": "vendor",
-        "name": "Vendor 1",
         "branches": [
           {
             "category": "product_name",
             "name": "Product B",
             "product": {
-              "product_id": "CSAFPID-9080701",
-              "name": "Product B"
+              "name": "Product B",
+              "product_id": "CSAFPID-9080701"
             }
           },
           {
             "category": "product_name",
             "name": "Product A",
             "product": {
-              "product_id": "CSAFPID-9080700",
-              "name": "Product A"
+              "name": "Product A",
+              "product_id": "CSAFPID-9080700"
             }
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Vendor 1"
+      }
+    ],
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
       }
     ],
     "relationships": [
@@ -74,7 +70,7 @@
           "product_id": "CSAFPID-9080702"
         },
         "product_reference": "CSAFPID-9080700",
-        "relates_to_product_reference": "CSAFPID-9080700"
+        "relates_to_product_reference": "CSAFPID-9080701"
       },
       {
         "category": "default_component_of",
@@ -83,7 +79,7 @@
           "product_id": "CSAFPID-9080702"
         },
         "product_reference": "CSAFPID-9080700",
-        "relates_to_product_reference": "CSAFPID-9080700"
+        "relates_to_product_reference": "CSAFPID-9080701"
       },
       {
         "category": "default_component_of",
@@ -92,7 +88,7 @@
           "product_id": "CSAFPID-9080701"
         },
         "product_reference": "CSAFPID-9080700",
-        "relates_to_product_reference": "CSAFPID-9080700"
+        "relates_to_product_reference": "CSAFPID-9080701"
       }
     ]
   }

@@ -33,12 +33,12 @@
     "relationships": [
       {
         "category": "default_component_of",
-        "product_reference": "CSAFPID-9080701",
-        "relates_to_product_reference": "CSAFPID-9080702",
         "full_product_name": {
           "name": "Cisco AnyConnect Secure Mobility Client 2.3.185",
           "product_id": "CSAFPID-0004"
-        }
+        },
+        "product_reference": "CSAFPID-9080701",
+        "relates_to_product_reference": "CSAFPID-9080702"
       }
     ]
   },
@@ -81,6 +81,11 @@
       ],
       "scores": [
         {
+          "cvss_v2": {
+            "baseScore": 6.8,
+            "vectorString": "AV:A/AC:H/Au:N/C:C/I:C/A:C",
+            "version": "2.0"
+          },
           "products": [
             "CSAFPID-9080705"
           ]

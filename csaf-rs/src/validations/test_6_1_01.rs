@@ -128,6 +128,7 @@ mod tests {
                     "CSAFPID-9080709",
                     "/vulnerabilities/0/product_status/under_investigation/0",
                 ),
+                generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/unknown/0"),
                 generate_err_msg("CSAFPID-9080710", "/vulnerabilities/0/remediations/0/product_ids/0"),
                 generate_err_msg("CSAFPID-9080711", "/vulnerabilities/0/threats/0/product_ids/0"),
             ]),

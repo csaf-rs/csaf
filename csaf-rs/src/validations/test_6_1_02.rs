@@ -71,7 +71,6 @@ mod tests {
         ]);
         let shared_error_02 = Err(vec![
             generate_err_msg("CSAFPID-9080700", "/product_tree/full_product_names/0"),
-            generate_err_msg("CSAFPID-9080700", "/product_tree/full_product_names/1"),
             generate_err_msg("CSAFPID-9080701", "/product_tree/branches/0/product"),
             generate_err_msg("CSAFPID-9080701", "/product_tree/branches/1/branches/0/product"),
             generate_err_msg("CSAFPID-9080702", "/product_tree/relationships/0/full_product_name"),

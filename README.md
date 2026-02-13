@@ -1,4 +1,4 @@
-# csaf-rust
+# csaf-rust [![build](https://github.com/csaf-rs/csaf/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/csaf-rs/csaf/actions/workflows/build.yml) [![CVSS](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)
 
 This repository is a reference implementation for the CSAF standard in Rust that relies on automatically generating CSAF document structs from the JSON schema.
 
@@ -88,7 +88,7 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 
 | Test specification | 2.0 | 2.1 (experimental) |
 | --- | --- | --- |
-| 6.1.1 | :white_check_mark:  | |
+| 6.1.1 | :white_check_mark:  | :white_check_mark: |
 | 6.1.2 | :white_check_mark:  | |
 | 6.1.3 | :white_check_mark:  | |
 | 6.1.4 | :white_check_mark:  | |

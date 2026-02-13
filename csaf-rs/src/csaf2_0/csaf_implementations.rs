@@ -221,6 +221,10 @@ impl VulnerabilityTrait for Vulnerability {
         Some(&self.scores)
     }
 
+    fn get_metrics_path(&self) -> String {
+        "scores".to_string()
+    }
+
     fn get_threats(&self) -> &Vec<Self::ThreatType> {
         &self.threats
     }
@@ -332,6 +336,12 @@ impl WithOptionalDate for Involvement {
 
 impl WithOptionalGroupIds for Involvement {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
+}
+
+impl WithOptionalProductIds for Involvement {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         None::<std::iter::Empty<&String>>
     }
 }

@@ -23,10 +23,26 @@ type TestCaseResult = (
     Vec<(Ident, Ident, Ident)>,
 );
 
+fn extract_test_doc(
+    tests: &Vec<serde_json::Value>,
+    base_dir: &str,
+    generated_docs: &mut Vec<(String, String, String)>,
+) {
+    for test in tests {
+        if let Some(name) = test["name"].as_str()
+            && let Some(case_num) = extract_test_case_number(name)
+        {
+            generated_docs.push((case_num, name.to_string(), base_dir.to_string()));
+        }
+    }
+}
+
 fn generate_test_cases_from_json(
     csaf_doc_type: TokenStream,
     base_dir: &str,
+    additional_base_dir: &str,
     testcases: &serde_json::Value,
+    additional_testcases: &serde_json::Value,
 ) -> TestCaseResult {
     // Generate individual test struct definitions
     let mut test_struct_defs = Vec::new();
@@ -38,6 +54,9 @@ fn generate_test_cases_from_json(
     let tests = testcases["tests"]
         .as_array()
         .expect("testcases.json should have a 'tests' array");
+    let additional_tests = additional_testcases["tests"]
+        .as_array()
+        .expect("additional testcases.json should have a 'tests' array");
 
     for test in tests {
         let id = test["id"].as_str().expect("test should have 'id' string");
@@ -49,25 +68,28 @@ fn generate_test_cases_from_json(
         let test_id = id.to_string();
 
         // Collect failure and valid test documents with their paths
-        let mut failure_docs: Vec<(String, String)> = Vec::new(); // (case_num, path)
-        let mut valid_docs: Vec<(String, String)> = Vec::new();
+        let mut failure_docs: Vec<(String, String, String)> = Vec::new(); // (case_num, path)
+        let mut valid_docs: Vec<(String, String, String)> = Vec::new();
 
         if let Some(failures) = test["failures"].as_array() {
-            for failure in failures {
-                if let Some(name) = failure["name"].as_str()
-                    && let Some(case_num) = extract_test_case_number(name)
-                {
-                    failure_docs.push((case_num, name.to_string()));
-                }
-            }
+            extract_test_doc(failures, base_dir, &mut failure_docs);
         }
 
         if let Some(valid_cases) = test.get("valid").and_then(|v| v.as_array()) {
-            for valid in valid_cases {
-                if let Some(name) = valid["name"].as_str()
-                    && let Some(case_num) = extract_test_case_number(name)
-                {
-                    valid_docs.push((case_num, name.to_string()));
+            extract_test_doc(valid_cases, base_dir, &mut valid_docs);
+        }
+
+        // Check for additional test cases in the additional_testcases.json
+        for additional_test in additional_tests {
+            let additional_test_id = additional_test["id"]
+                .as_str()
+                .expect("additional test should have 'id' string");
+            if additional_test_id == id {
+                if let Some(failures) = additional_test["failures"].as_array() {
+                    extract_test_doc(failures, additional_base_dir, &mut failure_docs);
+                }
+                if let Some(valid_cases) = additional_test.get("valid").and_then(|v| v.as_array()) {
+                    extract_test_doc(valid_cases, additional_base_dir, &mut valid_docs);
                 }
             }
         }
@@ -83,7 +105,7 @@ fn generate_test_cases_from_json(
         // Combine all docs with their case numbers
         let all_docs: Vec<_> = failure_docs.iter().chain(valid_docs.iter()).collect();
 
-        for (case_num, _) in &all_docs {
+        for (case_num, _, _) in &all_docs {
             param_names.push(Ident::new(&format!("case_{case_num}"), Span::call_site()));
             param_types.push(quote! { Result<(), Vec<crate::validation::ValidationError>> });
         }
@@ -92,7 +114,7 @@ fn generate_test_cases_from_json(
         let test_cases: Vec<_> = all_docs
             .iter()
             .enumerate()
-            .map(|(idx, (case_num, path))| {
+            .map(|(idx, (case_num, path, base_dir))| {
                 let full_path = format!("{base_dir}/{path}");
                 let param_name = &param_names[idx];
                 quote! {
@@ -215,18 +237,26 @@ fn generate_test_cases_from_json(
 /// Generates testcases module from testcases.json
 pub fn generate_testcases(
     input: &str,
+    additional_input: &str,
     output: &str,
     csaf_version: CsafVersion,
     target_path: &str,
 ) -> Result<(), BuildError> {
     println!("cargo:rerun-if-changed={input}");
+    println!("cargo:rerun-if-changed={additional_input}");
 
     let content = fs::read_to_string(input)?;
+    let additional_content = fs::read_to_string(additional_input)?;
 
     // Extract base directory from input path (directory containing testcases.json)
     let base_dir = std::path::Path::new(input)
         .parent()
         .expect("Failed to get parent directory of testcases.json")
+        .to_str()
+        .expect("Failed to convert path to string");
+    let additional_base_dir = std::path::Path::new(additional_input)
+        .parent()
+        .expect("Failed to get parent directory of additional testcases.json")
         .to_str()
         .expect("Failed to convert path to string");
 
@@ -244,10 +274,17 @@ pub fn generate_testcases(
 
     // Parse testcases.json as generic JSON Value
     let testcases: serde_json::Value = serde_json::from_str(&content)?;
+    let additional_testcases: serde_json::Value = serde_json::from_str(&additional_content)?;
 
     // Generate individual test struct definitions
     let (mandatory_tests, recommended_tests, informative_tests, test_struct_defs, test_instances) =
-        generate_test_cases_from_json(csaf_doc_type, base_dir, &testcases);
+        generate_test_cases_from_json(
+            csaf_doc_type,
+            base_dir,
+            additional_base_dir,
+            &testcases,
+            &additional_testcases,
+        );
 
     // Generate field definitions for TESTS constant (each test as a field with typed validator)
     let field_defs = test_instances

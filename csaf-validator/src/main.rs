@@ -1,55 +1,72 @@
 use anyhow::{Result, bail};
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use csaf::csaf::loader::detect_version;
 use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf::validation::{
     TestResult,
     TestResultStatus::{Failure, NotFound, Skipped, Success},
-    Validatable, ValidationPreset, ValidationResult, validate_by_preset, validate_by_tests,
+    Validatable, ValidationPreset, ValidationResult, validate_by_tests,
 };
+use std::ops::Deref;
 use std::str::FromStr;
 
 /// A validator for CSAF documents
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Path to the CSAF document to validate (not used with --web)
-    #[arg()]
-    path: Option<String>,
+    /// Path to the CSAF document(s) to validate
+    #[arg(action = clap::ArgAction::Append)]
+    path: Vec<String>,
 
     /// Version of CSAF to use
-    #[arg(short, long, default_value = "auto")]
+    #[arg(short = 'C', long, default_value = "auto")]
     csaf_version: String,
 
-    /// The validation preset to use
-    #[arg(short, long, default_value = "basic")]
-    preset: String,
+    /// The validation preset or tests to use
+    #[arg(short = 'T', long, default_value = "basic", action = clap::ArgAction::Append)]
+    test: Vec<String>,
 
-    /// Run only the selected tests, may be specified multiple times
-    #[arg(short, long, action = clap::ArgAction::Append)]
-    test_id: Vec<String>,
+    #[arg(short = 'v', long)]
+    verbose: bool
 }
 
-fn main() -> Result<()> {
+fn main() -> Result<(), anyhow::Error> {
     let args = Args::parse();
 
-    let path = args
-        .path
-        .as_ref()
-        .ok_or_else(|| anyhow::anyhow!("Path argument is required"))?;
+    if args.path.is_empty() {
+        Args::command().print_help()?;
+        println!();
+        bail!("PATH is required");
+    }
 
-    validate_file(path, &args)
+    if args
+        .path
+        .iter()
+        .map(|file| validate_file(file.deref(), &args))
+        .filter(|result| match result {
+            Ok(_) => false,
+            Err(err) => {
+                println!("{err}\n");
+                true
+            },
+        })
+        .count()
+        > 0
+    {
+        bail!("One or more files failed validation");
+    }
+    Ok(())
 }
 
 /// Try to validate a file as a CSAF document based on the specified version.
 fn validate_file(path: &str, args: &Args) -> Result<()> {
-    match if args.csaf_version == "auto" {
-        detect_version(path)?
-    } else {
-        args.csaf_version.clone()
-    }
-    .as_str()
+    println!("Validating file: {path}");
+    let version = match args.csaf_version.as_str() {
+        "auto" => detect_version(path)?,
+        other => other.to_string(),
+    };
+    match version.as_str()
     {
         "2.0" => {
             let document = load_document_2_0(path)?;
@@ -70,35 +87,39 @@ fn validate_document<T>(document: T, version: &str, args: &Args) -> Result<()>
 where
     T: Validatable,
 {
-    let preset = ValidationPreset::from_str(args.preset.as_str())
-        .map_err(|_| anyhow::anyhow!("Invalid validation preset: {}", args.preset))?;
+    let test_ids: Vec<_> = args
+        .test
+        .iter()
+        .flat_map(|test_or_preset| {
+            ValidationPreset::from_str(test_or_preset.as_str())
+                .map_or(vec![test_or_preset.as_str()], |preset| T::tests_in_preset(&preset))
+        })
+        .collect();
 
-    let result = if !args.test_id.is_empty() {
-        // Individual test validation
-        let test_ids: Vec<&str> = args.test_id.iter().map(|s| s.as_str()).collect();
-        validate_by_tests(&document, version, preset, &test_ids)
-    } else {
-        // Preset validation
-        validate_by_preset(&document, version, preset)
-    };
+    let result = validate_by_tests(&document, version, &test_ids);
 
-    print_validation_result(&result);
-    Ok(())
+    print_validation_result(&result, args.verbose);
+    match result.num_errors {
+        0 => Ok(()),
+        _ => Err(anyhow::anyhow!("Validation failed with {} error(s)", result.num_errors)),
+    }
 }
 
 /// Print a validation result to stdout (for CLI use)
-pub fn print_validation_result(result: &ValidationResult) {
-    println!("CSAF Version: {}", result.version);
-    println!("Validating document with {:?} preset...\n", result.preset);
+pub fn print_validation_result(result: &ValidationResult, verbose: bool) {
+    if verbose {
+        println!("CSAF Version: {}", result.version);
+        println!("Validating document...\n");
 
-    // Print individual test results
-    for test_result in &result.test_results {
-        print_test_result(test_result);
+        // Print individual test results
+        for test_result in &result.test_results {
+            print_test_result(test_result);
+        }
+
+        // Print summary
+        println!();
+        println!();
     }
-
-    // Print summary
-    println!();
-    println!();
     match (result.num_errors, result.num_warnings, result.num_infos) {
         (0, 0, 0) => println!("✅  Validation passed! No errors found.\n"),
         (0, 0, infos) => println!("💡  Validation passed with {infos} info(s)\n"),
@@ -108,7 +129,7 @@ pub fn print_validation_result(result: &ValidationResult) {
         },
     }
 
-    if result.num_not_found > 0 {
+    if verbose && result.num_not_found > 0 {
         println!(
             "Note: {} test(s) were not found during validation.\n",
             result.num_not_found

@@ -50,8 +50,6 @@ pub struct ValidationResult {
     pub success: bool,
     /// The detected CSAF version
     pub version: String,
-    /// The validation preset that was used
-    pub preset: ValidationPreset,
     /// Individual test results with execution details
     pub test_results: Vec<TestResult>,
     /// The total number of errors found during validation
@@ -113,7 +111,7 @@ pub trait Validate {
 /// It can then be used to validate documents with [validate_by_preset] or [validate_by_tests].
 pub trait Validatable {
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&str>;
+    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&'static str>;
 
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
@@ -133,7 +131,6 @@ pub fn validate_by_test(target: &impl Validatable, test_id: &str) -> TestResult 
 pub fn validate_by_tests(
     target: &impl Validatable,
     version: &str,
-    preset: ValidationPreset,
     test_ids: &[&str],
 ) -> ValidationResult {
     let mut test_results = Vec::new();
@@ -170,7 +167,6 @@ pub fn validate_by_tests(
         num_warnings,
         num_infos,
         num_not_found,
-        preset,
         test_results,
     }
 }
@@ -181,5 +177,5 @@ pub fn validate_by_preset<V: Validatable>(target: &V, version: &str, preset: Val
     let test_ids: Vec<&str> = V::tests_in_preset(&preset);
 
     // Forward them to validate_by_tests
-    validate_by_tests(target, version, preset, &test_ids)
+    validate_by_tests(target, version, &test_ids)
 }

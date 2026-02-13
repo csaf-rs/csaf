@@ -2,8 +2,6 @@ use crate::{csaf::raw::RawDocument, schema::csaf2_1::schema::CommonSecurityAdvis
 use std::{fs::File, io::BufReader};
 
 pub fn load_document(path: &str) -> std::io::Result<RawDocument<CommonSecurityAdvisoryFramework>> {
-    println!("Trying to load document {path}");
-
     let f = File::open(path)?;
     let reader = BufReader::new(f);
     let doc: RawDocument<CommonSecurityAdvisoryFramework> = RawDocument::new(serde_json::from_reader(reader)?);

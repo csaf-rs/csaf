@@ -41,7 +41,7 @@ fn to_test_result(
 }
 
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&str> {
+    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&'static str> {
         match preset {
             ValidationPreset::Basic => mandatory_tests(),
             ValidationPreset::Extended => [mandatory_tests(), recommended_tests()].concat(),

@@ -63,7 +63,7 @@ where
     T::Parsed: Validatable,
 {
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&str> {
+    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&'static str> {
         [vec!["schema"], CommonSecurityAdvisoryFramework::tests_in_preset(preset)].concat()
     }
 

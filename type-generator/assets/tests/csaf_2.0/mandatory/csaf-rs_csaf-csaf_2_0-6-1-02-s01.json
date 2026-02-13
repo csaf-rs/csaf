@@ -1,0 +1,95 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Multiple Definition of Product ID (failing supplementary example 1 covers all relevant paths)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-02-S01",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "product_name",
+        "name": "Product B",
+        "product": {
+          "name": "Product B",
+          "product_id": "CSAFPID-9080701"
+        }
+      },
+      {
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "Product B",
+            "product": {
+              "name": "Product B",
+              "product_id": "CSAFPID-9080701"
+            }
+          },
+          {
+            "category": "product_name",
+            "name": "Product A",
+            "product": {
+              "name": "Product A",
+              "product_id": "CSAFPID-9080700"
+            }
+          }
+        ],
+        "category": "vendor",
+        "name": "Vendor 1"
+      }
+    ],
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
+      }
+    ],
+    "relationships": [
+      {
+        "category": "default_component_of",
+        "full_product_name": {
+          "name": "P3",
+          "product_id": "CSAFPID-9080702"
+        },
+        "product_reference": "CSAFPID-9080700",
+        "relates_to_product_reference": "CSAFPID-9080701"
+      },
+      {
+        "category": "default_component_of",
+        "full_product_name": {
+          "name": "P3",
+          "product_id": "CSAFPID-9080702"
+        },
+        "product_reference": "CSAFPID-9080700",
+        "relates_to_product_reference": "CSAFPID-9080701"
+      },
+      {
+        "category": "default_component_of",
+        "full_product_name": {
+          "name": "P1",
+          "product_id": "CSAFPID-9080701"
+        },
+        "product_reference": "CSAFPID-9080700",
+        "relates_to_product_reference": "CSAFPID-9080701"
+      }
+    ]
+  }
+}

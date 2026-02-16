@@ -159,6 +159,7 @@ jobs:
           fi
    
   devguard-secret-scanning: # uses gitleaks
+    if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
     needs: 
       - prepare
       - build-platforms
@@ -169,6 +170,7 @@ jobs:
         with:
           args: devguard-scanner secret-scanning --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}"  ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-sast: #uses semgrep
+    if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
     needs: 
       - prepare
       - build-platforms
@@ -183,12 +185,14 @@ jobs:
       - prepare
       - build-platforms
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
     steps:
       - name: Run devguard-scanner iac
         uses: docker://ghcr.io/l3montree-dev/devguard/scanner:main-latest
         with:
           args: devguard-scanner iac --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }} --isTag=${{ github.ref_type == 'tag' }}
   process-sboms:
+    if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
     needs: 
       - prepare
       - build-platforms

@@ -136,7 +136,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.17" => Some(ValidatorForTest6_2_17.validate(self)),
                 "6.2.18" => Some(ValidatorForTest6_2_18.validate(self)),
                 "6.2.19" => None, // Some(ValidatorForTest6_2_19.validate(self)),
-                "6.2.20" => None, // Some(ValidatorForTest6_2_20.validate(self)),
+                "6.2.20" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 _ => None,
             },
         );
@@ -174,6 +180,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             Severity::Warning,
             match test_id {
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
+                "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,
             },
         )

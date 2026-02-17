@@ -1,0 +1,145 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "notes": [
+      {
+        "category": "general",
+        "product_ids": [
+          "CSAFPID-9080701"
+        ],
+        "text": "This is some note."
+      }
+    ],
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory Test: Missing Definition of Product ID (failing supplementary example 1 covers all relevant paths)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-01-S01",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "relationships": [
+      {
+        "category": "default_component_of",
+        "full_product_name": {
+          "name": "Cisco AnyConnect Secure Mobility Client 2.3.185",
+          "product_id": "CSAFPID-0004"
+        },
+        "product_reference": "CSAFPID-9080703",
+        "relates_to_product_reference": "CSAFPID-9080704"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "flags": [
+        {
+          "label": "component_not_present",
+          "product_ids": [
+            "CSAFPID-9080706"
+          ]
+        }
+      ],
+      "involvements": [
+        {
+          "party": "other",
+          "product_ids": [
+            "CSAFPID-9080705"
+          ],
+          "status": "open"
+        }
+      ],
+      "metrics": [
+        {
+          "content": {
+            "cvss_v2": {
+              "baseScore": 6.8,
+              "vectorString": "AV:A/AC:H/Au:N/C:C/I:C/A:C",
+              "version": "2.0"
+            }
+          },
+          "products": [
+            "CSAFPID-9080707"
+          ]
+        }
+      ],
+      "notes": [
+        {
+          "category": "other",
+          "product_ids": [
+            "CSAFPID-9080708"
+          ],
+          "text": "Some text"
+        }
+      ],
+      "product_status": {
+        "first_affected": [
+          "CSAFPID-9080709"
+        ],
+        "first_fixed": [
+          "CSAFPID-9080709"
+        ],
+        "fixed": [
+          "CSAFPID-9080709"
+        ],
+        "known_affected": [
+          "CSAFPID-9080709"
+        ],
+        "known_not_affected": [
+          "CSAFPID-9080709"
+        ],
+        "last_affected": [
+          "CSAFPID-9080709"
+        ],
+        "recommended": [
+          "CSAFPID-9080709"
+        ],
+        "under_investigation": [
+          "CSAFPID-9080709"
+        ],
+        "unknown": [
+          "CSAFPID-9080709"
+        ]
+      },
+      "remediations": [
+        {
+          "category": "workaround",
+          "details": "Remediation details",
+          "product_ids": [
+            "CSAFPID-9080710"
+          ]
+        }
+      ],
+      "threats": [
+        {
+          "category": "exploit_status",
+          "details": "Threat details",
+          "product_ids": [
+            "CSAFPID-9080711"
+          ]
+        }
+      ]
+    }
+  ]
+}

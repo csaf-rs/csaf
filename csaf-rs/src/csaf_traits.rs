@@ -671,6 +671,7 @@ pub trait ProductStatusTrait {
         self.extract_product_references(&mut ids, self.get_last_affected(), "last_affected");
         self.extract_product_references(&mut ids, self.get_recommended(), "recommended");
         self.extract_product_references(&mut ids, self.get_under_investigation(), "under_investigation");
+        self.extract_product_references(&mut ids, self.get_unknown(), "unknown");
         ids
     }
 

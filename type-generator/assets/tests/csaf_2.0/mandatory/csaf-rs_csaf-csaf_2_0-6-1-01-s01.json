@@ -1,0 +1,105 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Missing Definition of Product ID (failing supplementary example 1 covers all relevant paths)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-01-S01",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
+      }
+    ],
+    "relationships": [
+      {
+        "category": "default_component_of",
+        "full_product_name": {
+          "name": "Cisco AnyConnect Secure Mobility Client 2.3.185",
+          "product_id": "CSAFPID-0004"
+        },
+        "product_reference": "CSAFPID-9080701",
+        "relates_to_product_reference": "CSAFPID-9080702"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "product_status": {
+        "first_affected": [
+          "CSAFPID-9080703"
+        ],
+        "first_fixed": [
+          "CSAFPID-9080703"
+        ],
+        "fixed": [
+          "CSAFPID-9080703"
+        ],
+        "known_affected": [
+          "CSAFPID-9080703"
+        ],
+        "known_not_affected": [
+          "CSAFPID-9080703"
+        ],
+        "last_affected": [
+          "CSAFPID-9080703"
+        ],
+        "recommended": [
+          "CSAFPID-9080703"
+        ],
+        "under_investigation": [
+          "CSAFPID-9080703"
+        ]
+      },
+      "remediations": [
+        {
+          "category": "mitigation",
+          "details": "Apply the patch.",
+          "product_ids": [
+            "CSAFPID-9080704"
+          ]
+        }
+      ],
+      "scores": [
+        {
+          "cvss_v2": {
+            "baseScore": 6.8,
+            "vectorString": "AV:A/AC:H/Au:N/C:C/I:C/A:C",
+            "version": "2.0"
+          },
+          "products": [
+            "CSAFPID-9080705"
+          ]
+        }
+      ],
+      "threats": [
+        {
+          "category": "exploit_status",
+          "details": "The vulnerability is being actively exploited in the wild.",
+          "product_ids": [
+            "CSAFPID-9080706"
+          ]
+        }
+      ]
+    }
+  ]
+}

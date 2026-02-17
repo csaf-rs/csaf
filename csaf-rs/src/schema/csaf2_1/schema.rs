@@ -381,7 +381,8 @@ impl AggregateSeverity {
 ///    "sha512"
 ///  ],
 ///  "type": "string",
-///  "minLength": 1
+///  "minLength": 1,
+///  "pattern": "^[0-9a-z][0-9a-z-]*$"
 ///}
 /// ```
 /// </details>
@@ -417,6 +418,11 @@ impl ::std::str::FromStr for AlgorithmOfTheCryptographicHash {
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         if value.chars().count() < 1usize {
             return Err("shorter than 1 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[0-9a-z][0-9a-z-]*$").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err("doesn't match pattern \"^[0-9a-z][0-9a-z-]*$\"".into());
         }
         Ok(Self(value.to_string()))
     }
@@ -2277,7 +2283,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "description": "Indicates the name of the vulnerability tracking or numbering system.",
 ///                  "examples": [
 ///                    "Cisco Bug ID",
-///                    "GitHub Issue"
+///                    "GitHub Issue",
+///                    "https://github.com/oasis-tcs/csaf"
 ///                  ],
 ///                  "type": "string",
 ///                  "minLength": 1
@@ -2287,7 +2294,8 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                  "description": "Is unique label or tracking ID for the vulnerability (if such information exists).",
 ///                  "examples": [
 ///                    "CSCso66472",
-///                    "oasis-tcs/csaf#210"
+///                    "oasis-tcs/csaf#210",
+///                    "#1217"
 ///                  ],
 ///                  "type": "string",
 ///                  "minLength": 1
@@ -3028,11 +3036,12 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 ///              "sha512"
 ///            ],
 ///            "type": "string",
-///            "minLength": 1
+///            "minLength": 1,
+///            "pattern": "^[0-9a-z][0-9a-z-]*$"
 ///          },
 ///          "value": {
 ///            "title": "Value of the cryptographic hash",
-///            "description": "Contains the cryptographic hash value in hexadecimal representation.",
+///            "description": "Contains the cryptographic hash value in lowercase hexadecimal representation.",
 ///            "examples": [
 ///              "37df33cb7464da5c7f077f4d56a32bc84987ec1d85b234537c1c1a4d4fc8d09dc29e2e762cb5203677bf849a2855a0283710f1f5fe1d6ce8d5ac85c645d0fcb3",
 ///              "4775203615d9534a8bfca96a93dc8b461a489f69124a130d786b42204f3341cc",
@@ -3040,7 +3049,7 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 ///            ],
 ///            "type": "string",
 ///            "minLength": 32,
-///            "pattern": "^[0-9a-fA-F]{32,}$"
+///            "pattern": "^[0-9a-f]{32,}$"
 ///          }
 ///        },
 ///        "additionalProperties": false
@@ -4683,11 +4692,12 @@ impl Epss {
 ///        "sha512"
 ///      ],
 ///      "type": "string",
-///      "minLength": 1
+///      "minLength": 1,
+///      "pattern": "^[0-9a-z][0-9a-z-]*$"
 ///    },
 ///    "value": {
 ///      "title": "Value of the cryptographic hash",
-///      "description": "Contains the cryptographic hash value in hexadecimal representation.",
+///      "description": "Contains the cryptographic hash value in lowercase hexadecimal representation.",
 ///      "examples": [
 ///        "37df33cb7464da5c7f077f4d56a32bc84987ec1d85b234537c1c1a4d4fc8d09dc29e2e762cb5203677bf849a2855a0283710f1f5fe1d6ce8d5ac85c645d0fcb3",
 ///        "4775203615d9534a8bfca96a93dc8b461a489f69124a130d786b42204f3341cc",
@@ -4695,7 +4705,7 @@ impl Epss {
 ///      ],
 ///      "type": "string",
 ///      "minLength": 32,
-///      "pattern": "^[0-9a-fA-F]{32,}$"
+///      "pattern": "^[0-9a-f]{32,}$"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -4707,7 +4717,7 @@ impl Epss {
 pub struct FileHash {
     ///Contains the name of the cryptographic hash algorithm used to calculate the value.
     pub algorithm: AlgorithmOfTheCryptographicHash,
-    ///Contains the cryptographic hash value in hexadecimal representation.
+    ///Contains the cryptographic hash value in lowercase hexadecimal representation.
     pub value: ValueOfTheCryptographicHash,
 }
 impl ::std::convert::From<&FileHash> for FileHash {
@@ -5004,11 +5014,12 @@ impl Flag {
 ///                        "sha512"
 ///                      ],
 ///                      "type": "string",
-///                      "minLength": 1
+///                      "minLength": 1,
+///                      "pattern": "^[0-9a-z][0-9a-z-]*$"
 ///                    },
 ///                    "value": {
 ///                      "title": "Value of the cryptographic hash",
-///                      "description": "Contains the cryptographic hash value in hexadecimal representation.",
+///                      "description": "Contains the cryptographic hash value in lowercase hexadecimal representation.",
 ///                      "examples": [
 ///                        "37df33cb7464da5c7f077f4d56a32bc84987ec1d85b234537c1c1a4d4fc8d09dc29e2e762cb5203677bf849a2855a0283710f1f5fe1d6ce8d5ac85c645d0fcb3",
 ///                        "4775203615d9534a8bfca96a93dc8b461a489f69124a130d786b42204f3341cc",
@@ -5016,7 +5027,7 @@ impl Flag {
 ///                      ],
 ///                      "type": "string",
 ///                      "minLength": 32,
-///                      "pattern": "^[0-9a-fA-F]{32,}$"
+///                      "pattern": "^[0-9a-f]{32,}$"
 ///                    }
 ///                  },
 ///                  "additionalProperties": false
@@ -5266,11 +5277,12 @@ impl GenericUri {
 ///                    "sha512"
 ///                  ],
 ///                  "type": "string",
-///                  "minLength": 1
+///                  "minLength": 1,
+///                  "pattern": "^[0-9a-z][0-9a-z-]*$"
 ///                },
 ///                "value": {
 ///                  "title": "Value of the cryptographic hash",
-///                  "description": "Contains the cryptographic hash value in hexadecimal representation.",
+///                  "description": "Contains the cryptographic hash value in lowercase hexadecimal representation.",
 ///                  "examples": [
 ///                    "37df33cb7464da5c7f077f4d56a32bc84987ec1d85b234537c1c1a4d4fc8d09dc29e2e762cb5203677bf849a2855a0283710f1f5fe1d6ce8d5ac85c645d0fcb3",
 ///                    "4775203615d9534a8bfca96a93dc8b461a489f69124a130d786b42204f3341cc",
@@ -5278,7 +5290,7 @@ impl GenericUri {
 ///                  ],
 ///                  "type": "string",
 ///                  "minLength": 32,
-///                  "pattern": "^[0-9a-fA-F]{32,}$"
+///                  "pattern": "^[0-9a-f]{32,}$"
 ///                }
 ///              },
 ///              "additionalProperties": false
@@ -5472,7 +5484,8 @@ impl HelperToIdentifyTheProduct {
 ///      "description": "Indicates the name of the vulnerability tracking or numbering system.",
 ///      "examples": [
 ///        "Cisco Bug ID",
-///        "GitHub Issue"
+///        "GitHub Issue",
+///        "https://github.com/oasis-tcs/csaf"
 ///      ],
 ///      "type": "string",
 ///      "minLength": 1
@@ -5482,7 +5495,8 @@ impl HelperToIdentifyTheProduct {
 ///      "description": "Is unique label or tracking ID for the vulnerability (if such information exists).",
 ///      "examples": [
 ///        "CSCso66472",
-///        "oasis-tcs/csaf#210"
+///        "oasis-tcs/csaf#210",
+///        "#1217"
 ///      ],
 ///      "type": "string",
 ///      "minLength": 1
@@ -9683,7 +9697,8 @@ impl<'de> ::serde::Deserialize<'de> for SummaryOfTheRevision {
 ///  "description": "Indicates the name of the vulnerability tracking or numbering system.",
 ///  "examples": [
 ///    "Cisco Bug ID",
-///    "GitHub Issue"
+///    "GitHub Issue",
+///    "https://github.com/oasis-tcs/csaf"
 ///  ],
 ///  "type": "string",
 ///  "minLength": 1
@@ -9766,7 +9781,8 @@ impl<'de> ::serde::Deserialize<'de> for SystemName {
 ///  "description": "Is unique label or tracking ID for the vulnerability (if such information exists).",
 ///  "examples": [
 ///    "CSCso66472",
-///    "oasis-tcs/csaf#210"
+///    "oasis-tcs/csaf#210",
+///    "#1217"
 ///  ],
 ///  "type": "string",
 ///  "minLength": 1
@@ -10756,14 +10772,14 @@ impl<'de> ::serde::Deserialize<'de> for UniqueIdentifierForTheDocument {
             })
     }
 }
-///Contains the cryptographic hash value in hexadecimal representation.
+///Contains the cryptographic hash value in lowercase hexadecimal representation.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
 ///  "title": "Value of the cryptographic hash",
-///  "description": "Contains the cryptographic hash value in hexadecimal representation.",
+///  "description": "Contains the cryptographic hash value in lowercase hexadecimal representation.",
 ///  "examples": [
 ///    "37df33cb7464da5c7f077f4d56a32bc84987ec1d85b234537c1c1a4d4fc8d09dc29e2e762cb5203677bf849a2855a0283710f1f5fe1d6ce8d5ac85c645d0fcb3",
 ///    "4775203615d9534a8bfca96a93dc8b461a489f69124a130d786b42204f3341cc",
@@ -10771,7 +10787,7 @@ impl<'de> ::serde::Deserialize<'de> for UniqueIdentifierForTheDocument {
 ///  ],
 ///  "type": "string",
 ///  "minLength": 32,
-///  "pattern": "^[0-9a-fA-F]{32,}$"
+///  "pattern": "^[0-9a-f]{32,}$"
 ///}
 /// ```
 /// </details>
@@ -10803,9 +10819,9 @@ impl ::std::str::FromStr for ValueOfTheCryptographicHash {
             return Err("shorter than 32 characters".into());
         }
         static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
-        { ::regress::Regex::new("^[0-9a-fA-F]{32,}$").unwrap() });
+        { ::regress::Regex::new("^[0-9a-f]{32,}$").unwrap() });
         if PATTERN.find(value).is_none() {
-            return Err("doesn't match pattern \"^[0-9a-fA-F]{32,}$\"".into());
+            return Err("doesn't match pattern \"^[0-9a-f]{32,}$\"".into());
         }
         Ok(Self(value.to_string()))
     }
@@ -11125,7 +11141,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///            "description": "Indicates the name of the vulnerability tracking or numbering system.",
 ///            "examples": [
 ///              "Cisco Bug ID",
-///              "GitHub Issue"
+///              "GitHub Issue",
+///              "https://github.com/oasis-tcs/csaf"
 ///            ],
 ///            "type": "string",
 ///            "minLength": 1
@@ -11135,7 +11152,8 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///            "description": "Is unique label or tracking ID for the vulnerability (if such information exists).",
 ///            "examples": [
 ///              "CSCso66472",
-///              "oasis-tcs/csaf#210"
+///              "oasis-tcs/csaf#210",
+///              "#1217"
 ///            ],
 ///            "type": "string",
 ///            "minLength": 1

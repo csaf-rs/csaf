@@ -15871,145 +15871,6 @@ impl<
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatorForTest6_2_47;
 #[derive(Debug, Clone, Copy)]
-pub struct Test6_2_48<V>(std::marker::PhantomData<V>);
-impl<V> Test6_2_48<V> {
-    /// Test ID
-    pub const ID: &'static str = "6.2.48";
-    /// Create a new test instance
-    pub const fn new() -> Self {
-        Self(std::marker::PhantomData)
-    }
-    /// Get the test ID
-    pub fn id(&self) -> &'static str {
-        Self::ID
-    }
-}
-impl<
-    V: crate::test_validation::TestValidator<
-            crate::csaf::raw::RawDocument<
-                crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-            >,
-        > + Default,
-> Test6_2_48<V> {
-    /// Validate a CSAF document using this test's validator.
-    ///
-    /// # Arguments
-    /// * `doc` - The CSAF document to validate
-    ///
-    /// # Returns
-    /// * `Ok(())` if validation passes
-    /// * `Err(Vec<ValidationError>)` if validation fails
-    pub fn validate(
-        &self,
-        doc: &crate::csaf::raw::RawDocument<
-            crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-        >,
-    ) -> Result<(), Vec<crate::validation::ValidationError>> {
-        let validator = V::default();
-        validator.validate(doc)
-    }
-    /// Run the test with expected results for each test case.
-    ///
-    /// The method automatically loads test documents from the file system and runs
-    /// the validation function on each one, comparing actual vs expected results.
-    ///
-    /// # Arguments
-    /// * One parameter per test case document with the expected result
-    ///
-    /// # Panics
-    /// Panics if any test case fails to load, parse, or doesn't match the expected result
-    ///
-    pub fn expect(
-        &self,
-        case_01: Result<(), Vec<crate::validation::ValidationError>>,
-        case_02: Result<(), Vec<crate::validation::ValidationError>>,
-        case_03: Result<(), Vec<crate::validation::ValidationError>>,
-        case_11: Result<(), Vec<crate::validation::ValidationError>>,
-        case_12: Result<(), Vec<crate::validation::ValidationError>>,
-        case_13: Result<(), Vec<crate::validation::ValidationError>>,
-    ) {
-        let test_cases = vec![
-            ("01", { let path =
-            "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-01.json";
-            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-01.json", "01", e)); crate
-            ::csaf::raw::RawDocument:: < crate
-            ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework >
-            ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-01.json", "01", e))) },
-            case_01), ("02", { let path =
-            "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-02.json";
-            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-02.json", "02", e)); crate
-            ::csaf::raw::RawDocument:: < crate
-            ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework >
-            ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-02.json", "02", e))) },
-            case_02), ("03", { let path =
-            "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-03.json";
-            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-03.json", "03", e)); crate
-            ::csaf::raw::RawDocument:: < crate
-            ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework >
-            ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-03.json", "03", e))) },
-            case_03), ("11", { let path =
-            "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-11.json";
-            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-11.json", "11", e)); crate
-            ::csaf::raw::RawDocument:: < crate
-            ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework >
-            ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-11.json", "11", e))) },
-            case_11), ("12", { let path =
-            "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-12.json";
-            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-12.json", "12", e)); crate
-            ::csaf::raw::RawDocument:: < crate
-            ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework >
-            ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-12.json", "12", e))) },
-            case_12), ("13", { let path =
-            "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-13.json";
-            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
-            panic!("Failed to load {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-13.json", "13", e)); crate
-            ::csaf::raw::RawDocument:: < crate
-            ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework >
-            ::new(serde_json::from_str:: < serde_json::Value > (& content)
-            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
-            "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-48-13.json", "13", e))) },
-            case_13)
-        ];
-        let validator = V::default();
-        for (case_num, doc, expected) in test_cases {
-            let actual = validator.validate(&doc);
-            crate::test_result_comparison::compare_test_results(
-                    &actual,
-                    &expected,
-                    Self::ID,
-                    case_num,
-                )
-                .unwrap_or_else(|e| panic!("{}", e));
-        }
-    }
-}
-/// Validator for test case #test_id
-///
-/// Implement `TestValidator<#csaf_doc_type>` on this struct to provide validation logic.
-#[derive(Debug, Clone, Copy, Default)]
-pub struct ValidatorForTest6_2_48;
-#[derive(Debug, Clone, Copy)]
 pub struct Test6_3_1<V>(std::marker::PhantomData<V>);
 impl<V> Test6_3_1<V> {
     /// Test ID
@@ -18205,7 +18066,6 @@ pub struct TestCases {
     pub test_6_2_45: Test6_2_45<ValidatorForTest6_2_45>,
     pub test_6_2_46: Test6_2_46<ValidatorForTest6_2_46>,
     pub test_6_2_47: Test6_2_47<ValidatorForTest6_2_47>,
-    pub test_6_2_48: Test6_2_48<ValidatorForTest6_2_48>,
     pub test_6_3_1: Test6_3_1<ValidatorForTest6_3_1>,
     pub test_6_3_2: Test6_3_2<ValidatorForTest6_3_2>,
     pub test_6_3_3: Test6_3_3<ValidatorForTest6_3_3>,
@@ -18352,7 +18212,6 @@ impl TestCases {
             test_6_2_45: Test6_2_45::new(),
             test_6_2_46: Test6_2_46::new(),
             test_6_2_47: Test6_2_47::new(),
-            test_6_2_48: Test6_2_48::new(),
             test_6_3_1: Test6_3_1::new(),
             test_6_3_2: Test6_3_2::new(),
             test_6_3_3: Test6_3_3::new(),
@@ -18484,7 +18343,7 @@ impl TestCases {
             .test_6_2_39_4.id(), & TESTS_2_1.test_6_2_40.id(), & TESTS_2_1.test_6_2_41
             .id(), & TESTS_2_1.test_6_2_42.id(), & TESTS_2_1.test_6_2_43.id(), &
             TESTS_2_1.test_6_2_44.id(), & TESTS_2_1.test_6_2_45.id(), & TESTS_2_1
-            .test_6_2_46.id(), & TESTS_2_1.test_6_2_47.id(), & TESTS_2_1.test_6_2_48.id()
+            .test_6_2_46.id(), & TESTS_2_1.test_6_2_47.id()
         ]
     }
     /// Get informative test IDs
@@ -18558,7 +18417,7 @@ pub fn recommended_tests() -> Vec<&'static str> {
         .id(), & TESTS_2_1.test_6_2_39_4.id(), & TESTS_2_1.test_6_2_40.id(), & TESTS_2_1
         .test_6_2_41.id(), & TESTS_2_1.test_6_2_42.id(), & TESTS_2_1.test_6_2_43.id(), &
         TESTS_2_1.test_6_2_44.id(), & TESTS_2_1.test_6_2_45.id(), & TESTS_2_1.test_6_2_46
-        .id(), & TESTS_2_1.test_6_2_47.id(), & TESTS_2_1.test_6_2_48.id()
+        .id(), & TESTS_2_1.test_6_2_47.id()
     ]
 }
 /// Get all informative tests as IDs

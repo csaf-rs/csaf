@@ -3,6 +3,7 @@ use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
+use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
@@ -722,30 +723,30 @@ pub trait MetricTrait {
     fn get_source(&self) -> &Option<String>;
 }
 
+/// Helper function to extract the version string from a CVSS JSON object.
+/// TODO: This will be replaced after the CVSS implementation (probably?)
+fn get_cvss_version(cvss: &serde_json::Map<String, serde_json::Value>) -> Option<String> {
+    cvss.get("version").and_then(|v| v.as_str()).map(|v| v.to_string())
+}
+
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
-    fn get_vulnerability_metric_types(&self) -> Vec<VulnerabilityMetric> {
-        let mut types: Vec<VulnerabilityMetric> = Vec::new();
+    fn get_vulnerability_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
+        let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
         if self.has_ssvc() {
-            types.push(VulnerabilityMetric::SsvcV1);
+            types.push(CsafVulnerabilityMetric::SsvcV1);
         }
-        if self.has_cvss_v2() {
-            types.push(VulnerabilityMetric::CvssV2);
+        if let Some(version) = self.get_cvss_v2().and_then(get_cvss_version) {
+            types.push(CsafVulnerabilityMetric::CvssV2(version));
         }
-        if let Some(cvss_v3) = self.get_cvss_v3()
-            && let Some(version) = cvss_v3.get("version").and_then(|v| v.as_str())
-        {
-            if version == "3.0" || version == "3.1" {
-                types.push(VulnerabilityMetric::CvssV3(version.to_string()));
-            } else {
-                panic!("Unsupported cvss v3 version: {version}");
-            }
+        if let Some(version) = self.get_cvss_v3().and_then(get_cvss_version) {
+            types.push(CsafVulnerabilityMetric::CvssV3(version));
         }
-        if self.has_cvss_v4() {
-            types.push(VulnerabilityMetric::CvssV4);
+        if let Some(version) = self.get_cvss_v4().and_then(get_cvss_version) {
+            types.push(CsafVulnerabilityMetric::CvssV4(version));
         }
         if self.has_epss() {
-            types.push(VulnerabilityMetric::Epss);
+            types.push(CsafVulnerabilityMetric::Epss);
         }
         types
     }
@@ -813,40 +814,6 @@ pub trait ContentTrait {
     /// For CSAF 2.1, the path might look like:
     /// `/vulnerabilities/0/metrics/0/content`
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String;
-}
-
-/// Types of vulnerability metrics known until CSAF 2.1
-#[derive(Hash, Eq, PartialEq, Clone)]
-pub enum VulnerabilityMetric {
-    SsvcV1,
-    CvssV2,
-    CvssV3(String),
-    CvssV4,
-    Epss,
-}
-
-/// Display implementation for VulnerabilityMetrics.
-impl Display for VulnerabilityMetric {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            VulnerabilityMetric::SsvcV1 => write!(f, "SSVC-v1"),
-            VulnerabilityMetric::CvssV2 => write!(f, "CVSS-v2"),
-            VulnerabilityMetric::CvssV3(version) => write!(f, "CVSS-v{}", *version),
-            VulnerabilityMetric::CvssV4 => write!(f, "CVSS-v4"),
-            VulnerabilityMetric::Epss => write!(f, "EPSS"),
-        }
-    }
-}
-
-/// Returns the name of the metric property for the given metric type.
-pub fn get_metric_prop_name(metric: VulnerabilityMetric) -> &'static str {
-    match metric {
-        VulnerabilityMetric::SsvcV1 => "ssvc_v1",
-        VulnerabilityMetric::CvssV2 => "cvss_v2",
-        VulnerabilityMetric::CvssV3(_) => "cvss_v3",
-        VulnerabilityMetric::CvssV4 => "cvss_v4",
-        VulnerabilityMetric::Epss => "epss",
-    }
 }
 
 /// Trait representing an abstract threat in a CSAF document.

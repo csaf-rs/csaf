@@ -130,24 +130,45 @@ mod tests {
             &CsafDocumentCategory::from("superseded"),
             &CsafDocumentCategory::CsafSuperseded,
         )]);
-        let case_05_csaf21 = Err(vec![
-            test_6_1_26_err_generator_too_similar(&CsafDocumentCategory::from("csafvex"), &CsafDocumentCategory::CsafVex)
-        ]);
-        let case_06_csaf21 = Err(vec![
-            test_6_1_26_err_generator_too_similar(&CsafDocumentCategory::from("CSafDeprecatedSecurity—Advisory"), &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory),
-        ]);
-        let case_07_csaf21 = Err(vec![
-            test_6_1_26_err_generator_starts_with_csaf(&CsafDocumentCategory::from("CsaF_VeX"), &CsafVersion::X21),
-        ]);
-        let case_08_csaf21 = Err(vec![
-            test_6_1_26_err_generator_starts_with_csaf(&CsafDocumentCategory::from("csaf_BASE"), &CsafVersion::X21),
-        ]);
+        let case_05_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
+            &CsafDocumentCategory::from("csafvex"),
+            &CsafDocumentCategory::CsafVex,
+        )]);
+        let case_06_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
+            &CsafDocumentCategory::from("CSafDeprecatedSecurity—Advisory"),
+            &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+        )]);
+        let case_07_csaf21 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("CsaF_VeX"),
+            &CsafVersion::X21,
+        )]);
+        let case_08_csaf21 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("csaf_BASE"),
+            &CsafVersion::X21,
+        )]);
 
-
-        TESTS_2_0.test_6_1_26.expect(case_01_shared.clone(), case_02_csaf20, case_03_csaf20, case_04_csaf20, Ok(()), Ok(()));
-        TESTS_2_1
-            .test_6_1_26
-            .expect(case_01_shared, case_02_csaf21, case_03_csaf21, case_04_csaf21, case_05_csaf21, case_06_csaf21, case_07_csaf21, case_08_csaf21, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_0.test_6_1_26.expect(
+            case_01_shared.clone(),
+            case_02_csaf20,
+            case_03_csaf20,
+            case_04_csaf20,
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_1_26.expect(
+            case_01_shared,
+            case_02_csaf21,
+            case_03_csaf21,
+            case_04_csaf21,
+            case_05_csaf21,
+            case_06_csaf21,
+            case_07_csaf21,
+            case_08_csaf21,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 
     // Additional unit tests from the editorial version of CSAF 2.1

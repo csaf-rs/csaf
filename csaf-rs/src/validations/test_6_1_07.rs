@@ -1,20 +1,16 @@
-use crate::csaf_traits::{
-    ContentTrait, CsafTrait, MetricTrait, VulnerabilityMetric, VulnerabilityTrait, get_metric_prop_name,
-};
+use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
+use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
-use std::collections::{HashMap};
+use std::collections::HashMap;
 
 /// The actual test in run on a 3 level nested map.
-/// The outer map maps product ids to a second map [ProductVulnerabilityMetricMap], which maps to a third map [ProductVulnerabilityMetricSourceMap].
-type ProductMap = HashMap<String, ProductVulnerabilityMetricMap>;
+/// The outer map maps product ids to a second map [ProductCsafVulnerabilityMetricMap], which maps to a third map [ProductCsafVulnerabilityMetricSourceMap].
+type ProductMap = HashMap<String, ProductCsafVulnerabilityMetricMap>;
 /// The second map maps a metric type (e.g., CVSS v3.1) to a third map
-type ProductVulnerabilityMetricMap = HashMap<VulnerabilityMetric, ProductVulnerabilityMetricSourceMap>;
+type ProductCsafVulnerabilityMetricMap = HashMap<CsafVulnerabilityMetric, ProductCsafVulnerabilityMetricSourceMap>;
 /// The innermost map maps a source (None for CSAF 2.0 or if None is provided) to a list of JSON paths where this metric type is given for the product and source
-type ProductVulnerabilityMetricSourceMap = HashMap<Option<String>, Vec<String>>;
-fn gather_product_metrics(
-    vulnerability: &impl VulnerabilityTrait,
-    vulnerability_index: usize,
-) -> Option<ProductMap> {
+type ProductCsafVulnerabilityMetricSourceMap = HashMap<Option<String>, Vec<String>>;
+fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability_index: usize) -> Option<ProductMap> {
     let metrics = vulnerability.get_metrics();
 
     metrics?;
@@ -93,17 +89,23 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
     }
 }
 
-fn create_validation_error(score_type: &VulnerabilityMetric, product_id: &str, path: String, source: Option<String>) -> ValidationError {
+fn create_validation_error(
+    score_type: &CsafVulnerabilityMetric,
+    product_id: &str,
+    path: String,
+    source: Option<String>,
+) -> ValidationError {
     let source_info = source.map_or("by author".to_string(), |s| format!("for source: {s}"));
     ValidationError {
         message: format!("Multiple {score_type} scores are given for {product_id} {source_info}."),
-        instance_path: format!("{}/{}", path, get_metric_prop_name(score_type.to_owned())),
+        instance_path: format!("{}/{}", path, score_type.get_metric_prop_name()),
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
@@ -113,13 +115,13 @@ mod tests {
         TESTS_2_0.test_6_1_7.expect(
             Err(vec![
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/scores/0".to_string(),
                     None,
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/scores/1".to_string(),
                     None,
@@ -134,13 +136,13 @@ mod tests {
             // case 01
             Err(vec![
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/0/content".to_string(),
                     None,
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/1/content".to_string(),
                     None,
@@ -149,13 +151,13 @@ mod tests {
             // case 02
             Err(vec![
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/0/content".to_string(),
                     None,
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/1/content".to_string(),
                     None,
@@ -164,13 +166,13 @@ mod tests {
             // case 03
             Err(vec![
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV2,
+                    &CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/0/content".to_string(),
                     None,
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV2,
+                    &CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/1/content".to_string(),
                     None,
@@ -179,13 +181,13 @@ mod tests {
             // case 04
             Err(vec![
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV4,
+                    &CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/0/content".to_string(),
                     None,
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV4,
+                    &CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/1/content".to_string(),
                     None,
@@ -194,49 +196,49 @@ mod tests {
             // case 05
             Err(vec![
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/0/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/0/metrics/1/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/1/metrics/1/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.0".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
                     "CSAFPID-9080700",
                     "/vulnerabilities/1/metrics/2/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV2,
+                    &CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                     "CSAFPID-9080701",
                     "/vulnerabilities/2/metrics/0/content".to_string(),
                     Some("https://www.example.net/awesome-research-blog-post".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV2,
+                    &CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                     "CSAFPID-9080701",
                     "/vulnerabilities/2/metrics/1/content".to_string(),
                     Some("https://www.example.net/awesome-research-blog-post".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV4,
+                    &CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                     "CSAFPID-9080701",
                     "/vulnerabilities/3/metrics/0/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV4,
+                    &CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                     "CSAFPID-9080701",
                     "/vulnerabilities/3/metrics/1/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
@@ -245,39 +247,51 @@ mod tests {
             // case 06
             Err(vec![
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.2".to_string()),
                     "CSAFPID-9080700",
-                    "/vulnerabilities/0/metrics/0/content/cvss_v3".to_string(),
+                    "/vulnerabilities/0/metrics/0/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV3("3.1".to_string()),
+                    &CsafVulnerabilityMetric::CvssV3("3.2".to_string()),
                     "CSAFPID-9080700",
-                    "/vulnerabilities/0/metrics/1/content/cvss_v3".to_string(),
+                    "/vulnerabilities/0/metrics/1/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV2,
-                    "CSAFPID-9080701",
-                    "/vulnerabilities/2/metrics/0/content/cvss_v2".to_string(),
-                    Some("https://www.example.net/awesome-research-blog-post".to_string())
-                ),
-                create_validation_error(
-                    &VulnerabilityMetric::CvssV2,
-                    "CSAFPID-9080701",
-                    "/vulnerabilities/2/metrics/1/content/cvss_v2".to_string(),
-                    Some("https://www.example.net/awesome-research-blog-post".to_string())
-                ),
-                create_validation_error(
-                    &VulnerabilityMetric::CvssV4,
-                    "CSAFPID-9080701",
-                    "/vulnerabilities/3/metrics/0/content/".to_string(),
+                    &CsafVulnerabilityMetric::CvssV3("3.4".to_string()),
+                    "CSAFPID-9080700",
+                    "/vulnerabilities/1/metrics/1/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
                 create_validation_error(
-                    &VulnerabilityMetric::CvssV4,
+                    &CsafVulnerabilityMetric::CvssV3("3.4".to_string()),
+                    "CSAFPID-9080700",
+                    "/vulnerabilities/1/metrics/2/content".to_string(),
+                    Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
+                ),
+                create_validation_error(
+                    &CsafVulnerabilityMetric::CvssV2("2.5".to_string()),
                     "CSAFPID-9080701",
-                    "/vulnerabilities/3/metrics/1/content/".to_string(),
+                    "/vulnerabilities/2/metrics/0/content".to_string(),
+                    Some("https://www.example.net/awesome-research-blog-post".to_string()),
+                ),
+                create_validation_error(
+                    &CsafVulnerabilityMetric::CvssV2("2.5".to_string()),
+                    "CSAFPID-9080701",
+                    "/vulnerabilities/2/metrics/1/content".to_string(),
+                    Some("https://www.example.net/awesome-research-blog-post".to_string()),
+                ),
+                create_validation_error(
+                    &CsafVulnerabilityMetric::CvssV4("4.0.1".to_string()),
+                    "CSAFPID-9080701",
+                    "/vulnerabilities/3/metrics/0/content".to_string(),
+                    Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
+                ),
+                create_validation_error(
+                    &CsafVulnerabilityMetric::CvssV4("4.0.1".to_string()),
+                    "CSAFPID-9080701",
+                    "/vulnerabilities/3/metrics/1/content".to_string(),
                     Some("https://www.example.com/.well-known/csaf/clear/2024/esa-2024-0001.json".to_string()),
                 ),
             ]),

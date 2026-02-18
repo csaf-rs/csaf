@@ -18,7 +18,7 @@ impl CsafVulnerabilityMetric {
             CsafVulnerabilityMetric::SsvcV1 => true,
             CsafVulnerabilityMetric::CvssV2(version) => version == "2.0",
             CsafVulnerabilityMetric::CvssV3(version) => version == "3.0" || version == "3.1",
-            CsafVulnerabilityMetric::CvssV4(version) => version == "4.0",
+            CsafVulnerabilityMetric::CvssV4(version) => version == "4.0" || version == "4.0.1",
             CsafVulnerabilityMetric::Epss => true,
         }
     }

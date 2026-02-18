@@ -33,6 +33,16 @@
       ]
     },
     {
+      "id": "6.1.4",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-04-s01.json",
+          "valid": false
+        }
+      ]
+    },
+    {
       "id": "6.1.5",
       "group": "mandatory",
       "failures": [

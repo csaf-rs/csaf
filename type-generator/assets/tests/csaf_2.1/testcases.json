@@ -33,6 +33,36 @@
       ]
     },
     {
+      "id": "6.1.4",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-04-s01.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-04-s02.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-04-s03.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-04-s04.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-04-s05.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-04-s06.json",
+          "valid": false
+        }
+      ]
+    },
+    {
       "id": "6.1.5",
       "group": "mandatory",
       "failures": [

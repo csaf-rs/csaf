@@ -89,7 +89,7 @@ fn create_draft_validator(schema_str: &str) -> Validator {
 }
 
 /// Run the CVSS through json schema validation, add every error during validation to `errors`
-/// TODO: The metric prop is kinda wierd, but this will be removed after CVSS validation is implemented.
+/// TODO: The metric prop is kinda weird, but this will be removed after CVSS validation is implemented.
 fn evaluate_cvss(
     cvss_value: &Map<String, Value>,
     validator: &Validator,

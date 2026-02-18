@@ -3,7 +3,7 @@ use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrai
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
-/// The actual test in run on a 3 level nested map.
+/// The actual test is run on a 3 level nested map.
 /// The outer map maps product ids to a second map [ProductCsafVulnerabilityMetricMap], which maps to a third map [ProductCsafVulnerabilityMetricSourceMap].
 type ProductMap = HashMap<String, ProductCsafVulnerabilityMetricMap>;
 /// The second map maps a metric type (e.g., CVSS v3.1) to a third map

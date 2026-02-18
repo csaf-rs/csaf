@@ -7,14 +7,14 @@ use crate::validation::ValidationError;
 
 fn generate_incorrect_cwe_name_error(cwe: &str, name: &str, version: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("CWE '{cwe}' exists in version {version}, however its name is '{name}'."),
+        message: format!("Weakness '{cwe}' exists in version {version}, however its name is '{name}'."),
         instance_path: format!("{path}/name"),
     }
 }
 
 fn generate_incorrect_cwe_error(cwe: &str, version: &str, path: &str) -> ValidationError {
     ValidationError {
-        message: format!("CWE '{cwe}' does not exist in version {version}."),
+        message: format!("Weakness '{cwe}' does not exist in version {version}."),
         instance_path: format!("{path}/id"),
     }
 }

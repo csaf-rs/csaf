@@ -46,7 +46,7 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
         })
         .collect();
 
-    // If there are no errors, the test pases, otherwise return the errors
+    // If there are no errors, the test passes, otherwise return the errors
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 

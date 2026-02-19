@@ -27,7 +27,7 @@
       "group": "mandatory",
       "failures": [
         {
-          "name": "mandatory/csaf-rs_csaf-csaf_2_1_6-1-05-s01.json",
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-05-s01.json",
           "valid": false
         }
       ],

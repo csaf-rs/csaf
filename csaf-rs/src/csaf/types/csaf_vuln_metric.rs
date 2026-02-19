@@ -12,13 +12,14 @@ pub enum CsafVulnerabilityMetric {
 
 impl CsafVulnerabilityMetric {
     /// Checks if the metric is valid according to the known versions.
-    /// Known versions are: SSVC-v1, CVSS-v2.0, CVSS-v3.0, CVSS-v3.1, CVSS-v4.0, and EPSS.
+    /// Known versions are: CVSS-v2.0, CVSS-v3.0, CVSS-v3.1, CVSS-v4.0.
+    /// For SSVC-v1 and EPSS, there are no versions / they are not parsed so far, so they are always considered known.
     pub fn is_known_version(&self) -> bool {
         match self {
             CsafVulnerabilityMetric::SsvcV1 => true,
             CsafVulnerabilityMetric::CvssV2(version) => version == "2.0",
             CsafVulnerabilityMetric::CvssV3(version) => version == "3.0" || version == "3.1",
-            CsafVulnerabilityMetric::CvssV4(version) => version == "4.0" || version == "4.0.1",
+            CsafVulnerabilityMetric::CvssV4(version) => version == "4.0",
             CsafVulnerabilityMetric::Epss => true,
         }
     }

@@ -27,7 +27,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                         cvss2,
                         &cvss20_validator,
                         &instance_prefix,
-                        CsafVulnerabilityMetric::CvssV2("_".to_string()),
+                        CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                         &mut errors,
                     );
                 }
@@ -47,7 +47,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                         cvss4,
                         &cvss40_validator,
                         &instance_prefix,
-                        CsafVulnerabilityMetric::CvssV4("_".to_string()),
+                        CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                         &mut errors,
                     );
                 }

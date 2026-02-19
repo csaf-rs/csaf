@@ -46,7 +46,7 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
         // for each product that has only CVSS v2 as vulnerability metric,
         for (product, metrics_set) in product_metrics_map.iter() {
             if metrics_set.len() == 1
-                && matches!(metrics_set.iter().next().unwrap(), CsafVulnerabilityMetric::CvssV2(_))
+                && matches!(metrics_set.iter().next(), Some(CsafVulnerabilityMetric::CvssV2(_)))
             {
                 // create an error for each path it was encountered at
                 if let Some(paths) = product_path_map.get(product) {

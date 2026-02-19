@@ -39,7 +39,11 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
     let errors: Vec<ValidationError> = product_group_ids_with_paths
         .iter()
         .filter(|(_, paths)| paths.len() > 1)
-        .flat_map(|(group_id, paths)| paths.iter().map(move |path| generate_multiple_group_id_definition_error(group_id, path)))
+        .flat_map(|(group_id, paths)| {
+            paths
+                .iter()
+                .map(move |path| generate_multiple_group_id_definition_error(group_id, path))
+        })
         .collect();
 
     // If there are no errors, the test pases, otherwise return the errors

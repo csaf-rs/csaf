@@ -97,27 +97,78 @@ mod tests {
 
     #[test]
     fn test_test_6_1_26() {
-        let case_01 = Err(vec![test_6_1_26_err_generator_too_similar(
+        // Shared test cases
+        let case_01_shared = Err(vec![test_6_1_26_err_generator_too_similar(
             &CsafDocumentCategory::from("Security_Incident_Response"),
             &CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
-        let case_02 = Err(vec![test_6_1_26_err_generator_too_similar(
+
+        // CSAF 2.0 specific test cases
+        let case_02_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("csaf_BASE"),
+            &CsafVersion::X20,
+        )]);
+        let case_03_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("Csaf_VeX"),
+            &CsafVersion::X20,
+        )]);
+        let case_04_csaf20 = Err(vec![test_6_1_26_err_generator_too_similar(
+            &CsafDocumentCategory::from("csafsecurityadvisory"),
+            &CsafDocumentCategory::CsafSecurityAdvisory,
+        )]);
+
+        // CSAF 2.1 specific test cases
+        let case_02_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
             &CsafDocumentCategory::from("Deprecated Security Advisory"),
             &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
-        let case_03 = Err(vec![test_6_1_26_err_generator_too_similar(
+        let case_03_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
             &CsafDocumentCategory::from("withdrawn"),
             &CsafDocumentCategory::CsafWithdrawn,
         )]);
-        let case_04 = Err(vec![test_6_1_26_err_generator_too_similar(
+        let case_04_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
             &CsafDocumentCategory::from("superseded"),
             &CsafDocumentCategory::CsafSuperseded,
         )]);
+        let case_05_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
+            &CsafDocumentCategory::from("csafvex"),
+            &CsafDocumentCategory::CsafVex,
+        )]);
+        let case_06_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
+            &CsafDocumentCategory::from("CSafDeprecatedSecurity—Advisory"),
+            &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+        )]);
+        let case_07_csaf21 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("CsaF_VeX"),
+            &CsafVersion::X21,
+        )]);
+        let case_08_csaf21 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("csaf_BASE"),
+            &CsafVersion::X21,
+        )]);
 
-        TESTS_2_0.test_6_1_26.expect(case_01.clone());
-        TESTS_2_1
-            .test_6_1_26
-            .expect(case_01, case_02, case_03, case_04, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_0.test_6_1_26.expect(
+            case_01_shared.clone(),
+            case_02_csaf20,
+            case_03_csaf20,
+            case_04_csaf20,
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_1_26.expect(
+            case_01_shared,
+            case_02_csaf21,
+            case_03_csaf21,
+            case_04_csaf21,
+            case_05_csaf21,
+            case_06_csaf21,
+            case_07_csaf21,
+            case_08_csaf21,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 
     // Additional unit tests from the editorial version of CSAF 2.1
@@ -125,11 +176,6 @@ mod tests {
     fn test_validate_document_category_v21() {
         let version = CsafVersion::X21;
         assert!(validate_document_category(&CsafDocumentCategory::from("Csaf_a"), &version).is_err());
-        assert!(validate_document_category(&CsafDocumentCategory::from("CsaF_VeX"), &version).is_err());
-        assert!(
-            validate_document_category(&CsafDocumentCategory::from("CSafDeprecatedSecurity—Advisory"), &version)
-                .is_err()
-        );
         assert!(validate_document_category(&CsafDocumentCategory::from("csafvex"), &version).is_err());
         assert!(validate_document_category(&CsafDocumentCategory::from("Informational Advisory"), &version).is_err());
         assert!(validate_document_category(&CsafDocumentCategory::from("Security      Advisory"), &version).is_err());

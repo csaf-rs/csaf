@@ -59,8 +59,6 @@
       "cve": "CVE-2017-0145",
       "product_status": {
         "known_not_affected": [
-          "CSAFPID-9080700",
-          "CSAFPID-9080701",
           "CSAFPID-9080702"
         ]
       },
@@ -71,7 +69,7 @@
         {
           "label": "vulnerable_code_not_present",
           "product_ids": [
-            "CSAFPID-9080700"
+            "CSAFPID-9080702"
           ]
         }
       ]
@@ -81,8 +79,7 @@
       "product_status": {
         "known_not_affected": [
           "CSAFPID-9080700",
-          "CSAFPID-9080701",
-          "CSAFPID-9080702"
+          "CSAFPID-9080701"
         ]
       },
       "flags": [

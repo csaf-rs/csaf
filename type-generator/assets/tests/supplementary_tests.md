@@ -13,6 +13,10 @@ Covers all relevent paths defined in the spec.
 
 Covers all relevant paths defined in the spec and the relations between them.
 
+## 6.1.3-s01
+
+Checks cycle from `product_id` against `product_reference`.
+
 ## 6.1.5-s01
 
 Covers having three groups with the same group_id, which should result in 3 seperate error messages.

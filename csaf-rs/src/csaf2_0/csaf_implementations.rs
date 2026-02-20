@@ -310,6 +310,12 @@ impl WithOptionalDate for Flag {
 
 impl FirstKnownExploitationDatesTrait for () {}
 
+impl WithOptionalProductIds for () {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
+}
+
 impl WithOptionalGroupIds for () {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         None::<std::iter::Empty<&String>>

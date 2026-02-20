@@ -15,6 +15,12 @@ fn generate_duplicate_cve_error(cve: &str, path: usize) -> ValidationError {
 pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
+    // Check if there are any vulnerabilities, if there aren't, this test can be skipped
+    if vulnerabilities.is_empty() {
+        // This will be WasSkipped later
+        return Ok(());
+    }
+
     // Map occurrence paths indexes to CVE identifiers
     let mut cve_paths: HashMap<String, Vec<usize>> = HashMap::new();
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
@@ -25,19 +31,23 @@ pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), 
         }
     }
 
+    // Check if there are any CVE identifiers, if there aren't, this test can be skipped
+    if cve_paths.is_empty() {
+        // This will be WasSkipped later
+        return Ok(());
+    }
+
     // Generate errors for CVE identifiers with multiple occurrence paths indexes
-    let mut errors = Vec::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
     for (cve, paths) in &cve_paths {
         if paths.len() > 1 {
-            errors.extend(paths.iter().map(|path| generate_duplicate_cve_error(cve, *path)));
+            errors
+                .get_or_insert_default()
+                .extend(paths.iter().map(|path| generate_duplicate_cve_error(cve, *path)));
         }
     }
 
-    if !errors.is_empty() {
-        return Err(errors);
-    }
-
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
@@ -70,13 +80,44 @@ mod tests {
 
     #[test]
     fn test_test_6_1_23() {
+        // Case 01: Two vulnerabilities, same CVE identifier
         let case_01 = Err(vec![
             generate_duplicate_cve_error("CVE-2017-0145", 0),
             generate_duplicate_cve_error("CVE-2017-0145", 1),
         ]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_23.expect(case_01.clone());
-        TESTS_2_1.test_6_1_23.expect(case_01);
+        // Case S01: Three vulnerabilities, same CVE identifier
+        let case_s01 = Err(vec![
+            generate_duplicate_cve_error("CVE-2017-0145", 0),
+            generate_duplicate_cve_error("CVE-2017-0145", 1),
+            generate_duplicate_cve_error("CVE-2017-0145", 2),
+        ]);
+        // Case S02: Four vulnerabilities, pairwise same CVE identifier
+        let case_s02 = Err(vec![
+            generate_duplicate_cve_error("CVE-2017-0145", 0),
+            generate_duplicate_cve_error("CVE-2017-0145", 2),
+            generate_duplicate_cve_error("CVE-2017-0146", 1),
+            generate_duplicate_cve_error("CVE-2017-0146", 3),
+        ]);
+        // Case S03: Three vulnerabilities, two with same CVE identifier
+        let case_s03 = Err(vec![
+            generate_duplicate_cve_error("CVE-2017-0145", 0),
+            generate_duplicate_cve_error("CVE-2017-0145", 2),
+        ]);
+        // Case S11: Two vulnerabilities, different CVE identifiers (valid)
+        // Case S12: One vulnerability with a CVE identifier (valid)
+
+        // Both CSAF 2.0 and 2.1 have 6 test cases
+        TESTS_2_0.test_6_1_23.expect(
+            case_01.clone(),
+            case_s01.clone(),
+            case_s02.clone(),
+            case_s03.clone(),
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1
+            .test_6_1_23
+            .expect(case_01, case_s01, case_s02, case_s03, Ok(()), Ok(()));
     }
 }

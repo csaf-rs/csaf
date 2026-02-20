@@ -3,7 +3,7 @@ use crate::validation::ValidationError;
 
 fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> ValidationError {
     ValidationError {
-        message: "A flag needs to at least have one of the elements group_ids or product_ids".to_string(),
+        message: "A flag must have at least of the elements group_ids or product_ids".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/flags/{flag_index}"),
     }
 }
@@ -19,8 +19,8 @@ pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Resul
         // This will be WasSkipped later
         return Ok(());
     }
-    let mut errors: Option<Vec<ValidationError>> = None;
 
+    let mut errors: Option<Vec<ValidationError>> = None;
     // Check each flag in each vulnerability
     for (vuln_i, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(flags) = vulnerability.get_flags() {
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn test_test_6_1_32() {
-        // Case 01: A flag without no product_ids and group_ids
+        // Case 01: A flag without product_ids and group_ids
         let case_01 = Err(vec![create_flag_without_product_reference_error(0, 0)]);
         // Case 11: A flag with only product_ids
 
@@ -83,7 +83,6 @@ mod tests {
         // Case S12: A flag with both product_ids and group_ids
         // Case S13: A vulnerability without a flag
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0
             .test_6_1_32
             .expect(case_01.clone(), case_s01.clone(), Ok(()), Ok(()), Ok(()), Ok(()));

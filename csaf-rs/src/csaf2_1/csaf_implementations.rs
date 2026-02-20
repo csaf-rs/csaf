@@ -275,6 +275,12 @@ impl WithOptionalDate for Flag {
 
 impl FirstKnownExploitationDatesTrait for FirstKnownExploitationDate {}
 
+impl WithOptionalProductIds for FirstKnownExploitationDate {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
+    }
+}
+
 impl WithDate for FirstKnownExploitationDate {
     fn get_date(&self) -> CsafDateTime {
         CsafDateTime::from(&self.date)

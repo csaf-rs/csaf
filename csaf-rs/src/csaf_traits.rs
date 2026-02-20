@@ -90,6 +90,7 @@ pub trait CsafTrait {
                 vulnerability.get_metrics_product_references(),
                 vulnerability.get_notes_product_references(),
                 vulnerability.get_involvements_product_references(),
+                vulnerability.get_first_known_exploitation_dates_product_references(),
             ];
 
             for getter in getters {
@@ -519,6 +520,13 @@ pub trait VulnerabilityTrait {
     /// Returns the information about the first known exploitation dates of this vulnerability.
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
 
+    /// Returns all product references associated with the first known exploitation dates of this vulnerability.
+    fn get_first_known_exploitation_dates_product_references(&self) -> Vec<(String, String)> {
+        self.get_first_known_exploitation_dates()
+            .extract_product_references("first_known_exploitation_dates")
+    }
+
+    /// Returns all product group references associated with the first known exploitation dates of this vulnerability.
     fn get_first_known_exploitation_dates_group_references(&self) -> Vec<(String, String)> {
         self.get_first_known_exploitation_dates()
             .extract_group_references("first_known_exploitation_dates")
@@ -537,7 +545,7 @@ pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptiona
     fn get_label(&self) -> LabelOfTheFlag;
 }
 
-pub trait FirstKnownExploitationDatesTrait: WithDate + WithOptionalGroupIds {}
+pub trait FirstKnownExploitationDatesTrait: WithDate + WithOptionalProductIds + WithOptionalGroupIds {}
 
 /// Trait for accessing vulnerability involvement information
 pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate + WithOptionalProductIds {

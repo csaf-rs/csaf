@@ -1,4 +1,5 @@
-use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityMetric, VulnerabilityTrait};
+use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
+use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
@@ -18,8 +19,8 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
     // for each vuln
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         // generate a map of each product to the set of vulnerability metrics used for it
-        let mut product_metrics_map: HashMap<String, HashSet<VulnerabilityMetric>> =
-            HashMap::<String, HashSet<VulnerabilityMetric>>::new();
+        let mut product_metrics_map: HashMap<String, HashSet<CsafVulnerabilityMetric>> =
+            HashMap::<String, HashSet<CsafVulnerabilityMetric>>::new();
         // generate a map of each product to the paths where it was encountered
         let mut product_path_map: HashMap<String, HashSet<String>> = HashMap::<String, HashSet<String>>::new();
         // for each metric and each product in it
@@ -44,7 +45,7 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
         }
         // for each product that has only CVSS v2 as vulnerability metric,
         for (product, metrics_set) in product_metrics_map.iter() {
-            if metrics_set.len() == 1 && metrics_set.contains(&VulnerabilityMetric::CvssV2) {
+            if metrics_set.len() == 1 && matches!(metrics_set.iter().next(), Some(CsafVulnerabilityMetric::CvssV2(_))) {
                 // create an error for each path it was encountered at
                 if let Some(paths) = product_path_map.get(product) {
                     for path in paths {

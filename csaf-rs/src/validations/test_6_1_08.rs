@@ -1,10 +1,9 @@
 use jsonschema::Validator;
 use serde_json::{Map, Value};
 
+use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::{
-    csaf_traits::{
-        ContentTrait, CsafTrait, MetricTrait, VulnerabilityMetric, VulnerabilityTrait, get_metric_prop_name,
-    },
+    csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
     validation::ValidationError,
 };
 
@@ -28,14 +27,14 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                         cvss2,
                         &cvss20_validator,
                         &instance_prefix,
-                        VulnerabilityMetric::CvssV2,
+                        CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                         &mut errors,
                     );
                 }
                 if let Some(cvss3) = content.get_cvss_v3() {
                     // Use as_str because otherwise additional quotation marks would be included
                     if let Some(version) = cvss3.get("version").and_then(|v| v.as_str()) {
-                        let metric_type = VulnerabilityMetric::CvssV3(version.to_string());
+                        let metric_type = CsafVulnerabilityMetric::CvssV3(version.to_string());
                         if version == "3.0" {
                             evaluate_cvss(cvss3, &cvss30_validator, &instance_prefix, metric_type, &mut errors);
                         } else if version == "3.1" {
@@ -48,7 +47,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                         cvss4,
                         &cvss40_validator,
                         &instance_prefix,
-                        VulnerabilityMetric::CvssV4,
+                        CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                         &mut errors,
                     );
                 }
@@ -90,11 +89,12 @@ fn create_draft_validator(schema_str: &str) -> Validator {
 }
 
 /// Run the CVSS through json schema validation, add every error during validation to `errors`
+/// TODO: The metric prop is kinda weird, but this will be removed after CVSS validation is implemented.
 fn evaluate_cvss(
     cvss_value: &Map<String, Value>,
     validator: &Validator,
     base_path: &str,
-    metric: VulnerabilityMetric,
+    metric: CsafVulnerabilityMetric,
     errors: &mut Vec<ValidationError>,
 ) {
     let value = serde_json::to_value(cvss_value).unwrap();
@@ -103,10 +103,10 @@ fn evaluate_cvss(
     }
 }
 
-fn create_validation_error(message: String, base: &str, metric: VulnerabilityMetric) -> ValidationError {
+fn create_validation_error(message: String, base: &str, metric: CsafVulnerabilityMetric) -> ValidationError {
     ValidationError {
         message,
-        instance_path: format!("{}/{}", base, get_metric_prop_name(metric)),
+        instance_path: format!("{}/{}", base, metric.get_metric_prop_name()),
     }
 }
 
@@ -123,17 +123,17 @@ mod tests {
             Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
-                VulnerabilityMetric::CvssV3("3.1".to_string()),
+                CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
             )]),
             Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
-                VulnerabilityMetric::CvssV3("3.0".to_string()),
+                CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
             )]),
             Err(vec![create_validation_error(
                 "\"version\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
-                VulnerabilityMetric::CvssV2,
+                CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
             )]),
             Ok(()), // case_11
             Ok(()), // case_12
@@ -146,35 +146,35 @@ mod tests {
             Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
-                VulnerabilityMetric::CvssV3("3.1".to_string()),
+                CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
             )]),
             Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
-                VulnerabilityMetric::CvssV3("3.0".to_string()),
+                CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
             )]),
             Err(vec![create_validation_error(
                 "\"version\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
-                VulnerabilityMetric::CvssV2,
+                CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
             )]),
             Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
-                VulnerabilityMetric::CvssV4,
+                CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
             )]),
             Err(vec![
                 create_validation_error(
                     "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
+                    CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                 ),
             ]),
             Err(vec![
                 create_validation_error(
                     "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
-                    VulnerabilityMetric::CvssV4,
+                    CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                 ),
             ]),
             Ok(()), // case_11

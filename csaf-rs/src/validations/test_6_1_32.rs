@@ -73,15 +73,22 @@ mod tests {
         let case_01 = Err(vec![create_flag_without_product_reference_error(0, 0)]);
         // Case 11: A flag with only product_ids
 
-        // TODO
-        // Case S01: Two vulnerabilities, two flags each, two of which are missing product references
+        // Case S01: Three vulnerabilities, two flags each, each with one flag without product_ids and group_ids
+        let case_s01 = Err(vec![
+            create_flag_without_product_reference_error(0, 0),
+            create_flag_without_product_reference_error(1, 1),
+            create_flag_without_product_reference_error(2, 1),
+        ]);
         // Case S11: A flag with only group_ids
         // Case S12: A flag with both product_ids and group_ids
         // Case S13: A vulnerability without a flag
 
-
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_1_32.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_1_32.expect(case_01, Ok(()));
+        TESTS_2_0
+            .test_6_1_32
+            .expect(case_01.clone(), case_s01.clone(), Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1
+            .test_6_1_32
+            .expect(case_01, case_s01, Ok(()), Ok(()), Ok(()), Ok(()));
     }
 }

@@ -57,6 +57,30 @@
           "valid": true
         }
       ]
+    },
+    {
+      "id": "6.1.32",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-32-s01.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-32-s11.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-32-s12.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-32-s13.json",
+          "valid": true
+        }
+      ]
     }
   ]
 }

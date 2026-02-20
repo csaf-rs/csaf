@@ -3,43 +3,40 @@ use crate::validation::ValidationError;
 
 fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> ValidationError {
     ValidationError {
-        message: "Each flag must reference at least one group_id or product_id".to_string(),
+        message: "A flag needs to at least have one of the elements group_ids or product_ids".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/flags/{flag_index}"),
     }
 }
 
 /// 6.1.32 Flag without Product Reference
 ///
-/// Each `/vulnerabilities[]/flags[]` item needs to contain at least one element
-/// in it's `group_ids` or `product_ids` arrays.
+/// Each `/vulnerabilities[]/flags[]` must have at least one of the elements group_ids or product_ids.
 pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors = Vec::new();
+    let vulnerabilities = doc.get_vulnerabilities();
+
+    // Check if there are any vulnerabilities, if there aren't, this test can be skipped
+    if vulnerabilities.is_empty() {
+        // This will be WasSkipped later
+        return Ok(());
+    }
+    let mut errors: Option<Vec<ValidationError>> = None;
 
     // Check each flag in each vulnerability
-    for (v_r, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
+    for (vuln_i, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(flags) = vulnerability.get_flags() {
-            for (f_r, flag) in flags.iter().enumerate() {
-                // Check if both group_ids and product_ids present and not empty
-                if let Some(mut group_ids) = flag.get_group_ids()
-                    && group_ids.any(|_| true)
-                {
-                    continue;
+            for (flag_i, flag) in flags.iter().enumerate() {
+                // Check if both product_ids and group_ids are None, if so, generate an error
+                // Through the schema, it is ensured that if they are not None, they contain at least one entry
+                if flag.get_product_ids().is_none() && flag.get_group_ids().is_none() {
+                    errors
+                        .get_or_insert_with(Vec::new)
+                        .push(create_flag_without_product_reference_error(vuln_i, flag_i));
                 }
-                if let Some(mut product_ids) = flag.get_product_ids()
-                    && product_ids.any(|_| true)
-                {
-                    continue;
-                }
-                errors.push(create_flag_without_product_reference_error(v_r, f_r));
             }
         }
     }
 
-    if !errors.is_empty() {
-        return Err(errors);
-    }
-
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
@@ -72,7 +69,16 @@ mod tests {
 
     #[test]
     fn test_test_6_1_32() {
+        // Case 01: A flag without no product_ids and group_ids
         let case_01 = Err(vec![create_flag_without_product_reference_error(0, 0)]);
+        // Case 11: A flag with only product_ids
+
+        // TODO
+        // Case S01: Two vulnerabilities, two flags each, two of which are missing product references
+        // Case S11: A flag with only group_ids
+        // Case S12: A flag with both product_ids and group_ids
+        // Case S13: A vulnerability without a flag
+
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_1_32.expect(case_01.clone(), Ok(()));

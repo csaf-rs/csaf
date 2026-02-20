@@ -77,7 +77,7 @@ mod tests {
         let case_s01 = Err(vec![
             create_missing_product_reference_error(0, 0),
             create_missing_product_reference_error(1, 1),
-            create_missing_product_reference_error(2, 1)
+            create_missing_product_reference_error(2, 1),
         ]);
         // Case S11: A remediation with group_ids but without product_ids
         // Case S12: A remediation with both group_ids and product_ids

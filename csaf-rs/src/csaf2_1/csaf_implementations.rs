@@ -281,6 +281,12 @@ impl WithDate for FirstKnownExploitationDate {
     }
 }
 
+impl WithOptionalGroupIds for FirstKnownExploitationDate {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
+    }
+}
+
 impl InvolvementTrait for Involvement {
     fn get_party(&self) -> PartyCategory {
         self.party

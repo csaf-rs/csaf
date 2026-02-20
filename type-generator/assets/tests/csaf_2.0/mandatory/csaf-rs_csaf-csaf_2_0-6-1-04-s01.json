@@ -1,0 +1,66 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Missing Definition of Product Group ID (failing supplementary example 1 tests against remediations)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-04-S01",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
+      },
+      {
+        "name": "Product B",
+        "product_id": "CSAFPID-9080701"
+      },
+      {
+        "name": "Product C",
+        "product_id": "CSAFPID-9080702"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "remediations": [
+        {
+          "category": "mitigation",
+          "details": "This is a mitigation for vulnerability 1.",
+          "group_ids": [
+            "CSAFGID-1020300"
+          ]
+        }
+      ]
+    },
+    {
+      "remediations": [
+        {
+          "category": "mitigation",
+          "details": "This is a mitigation for vulnerability 2.",
+          "group_ids": [
+            "CSAFGID-1020301"
+          ]
+        }
+      ]
+    }
+  ]
+}

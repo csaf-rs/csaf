@@ -310,6 +310,12 @@ impl WithOptionalDate for Flag {
 
 impl FirstKnownExploitationDatesTrait for () {}
 
+impl WithOptionalGroupIds for () {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+        None::<std::iter::Empty<&String>>
+    }
+}
+
 impl WithDate for () {
     fn get_date(&self) -> CsafDateTime {
         panic!("First known exploitation dates are not implemented in CSAF 2.0");

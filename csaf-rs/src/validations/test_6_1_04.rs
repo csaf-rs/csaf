@@ -60,20 +60,50 @@ mod tests {
 
     #[test]
     fn test_test_6_1_04() {
-        let case_01 = Err(vec![generate_err_msg(
+        let case_threats = Err(vec![generate_err_msg(
             "CSAFGID-1020301",
             "/vulnerabilities/0/threats/0/group_ids/0",
         )]);
+        let case_flags = Err(vec![
+            generate_err_msg("CSAFGID-1020300", "/vulnerabilities/0/flags/0/group_ids/0"),
+            generate_err_msg("CSAFGID-1020301", "/vulnerabilities/1/flags/0/group_ids/0"),
+        ]);
+        let case_remediations = Err(vec![
+            generate_err_msg("CSAFGID-1020300", "/vulnerabilities/0/remediations/0/group_ids/0"),
+            generate_err_msg("CSAFGID-1020301", "/vulnerabilities/1/remediations/0/group_ids/0"),
+        ]);
+        let case_involvements = Err(vec![generate_err_msg(
+            "CSAFGID-1020301",
+            "/vulnerabilities/0/involvements/0/group_ids/0",
+        )]);
+        let case_vulnerability_notes = Err(vec![generate_err_msg(
+            "CSAFGID-1020301",
+            "/vulnerabilities/0/notes/0/group_ids/0",
+        )]);
+        let case_first_known_exploitation_dates = Err(vec![generate_err_msg(
+            "CSAFGID-1020301",
+            "/vulnerabilities/0/first_known_exploitation_dates/0/group_ids/0",
+        )]);
+        let case_document_notes = Err(vec![generate_err_msg(
+            "CSAFGID-1020301",
+            "/document/notes/0/group_ids/0",
+        )]);
 
         TESTS_2_0.test_6_1_4.expect(
-            case_01.clone(),
-            Err(vec![
-                generate_err_msg("CSAFGID-1020300", "/vulnerabilities/0/flags/0/group_ids/0"),
-                generate_err_msg("CSAFGID-1020301", "/vulnerabilities/1/flags/0/group_ids/0"),
-            ]),
+            case_threats.clone(),      // threats
+            case_flags.clone(),        // flags
+            case_remediations.clone(), // remediations
             Ok(()),
             Ok(()),
         );
-        TESTS_2_1.test_6_1_4.expect(case_01);
+        TESTS_2_1.test_6_1_4.expect(
+            case_threats,                        // threats
+            case_flags,                          // flags
+            case_remediations,                   // remediations
+            case_involvements,                   // involvements
+            case_vulnerability_notes,            // notes
+            case_first_known_exploitation_dates, // first_known_exploitation_dates
+            case_document_notes,                 // document notes
+        );
     }
 }

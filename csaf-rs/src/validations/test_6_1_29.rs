@@ -73,7 +73,7 @@ mod tests {
         // Case 11: A remediation with product_ids but without group ids
         // Case 12: A vulnerability without a remediation
 
-        // Case S01: Two vulnerabilities, with two remediations each, two of which are missing product references
+        // Case S01: Three vulnerabilities, two flags each, each with one flag without product_ids and group_ids
         let case_s01 = Err(vec![
             create_missing_product_reference_error(0, 0),
             create_missing_product_reference_error(1, 1),

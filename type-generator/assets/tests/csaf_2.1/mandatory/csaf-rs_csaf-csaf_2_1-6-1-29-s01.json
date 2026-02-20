@@ -13,7 +13,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory test: Remediation without Product Reference (failing supplementary example 3 - multiple vulnerabilities with multiple remediations)",
+    "title": "Mandatory test: Remediation without Product Reference (failing supplementary example 3 - three vulnerabilities, two remediations each, one of the flags with missing references)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-29-S01",

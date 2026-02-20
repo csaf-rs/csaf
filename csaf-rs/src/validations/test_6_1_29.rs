@@ -3,7 +3,7 @@ use crate::validation::ValidationError;
 
 fn create_missing_product_reference_error(vulnerability_index: usize, remediation_index: usize) -> ValidationError {
     ValidationError {
-        message: "Remediations need to at least have one of the elements group_ids or product_ids".to_string(),
+        message: "A remediation need to at least have one of the elements group_ids or product_ids".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/remediations/{remediation_index}"),
     }
 }
@@ -23,7 +23,7 @@ pub fn test_6_1_29_remediation_without_product_reference(doc: &impl CsafTrait) -
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // Check vulnerability and each remediation in them
-    for (vuln_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
+    for (vuln_i, vulnerability) in vulnerabilities.iter().enumerate() {
         for (rem_i, remediation) in vulnerability.get_remediations().iter().enumerate() {
             // Check if both product_ids and group_ids are None, if so, generate an error
             // Through the schema, it is ensured that if they are not None, they contain at least one entry
@@ -73,7 +73,7 @@ mod tests {
         // Case 11: A remediation with product_ids but without group ids
         // Case 12: A vulnerability without a remediation
 
-        // Case S03: Two vulnerabilities, with two remediations each, two of which are missing product references
+        // Case S01: Two vulnerabilities, with two remediations each, two of which are missing product references
         let case_s01 = Err(vec![
             create_missing_product_reference_error(0, 0),
             create_missing_product_reference_error(1, 1),

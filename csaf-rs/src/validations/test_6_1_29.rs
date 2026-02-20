@@ -3,7 +3,7 @@ use crate::validation::ValidationError;
 
 fn create_missing_product_reference_error(vulnerability_index: usize, remediation_index: usize) -> ValidationError {
     ValidationError {
-        message: "A remediation need to at least have one of the elements group_ids or product_ids".to_string(),
+        message: "A remediation needs to at least have one of the elements group_ids or product_ids".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/remediations/{remediation_index}"),
     }
 }

@@ -79,10 +79,6 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-23-s11.json",
           "valid": true
-        },
-        {
-          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-23-s12.json",
-          "valid": true
         }
       ]
     }

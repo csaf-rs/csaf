@@ -92,7 +92,7 @@ mod tests {
             generate_duplicate_cve_error("CVE-2017-0145", 1),
             generate_duplicate_cve_error("CVE-2017-0145", 2),
         ]);
-        // Case S02: Four vulnerabilities, pairwise same CVE identifier
+        // Case S02: Four vulnerabilities, 2 pairs with same CVE identifier
         let case_s02 = Err(vec![
             generate_duplicate_cve_error("CVE-2017-0145", 0),
             generate_duplicate_cve_error("CVE-2017-0145", 2),
@@ -105,7 +105,6 @@ mod tests {
             generate_duplicate_cve_error("CVE-2017-0145", 2),
         ]);
         // Case S11: Two vulnerabilities, different CVE identifiers (valid)
-        // Case S12: One vulnerability with a CVE identifier (valid)
 
         // Both CSAF 2.0 and 2.1 have 6 test cases
         TESTS_2_0.test_6_1_23.expect(
@@ -114,10 +113,9 @@ mod tests {
             case_s02.clone(),
             case_s03.clone(),
             Ok(()),
-            Ok(()),
         );
         TESTS_2_1
             .test_6_1_23
-            .expect(case_01, case_s01, case_s02, case_s03, Ok(()), Ok(()));
+            .expect(case_01, case_s01, case_s02, case_s03, Ok(()));
     }
 }

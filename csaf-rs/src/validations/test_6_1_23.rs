@@ -106,7 +106,6 @@ mod tests {
         ]);
         // Case S11: Two vulnerabilities, different CVE identifiers (valid)
 
-        // Both CSAF 2.0 and 2.1 have 6 test cases
         TESTS_2_0.test_6_1_23.expect(
             case_01.clone(),
             case_s01.clone(),

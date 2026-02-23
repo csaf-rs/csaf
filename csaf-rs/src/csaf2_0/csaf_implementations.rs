@@ -1,6 +1,7 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
+use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
 use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
@@ -710,12 +711,16 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
         self.purl.as_ref().map(std::slice::from_ref)
     }
 
-    fn get_model_numbers(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.model_numbers.as_ref().map(|v| v.iter().map(|x| x.deref()))
+    fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>> {
+        self.model_numbers
+            .as_ref()
+            .map(|v| v.iter().map(CsafModelNumber::from).collect())
     }
 
-    fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.serial_numbers.as_ref().map(|v| v.iter().map(|x| x.deref()))
+    fn get_serial_numbers(&self) -> Option<Vec<CsafSerialNumber>> {
+        self.serial_numbers
+            .as_ref()
+            .map(|v| v.iter().map(CsafSerialNumber::from).collect())
     }
 
     fn get_hashes(&self) -> &Vec<Self::HashType> {

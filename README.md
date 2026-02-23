@@ -86,25 +86,25 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 
 ### Mandatory Tests
 
-| Test specification | 2.0 | 2.1 (experimental) |
-| --- | --- | --- |
-| 6.1.1 | :white_check_mark:  | :white_check_mark: |
-| 6.1.2 | :white_check_mark:  | :white_check_mark: |
-| 6.1.3 | :white_check_mark:  | :white_check_mark: |
-| 6.1.4 | :white_check_mark:  | :white_check_mark: |
-| 6.1.5 | :white_check_mark:  | :white_check_mark: |
-| 6.1.6 | | |
-| 6.1.7 | | |
-| 6.1.8 | :white_check_mark: | |
-| 6.1.9 | | |
-| 6.1.10 | | |
+| Test specification | 2.0                | 2.1 (experimental) |
+| --- |--------------------|--------------------|
+| 6.1.1 | :white_check_mark: | :white_check_mark: |
+| 6.1.2 | :white_check_mark: | :white_check_mark: |
+| 6.1.3 | :white_check_mark: | :white_check_mark: |
+| 6.1.4 | :white_check_mark: | :white_check_mark: |
+| 6.1.5 | :white_check_mark: | :white_check_mark: |
+| 6.1.6 |                    |                    |
+| 6.1.7 |                    |                    |
+| 6.1.8 | :white_check_mark: |                    |
+| 6.1.9 |                    |                    |
+| 6.1.10 |                    |                    |
 | 6.1.11 | :white_check_mark: | :white_check_mark: |
 | 6.1.12 | :white_check_mark: |                    |
 | 6.1.13 |                    |                    |
 | 6.1.14 |                    |                    |
 | 6.1.15 |                    |                    |
 | 6.1.16 |                    |                    |
-| 6.1.17 |                    |                    |
+| 6.1.17 | :white_check_mark: | :white_check_mark: |
 | 6.1.18 |                    |                    |
 | 6.1.19 |                    |                    |
 | 6.1.20 |                    |                    |

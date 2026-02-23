@@ -79,6 +79,50 @@
       ]
     },
     {
+      "id": "6.1.17",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s01.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s02.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s03.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s04.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s05.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s11.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s12.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s13.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s14.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.1.23",
       "group": "mandatory",
       "failures": [

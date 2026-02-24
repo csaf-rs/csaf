@@ -31,12 +31,13 @@ pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<Validation
     }
 
     // Check if source_lang is present
-    if document.get_source_lang().is_none() {
-        return Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
-    }
+    let source_lang= match document.get_source_lang() {
+        Some(lang) => lang,
+        None => return Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]),
+    };
 
     // Check if source_lang is set
-    match CsafLanguage::from(document.get_source_lang().unwrap()) {
+    match CsafLanguage::from(source_lang) {
         CsafLanguage::Invalid(err) => match err {
             // This should be a warning, but we don't have those yet. So for now, return an error (see #409)
             CsafLanguageError::InvalidLangTag(invalid_lang_tag) => {

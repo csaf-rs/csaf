@@ -13,7 +13,7 @@ fn generate_duplicate_involvement_error(
 ) -> ValidationError {
     let date_str = date.as_ref().map_or("none".to_string(), |d| d.to_string());
     ValidationError {
-        message: format!("Duplicate usage of tuple of involvement date {date_str} and party {party}"),
+        message: format!("Duplicate usage of tuple of involvement date '{date_str}' and party '{party}'"),
         instance_path: format!("/vulnerabilities/{vul_r}/involvements/{inv_r}"),
     }
 }
@@ -27,7 +27,7 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
 
     // Check if there are any vulnerabilities, if there aren't, this test can be skipped
     if vulnerabilities.is_empty() {
-        // This will be WasSkipped later
+        // This will be WasSkipped later (#409)
         return Ok(());
     }
 
@@ -43,7 +43,7 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
             for (inv_i, involvement) in involvements.iter().enumerate() {
                 // if the involvement does have a date, check if it's valid
                 let date = match involvement.get_date() {
-                    // If the date is invalid, generate an error and skip this involvement
+                    // If the date is invalid, generate an error and skip this involvement (this will be a non-determinable later, #409)
                     Some(Invalid(err)) => {
                         errors.get_or_insert_default().push(
                             err.into_validation_error(&format!("/vulnerabilities/{vuln_i}/involvements/{inv_i}/date")),
@@ -63,7 +63,7 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
                 paths.push(inv_i);
             }
 
-            // If there were any involvements with valid dates
+            // If there were any non-skipped involvements
             if let Some(date_party_paths_map) = date_party_paths_map {
                 // Generate errors for (date, party) tuples with multiple involvement paths indices
                 for ((date, party), paths) in &date_party_paths_map {

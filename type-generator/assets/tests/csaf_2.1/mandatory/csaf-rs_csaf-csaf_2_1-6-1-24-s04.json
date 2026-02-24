@@ -1,0 +1,59 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Multiple Definition in Involvements (failing supplementary example 4 - four involvements, two pairs with same date, same party)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-24-S04",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "vulnerabilities": [
+    {
+      "involvements": [
+        {
+          "date": "2023-08-24T10:00:00.000Z",
+          "party": "vendor",
+          "status": "in_progress"
+        },
+        {
+          "date": "2023-08-23T10:00:00.000Z",
+          "party": "discoverer",
+          "status": "contact_attempted"
+        },
+        {
+          "date": "2023-08-24T10:00:00.000Z",
+          "party": "vendor",
+          "status": "open"
+        },
+        {
+          "date": "2023-08-23T10:00:00.000Z",
+          "party": "discoverer",
+          "status": "not_contacted"
+        }
+      ]
+    }
+  ]
+}
+

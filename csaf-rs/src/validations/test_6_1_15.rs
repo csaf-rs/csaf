@@ -31,7 +31,7 @@ pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<Validation
     }
 
     // Check if source_lang is present
-    let source_lang= match document.get_source_lang() {
+    let source_lang = match document.get_source_lang() {
         Some(lang) => lang,
         None => return Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]),
     };

@@ -1,0 +1,28 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "translator",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "source_lang": "EZ",
+    "title": "Mandatory test: Translator (failing supplementary example 1 - invalid source_lang)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-15-S01",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  }
+}
+

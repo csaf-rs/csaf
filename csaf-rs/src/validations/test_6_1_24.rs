@@ -138,7 +138,7 @@ mod tests {
         let default_date_csaf_21 = Some(ValidCsafDateTime::from_str("2023-08-23T10:00:00.000Z").unwrap());
         let alternate_date_csaf_21 = Some(ValidCsafDateTime::from_str("2023-08-24T10:00:00.000Z").unwrap());
         let vendor = PartyCategory::Vendor;
-        let coordinator = PartyCategory::Coordinator;
+        let discoverer = PartyCategory::Discoverer;
 
         // Date-independent test cases
         let case_s01 = Err(vec![
@@ -167,15 +167,15 @@ mod tests {
             case_s02.clone(),
             // case_s03
             Err(vec![
-                generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 2),
+                generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 0),
+                generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 1),
             ]),
             // case_s04
             Err(vec![
-                generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 2),
-                generate_duplicate_involvement_error(&alternate_date_csaf_20, &coordinator, 0, 1),
-                generate_duplicate_involvement_error(&alternate_date_csaf_20, &coordinator, 0, 3),
+                generate_duplicate_involvement_error(&default_date_csaf_20, &discoverer, 0, 1),
+                generate_duplicate_involvement_error(&default_date_csaf_20, &discoverer, 0, 3),
+                generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 0),
+                generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 2),
             ]),
             Ok(()), // case_11
             Ok(()), // case_12
@@ -199,15 +199,15 @@ mod tests {
             case_s02,
             // case_s03
             Err(vec![
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 2),
+                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 0),
+                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 1),
             ]),
             // case_s04
             Err(vec![
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 2),
-                generate_duplicate_involvement_error(&alternate_date_csaf_21, &coordinator, 0, 1),
-                generate_duplicate_involvement_error(&alternate_date_csaf_21, &coordinator, 0, 3),
+                generate_duplicate_involvement_error(&default_date_csaf_21, &discoverer, 0, 1),
+                generate_duplicate_involvement_error(&default_date_csaf_21, &discoverer, 0, 3),
+                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 0),
+                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 2),
             ]),
             Ok(()), // case_11
             Ok(()), // case_12

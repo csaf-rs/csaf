@@ -117,17 +117,88 @@ mod tests {
 
     #[test]
     fn test_test_6_1_17() {
-        // TODO: Add unit test for doc status check
-        // TODO: Add unit test for unparseable version
-        // TODO: Add unit tests here to check for intver 0, semver pre and semver major 0 + pre
+        // Case 01: Document status is not "draft" and version is 0.y.z
         let case_01 = Err(vec![generate_status_version_error(
             &ValidVersionNumber::from_str("0.9.5").unwrap(),
             &DocumentStatus::Final,
             &DocumentStatusDraftErrorReason::SemVerMajorZero,
         )]);
 
+        // Failing:
+        // Case S01: Document status is "final" and version is 0.0.0+exp.sha.ac00785 (build metadata should have no impact)
+        let case_s01 = Err(vec![generate_status_version_error(
+            &ValidVersionNumber::from_str("0.0.0+exp.sha.ac00785").unwrap(),
+            &DocumentStatus::Final,
+            &DocumentStatusDraftErrorReason::SemVerMajorZero,
+        )]);
+
+        // With pre-release fails always:
+        // Case S02: Document status is "final" and version is 1.0.0-alpha
+        let case_s02 = Err(vec![generate_status_version_error(
+            &ValidVersionNumber::from_str("1.0.0-alpha").unwrap(),
+            &DocumentStatus::Final,
+            &DocumentStatusDraftErrorReason::SemVerHasPre,
+        )]);
+        // Case S03: Document status is "final" and version is 0.9.5-alpha
+        let case_s03 = Err(vec![
+            generate_status_version_error(
+                &ValidVersionNumber::from_str("0.9.5-alpha").unwrap(),
+                &DocumentStatus::Final,
+                &DocumentStatusDraftErrorReason::SemVerMajorZero,
+            ),
+            generate_status_version_error(
+                &ValidVersionNumber::from_str("0.9.5-alpha").unwrap(),
+                &DocumentStatus::Final,
+                &DocumentStatusDraftErrorReason::SemVerHasPre,
+            ),
+        ]);
+
+        // Interim:
+        // Case S04: Document status is "interim" and version is 0.9.5 ("interim" is handled correctly)
+        let case_s04 = Err(vec![generate_status_version_error(
+            &ValidVersionNumber::from_str("0.9.5").unwrap(),
+            &DocumentStatus::Interim,
+            &DocumentStatusDraftErrorReason::SemVerMajorZero,
+        )]);
+
+        // IntVer:
+        // Case S05: Document status is "final" and version is 0
+        let case_s05 = Err(vec![generate_status_version_error(
+            &ValidVersionNumber::from_str("0").unwrap(),
+            &DocumentStatus::Final,
+            &DocumentStatusDraftErrorReason::IntVerZero,
+        )]);
+
+        // Valid:
+        // Case S11: Document status is "draft" and version is 0 ("draft" allows 0 version)
+        // Case S12: Document status is "draft" and version is 0.9.5 ("draft" allows 0.y.z versions)
+        // Case S13: Document status is "draft" and version is 1.0.0-alpha ("draft" allows prerelease versions)
+        // Case S14: Document status is "final" and version is 1.0.0+exp.sha.ac00785 (build metadata should have no impact)
+
         // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_17.expect(case_01.clone());
-        TESTS_2_1.test_6_1_17.expect(case_01);
+        TESTS_2_0.test_6_1_17.expect(
+            case_01.clone(),
+            case_s01.clone(),
+            case_s02.clone(),
+            case_s03.clone(),
+            case_s04.clone(),
+            case_s05.clone(),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_1_17.expect(
+            case_01,
+            case_s01,
+            case_s02,
+            case_s03,
+            case_s04,
+            case_s05,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

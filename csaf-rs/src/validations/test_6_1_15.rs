@@ -12,9 +12,9 @@ static MISSING_SOURCE_LANG_ERROR: LazyLock<ValidationError> = LazyLock::new(|| V
 fn invalid_language_warning(invalid_lang_tag: &str) -> ValidationError {
     ValidationError {
         message: format!(
-            "WARNING: source_lang is required when the publisher category is 'translator', but the provided value is invalid: {invalid_lang_tag}"
+            "source_lang is required when the publisher category is 'translator', but the provided value is invalid: '{invalid_lang_tag}'"
         ),
-        instance_path: "/document/tracking/version".to_string(),
+        instance_path: "/document/source_lang".to_string(),
     }
 }
 

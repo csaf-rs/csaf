@@ -2,6 +2,7 @@ use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
+use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
@@ -1115,9 +1116,9 @@ pub trait ProductIdentificationHelperTrait {
     /// Returns the PURLs identifying the associated product.
     fn get_purls(&self) -> Option<&[String]>;
 
-    fn get_model_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>>;
 
-    fn get_serial_numbers(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_serial_numbers(&self) -> Option<Vec<CsafSerialNumber>>;
 
     fn get_hashes(&self) -> &Vec<Self::HashType>;
 }

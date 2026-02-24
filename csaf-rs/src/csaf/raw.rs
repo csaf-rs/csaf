@@ -2,10 +2,7 @@ use std::cell::OnceCell;
 
 use serde::de::DeserializeOwned;
 
-use crate::{
-    schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    validation::{TestResult, TestResultStatus, Validatable, ValidationError, ValidationPreset},
-};
+use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationError};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawDocument<T> {
@@ -63,32 +60,12 @@ where
     T::Parsed: Validatable,
 {
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&'static str> {
-        [vec!["schema"], CommonSecurityAdvisoryFramework::tests_in_preset(preset)].concat()
+    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
+        T::Parsed::tests_in_preset(preset)
     }
 
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult {
-        if test_id == "schema" {
-            return match self.get_parsed() {
-                Ok(_) => TestResult {
-                    test_id: test_id.to_string(),
-                    status: crate::validation::TestResultStatus::Success,
-                },
-                Err(err) => TestResult {
-                    test_id: test_id.to_string(),
-                    status: crate::validation::TestResultStatus::Failure {
-                        errors: vec![ValidationError {
-                            message: err.clone(),
-                            instance_path: "".to_string(),
-                        }],
-                        warnings: vec![],
-                        infos: vec![],
-                    },
-                },
-            };
-        }
-
         let raw_result = self::RawValidatable::run_raw_test(self, test_id);
         if TestResultStatus::NotFound != raw_result.status {
             return raw_result;

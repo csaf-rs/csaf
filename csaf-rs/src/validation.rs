@@ -1,7 +1,5 @@
 use TestResultStatus::*;
 use serde::{Deserialize, Serialize};
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
 use tsify::Tsify;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, Tsify)]
@@ -62,46 +60,15 @@ pub struct ValidationResult {
     pub num_not_found: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, Tsify)]
-#[serde(rename_all = "camelCase")]
-pub enum ValidationPreset {
-    Basic,
-    Extended,
-    Full,
-}
-
-impl FromStr for ValidationPreset {
-    type Err = ();
-
-    fn from_str(input: &str) -> Result<ValidationPreset, Self::Err> {
-        match input {
-            "basic" => Ok(ValidationPreset::Basic),
-            "extended" => Ok(ValidationPreset::Extended),
-            "full" => Ok(ValidationPreset::Full),
-            _ => Err(()),
-        }
-    }
-}
-
-impl Display for ValidationPreset {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Basic => write!(f, "basic"),
-            Self::Extended => write!(f, "extended"),
-            Self::Full => write!(f, "full"),
-        }
-    }
-}
-
 pub trait Validate {
     /// Validates this object according to
     fn validate_by_test(&self, test_id: &str) -> TestResult;
 
     /// Validates this object according to specific test IDs and returns detailed results
-    fn validate_by_tests(&self, version: &str, preset: ValidationPreset, test_ids: &[&str]) -> ValidationResult;
+    fn validate_by_tests(&self, version: &str, test_ids: &[&str]) -> ValidationResult;
 
     /// Validates this object according to a validation preset and returns detailed results
-    fn validate_by_preset(&self, version: &str, preset: ValidationPreset) -> ValidationResult;
+    fn validate_by_preset(&self, version: &str, preset: &str) -> ValidationResult;
 }
 
 /// Represents something which is validatable according to the CSAF standard.
@@ -111,7 +78,7 @@ pub trait Validate {
 /// It can then be used to validate documents with [validate_by_preset] or [validate_by_tests].
 pub trait Validatable {
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&'static str>;
+    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>>;
 
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
@@ -128,11 +95,7 @@ pub fn validate_by_test(target: &impl Validatable, test_id: &str) -> TestResult 
 }
 
 /// Validate document with specific tests and return detailed results.
-pub fn validate_by_tests(
-    target: &impl Validatable,
-    version: &str,
-    test_ids: &[&str],
-) -> ValidationResult {
+pub fn validate_by_tests(target: &impl Validatable, version: &str, test_ids: &[&str]) -> ValidationResult {
     let mut test_results = Vec::new();
     let mut num_errors: usize = 0;
     let mut num_warnings: usize = 0;
@@ -172,9 +135,9 @@ pub fn validate_by_tests(
 }
 
 /// Validate document with a preset and return detailed results.
-pub fn validate_by_preset<V: Validatable>(target: &V, version: &str, preset: ValidationPreset) -> ValidationResult {
+pub fn validate_by_preset<V: Validatable>(target: &V, version: &str, preset: &str) -> ValidationResult {
     // Retrieve the test IDs for the given preset
-    let test_ids: Vec<&str> = V::tests_in_preset(&preset);
+    let test_ids: Vec<&str> = V::tests_in_preset(preset).unwrap_or(vec![]);
 
     // Forward them to validate_by_tests
     validate_by_tests(target, version, &test_ids)

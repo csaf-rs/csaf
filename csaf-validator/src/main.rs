@@ -6,10 +6,9 @@ use csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf::validation::{
     TestResult,
     TestResultStatus::{Failure, NotFound, Skipped, Success},
-    Validatable, ValidationPreset, ValidationResult, validate_by_tests,
+    Validatable, ValidationResult, validate_by_tests,
 };
 use std::ops::Deref;
-use std::str::FromStr;
 
 /// A validator for CSAF documents
 #[derive(Parser, Debug)]
@@ -28,7 +27,7 @@ struct Args {
     test: Vec<String>,
 
     #[arg(short = 'v', long)]
-    verbose: bool
+    verbose: bool,
 }
 
 fn main() -> Result<(), anyhow::Error> {
@@ -66,8 +65,7 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
         "auto" => detect_version(path)?,
         other => other.to_string(),
     };
-    match version.as_str()
-    {
+    match version.as_str() {
         "2.0" => {
             let document = load_document_2_0(path)?;
             validate_document(document, "2.0", args)
@@ -90,9 +88,9 @@ where
     let test_ids: Vec<_> = args
         .test
         .iter()
-        .flat_map(|test_or_preset| {
-            ValidationPreset::from_str(test_or_preset.as_str())
-                .map_or(vec![test_or_preset.as_str()], |preset| T::tests_in_preset(&preset))
+        .flat_map(|test_or_preset| match T::tests_in_preset(test_or_preset) {
+            Some(test_ids) => test_ids,
+            None => vec![test_or_preset.as_str()],
         })
         .collect();
 

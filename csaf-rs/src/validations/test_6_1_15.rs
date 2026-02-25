@@ -40,7 +40,7 @@ pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<Validation
     match CsafLanguage::from(source_lang) {
         CsafLanguage::Invalid(err) => match err {
             // This should be a warning, but we don't have those yet. So for now, return an error (see #409)
-            CsafLanguageError::InvalidLangTag(invalid_lang_tag) => {
+            CsafLanguageError::InvalidLangTag(invalid_lang_tag, _) => {
                 Err(vec![invalid_language_warning(&invalid_lang_tag)])
             },
         },

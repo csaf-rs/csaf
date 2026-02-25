@@ -31,6 +31,7 @@ use serde::de::Error;
 use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
+use crate::csaf::types::csaf_language::CsafLanguage;
 
 impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
@@ -408,12 +409,12 @@ impl DocumentTrait for DocumentLevelMetaData {
         self.notes.as_deref()
     }
 
-    fn get_lang(&self) -> Option<&String> {
-        self.lang.as_deref()
+    fn get_lang(&self) -> Option<CsafLanguage> {
+        self.lang.as_deref().map(CsafLanguage::from)
     }
 
-    fn get_source_lang(&self) -> Option<&String> {
-        self.source_lang.as_deref()
+    fn get_source_lang(&self) -> Option<CsafLanguage> {
+        self.lang.as_deref().map(CsafLanguage::from)
     }
 
     fn get_publisher(&self) -> &Publisher {

@@ -1,51 +1,43 @@
+use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::generated::language_subtags::is_valid_language_subtag;
 use crate::validation::ValidationError;
-
-fn generate_invalid_language_error(language: &str, subtag: &str, path: &str) -> ValidationError {
-    ValidationError {
-        message: format!(
-            "Invalid language code '{language}': primary language subtag '{subtag}' is not a valid language subtag"
-        ),
-        instance_path: path.to_string(),
-    }
-}
 
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
 
-    let mut errors: Option<Vec<ValidationError>> = None;
-    // Check /document/lang if it exists
-    if let Some(lang) = document.get_lang()
-        && let Err(e) = validate_language_code(lang, "/document/lang")
-    {
-        errors.get_or_insert_default().extend(e);
+    if document.get_lang().is_none() && document.get_source_lang().is_none() {
+        return Ok(()); // This should be a wasSkipped later (see #409)
     }
 
-    // Check /document/source_lang if it exists
-    if let Some(source_lang) = document.get_source_lang()
-        && let Err(e) = validate_language_code(source_lang, "/document/source_lang")
-    {
-        errors.get_or_insert_default().extend(e);
-    }
+    let mut errors: Option<Vec<ValidationError>> = None;
+    validate_language(document.get_lang(), "/document/lang", &mut errors);
+    validate_language(document.get_source_lang(), "/document/source_lang", &mut errors);
 
     errors.map_or(Ok(()), Err)
 }
 
-fn validate_language_code(lang_code: &str, json_path: &str) -> Result<(), Vec<ValidationError>> {
-    // Extract the primary language subtag (everything before the first hyphen)
-    let primary_subtag = lang_code.split('-').next().unwrap_or(lang_code);
 
-    if !is_valid_language_subtag(primary_subtag) {
-        return Err(vec![generate_invalid_language_error(
-            lang_code,
-            primary_subtag,
-            json_path,
-        )]);
+/// Validate a language code and append the validation error to the errors vector.
+///
+/// If the given language is [`CsafLanguage::Invalid`], a [`ValidationError`] is created
+/// with the specified JSON path and added to the errors collection.
+/// 
+/// # Arguments
+/// - `lang`: An optional language code to validate. 
+/// - `json_path`: The JSON path to the language code being validated
+/// - `errors`: A mutable reference to an optional vector of validation errors.
+fn validate_language(
+    lang: Option<CsafLanguage>,
+    json_path: &str,
+    errors: &mut Option<Vec<ValidationError>>,
+) {
+    if let Some(CsafLanguage::Invalid(err)) = lang {
+        errors
+            .get_or_insert_default()
+            .push(err.into_validation_error(json_path));
     }
-
-    Ok(())
 }
+
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
     for crate::csaf2_0::testcases::ValidatorForTest6_1_12
@@ -72,14 +64,36 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::csaf_language::CsafLanguage::Invalid;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_12() {
-        let case_01 = Err(vec![generate_invalid_language_error("EZ", "EZ", "/document/lang")]);
+        // Case 01: Invalid language code in /document/lang
+        // Case S01: Invalid language code in /document/source_lang
+        // Case S02: Invalid language code in both /document/lang and /document/source_lang
+        // Case S11: Valid language code in both /document/lang and /document/source_lang
+        // Case S12: Both /document/lang and /document/source_lang are missing (should be skipped? #409)
 
-        TESTS_2_0.test_6_1_12.expect(case_01.clone());
-        TESTS_2_1.test_6_1_12.expect(case_01);
+        let Invalid(ez_error) = CsafLanguage::from(&"EZ".to_string()) else {
+            unreachable!()
+        };
+        let Invalid(zzz_error) = CsafLanguage::from(&"ZZZ".to_string()) else {
+            unreachable!()
+        };
+        let case_01 = Err(vec![ez_error.clone().into_validation_error("/document/lang")]);
+        let case_s01 = Err(vec![ez_error.clone().into_validation_error("/document/source_lang")]);
+        let case_s02 = Err(vec![
+            ez_error.clone().into_validation_error("/document/lang"),
+            zzz_error.into_validation_error("/document/source_lang"),
+        ]);
+
+        TESTS_2_0
+            .test_6_1_12
+            .expect(case_01.clone(), case_s01.clone(), case_s02.clone(), Ok(()), Ok(()));
+        TESTS_2_1
+            .test_6_1_12
+            .expect(case_01, case_s01, case_s02, Ok(()), Ok(()));
     }
 }

@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_language::CsafLanguage::Valid;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
 
@@ -13,6 +14,18 @@ fn create_same_language_error(lang: &str) -> ValidationError {
 /// `/document/lang` and `/document/source_lang` must have different values
 pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
+
+    // Check if both lang and source_lang are present
+    let (lang, source_lang) = match (document.get_lang(), document.get_source_lang()) {
+        (Some(lang), Some(source_lang)) => (lang, source_lang),
+        (_, _) => return Ok(()) // This should be a wasSkipped later (see #409)
+    };
+
+    // Check if both lang and source_lang are valid
+    let (lang, source_lang) = match (lang, source_lang) {
+        (Valid(lang), Valid(source_lang)) => (lang, source_lang),
+        (_, _) => return Ok(()) // This should be a wasSkipped later (see #409)
+    };
     if let Some(lang) = document.get_lang()
         && let Some(source_lang) = document.get_source_lang()
         && lang.to_lowercase() == source_lang.to_lowercase()

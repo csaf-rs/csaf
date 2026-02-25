@@ -17,6 +17,7 @@ use chrono::{DateTime, Utc};
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 use uuid::Uuid;
+use crate::csaf::types::csaf_language::CsafLanguage;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -167,10 +168,10 @@ pub trait DocumentTrait {
     }
 
     /// Returns the language associated with this document.
-    fn get_lang(&self) -> Option<&String>;
+    fn get_lang(&self) -> Option<CsafLanguage>;
 
     /// Returns the source language associated with this document.
-    fn get_source_lang(&self) -> Option<&String>;
+    fn get_source_lang(&self) -> Option<CsafLanguage>;
 
     /// Returns the publisher information for this document
     fn get_publisher(&self) -> &Self::PublisherType;

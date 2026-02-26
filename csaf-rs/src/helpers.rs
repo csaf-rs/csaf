@@ -50,12 +50,6 @@ pub static SSVC_DECISION_POINTS: LazyLock<SsvcDecisionPointsMap> = LazyLock::new
             let content = std::str::from_utf8(&file.data).unwrap();
             match serde_json::from_str::<DecisionPoint>(content) {
                 Ok(dp) => {
-                    println!(
-                        "Loaded SSVC decision point '{}' ({}, version {})",
-                        dp.key.deref(),
-                        dp.name.deref(),
-                        dp.version.deref()
-                    );
                     let key = (
                         dp.namespace.deref().to_owned(),
                         dp.key.deref().to_owned(),

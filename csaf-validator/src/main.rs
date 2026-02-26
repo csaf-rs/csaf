@@ -1,8 +1,10 @@
+use anstream::println;
 use anyhow::{Result, bail};
 use clap::{CommandFactory, Parser};
 use csaf::csaf::loader::detect_version;
 use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
+use csaf::validation::ValidationError;
 use csaf::validation::{
     TestResult,
     TestResultStatus::{Failure, NotFound, Skipped, Success},
@@ -35,8 +37,7 @@ fn main() -> Result<(), anyhow::Error> {
 
     if args.path.is_empty() {
         Args::command().print_help()?;
-        println!();
-        bail!("PATH is required");
+        return Ok(());
     }
 
     if args
@@ -44,7 +45,7 @@ fn main() -> Result<(), anyhow::Error> {
         .iter()
         .map(|file| validate_file(file.deref(), &args))
         .filter(|result| match result {
-            Ok(_) => false,
+            Ok(result) => !result.success,
             Err(err) => {
                 println!("{err}\n");
                 true
@@ -59,8 +60,9 @@ fn main() -> Result<(), anyhow::Error> {
 }
 
 /// Try to validate a file as a CSAF document based on the specified version.
-fn validate_file(path: &str, args: &Args) -> Result<()> {
-    println!("Validating file: {path}");
+fn validate_file(path: &str, args: &Args) -> Result<ValidationResult> {
+    let file_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Cyan.into()));
+    println!("Validating file: {file_color}{path}{file_color:#}");
     let version = match args.csaf_version.as_str() {
         "auto" => detect_version(path)?,
         other => other.to_string(),
@@ -68,11 +70,11 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
     match version.as_str() {
         "2.0" => {
             let document = load_document_2_0(path)?;
-            validate_document(document, "2.0", args)
+            Ok(validate_document(document, "2.0", args))
         },
         "2.1" => {
             let document = load_document_2_1(path)?;
-            validate_document(document, "2.1", args)
+            Ok(validate_document(document, "2.1", args))
         },
         _ => bail!(format!("Invalid CSAF version: {}", args.csaf_version)),
     }
@@ -81,7 +83,7 @@ fn validate_file(path: &str, args: &Args) -> Result<()> {
 /// Validate a CSAF document of the specified version with the provided arguments.
 ///
 /// This prints the results of the tests on stdout.
-fn validate_document<T>(document: T, version: &str, args: &Args) -> Result<()>
+fn validate_document<T>(document: T, version: &str, args: &Args) -> ValidationResult
 where
     T: Validatable,
 {
@@ -97,46 +99,45 @@ where
     let result = validate_by_tests(&document, version, &test_ids);
 
     print_validation_result(&result, args.verbose);
-    match result.num_errors {
-        0 => Ok(()),
-        _ => Err(anyhow::anyhow!("Validation failed with {} error(s)", result.num_errors)),
-    }
+    result
 }
 
 /// Print a validation result to stdout (for CLI use)
 pub fn print_validation_result(result: &ValidationResult, verbose: bool) {
     if verbose {
         println!("CSAF Version: {}", result.version);
-        println!("Validating document...\n");
-
-        // Print individual test results
-        for test_result in &result.test_results {
-            print_test_result(test_result);
-        }
-
-        // Print summary
-        println!();
-        println!();
     }
+
+    // Print individual test results
+    for test_result in &result.test_results {
+        if verbose {
+            print_individual_test_result(test_result);
+        }
+        print_individual_test_failures(test_result);
+    }
+
+    // Print summary
     match (result.num_errors, result.num_warnings, result.num_infos) {
-        (0, 0, 0) => println!("✅  Validation passed! No errors found.\n"),
-        (0, 0, infos) => println!("💡  Validation passed with {infos} info(s)\n"),
-        (0, warnings, infos) => println!("⚠️  Validation passed with {warnings} warning(s) and {infos} info(s)\n"),
+        (0, 0, 0) => println!("✅  Validation passed! No errors found."),
+        (0, 0, infos) => println!("💡  Validation passed with {infos} info(s)."),
+        (0, warnings, infos) => println!("⚠️  Validation passed with {warnings} warning(s) and {infos} info(s)."),
         (errors, warnings, infos) => {
-            println!("❌  Validation failed with {errors} error(s), {warnings} warning(s) and {infos} info(s)\n")
+            println!("❌  Validation failed with {errors} error(s), {warnings} warning(s) and {infos} info(s).")
         },
     }
 
-    if verbose && result.num_not_found > 0 {
+    if result.num_not_found > 0 {
+        let bold = anstyle::Style::new().underline();
         println!(
-            "Note: {} test(s) were not found during validation.\n",
+            "{bold}Note:{bold:#} {} test(s) were not found during validation.",
             result.num_not_found
         );
     }
+    println!();
 }
 
 /// Print individual test result to stdout.
-fn print_test_result(test_result: &TestResult) {
+fn print_individual_test_result(test_result: &TestResult) {
     // Common prefix for all test statuses
     let prefix = format!("Executing Test {:10} ... ", test_result.test_id);
     print!("{prefix}");
@@ -158,21 +159,6 @@ fn print_test_result(test_result: &TestResult) {
             } else {
                 println!("💡  {} info(s) found", infos.len());
             };
-            for error in errors {
-                println!(
-                    "❌  {}: {} [{}]",
-                    test_result.test_id, error.message, error.instance_path
-                );
-            }
-            for warning in warnings {
-                println!(
-                    "⚠️  {}: {} [{}]",
-                    test_result.test_id, warning.message, warning.instance_path
-                );
-            }
-            for info in infos {
-                println!("💡  {}: {} [{}]", test_result.test_id, info.message, info.instance_path);
-            }
         },
         NotFound => {
             // Test not found
@@ -182,5 +168,30 @@ fn print_test_result(test_result: &TestResult) {
             // Test skipped
             println!("⏭️  Test skipped");
         },
+    }
+}
+
+/// Print individual information about test failures, warnings, and infos.
+fn print_individual_test_failures(test_result: &TestResult) {
+    if let Failure {
+        errors,
+        warnings,
+        infos,
+    } = &test_result.status
+    {
+        let test_id = &test_result.test_id;
+        let path_color = anstyle::Style::new().dimmed();
+        for ValidationError { message, instance_path } in errors {
+            let color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Red.into()));
+            println!(" {path_color}{instance_path}{path_color:#}: {color}{message} [Error {test_id}]{color:#}");
+        }
+        for ValidationError { message, instance_path } in warnings {
+            let color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Yellow.into()));
+            println!(" {path_color}{instance_path}{path_color:#}: {color}{message} [Warning {test_id}]{color:#}");
+        }
+        for ValidationError { message, instance_path } in infos {
+            let color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Blue.into()));
+            println!(" {path_color}{instance_path}{path_color:#}: {color}{message} [Info {test_id}]{color:#}");
+        }
     }
 }

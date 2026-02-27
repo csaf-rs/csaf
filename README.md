@@ -129,7 +129,7 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 | 6.1.39 |                    |                    |
 | 6.1.40 |                    |                    |
 | 6.1.41 |                    |                    |
-| 6.1.42 |                    |                    |
+| 6.1.42 | :white_check_mark: | :white_check_mark: |
 | 6.1.43 | :o:                | :white_check_mark: |
 | 6.1.44 | :o:                | :white_check_mark: |
 | 6.1.45 |                    |                    |

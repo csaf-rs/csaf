@@ -56,7 +56,7 @@ pub enum PurlParseError {
     InvalidSubpathSegment(String),
     #[error("utf-8 decoding failed")]
     DecodingError,
-    #[error("CSAF error")]
+    #[error("unsupported in CSAF")]
     CsafError,
 }
 

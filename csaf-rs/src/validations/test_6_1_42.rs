@@ -17,6 +17,8 @@ fn create_purl_consistency_error(path: &str, index: usize) -> ValidationError {
     }
 }
 
+/// 6.1.42 PURL Consistency
+/// Checks the consistency of PURLs within the same product_identification_helper. PURLs must only differ in qualifiers.
 pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
@@ -25,37 +27,36 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
             if let Some(helper) = product.get_product_identification_helper()
                 && let Some(purls) = helper.get_purls()
             {
+                // break early if there are 0 or 1 PURLs, as consistency is not an issue
                 if purls.len() <= 1 {
                     return;
                 }
 
-                let mut base_parts: Option<String> = None;
+                let mut base: Option<String> = None;
 
                 for (i, purl_str) in purls.iter().enumerate() {
                     // Parse the PURL
                     let mut purl = match PackageUrl::from_str(purl_str) {
                         Ok(p) => p,
                         Err(_) => {
-                            errors
-                                .get_or_insert_with(Vec::new)
-                                .push(create_invalid_purl_error(purl_str, path, i));
+                            // ToDo create percondition failed warning
                             continue;
                         },
                     };
 
                     // Strip qualifiers
-                    let current_parts = purl.clear_qualifiers().to_string();
+                    let current_value = purl.clear_qualifiers().to_string();
 
-                    if let Some(ref base) = base_parts {
+                    if let Some(ref base_value) = base {
                         // Must always match
-                        if current_parts != *base {
+                        if current_value != *base_value {
                             errors
                                 .get_or_insert_with(Vec::new)
                                 .push(create_purl_consistency_error(path, i));
                         }
                     } else {
                         // The first PURL becomes the base for comparison
-                        base_parts = Some(current_parts);
+                        base = Some(current_value);
                     }
                 }
             }
@@ -83,7 +84,6 @@ mod tests {
 
     #[test]
     fn test_test_6_1_42() {
-        // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
         TESTS_2_1.test_6_1_42.expect(
             Err(vec![create_purl_consistency_error(
                 "/product_tree/full_product_names/0",

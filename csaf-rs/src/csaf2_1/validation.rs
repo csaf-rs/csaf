@@ -1,8 +1,8 @@
-use crate::csaf::raw::{RawDocument, RawValidatable};
+use crate::csaf::raw::{HasParsed, RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationPreset};
+use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationError};
 enum Severity {
     Error,
     Warning,
@@ -40,12 +40,57 @@ fn to_test_result(
     }
 }
 
+fn validate_schema(document: &RawDocument<CommonSecurityAdvisoryFramework>) -> Result<(), Vec<ValidationError>> {
+    // TODO: validate using `jsonschema` crate instead of relying on parsing errors from `serde_json`
+    match document.get_parsed() {
+        Ok(_) => Ok(()),
+        Err(err) => Err(vec![ValidationError {
+            message: err.clone(),
+            instance_path: "".to_string(),
+        }]),
+    }
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&str> {
+    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
         match preset {
-            ValidationPreset::Basic => mandatory_tests(),
-            ValidationPreset::Extended => [mandatory_tests(), recommended_tests()].concat(),
-            ValidationPreset::Full => [mandatory_tests(), recommended_tests(), informative_tests()].concat(),
+            "mandatory" => Some(mandatory_tests()),
+            "recommended" => Some(recommended_tests()),
+            "informative" => Some(informative_tests()),
+            "schema" => Some(vec!["schema"]),
+            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
+            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            "full" => Some(
+                [
+                    vec!["schema"],
+                    mandatory_tests(),
+                    recommended_tests(),
+                    informative_tests(),
+                ]
+                .concat(),
+            ),
+            "external-request-free" => Some(
+                [
+                    vec!["schema"],
+                    mandatory_tests(),
+                    recommended_tests(),
+                    informative_tests(),
+                ]
+                .concat()
+                .into_iter()
+                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+                .collect(),
+            ),
+            "consistent-revision-history" => Some(vec![
+                "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
+                "6.2.33",
+            ]),
+            "consistent-date-times" => Some(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            "ssvc" => Some(vec![
+                "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
+                "6.3.14", "6.3.15",
+            ]),
+            _ => None,
         }
     }
 
@@ -244,6 +289,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             test_id,
             Severity::Warning,
             match test_id {
+                "schema" => Some(validate_schema(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

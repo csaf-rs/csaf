@@ -4,7 +4,7 @@
 
 use crate::csaf2_0::loader::load_document_from_str as load_document_from_str_2_0;
 use crate::csaf2_1::loader::load_document_from_str as load_document_from_str_2_1;
-use crate::validation::{ValidationPreset, ValidationResult, validate_by_preset};
+use crate::validation::{ValidationResult, validate_by_preset};
 use wasm_bindgen::prelude::*;
 
 /// Initialize panic hook for better error messages in the browser console
@@ -27,12 +27,7 @@ pub fn init() {
 ///
 /// A `ValidationResult` containing the validation outcome and any errors
 #[wasm_bindgen(js_name = validateCsaf)]
-pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResult, JsValue> {
-    // Parse the preset
-    let preset = preset_str
-        .parse::<ValidationPreset>()
-        .map_err(|_| JsValue::from_str(&format!("Invalid preset: {preset_str}")))?;
-
+pub fn validate_csaf(json_str: &str, preset: &str) -> Result<ValidationResult, JsValue> {
     // First, try to detect the version by parsing the JSON
     let json_value: serde_json::Value =
         serde_json::from_str(json_str).map_err(|e| JsValue::from_str(&format!("Invalid JSON: {e}")))?;
@@ -64,7 +59,7 @@ pub fn validate_csaf(json_str: &str, preset_str: &str) -> Result<ValidationResul
 }
 
 /// Validate a CSAF 2.0 document
-fn validate_2_0(json_str: &str, preset: ValidationPreset) -> Result<ValidationResult, String> {
+fn validate_2_0(json_str: &str, preset: &str) -> Result<ValidationResult, String> {
     let document =
         load_document_from_str_2_0(json_str).map_err(|e| format!("Failed to load CSAF 2.0 document: {e}"))?;
 
@@ -72,7 +67,7 @@ fn validate_2_0(json_str: &str, preset: ValidationPreset) -> Result<ValidationRe
 }
 
 /// Validate a CSAF 2.1 document
-fn validate_2_1(json_str: &str, preset: ValidationPreset) -> Result<ValidationResult, String> {
+fn validate_2_1(json_str: &str, preset: &str) -> Result<ValidationResult, String> {
     let document =
         load_document_from_str_2_1(json_str).map_err(|e| format!("Failed to load CSAF 2.1 document: {e}"))?;
 
@@ -92,7 +87,6 @@ mod tests {
             num_warnings: 0,
             num_infos: 0,
             num_not_found: 0,
-            preset: ValidationPreset::Basic,
             test_results: vec![],
         };
 

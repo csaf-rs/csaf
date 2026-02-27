@@ -313,6 +313,8 @@ dependencies = [
 name = "csaf-validator"
 version = "0.3.1"
 dependencies = [
+ "anstream",
+ "anstyle",
  "anyhow",
  "clap",
  "csaf-rs",

@@ -1,0 +1,43 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Multiple Definition in Involvements (valid supplementary example 12 - two involvements, different date, same party)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-24-S12",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "vulnerabilities": [
+    {
+      "involvements": [
+        {
+          "date": "2021-04-23T10:00:00.000Z",
+          "party": "vendor",
+          "status": "open"
+        },
+        {
+          "date": "2021-04-24T10:00:00.000Z",
+          "party": "vendor",
+          "status": "in_progress"
+        }
+      ]
+    }
+  ]
+}
+

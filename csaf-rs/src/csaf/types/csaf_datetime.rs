@@ -1,7 +1,8 @@
+use crate::validation::ValidationError;
 use chrono::{DateTime, FixedOffset, ParseError, Utc};
 use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::hash::Hash;
 use std::str::FromStr;
-
 // ============================================================================
 // CsafDateTime Implementation
 // ============================================================================
@@ -88,6 +89,13 @@ impl CsafDateTimeParseError {
     pub fn get_raw_string(&self) -> &str {
         &self.raw_string
     }
+
+    pub fn into_validation_error(self, instance_path: &str) -> ValidationError {
+        ValidationError {
+            message: self.to_string(),
+            instance_path: instance_path.to_string(),
+        }
+    }
 }
 
 impl Display for CsafDateTimeParseError {
@@ -156,6 +164,12 @@ impl Eq for ValidCsafDateTime {}
 impl PartialEq for ValidCsafDateTime {
     fn eq(&self, other: &Self) -> bool {
         self.parsed == other.parsed
+    }
+}
+
+impl Hash for ValidCsafDateTime {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.parsed.hash(state);
     }
 }
 

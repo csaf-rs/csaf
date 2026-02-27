@@ -1,8 +1,9 @@
-use crate::csaf::raw::{HasParsed, RawDocument, RawValidatable};
+use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationError};
+use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validations::test_schema::validate_schema_csaf_2_0;
 
 enum Severity {
     Error,
@@ -38,17 +39,6 @@ fn to_test_result(
                 },
             },
         },
-    }
-}
-
-fn validate_schema(document: &RawDocument<CommonSecurityAdvisoryFramework>) -> Result<(), Vec<ValidationError>> {
-    // TODO: validate using `jsonschema` crate instead of relying on parsing errors from `serde_json`
-    match document.get_parsed() {
-        Ok(_) => Ok(()),
-        Err(err) => Err(vec![ValidationError {
-            message: err.clone(),
-            instance_path: "".to_string(),
-        }]),
     }
 }
 
@@ -191,7 +181,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             test_id,
             Severity::Warning,
             match test_id {
-                "schema" => Some(validate_schema(self)),
+                "schema" => Some(validate_schema_csaf_2_0(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

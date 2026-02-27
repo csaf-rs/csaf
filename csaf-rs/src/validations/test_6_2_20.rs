@@ -1,6 +1,14 @@
 use std::sync::LazyLock;
 
-use crate::{csaf::raw::RawDocument, validation::ValidationError};
+use crate::{
+    csaf::raw::RawDocument,
+    helpers::{
+        CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA, CVSS_V3_0_SCHEMA_URL,
+        CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_1_SCHEMA, CVSS_V4_0_1_SCHEMA_URL, SSVC_2_SCHEMA,
+        SSVC_2_SCHEMA_URL,
+    },
+    validation::ValidationError,
+};
 use jsonschema::{Resource, error::ValidationErrorKind};
 use serde_json::Value;
 
@@ -32,72 +40,33 @@ fn make_strict_inplace(schema_value: &mut Value) {
     }
 }
 
-const CSAF_2_0_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.0/csaf_json_schema.json";
-static CSAF_2_0_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/csaf_2.0_json_schema.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-    Resource::from_contents(make_strict(schema_json))
+static STRICT_VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    jsonschema::options()
+        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())))
+        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
+        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
+        .build(&make_strict(CSAF_2_0_SCHEMA.clone()))
+        .unwrap()
 });
 
-const CSAF_2_1_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json";
-static CSAF_2_1_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/csaf_2.1_json_schema.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-    Resource::from_contents(make_strict(schema_json))
-});
-
-const CVSS_V2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v2.0.json";
-static CVSS_V2_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/cvss-v2.0.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-    Resource::from_contents(make_strict(schema_json))
-});
-
-const CVSS_V3_0_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.0.json";
-static CVSS_V3_0_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/cvss-v3.0.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-    // we may not make this strict, otherwise the oneOf does not match
-    Resource::from_contents(schema_json)
-});
-
-const CVSS_V3_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.1.json";
-static CVSS_V3_1_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/cvss-v3.1.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-    // we may not make this strict, otherwise the oneOf does not match
-    Resource::from_contents(schema_json)
-});
-
-const CVSS_V4_0_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.1.json";
-static CVSS_V4_0_1_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/cvss-v4.0.rev.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-    Resource::from_contents(make_strict(schema_json))
-});
-
-const SSVC_2_SCHEMA_URL: &str = "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json";
-static SSVC_2_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/decision_point_selection_list_json_schema.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
-    Resource::from_contents(schema_json)
+static STRICT_VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    jsonschema::options()
+        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())))
+        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
+        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
+        .with_resource(CVSS_V4_0_1_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V4_0_1_SCHEMA.clone())))
+        .with_resource(SSVC_2_SCHEMA_URL, Resource::from_contents(make_strict(SSVC_2_SCHEMA.clone())))
+        .build(&make_strict(CSAF_2_1_SCHEMA.clone()))
+        .unwrap()
 });
 
 /// 6.2.20 Additional Properties
 ///
 /// There is no additional property in the CSAF document that was not defined in the CSAF JSON schema.
-pub fn test_6_2_20_additional_properties(json: &Value, schema: Resource) -> Result<(), Vec<ValidationError>> {
-    let validator = jsonschema::options()
-        .with_resource(CSAF_2_0_SCHEMA_URL, CSAF_2_0_SCHEMA.clone())
-        .with_resource(CSAF_2_1_SCHEMA_URL, CSAF_2_1_SCHEMA.clone())
-        .with_resource(CVSS_V2_SCHEMA_URL, CVSS_V2_SCHEMA.clone())
-        .with_resource(CVSS_V3_0_SCHEMA_URL, CVSS_V3_0_SCHEMA.clone())
-        .with_resource(CVSS_V3_1_SCHEMA_URL, CVSS_V3_1_SCHEMA.clone())
-        .with_resource(CVSS_V4_0_1_SCHEMA_URL, CVSS_V4_0_1_SCHEMA.clone())
-        .with_resource(SSVC_2_SCHEMA_URL, SSVC_2_SCHEMA.clone())
-        .build(schema.contents())
-        .unwrap();
-
+pub fn test_6_2_20_additional_properties(
+    json: &Value,
+    validator: &jsonschema::Validator,
+) -> Result<(), Vec<ValidationError>> {
     let results: Vec<_> = validator
         .iter_errors(json)
         .flat_map(|error| match error.kind() {
@@ -126,7 +95,7 @@ impl crate::test_validation::TestValidator<RawDocument<crate::schema::csaf2_0::s
         &self,
         document: &RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
     ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_20_additional_properties(document.get_json(), CSAF_2_0_SCHEMA.clone())
+        test_6_2_20_additional_properties(document.get_json(), &STRICT_VALIDATOR_2_0)
     }
 }
 
@@ -137,7 +106,7 @@ impl crate::test_validation::TestValidator<RawDocument<crate::schema::csaf2_1::s
         &self,
         document: &RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
     ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_20_additional_properties(document.get_json(), CSAF_2_1_SCHEMA.clone())
+        test_6_2_20_additional_properties(document.get_json(), &STRICT_VALIDATOR_2_1)
     }
 }
 

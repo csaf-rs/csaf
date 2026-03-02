@@ -14,7 +14,7 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
     // Check if doc version is valid, if not return an error and skip this test
     let doc_version = match tracking.get_version() {
         CsafVersionNumber::Valid(version_number) => version_number,
-        CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/version")]),
+        CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/version")]), // ToDo return warning here
     };
 
     let mut revision_history = tracking.get_revision_history_tuples();
@@ -99,57 +99,61 @@ mod tests {
     #[test]
     fn test_test_6_1_16() {
         // Error cases
-        let case_01 = Err(vec![test_6_1_16_err_generator(
+        let case_intver_history_greater_document_version = Err(vec![test_6_1_16_err_generator(
             &ValidVersionNumber::from_str("1").unwrap(),
             &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_02 = Err(vec![test_6_1_16_err_generator(
+        let case_intver_history_greater_document_version_same_date = Err(vec![test_6_1_16_err_generator(
             &ValidVersionNumber::from_str("1").unwrap(),
             &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_03 = Err(vec![test_6_1_16_err_generator(
-            &ValidVersionNumber::from_str("1").unwrap(),
-            &ValidVersionNumber::from_str("2").unwrap(),
-            &DocumentStatus::Final,
-        )]);
-        let case_04 = Err(vec![test_6_1_16_err_generator(
+        let case_interver_history_greater_document_version_same_date_wrong_order =
+            Err(vec![test_6_1_16_err_generator(
+                &ValidVersionNumber::from_str("1").unwrap(),
+                &ValidVersionNumber::from_str("2").unwrap(),
+                &DocumentStatus::Final,
+            )]);
+        let case_semver_history_greater_document_version = Err(vec![test_6_1_16_err_generator(
             &ValidVersionNumber::from_str("1.0.0").unwrap(),
             &ValidVersionNumber::from_str("2.0.0").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_05 = Err(vec![test_6_1_16_err_generator(
+        let case_semver_history_greater_document_version_same_date = Err(vec![test_6_1_16_err_generator(
             &ValidVersionNumber::from_str("1.0.0").unwrap(),
             &ValidVersionNumber::from_str("2.0.0").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_06 = Err(vec![test_6_1_16_err_generator(
-            &ValidVersionNumber::from_str("9").unwrap(),
-            &ValidVersionNumber::from_str("10").unwrap(),
-            &DocumentStatus::Final,
-        )]);
-        let case_07 = Err(vec![test_6_1_16_err_generator(
-            &ValidVersionNumber::from_str("1.9.0").unwrap(),
-            &ValidVersionNumber::from_str("1.10.0").unwrap(),
-            &DocumentStatus::Final,
-        )]);
-        let case_08 = Err(vec![test_6_1_16_err_generator(
-            &ValidVersionNumber::from_str("1").unwrap(),
-            &ValidVersionNumber::from_str("2").unwrap(),
-            &DocumentStatus::Final,
-        )]);
+        let case_intver_history_greater_document_version_same_date_multiple_versions =
+            Err(vec![test_6_1_16_err_generator(
+                &ValidVersionNumber::from_str("9").unwrap(),
+                &ValidVersionNumber::from_str("10").unwrap(),
+                &DocumentStatus::Final,
+            )]);
+        let case_semver_history_greater_document_version_same_date_multiple_versions =
+            Err(vec![test_6_1_16_err_generator(
+                &ValidVersionNumber::from_str("1.9.0").unwrap(),
+                &ValidVersionNumber::from_str("1.10.0").unwrap(),
+                &DocumentStatus::Final,
+            )]);
+        let case_intver_history_greater_document_version_same_date_higher_precision =
+            Err(vec![test_6_1_16_err_generator(
+                &ValidVersionNumber::from_str("1").unwrap(),
+                &ValidVersionNumber::from_str("2").unwrap(),
+                &DocumentStatus::Final,
+            )]);
 
         // CSAF 2.0 has 18 test cases (01-08, 11-19, 31)
         TESTS_2_0.test_6_1_16.expect(
-            case_01.clone(),
-            case_02.clone(),
-            case_03.clone(),
-            case_04.clone(),
-            case_05.clone(),
-            case_06.clone(),
-            case_07.clone(),
-            case_08.clone(),
+            case_intver_history_greater_document_version.clone(),
+            case_intver_history_greater_document_version_same_date.clone(),
+            case_interver_history_greater_document_version_same_date_wrong_order.clone(),
+            case_semver_history_greater_document_version.clone(),
+            case_semver_history_greater_document_version_same_date.clone(),
+            case_intver_history_greater_document_version_same_date_multiple_versions.clone(),
+            case_semver_history_greater_document_version_same_date_multiple_versions.clone(),
+            case_intver_history_greater_document_version_same_date_higher_precision.clone(),
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13
@@ -164,19 +168,19 @@ mod tests {
 
         // CSAF 2.1 has 20 test cases (01-09, 11-19, 31-32)
         TESTS_2_1.test_6_1_16.expect(
-            case_01,
-            case_02,
-            case_03,
-            case_04,
-            case_05,
-            case_06,
-            case_07,
-            case_08,
+            case_intver_history_greater_document_version,
+            case_intver_history_greater_document_version_same_date,
+            case_interver_history_greater_document_version_same_date_wrong_order,
+            case_semver_history_greater_document_version,
+            case_semver_history_greater_document_version_same_date,
+            case_intver_history_greater_document_version_same_date_multiple_versions,
+            case_semver_history_greater_document_version_same_date_multiple_versions,
+            case_intver_history_greater_document_version_same_date_higher_precision,
             Err(vec![test_6_1_16_err_generator(
                 &ValidVersionNumber::from_str("2").unwrap(),
                 &ValidVersionNumber::from_str("1").unwrap(),
                 &DocumentStatus::Final,
-            )]),
+            )]), // incorrect ordering
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13

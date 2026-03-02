@@ -24,7 +24,7 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
             CsafVersionNumber::Invalid(err) => {
                 errors.get_or_insert_default().push(err.get_validation_error(
                     format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
+                )); // ToDo generate warning
                 continue;
             },
         };

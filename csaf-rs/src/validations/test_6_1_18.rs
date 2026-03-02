@@ -30,7 +30,7 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     // This test is only relevant for documents with status 'interim' and 'final'
     let status = tracking.get_status();
     if !(DocumentStatus::Final == status || DocumentStatus::Interim == status) {
-        return Ok(());
+        return Ok(()); // ToDo return skipped/not applicable
     }
 
     // Check that no revision history item has version 0 or 0.y.z
@@ -39,10 +39,10 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     for (revision_index, revision) in revision_history.iter().enumerate() {
         let number = match revision.get_number() {
             CsafVersionNumber::Valid(number) => number,
-            CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
+            CsafVersionNumber::Invalid(_) => {
+                // errors.get_or_insert_default().push(err.get_validation_error(
+                //     format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
+                // ));// ToDo generate warning here
                 continue;
             },
         };
@@ -92,17 +92,27 @@ mod tests {
 
     #[test]
     fn test_test_6_1_18() {
-        // TODO Unit tests for doc status
-        // TODO for invalid number
-        // TODO for semver with major 0
-        let case_01 = Err(vec![create_revision_history_error(
+        let case_intver_final = Err(vec![create_revision_history_error(
             &DocumentStatus::Final,
             &ValidVersionNumber::from_str("0").unwrap(),
             &0,
         )]);
+        let case_semver_final = Err(vec![create_revision_history_error(
+            &DocumentStatus::Final,
+            &ValidVersionNumber::from_str("0.9.0").unwrap(),
+            &0,
+        )]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_18.expect(case_01.clone());
-        TESTS_2_1.test_6_1_18.expect(case_01);
+        TESTS_2_0.test_6_1_18.expect(
+            case_intver_final.clone(),
+            case_semver_final.clone(),
+            Ok(()), // status draft
+        );
+        TESTS_2_1.test_6_1_18.expect(
+            case_intver_final,
+            case_semver_final,
+            Ok(()), // status draft
+        );
     }
 }

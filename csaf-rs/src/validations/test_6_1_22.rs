@@ -26,7 +26,7 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
             CsafVersionNumber::Invalid(err) => {
                 errors.get_or_insert_default().push(
                     err.get_validation_error(format!("/document/tracking/revision_history/{i_r}/number").as_str()),
-                );
+                ); // ToDo generate warning
                 continue;
             },
         };
@@ -79,14 +79,40 @@ mod tests {
 
     #[test]
     fn test_test_6_1_22() {
-        // TODO: Add unit test for semver, more than two duplicates, invalid number
-        let case_01 = Err(vec![
+        // TODO: Add unit test for more than two duplicates
+        let case_intver = Err(vec![
             generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &0),
             generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &1),
         ]);
+        let case_intver_double_duplicates = Err(vec![
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &0),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2").unwrap(), &1),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &2),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2").unwrap(), &3),
+        ]);
+        let case_semver = Err(vec![
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &0),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &1),
+        ]);
+        let case_semver_double_duplicates = Err(vec![
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &0),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2.0.0").unwrap(), &1),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &2),
+            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2.0.0").unwrap(), &3),
+        ]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_22.expect(case_01.clone());
-        TESTS_2_1.test_6_1_22.expect(case_01);
+        TESTS_2_0.test_6_1_22.expect(
+            case_intver.clone(),
+            case_semver.clone(),
+            case_intver_double_duplicates.clone(),
+            case_semver_double_duplicates.clone(),
+        );
+        TESTS_2_1.test_6_1_22.expect(
+            case_intver,
+            case_semver,
+            case_intver_double_duplicates,
+            case_semver_double_duplicates,
+        );
     }
 }

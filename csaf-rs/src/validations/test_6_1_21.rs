@@ -121,38 +121,48 @@ mod tests {
 
     #[test]
     fn test_test_6_1_21() {
-        // TODO: Unit Tests with semver
-        // Error cases
-        let case_01 = Err(vec![test_6_1_21_err_missing_version_in_range(
+        let case_intver_1_missing = Err(vec![test_6_1_21_err_missing_version_in_range(
             &ValidVersionNumber::from_str("1").unwrap(),
             &2,
             &1,
             &3,
         )]);
-        let case_02 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
+        let case_intver_2_missing = Err(vec![test_6_1_21_err_wrong_first_version_generator(
             &ValidVersionNumber::from_str("2").unwrap(),
             &0,
         )]);
+        let case_semver_1_missing = Err(vec![test_6_1_21_err_missing_version_in_range(
+            &ValidVersionNumber::from_str("1.0.0").unwrap(),
+            &2,
+            &1,
+            &3,
+        )]);
+        let case_semver_2_missing = Err(vec![test_6_1_21_err_wrong_first_version_generator(
+            &ValidVersionNumber::from_str("2.0.0").unwrap(),
+            &0,
+        )]);
 
-        // CSAF 2.0 has 5 test cases (01-02, 11-13)
         TESTS_2_0.test_6_1_21.expect(
-            case_01.clone(),
-            case_02.clone(),
+            case_intver_1_missing.clone(),
+            case_intver_2_missing.clone(),
+            case_semver_1_missing.clone(),
+            case_semver_2_missing.clone(),
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13
         );
 
-        // CSAF 2.1 has 7 test cases (01-03, 11-14)
         TESTS_2_1.test_6_1_21.expect(
-            case_01,
-            case_02,
+            case_intver_1_missing,
+            case_intver_2_missing,
             Err(vec![test_6_1_21_err_missing_version_in_range(
                 &ValidVersionNumber::from_str("1").unwrap(),
                 &2,
                 &1,
                 &4,
             )]),
+            case_semver_1_missing,
+            case_semver_2_missing,
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13

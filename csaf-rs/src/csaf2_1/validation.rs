@@ -275,11 +275,14 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
+        if test_id == "schema" {
+            return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_1(self)));
+        }
+
         to_test_result(
             test_id,
             Severity::Warning,
             match test_id {
-                "schema" => Some(validate_schema_csaf_2_1(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

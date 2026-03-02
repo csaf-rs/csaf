@@ -22,18 +22,18 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
     // Check if the document status is not "final" or "interim"
     let status = tracking.get_status();
     if !(status == DocumentStatus::Final || status == DocumentStatus::Interim) {
-        return Ok(());
+        return Ok(()); // ToDo return skipped/not applicable
     }
 
     // Check if doc version is valid
     let doc_version = match tracking.get_version() {
         CsafVersionNumber::Valid(version_number) => version_number,
-        CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/version")]),
+        CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/version")]), // ToDo generate warning
     };
 
     match doc_version {
         // If version is integer versioning, this test does not apply
-        ValidVersionNumber::IntVer(_) => {},
+        ValidVersionNumber::IntVer(_) => {}, // ToDo maybe generate skipped/not applicable
         ValidVersionNumber::SemVer(semver) => {
             if semver.has_prerelease() {
                 return Err(vec![create_validation_error(&status, &semver)]);
@@ -78,14 +78,17 @@ mod tests {
 
     #[test]
     fn test_test_6_1_20() {
-        // TODO Unit tests for other Doc status
-        let case_01 = Err(vec![create_validation_error(
+        let case_interim = Err(vec![create_validation_error(
             &DocumentStatus::Interim,
+            &SemVerVersion::from(Version::from_str("1.0.0-alpha").unwrap()),
+        )]);
+        let case_final = Err(vec![create_validation_error(
+            &DocumentStatus::Final,
             &SemVerVersion::from(Version::from_str("1.0.0-alpha").unwrap()),
         )]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_20.expect(case_01.clone());
-        TESTS_2_1.test_6_1_20.expect(case_01);
+        TESTS_2_0.test_6_1_20.expect(case_interim.clone(), case_final.clone());
+        TESTS_2_1.test_6_1_20.expect(case_interim.clone(), case_final.clone());
     }
 }

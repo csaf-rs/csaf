@@ -152,15 +152,17 @@ mod tests {
             Ok(()), // case_13
         );
 
+        let case_intver_2_missing_higher_versions = Err(vec![test_6_1_21_err_missing_version_in_range(
+            &ValidVersionNumber::from_str("1").unwrap(),
+            &2,
+            &1,
+            &4,
+        )]);
+
         TESTS_2_1.test_6_1_21.expect(
             case_intver_1_missing,
             case_intver_2_missing,
-            Err(vec![test_6_1_21_err_missing_version_in_range(
-                &ValidVersionNumber::from_str("1").unwrap(),
-                &2,
-                &1,
-                &4,
-            )]),
+            case_intver_2_missing_higher_versions,
             case_semver_1_missing,
             case_semver_2_missing,
             Ok(()), // case_11

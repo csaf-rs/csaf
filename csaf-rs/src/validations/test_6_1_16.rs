@@ -109,7 +109,7 @@ mod tests {
             &ValidVersionNumber::from_str("2").unwrap(),
             &DocumentStatus::Final,
         )]);
-        let case_interver_history_greater_document_version_same_date_wrong_order =
+        let case_intver_history_greater_document_version_same_date_wrong_order =
             Err(vec![test_6_1_16_err_generator(
                 &ValidVersionNumber::from_str("1").unwrap(),
                 &ValidVersionNumber::from_str("2").unwrap(),
@@ -148,7 +148,7 @@ mod tests {
         TESTS_2_0.test_6_1_16.expect(
             case_intver_history_greater_document_version.clone(),
             case_intver_history_greater_document_version_same_date.clone(),
-            case_interver_history_greater_document_version_same_date_wrong_order.clone(),
+            case_intver_history_greater_document_version_same_date_wrong_order.clone(),
             case_semver_history_greater_document_version.clone(),
             case_semver_history_greater_document_version_same_date.clone(),
             case_intver_history_greater_document_version_same_date_multiple_versions.clone(),
@@ -170,7 +170,7 @@ mod tests {
         TESTS_2_1.test_6_1_16.expect(
             case_intver_history_greater_document_version,
             case_intver_history_greater_document_version_same_date,
-            case_interver_history_greater_document_version_same_date_wrong_order,
+            case_intver_history_greater_document_version_same_date_wrong_order,
             case_semver_history_greater_document_version,
             case_semver_history_greater_document_version_same_date,
             case_intver_history_greater_document_version_same_date_multiple_versions,

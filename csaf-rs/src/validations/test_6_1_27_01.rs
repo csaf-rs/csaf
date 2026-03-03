@@ -90,7 +90,6 @@ mod tests {
             CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
         TESTS_2_0.test_6_1_27_1.expect(case_01.clone());
         TESTS_2_1.test_6_1_27_1.expect(case_01);
     }

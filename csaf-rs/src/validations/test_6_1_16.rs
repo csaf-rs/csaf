@@ -181,7 +181,7 @@ mod tests {
             case_intver_history_greater_document_version_same_date_multiple_versions,
             case_semver_history_greater_document_version_same_date_multiple_versions,
             case_intver_history_greater_document_version_same_date_higher_precision,
-            case_intver_history_greater_document_version_wrong_order, // incorrect ordering
+            case_intver_history_greater_document_version_wrong_order,
             Ok(()),                                                   // case_11
             Ok(()),                                                   // case_12
             Ok(()),                                                   // case_13

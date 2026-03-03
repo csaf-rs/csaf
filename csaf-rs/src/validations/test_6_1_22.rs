@@ -12,7 +12,7 @@ fn generate_duplicate_revision_error(number: &ValidVersionNumber, path: &usize) 
 
 /// Test 6.1.22: Multiple Definition in Revision History
 ///
-/// Items of the revision history must not contain the same string in the
+/// Items of the revision history must not contain the same value in the
 /// `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let revision_history = doc.get_document().get_tracking().get_revision_history();

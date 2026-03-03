@@ -45,9 +45,17 @@ fn to_test_result(
 impl Validatable for CommonSecurityAdvisoryFramework {
     fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
         match preset {
-            "basic" => Some(mandatory_tests()),
-            "extended" => Some([mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some([mandatory_tests(), recommended_tests(), informative_tests()].concat()),
+            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
+            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            "full" => Some(
+                [
+                    vec!["schema"],
+                    mandatory_tests(),
+                    recommended_tests(),
+                    informative_tests(),
+                ]
+                .concat(),
+            ),
             _ => None,
         }
     }

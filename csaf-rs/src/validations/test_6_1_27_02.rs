@@ -80,11 +80,11 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_02() {
-        let case_01 = Err(vec![create_missing_external_reference_error(
+        let case_informational_advisory = Err(vec![create_missing_external_reference_error(
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
 
-        TESTS_2_0.test_6_1_27_2.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_2.expect(case_01);
+        TESTS_2_0.test_6_1_27_2.expect(case_informational_advisory.clone());
+        TESTS_2_1.test_6_1_27_2.expect(case_informational_advisory);
     }
 }

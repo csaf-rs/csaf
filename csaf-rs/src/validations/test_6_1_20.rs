@@ -87,8 +87,7 @@ mod tests {
             &SemVerVersion::from(Version::from_str("1.0.0-alpha").unwrap()),
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
         TESTS_2_0.test_6_1_20.expect(case_interim.clone(), case_final.clone());
-        TESTS_2_1.test_6_1_20.expect(case_interim.clone(), case_final.clone());
+        TESTS_2_1.test_6_1_20.expect(case_interim, case_final);
     }
 }

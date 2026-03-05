@@ -90,7 +90,11 @@ mod tests {
             CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
 
-        TESTS_2_0.test_6_1_27_1.expect(case_security_incident_response_no_valid_note.clone());
-        TESTS_2_1.test_6_1_27_1.expect(case_security_incident_response_no_valid_note);
+        TESTS_2_0
+            .test_6_1_27_1
+            .expect(case_security_incident_response_no_valid_note.clone());
+        TESTS_2_1
+            .test_6_1_27_1
+            .expect(case_security_incident_response_no_valid_note);
     }
 }

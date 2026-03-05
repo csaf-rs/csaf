@@ -73,7 +73,9 @@ mod tests {
     fn test_test_6_1_27_08() {
         let case_vex_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
 
-        TESTS_2_0.test_6_1_27_8.expect(case_vex_without_cve_or_id.clone(), Ok(()));
+        TESTS_2_0
+            .test_6_1_27_8
+            .expect(case_vex_without_cve_or_id.clone(), Ok(()));
         TESTS_2_1.test_6_1_27_8.expect(case_vex_without_cve_or_id, Ok(()));
     }
 }

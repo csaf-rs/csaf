@@ -80,16 +80,16 @@ mod tests {
             &CsafDocumentCategory::CsafSecurityAdvisory,
             &0,
         )]);
-let case_vex = Err(vec![test_6_1_27_05_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            &0,
-        )]);
-let _case_deprecated_security_advisory: Result<(), Vec<ValidationError>> = Err(vec![test_6_1_27_05_err_generator(
-            &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-            &0,
-        )]);
+        let case_vex = Err(vec![test_6_1_27_05_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
+        let _case_deprecated_security_advisory: Result<(), Vec<ValidationError>> =
+            Err(vec![test_6_1_27_05_err_generator(
+                &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+                &0,
+            )]);
 
-        TESTS_2_0.test_6_1_27_5.expect(case_security_advisory.clone(), case_vex.clone());
+        TESTS_2_0
+            .test_6_1_27_5
+            .expect(case_security_advisory.clone(), case_vex.clone());
         TESTS_2_1.test_6_1_27_5.expect(
             case_security_advisory,
             case_vex.clone(),

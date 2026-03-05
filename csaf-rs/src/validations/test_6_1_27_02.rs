@@ -23,8 +23,7 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
 /// This test only applies to documents with `/document/category` with value `csaf_informational_advisory`
 /// or `csaf_security_incident_response`.
 ///
-/// Documents with these categories must have at least one entry in `/document/notes` with `category` values
-/// of `description`, `details`, `general` or `summary`.
+/// Documents with these categories must have at least one entry in `/document/references` with an external reference.
 pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 

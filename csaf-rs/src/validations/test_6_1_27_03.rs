@@ -71,18 +71,16 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_03() {
-        let case_informational_advisory = Err (vec![create_must_not_have_vuln_element_error(
+        let case_informational_advisory = Err(vec![create_must_not_have_vuln_element_error(
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
-        let case_withdrawn = Err (vec![create_must_not_have_vuln_element_error(
+        let case_withdrawn = Err(vec![create_must_not_have_vuln_element_error(
             &CsafDocumentCategory::CsafWithdrawn,
         )]);
-        let case_superseded = Err (vec![create_must_not_have_vuln_element_error(
+        let case_superseded = Err(vec![create_must_not_have_vuln_element_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);
-        TESTS_2_0
-            .test_6_1_27_3
-            .expect(case_informational_advisory.clone());
+        TESTS_2_0.test_6_1_27_3.expect(case_informational_advisory.clone());
         TESTS_2_1.test_6_1_27_3.expect(
             case_informational_advisory.clone(),
             case_withdrawn.clone(),

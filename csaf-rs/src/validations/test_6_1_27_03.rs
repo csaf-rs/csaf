@@ -63,27 +63,30 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 
 #[cfg(test)]
 mod tests {
+    use std::vec;
+
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_03() {
+        let case_informational_advisory = Err (vec![create_must_not_have_vuln_element_error(
+            &CsafDocumentCategory::CsafInformationalAdvisory,
+        )]);
+        let case_withdrawn = Err (vec![create_must_not_have_vuln_element_error(
+            &CsafDocumentCategory::CsafWithdrawn,
+        )]);
+        let case_superseded = Err (vec![create_must_not_have_vuln_element_error(
+            &CsafDocumentCategory::CsafSuperseded,
+        )]);
         TESTS_2_0
             .test_6_1_27_3
-            .expect(Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafInformationalAdvisory,
-            )]));
+            .expect(case_informational_advisory.clone());
         TESTS_2_1.test_6_1_27_3.expect(
-            Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafInformationalAdvisory,
-            )]),
-            Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafWithdrawn,
-            )]),
-            Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafSuperseded,
-            )]),
+            case_informational_advisory.clone(),
+            case_withdrawn.clone(),
+            case_superseded.clone(),
             Ok(()),
             Ok(()),
             Ok(()),

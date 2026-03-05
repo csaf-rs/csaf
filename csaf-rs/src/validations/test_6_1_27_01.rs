@@ -86,11 +86,11 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_01() {
-        let case_01 = Err(vec![create_missing_note_error(
+        let case_security_incident_response_no_valid_note = Err(vec![create_missing_note_error(
             CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
 
-        TESTS_2_0.test_6_1_27_1.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_1.expect(case_01);
+        TESTS_2_0.test_6_1_27_1.expect(case_security_incident_response_no_valid_note.clone());
+        TESTS_2_1.test_6_1_27_1.expect(case_security_incident_response_no_valid_note);
     }
 }

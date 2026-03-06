@@ -68,22 +68,24 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_11() {
-        let case_01 = Err(vec![create_missing_vulnerabilities_error(
+        let case_security_advisory = Err(vec![create_missing_vulnerabilities_error(
             &CsafDocumentCategory::CsafSecurityAdvisory,
+        )]);
+        let case_vex = Err(vec![create_missing_vulnerabilities_error(
+            &CsafDocumentCategory::CsafVex,
+        )]);
+        let case_deprecated_security_advisory = Err(vec![create_missing_vulnerabilities_error(
+            &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
 
         // CSAF 2.0 has 1 test case
-        TESTS_2_0.test_6_1_27_11.expect(case_01.clone());
+        TESTS_2_0
+            .test_6_1_27_11
+            .expect(case_security_advisory.clone(), case_vex.clone(), Ok(()));
 
         // CSAF 2.1 has 3 test cases
-        TESTS_2_1.test_6_1_27_11.expect(
-            case_01,
-            Err(vec![create_missing_vulnerabilities_error(
-                &CsafDocumentCategory::CsafVex,
-            )]),
-            Err(vec![create_missing_vulnerabilities_error(
-                &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-            )]),
-        );
+        TESTS_2_1
+            .test_6_1_27_11
+            .expect(case_security_advisory, case_vex, case_deprecated_security_advisory);
     }
 }

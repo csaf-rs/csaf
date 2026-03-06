@@ -1,8 +1,9 @@
-use crate::csaf::raw::{HasParsed, RawDocument, RawValidatable};
+use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationError};
+use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validations::test_schema::validate_schema_csaf_2_0;
 
 enum Severity {
     Error,
@@ -41,23 +42,20 @@ fn to_test_result(
     }
 }
 
-fn validate_schema(document: &RawDocument<CommonSecurityAdvisoryFramework>) -> Result<(), Vec<ValidationError>> {
-    // TODO: validate using `jsonschema` crate instead of relying on parsing errors from `serde_json`
-    match document.get_parsed() {
-        Ok(_) => Ok(()),
-        Err(err) => Err(vec![ValidationError {
-            message: err.clone(),
-            instance_path: "".to_string(),
-        }]),
-    }
-}
-
 impl Validatable for CommonSecurityAdvisoryFramework {
     fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
         match preset {
-            "basic" => Some(mandatory_tests()),
-            "extended" => Some([mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some([mandatory_tests(), recommended_tests(), informative_tests()].concat()),
+            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
+            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            "full" => Some(
+                [
+                    vec!["schema"],
+                    mandatory_tests(),
+                    recommended_tests(),
+                    informative_tests(),
+                ]
+                .concat(),
+            ),
             _ => None,
         }
     }
@@ -187,11 +185,14 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
+        if test_id == "schema" {
+            return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_0(self)));
+        }
+
         to_test_result(
             test_id,
             Severity::Warning,
             match test_id {
-                "schema" => Some(validate_schema(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

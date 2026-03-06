@@ -76,7 +76,7 @@ fn validate_file(path: &str, args: &Args) -> Result<ValidationResult> {
             let document = load_document_2_1(path)?;
             Ok(validate_document(document, "2.1", args))
         },
-        _ => bail!(format!("Invalid CSAF version: {}", args.csaf_version)),
+        _ => bail!(format!("Invalid CSAF version: {version}")),
     }
 }
 

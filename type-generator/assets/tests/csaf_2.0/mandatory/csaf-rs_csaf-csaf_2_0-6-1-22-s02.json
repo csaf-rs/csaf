@@ -1,0 +1,41 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "OASIS CSAF TC",
+      "namespace": "https://csaf.io"
+    },
+    "title": "Mandatory test: Multiple Definition in Revision History (failing supplementary example 2)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-22-S02",
+      "initial_release_date": "2021-07-20T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-20T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        },
+        {
+          "date": "2021-07-21T10:30:00.000Z",
+          "number": "2",
+          "summary": "Some other changes."
+        },
+        {
+          "date": "2021-07-21T11:00:00.000Z",
+          "number": "1",
+          "summary": "Some other changes."
+        },
+        {
+          "date": "2021-07-21T11:30:00.000Z",
+          "number": "2",
+          "summary": "Some other changes."
+        }
+      ],
+      "status": "final",
+      "version": "2"
+    }
+  }
+}

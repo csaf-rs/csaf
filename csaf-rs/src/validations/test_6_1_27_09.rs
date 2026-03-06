@@ -90,7 +90,6 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         // generate errors for all remaining known_not_affected product or group ids
         for known_not_affected_group_id in known_not_affected_product_or_group_ids.iter() {
             errors.get_or_insert_with(Vec::new).push(test_6_1_27_09_err_generator(
-                &doc_category,
                 known_not_affected_group_id.0.to_string(),
                 v_i,
                 *known_not_affected_group_id.1,
@@ -105,16 +104,13 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]);
 
 fn test_6_1_27_09_err_generator(
-    document_category: &CsafDocumentCategory,
     product_or_group_id: String,
     vuln_path_index: usize,
     known_not_affected_path_index: usize,
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "In documents with category '{document_category}', vulnerability product status 'known_not_affected' entries \
-            must have a corresponding impact statement in 'flags' or 'threats' with category 'impact'. \
-            Found 'known_not_affected' product status entry '{product_or_group_id}' without impact statement."
+            "No impact statement found for 'known_not_affected' product status entry '{product_or_group_id}'."
         ),
         instance_path: format!(
             "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_not_affected_path_index}"
@@ -152,50 +148,28 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_09() {
-        let case_01 = Err(vec![test_6_1_27_09_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            "CSAFPID-9080702".to_string(),
-            0,
-            2,
-        )]);
-        let case_02 = Err(vec![test_6_1_27_09_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            "CSAFPID-9080702".to_string(),
-            0,
-            2,
-        )]);
-        let case_03 = Err(vec![test_6_1_27_09_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            "CSAFPID-9080700".to_string(),
-            0,
-            0,
-        )]);
-        let case_04 = Err(vec![test_6_1_27_09_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            "CSAFPID-9080700".to_string(),
-            0,
-            0,
-        )]);
-        let case_05 = Err(vec![test_6_1_27_09_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            "CSAFPID-9080700".to_string(),
-            0,
-            0,
-        )]);
-        let case_06 = Err(vec![test_6_1_27_09_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            "CSAFPID-9080701".to_string(),
-            1,
-            1,
-        )]);
+        let case_group_covered_by_threats =
+            Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080702".to_string(), 0, 2)]);
+        let case_group_covered_by_flag = Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080702".to_string(), 0, 2)]);
+        let case_products_covered_by_threats =
+            Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080700".to_string(), 0, 0)]);
+        let case_products_covered_by_flags =
+            Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080700".to_string(), 0, 0)]);
+        let case_products_covered_by_flags_or_threats =
+            Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080700".to_string(), 0, 0)]);
+        let case_one_not_covered_with_multiple_vulnerabilities =
+            Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080701".to_string(), 1, 1)]);
+        let case_one_not_covered_by_threat_with_wrong_category =
+            Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080702".to_string(), 0, 2)]);
 
         TESTS_2_0.test_6_1_27_9.expect(
-            case_01.clone(),
-            case_02.clone(),
-            case_03.clone(),
-            case_04.clone(),
-            case_05.clone(),
-            case_06.clone(),
+            case_group_covered_by_threats.clone(),
+            case_group_covered_by_flag.clone(),
+            case_products_covered_by_threats.clone(),
+            case_products_covered_by_flags.clone(),
+            case_products_covered_by_flags_or_threats.clone(),
+            case_one_not_covered_with_multiple_vulnerabilities.clone(),
+            case_one_not_covered_by_threat_with_wrong_category.clone(),
             Ok(()),
             Ok(()),
             Ok(()),
@@ -204,12 +178,13 @@ mod tests {
             Ok(()),
         );
         TESTS_2_1.test_6_1_27_9.expect(
-            case_01,
-            case_02,
-            case_03,
-            case_04,
-            case_05,
-            case_06,
+            case_group_covered_by_threats,
+            case_group_covered_by_flag,
+            case_products_covered_by_threats,
+            case_products_covered_by_flags,
+            case_products_covered_by_flags_or_threats,
+            case_one_not_covered_with_multiple_vulnerabilities,
+            case_one_not_covered_by_threat_with_wrong_category,
             Ok(()),
             Ok(()),
             Ok(()),

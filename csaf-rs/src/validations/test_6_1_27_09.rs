@@ -23,7 +23,7 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
     // Only execute this test for documents with category 'csaf_vex'
     // and if there are any vulnerabilities present
     if !PROFILE_TEST_CONFIG.matches_category(&doc_category) || vulnerabilities.is_empty() {
-        return Ok(());
+        return Ok(()); // ToDo generate not applicable
     }
 
     let mut errors: Option<Vec<ValidationError>> = None;

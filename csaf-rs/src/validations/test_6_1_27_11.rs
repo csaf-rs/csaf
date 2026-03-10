@@ -78,14 +78,20 @@ mod tests {
             &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
 
-        // CSAF 2.0 has 1 test case
         TESTS_2_0
             .test_6_1_27_11
-            .expect(case_security_advisory.clone(), case_vex.clone(), Ok(()));
+            .expect(
+                case_security_advisory.clone(), 
+                case_vex.clone(), 
+                Ok(()), 
+                Ok(()));
 
-        // CSAF 2.1 has 3 test cases
-        TESTS_2_1
-            .test_6_1_27_11
-            .expect(case_security_advisory, case_vex, case_deprecated_security_advisory);
+        TESTS_2_1.test_6_1_27_11.expect(
+            case_security_advisory,
+            case_vex,
+            case_deprecated_security_advisory,
+            Ok(()),
+            Ok(()),
+        );
     }
 }

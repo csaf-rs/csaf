@@ -63,8 +63,6 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 
 #[cfg(test)]
 mod tests {
-    use std::vec;
-
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;

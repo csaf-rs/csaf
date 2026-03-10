@@ -231,6 +231,9 @@ pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory;
 }
 
+
+pub const SG_NAME_PUBLIC: &str = "Public";
+pub const SG_NAME_PRIVATE: &str = "No sharing allowed";
 /// Trait representing sharing group information
 pub trait SharingGroupTrait {
     /// Returns the ID of the sharing group
@@ -238,6 +241,16 @@ pub trait SharingGroupTrait {
 
     /// Returns the optional name of the sharing group
     fn get_name(&self) -> Option<&String>;
+
+    /// Utility function to check if the sharing group name is "Public"
+    fn is_name_public(&self) -> bool {
+        self.get_name().is_some_and(|name| name == SG_NAME_PUBLIC)
+    }
+
+    /// Utility function to check if the sharing group name is "No sharing allowed"
+    fn is_name_private(&self) -> bool {
+        self.get_name().is_some_and(|name| name == SG_NAME_PRIVATE)
+    }
 }
 
 /// Trait representing TLP (Traffic Light Protocol) information

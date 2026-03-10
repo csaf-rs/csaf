@@ -1,7 +1,6 @@
 use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait, TrackingTrait};
-use crate::helpers::{MAX_UUID, NIL_UUID};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
 use crate::validation::ValidationError;
@@ -34,8 +33,8 @@ pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(doc: &impl CsafTrait) -
         && let Some(sharing_group) = distribution.get_sharing_group()
     {
         let sharing_group_id = sharing_group.get_id();
-        return if sharing_group_id == MAX_UUID
-            || (sharing_group_id == NIL_UUID && doc.get_document().get_tracking().get_status() == DocumentStatus::Draft)
+        return if sharing_group_id.is_max()
+            || (sharing_group_id.is_nil() && doc.get_document().get_tracking().get_status() == DocumentStatus::Draft)
         {
             Ok(())
         } else {

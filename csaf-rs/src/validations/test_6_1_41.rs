@@ -1,16 +1,15 @@
 use std::sync::LazyLock;
 
-use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
-use crate::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
+use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
 use crate::validation::ValidationError;
 
 static MAX_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!("Max UUID requires sharing group name to be \"{SG_NAME_PUBLIC}\"."),
+    message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });
 
 static NIL_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!("Nil UUID requires sharing group name to be \"{SG_NAME_PRIVATE}\"."),
+    message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });
 
@@ -35,25 +34,13 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
-        // Check if max UUID is used
-        if sharing_group.get_id() == MAX_UUID {
-            // If max UUID is used, the name must exist and be NAME_PUBLIC
-            match sharing_group.get_name() {
-                Some(name) if name == SG_NAME_PUBLIC => {},
-                _ => {
-                    return Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
-                },
-            }
+        // If max UUID is used, the name must exist and be NAME_PUBLIC
+        if sharing_group.get_id().is_max() && !sharing_group.is_name_public() {
+            return Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
         }
-        // Check if nil UUID is used
-        else if sharing_group.get_id() == NIL_UUID {
-            // If nil UUID is used, the name must exist and be NAME_PRIVATE
-            match sharing_group.get_name() {
-                Some(name) if name == SG_NAME_PRIVATE => {},
-                _ => {
-                    return Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
-                },
-            }
+        // If nil UUID is used, the name must exist and be NAME_PRIVATE
+        else if sharing_group.get_id().is_nil() && !sharing_group.is_name_private() {
+            return Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
         }
     }
 

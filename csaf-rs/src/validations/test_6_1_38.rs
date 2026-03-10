@@ -1,8 +1,7 @@
 use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait};
-use crate::helpers::MAX_UUID;
-use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
+use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::ValidationError;
 
 static NON_PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
@@ -30,8 +29,8 @@ pub fn test_6_1_38_non_public_sharing_group_max_uuid(doc: &impl CsafTrait) -> Re
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group()
-        && sharing_group.get_id() == MAX_UUID
-        && distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() != Clear
+        && sharing_group.get_id().is_max()
+        && distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() != LabelOfTlp::Clear
     {
         return Err(vec![NON_PUBLIC_SHARING_GROUP_ERROR.clone()]);
     }

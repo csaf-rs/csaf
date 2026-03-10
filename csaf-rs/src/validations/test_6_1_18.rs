@@ -107,16 +107,11 @@ mod tests {
             &0,
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_18.expect(
-            case_intver_final.clone(),
-            case_semver_final.clone(),
-            Ok(())
-        );
-        TESTS_2_1.test_6_1_18.expect(
-            case_intver_final,
-            case_semver_final,
-            Ok(())
-        );
+        TESTS_2_0
+            .test_6_1_18
+            .expect(case_intver_final.clone(), case_semver_final.clone(), Ok(()));
+        TESTS_2_1
+            .test_6_1_18
+            .expect(case_intver_final, case_semver_final, Ok(()));
     }
 }

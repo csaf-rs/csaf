@@ -66,11 +66,11 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         }
 
         // generate errors for all remaining known_affected product or group ids
-        for known_not_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
+        for known_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
             errors.get_or_insert_with(Vec::new).push(test_6_1_27_10_err_generator(
-                known_not_affected_product_or_group_id.0.to_string(),
+                known_affected_product_or_group_id.0.to_string(),
                 v_i,
-                *known_not_affected_product_or_group_id.1,
+                *known_affected_product_or_group_id.1,
             ));
         }
     }
@@ -88,10 +88,10 @@ fn test_6_1_27_10_err_generator(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "No actions statement found for 'known_affected' product status entry '{product_or_group_id}'."
+            "No action statement found for 'known_affected' product status entry '{product_or_group_id}'."
         ),
         instance_path: format!(
-            "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_affected_path_index}"
+            "/vulnerabilities/{vuln_path_index}/product_status/known_affected/{known_affected_path_index}"
         ),
     }
 }

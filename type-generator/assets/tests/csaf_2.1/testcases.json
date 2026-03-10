@@ -182,7 +182,7 @@
         }
       ]
     },
-     {
+    {
       "id": "6.1.20",
       "group": "mandatory",
       "failures": [
@@ -284,7 +284,7 @@
         }
       ]
     },
-     {
+    {
       "id": "6.1.27.9",
       "group": "mandatory",
       "failures": [

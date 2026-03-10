@@ -88,7 +88,7 @@
       "description": "Contains the URL of the JSON schema for test data which the document promises to be valid for.",
       "type": "string",
       "enum": [
-        "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.0/test/validator/testcases_json_schema.json"
+        "https://raw.githubusercontent.com/csaf-rs/csaf/refs/heads/main/type-generator/assets/tests/csaf_2.0/testcases_json_schema.json"
       ],
       "format": "uri"
     },
@@ -106,7 +106,9 @@
       "title": "Test schema version",
       "description": "Contains the current version of this schema",
       "type": "string",
-      "enum": ["2.0"]
+      "enum": [
+        "2.0"
+      ]
     }
   },
   "additionalProperties": false

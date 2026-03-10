@@ -41,8 +41,9 @@ pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<()
         // If the sharing group name is "Public", the ID must be max UUID
         if sharing_group.is_name_public() && !sharing_group.get_id().is_max() {
             return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
+        }
         // If the sharing group name is "No sharing allowed", the ID must be nil UUID
-        } else if sharing_group.is_name_private() && !sharing_group.get_id().is_nil() {
+        else if sharing_group.is_name_private() && !sharing_group.get_id().is_nil() {
             return Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]);
         }
     }

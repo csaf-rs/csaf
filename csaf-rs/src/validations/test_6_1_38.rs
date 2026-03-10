@@ -59,14 +59,23 @@ mod tests {
         let err = Err(vec![NON_PUBLIC_SHARING_GROUP_ERROR.clone()]);
         // Only CSAF 2.1 has this test with 9 test cases (4 error cases, 5 success cases)
         TESTS_2_1.test_6_1_38.expect(
+            // Case 01: Max UUID with TLP:RED
             err.clone(),
+            // Case 02: Max UUID with TLP:AMBER+STRICT
             err.clone(),
+            // Case 03: Max UUID with TLP:AMBER
             err.clone(),
+            // Case 04: Max UUID with TLP:GREEN
             err.clone(),
+            // Case 11: Regular UUID with TLP:RED
             Ok(()),
+            // Case 12: Regular UUID with TLP:AMBER+STRICT, no name
             Ok(()),
+            // Case 13: Regular UUID with TLP:AMBER
             Ok(()),
+            // Case 14: No sharing group with TLP:GREEN
             Ok(()),
+            // Case 15: Max UUID with TLP:CLEAR
             Ok(()),
         );
     }

@@ -38,8 +38,10 @@ pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<()
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
+        // If the sharing group name is "Public", the ID must be max UUID
         if sharing_group.is_name_public() && !sharing_group.get_id().is_max() {
             return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
+        // If the sharing group name is "No sharing allowed", the ID must be nil UUID
         } else if sharing_group.is_name_private() && !sharing_group.get_id().is_nil() {
             return Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]);
         }
@@ -68,11 +70,17 @@ mod tests {
     fn test_test_6_1_40() {
         // Only CSAF 2.1 has this test with 6 test cases (2 error cases, 4 success cases)
         TESTS_2_1.test_6_1_40.expect(
+            // Case 01: Name "Public" with regular UUID
             Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
+            // Case 02: Name "No sharing allowed" with regular UUID
             Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]),
+            // Case 11: Name "Public" with Max UUID
             Ok(()),
+            // Case 12: Name "No sharing allowed" with Nil UUID
             Ok(()),
+            // Case 13: Regular UUID without name
             Ok(()),
+            // Case 14: Regular UUID with arbitrary name
             Ok(()),
         );
     }

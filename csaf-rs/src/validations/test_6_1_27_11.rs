@@ -80,11 +80,7 @@ mod tests {
 
         TESTS_2_0
             .test_6_1_27_11
-            .expect(
-                case_security_advisory.clone(), 
-                case_vex.clone(), 
-                Ok(()), 
-                Ok(()));
+            .expect(case_security_advisory.clone(), case_vex.clone(), Ok(()), Ok(()));
 
         TESTS_2_1.test_6_1_27_11.expect(
             case_security_advisory,

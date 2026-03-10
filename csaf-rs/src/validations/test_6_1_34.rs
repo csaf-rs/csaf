@@ -11,16 +11,20 @@ fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> Valid
 }
 
 pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    if let Some(tree) = doc.get_product_tree().as_ref()
-        && let Some(branches) = tree.get_branches()
-    {
-        for (i, branch) in branches.iter().enumerate() {
-            if let Some(path) = branch.find_excessive_branch_depth(MAX_DEPTH) {
-                return Err(vec![create_excessive_branch_depth_error(i, &path)]);
-            }
+    // TODO This can be wasSkipped in the future
+    let Some(branches) = doc.get_product_tree().as_ref().and_then(|t| t.get_branches()) else {
+        return Ok(());
+    };
+
+    let mut errors: Option<Vec<ValidationError>> = None;
+    for (i, branch) in branches.iter().enumerate() {
+        if let Some(path) = branch.find_excessive_branch_depth(MAX_DEPTH) {
+            errors
+                .get_or_insert_default()
+                .push(create_excessive_branch_depth_error(i, &path));
         }
     }
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
@@ -41,24 +45,33 @@ mod tests {
 
     #[test]
     fn test_test_6_1_34() {
-        // Only CSAF 2.1 has this test with 3 test cases
+        // Case 01: One long branch structure with depth of 31
+        // Case 02: More complex branch structure with 3 sub-branches, one of which has depth of 31
+        // Case S01: Two long branch structures with depth of 31
+        // Case 11: One long branch structure with depth of 30
+
+        let one_too_long_branch_path = "/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0";
+        let one_too_long_branch_error = Err(vec![create_excessive_branch_depth_error(0, one_too_long_branch_path)]);
+        let two_too_long_branches_error = Err(vec![
+            create_excessive_branch_depth_error(0, one_too_long_branch_path),
+            create_excessive_branch_depth_error(1, one_too_long_branch_path),
+        ]);
+        let more_complex_too_long_branch_error = Err(vec![create_excessive_branch_depth_error(
+            0,
+            "/branches/0/branches/1/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
+                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
+        )]);
         TESTS_2_1.test_6_1_34.expect(
-            Err(vec![create_excessive_branch_depth_error(
-                0,
-                "/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
-            )]),
-            Err(vec![create_excessive_branch_depth_error(
-                0,
-                "/branches/0/branches/1/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
-                /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
-            )]),
+            one_too_long_branch_error,
+            more_complex_too_long_branch_error,
+            two_too_long_branches_error,
             Ok(()),
         );
     }

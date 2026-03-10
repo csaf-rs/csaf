@@ -13,7 +13,7 @@ pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category(&doc_category) {
-        return Ok(());
+        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
     let mut errors: Option<Vec<ValidationError>> = None;
@@ -78,7 +78,7 @@ mod tests {
     fn test_test_6_1_27_07() {
         let case_01 = Err(vec![test_6_1_27_07_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
 
-        TESTS_2_0.test_6_1_27_7.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_7.expect(case_01);
+        TESTS_2_0.test_6_1_27_7.expect(case_01.clone(), Ok(()));
+        TESTS_2_1.test_6_1_27_7.expect(case_01, Ok(()));
     }
 }

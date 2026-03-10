@@ -28,7 +28,7 @@ pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     let doc_category = doc.get_document().get_category();
     // check if document has a relevant category for this test
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
-        return Ok(());
+        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
     // return error if there are elements in /vulnerabilities
@@ -69,21 +69,20 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_03() {
-        TESTS_2_0
-            .test_6_1_27_3
-            .expect(Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafInformationalAdvisory,
-            )]));
+        let case_informational_advisory = Err(vec![create_must_not_have_vuln_element_error(
+            &CsafDocumentCategory::CsafInformationalAdvisory,
+        )]);
+        let case_withdrawn = Err(vec![create_must_not_have_vuln_element_error(
+            &CsafDocumentCategory::CsafWithdrawn,
+        )]);
+        let case_superseded = Err(vec![create_must_not_have_vuln_element_error(
+            &CsafDocumentCategory::CsafSuperseded,
+        )]);
+        TESTS_2_0.test_6_1_27_3.expect(case_informational_advisory.clone());
         TESTS_2_1.test_6_1_27_3.expect(
-            Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafInformationalAdvisory,
-            )]),
-            Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafWithdrawn,
-            )]),
-            Err(vec![create_must_not_have_vuln_element_error(
-                &CsafDocumentCategory::CsafSuperseded,
-            )]),
+            case_informational_advisory.clone(),
+            case_withdrawn.clone(),
+            case_superseded.clone(),
             Ok(()),
             Ok(()),
             Ok(()),

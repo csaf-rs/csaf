@@ -15,36 +15,39 @@ use std::collections::HashMap;
 /// `/product_tree/full_product_names[]/product_identification_helper/hashes[]/file_hashes[]`
 /// `/product_tree/relationships[]/full_product_name/product_identification_helper/hashes[]/file_hashes[]`
 pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+    // TODO: This can be a wasSkipped later
+    let Some(product_tree) = doc.get_product_tree() else {
+        return Ok(());
+    };
+
     let mut errors: Option<Vec<ValidationError>> = None;
     // Visit all products in the product tree
-    if let Some(product_tree) = doc.get_product_tree() {
-        product_tree.visit_all_products(&mut |product, path| {
-            // Check all file_hashes in all hashes in all product identification helpers
-            if let Some(helper) = product.get_product_identification_helper() {
-                for (hash_i, hash) in helper.get_hashes().iter().enumerate() {
-                    // Iterate over file_hashes, build hashmap of all encountered algos and their indices
-                    let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<usize>>::new();
-                    for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                        let file_hash_is = algorithms.entry(file_hash.get_algorithm()).or_default();
-                        file_hash_is.push(file_hash_i);
-                    }
-                    // For each algo found multiple times, generate error message for all indices with the algo
-                    for (algo, file_hash_is) in &algorithms {
-                        if file_hash_is.len() > 1 {
-                            for file_hash_i in file_hash_is.iter() {
-                                errors.get_or_insert_with(Vec::new).push(test_6_1_25_err_generator(
-                                    algo,
-                                    path.to_string(),
-                                    hash_i.to_string(),
-                                    file_hash_i.to_string(),
-                                ));
-                            }
+    product_tree.visit_all_products(&mut |product, path| {
+        // Check all file_hashes in all hashes in all product identification helpers
+        if let Some(helper) = product.get_product_identification_helper() {
+            for (hash_i, hash) in helper.get_hashes().iter().enumerate() {
+                // Iterate over file_hashes, build hashmap of all encountered algos and their indices
+                let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<usize>>::new();
+                for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
+                    let file_hash_is = algorithms.entry(file_hash.get_algorithm()).or_default();
+                    file_hash_is.push(file_hash_i);
+                }
+                // For each algo found multiple times, generate error message for all indices with the algo
+                for (algo, file_hash_is) in &algorithms {
+                    if file_hash_is.len() > 1 {
+                        for file_hash_i in file_hash_is.iter() {
+                            errors.get_or_insert_with(Vec::new).push(test_6_1_25_err_generator(
+                                algo,
+                                path.to_string(),
+                                hash_i.to_string(),
+                                file_hash_i.to_string(),
+                            ));
                         }
                     }
                 }
             }
-        });
-    }
+        }
+    });
     errors.map_or(Ok(()), Err)
 }
 
@@ -92,7 +95,13 @@ mod tests {
 
     #[test]
     fn test_test_6_1_25() {
-        let case_01 = Err(vec![
+        // Case 01: one file_hashes, with two elements, both with same algorithm
+        // Case S01: one file_hashes, with three elements, two with same algorithm
+        // Case S02: one file_hashes, with three elements, all with same algorithm
+        // Case S11: one file_hashes, with two elements, both with different algorithms
+        // Case S12: two file_hashes, each with one element, both with same algorithm
+
+        let one_file_hash_two_hashes_same_algo = Err(vec![
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
                 "/product_tree/full_product_names/0".to_string(),
@@ -107,8 +116,55 @@ mod tests {
             ),
         ]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_25.expect(case_01.clone());
-        TESTS_2_1.test_6_1_25.expect(case_01);
+        let three_elements_two_same_algo = Err(vec![
+            test_6_1_25_err_generator(
+                &CsafHashAlgorithm::Sha256,
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "0".to_string(),
+            ),
+            test_6_1_25_err_generator(
+                &CsafHashAlgorithm::Sha256,
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "2".to_string(),
+            ),
+        ]);
+
+        let three_elements_all_same_algo = Err(vec![
+            test_6_1_25_err_generator(
+                &CsafHashAlgorithm::Sha256,
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "0".to_string(),
+            ),
+            test_6_1_25_err_generator(
+                &CsafHashAlgorithm::Sha256,
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "1".to_string(),
+            ),
+            test_6_1_25_err_generator(
+                &CsafHashAlgorithm::Sha256,
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "2".to_string(),
+            ),
+        ]);
+
+        TESTS_2_0.test_6_1_25.expect(
+            one_file_hash_two_hashes_same_algo.clone(),
+            three_elements_two_same_algo.clone(),
+            three_elements_all_same_algo.clone(),
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_1_25.expect(
+            one_file_hash_two_hashes_same_algo,
+            three_elements_two_same_algo,
+            three_elements_all_same_algo,
+            Ok(()),
+            Ok(()),
+        );
     }
 }

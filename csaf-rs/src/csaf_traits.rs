@@ -231,7 +231,6 @@ pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory;
 }
 
-
 pub const SG_NAME_PUBLIC: &str = "Public";
 pub const SG_NAME_PRIVATE: &str = "No sharing allowed";
 /// Trait representing sharing group information

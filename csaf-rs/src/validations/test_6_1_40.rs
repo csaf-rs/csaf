@@ -1,6 +1,8 @@
 use std::sync::LazyLock;
 
-use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, SG_NAME_PUBLIC, SG_NAME_PRIVATE};
+use crate::csaf_traits::{
+    CsafTrait, DistributionTrait, DocumentTrait, SG_NAME_PRIVATE, SG_NAME_PUBLIC, SharingGroupTrait,
+};
 use crate::validation::ValidationError;
 
 static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
@@ -35,8 +37,7 @@ static PRIVATE_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(||
 pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
-    if let Some(sharing_group) = distribution.get_sharing_group()
-    {
+    if let Some(sharing_group) = distribution.get_sharing_group() {
         if sharing_group.is_name_public() && !sharing_group.get_id().is_max() {
             return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
         } else if sharing_group.is_name_private() && !sharing_group.get_id().is_nil() {

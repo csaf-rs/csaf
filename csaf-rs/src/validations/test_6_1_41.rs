@@ -1,6 +1,8 @@
 use std::sync::LazyLock;
 
-use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
+use crate::csaf_traits::{
+    CsafTrait, DistributionTrait, DocumentTrait, SG_NAME_PRIVATE, SG_NAME_PUBLIC, SharingGroupTrait,
+};
 use crate::validation::ValidationError;
 
 static MAX_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {

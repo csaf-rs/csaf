@@ -231,8 +231,11 @@ pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory;
 }
 
+/// Special name for public sharing groups
 pub const SG_NAME_PUBLIC: &str = "Public";
+/// Special name for private sharing groups
 pub const SG_NAME_PRIVATE: &str = "No sharing allowed";
+
 /// Trait representing sharing group information
 pub trait SharingGroupTrait {
     /// Returns the ID of the sharing group

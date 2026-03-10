@@ -6,12 +6,12 @@ use crate::csaf_traits::{
 use crate::validation::ValidationError;
 
 static MAX_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!("Max UUID requires sharing group name to be \"{}\".", SG_NAME_PUBLIC),
+    message: format!("Max UUID requires sharing group name to be \"{SG_NAME_PUBLIC}\"."),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });
 
 static NIL_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!("Nil UUID requires sharing group name to be \"{}\".", SG_NAME_PRIVATE),
+    message: format!("Nil UUID requires sharing group name to be \"{SG_NAME_PRIVATE}\"."),
     instance_path: "/document/distribution/sharing_group/name".to_string(),
 });
 

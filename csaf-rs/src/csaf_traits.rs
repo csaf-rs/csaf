@@ -5,7 +5,7 @@ use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
-use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
+use ssvc::selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
 use crate::schema::csaf2_1::schema::{

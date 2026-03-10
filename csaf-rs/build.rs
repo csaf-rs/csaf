@@ -24,26 +24,15 @@ fn main() -> Result<(), BuildError> {
     println!("cargo:rerun-if-changed=build.rs");
 
     // All schema files for change watching
-    let schema_configs = [
-        (
-            "assets/decision_point_json_schema.json",
-            "csaf2_1/ssvc_dp.generated.rs",
-            None,
-        ),
-        (
-            "assets/decision_point_selection_list_json_schema.json",
-            "csaf2_1/ssvc_dp_selection_list.generated.rs",
-            None,
-        ),
-    ];
+    let schema_configs: &[(&str, &str, Option<&dyn Fn(&mut Value)>)] = &[];
 
     // Register watching for all inputs
-    for (input, _, _) in &schema_configs {
+    for (input, _, _) in schema_configs {
         println!("cargo:rerun-if-changed={input}");
     }
 
     // Execute all listed schema builds
-    for (input, output, schema_patch) in &schema_configs {
+    for (input, output, schema_patch) in schema_configs {
         build(input, output, schema_patch)?;
     }
 

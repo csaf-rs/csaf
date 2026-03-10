@@ -78,8 +78,7 @@ static CVSS_V4_0_1_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
 
 const SSVC_2_SCHEMA_URL: &str = "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json";
 static SSVC_2_SCHEMA: LazyLock<Resource> = LazyLock::new(|| {
-    let schema_str = include_str!("../../assets/decision_point_selection_list_json_schema.json");
-    let schema_json: Value = serde_json::from_str(schema_str).unwrap();
+    let schema_json: Value = serde_json::from_str(ssvc::assets::SELECTION_LIST_SCHEMA).unwrap();
     Resource::from_contents(schema_json)
 });
 

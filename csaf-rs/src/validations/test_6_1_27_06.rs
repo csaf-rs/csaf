@@ -14,7 +14,7 @@ pub fn test_6_1_27_06_product_status(doc: &impl CsafTrait) -> Result<(), Vec<Val
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
-        return Ok(());
+        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
     let mut errors: Option<Vec<ValidationError>> = None;
@@ -73,22 +73,20 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_06() {
-        let case_01 = Err(vec![test_6_1_27_06_err_generator(
+        let case_security_advisory = Err(vec![test_6_1_27_06_err_generator(
             &CsafDocumentCategory::CsafSecurityAdvisory,
             &0,
         )]);
+        let case_deprecated_security_advisory = Err(vec![test_6_1_27_06_err_generator(
+            &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+            &0,
+        )]);
 
-        TESTS_2_0.test_6_1_27_6.expect(case_01.clone());
+        TESTS_2_0.test_6_1_27_6.expect(case_security_advisory.clone());
         TESTS_2_1.test_6_1_27_6.expect(
-            case_01,
-            Err(vec![test_6_1_27_06_err_generator(
-                &CsafDocumentCategory::CsafSecurityAdvisory,
-                &0,
-            )]),
-            Err(vec![test_6_1_27_06_err_generator(
-                &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-                &0,
-            )]),
+            case_security_advisory.clone(),
+            case_security_advisory,
+            case_deprecated_security_advisory,
         );
     }
 }

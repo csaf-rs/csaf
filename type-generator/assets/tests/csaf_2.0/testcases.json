@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.0/test/validator/testcases_json_schema.json",
+  "$schema": "https://raw.githubusercontent.com/csaf-rs/csaf/refs/heads/main/type-generator/assets/tests/csaf_2.0/testcases_json_schema.json",
   "testschema_version": "2.0",
   "tests": [
     {
@@ -246,6 +246,90 @@
         },
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-25-s12.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.1.27.5",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-05-s01.json",
+          "valid": false
+        }
+      ]
+    },
+    {
+      "id": "6.1.27.7",
+      "group": "mandatory",
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-07-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.1.27.8",
+      "group": "mandatory",
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-08-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.1.27.9",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-09-s01.json",
+          "valid": false
+        }
+      ]
+    },
+    {
+      "id": "6.1.27.10",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-10-s01.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-10-s02.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-10-s11.json",
+          "valid": true
+        },
+         {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-10-s12.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.1.27.11",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-11-s01.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-11-s11.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-11-s12.json",
           "valid": true
         }
       ]

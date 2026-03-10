@@ -29,7 +29,7 @@ pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Val
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
-        return Ok(());
+        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
     // check if there is a document note with the required category
@@ -86,12 +86,15 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_01() {
-        let case_01 = Err(vec![create_missing_note_error(
+        let case_security_incident_response_no_valid_note = Err(vec![create_missing_note_error(
             CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_27_1.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_1.expect(case_01);
+        TESTS_2_0
+            .test_6_1_27_1
+            .expect(case_security_incident_response_no_valid_note.clone());
+        TESTS_2_1
+            .test_6_1_27_1
+            .expect(case_security_incident_response_no_valid_note);
     }
 }

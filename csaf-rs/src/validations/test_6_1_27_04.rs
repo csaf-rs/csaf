@@ -14,7 +14,7 @@ pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<Valid
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
-        return Ok(());
+        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
     // return error if there are there isn't a product tree
@@ -69,17 +69,17 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_04() {
-        let case_01 = Err(vec![test_6_1_27_04_err_generator(
+        let case_security_advisory = Err(vec![test_6_1_27_04_err_generator(
             CsafDocumentCategory::CsafSecurityAdvisory,
         )]);
+        let case_vex = Err(vec![test_6_1_27_04_err_generator(CsafDocumentCategory::CsafVex)]);
+        let case_deprecated_security_advisory = Err(vec![test_6_1_27_04_err_generator(
+            CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+        )]);
 
-        TESTS_2_0.test_6_1_27_4.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_4.expect(
-            case_01,
-            Err(vec![test_6_1_27_04_err_generator(CsafDocumentCategory::CsafVex)]),
-            Err(vec![test_6_1_27_04_err_generator(
-                CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-            )]),
-        );
+        TESTS_2_0.test_6_1_27_4.expect(case_security_advisory.clone());
+        TESTS_2_1
+            .test_6_1_27_4
+            .expect(case_security_advisory, case_vex, case_deprecated_security_advisory);
     }
 }

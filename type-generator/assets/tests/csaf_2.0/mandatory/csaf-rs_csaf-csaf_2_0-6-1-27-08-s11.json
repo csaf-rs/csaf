@@ -1,0 +1,36 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Vulnerability ID (succeeding example 1: cve present for vulnerability 0, ids present for vulnerability 1)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-27-08-S11",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "vulnerabilities": [
+    {
+      "title": "A vulnerability item with a CVE",
+      "cve": "CVE-2021-12345"
+    },
+    {
+      "title": "A vulnerability item with an id",
+      "ids": "oasis-tcs/csaf#210"
+    }
+  ]
+}

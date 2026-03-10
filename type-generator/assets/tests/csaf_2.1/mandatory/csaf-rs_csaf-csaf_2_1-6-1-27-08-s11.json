@@ -13,7 +13,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory Test: Vulnerability ID (succeeding example 1)",
+    "title": "Mandatory Test: Vulnerability ID (succeeding example 1: cve present for vulnerability 0, ids present for vulnerability 1)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-27-08-S11",

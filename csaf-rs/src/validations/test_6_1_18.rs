@@ -30,7 +30,7 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     // This test is only relevant for documents with status 'interim' and 'final'
     let status = tracking.get_status();
     if !(DocumentStatus::Final == status || DocumentStatus::Interim == status) {
-        return Ok(()); // ToDo return skipped/not applicable
+        return Ok(()); // ToDo return skipped/not applicable (https://github.com/csaf-rs/csaf/issues/409)
     }
 
     // Check that no revision history item has version 0 or 0.y.z
@@ -42,7 +42,7 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
             CsafVersionNumber::Invalid(_) => {
                 // errors.get_or_insert_default().push(err.get_validation_error(
                 //     format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                // ));// ToDo generate warning here
+                // ));// ToDo generate warning here (https://github.com/csaf-rs/csaf/issues/409)
                 continue;
             },
         };
@@ -92,6 +92,10 @@ mod tests {
 
     #[test]
     fn test_test_6_1_18() {
+        // Case 01: Document status final, revision history item with version 0
+        // Case S01: Document status final, revision history item with version 0.y.z
+        // Case S11: Document status draft, revision history item with version 0.y.z
+
         let case_intver_final = Err(vec![create_revision_history_error(
             &DocumentStatus::Final,
             &ValidVersionNumber::from_str("0").unwrap(),
@@ -103,16 +107,11 @@ mod tests {
             &0,
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_18.expect(
-            case_intver_final.clone(),
-            case_semver_final.clone(),
-            Ok(()), // status draft
-        );
-        TESTS_2_1.test_6_1_18.expect(
-            case_intver_final,
-            case_semver_final,
-            Ok(()), // status draft
-        );
+        TESTS_2_0
+            .test_6_1_18
+            .expect(case_intver_final.clone(), case_semver_final.clone(), Ok(()));
+        TESTS_2_1
+            .test_6_1_18
+            .expect(case_intver_final, case_semver_final, Ok(()));
     }
 }

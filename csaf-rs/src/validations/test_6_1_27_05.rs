@@ -14,7 +14,7 @@ pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Ve
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
-        return Ok(());
+        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
     let mut errors: Option<Vec<ValidationError>> = None;

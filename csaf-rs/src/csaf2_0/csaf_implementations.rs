@@ -515,6 +515,10 @@ impl NoteTrait for Note {
             NoteCategory::LegalDisclaimer => NoteCategory21::LegalDisclaimer,
         }
     }
+
+    fn get_title(&self) -> Option<&String> {
+        self.title.as_deref()
+    }
 }
 
 impl SharingGroupTrait for () {

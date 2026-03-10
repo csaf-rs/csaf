@@ -444,6 +444,10 @@ impl NoteTrait for Note {
     fn get_category(&self) -> NoteCategory {
         self.category
     }
+
+    fn get_title(&self) -> Option<&String> {
+        self.title.as_deref()
+    }
 }
 
 impl SharingGroupTrait for SharingGroup {

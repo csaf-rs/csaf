@@ -122,74 +122,89 @@ mod tests {
 
     #[test]
     fn test_test_6_1_31() {
-        let case_01 = Err(vec![create_forbidden_strings_in_version_error(
+        // Case 01: Keyword "prior" in product_version
+        // Case 02: Operator "<" in product_version
+        // Case 03: Operator "<=" in product_version
+        // Case 04: Operator "<=" with space in product_version
+        // Case 05: Keyword "earlier" in product_version
+        // Case 06: Keyword "all" in product_version
+        // Case 07: Keyword "before" in product_version
+        // Case 08: Keyword "later" in product_version
+        // Case 09: Keyword "versions" in product_version
+        // Case 11: Using product_version_range
+        // Case 12: Keyword as part of word "after-eight"
+        // Case 13: Keyword "all" as part of word "overall"
+
+        let case_01_prior = Err(vec![create_forbidden_strings_in_version_error(
             "prior to 4.2",
             vec!["prior"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_02 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_02_less_than = Err(vec![create_forbidden_strings_in_version_error(
             "<4.2",
             vec!["<"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_03 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_03_less_equal = Err(vec![create_forbidden_strings_in_version_error(
             "<=4.1",
             vec!["<="],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_04 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_04_less_equal_space = Err(vec![create_forbidden_strings_in_version_error(
             "<= 4.1",
             vec!["<="],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_05 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_05_earlier = Err(vec![create_forbidden_strings_in_version_error(
             "4.1 and earlier",
             vec!["earlier"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_06 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_06_all = Err(vec![create_forbidden_strings_in_version_error(
             "all",
             vec!["all"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_07 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_07_before = Err(vec![create_forbidden_strings_in_version_error(
             "before 4.2",
             vec!["before"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_08 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_08_later = Err(vec![create_forbidden_strings_in_version_error(
             "4.2 and later",
             vec!["later"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_09 = Err(vec![create_forbidden_strings_in_version_error(
+        let case_09_versions = Err(vec![create_forbidden_strings_in_version_error(
             "3.X versions",
             vec!["versions"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
+
         TESTS_2_0.test_6_1_31.expect(
-            case_01.clone(),
-            case_02.clone(),
-            case_03.clone(),
-            case_04.clone(),
-            case_05.clone(),
-            case_06.clone(),
-            case_07.clone(),
-            case_08.clone(),
-            case_09.clone(),
+            case_01_prior.clone(),
+            case_02_less_than.clone(),
+            case_03_less_equal.clone(),
+            case_04_less_equal_space.clone(),
+            case_05_earlier.clone(),
+            case_06_all.clone(),
+            case_07_before.clone(),
+            case_08_later.clone(),
+            case_09_versions.clone(),
             Ok(()),
             Ok(()),
         );
+
         TESTS_2_1.test_6_1_31.expect(
-            case_01,
-            case_02,
-            case_03,
-            case_04,
-            case_05,
-            case_06,
-            case_07,
-            case_08,
-            case_09,
+            case_01_prior,
+            case_02_less_than,
+            case_03_less_equal,
+            case_04_less_equal_space,
+            case_05_earlier,
+            case_06_all,
+            case_07_before,
+            case_08_later,
+            case_09_versions,
             Ok(()),
             Ok(()),
             Ok(()),

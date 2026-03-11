@@ -15,7 +15,7 @@ fn create_missing_description_note(document_category: &CsafDocumentCategory) -> 
 
 /// 6.1.27.14 Document Notes
 ///
-/// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseeded`.
+/// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseded`.
 ///
 /// There must be at least one item in `/document/notes[]` with category `description`.
 pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {

@@ -25,10 +25,16 @@ const FORBIDDEN_LESS: &str = "<";
 const FORBIDDEN_GREATER: &str = ">";
 const FORBIDDEN_KEYWORDS: &[&str] = &["after", "all", "before", "earlier", "later", "prior", "versions"];
 
-/// Check the branch name for forbidden substrings and return a vector of found substrings
-/// if any are found.
+/// Check the branch name for forbidden substrings (operators and keywords).
+/// Operators `<=` and `>=` are prioritized before `<` and `>` respectively.
+/// For keywords, the string is tokenized by Unicode whitespace and scanned case-insensitive exact matches.
+///
+/// # Returns
+///
+/// * Some(Vec<&str>) - A vector of unique forbidden substrings found in the branch name, sorted alphabetically.
+/// * None - If no forbidden substrings are found.
 fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&'static str>> {
-    let mut forbidden_substrings: Option<HashSet<&str>> = None;
+    let mut forbidden_substrings: Option<HashSet<&'static str>> = None;
     let mut branch_name = branch_name.to_lowercase();
     // check for `>=` first, then remove `>=`
     if branch_name.contains(FORBIDDEN_GREATER_EQUAL) {

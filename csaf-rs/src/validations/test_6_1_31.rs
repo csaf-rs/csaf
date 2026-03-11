@@ -1,5 +1,6 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
+use std::collections::HashSet;
 
 fn create_forbidden_strings_in_version_error(
     product_name: &str,
@@ -27,47 +28,49 @@ const FORBIDDEN_KEYWORDS: &[&str] = &["after", "all", "before", "earlier", "late
 /// Check the branch name for forbidden substrings and return a vector of found substrings
 /// if any are found.
 fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&'static str>> {
-    let mut forbidden_substrings: Option<Vec<&str>> = None;
+    let mut forbidden_substrings: Option<HashSet<&str>> = None;
     let mut branch_name = branch_name.to_lowercase();
     // check for `>=` first, then remove `>=`
     if branch_name.contains(FORBIDDEN_GREATER_EQUAL) {
         forbidden_substrings
-            .get_or_insert_with(Vec::new)
-            .push(FORBIDDEN_GREATER_EQUAL);
+            .get_or_insert_default()
+            .insert(FORBIDDEN_GREATER_EQUAL);
     }
     branch_name = branch_name.replace(FORBIDDEN_GREATER_EQUAL, "");
     // then check for `>`, then remove `>`
     if branch_name.contains(FORBIDDEN_GREATER) {
-        forbidden_substrings
-            .get_or_insert_with(Vec::new)
-            .push(FORBIDDEN_GREATER);
+        forbidden_substrings.get_or_insert_default().insert(FORBIDDEN_GREATER);
     }
     branch_name = branch_name.replace(FORBIDDEN_GREATER, "");
     // check for `<=` first, then remove `<=`
     if branch_name.contains(FORBIDDEN_LESS_EQUAL) {
         forbidden_substrings
-            .get_or_insert_with(Vec::new)
-            .push(FORBIDDEN_LESS_EQUAL);
+            .get_or_insert_default()
+            .insert(FORBIDDEN_LESS_EQUAL);
     }
     branch_name = branch_name.replace(FORBIDDEN_LESS_EQUAL, "");
     // check for `<`, then remove `<`
     if branch_name.contains(FORBIDDEN_LESS) {
-        forbidden_substrings.get_or_insert_with(Vec::new).push(FORBIDDEN_LESS);
+        forbidden_substrings.get_or_insert_default().insert(FORBIDDEN_LESS);
     }
     branch_name = branch_name.replace(FORBIDDEN_LESS, "");
     // check for the other keywords, tokenized by Unicode whitespace
     for token in branch_name.split_whitespace() {
         if let Some(&keyword) = FORBIDDEN_KEYWORDS.iter().find(|&&kw| kw == token) {
-            forbidden_substrings.get_or_insert_with(Vec::new).push(keyword);
+            forbidden_substrings.get_or_insert_default().insert(keyword);
         }
     }
-    forbidden_substrings
+    forbidden_substrings.map(|set| {
+        let mut vec: Vec<&str> = set.into_iter().collect();
+        vec.sort();
+        vec
+    })
 }
 
 /// 6.1.31 Version Range in Product Version
 /// All branches with type `product_version` in the product tree must not contain any of the substrings
 /// `<, <=, >, >=, after, all, before, earlier, later, prior, versions` in their branch `name`.
-/// `<=` and `>=` are prioritized before `<` and `>` respectively. The error contains all offending substrings.
+/// `<=` and `>=` are prioritized before `<` and `>` respectively. The error contains all unique offending substrings.
 pub fn test_6_1_31_version_range_in_product_version_branch_name(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
@@ -78,7 +81,7 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
                 // if there are any forbidden substrings found, create an error
                 if let Some(forbidden_substrings) = check_branch_name_for_forbidden_substrings(branch.get_name()) {
                     errors
-                        .get_or_insert_with(Vec::new)
+                        .get_or_insert_default()
                         .push(create_forbidden_strings_in_version_error(
                             branch.get_name(),
                             forbidden_substrings,
@@ -122,18 +125,25 @@ mod tests {
 
     #[test]
     fn test_test_6_1_31() {
-        // Case 01: Keyword "prior" in product_version
-        // Case 02: Operator "<" in product_version
-        // Case 03: Operator "<=" in product_version
-        // Case 04: Operator "<=" with space in product_version
-        // Case 05: Keyword "earlier" in product_version
-        // Case 06: Keyword "all" in product_version
-        // Case 07: Keyword "before" in product_version
-        // Case 08: Keyword "later" in product_version
-        // Case 09: Keyword "versions" in product_version
+        // Case 01: Keyword "prior"
+        // Case 02: Operator "<"
+        // Case 03: Operator "<="
+        // Case 04: Operator "<=" with space
+        // Case 05: Keyword "earlier"
+        // Case 06: Keyword "all"
+        // Case 07: Keyword "before"
+        // Case 08: Keyword "later"
+        // Case 09: Keyword "versions"
         // Case 11: Using product_version_range
-        // Case 12: Keyword as part of word "after-eight"
+        // Case 12: Keyword "after" as part of word "after-eight"
         // Case 13: Keyword "all" as part of word "overall"
+
+        // Case S01: Keyword "ALL"
+        // Case S02: Operator ">"
+        // Case S03: Operator ">="
+        // Case S04: Multiple operators and keywords ">=2.0 and <3.0 and after 4.1 and before 5.1"
+        // Case S11: Keyword "all" as part of word "overall" (backport for CSAF 2.0, CSAF 2.1 has this as Case 13)
+        // Case S12: Just a valid branch name "2.0"
 
         let case_01_prior = Err(vec![create_forbidden_strings_in_version_error(
             "prior to 4.2",
@@ -180,6 +190,26 @@ mod tests {
             vec!["versions"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
+        let case_s01_all_uppercase = Err(vec![create_forbidden_strings_in_version_error(
+            "ALL",
+            vec!["all"],
+            "/product_tree/branches/0/branches/0/branches/0",
+        )]);
+        let case_s02_greater_than = Err(vec![create_forbidden_strings_in_version_error(
+            ">4.2",
+            vec![">"],
+            "/product_tree/branches/0/branches/0/branches/0",
+        )]);
+        let case_s03_greater_equal = Err(vec![create_forbidden_strings_in_version_error(
+            ">=4.2",
+            vec![">="],
+            "/product_tree/branches/0/branches/0/branches/0",
+        )]);
+        let case_s04_multiple = Err(vec![create_forbidden_strings_in_version_error(
+            ">=2.0 and <3.0 and after 4.1 and before 5.1",
+            vec!["<", ">=", "after", "before"],
+            "/product_tree/branches/0/branches/0/branches/0",
+        )]);
 
         TESTS_2_0.test_6_1_31.expect(
             case_01_prior.clone(),
@@ -191,6 +221,12 @@ mod tests {
             case_07_before.clone(),
             case_08_later.clone(),
             case_09_versions.clone(),
+            case_s01_all_uppercase.clone(),
+            case_s02_greater_than.clone(),
+            case_s03_greater_equal.clone(),
+            case_s04_multiple.clone(),
+            Ok(()),
+            Ok(()),
             Ok(()),
             Ok(()),
         );
@@ -205,6 +241,11 @@ mod tests {
             case_07_before,
             case_08_later,
             case_09_versions,
+            case_s01_all_uppercase,
+            case_s02_greater_than,
+            case_s03_greater_equal,
+            case_s04_multiple,
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),
@@ -214,28 +255,38 @@ mod tests {
     #[test]
     fn test_check_branch_name_for_forbidden_substrings() {
         let test_cases = vec![
-            ("Version 2.0", vec![]), // No forbidden substrings
+            // more operators with spaces
             ("Version >= 2.0", vec![FORBIDDEN_GREATER_EQUAL]),
             ("Version > 2.0", vec![FORBIDDEN_GREATER]),
-            ("Version <= 2.0", vec![FORBIDDEN_LESS_EQUAL]),
             ("Version < 2.0", vec![FORBIDDEN_LESS]),
+            // more uppercase
             ("After 2.0", vec!["after"]),
-            ("All", vec!["all"]),
             ("Before 2.0", vec!["before"]),
             ("Earlier than 2.0", vec!["earlier"]),
             ("Later than 2.0", vec!["later"]),
             ("Prior to 2.0", vec!["prior"]),
             ("3.X Versions", vec!["versions"]),
-            (">=2.0 and <=3.0", vec![FORBIDDEN_GREATER_EQUAL, FORBIDDEN_LESS_EQUAL]),
-            (">=2.0 and before 3.0", vec![FORBIDDEN_GREATER_EQUAL, "before"]),
+            // Priority of <= over < and >= over >
             (
-                ">=2.0 and <=3.0 and >4.1 and <5.1",
-                vec![
-                    FORBIDDEN_GREATER_EQUAL,
-                    FORBIDDEN_GREATER,
-                    FORBIDDEN_LESS_EQUAL,
-                    FORBIDDEN_LESS,
-                ],
+                ">2.0 and <=3.0 and >=4.0",
+                vec![FORBIDDEN_LESS_EQUAL, FORBIDDEN_GREATER, FORBIDDEN_GREATER_EQUAL],
+            ),
+            (
+                "<2.0 and >=3.0 and <=4.0",
+                vec![FORBIDDEN_LESS, FORBIDDEN_LESS_EQUAL, FORBIDDEN_GREATER_EQUAL],
+            ),
+            // multiple of the same should be unique
+            (
+                ">=2.0 and <3.0 and >=4.0 and <5.0",
+                vec![FORBIDDEN_LESS, FORBIDDEN_GREATER_EQUAL],
+            ),
+            (
+                "after 2.0 and before 3.0 and after 4.0 and before 5.0",
+                vec!["after", "before"],
+            ),
+            (
+                ">=2.0 and before 3.0 and >= 4.0 and before 5.",
+                vec![FORBIDDEN_GREATER_EQUAL, "before"],
             ),
         ];
 

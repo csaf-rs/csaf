@@ -105,7 +105,6 @@ mod tests {
         assert_eq!(lang1, lang2);
     }
 
-
     #[test]
     fn test_invalid_language() {
         let lang = CsafLanguage::from(&"EZ".to_string());

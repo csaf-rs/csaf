@@ -1,4 +1,3 @@
-use crate::csaf::types::csaf_language::{CsafLanguage, CsafLanguageError};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, PublisherTrait};
 use crate::schema::csaf2_1::schema::CategoryOfPublisher;
 use crate::validation::ValidationError;
@@ -8,15 +7,6 @@ static MISSING_SOURCE_LANG_ERROR: LazyLock<ValidationError> = LazyLock::new(|| V
     message: "source_lang is required when the publisher category is 'translator'".to_string(),
     instance_path: "/document/source_lang".to_string(),
 });
-
-fn invalid_language_warning(invalid_lang_tag: &str) -> ValidationError {
-    ValidationError {
-        message: format!(
-            "source_lang is required when the publisher category is 'translator', but the provided value is invalid: '{invalid_lang_tag}'"
-        ),
-        instance_path: "/document/source_lang".to_string(),
-    }
-}
 
 /// 6.1.15 Translator
 ///
@@ -31,20 +21,9 @@ pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<Validation
     }
 
     // Check if source_lang is present
-    let source_lang = match document.get_source_lang() {
-        Some(lang) => lang,
-        None => return Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]),
-    };
-
-    // Check if source_lang is set
-    match CsafLanguage::from(source_lang) {
-        CsafLanguage::Invalid(err) => match err {
-            // This should be a warning, but we don't have those yet. So for now, return an error (see #409)
-            CsafLanguageError::InvalidLangTag(invalid_lang_tag) => {
-                Err(vec![invalid_language_warning(&invalid_lang_tag)])
-            },
-        },
-        CsafLanguage::Valid(_) => Ok(()),
+    match document.get_source_lang() {
+        None => Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]),
+        _ => Ok(()), // We do not care if the language tag is valid or invalid
     }
 }
 
@@ -80,19 +59,16 @@ mod tests {
     fn test_test_6_1_15() {
         // Error cases
         let missing_source_lang_error = Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
-        let invalid_source_lang_error = Err(vec![invalid_language_warning("EZ")]);
 
         // case 01: translator category without source_lang
         // case 02: translator category without source_lang, but lang field is present
         // case 11: translator category with source_lang
         // case 12: translator category with source_lang and lang field is present
-        // case S01: source_lang is present but invalid (should give warning later)
         // case S11: source_lang is missing, but category is not translator (should be skipped)
 
         TESTS_2_0.test_6_1_15.expect(
             missing_source_lang_error.clone(),
             missing_source_lang_error.clone(),
-            invalid_source_lang_error.clone(),
             Ok(()),
             Ok(()),
             Ok(()),
@@ -101,9 +77,8 @@ mod tests {
         TESTS_2_1.test_6_1_15.expect(
             missing_source_lang_error.clone(),
             missing_source_lang_error,
-            invalid_source_lang_error,
-            Ok(()), // case_11
-            Ok(()), // case_12
+            Ok(()),
+            Ok(()),
             Ok(()),
         );
     }

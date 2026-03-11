@@ -1,9 +1,10 @@
+use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
 
-fn create_same_language_error(lang: &str) -> ValidationError {
+fn create_same_language_error(lang: &CsafLanguage) -> ValidationError {
     ValidationError {
-        message: format!("document language and source language have the same value {lang}"),
+        message: format!("document language and source language have the same value '{lang}'"),
         instance_path: "/document/source_lang".to_string(),
     }
 }
@@ -13,11 +14,15 @@ fn create_same_language_error(lang: &str) -> ValidationError {
 /// `/document/lang` and `/document/source_lang` must have different values
 pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
-    if let Some(lang) = document.get_lang()
-        && let Some(source_lang) = document.get_source_lang()
-        && lang.to_lowercase() == source_lang.to_lowercase()
-    {
-        return Err(vec![create_same_language_error(lang)]);
+
+    // Check if both lang and source_lang are present
+    let (lang, source_lang) = match (document.get_lang(), document.get_source_lang()) {
+        (Some(lang), Some(source_lang)) => (lang, source_lang),
+        (_, _) => return Ok(()), // This should be a wasSkipped later (see #409)
+    };
+
+    if lang == source_lang {
+        return Err(vec![create_same_language_error(&lang)]);
     }
 
     Ok(())
@@ -53,10 +58,18 @@ mod tests {
 
     #[test]
     fn test_test_6_1_28() {
-        let case_01 = Err(vec![create_same_language_error("en-US")]);
+        // Case 01: /document/lang and /document/source_lang are set to the same value
+        // Case 11: /document/lang and /document/source_lang are set to different values
+        // Case S01: /document/lang and /document/source_lang are set to "i-default", but one is uppercase
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_1_28.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_1_28.expect(case_01, Ok(()));
+        let case_01 = Err(vec![create_same_language_error(&CsafLanguage::from(
+            &"en-US".to_string(),
+        ))]);
+        let case_s01 = Err(vec![create_same_language_error(&CsafLanguage::from(
+            &"i-default".to_string(),
+        ))]);
+
+        TESTS_2_0.test_6_1_28.expect(case_01.clone(), case_s01.clone(), Ok(()));
+        TESTS_2_1.test_6_1_28.expect(case_01, case_s01, Ok(()));
     }
 }

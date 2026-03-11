@@ -1,9 +1,7 @@
 use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait, TrackingTrait};
-use crate::helpers::{MAX_UUID, NIL_UUID};
-use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::schema::csaf2_1::schema::LabelOfTlp::Clear;
+use crate::schema::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
 use crate::validation::ValidationError;
 
 static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
@@ -30,12 +28,12 @@ static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| 
 pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
-    if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() == Clear
+    if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() == LabelOfTlp::Clear
         && let Some(sharing_group) = distribution.get_sharing_group()
     {
         let sharing_group_id = sharing_group.get_id();
-        return if sharing_group_id == MAX_UUID
-            || (sharing_group_id == NIL_UUID && doc.get_document().get_tracking().get_status() == DocumentStatus::Draft)
+        return if sharing_group_id.is_max()
+            || (sharing_group_id.is_nil() && doc.get_document().get_tracking().get_status() == DocumentStatus::Draft)
         {
             Ok(())
         } else {
@@ -66,6 +64,15 @@ mod tests {
     fn test_test_6_1_39() {
         let err = Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
-        TESTS_2_1.test_6_1_39.expect(err.clone(), err.clone(), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_39.expect(
+            // Case 01: TLP:CLEAR with regular UUID, status final
+            err.clone(),
+            // Case 02: TLP:CLEAR with Nil UUID, status final
+            err.clone(),
+            // Case 11: TLP:CLEAR with Max UUID, status final
+            Ok(()),
+            // Case 12: TLP:CLEAR with Nil UUID, status draft
+            Ok(()),
+        );
     }
 }

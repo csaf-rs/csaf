@@ -1,7 +1,8 @@
 use std::sync::LazyLock;
 
-use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
-use crate::helpers::{MAX_UUID, NIL_UUID, SG_NAME_PRIVATE, SG_NAME_PUBLIC};
+use crate::csaf_traits::{
+    CsafTrait, DistributionTrait, DocumentTrait, SG_NAME_PRIVATE, SG_NAME_PUBLIC, SharingGroupTrait,
+};
 use crate::validation::ValidationError;
 
 static MAX_UUID_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
@@ -35,25 +36,13 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
-        // Check if max UUID is used
-        if sharing_group.get_id() == MAX_UUID {
-            // If max UUID is used, the name must exist and be NAME_PUBLIC
-            match sharing_group.get_name() {
-                Some(name) if name == SG_NAME_PUBLIC => {},
-                _ => {
-                    return Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
-                },
-            }
+        // If max UUID is used, the name must exist and be "Public"
+        if sharing_group.get_id().is_max() && !sharing_group.is_name_public() {
+            return Err(vec![MAX_UUID_SHARING_GROUP_ERROR.clone()]);
         }
-        // Check if nil UUID is used
-        else if sharing_group.get_id() == NIL_UUID {
-            // If nil UUID is used, the name must exist and be NAME_PRIVATE
-            match sharing_group.get_name() {
-                Some(name) if name == SG_NAME_PRIVATE => {},
-                _ => {
-                    return Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
-                },
-            }
+        // If nil UUID is used, the name must exist and be "No sharing allowed"
+        else if sharing_group.get_id().is_nil() && !sharing_group.is_name_private() {
+            return Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
         }
     }
 
@@ -83,11 +72,17 @@ mod tests {
 
         // Only CSAF 2.1 has this test with 6 test cases (4 error cases, 2 success cases)
         TESTS_2_1.test_6_1_41.expect(
+            // Case 01: Max UUID without name
             max_uuid_err.clone(),
+            // Case 02: NIL UUID without name
             nil_uuid_err.clone(),
+            // Case 03: Max UUID with wrong name
             max_uuid_err.clone(),
+            // Case 04: Nil UUID with wrong name
             nil_uuid_err.clone(),
+            // Case 11: Max UUID with correct name "Public"
             Ok(()),
+            // Case 12: Nil UUID with correct name "No sharing allowed"
             Ok(()),
         );
     }

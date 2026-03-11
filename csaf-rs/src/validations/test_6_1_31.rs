@@ -68,29 +68,34 @@ fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&
 }
 
 /// 6.1.31 Version Range in Product Version
-/// All branches with type `product_version` in the product tree must not contain any of the substrings
-/// `<, <=, >, >=, after, all, before, earlier, later, prior, versions` in their branch `name`.
-/// `<=` and `>=` are prioritized before `<` and `>` respectively. The error contains all unique offending substrings.
+/// All branches with type `product_version` in the product tree must not contain any of the operators
+/// `<, <=, >, >=` or keywords `after, all, before, earlier, later, prior, versions` when
+/// tokenized by whitespace in their branch `name`.
+/// `<=` and `>=` are prioritized before `<` and `>` respectively.
+/// The error contains all unique offending operators and keywords.
 pub fn test_6_1_31_version_range_in_product_version_branch_name(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
+    let Some(product_tree) = doc.get_product_tree().as_ref() else {
+        return Ok(());
+    };
+
     let mut errors: Option<Vec<ValidationError>> = None;
-    if let Some(product_tree) = doc.get_product_tree().as_ref() {
-        product_tree.visit_all_branches(&mut |branch, path| {
-            if branch.get_category() == &CategoryOfTheBranch::ProductVersion {
-                // if there are any forbidden substrings found, create an error
-                if let Some(forbidden_substrings) = check_branch_name_for_forbidden_substrings(branch.get_name()) {
-                    errors
-                        .get_or_insert_default()
-                        .push(create_forbidden_strings_in_version_error(
-                            branch.get_name(),
-                            forbidden_substrings,
-                            path,
-                        ));
-                }
+
+    product_tree.visit_all_branches(&mut |branch, path| {
+        if branch.get_category() == &CategoryOfTheBranch::ProductVersion {
+            // if there are any forbidden substrings found, create an error
+            if let Some(forbidden_substrings) = check_branch_name_for_forbidden_substrings(branch.get_name()) {
+                errors
+                    .get_or_insert_default()
+                    .push(create_forbidden_strings_in_version_error(
+                        branch.get_name(),
+                        forbidden_substrings,
+                        path,
+                    ));
             }
-        })
-    }
+        }
+    });
 
     errors.map_or(Ok(()), Err)
 }
@@ -252,6 +257,9 @@ mod tests {
         );
     }
 
+    // Additional tests for the helper function `check_branch_name_for_forbidden_substrings`.
+    // These are not meant to be exhaustive, but to cover some additional edge cases that are not
+    // covered by the upstream and supplementary test cases above.
     #[test]
     fn test_check_branch_name_for_forbidden_substrings() {
         let test_cases = vec![

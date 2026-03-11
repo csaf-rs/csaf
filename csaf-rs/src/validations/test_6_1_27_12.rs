@@ -11,7 +11,7 @@ fn create_missing_affected_products_error(
         message: format!(
             "Document with category '{document_category}' must have a '/vulnerabilities[]/product_status/known_affected' element"
         ),
-        instance_path: format!("/vulnerabilities[{vulnerability_index}]/product_status"),
+        instance_path: format!("/vulnerabilities[{vulnerability_index}]/product_status/known_affected"),
     }
 }
 
@@ -19,7 +19,7 @@ fn create_missing_affected_products_error(
 ///
 /// This test only applies to documents with `/document/category` with value `csaf_security_advisory`.
 ///
-/// For each item in /vulnerabilities it MUST be tested that the element product_status/known_affected exists.
+/// For each item in `/vulnerabilities[]` it MUST be tested that the element `product_status/known_affected` exists.
 pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
@@ -27,21 +27,20 @@ pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<
         return Ok(());
     }
 
+    let mut errors: Vec<ValidationError> = Vec::new();
     let vulnerabilities = doc.get_vulnerabilities();
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
-        match vulnerability.get_product_status() {
-            None => {
-                return Err(vec![create_missing_affected_products_error(&doc_category, v_i)]);
-            },
-            Some(ps) => {
-                if ps.get_known_affected().is_none() {
-                    return Err(vec![create_missing_affected_products_error(&doc_category, v_i)]);
-                }
-            },
+        if vulnerability
+            .get_product_status()
+            .as_ref()
+            .and_then(|ps| ps.get_known_affected())
+            .is_none()
+        {
+            errors.push(create_missing_affected_products_error(&doc_category, v_i));
         }
     }
 
-    Ok(())
+    if !errors.is_empty() { Err(errors) } else { Ok(()) }
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
@@ -65,11 +64,21 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_12() {
-        let case_security_advisory = Err(vec![create_missing_affected_products_error(
+        let case_security_advisory_missing_affected = Err(vec![create_missing_affected_products_error(
             &CsafDocumentCategory::CsafSecurityAdvisory,
             0,
         )]);
+        let case_security_advisory_two_vulnerabilities_missing_affected = Err(vec![
+            create_missing_affected_products_error(&CsafDocumentCategory::CsafSecurityAdvisory, 0),
+            create_missing_affected_products_error(&CsafDocumentCategory::CsafSecurityAdvisory, 1),
+        ]);
 
-        TESTS_2_1.test_6_1_27_12.expect(case_security_advisory, Ok(()));
+        TESTS_2_1.test_6_1_27_12.expect(
+            case_security_advisory_missing_affected.clone(),
+            case_security_advisory_missing_affected,
+            case_security_advisory_two_vulnerabilities_missing_affected,
+            Ok(()),
+            Ok(()),
+        );
     }
 }

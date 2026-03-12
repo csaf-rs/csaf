@@ -14,9 +14,9 @@ pub enum CsafLanguage {
 impl Display for CsafLanguage {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            CsafLanguage::Valid(lang) => write!(f, "{}", lang),
-            CsafLanguage::DefaultLanguage(lang) => write!(f, "{}", lang),
-            CsafLanguage::Invalid(lang, _) => write!(f, "{}", lang),
+            CsafLanguage::Valid(lang) => write!(f, "{lang}"),
+            CsafLanguage::DefaultLanguage(lang) => write!(f, "{lang}"),
+            CsafLanguage::Invalid(lang, _) => write!(f, "{lang}"),
         }
     }
 }

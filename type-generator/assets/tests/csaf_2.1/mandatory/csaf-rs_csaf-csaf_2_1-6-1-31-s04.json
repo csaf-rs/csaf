@@ -1,0 +1,57 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Version Range in Product Version (failing supplementary example 4 - mix of multiple operators and keywords)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-31-S04",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "vendor",
+        "name": "Example Company",
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "Product A",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": ">=2.0 and <3.0 and after 4.1 and before 5.1",
+                "product": {
+                  "product_id": "CSAFPID-9080700",
+                  "name": "Example Company Product A >=2.0 and <3.0 and after 4.1 and before 5.1"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+

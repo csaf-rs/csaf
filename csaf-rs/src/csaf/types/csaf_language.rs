@@ -24,11 +24,11 @@ impl Display for CsafLanguage {
 impl PartialEq for CsafLanguage {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (CsafLanguage::Valid(a), CsafLanguage::Valid(b)) => a == b,
+            (CsafLanguage::Valid(a), CsafLanguage::Valid(b)) => a.eq_ignore_ascii_case(b),
             (CsafLanguage::DefaultLanguage(a), CsafLanguage::DefaultLanguage(b)) => {
-                a.to_lowercase() == b.to_lowercase()
+                a.eq_ignore_ascii_case(b)
             },
-            (CsafLanguage::Invalid(a, _), CsafLanguage::Invalid(b, _)) => a == b,
+            (CsafLanguage::Invalid(a, _), CsafLanguage::Invalid(b, _)) => a.eq_ignore_ascii_case(b),
             _ => false,
         }
     }
@@ -48,7 +48,7 @@ impl From<&LangT21> for CsafLanguage {
 
 impl From<&String> for CsafLanguage {
     fn from(lang_code: &String) -> Self {
-        if lang_code.to_lowercase() == "i-default" {
+        if lang_code.eq_ignore_ascii_case("i-default") {
             CsafLanguage::DefaultLanguage(lang_code.to_string())
         } else {
             let primary_subtag = lang_code.split('-').next().unwrap_or(lang_code);

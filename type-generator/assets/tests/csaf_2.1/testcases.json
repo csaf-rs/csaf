@@ -143,6 +143,10 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-12-s12.json",
           "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-12-s13.json",
+          "valid": true
         }
       ]
     },

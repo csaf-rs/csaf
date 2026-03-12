@@ -69,6 +69,7 @@ mod tests {
         // Case S02: Invalid language code in both /document/lang and /document/source_lang
         // Case S11: Valid language code in both /document/lang and /document/source_lang
         // Case S12: Both /document/lang and /document/source_lang are missing (should be skipped? #409)
+        // Case S13: default language code in /document/lang
 
         let Invalid(_, ez_error) = CsafLanguage::from(&"EZ".to_string()) else {
             unreachable!()
@@ -85,9 +86,9 @@ mod tests {
 
         TESTS_2_0
             .test_6_1_12
-            .expect(case_01.clone(), case_s01.clone(), case_s02.clone(), Ok(()), Ok(()));
+            .expect(case_01.clone(), case_s01.clone(), case_s02.clone(), Ok(()), Ok(()), Ok(()));
         TESTS_2_1
             .test_6_1_12
-            .expect(case_01, case_s01, case_s02, Ok(()), Ok(()));
+            .expect(case_01, case_s01, case_s02, Ok(()), Ok(()), Ok(()));
     }
 }

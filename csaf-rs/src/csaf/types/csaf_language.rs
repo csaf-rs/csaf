@@ -70,9 +70,9 @@ pub enum CsafLanguageError {
 impl CsafLanguageError {
     pub fn into_validation_error(self, json_path: &str) -> ValidationError {
         match self {
-            CsafLanguageError::InvalidPrimaryLangTag(invalid_lang_tag, primary_lab_subtag) => ValidationError {
+            CsafLanguageError::InvalidPrimaryLangTag(invalid_lang_tag, primary_lang_subtag) => ValidationError {
                 message: format!(
-                    "Invalid language code '{invalid_lang_tag}': primary language subtag '{primary_lab_subtag}' is not a valid language subtag"
+                    "Invalid language code '{invalid_lang_tag}': primary language subtag '{primary_lang_subtag}' is not a valid language subtag"
                 ),
                 instance_path: json_path.to_string(),
             },

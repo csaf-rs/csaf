@@ -21,7 +21,7 @@ pub fn test_6_1_27_16_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<V
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
-        return Ok(()); // TODO This will be a wasSkipped lated ([#409](https://github.com/csaf-rs/csaf/issues/409))
+        return Ok(()); // TODO This will be a wasSkipped later ([#409](https://github.com/csaf-rs/csaf/issues/409))
     }
     if doc.get_document().get_tracking().get_revision_history().len() == 1 {
         return Err(vec![create_revision_history_only_one_entry_error(&doc_category)]);
@@ -59,10 +59,10 @@ mod tests {
         let fail_superseded = Err(vec![create_revision_history_only_one_entry_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);
-        // Case S11: document status is draft, category is csaf_withdrawn, two revision history elements, one of which is a draft
-        // Case S12: document status is final, category is csaf_withdrawn, two revision history elements
-        // Case S13: document status is final, category is csaf_superseded, two revision history elements
-        // Case S14: document status is draft, category is csaf_supersded, two revision history elements, one of which is a draft
+        // Case 11: document status is draft, category is csaf_withdrawn, two revision history elements, one of which is a draft
+        // Case 12: document status is final, category is csaf_withdrawn, two revision history elements
+        // Case 13: document status is final, category is csaf_superseded, two revision history elements
+        // Case 14: document status is draft, category is csaf_superseded, two revision history elements, one of which is a draft
         TESTS_2_1
             .test_6_1_27_16
             .expect(fail_withdrawn, fail_superseded, Ok(()), Ok(()), Ok(()), Ok(()));

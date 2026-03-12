@@ -25,18 +25,16 @@ pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> R
         return Ok(());
     }
 
-    match doc.get_document().get_notes() {
-        None => Err(vec![create_missing_description_note(&doc_category)]),
-        Some(notes) => {
-            if notes
-                .iter()
-                .all(|note| note.get_category() != NoteCategory::Description)
-            {
-                Err(vec![create_missing_description_note(&doc_category)])
-            } else {
-                Ok(())
-            }
-        },
+    let has_description = doc.get_document().get_notes().is_some_and(|notes| {
+        notes
+            .iter()
+            .any(|note| note.get_category() == NoteCategory::Description)
+    });
+
+    if has_description {
+        Ok(())
+    } else {
+        Err(vec![create_missing_description_note(&doc_category)])
     }
 }
 
@@ -72,6 +70,6 @@ mod tests {
 
         TESTS_2_1
             .test_6_1_27_14
-            .expect(fail_withdrawn, fail_superseded, Ok(()), Ok(()));
+            .expect(fail_withdrawn.clone(), fail_superseded, fail_withdrawn, Ok(()), Ok(()));
     }
 }

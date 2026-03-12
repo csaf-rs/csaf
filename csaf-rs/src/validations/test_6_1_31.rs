@@ -136,26 +136,6 @@ mod tests {
 
     #[test]
     fn test_test_6_1_31() {
-        // Case 01: Keyword "prior"
-        // Case 02: Operator "<"
-        // Case 03: Operator "<="
-        // Case 04: Operator "<=" with space
-        // Case 05: Keyword "earlier"
-        // Case 06: Keyword "all"
-        // Case 07: Keyword "before"
-        // Case 08: Keyword "later"
-        // Case 09: Keyword "versions"
-        // Case 11: Using product_version_range
-        // Case 12: Keyword "after" as part of word "after-eight"
-        // Case 13: Keyword "all" as part of word "overall"
-
-        // Case S01: Keyword "ALL"
-        // Case S02: Operator ">"
-        // Case S03: Operator ">="
-        // Case S04: Multiple operators and keywords ">=2.0 and <3.0 and after 4.1 and before 5.1"
-        // Case S11: Keyword "all" as part of word "overall" (backport for CSAF 2.0, CSAF 2.1 has this as Case 13)
-        // Case S12: Just a valid branch name "2.0"
-
         let case_01_prior = Err(vec![create_forbidden_strings_in_version_error(
             "prior to 4.2",
             vec!["prior"],
@@ -216,11 +196,18 @@ mod tests {
             vec![">="],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
+        // Case S04: Multiple operators and keywords
         let case_s04_multiple = Err(vec![create_forbidden_strings_in_version_error(
             ">=2.0 and <3.0 and after 4.1 and before 5.1",
             vec!["<", ">=", "after", "before"],
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
+
+        // Case 11: Using product_version_range
+        // Case 12: Keyword "after" as part of word "after-eight"
+        // Case 13: Keyword "all" as part of word "overall"
+        // Case S11: Keyword "all" as part of word "overall" (backport for CSAF 2.0, CSAF 2.1 has this as Case 13)
+        // Case S12: Just a valid branch name "2.0"
 
         TESTS_2_0.test_6_1_31.expect(
             case_01_prior.clone(),

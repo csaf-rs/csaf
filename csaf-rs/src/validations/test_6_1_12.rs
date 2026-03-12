@@ -84,9 +84,14 @@ mod tests {
             zzz_error.into_validation_error("/document/source_lang"),
         ]);
 
-        TESTS_2_0
-            .test_6_1_12
-            .expect(case_01.clone(), case_s01.clone(), case_s02.clone(), Ok(()), Ok(()), Ok(()));
+        TESTS_2_0.test_6_1_12.expect(
+            case_01.clone(),
+            case_s01.clone(),
+            case_s02.clone(),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
         TESTS_2_1
             .test_6_1_12
             .expect(case_01, case_s01, case_s02, Ok(()), Ok(()), Ok(()));

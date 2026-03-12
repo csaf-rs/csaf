@@ -25,9 +25,7 @@ impl PartialEq for CsafLanguage {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (CsafLanguage::Valid(a), CsafLanguage::Valid(b)) => a.eq_ignore_ascii_case(b),
-            (CsafLanguage::DefaultLanguage(a), CsafLanguage::DefaultLanguage(b)) => {
-                a.eq_ignore_ascii_case(b)
-            },
+            (CsafLanguage::DefaultLanguage(a), CsafLanguage::DefaultLanguage(b)) => a.eq_ignore_ascii_case(b),
             (CsafLanguage::Invalid(a, _), CsafLanguage::Invalid(b, _)) => a.eq_ignore_ascii_case(b),
             _ => false,
         }
@@ -96,6 +94,22 @@ mod tests {
     fn test_default_language() {
         let lang1 = CsafLanguage::from(&"i-default".to_string());
         assert_eq!(lang1, CsafLanguage::DefaultLanguage("i-default".to_string()));
+    }
+
+    #[test]
+    fn test_valid_language_compare_case_insensitive() {
+        let lang1 = CsafLanguage::from(&"en-US".to_string());
+        let lang2 = CsafLanguage::from(&"en-us".to_string());
+        assert_eq!(lang1, lang2);
+    }
+
+    #[test]
+    fn test_invalid_language_compare_case_insensitive() {
+        // this is a region tag
+        let lang1 = CsafLanguage::from(&"EZ".to_string());
+        // this does not exist
+        let lang2 = CsafLanguage::from(&"ez".to_string());
+        assert_eq!(lang1, lang2);
     }
 
     #[test]

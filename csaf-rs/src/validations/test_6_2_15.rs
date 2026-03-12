@@ -30,18 +30,13 @@ pub fn test_6_2_15_use_of_default_language(doc: &impl CsafTrait) -> Result<(), V
 /// - `json_path`: The JSON path to the language tag
 /// - `errors`: A mutable reference to the errors vector
 fn validate_default_language(lang: Option<CsafLanguage>, json_path: &str, errors: &mut Option<Vec<ValidationError>>) {
-    if let Some(lang) = lang {
-        match lang {
-            CsafLanguage::DefaultLanguage(lang_tag) => {
-                errors
-                    .get_or_insert_default()
-                    .push(create_default_language_error(lang_tag, json_path));
-            },
-            // We do not care if the language tag is otherwise valid or invalid.
-            _ => {},
-        }
+    if let Some(CsafLanguage::DefaultLanguage(lang_tag)) = lang {
+            errors
+                .get_or_insert_default()
+                .push(create_default_language_error(lang_tag, json_path));
     }
 }
+
 
 fn create_default_language_error(lang_tag: String, instance_path: &str) -> ValidationError {
     ValidationError {

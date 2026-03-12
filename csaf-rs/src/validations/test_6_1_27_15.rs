@@ -59,7 +59,8 @@ mod tests {
         let fail_superseded = Err(vec![create_product_tree_exists_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);
-
+         // Case 11: category csaf_withdrawn, no product tree
+         // Case 12: category csaf_superseded, no product tree
         TESTS_2_1
             .test_6_1_27_15
             .expect(fail_withdrawn, fail_superseded, Ok(()), Ok(()));

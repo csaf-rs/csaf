@@ -44,8 +44,7 @@ impl CsafVersionNumber {
 
         // Panic if both fail
         panic!(
-            "Version string '{}' does not match either integer or semantic versioning. (Either the schema regex is wrong, or this is a dev error)",
-            s
+            "Version string '{s}' does not match either integer or semantic versioning. (Either the schema regex is wrong, or this is a dev error)"
         );
     }
 
@@ -145,6 +144,7 @@ impl PartialOrd for CsafVersionNumber {
     }
 }
 /*
+
 TODO: Uncomment this once revisionhistory has been typified to only allow one variant
 /// VersionNumbers can be ordered if they are of the same variant
 /// Otherwise, there is no ordering

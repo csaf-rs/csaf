@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
-use crate::helpers::extract_primary_language_subtag;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
@@ -30,14 +30,6 @@ fn create_incorrect_category_error(note_index: usize) -> ValidationError {
     }
 }
 
-fn is_undefined_or_target_lang(lang_element: Option<&String>, target_language: &str) -> bool {
-    if let Some(language) = lang_element {
-        let primary_subtag = extract_primary_language_subtag(language);
-        return primary_subtag.eq_ignore_ascii_case(target_language);
-    }
-    true
-}
-
 /// 6.1.27.17 Reasoning for withdrawal
 ///
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` and only if the document language is English (i.e., `/document/lang` with value `en`) or unspecified.
@@ -49,9 +41,12 @@ pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> R
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
-    let is_undefined_or_english = is_undefined_or_target_lang(doc.get_document().get_lang(), "en");
-    if !is_undefined_or_english {
-        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+    match doc.get_document().get_lang() {
+        Some(CsafLanguage::DefaultLanguage(_)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(CsafLanguage::Valid(valid_lang)) if !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(_) => {}, // this is english
+        None => {}, // no language set
     }
 
     let mut errors = Vec::new();

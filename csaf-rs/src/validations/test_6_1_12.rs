@@ -1,7 +1,5 @@
 use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::generated::language_subtags::is_valid_language_subtag;
-use crate::helpers::extract_primary_language_subtag;
 use crate::validation::ValidationError;
 
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {

@@ -1,6 +1,7 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
+use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
 use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
@@ -408,12 +409,12 @@ impl DocumentTrait for DocumentLevelMetaData {
         self.notes.as_deref()
     }
 
-    fn get_lang(&self) -> Option<&String> {
-        self.lang.as_deref()
+    fn get_lang(&self) -> Option<CsafLanguage> {
+        self.lang.as_deref().map(CsafLanguage::from)
     }
 
-    fn get_source_lang(&self) -> Option<&String> {
-        self.source_lang.as_deref()
+    fn get_source_lang(&self) -> Option<CsafLanguage> {
+        self.source_lang.as_deref().map(CsafLanguage::from)
     }
 
     fn get_publisher(&self) -> &Publisher {

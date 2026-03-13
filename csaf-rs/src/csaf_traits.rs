@@ -2,6 +2,7 @@ use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
+use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
 use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
@@ -167,10 +168,10 @@ pub trait DocumentTrait {
     }
 
     /// Returns the language associated with this document.
-    fn get_lang(&self) -> Option<&String>;
+    fn get_lang(&self) -> Option<CsafLanguage>;
 
     /// Returns the source language associated with this document.
-    fn get_source_lang(&self) -> Option<&String>;
+    fn get_source_lang(&self) -> Option<CsafLanguage>;
 
     /// Returns the publisher information for this document
     fn get_publisher(&self) -> &Self::PublisherType;

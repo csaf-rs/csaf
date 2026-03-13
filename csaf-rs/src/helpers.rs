@@ -166,23 +166,3 @@ pub static SSVC_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     let schema_str = include_str!("../assets/decision_point_selection_list_json_schema.json");
     serde_json::from_str(schema_str).unwrap()
 });
-
-/// Extracts the primary language subtag from a given language code.
-/// The primary subtag is defined as the portion of the language code that appears before the first hyphen (`-`).
-/// If there is no hyphen, the entire language code is considered the primary subtag.
-///
-/// # Examples
-///
-/// ```
-/// use csaf::helpers::extract_primary_language_subtag;
-///
-/// let result = extract_primary_language_subtag("en-US");
-/// assert_eq!(result, "en");
-///
-/// let result = extract_primary_language_subtag("de");
-/// assert_eq!(result, "de");
-/// ```
-pub fn extract_primary_language_subtag(lang_code: &str) -> &str {
-    // Extract the primary language subtag (everything before the first hyphen)
-    lang_code.split('-').next().unwrap_or(lang_code)
-}

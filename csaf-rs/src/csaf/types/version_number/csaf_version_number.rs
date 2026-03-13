@@ -6,7 +6,6 @@ use semver::Version;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::hash::Hash;
 use std::ops::Deref;
-use std::str::FromStr;
 
 /// Enum representing the version number of a CSAF document, which can be either be integer or semantic versioning
 ///
@@ -34,12 +33,12 @@ impl CsafVersionNumber {
             && !(s.len() > 1 && s.starts_with('0'))
             && let Ok(num) = s.parse::<u64>()
         {
-            return CsafVersionNumber::IntVer(IntVerVersion::from(num));
+            return CsafVersionNumber::IntVer(IntVerVersion::new(num));
         }
 
         // Try to parse as semver
         if let Ok(semver) = Version::parse(s) {
-            return CsafVersionNumber::SemVer(SemVerVersion::from(semver));
+            return CsafVersionNumber::SemVer(SemVerVersion::new(semver));
         }
 
         // Panic if both fail
@@ -57,15 +56,6 @@ impl CsafVersionNumber {
     }
 }
 
-// Transform a raw version string into a CsafVersionNumber. As the schema validation is the same
-// for CSAF 2.0 and 2.1, we can just push the raw string through either before parsing it into a CsafVersionNumber.
-impl From<&str> for CsafVersionNumber {
-    fn from(s: &str) -> Self {
-        CsafVersionNumber::parse_str(&VersionT21::from_str(s).unwrap_or_else(|err| {
-            panic!("Raw version string '{s}' failed schema validation: {err}. This looks like a dev error.")
-        }))
-    }
-}
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber
 impl From<&VersionT20> for CsafVersionNumber {
@@ -162,8 +152,23 @@ impl PartialOrd for VersionNumber {
 }
 */
 
+// Transform a raw version string into a CsafVersionNumber.  As the schema validation is the same
+// for CSAF 2.0 and 2.1, we can just push the raw string through either before parsing it into a CsafVersionNumber.
+// This is only used for testing and not available on the public API
+#[cfg(test)]
+impl From<&str> for CsafVersionNumber {
+    fn from(s: &str) -> Self {
+        use std::str::FromStr;
+        CsafVersionNumber::parse_str(&crate::schema::csaf2_1::schema::VersionT::from_str(s).unwrap_or_else(|err| {
+            panic!("Raw version string '{s}' failed schema validation: {err}. This looks like a dev error.")
+        }))
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
     use super::*;
 
     #[test]

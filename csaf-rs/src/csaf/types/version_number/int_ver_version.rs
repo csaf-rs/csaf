@@ -17,9 +17,19 @@ impl Display for IntVerVersion {
     }
 }
 
+impl IntVerVersion {
+    /// Creates a new `IntVerVersion` from a `u64`.
+    /// Only available within the version_number module.
+    pub(super) fn new(value: u64) -> Self {
+        IntVerVersion(value)
+    }
+}
+
+#[cfg(test)]
+// This is only used for testing and not available on the public API
 impl From<u64> for IntVerVersion {
     fn from(value: u64) -> Self {
-        IntVerVersion(value)
+        IntVerVersion::new(value)
     }
 }
 

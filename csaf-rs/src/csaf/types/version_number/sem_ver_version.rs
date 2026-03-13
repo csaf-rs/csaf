@@ -54,9 +54,19 @@ impl Display for SemVerVersion {
     }
 }
 
+impl SemVerVersion {
+    /// Creates a new `SemVerVersion` from a `semver::Version`.
+    /// Only available within the version_number module.
+    pub(super) fn new(value: Version) -> Self {
+        SemVerVersion(value)
+    }
+}
+
+#[cfg(test)]
+// This is only used for testing and not available on the public API
 impl From<Version> for SemVerVersion {
     fn from(value: Version) -> Self {
-        SemVerVersion(value)
+        SemVerVersion::new(value)
     }
 }
 

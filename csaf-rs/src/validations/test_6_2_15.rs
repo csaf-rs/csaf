@@ -74,39 +74,41 @@ mod tests {
 
     #[test]
     fn test_test_6_2_15() {
-        // Case 01: /document/lang is set to the default language
-        let case_01 = Err(vec![create_default_language_error(
+        let case_01_default_lang = Err(vec![create_default_language_error(
             "i-default".to_string(),
             "/document/lang",
         )]);
-        // Case 02: /document/source_lang is set to the default language
-        let case_02 = Err(vec![create_default_language_error(
+        let case_02_default_source_lang = Err(vec![create_default_language_error(
             "i-default".to_string(),
             "/document/source_lang",
         )]);
-        // Case 11: /document/lang is not set to the default language
 
-        // Case S01: Both /document/lang and /document/source_lang are set to the default language
-        let case_s01 = Err(vec![
+        let case_s01_default_both_langs = Err(vec![
             create_default_language_error("i-default".to_string(), "/document/lang"),
             create_default_language_error("i-default".to_string(), "/document/source_lang"),
         ]);
-        // Case S02: default lang in /document/lang tag is uppercase
-        let case_s02 = Err(vec![create_default_language_error(
+        let case_s02_default_lang_uppercase = Err(vec![create_default_language_error(
             "I-DEFAULT".to_string(),
             "/document/lang",
         )]);
+
+        // Case 11: /document/lang is not set to the default language
         // Case S11: Both /document/lang and /document/source_lang are missing (should be skipped? #409)
         TESTS_2_0.test_6_2_15.expect(
-            case_01.clone(),
-            case_02.clone(),
-            case_s01.clone(),
-            case_s02.clone(),
+            case_01_default_lang.clone(),
+            case_02_default_source_lang.clone(),
+            case_s01_default_both_langs.clone(),
+            case_s02_default_lang_uppercase.clone(),
             Ok(()),
             Ok(()),
         );
-        TESTS_2_1
-            .test_6_2_15
-            .expect(case_01, case_02, case_s01, case_s02, Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_15.expect(
+            case_01_default_lang,
+            case_02_default_source_lang,
+            case_s01_default_both_langs,
+            case_s02_default_lang_uppercase,
+            Ok(()),
+            Ok(()),
+        );
     }
 }

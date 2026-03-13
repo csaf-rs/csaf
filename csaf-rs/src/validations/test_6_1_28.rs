@@ -58,18 +58,20 @@ mod tests {
 
     #[test]
     fn test_test_6_1_28() {
-        // Case 01: /document/lang and /document/source_lang are set to the same value
-        // Case 11: /document/lang and /document/source_lang are set to different values
-        // Case S01: /document/lang and /document/source_lang are set to "i-default", but one is uppercase
-
-        let case_01 = Err(vec![create_same_language_error(&CsafLanguage::from(
+        let case_01_same_value = Err(vec![create_same_language_error(&CsafLanguage::from(
             &"en-US".to_string(),
         ))]);
-        let case_s01 = Err(vec![create_same_language_error(&CsafLanguage::from(
+        let case_s01_default_casing = Err(vec![create_same_language_error(&CsafLanguage::from(
             &"i-default".to_string(),
         ))]);
 
-        TESTS_2_0.test_6_1_28.expect(case_01.clone(), case_s01.clone(), Ok(()));
-        TESTS_2_1.test_6_1_28.expect(case_01, case_s01, Ok(()));
+        // Case 11: /document/lang and /document/source_lang are set to different values
+
+        TESTS_2_0
+            .test_6_1_28
+            .expect(case_01_same_value.clone(), case_s01_default_casing.clone(), Ok(()));
+        TESTS_2_1
+            .test_6_1_28
+            .expect(case_01_same_value, case_s01_default_casing, Ok(()));
     }
 }

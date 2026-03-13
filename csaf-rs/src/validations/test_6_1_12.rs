@@ -64,36 +64,41 @@ mod tests {
 
     #[test]
     fn test_test_6_1_12() {
-        // Case 01: Invalid language code in /document/lang
-        // Case S01: Invalid language code in /document/source_lang
-        // Case S02: Invalid language code in both /document/lang and /document/source_lang
-        // Case S11: Valid language code in both /document/lang and /document/source_lang
-        // Case S12: Both /document/lang and /document/source_lang are missing (should be skipped? #409)
-        // Case S13: default language code in /document/lang
-
+        // shared language validation errors
         let Invalid(_, ez_error) = CsafLanguage::from(&"EZ".to_string()) else {
             unreachable!()
         };
         let Invalid(_, zzz_error) = CsafLanguage::from(&"ZZZ".to_string()) else {
             unreachable!()
         };
-        let case_01 = Err(vec![ez_error.clone().into_validation_error("/document/lang")]);
-        let case_s01 = Err(vec![ez_error.clone().into_validation_error("/document/source_lang")]);
-        let case_s02 = Err(vec![
+
+        let case_01_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/lang")]);
+        let case_s01_source_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/source_lang")]);
+        let case_s02_both_langs_invalid = Err(vec![
             ez_error.clone().into_validation_error("/document/lang"),
             zzz_error.into_validation_error("/document/source_lang"),
         ]);
 
+        // Case S11: Valid language code in both /document/lang and /document/source_lang
+        // Case S12: Both /document/lang and /document/source_lang are missing (should be skipped? #409)
+        // Case S13: default language code in /document/lang
+
         TESTS_2_0.test_6_1_12.expect(
-            case_01.clone(),
-            case_s01.clone(),
-            case_s02.clone(),
+            case_01_lang_invalid.clone(),
+            case_s01_source_lang_invalid.clone(),
+            case_s02_both_langs_invalid.clone(),
             Ok(()),
             Ok(()),
             Ok(()),
         );
-        TESTS_2_1
-            .test_6_1_12
-            .expect(case_01, case_s01, case_s02, Ok(()), Ok(()), Ok(()));
+
+        TESTS_2_1.test_6_1_12.expect(
+            case_01_lang_invalid,
+            case_s01_source_lang_invalid,
+            case_s02_both_langs_invalid,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

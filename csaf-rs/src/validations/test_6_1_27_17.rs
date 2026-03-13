@@ -42,11 +42,10 @@ pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> R
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
     match doc.get_document().get_lang() {
-        Some(CsafLanguage::DefaultLanguage(_)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
-        Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(CsafLanguage::DefaultLanguage(_)) | Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
         Some(CsafLanguage::Valid(valid_lang)) if !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
-        Some(_) => {}, // this is english
-        None => {}, // no language set
+        Some(_) => {},                                                                      // this is english
+        None => {},                                                                         // no language set
     }
 
     let mut errors = Vec::new();

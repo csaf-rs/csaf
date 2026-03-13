@@ -56,7 +56,6 @@ impl CsafVersionNumber {
     }
 }
 
-
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber
 impl From<&VersionT20> for CsafVersionNumber {
     fn from(v: &VersionT20) -> Self {
@@ -159,17 +158,18 @@ impl PartialOrd for VersionNumber {
 impl From<&str> for CsafVersionNumber {
     fn from(s: &str) -> Self {
         use std::str::FromStr;
-        CsafVersionNumber::parse_str(&crate::schema::csaf2_1::schema::VersionT::from_str(s).unwrap_or_else(|err| {
-            panic!("Raw version string '{s}' failed schema validation: {err}. This looks like a dev error.")
-        }))
+        CsafVersionNumber::parse_str(
+            &crate::schema::csaf2_1::schema::VersionT::from_str(s).unwrap_or_else(|err| {
+                panic!("Raw version string '{s}' failed schema validation: {err}. This looks like a dev error.")
+            }),
+        )
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
     use super::*;
+    use std::str::FromStr;
 
     #[test]
     fn test_parse_str_integer_version() {

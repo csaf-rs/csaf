@@ -1,5 +1,5 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 /// 6.1.21 Missing Item in Revision History
@@ -12,10 +12,11 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // Generate and sort the revision history tuples by date first and by number second
-    let mut rev_history_tuples = doc.get_document().get_tracking().get_revision_history_tuples();
+    let mut rev_history_tuples = doc.get_document().get_tracking().aggregate_revision_history();
     rev_history_tuples.inplace_sort_by_date_then_number();
 
     // We can safely unwrap here, as there has to be at least one item in rev_history_tuples
+    // TODO: Remove this unwrap after refactor
     let first_tuple = rev_history_tuples.first().unwrap();
     let first_version = &first_tuple.number;
     let first_number = first_version.get_major();
@@ -28,11 +29,13 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         )]);
     }
 
+    // TODO: Remove this unwrap after refactor
     let last_number = rev_history_tuples.last().unwrap().number.get_major();
 
     for expected_number in first_number + 1..last_number {
         let mut found = false;
-        for revision_history_item in rev_history_tuples.iter() {
+        // TODO: Remove this clone after refactor
+        for revision_history_item in rev_history_tuples.clone().into_iter() {
             if revision_history_item.number.clone().get_major() == expected_number {
                 found = true;
                 break;

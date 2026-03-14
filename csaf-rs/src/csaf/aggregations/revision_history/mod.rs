@@ -1,0 +1,3 @@
+mod unvalidated_csaf_revision_history;
+
+pub use unvalidated_csaf_revision_history::{CsafRevisionHistoryItem, UnvalidatedCsafRevisionHistory};

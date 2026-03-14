@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 fn create_revision_history_error(revision_number: impl std::fmt::Display, path_index: usize) -> ValidationError {
@@ -16,7 +16,7 @@ fn create_revision_history_error(revision_number: impl std::fmt::Display, path_i
 /// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Generate tuples of (revision history path index, date, number)
-    let mut rev_history_tuples_sort_by_date = doc.get_document().get_tracking().get_revision_history_tuples();
+    let mut rev_history_tuples_sort_by_date = doc.get_document().get_tracking().aggregate_revision_history();
     let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
 
     // Sort by date and by number
@@ -26,11 +26,14 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
     // Generate errors if revision history items are sorted differently between sort by date and sort by number
     let mut errors = Vec::new();
     for i in 0..rev_history_tuples_sort_by_date.len() {
-        if rev_history_tuples_sort_by_date[i].date != rev_history_tuples_sort_by_number[i].date {
-            errors.push(create_revision_history_error(
-                &rev_history_tuples_sort_by_date[i].number,
-                rev_history_tuples_sort_by_date[i].path_index,
-            ));
+        if let Some(by_date) = rev_history_tuples_sort_by_date.get(i)
+            && let Some(by_number) = rev_history_tuples_sort_by_number.get(i)
+        {
+            if by_date.date != by_number.date {
+                errors.push(create_revision_history_error(&by_date.number, by_date.path_index));
+            }
+        } else {
+            unreachable!("Both arrays should have same length, this looks like a dev error.")
         }
     }
 

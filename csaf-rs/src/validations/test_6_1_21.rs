@@ -34,9 +34,8 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 
     for expected_number in first_number + 1..last_number {
         let mut found = false;
-        // TODO: Remove this clone after refactor
-        for revision_history_item in rev_history_tuples.clone().into_iter() {
-            if revision_history_item.number.clone().get_major() == expected_number {
+        for revision_history_item in &rev_history_tuples {
+            if revision_history_item.number.get_major() == expected_number {
                 found = true;
                 break;
             }

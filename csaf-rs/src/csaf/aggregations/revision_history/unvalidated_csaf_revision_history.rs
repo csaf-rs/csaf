@@ -47,6 +47,10 @@ impl UnvalidatedCsafRevisionHistory {
     pub(crate) fn last(&self) -> Option<&CsafRevisionHistoryItem> {
         self.0.last()
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = &CsafRevisionHistoryItem> {
+        self.0.iter()
+    }
 }
 
 impl<T: RevisionTrait> From<&Vec<T>> for UnvalidatedCsafRevisionHistory {
@@ -69,6 +73,15 @@ impl IntoIterator for UnvalidatedCsafRevisionHistory {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a UnvalidatedCsafRevisionHistory {
+    type Item = &'a CsafRevisionHistoryItem;
+    type IntoIter = std::slice::Iter<'a, CsafRevisionHistoryItem>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
     }
 }
 

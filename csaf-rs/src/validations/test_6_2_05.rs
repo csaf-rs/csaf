@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 fn create_older_initial_release_date_error(
@@ -21,17 +21,21 @@ pub fn test_6_2_05_older_init_release_than_rev_history(doc: &impl CsafTrait) -> 
     // TODO: Check for invalid dates here, will be done after revision history refactor, which will introduce
     // generic parsing error handling
 
-    let mut rev_history = doc.get_document().get_tracking().get_revision_history_tuples();
+    let mut rev_history = doc.get_document().get_tracking().aggregate_revision_history();
     rev_history.inplace_sort_by_date_then_number();
     // We can safely unwrap here because empty revision histories would not parse schema validation
+    // TODO: Remove this unwrap after refactor and panic stuff after the refactor
     let earliest_rev_history_item_date = rev_history.first().unwrap();
     let Valid(initial_release_date) = initial_release_date else {
         panic!();
     };
-    if initial_release_date.get_as_utc() < earliest_rev_history_item_date.date {
+    let Valid(earliest_rev_history_item_date) = &earliest_rev_history_item_date.date else {
+        panic!();
+    };
+    if initial_release_date.get_as_utc() < earliest_rev_history_item_date.get_as_utc() {
         return Err(vec![create_older_initial_release_date_error(
             initial_release_date.get_raw_string(),
-            &earliest_rev_history_item_date.date_string,
+            earliest_rev_history_item_date.get_raw_string(),
         )]);
     }
     Ok(())

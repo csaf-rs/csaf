@@ -1,9 +1,9 @@
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
-fn generate_duplicate_revision_error(number: &ValidVersionNumber, path: &usize) -> ValidationError {
+fn generate_duplicate_revision_error(number: &CsafVersionNumber, path: &usize) -> ValidationError {
     ValidationError {
         message: format!("Duplicate definition of revision history number {number}"),
         instance_path: format!("/document/tracking/revision_history/{path}/number"),
@@ -19,17 +19,9 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
 
     let mut errors: Option<Vec<ValidationError>> = None;
     // Map occurrence paths indexes to revision numbers
-    let mut number_revision_index_map: HashMap<ValidVersionNumber, Vec<usize>> = HashMap::new();
+    let mut number_revision_index_map: HashMap<CsafVersionNumber, Vec<usize>> = HashMap::new();
     for (i_r, revision) in revision_history.iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
-            CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(
-                    err.get_validation_error(format!("/document/tracking/revision_history/{i_r}/number").as_str()),
-                ); // ToDo generate warning
-                continue;
-            },
-        };
+        let number = revision.get_number();
         let path = number_revision_index_map.entry(number.clone()).or_default();
         path.push(i_r);
     }
@@ -75,30 +67,29 @@ mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use std::str::FromStr;
 
     #[test]
     fn test_test_6_1_22() {
         // TODO: Add unit test for more than two duplicates
         let case_intver = Err(vec![
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &0),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &1),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1"), &0),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1"), &1),
         ]);
         let case_intver_double_duplicates = Err(vec![
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &0),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2").unwrap(), &1),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1").unwrap(), &2),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2").unwrap(), &3),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1"), &0),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("2"), &1),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1"), &2),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("2"), &3),
         ]);
         let case_semver = Err(vec![
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &0),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &1),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1.0.0"), &0),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1.0.0"), &1),
         ]);
         let case_semver_double_duplicates = Err(vec![
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &0),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2.0.0").unwrap(), &1),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("1.0.0").unwrap(), &2),
-            generate_duplicate_revision_error(&ValidVersionNumber::from_str("2.0.0").unwrap(), &3),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1.0.0"), &0),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("2.0.0"), &1),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("1.0.0"), &2),
+            generate_duplicate_revision_error(&CsafVersionNumber::from("2.0.0"), &3),
         ]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case

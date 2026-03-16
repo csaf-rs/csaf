@@ -11,7 +11,7 @@ use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
 use crate::schema::csaf2_1::schema::{
     CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, Cwe as Cwe21,
-    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory,
+    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory, QualitativeSeverityRating,
 };
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};
@@ -819,6 +819,12 @@ pub trait ContentTrait {
     /// Returns whether this content contains an EPSS metric.
     fn has_epss(&self) -> bool {
         self.get_epss().is_some()
+    }
+
+    fn get_qualitative_severity(&self) -> &Option<QualitativeSeverityRating>;
+
+    fn has_qualitative_severity(&self) -> bool {
+        self.get_qualitative_severity().is_some()
     }
 
     /// This function constructs a JSON path string that can be used to locate the specific

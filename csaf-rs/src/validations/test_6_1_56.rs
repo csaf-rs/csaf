@@ -16,7 +16,7 @@ fn generate_cvss_and_qualitative_error(
 
     ValidationError {
         message: format!(
-            "Vulnerability has both a CVSS score and qualitative severity rating for product_id '{product_id}' '{source_str}'"
+            "Vulnerability has both a CVSS score and qualitative severity rating for product_id '{product_id}' {source_str}"
         ),
         instance_path: format!("/vulnerabilities/{v_i}/metrics/{m_i}/content/qualitative_severity_rating",),
     }

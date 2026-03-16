@@ -1,7 +1,9 @@
 use crate::schema::csaf2_0::schema::ModelNumber as ModelNumber20;
 use crate::schema::csaf2_0::schema::SerialNumber as SerialNumber20;
+use crate::schema::csaf2_0::schema::StockKeepingUnit as StockKeepingUnit20;
 use crate::schema::csaf2_1::schema::ModelNumber as ModelNumber21;
 use crate::schema::csaf2_1::schema::SerialNumber as SerialNumber21;
+use crate::schema::csaf2_1::schema::StockKeepingUnit as StockKeepingUnit21;
 use std::fmt::Display;
 
 /// A helper struct to encapsulate the logic for counting unescaped '*' characters in product identification fields.
@@ -37,6 +39,38 @@ impl ProductIdentificationHelperNumber {
     /// Returns the number of unescaped '*' characters found in the string.
     pub fn count_unescaped_stars(&self) -> u32 {
         Self::count_unescaped_stars_impl(&self.0)
+    }
+}
+
+pub struct CsafStockKeepingUnit(ProductIdentificationHelperNumber);
+
+impl CsafStockKeepingUnit {
+    pub fn count_unescaped_stars(&self) -> u32 {
+        self.0.count_unescaped_stars()
+    }
+}
+
+impl Display for CsafStockKeepingUnit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.0.fmt(f)
+    }
+}
+
+impl From<&StockKeepingUnit20> for CsafStockKeepingUnit {
+    fn from(value: &StockKeepingUnit20) -> Self {
+        CsafStockKeepingUnit(ProductIdentificationHelperNumber(value.to_string()))
+    }
+}
+
+impl From<&StockKeepingUnit21> for CsafStockKeepingUnit {
+    fn from(value: &StockKeepingUnit21) -> Self {
+        CsafStockKeepingUnit(ProductIdentificationHelperNumber(value.to_string()))
+    }
+}
+
+impl From<&str> for CsafStockKeepingUnit {
+    fn from(value: &str) -> Self {
+        CsafStockKeepingUnit(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 

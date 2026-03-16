@@ -131,7 +131,7 @@ mod tests {
 
     #[test]
     fn test_test_6_1_33() {
-        let case_01 = Err(vec![
+        let case_one_direct_reference_one_via_group = Err(vec![
             test_6_1_33_err_generator(
                 "CSAFPID-9080700",
                 &[
@@ -155,7 +155,65 @@ mod tests {
                 1,
             ),
         ]);
-        TESTS_2_0.test_6_1_33.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_1_33.expect(case_01, Ok(()));
+        let case_two_direct_references = Err(vec![
+            test_6_1_33_err_generator(
+                "CSAFPID-9080700",
+                &[
+                    LabelOfTheFlag::ComponentNotPresent,
+                    LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                ],
+                LabelOfTheFlag::ComponentNotPresent,
+                None,
+                0,
+                0,
+            ),
+            test_6_1_33_err_generator(
+                "CSAFPID-9080700",
+                &[
+                    LabelOfTheFlag::ComponentNotPresent,
+                    LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                ],
+                LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                None,
+                0,
+                1,
+            ),
+        ]);
+        let case_two_references_via_intersecting_groups = Err(vec![
+            test_6_1_33_err_generator(
+                "CSAFPID-9080701",
+                &[
+                    LabelOfTheFlag::ComponentNotPresent,
+                    LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                ],
+                LabelOfTheFlag::ComponentNotPresent,
+                Some("CSAFGID-0001".to_string()),
+                0,
+                0,
+            ),
+            test_6_1_33_err_generator(
+                "CSAFPID-9080701",
+                &[
+                    LabelOfTheFlag::ComponentNotPresent,
+                    LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                ],
+                LabelOfTheFlag::VulnerableCodeCannotBeControlledByAdversary,
+                Some("CSAFGID-0002".to_string()),
+                0,
+                1,
+            ),
+        ]);
+        TESTS_2_0.test_6_1_33.expect(
+            case_one_direct_reference_one_via_group.clone(),
+            case_two_direct_references.clone(),
+            case_two_references_via_intersecting_groups.clone(),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_1_33.expect(
+            case_one_direct_reference_one_via_group,
+            case_two_direct_references,
+            case_two_references_via_intersecting_groups,
+            Ok(()),
+        );
     }
 }

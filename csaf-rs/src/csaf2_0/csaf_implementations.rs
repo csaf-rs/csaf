@@ -2,7 +2,7 @@ use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_language::CsafLanguage;
-use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
+use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber, CsafStockKeepingUnit};
 use crate::csaf::types::csaf_version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
@@ -710,6 +710,10 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct {
 
     fn get_purls(&self) -> Option<&[String]> {
         self.purl.as_ref().map(std::slice::from_ref)
+    }
+
+    fn get_skus(&self) -> Vec<CsafStockKeepingUnit> {
+        self.skus.iter().map(CsafStockKeepingUnit::from).collect()
     }
 
     fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>> {

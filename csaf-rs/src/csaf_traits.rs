@@ -562,7 +562,9 @@ pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptiona
     fn get_label(&self) -> LabelOfTheFlag;
 }
 
-pub trait FirstKnownExploitationDatesTrait: WithDate + WithOptionalProductIds + WithOptionalGroupIds {}
+pub trait FirstKnownExploitationDatesTrait: WithDate + WithOptionalProductIds + WithOptionalGroupIds {
+    fn get_exploitation_date(&self) -> CsafDateTime;
+}
 
 /// Trait for accessing vulnerability involvement information
 pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate + WithOptionalProductIds {

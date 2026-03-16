@@ -161,12 +161,12 @@ impl ContentTrait for Score {
         None
     }
 
-    fn get_epss(&self) -> &Option<Epss> {
-        &None::<Epss>
+    fn get_epss(&self) -> Option<&Epss> {
+        None
     }
 
-    fn get_qualitative_severity(&self) -> &Option<QualitativeSeverityRating> {
-        &None::<QualitativeSeverityRating>
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating> {
+        None
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {

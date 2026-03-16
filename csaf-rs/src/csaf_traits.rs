@@ -814,15 +814,17 @@ pub trait ContentTrait {
     }
 
     /// Returns a reference to the contained EPSS metric if it exists.
-    fn get_epss(&self) -> &Option<Epss>;
+    fn get_epss(&self) -> Option<&Epss>;
 
     /// Returns whether this content contains an EPSS metric.
     fn has_epss(&self) -> bool {
         self.get_epss().is_some()
     }
 
-    fn get_qualitative_severity(&self) -> &Option<QualitativeSeverityRating>;
+    /// Returns a reference to the contained qualitative severity rating if it exists.
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating>;
 
+    /// Returns whether this content contains a qualitative severity rating.
     fn has_qualitative_severity(&self) -> bool {
         self.get_qualitative_severity().is_some()
     }

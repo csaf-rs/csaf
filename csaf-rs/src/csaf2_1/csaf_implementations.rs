@@ -140,12 +140,12 @@ impl ContentTrait for Content {
         }
     }
 
-    fn get_epss(&self) -> &Option<Epss> {
-        &self.epss
+    fn get_epss(&self) -> Option<&Epss> {
+        self.epss.as_ref()
     }
 
-    fn get_qualitative_severity(&self) -> &Option<QualitativeSeverityRating> {
-        &self.qualitative_severity_rating
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating> {
+        self.qualitative_severity_rating.as_ref()
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {

@@ -22,7 +22,7 @@ fn create_inconsistent_exploitation_date_error(
 /// is earlier or equal to the `date`.
 pub fn test_6_1_53_inconsistent_exploitation_date(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
-    for (v_i, vulnerability) in doc.get_vulnerabilities().into_iter().enumerate() {
+    for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(first_exploitation_dates) = vulnerability.get_first_known_exploitation_dates() {
             for (f_i, first_exploitation_date) in first_exploitation_dates.iter().enumerate() {
                 if let Valid(exploitation_date) = first_exploitation_date.get_exploitation_date()

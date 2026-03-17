@@ -23,10 +23,10 @@ fn create_inconsistent_exploitation_date_error(
 pub fn test_6_1_53_inconsistent_exploitation_date(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
-        if let Some(first_exploitation_dates) = vulnerability.get_first_known_exploitation_dates() {
-            for (f_i, first_exploitation_date) in first_exploitation_dates.iter().enumerate() {
-                if let Valid(exploitation_date) = first_exploitation_date.get_exploitation_date()
-                    && let Valid(date) = first_exploitation_date.get_date()
+        if let Some(first_known_exploitation_dates) = vulnerability.get_first_known_exploitation_dates() {
+            for (f_i, first_known_exploitation_date) in first_known_exploitation_dates.iter().enumerate() {
+                if let Valid(exploitation_date) = first_known_exploitation_date.get_exploitation_date()
+                    && let Valid(date) = first_known_exploitation_date.get_date()
                 {
                     if exploitation_date > date {
                         errors
@@ -73,7 +73,7 @@ mod tests {
             0,
         )]);
 
-        // Case 02: 2 vulns, 3 first_exploitation_dates with timezones
+        // Case 02: 2 vulns, 3 first_known_exploitation_dates with timezones
         // in the second vuln both have exploitation_date after date
         let case_02_exp_date_after_date_timezones = Err(vec![
             create_inconsistent_exploitation_date_error(

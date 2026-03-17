@@ -1,3 +1,4 @@
+pub mod csaf_cwe;
 pub mod csaf_datetime;
 pub mod csaf_document_category;
 pub mod csaf_hash_algo;

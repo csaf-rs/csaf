@@ -1,3 +1,7 @@
+pub use crate::csaf::enums::category_of_the_branch::CategoryOfTheBranch;
+pub use crate::csaf::enums::csaf_version::CsafVersion;
+pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
+pub use crate::csaf::types::csaf_cwe::Cwe;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
@@ -8,15 +12,13 @@ use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
-use crate::schema::csaf2_0::schema::Cwe as Cwe20;
 use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, Cwe as Cwe21,
-    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory, QualitativeSeverityRating,
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
+    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory, QualitativeSeverityRating
 };
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};
 use std::collections::{BTreeSet, HashMap, HashSet};
-use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
@@ -185,17 +187,6 @@ pub trait DocumentTrait {
     fn get_csaf_version(&self) -> &CsafVersion;
 }
 
-/// Enum representing CSAF versions
-///
-/// Contrary to other enums that are based on enums in the generated schemas, we are re-defining
-/// this enum in the trait. Each schema only contains an enum with "their" version, and merging them
-/// would be more complex than defining them here and mapping to them in each implementation.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub enum CsafVersion {
-    X20,
-    X21,
-}
-
 /// Trait representing document references
 pub trait DocumentReferenceTrait {
     // Returns the category of the document reference as enum
@@ -360,35 +351,6 @@ pub trait RevisionTrait: WithDate {
 
     /// Returns the summary of changes in this revision
     fn get_summary(&self) -> &String;
-}
-
-pub struct Cwe {
-    ///Holds the ID for the weakness associated.
-    pub id: String,
-    ///Holds the full name of the weakness as given in the CWE specification.
-    pub name: String,
-    ///Holds the version string of the CWE specification this weakness was extracted from.
-    pub version: Option<String>,
-}
-
-impl From<&Cwe21> for Cwe {
-    fn from(cwe: &Cwe21) -> Self {
-        Cwe {
-            id: cwe.id.to_string(),
-            name: cwe.name.to_string(),
-            version: Some(cwe.version.to_string()),
-        }
-    }
-}
-
-impl From<&Cwe20> for Cwe {
-    fn from(cwe: &Cwe20) -> Self {
-        Cwe {
-            id: cwe.id.to_string(),
-            name: cwe.name.to_string(),
-            version: None,
-        }
-    }
 }
 
 /// Trait representing an abstract vulnerability in a CSAF document.
@@ -602,36 +564,6 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + With
                 product_set.extend(product_ids.iter().map(|id| id.to_owned()));
             }
             Some(product_set)
-        }
-    }
-}
-
-/// Enum representing product status groups
-#[derive(PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
-pub enum ProductStatusGroup {
-    // first_affected, known_affected, last_affected
-    Affected,
-    // known_not_affected
-    NotAffected,
-    // first_fixed, fixed
-    Fixed,
-    // under_investigation
-    UnderInvestigation,
-    // unknown
-    Unknown,
-    // recommended
-    Recommended,
-}
-
-impl Display for ProductStatusGroup {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ProductStatusGroup::Affected => write!(f, "affected"),
-            ProductStatusGroup::NotAffected => write!(f, "not affected"),
-            ProductStatusGroup::Fixed => write!(f, "fixed"),
-            ProductStatusGroup::UnderInvestigation => write!(f, "under investigation"),
-            ProductStatusGroup::Unknown => write!(f, "unknown"),
-            ProductStatusGroup::Recommended => write!(f, "recommended"),
         }
     }
 }
@@ -1004,27 +936,6 @@ pub trait ProductTreeTrait {
             }
         }
     }
-}
-
-/// Enum representing the category of a branch in a product tree.
-/// We need a shared type on the trait, as CSAF version 2.0 have fully divergent definitions.
-/// CSAF 2.0 has legacy, which 2.1 has not.
-/// CSAF 2.1 has platform, which 2.0 has not.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub enum CategoryOfTheBranch {
-    Architecture,
-    HostName,
-    Language,
-    Legacy,
-    PatchLevel,
-    Platform,
-    ProductFamily,
-    ProductName,
-    ProductVersion,
-    ProductVersionRange,
-    ServicePack,
-    Specification,
-    Vendor,
 }
 
 /// Trait representing an abstract branch in a product tree.

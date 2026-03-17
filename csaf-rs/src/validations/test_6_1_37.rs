@@ -1,6 +1,9 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait, WithDate, WithOptionalDate};
+use crate::csaf_traits::{
+    CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, TrackingTrait, VulnerabilityTrait, WithDate,
+    WithOptionalDate,
+};
 use crate::validation::ValidationError;
 use regex::Regex;
 use std::sync::LazyLock;
@@ -93,6 +96,10 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
                 check_datetime(
                     &date.get_date(),
                     &format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/date"),
+                )?;
+                check_datetime(
+                    &date.get_exploitation_date(),
+                    &format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/exploitation_date"),
                 )?;
             }
         }

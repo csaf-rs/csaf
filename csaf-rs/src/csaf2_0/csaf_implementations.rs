@@ -33,6 +33,30 @@ use serde_json::{Map, Value};
 use std::ops::Deref;
 use uuid::Uuid;
 
+/// Marker type for features that are not present in CSAF 2.0.
+///
+/// This type is used as an associated type when a feature does not exist in CSAF 2.0
+/// (so far: `FirstKnownExploitationDates`, `SharingGroup`). It cannot be instantiated
+/// since it is an empty enum.
+#[derive(Debug, Clone, Copy)]
+pub enum NotPresentInCsaf20 {}
+
+impl NotPresentInCsaf20 {
+    /// Converts `self` into any type. `NotPresentInCsaf20` can never be instantiated,
+    /// so this method can never actually be called.
+    #[inline]
+    fn into_any<T>(self) -> T {
+        match self {}
+    }
+
+    /// Converts `self` into an empty iterator option of any type. `NotPresentInCsaf20` can never be
+    /// instantiated, so this method can never actually be called.
+    #[inline]
+    fn into_any_iter<T>(self) -> Option<std::iter::Empty<T>> {
+        match self {}
+    }
+}
+
 impl WithOptionalGroupIds for Remediation {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
         self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
@@ -209,7 +233,7 @@ impl VulnerabilityTrait for Vulnerability {
     type VulnerabilityIdType = Id;
     type NoteType = Note;
     // First known exploitation dates are not implemented in CSAF 2.0
-    type FirstKnownExploitationDatesType = ();
+    type FirstKnownExploitationDatesType = NotPresentInCsaf20;
 
     fn get_remediations(&self) -> &Vec<Self::RemediationType> {
         &self.remediations
@@ -310,23 +334,27 @@ impl WithOptionalDate for Flag {
     }
 }
 
-impl FirstKnownExploitationDatesTrait for () {}
+impl FirstKnownExploitationDatesTrait for NotPresentInCsaf20 {
+    fn get_exploitation_date(&self) -> CsafDateTime {
+        self.into_any()
+    }
+}
 
-impl WithOptionalProductIds for () {
+impl WithOptionalProductIds for NotPresentInCsaf20 {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        None::<std::iter::Empty<&String>>
+        self.into_any_iter()
     }
 }
 
-impl WithOptionalGroupIds for () {
+impl WithOptionalGroupIds for NotPresentInCsaf20 {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        None::<std::iter::Empty<&String>>
+        self.into_any_iter()
     }
 }
 
-impl WithDate for () {
+impl WithDate for NotPresentInCsaf20 {
     fn get_date(&self) -> CsafDateTime {
-        panic!("First known exploitation dates are not implemented in CSAF 2.0");
+        self.into_any()
     }
 }
 
@@ -467,7 +495,7 @@ impl PublisherTrait for Publisher {
 }
 
 impl DistributionTrait for RulesForSharingDocument {
-    type SharingGroupType = ();
+    type SharingGroupType = NotPresentInCsaf20;
     type TlpType = TrafficLightProtocolTlp;
 
     fn get_sharing_group(&self) -> &Option<Self::SharingGroupType> {
@@ -521,13 +549,13 @@ impl NoteTrait for Note {
     }
 }
 
-impl SharingGroupTrait for () {
+impl SharingGroupTrait for NotPresentInCsaf20 {
     fn get_id(&self) -> &Uuid {
-        panic!("Sharing groups are not implemented in CSAF 2.0");
+        self.into_any()
     }
 
     fn get_name(&self) -> Option<&String> {
-        panic!("Sharing groups are not implemented in CSAF 2.0");
+        self.into_any()
     }
 }
 

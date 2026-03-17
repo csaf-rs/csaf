@@ -18,13 +18,17 @@ fn generate_cvss_and_qualitative_error(
         message: format!(
             "Vulnerability has both a CVSS score and qualitative severity rating for product_id '{product_id}' {source_str}"
         ),
+        // Metric instances paths are usually constructed using "ContentTrait::get_content_json_path".
+        // We are not doing that here, as qualitative severity rating is CSAF 2.1 only.
+        // So even if we implement running CSAF 2.1 tests for CSAF 2.0 docs, this test will always pass,
+        // as the offending metric type does not exist on CSAF 2.0, and this will never print the wrong path.
         instance_path: format!("/vulnerabilities/{v_i}/metrics/{m_i}/content/qualitative_severity_rating",),
     }
 }
 
 /// 6.1.56 Use of CVSS and Qualitative Severity Rating
 ///
-/// In each vulnerability, for each tuple of Product ID and source, there can not be both a CVSS score
+/// In each vulnerability, for each tuple of Product ID and source, there cannot be both a CVSS score
 /// and a qualitative severity rating present.
 pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     type ProductIdSourceTuple = (String, Option<String>);

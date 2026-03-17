@@ -15,7 +15,6 @@ fn create_both_product_version_version_range_error(instance_path: String) -> Val
 pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
-
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(()); // this will be a Passed::NoData later (#409)
     };
@@ -37,7 +36,9 @@ pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
 
         // if it contains both, add an error
         if contains_product_version && contains_product_version_range {
-            errors.get_or_insert_default().push(create_both_product_version_version_range_error(path_str));
+            errors
+                .get_or_insert_default()
+                .push(create_both_product_version_version_range_error(path_str));
         }
     }
 
@@ -64,8 +65,12 @@ mod tests {
     fn test_6_1_58() {
         // Case 01: Two path, both with version and version range
         let case_01 = Err(vec![
-            create_both_product_version_version_range_error("/product_tree/branches/0/branches/0/branches/0/branches/0/product".to_string()),
-            create_both_product_version_version_range_error("/product_tree/branches/0/branches/0/branches/1/branches/0/product".to_string()),
+            create_both_product_version_version_range_error(
+                "/product_tree/branches/0/branches/0/branches/0/branches/0/product".to_string(),
+            ),
+            create_both_product_version_version_range_error(
+                "/product_tree/branches/0/branches/0/branches/1/branches/0/product".to_string(),
+            ),
         ]);
         // Case 11: Only version range
 

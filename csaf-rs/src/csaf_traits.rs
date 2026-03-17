@@ -993,13 +993,38 @@ pub trait ProductTreeTrait {
             }
         }
     }
+
+    /// Collects all paths from the product tree root to each leaf node (FPN).
+    ///
+    /// It also collects the instance path of that leaf node. For this, it utilizes recursion to do
+    /// depth-first traversal with backtracking.
+    ///
+    /// # Returns
+    /// A vector that for each leaf node contains a vector of tuples that contain:
+    /// - `Vec<&BranchType>`: references of branches from root to leaf
+    /// - `String`: instance path (i.e. `/product_tree/branches/0/branches/0`)
+    fn collect_leaf_paths(&self) -> Vec<(Vec<&Self::BranchType>, String)> {
+        let mut result: Vec<(Vec<&Self::BranchType>, String)> = Vec::new();
+
+        if let Some(branches) = self.get_branches().as_ref() {
+            // for each root branch, initialize a new vec of branches and path
+            for (i, branch) in branches.iter().enumerate() {
+                let mut current_path: Vec<&Self::BranchType> = Vec::new();
+                let path_str = format!("/product_tree/branches/{i}");
+                // start recursion and collect all paths to leaf nodes into the result
+                result.extend(branch.collect_leaf_paths_rec(&mut current_path, path_str));
+            }
+        }
+
+        result
+    }
 }
 
 /// Enum representing the category of a branch in a product tree.
 /// We need a shared type on the trait, as CSAF version 2.0 have fully divergent definitions.
 /// CSAF 2.0 has legacy, which 2.1 has not.
 /// CSAF 2.1 has platform, which 2.0 has not.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum CategoryOfTheBranch {
     Architecture,
     HostName,
@@ -1014,6 +1039,26 @@ pub enum CategoryOfTheBranch {
     ServicePack,
     Specification,
     Vendor,
+}
+
+impl Display for CategoryOfTheBranch {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CategoryOfTheBranch::Architecture => write!(f, "architecture"),
+            CategoryOfTheBranch::HostName => write!(f, "host_name"),
+            CategoryOfTheBranch::Language => write!(f, "language"),
+            CategoryOfTheBranch::Legacy => write!(f, "legacy"),
+            CategoryOfTheBranch::PatchLevel => write!(f, "patch_level"),
+            CategoryOfTheBranch::Platform => write!(f, "platform"),
+            CategoryOfTheBranch::ProductFamily => write!(f, "product_family"),
+            CategoryOfTheBranch::ProductName => write!(f, "product_name"),
+            CategoryOfTheBranch::ProductVersion => write!(f, "product_version"),
+            CategoryOfTheBranch::ProductVersionRange => write!(f, "product_version_range"),
+            CategoryOfTheBranch::ServicePack => write!(f, "service_pack"),
+            CategoryOfTheBranch::Specification => write!(f, "specification"),
+            CategoryOfTheBranch::Vendor => write!(f, "vendor"),
+        }
+    }
 }
 
 /// Trait representing an abstract branch in a product tree.
@@ -1078,6 +1123,49 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
             }
         }
         None
+    }
+
+    /// Recursively collects the branches and their indices from the current branch to all leaf nodes.
+    /// Utilizes depth-first traversal with backtracking.
+    ///
+    /// This is a helper method for `ProductTreeTrait::collect_leaf_paths()`.
+    ///
+    /// # Arguments
+    /// * `current_path` - A mutable vector that collects the branches along the current path
+    /// * `path_str` - The current path string
+    ///
+    /// # Returns
+    /// A vector of tuples containing (branch path, instance path string) for each leaf node
+    fn collect_leaf_paths_rec<'a>(
+        &'a self,
+        branches: &mut Vec<&'a Self>,
+        instance_path: String,
+    ) -> Vec<(Vec<&'a Self>, String)> {
+        // push the current branch to the branches
+        branches.push(self);
+
+        let result = match self.get_branches() {
+            // TODO: depending on how we implement extended schema validation, the children.is_empty() might not be necessary
+            Some(children) if !children.is_empty() => {
+                // there are still nodes to visit
+                let mut collected = Vec::new();
+                for (i, child) in children.iter().enumerate() {
+                    // add another level to the instance path and continue recursion
+                    let child_path_str = format!("{}/branches/{}", instance_path, i);
+                    collected.extend(child.collect_leaf_paths_rec(branches, child_path_str));
+                }
+                collected
+            },
+            _ => {
+                // we are at a leaf node
+                let leaf_path = format!("{instance_path}/product");
+                vec![(branches.clone(), leaf_path)]
+            },
+        };
+
+        // backtrack
+        branches.pop();
+        result
     }
 }
 

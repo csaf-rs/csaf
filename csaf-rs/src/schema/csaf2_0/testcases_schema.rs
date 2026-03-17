@@ -74,11 +74,6 @@ pub struct FileT {
     ///States whether the test file is valid according to the CSAF standard.
     pub valid: bool,
 }
-impl ::std::convert::From<&FileT> for FileT {
-    fn from(value: &FileT) -> Self {
-        value.clone()
-    }
-}
 impl FileT {
     pub fn builder() -> builder::FileT {
         Default::default()
@@ -117,11 +112,6 @@ pub enum JsonSchema {
         rename = "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.0/test/validator/testcases_json_schema.json"
     )]
     HttpsRawGithubusercontentComOasisTcsCsafMasterCsaf20TestValidatorTestcasesJsonSchemaJson,
-}
-impl ::std::convert::From<&Self> for JsonSchema {
-    fn from(value: &JsonSchema) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for JsonSchema {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -200,11 +190,6 @@ impl ::std::convert::From<NameOfTheTestFile> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&NameOfTheTestFile> for NameOfTheTestFile {
-    fn from(value: &NameOfTheTestFile) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for NameOfTheTestFile {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -279,11 +264,6 @@ impl ::std::ops::Deref for NumberOfTheTest {
 impl ::std::convert::From<NumberOfTheTest> for ::std::string::String {
     fn from(value: NumberOfTheTest) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&NumberOfTheTest> for NumberOfTheTest {
-    fn from(value: &NumberOfTheTest) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for NumberOfTheTest {
@@ -402,11 +382,6 @@ pub struct TestCasesForCsaf {
     ///Contains the current version of this schema
     pub testschema_version: TestSchemaVersion,
 }
-impl ::std::convert::From<&TestCasesForCsaf> for TestCasesForCsaf {
-    fn from(value: &TestCasesForCsaf) -> Self {
-        value.clone()
-    }
-}
 impl TestCasesForCsaf {
     pub fn builder() -> builder::TestCasesForCsaf {
         Default::default()
@@ -448,11 +423,6 @@ pub enum TestGroup {
     Informative,
     #[serde(rename = "optional")]
     Optional,
-}
-impl ::std::convert::From<&Self> for TestGroup {
-    fn from(value: &TestGroup) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for TestGroup {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -530,11 +500,6 @@ impl ::std::convert::TryFrom<::std::string::String> for TestGroup {
 pub enum TestSchemaVersion {
     #[serde(rename = "2.0")]
     X20,
-}
-impl ::std::convert::From<&Self> for TestSchemaVersion {
-    fn from(value: &TestSchemaVersion) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for TestSchemaVersion {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -647,11 +612,6 @@ pub struct TestT {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub valid: ::std::option::Option<Vec<FileT>>,
 }
-impl ::std::convert::From<&TestT> for TestT {
-    fn from(value: &TestT) -> Self {
-        value.clone()
-    }
-}
 impl TestT {
     pub fn builder() -> builder::TestT {
         Default::default()
@@ -680,7 +640,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
         pub fn valid<T>(mut self, value: T) -> Self
@@ -690,9 +650,7 @@ pub mod builder {
         {
             self.valid = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for valid: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for valid: {e}"));
             self
         }
     }
@@ -743,9 +701,7 @@ pub mod builder {
         {
             self.schema = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for schema: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for schema: {e}"));
             self
         }
         pub fn tests<T>(mut self, value: T) -> Self
@@ -755,9 +711,7 @@ pub mod builder {
         {
             self.tests = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for tests: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for tests: {e}"));
             self
         }
         pub fn testschema_version<T>(mut self, value: T) -> Self
@@ -769,7 +723,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for testschema_version: {}", e
+                        "error converting supplied value for testschema_version: {e}"
                     )
                 });
             self
@@ -825,7 +779,7 @@ pub mod builder {
             self.failures = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for failures: {}", e)
+                    format!("error converting supplied value for failures: {e}")
                 });
             self
         }
@@ -836,9 +790,7 @@ pub mod builder {
         {
             self.group = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for group: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for group: {e}"));
             self
         }
         pub fn id<T>(mut self, value: T) -> Self
@@ -848,7 +800,7 @@ pub mod builder {
         {
             self.id = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for id: {}", e));
+                .map_err(|e| format!("error converting supplied value for id: {e}"));
             self
         }
         pub fn valid<T>(mut self, value: T) -> Self
@@ -858,9 +810,7 @@ pub mod builder {
         {
             self.valid = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for valid: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for valid: {e}"));
             self
         }
     }

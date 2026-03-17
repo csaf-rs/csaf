@@ -1,8 +1,8 @@
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
-fn create_prerelease_version_error(number: &SemVerVersion, index: &usize) -> ValidationError {
+fn create_prerelease_version_error(number: &SemVerVersion, index: usize) -> ValidationError {
     ValidationError {
         message: format!("revision history item number '{number}' contains a pre-release part"),
         instance_path: format!("/document/tracking/revision_history/{index}/number"),
@@ -19,22 +19,13 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     let mut errors: Option<Vec<ValidationError>> = None;
     let revision_history = doc.get_document().get_tracking().get_revision_history();
     for (revision_index, revision) in revision_history.iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
-            CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                )); // ToDo generate warning
-                continue;
-            },
-        };
-        match number {
-            ValidVersionNumber::IntVer(_) => {},
-            ValidVersionNumber::SemVer(semver) => {
+        match revision.get_number() {
+            CsafVersionNumber::IntVer(_) => {},
+            CsafVersionNumber::SemVer(semver) => {
                 if semver.has_prerelease() {
                     errors
                         .get_or_insert_default()
-                        .push(create_prerelease_version_error(&semver, &revision_index));
+                        .push(create_prerelease_version_error(&semver, revision_index));
                 }
             },
         }
@@ -75,17 +66,15 @@ mod tests {
 
     #[test]
     fn test_test_6_1_19() {
-        let case_01 = Err(vec![create_prerelease_version_error(
+        // Case 01: 2 revision history items, one with pre-release, dates are different
+        // Case 02: 2 revision history items, one with pre-release, dates are the same
+        let has_pre = Err(vec![create_prerelease_version_error(
             &SemVerVersion::from(Version::from_str("1.0.0-rc").unwrap()),
-            &0,
-        )]);
-        let case_02 = Err(vec![create_prerelease_version_error(
-            &SemVerVersion::from(Version::from_str("1.0.0-rc").unwrap()),
-            &0,
+            0,
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_1_19.expect(case_01.clone(), case_02.clone());
-        TESTS_2_1.test_6_1_19.expect(case_01, case_02);
+        TESTS_2_0.test_6_1_19.expect(has_pre.clone(), has_pre.clone());
+        TESTS_2_1.test_6_1_19.expect(has_pre.clone(), has_pre);
     }
 }

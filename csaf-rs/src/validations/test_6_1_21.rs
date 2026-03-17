@@ -1,4 +1,4 @@
-use crate::csaf::types::csaf_version_number::ValidVersionNumber;
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 
@@ -76,12 +76,12 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 }
 
 fn test_6_1_21_err_wrong_first_version_generator(
-    version: &ValidVersionNumber,
+    version: &CsafVersionNumber,
     revision_index: &usize,
 ) -> ValidationError {
     let version_error = match version {
-        ValidVersionNumber::IntVer(_) => "integer version of 0 or 1",
-        ValidVersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",
+        CsafVersionNumber::IntVer(_) => "integer version of 0 or 1",
+        CsafVersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",
     }
     .to_string();
     ValidationError {
@@ -91,19 +91,19 @@ fn test_6_1_21_err_wrong_first_version_generator(
 }
 
 fn test_6_1_21_err_missing_version_in_range(
-    version: &ValidVersionNumber,
+    version: &CsafVersionNumber,
     expected_number: &u64,
     first_number: &u64,
     last_number: &u64,
 ) -> ValidationError {
     let version_error = match version {
-        ValidVersionNumber::IntVer(_) => format!("integer version {expected_number}"),
-        ValidVersionNumber::SemVer(_) => format!("semver version {expected_number}.y.z"),
+        CsafVersionNumber::IntVer(_) => format!("integer version {expected_number}"),
+        CsafVersionNumber::SemVer(_) => format!("semver version {expected_number}.y.z"),
     }
     .to_string();
     let version_error_range = match version {
-        ValidVersionNumber::IntVer(_) => format!("integer version range {first_number} to {last_number}"),
-        ValidVersionNumber::SemVer(_) => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
+        CsafVersionNumber::IntVer(_) => format!("integer version range {first_number} to {last_number}"),
+        CsafVersionNumber::SemVer(_) => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
     }
     .to_string();
     ValidationError {
@@ -117,28 +117,27 @@ mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use std::str::FromStr;
 
     #[test]
     fn test_test_6_1_21() {
         let case_intver_1_missing = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &ValidVersionNumber::from_str("1").unwrap(),
+            &CsafVersionNumber::from("1"),
             &2,
             &1,
             &3,
         )]);
         let case_intver_2_missing = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            &ValidVersionNumber::from_str("2").unwrap(),
+            &CsafVersionNumber::from("2"),
             &0,
         )]);
         let case_semver_1_missing = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &ValidVersionNumber::from_str("1.0.0").unwrap(),
+            &CsafVersionNumber::from("1.0.0"),
             &2,
             &1,
             &3,
         )]);
         let case_semver_2_missing = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            &ValidVersionNumber::from_str("2.0.0").unwrap(),
+            &CsafVersionNumber::from("2.0.0"),
             &0,
         )]);
 
@@ -147,13 +146,13 @@ mod tests {
             case_intver_2_missing.clone(),
             case_semver_1_missing.clone(),
             case_semver_2_missing.clone(),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
 
         let case_intver_2_missing_higher_versions = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &ValidVersionNumber::from_str("1").unwrap(),
+            &CsafVersionNumber::from("1"),
             &2,
             &1,
             &4,
@@ -165,10 +164,10 @@ mod tests {
             case_intver_2_missing_higher_versions,
             case_semver_1_missing,
             case_semver_2_missing,
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

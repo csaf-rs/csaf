@@ -1,4 +1,4 @@
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
@@ -22,19 +22,13 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
     // Check if the document status is not "final" or "interim"
     let status = tracking.get_status();
     if !(status == DocumentStatus::Final || status == DocumentStatus::Interim) {
-        return Ok(()); // ToDo return skipped/not applicable
+        return Ok(()); // ToDo return skipped/not applicable (#409)
     }
 
-    // Check if doc version is valid
-    let doc_version = match tracking.get_version() {
-        CsafVersionNumber::Valid(version_number) => version_number,
-        CsafVersionNumber::Invalid(err) => return Err(vec![err.get_validation_error("/document/tracking/version")]), // ToDo generate warning
-    };
-
-    match doc_version {
+    match tracking.get_version() {
         // If version is integer versioning, this test does not apply
-        ValidVersionNumber::IntVer(_) => {}, // ToDo maybe generate skipped/not applicable
-        ValidVersionNumber::SemVer(semver) => {
+        CsafVersionNumber::IntVer(_) => {}, // ToDo maybe generate skipped/not applicable
+        CsafVersionNumber::SemVer(semver) => {
             if semver.has_prerelease() {
                 return Err(vec![create_status_version_error(&status, &semver)]);
             }
@@ -69,7 +63,6 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf::types::csaf_version_number::SemVerVersion;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::schema::csaf2_1::schema::DocumentStatus;

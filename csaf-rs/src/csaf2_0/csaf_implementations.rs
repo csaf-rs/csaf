@@ -3,7 +3,7 @@ use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
-use crate::csaf::types::csaf_version_number::CsafVersionNumber;
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{
     BranchTrait, CategoryOfTheBranch as CategoryOfTheBranchTrait, ContentTrait, CsafTrait, CsafVersion, Cwe,
     DistributionTrait, DocumentReferenceTrait, DocumentTrait, FileHashTrait, FirstKnownExploitationDatesTrait,
@@ -542,6 +542,10 @@ impl NoteTrait for Note {
             NoteCategory::General => NoteCategory21::General,
             NoteCategory::LegalDisclaimer => NoteCategory21::LegalDisclaimer,
         }
+    }
+
+    fn get_title(&self) -> Option<&String> {
+        self.title.as_deref()
     }
 }
 

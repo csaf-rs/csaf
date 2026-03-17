@@ -409,6 +409,20 @@
       ]
     },
     {
+      "id": "6.1.27.17",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-27-17-s01.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-27-17-s02.json",
+          "valid": false
+        }
+      ]
+    },
+    {
       "id": "6.1.29",
       "group": "mandatory",
       "failures": [

@@ -65,7 +65,7 @@ pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> R
         }
     }
 
-    // The fact that there is none or more than one note with the required title is the primary error and we ignore the category check, which is 
+    // The fact that there is none or more than one note with the required title is the primary error and we ignore the category check, which is
     // only relevant if there is exactly one occurence.
     if withdrawals.is_empty() {
         return Err(vec![create_missing_reasoning_error(&doc_category)]);

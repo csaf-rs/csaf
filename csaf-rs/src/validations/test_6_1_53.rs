@@ -61,8 +61,8 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validations::test_6_1_53::create_inconsistent_exploitation_date_error;
 
     #[test]
     fn test_test_6_1_53() {

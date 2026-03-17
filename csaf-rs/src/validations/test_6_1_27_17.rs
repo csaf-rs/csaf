@@ -65,6 +65,8 @@ pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> R
         }
     }
 
+    // The fact that there is none or more than one note with the required title is the primary error and we ignore the category check, which is 
+    // only relevant if there is exactly one occurence.
     if withdrawals.is_empty() {
         return Err(vec![create_missing_reasoning_error(&doc_category)]);
     } else if withdrawals.len() > 1 {
@@ -73,9 +75,6 @@ pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> R
             .map(|f| create_duplicated_reasoning_error(&doc_category, *f))
             .collect::<Vec<_>>());
     }
-    // this only happens if there is exactly one note with the correct title.
-    // We already checked the category of this note above and added an error if the category is incorrect.
-    // So we only need to check if there are any errors and return them.
     if !errors.is_empty() {
         return Err(errors);
     }

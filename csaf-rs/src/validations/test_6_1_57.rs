@@ -30,37 +30,40 @@ fn create_stacked_categories_error(
 /// are only allowed occur once.
 pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
-    if let Some(product_tree) = doc.get_product_tree() {
-        // get all paths from root to leafs in the product tree
-        let leaf_paths = product_tree.collect_leaf_paths();
 
-        // for every path
-        for (path, path_str) in leaf_paths {
-            // generate a hashmap of category occurrences
-            let mut categories_in_path_map: HashMap<&CategoryOfTheBranch, u64> = HashMap::new();
-            for branch in &path {
-                if branch.get_category() == &CategoryOfTheBranch::ProductFamily {
-                    continue;
-                }
-                categories_in_path_map
-                    .entry(branch.get_category())
-                    .and_modify(|v| *v += 1)
-                    .or_insert(1);
+    let Some(product_tree) = doc.get_product_tree() else {
+        return Ok(()); // this will be a Passed::NoData later (#409)
+    };
+
+    // get all paths from root to leafs in the product tree
+    let leaf_paths = product_tree.collect_leaf_paths();
+
+    // for every path
+    for (path, path_str) in leaf_paths {
+        // generate a hashmap of category occurrences
+        let mut categories_in_path_map: HashMap<&CategoryOfTheBranch, u64> = HashMap::new();
+        for branch in &path {
+            if branch.get_category() == &CategoryOfTheBranch::ProductFamily {
+                continue;
             }
+            categories_in_path_map
+                .entry(branch.get_category())
+                .and_modify(|v| *v += 1)
+                .or_insert(1);
+        }
 
-            // filter hashmap to only categories that occur more than once
-            let stacked_categories: Vec<(&CategoryOfTheBranch, &u64)> = categories_in_path_map
-                .iter()
-                .filter(|(_, count)| **count > 1)
-                .map(|(cat, count)| (*cat, count))
-                .collect();
+        // filter hashmap to only categories that occur more than once
+        let stacked_categories: Vec<(&CategoryOfTheBranch, &u64)> = categories_in_path_map
+            .iter()
+            .filter(|(_, count)| **count > 1)
+            .map(|(cat, count)| (*cat, count))
+            .collect();
 
-            // if there are any, create an error for this path
-            if !stacked_categories.is_empty() {
-                errors
-                    .get_or_insert_default()
-                    .push(create_stacked_categories_error(&stacked_categories, path_str));
-            }
+        // if there are any, create an error for this path
+        if !stacked_categories.is_empty() {
+            errors
+                .get_or_insert_default()
+                .push(create_stacked_categories_error(&stacked_categories, path_str));
         }
     }
 
@@ -133,6 +136,10 @@ mod tests {
                 "/product_tree/branches/0/branches/0/branches/1/branches/1/branches/1/branches/0/product".to_string(),
             ),
         ]);
+
+        // Case 11: no stacked categories
+        // Case 12: 30 branches deep, but the only stacked category is product_family
+        // Case 13: breadth with no stacked categories
 
         TESTS_2_1
             .test_6_1_57

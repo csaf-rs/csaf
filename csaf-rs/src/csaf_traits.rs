@@ -1010,9 +1010,9 @@ pub trait ProductTreeTrait {
             // for each root branch, initialize a new vec of branches and path
             for (i, branch) in branches.iter().enumerate() {
                 let mut current_path: Vec<&Self::BranchType> = Vec::new();
-                let path_str = format!("/product_tree/branches/{i}");
+                let instance_path = format!("/product_tree/branches/{i}");
                 // start recursion and collect all paths to leaf nodes into the result
-                result.extend(branch.collect_leaf_paths_rec(&mut current_path, path_str));
+                result.extend(branch.collect_leaf_paths_rec(&mut current_path, instance_path));
             }
         }
 
@@ -1131,11 +1131,11 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// This is a helper method for `ProductTreeTrait::collect_leaf_paths()`.
     ///
     /// # Arguments
-    /// * `current_path` - A mutable vector that collects the branches along the current path
-    /// * `path_str` - The current path string
+    /// * `current_path` - A mutable vector for the branches along the current path
+    /// * `instance_path` - The current instance path
     ///
     /// # Returns
-    /// A vector of tuples containing (branch path, instance path string) for each leaf node
+    /// A vector of tuples (vector of branches along the path, instance_path) for each leaf node found
     fn collect_leaf_paths_rec<'a>(
         &'a self,
         branches: &mut Vec<&'a Self>,
@@ -1151,8 +1151,8 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
                 let mut collected = Vec::new();
                 for (i, child) in children.iter().enumerate() {
                     // add another level to the instance path and continue recursion
-                    let child_path_str = format!("{}/branches/{}", instance_path, i);
-                    collected.extend(child.collect_leaf_paths_rec(branches, child_path_str));
+                    let child_instance_path = format!("{}/branches/{}", instance_path, i);
+                    collected.extend(child.collect_leaf_paths_rec(branches, child_instance_path));
                 }
                 collected
             },

@@ -15,23 +15,29 @@ fn create_both_product_version_version_range_error(instance_path: String) -> Val
 pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
+
+    let Some(product_tree) = doc.get_product_tree() else {
+        return Ok(()); // this will be a Passed::NoData later (#409)
+    };
+
     let mut errors: Option<Vec<ValidationError>> = None;
-    if let Some(product_tree) = doc.get_product_tree() {
-        // get all paths from root to leafs in the product tree
-        let leaf_paths = product_tree.collect_leaf_paths();
 
-        // for every path
-        for (path, path_str) in leaf_paths {
-            let contains_product_version = path
-                .iter()
-                .any(|b| b.get_category() == &CategoryOfTheBranch::ProductVersion);
-            let contains_product_version_range = path
-                .iter()
-                .any(|b| b.get_category() == &CategoryOfTheBranch::ProductVersionRange);
+    // get all paths from root to leafs in the product tree
+    let leaf_paths = product_tree.collect_leaf_paths();
 
-            if contains_product_version && contains_product_version_range {
-                errors.get_or_insert_default().push(create_both_product_version_version_range_error(path_str));
-            }
+    // for every path
+    for (path, path_str) in leaf_paths {
+        // check if it contains one of the relevant categories
+        let contains_product_version = path
+            .iter()
+            .any(|b| b.get_category() == &CategoryOfTheBranch::ProductVersion);
+        let contains_product_version_range = path
+            .iter()
+            .any(|b| b.get_category() == &CategoryOfTheBranch::ProductVersionRange);
+
+        // if it contains both, add an error
+        if contains_product_version && contains_product_version_range {
+            errors.get_or_insert_default().push(create_both_product_version_version_range_error(path_str));
         }
     }
 
@@ -61,6 +67,7 @@ mod tests {
             create_both_product_version_version_range_error("/product_tree/branches/0/branches/0/branches/0/branches/0/product".to_string()),
             create_both_product_version_version_range_error("/product_tree/branches/0/branches/0/branches/1/branches/0/product".to_string()),
         ]);
+        // Case 11: Only version range
 
         TESTS_2_1.test_6_1_58.expect(case_01, Ok(()))
     }

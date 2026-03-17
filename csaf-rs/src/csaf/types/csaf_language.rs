@@ -6,15 +6,29 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]
 pub enum CsafLanguage {
-    Valid(String),
+    Valid(ValidCsafLanguage),
     DefaultLanguage(String),
     Invalid(String, CsafLanguageError),
+}
+
+/// Struct to represent a valid language tag in CSAF, containing both the primary subtag and the full tag for easy access.
+#[derive(Debug, PartialEq, Clone)]
+pub struct ValidCsafLanguage {
+    pub primary_subtag: String,
+    pub full_tag: String,
+}
+
+impl ValidCsafLanguage {
+    /// Checks if the primary language subtag is "en" (English), ignoring case.
+    pub fn is_english(&self) -> bool {
+        self.primary_subtag.eq_ignore_ascii_case("en")
+    }
 }
 
 impl Display for CsafLanguage {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            CsafLanguage::Valid(lang) => write!(f, "{lang}"),
+            CsafLanguage::Valid(lang) => write!(f, "{}", lang.full_tag),
             CsafLanguage::DefaultLanguage(lang) => write!(f, "{lang}"),
             CsafLanguage::Invalid(lang, _) => write!(f, "{lang}"),
         }
@@ -24,7 +38,7 @@ impl Display for CsafLanguage {
 impl PartialEq for CsafLanguage {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (CsafLanguage::Valid(a), CsafLanguage::Valid(b)) => a.eq_ignore_ascii_case(b),
+            (CsafLanguage::Valid(a), CsafLanguage::Valid(b)) => a.full_tag.eq_ignore_ascii_case(&b.full_tag),
             (CsafLanguage::DefaultLanguage(a), CsafLanguage::DefaultLanguage(b)) => a.eq_ignore_ascii_case(b),
             (CsafLanguage::Invalid(a, _), CsafLanguage::Invalid(b, _)) => a.eq_ignore_ascii_case(b),
             _ => false,
@@ -56,7 +70,10 @@ impl From<&String> for CsafLanguage {
                     CsafLanguageError::InvalidPrimaryLangTag(lang_code.to_string(), primary_subtag.to_string()),
                 )
             } else {
-                CsafLanguage::Valid(lang_code.to_string())
+                CsafLanguage::Valid(ValidCsafLanguage {
+                    primary_subtag: primary_subtag.to_string(),
+                    full_tag: lang_code.to_string(),
+                })
             }
         }
     }
@@ -87,7 +104,13 @@ mod tests {
     #[test]
     fn test_valid_language() {
         let lang = CsafLanguage::from(&"en".to_string());
-        assert_eq!(lang, CsafLanguage::Valid("en".to_string()));
+        assert_eq!(
+            lang,
+            CsafLanguage::Valid(ValidCsafLanguage {
+                primary_subtag: "en".to_string(),
+                full_tag: "en".to_string()
+            })
+        );
     }
 
     #[test]

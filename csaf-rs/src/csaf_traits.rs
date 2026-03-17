@@ -230,6 +230,7 @@ pub trait DistributionTrait {
 
 pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory;
+    fn get_title(&self) -> Option<&String>;
 }
 
 /// Special name for public sharing groups

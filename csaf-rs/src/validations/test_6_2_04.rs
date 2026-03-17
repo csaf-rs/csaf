@@ -1,4 +1,4 @@
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, SemVerVersion, ValidVersionNumber};
+use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
@@ -15,18 +15,9 @@ pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result
         .iter()
         .enumerate()
     {
-        let version_number = match revision.get_number() {
-            CsafVersionNumber::Valid(version_number) => version_number,
-            CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
-                continue;
-            },
-        };
-        match version_number {
-            ValidVersionNumber::IntVer(_) => {},
-            ValidVersionNumber::SemVer(semver) => {
+        match revision.get_number() {
+            CsafVersionNumber::IntVer(_) => {},
+            CsafVersionNumber::SemVer(semver) => {
                 if semver.has_build_metadata() {
                     errors
                         .get_or_insert_default()
@@ -71,7 +62,6 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf::types::csaf_version_number::SemVerVersion;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use semver::Version;

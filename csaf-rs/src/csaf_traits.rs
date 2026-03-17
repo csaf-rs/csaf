@@ -4,8 +4,8 @@ use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_0::schema::Cwe as Cwe20;
@@ -230,6 +230,7 @@ pub trait DistributionTrait {
 
 pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory;
+    fn get_title(&self) -> Option<&String>;
 }
 
 /// Special name for public sharing groups
@@ -272,7 +273,7 @@ pub struct RevisionHistoryItem {
     pub path_index: usize,
     pub date_string: String,
     pub date: DateTime<Utc>,
-    pub number: ValidVersionNumber,
+    pub number: CsafVersionNumber,
 }
 
 /// Trait providing sorting functionality for revision history
@@ -324,18 +325,13 @@ pub trait TrackingTrait {
         let mut revision_history: RevisionHistory = Vec::new();
         for (i_r, revision) in self.get_revision_history().iter().enumerate() {
             match revision.get_date() {
-                Valid(valid_date) => match revision.get_number() {
-                    CsafVersionNumber::Valid(valid_number) => {
-                        revision_history.push(RevisionHistoryItem {
-                            path_index: i_r,
-                            date: valid_date.get_as_utc().to_owned(),
-                            date_string: valid_date.get_raw_string().to_string(),
-                            number: valid_number,
-                        });
-                    },
-                    CsafVersionNumber::Invalid(error) => {
-                        panic!("{}", error)
-                    },
+                Valid(valid_date) => {
+                    revision_history.push(RevisionHistoryItem {
+                        path_index: i_r,
+                        date: valid_date.get_as_utc().to_owned(),
+                        date_string: valid_date.get_raw_string().to_string(),
+                        number: revision.get_number(),
+                    });
                 },
                 Invalid(error) => {
                     panic!("{}", error)

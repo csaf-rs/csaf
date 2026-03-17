@@ -114,11 +114,6 @@ pub struct Acknowledgment {
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub urls: ::std::vec::Vec<::std::string::String>,
 }
-impl ::std::convert::From<&Acknowledgment> for Acknowledgment {
-    fn from(value: &Acknowledgment) -> Self {
-        value.clone()
-    }
-}
 impl ::std::default::Default for Acknowledgment {
     fn default() -> Self {
         Self {
@@ -217,11 +212,6 @@ impl ::std::convert::From<AcknowledgmentsT> for ::std::vec::Vec<Acknowledgment> 
         value.0
     }
 }
-impl ::std::convert::From<&AcknowledgmentsT> for AcknowledgmentsT {
-    fn from(value: &AcknowledgmentsT) -> Self {
-        value.clone()
-    }
-}
 impl ::std::convert::From<::std::vec::Vec<Acknowledgment>> for AcknowledgmentsT {
     fn from(value: ::std::vec::Vec<Acknowledgment>) -> Self {
         Self(value)
@@ -252,12 +242,6 @@ impl ::std::ops::Deref for AdditionalRestartInformation {
 impl ::std::convert::From<AdditionalRestartInformation> for ::std::string::String {
     fn from(value: AdditionalRestartInformation) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&AdditionalRestartInformation>
-for AdditionalRestartInformation {
-    fn from(value: &AdditionalRestartInformation) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for AdditionalRestartInformation {
@@ -349,11 +333,6 @@ pub struct AggregateSeverity {
     ///Provides a severity which is independent of - and in addition to - any other standard metric for determining the impact or severity of a given vulnerability (such as CVSS).
     pub text: TextOfAggregateSeverity,
 }
-impl ::std::convert::From<&AggregateSeverity> for AggregateSeverity {
-    fn from(value: &AggregateSeverity) -> Self {
-        value.clone()
-    }
-}
 impl AggregateSeverity {
     pub fn builder() -> builder::AggregateSeverity {
         Default::default()
@@ -392,12 +371,6 @@ impl ::std::ops::Deref for AlgorithmOfTheCryptographicHash {
 impl ::std::convert::From<AlgorithmOfTheCryptographicHash> for ::std::string::String {
     fn from(value: AlgorithmOfTheCryptographicHash) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&AlgorithmOfTheCryptographicHash>
-for AlgorithmOfTheCryptographicHash {
-    fn from(value: &AlgorithmOfTheCryptographicHash) -> Self {
-        value.clone()
     }
 }
 impl ::std::default::Default for AlgorithmOfTheCryptographicHash {
@@ -483,11 +456,6 @@ impl ::std::convert::From<AlternateName> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&AlternateName> for AlternateName {
-    fn from(value: &AlternateName) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for AlternateName {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -566,11 +534,6 @@ impl ::std::ops::Deref for AudienceOfNote {
 impl ::std::convert::From<AudienceOfNote> for ::std::string::String {
     fn from(value: AudienceOfNote) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&AudienceOfNote> for AudienceOfNote {
-    fn from(value: &AudienceOfNote) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for AudienceOfNote {
@@ -692,11 +655,6 @@ pub struct Branch {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub product: ::std::option::Option<FullProductNameT>,
 }
-impl ::std::convert::From<&Branch> for Branch {
-    fn from(value: &Branch) -> Self {
-        value.clone()
-    }
-}
 impl Branch {
     pub fn builder() -> builder::Branch {
         Default::default()
@@ -783,11 +741,6 @@ impl ::std::convert::From<BranchesT> for ::std::vec::Vec<Branch> {
         value.0
     }
 }
-impl ::std::convert::From<&BranchesT> for BranchesT {
-    fn from(value: &BranchesT) -> Self {
-        value.clone()
-    }
-}
 impl ::std::convert::From<::std::vec::Vec<Branch>> for BranchesT {
     fn from(value: ::std::vec::Vec<Branch>) -> Self {
         Self(value)
@@ -838,11 +791,6 @@ pub enum CategoryOfPublisher {
     User,
     #[serde(rename = "vendor")]
     Vendor,
-}
-impl ::std::convert::From<&Self> for CategoryOfPublisher {
-    fn from(value: &CategoryOfPublisher) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for CategoryOfPublisher {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -930,11 +878,6 @@ pub enum CategoryOfReference {
     External,
     #[serde(rename = "self")]
     Self_,
-}
-impl ::std::convert::From<&Self> for CategoryOfReference {
-    fn from(value: &CategoryOfReference) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for CategoryOfReference {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1039,11 +982,6 @@ pub enum CategoryOfRestart {
     VulnerableComponent,
     #[serde(rename = "zone")]
     Zone,
-}
-impl ::std::convert::From<&Self> for CategoryOfRestart {
-    fn from(value: &CategoryOfRestart) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for CategoryOfRestart {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1167,11 +1105,6 @@ pub enum CategoryOfTheBranch {
     #[serde(rename = "vendor")]
     Vendor,
 }
-impl ::std::convert::From<&Self> for CategoryOfTheBranch {
-    fn from(value: &CategoryOfTheBranch) -> Self {
-        value.clone()
-    }
-}
 impl ::std::fmt::Display for CategoryOfTheBranch {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
@@ -1279,11 +1212,6 @@ pub enum CategoryOfTheRemediation {
     #[serde(rename = "workaround")]
     Workaround,
 }
-impl ::std::convert::From<&Self> for CategoryOfTheRemediation {
-    fn from(value: &CategoryOfTheRemediation) -> Self {
-        value.clone()
-    }
-}
 impl ::std::fmt::Display for CategoryOfTheRemediation {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
@@ -1371,11 +1299,6 @@ pub enum CategoryOfTheThreat {
     #[serde(rename = "target_set")]
     TargetSet,
 }
-impl ::std::convert::From<&Self> for CategoryOfTheThreat {
-    fn from(value: &CategoryOfTheThreat) -> Self {
-        value.clone()
-    }
-}
 impl ::std::fmt::Display for CategoryOfTheThreat {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
@@ -1449,12 +1372,6 @@ impl ::std::convert::From<CommonPlatformEnumerationRepresentation>
 for ::std::string::String {
     fn from(value: CommonPlatformEnumerationRepresentation) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&CommonPlatformEnumerationRepresentation>
-for CommonPlatformEnumerationRepresentation {
-    fn from(value: &CommonPlatformEnumerationRepresentation) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for CommonPlatformEnumerationRepresentation {
@@ -2443,12 +2360,6 @@ pub struct CommonSecurityAdvisoryFramework {
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub vulnerabilities: ::std::vec::Vec<Vulnerability>,
 }
-impl ::std::convert::From<&CommonSecurityAdvisoryFramework>
-for CommonSecurityAdvisoryFramework {
-    fn from(value: &CommonSecurityAdvisoryFramework) -> Self {
-        value.clone()
-    }
-}
 impl CommonSecurityAdvisoryFramework {
     pub fn builder() -> builder::CommonSecurityAdvisoryFramework {
         Default::default()
@@ -2482,11 +2393,6 @@ impl ::std::ops::Deref for ContactDetails {
 impl ::std::convert::From<ContactDetails> for ::std::string::String {
     fn from(value: ContactDetails) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&ContactDetails> for ContactDetails {
-    fn from(value: &ContactDetails) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for ContactDetails {
@@ -2566,11 +2472,6 @@ impl ::std::ops::Deref for ContributingOrganization {
 impl ::std::convert::From<ContributingOrganization> for ::std::string::String {
     fn from(value: ContributingOrganization) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&ContributingOrganization> for ContributingOrganization {
-    fn from(value: &ContributingOrganization) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for ContributingOrganization {
@@ -2699,11 +2600,6 @@ pub struct CryptographicHashes {
     ///Contains the name of the file which is identified by the hash values.
     pub filename: Filename,
 }
-impl ::std::convert::From<&CryptographicHashes> for CryptographicHashes {
-    fn from(value: &CryptographicHashes) -> Self {
-        value.clone()
-    }
-}
 impl CryptographicHashes {
     pub fn builder() -> builder::CryptographicHashes {
         Default::default()
@@ -2739,11 +2635,6 @@ impl CryptographicHashes {
 pub enum CsafVersion {
     #[serde(rename = "2.0")]
     X20,
-}
-impl ::std::convert::From<&Self> for CsafVersion {
-    fn from(value: &CsafVersion) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for CsafVersion {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2812,11 +2703,6 @@ impl ::std::ops::Deref for Cve {
 impl ::std::convert::From<Cve> for ::std::string::String {
     fn from(value: Cve) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Cve> for Cve {
-    fn from(value: &Cve) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for Cve {
@@ -2915,11 +2801,6 @@ pub struct Cwe {
     ///Holds the full name of the weakness as given in the CWE specification.
     pub name: WeaknessName,
 }
-impl ::std::convert::From<&Cwe> for Cwe {
-    fn from(value: &Cwe) -> Self {
-        value.clone()
-    }
-}
 impl Cwe {
     pub fn builder() -> builder::Cwe {
         Default::default()
@@ -2950,11 +2831,6 @@ impl ::std::ops::Deref for DetailsOfTheRemediation {
 impl ::std::convert::From<DetailsOfTheRemediation> for ::std::string::String {
     fn from(value: DetailsOfTheRemediation) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&DetailsOfTheRemediation> for DetailsOfTheRemediation {
-    fn from(value: &DetailsOfTheRemediation) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for DetailsOfTheRemediation {
@@ -3029,11 +2905,6 @@ impl ::std::ops::Deref for DetailsOfTheThreat {
 impl ::std::convert::From<DetailsOfTheThreat> for ::std::string::String {
     fn from(value: DetailsOfTheThreat) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&DetailsOfTheThreat> for DetailsOfTheThreat {
-    fn from(value: &DetailsOfTheThreat) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for DetailsOfTheThreat {
@@ -3115,11 +2986,6 @@ impl ::std::ops::Deref for DocumentCategory {
 impl ::std::convert::From<DocumentCategory> for ::std::string::String {
     fn from(value: DocumentCategory) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&DocumentCategory> for DocumentCategory {
-    fn from(value: &DocumentCategory) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for DocumentCategory {
@@ -3236,11 +3102,6 @@ pub struct DocumentGenerator {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub date: ::std::option::Option<::std::string::String>,
     pub engine: EngineOfDocumentGeneration,
-}
-impl ::std::convert::From<&DocumentGenerator> for DocumentGenerator {
-    fn from(value: &DocumentGenerator) -> Self {
-        value.clone()
-    }
 }
 impl DocumentGenerator {
     pub fn builder() -> builder::DocumentGenerator {
@@ -3647,11 +3508,6 @@ pub struct DocumentLevelMetaData {
     pub title: TitleOfThisDocument,
     pub tracking: Tracking,
 }
-impl ::std::convert::From<&DocumentLevelMetaData> for DocumentLevelMetaData {
-    fn from(value: &DocumentLevelMetaData) -> Self {
-        value.clone()
-    }
-}
 impl DocumentLevelMetaData {
     pub fn builder() -> builder::DocumentLevelMetaData {
         Default::default()
@@ -3693,11 +3549,6 @@ pub enum DocumentStatus {
     Final,
     #[serde(rename = "interim")]
     Interim,
-}
-impl ::std::convert::From<&Self> for DocumentStatus {
-    fn from(value: &DocumentStatus) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for DocumentStatus {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3775,11 +3626,6 @@ impl ::std::ops::Deref for EngineName {
 impl ::std::convert::From<EngineName> for ::std::string::String {
     fn from(value: EngineName) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&EngineName> for EngineName {
-    fn from(value: &EngineName) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for EngineName {
@@ -3876,11 +3722,6 @@ pub struct EngineOfDocumentGeneration {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub version: ::std::option::Option<EngineVersion>,
 }
-impl ::std::convert::From<&EngineOfDocumentGeneration> for EngineOfDocumentGeneration {
-    fn from(value: &EngineOfDocumentGeneration) -> Self {
-        value.clone()
-    }
-}
 impl EngineOfDocumentGeneration {
     pub fn builder() -> builder::EngineOfDocumentGeneration {
         Default::default()
@@ -3916,11 +3757,6 @@ impl ::std::ops::Deref for EngineVersion {
 impl ::std::convert::From<EngineVersion> for ::std::string::String {
     fn from(value: EngineVersion) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&EngineVersion> for EngineVersion {
-    fn from(value: &EngineVersion) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for EngineVersion {
@@ -3995,11 +3831,6 @@ impl ::std::ops::Deref for EntitlementOfTheRemediation {
 impl ::std::convert::From<EntitlementOfTheRemediation> for ::std::string::String {
     fn from(value: EntitlementOfTheRemediation) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&EntitlementOfTheRemediation> for EntitlementOfTheRemediation {
-    fn from(value: &EntitlementOfTheRemediation) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for EntitlementOfTheRemediation {
@@ -4100,11 +3931,6 @@ pub struct FileHash {
     ///Contains the cryptographic hash value in hexadecimal representation.
     pub value: ValueOfTheCryptographicHash,
 }
-impl ::std::convert::From<&FileHash> for FileHash {
-    fn from(value: &FileHash) -> Self {
-        value.clone()
-    }
-}
 impl FileHash {
     pub fn builder() -> builder::FileHash {
         Default::default()
@@ -4140,11 +3966,6 @@ impl ::std::ops::Deref for Filename {
 impl ::std::convert::From<Filename> for ::std::string::String {
     fn from(value: Filename) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Filename> for Filename {
-    fn from(value: &Filename) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for Filename {
@@ -4245,11 +4066,6 @@ pub struct Flag {
     pub label: LabelOfTheFlag,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub product_ids: ::std::option::Option<ProductsT>,
-}
-impl ::std::convert::From<&Flag> for Flag {
-    fn from(value: &Flag) -> Self {
-        value.clone()
-    }
 }
 impl Flag {
     pub fn builder() -> builder::Flag {
@@ -4468,11 +4284,6 @@ pub struct FullProductNameT {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub product_identification_helper: ::std::option::Option<HelperToIdentifyTheProduct>,
 }
-impl ::std::convert::From<&FullProductNameT> for FullProductNameT {
-    fn from(value: &FullProductNameT) -> Self {
-        value.clone()
-    }
-}
 impl FullProductNameT {
     pub fn builder() -> builder::FullProductNameT {
         Default::default()
@@ -4514,11 +4325,6 @@ pub struct GenericUri {
     pub namespace: ::std::string::String,
     ///Contains the identifier itself.
     pub uri: ::std::string::String,
-}
-impl ::std::convert::From<&GenericUri> for GenericUri {
-    fn from(value: &GenericUri) -> Self {
-        value.clone()
-    }
 }
 impl GenericUri {
     pub fn builder() -> builder::GenericUri {
@@ -4732,11 +4538,6 @@ pub struct HelperToIdentifyTheProduct {
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub x_generic_uris: ::std::vec::Vec<GenericUri>,
 }
-impl ::std::convert::From<&HelperToIdentifyTheProduct> for HelperToIdentifyTheProduct {
-    fn from(value: &HelperToIdentifyTheProduct) -> Self {
-        value.clone()
-    }
-}
 impl ::std::default::Default for HelperToIdentifyTheProduct {
     fn default() -> Self {
         Self {
@@ -4800,11 +4601,6 @@ pub struct Id {
     pub system_name: SystemName,
     ///Is unique label or tracking ID for the vulnerability (if such information exists).
     pub text: Text,
-}
-impl ::std::convert::From<&Id> for Id {
-    fn from(value: &Id) -> Self {
-        value.clone()
-    }
 }
 impl Id {
     pub fn builder() -> builder::Id {
@@ -4878,11 +4674,6 @@ pub struct Involvement {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub summary: ::std::option::Option<SummaryOfTheInvolvement>,
 }
-impl ::std::convert::From<&Involvement> for Involvement {
-    fn from(value: &Involvement) -> Self {
-        value.clone()
-    }
-}
 impl Involvement {
     pub fn builder() -> builder::Involvement {
         Default::default()
@@ -4913,11 +4704,6 @@ impl ::std::ops::Deref for IssuingAuthority {
 impl ::std::convert::From<IssuingAuthority> for ::std::string::String {
     fn from(value: IssuingAuthority) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&IssuingAuthority> for IssuingAuthority {
-    fn from(value: &IssuingAuthority) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for IssuingAuthority {
@@ -5009,11 +4795,6 @@ pub enum LabelOfTheFlag {
     VulnerableCodeNotInExecutePath,
     #[serde(rename = "vulnerable_code_not_present")]
     VulnerableCodeNotPresent,
-}
-impl ::std::convert::From<&Self> for LabelOfTheFlag {
-    fn from(value: &LabelOfTheFlag) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for LabelOfTheFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5115,11 +4896,6 @@ pub enum LabelOfTlp {
     #[serde(rename = "WHITE")]
     White,
 }
-impl ::std::convert::From<&Self> for LabelOfTlp {
-    fn from(value: &LabelOfTlp) -> Self {
-        value.clone()
-    }
-}
 impl ::std::fmt::Display for LabelOfTlp {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
@@ -5200,11 +4976,6 @@ impl ::std::ops::Deref for LangT {
 impl ::std::convert::From<LangT> for ::std::string::String {
     fn from(value: LangT) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&LangT> for LangT {
-    fn from(value: &LangT) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for LangT {
@@ -5291,11 +5062,6 @@ impl ::std::convert::From<LegacyVersionOfTheRevision> for ::std::string::String 
         value.0
     }
 }
-impl ::std::convert::From<&LegacyVersionOfTheRevision> for LegacyVersionOfTheRevision {
-    fn from(value: &LegacyVersionOfTheRevision) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for LegacyVersionOfTheRevision {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -5368,11 +5134,6 @@ impl ::std::ops::Deref for ModelNumber {
 impl ::std::convert::From<ModelNumber> for ::std::string::String {
     fn from(value: ModelNumber) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&ModelNumber> for ModelNumber {
-    fn from(value: &ModelNumber) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for ModelNumber {
@@ -5452,11 +5213,6 @@ impl ::std::ops::Deref for NameOfPublisher {
 impl ::std::convert::From<NameOfPublisher> for ::std::string::String {
     fn from(value: NameOfPublisher) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&NameOfPublisher> for NameOfPublisher {
-    fn from(value: &NameOfPublisher) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for NameOfPublisher {
@@ -5543,11 +5299,6 @@ impl ::std::convert::From<NameOfTheBranch> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&NameOfTheBranch> for NameOfTheBranch {
-    fn from(value: &NameOfTheBranch) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for NameOfTheBranch {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -5624,11 +5375,6 @@ impl ::std::ops::Deref for NameOfTheContributor {
 impl ::std::convert::From<NameOfTheContributor> for ::std::string::String {
     fn from(value: NameOfTheContributor) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&NameOfTheContributor> for NameOfTheContributor {
-    fn from(value: &NameOfTheContributor) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for NameOfTheContributor {
@@ -5753,11 +5499,6 @@ pub struct Note {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<TitleOfNote>,
 }
-impl ::std::convert::From<&Note> for Note {
-    fn from(value: &Note) -> Self {
-        value.clone()
-    }
-}
 impl Note {
     pub fn builder() -> builder::Note {
         Default::default()
@@ -5811,11 +5552,6 @@ pub enum NoteCategory {
     Other,
     #[serde(rename = "summary")]
     Summary,
-}
-impl ::std::convert::From<&Self> for NoteCategory {
-    fn from(value: &NoteCategory) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for NoteCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5896,11 +5632,6 @@ impl ::std::ops::Deref for NoteContent {
 impl ::std::convert::From<NoteContent> for ::std::string::String {
     fn from(value: NoteContent) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&NoteContent> for NoteContent {
-    fn from(value: &NoteContent) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for NoteContent {
@@ -6032,11 +5763,6 @@ impl ::std::convert::From<NotesT> for ::std::vec::Vec<Note> {
         value.0
     }
 }
-impl ::std::convert::From<&NotesT> for NotesT {
-    fn from(value: &NotesT) -> Self {
-        value.clone()
-    }
-}
 impl ::std::convert::From<::std::vec::Vec<Note>> for NotesT {
     fn from(value: ::std::vec::Vec<Note>) -> Self {
         Self(value)
@@ -6084,11 +5810,6 @@ pub enum PartyCategory {
     User,
     #[serde(rename = "vendor")]
     Vendor,
-}
-impl ::std::convert::From<&Self> for PartyCategory {
-    fn from(value: &PartyCategory) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for PartyCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6185,11 +5906,6 @@ pub enum PartyStatus {
     NotContacted,
     #[serde(rename = "open")]
     Open,
-}
-impl ::std::convert::From<&Self> for PartyStatus {
-    fn from(value: &PartyStatus) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for PartyStatus {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6293,11 +6009,6 @@ pub struct ProductGroup {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub summary: ::std::option::Option<SummaryOfTheProductGroup>,
 }
-impl ::std::convert::From<&ProductGroup> for ProductGroup {
-    fn from(value: &ProductGroup) -> Self {
-        value.clone()
-    }
-}
 impl ProductGroup {
     pub fn builder() -> builder::ProductGroup {
         Default::default()
@@ -6333,11 +6044,6 @@ impl ::std::ops::Deref for ProductGroupIdT {
 impl ::std::convert::From<ProductGroupIdT> for ::std::string::String {
     fn from(value: ProductGroupIdT) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&ProductGroupIdT> for ProductGroupIdT {
-    fn from(value: &ProductGroupIdT) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for ProductGroupIdT {
@@ -6418,11 +6124,6 @@ impl ::std::convert::From<ProductGroupsT> for Vec<ProductGroupIdT> {
         value.0
     }
 }
-impl ::std::convert::From<&ProductGroupsT> for ProductGroupsT {
-    fn from(value: &ProductGroupsT) -> Self {
-        value.clone()
-    }
-}
 impl ::std::convert::From<Vec<ProductGroupIdT>> for ProductGroupsT {
     fn from(value: Vec<ProductGroupIdT>) -> Self {
         Self(value)
@@ -6457,11 +6158,6 @@ impl ::std::ops::Deref for ProductIdT {
 impl ::std::convert::From<ProductIdT> for ::std::string::String {
     fn from(value: ProductIdT) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&ProductIdT> for ProductIdT {
-    fn from(value: &ProductIdT) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for ProductIdT {
@@ -6592,11 +6288,6 @@ pub struct ProductStatus {
     ///It is not known yet whether these versions are or are not affected by the vulnerability. However, it is still under investigation - the result will be provided in a later release of the document.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub under_investigation: ::std::option::Option<ProductsT>,
-}
-impl ::std::convert::From<&ProductStatus> for ProductStatus {
-    fn from(value: &ProductStatus) -> Self {
-        value.clone()
-    }
 }
 impl ::std::default::Default for ProductStatus {
     fn default() -> Self {
@@ -6742,11 +6433,6 @@ pub struct ProductTree {
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub relationships: ::std::vec::Vec<Relationship>,
 }
-impl ::std::convert::From<&ProductTree> for ProductTree {
-    fn from(value: &ProductTree) -> Self {
-        value.clone()
-    }
-}
 impl ::std::default::Default for ProductTree {
     fn default() -> Self {
         Self {
@@ -6791,11 +6477,6 @@ impl ::std::ops::Deref for ProductsT {
 impl ::std::convert::From<ProductsT> for Vec<ProductIdT> {
     fn from(value: ProductsT) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&ProductsT> for ProductsT {
-    fn from(value: &ProductsT) -> Self {
-        value.clone()
     }
 }
 impl ::std::convert::From<Vec<ProductIdT>> for ProductsT {
@@ -6886,11 +6567,6 @@ pub struct Publisher {
     ///Contains a URL which is under control of the issuing party and can be used as a globally unique identifier for that issuing party.
     pub namespace: ::std::string::String,
 }
-impl ::std::convert::From<&Publisher> for Publisher {
-    fn from(value: &Publisher) -> Self {
-        value.clone()
-    }
-}
 impl Publisher {
     pub fn builder() -> builder::Publisher {
         Default::default()
@@ -6945,11 +6621,6 @@ pub struct Reference {
     pub summary: SummaryOfTheReference,
     ///Provides the URL for the reference.
     pub url: ::std::string::String,
-}
-impl ::std::convert::From<&Reference> for Reference {
-    fn from(value: &Reference) -> Self {
-        value.clone()
-    }
 }
 impl Reference {
     pub fn builder() -> builder::Reference {
@@ -7016,11 +6687,6 @@ impl ::std::convert::From<ReferencesT> for ::std::vec::Vec<Reference> {
         value.0
     }
 }
-impl ::std::convert::From<&ReferencesT> for ReferencesT {
-    fn from(value: &ReferencesT) -> Self {
-        value.clone()
-    }
-}
 impl ::std::convert::From<::std::vec::Vec<Reference>> for ReferencesT {
     fn from(value: ::std::vec::Vec<Reference>) -> Self {
         Self(value)
@@ -7081,11 +6747,6 @@ pub struct Relationship {
     ///Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.
     pub relates_to_product_reference: ProductIdT,
 }
-impl ::std::convert::From<&Relationship> for Relationship {
-    fn from(value: &Relationship) -> Self {
-        value.clone()
-    }
-}
 impl Relationship {
     pub fn builder() -> builder::Relationship {
         Default::default()
@@ -7133,11 +6794,6 @@ pub enum RelationshipCategory {
     InstalledWith,
     #[serde(rename = "optional_component_of")]
     OptionalComponentOf,
-}
-impl ::std::convert::From<&Self> for RelationshipCategory {
-    fn from(value: &RelationshipCategory) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for RelationshipCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7308,11 +6964,6 @@ pub struct Remediation {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub url: ::std::option::Option<::std::string::String>,
 }
-impl ::std::convert::From<&Remediation> for Remediation {
-    fn from(value: &Remediation) -> Self {
-        value.clone()
-    }
-}
 impl Remediation {
     pub fn builder() -> builder::Remediation {
         Default::default()
@@ -7364,12 +7015,6 @@ pub struct RestartRequiredByRemediation {
     ///Provides additional information for the restart. This can include details on procedures, scope or impact.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub details: ::std::option::Option<AdditionalRestartInformation>,
-}
-impl ::std::convert::From<&RestartRequiredByRemediation>
-for RestartRequiredByRemediation {
-    fn from(value: &RestartRequiredByRemediation) -> Self {
-        value.clone()
-    }
 }
 impl RestartRequiredByRemediation {
     pub fn builder() -> builder::RestartRequiredByRemediation {
@@ -7428,11 +7073,6 @@ pub struct Revision {
     pub number: VersionT,
     ///Holds a single non-empty string representing a short description of the changes.
     pub summary: SummaryOfTheRevision,
-}
-impl ::std::convert::From<&Revision> for Revision {
-    fn from(value: &Revision) -> Self {
-        value.clone()
-    }
 }
 impl Revision {
     pub fn builder() -> builder::Revision {
@@ -7505,11 +7145,6 @@ pub struct RulesForSharingDocument {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub tlp: ::std::option::Option<TrafficLightProtocolTlp>,
 }
-impl ::std::convert::From<&RulesForSharingDocument> for RulesForSharingDocument {
-    fn from(value: &RulesForSharingDocument) -> Self {
-        value.clone()
-    }
-}
 impl ::std::default::Default for RulesForSharingDocument {
     fn default() -> Self {
         Self {
@@ -7558,11 +7193,6 @@ pub struct Score {
     pub cvss_v3: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     pub products: ProductsT,
 }
-impl ::std::convert::From<&Score> for Score {
-    fn from(value: &Score) -> Self {
-        value.clone()
-    }
-}
 impl Score {
     pub fn builder() -> builder::Score {
         Default::default()
@@ -7593,11 +7223,6 @@ impl ::std::ops::Deref for SerialNumber {
 impl ::std::convert::From<SerialNumber> for ::std::string::String {
     fn from(value: SerialNumber) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&SerialNumber> for SerialNumber {
-    fn from(value: &SerialNumber) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for SerialNumber {
@@ -7672,11 +7297,6 @@ impl ::std::ops::Deref for StockKeepingUnit {
 impl ::std::convert::From<StockKeepingUnit> for ::std::string::String {
     fn from(value: StockKeepingUnit) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&StockKeepingUnit> for StockKeepingUnit {
-    fn from(value: &StockKeepingUnit) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for StockKeepingUnit {
@@ -7756,11 +7376,6 @@ impl ::std::convert::From<SummaryOfTheAcknowledgment> for ::std::string::String 
         value.0
     }
 }
-impl ::std::convert::From<&SummaryOfTheAcknowledgment> for SummaryOfTheAcknowledgment {
-    fn from(value: &SummaryOfTheAcknowledgment) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for SummaryOfTheAcknowledgment {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -7833,11 +7448,6 @@ impl ::std::ops::Deref for SummaryOfTheInvolvement {
 impl ::std::convert::From<SummaryOfTheInvolvement> for ::std::string::String {
     fn from(value: SummaryOfTheInvolvement) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&SummaryOfTheInvolvement> for SummaryOfTheInvolvement {
-    fn from(value: &SummaryOfTheInvolvement) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for SummaryOfTheInvolvement {
@@ -7918,11 +7528,6 @@ impl ::std::convert::From<SummaryOfTheProductGroup> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&SummaryOfTheProductGroup> for SummaryOfTheProductGroup {
-    fn from(value: &SummaryOfTheProductGroup) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for SummaryOfTheProductGroup {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -7995,11 +7600,6 @@ impl ::std::ops::Deref for SummaryOfTheReference {
 impl ::std::convert::From<SummaryOfTheReference> for ::std::string::String {
     fn from(value: SummaryOfTheReference) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&SummaryOfTheReference> for SummaryOfTheReference {
-    fn from(value: &SummaryOfTheReference) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for SummaryOfTheReference {
@@ -8077,11 +7677,6 @@ impl ::std::ops::Deref for SummaryOfTheRevision {
 impl ::std::convert::From<SummaryOfTheRevision> for ::std::string::String {
     fn from(value: SummaryOfTheRevision) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&SummaryOfTheRevision> for SummaryOfTheRevision {
-    fn from(value: &SummaryOfTheRevision) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for SummaryOfTheRevision {
@@ -8162,11 +7757,6 @@ impl ::std::convert::From<SystemName> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&SystemName> for SystemName {
-    fn from(value: &SystemName) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for SystemName {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -8243,11 +7833,6 @@ impl ::std::ops::Deref for Text {
 impl ::std::convert::From<Text> for ::std::string::String {
     fn from(value: Text) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Text> for Text {
-    fn from(value: &Text) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for Text {
@@ -8329,11 +7914,6 @@ impl ::std::convert::From<TextOfAggregateSeverity> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&TextOfAggregateSeverity> for TextOfAggregateSeverity {
-    fn from(value: &TextOfAggregateSeverity) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for TextOfAggregateSeverity {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -8413,11 +7993,6 @@ impl ::std::convert::From<TextualDescription> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&TextualDescription> for TextualDescription {
-    fn from(value: &TextualDescription) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for TextualDescription {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -8494,12 +8069,6 @@ impl ::std::ops::Deref for TextualDescriptionOfTheProduct {
 impl ::std::convert::From<TextualDescriptionOfTheProduct> for ::std::string::String {
     fn from(value: TextualDescriptionOfTheProduct) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&TextualDescriptionOfTheProduct>
-for TextualDescriptionOfTheProduct {
-    fn from(value: &TextualDescriptionOfTheProduct) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for TextualDescriptionOfTheProduct {
@@ -8608,11 +8177,6 @@ pub struct Threat {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub product_ids: ::std::option::Option<ProductsT>,
 }
-impl ::std::convert::From<&Threat> for Threat {
-    fn from(value: &Threat) -> Self {
-        value.clone()
-    }
-}
 impl Threat {
     pub fn builder() -> builder::Threat {
         Default::default()
@@ -8643,11 +8207,6 @@ impl ::std::ops::Deref for Title {
 impl ::std::convert::From<Title> for ::std::string::String {
     fn from(value: Title) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Title> for Title {
-    fn from(value: &Title) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for Title {
@@ -8730,11 +8289,6 @@ impl ::std::convert::From<TitleOfNote> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&TitleOfNote> for TitleOfNote {
-    fn from(value: &TitleOfNote) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for TitleOfNote {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -8811,11 +8365,6 @@ impl ::std::ops::Deref for TitleOfThisDocument {
 impl ::std::convert::From<TitleOfThisDocument> for ::std::string::String {
     fn from(value: TitleOfThisDocument) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&TitleOfThisDocument> for TitleOfThisDocument {
-    fn from(value: &TitleOfThisDocument) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for TitleOfThisDocument {
@@ -9045,11 +8594,6 @@ pub struct Tracking {
     pub status: DocumentStatus,
     pub version: VersionT,
 }
-impl ::std::convert::From<&Tracking> for Tracking {
-    fn from(value: &Tracking) -> Self {
-        value.clone()
-    }
-}
 impl Tracking {
     pub fn builder() -> builder::Tracking {
         Default::default()
@@ -9102,11 +8646,6 @@ pub struct TrafficLightProtocolTlp {
     #[serde(default = "defaults::traffic_light_protocol_tlp_url")]
     pub url: ::std::string::String,
 }
-impl ::std::convert::From<&TrafficLightProtocolTlp> for TrafficLightProtocolTlp {
-    fn from(value: &TrafficLightProtocolTlp) -> Self {
-        value.clone()
-    }
-}
 impl TrafficLightProtocolTlp {
     pub fn builder() -> builder::TrafficLightProtocolTlp {
         Default::default()
@@ -9143,12 +8682,6 @@ impl ::std::ops::Deref for UniqueIdentifierForTheDocument {
 impl ::std::convert::From<UniqueIdentifierForTheDocument> for ::std::string::String {
     fn from(value: UniqueIdentifierForTheDocument) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&UniqueIdentifierForTheDocument>
-for UniqueIdentifierForTheDocument {
-    fn from(value: &UniqueIdentifierForTheDocument) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for UniqueIdentifierForTheDocument {
@@ -9236,11 +8769,6 @@ impl ::std::convert::From<ValueOfTheCryptographicHash> for ::std::string::String
         value.0
     }
 }
-impl ::std::convert::From<&ValueOfTheCryptographicHash> for ValueOfTheCryptographicHash {
-    fn from(value: &ValueOfTheCryptographicHash) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for ValueOfTheCryptographicHash {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -9325,11 +8853,6 @@ impl ::std::ops::Deref for VersionT {
 impl ::std::convert::From<VersionT> for ::std::string::String {
     fn from(value: VersionT) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&VersionT> for VersionT {
-    fn from(value: &VersionT) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for VersionT {
@@ -9866,11 +9389,6 @@ pub struct Vulnerability {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<Title>,
 }
-impl ::std::convert::From<&Vulnerability> for Vulnerability {
-    fn from(value: &Vulnerability) -> Self {
-        value.clone()
-    }
-}
 impl ::std::default::Default for Vulnerability {
     fn default() -> Self {
         Self {
@@ -9927,11 +9445,6 @@ impl ::std::ops::Deref for WeaknessId {
 impl ::std::convert::From<WeaknessId> for ::std::string::String {
     fn from(value: WeaknessId) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&WeaknessId> for WeaknessId {
-    fn from(value: &WeaknessId) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for WeaknessId {
@@ -10013,11 +9526,6 @@ impl ::std::ops::Deref for WeaknessName {
 impl ::std::convert::From<WeaknessName> for ::std::string::String {
     fn from(value: WeaknessName) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&WeaknessName> for WeaknessName {
-    fn from(value: &WeaknessName) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for WeaknessName {
@@ -10106,9 +9614,7 @@ pub mod builder {
         {
             self.names = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for names: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for names: {e}"));
             self
         }
         pub fn organization<T>(mut self, value: T) -> Self
@@ -10121,7 +9627,7 @@ pub mod builder {
             self.organization = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for organization: {}", e)
+                    format!("error converting supplied value for organization: {e}")
                 });
             self
         }
@@ -10135,7 +9641,7 @@ pub mod builder {
             self.summary = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for summary: {}", e)
+                    format!("error converting supplied value for summary: {e}")
                 });
             self
         }
@@ -10146,7 +9652,7 @@ pub mod builder {
         {
             self.urls = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for urls: {}", e));
+                .map_err(|e| format!("error converting supplied value for urls: {e}"));
             self
         }
     }
@@ -10201,7 +9707,7 @@ pub mod builder {
             self.namespace = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for namespace: {}", e)
+                    format!("error converting supplied value for namespace: {e}")
                 });
             self
         }
@@ -10212,7 +9718,7 @@ pub mod builder {
         {
             self.text = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for text: {}", e));
+                .map_err(|e| format!("error converting supplied value for text: {e}"));
             self
         }
     }
@@ -10270,7 +9776,7 @@ pub mod builder {
             self.branches = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for branches: {}", e)
+                    format!("error converting supplied value for branches: {e}")
                 });
             self
         }
@@ -10282,7 +9788,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -10293,7 +9799,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
         pub fn product<T>(mut self, value: T) -> Self
@@ -10304,7 +9810,7 @@ pub mod builder {
             self.product = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product: {}", e)
+                    format!("error converting supplied value for product: {e}")
                 });
             self
         }
@@ -10365,7 +9871,7 @@ pub mod builder {
             self.document = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for document: {}", e)
+                    format!("error converting supplied value for document: {e}")
                 });
             self
         }
@@ -10377,7 +9883,7 @@ pub mod builder {
             self.product_tree = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_tree: {}", e)
+                    format!("error converting supplied value for product_tree: {e}")
                 });
             self
         }
@@ -10389,7 +9895,7 @@ pub mod builder {
             self.vulnerabilities = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for vulnerabilities: {}", e)
+                    format!("error converting supplied value for vulnerabilities: {e}")
                 });
             self
         }
@@ -10442,7 +9948,7 @@ pub mod builder {
             self.file_hashes = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for file_hashes: {}", e)
+                    format!("error converting supplied value for file_hashes: {e}")
                 });
             self
         }
@@ -10454,7 +9960,7 @@ pub mod builder {
             self.filename = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for filename: {}", e)
+                    format!("error converting supplied value for filename: {e}")
                 });
             self
         }
@@ -10499,7 +10005,7 @@ pub mod builder {
         {
             self.id = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for id: {}", e));
+                .map_err(|e| format!("error converting supplied value for id: {e}"));
             self
         }
         pub fn name<T>(mut self, value: T) -> Self
@@ -10509,7 +10015,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
     }
@@ -10559,7 +10065,7 @@ pub mod builder {
         {
             self.date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for date: {}", e));
+                .map_err(|e| format!("error converting supplied value for date: {e}"));
             self
         }
         pub fn engine<T>(mut self, value: T) -> Self
@@ -10569,9 +10075,7 @@ pub mod builder {
         {
             self.engine = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for engine: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for engine: {e}"));
             self
         }
     }
@@ -10657,7 +10161,7 @@ pub mod builder {
             self.acknowledgments = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for acknowledgments: {}", e)
+                    format!("error converting supplied value for acknowledgments: {e}")
                 });
             self
         }
@@ -10670,7 +10174,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for aggregate_severity: {}", e
+                        "error converting supplied value for aggregate_severity: {e}"
                     )
                 });
             self
@@ -10683,7 +10187,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -10695,7 +10199,7 @@ pub mod builder {
             self.csaf_version = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for csaf_version: {}", e)
+                    format!("error converting supplied value for csaf_version: {e}")
                 });
             self
         }
@@ -10709,7 +10213,7 @@ pub mod builder {
             self.distribution = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for distribution: {}", e)
+                    format!("error converting supplied value for distribution: {e}")
                 });
             self
         }
@@ -10720,7 +10224,7 @@ pub mod builder {
         {
             self.lang = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for lang: {}", e));
+                .map_err(|e| format!("error converting supplied value for lang: {e}"));
             self
         }
         pub fn notes<T>(mut self, value: T) -> Self
@@ -10730,9 +10234,7 @@ pub mod builder {
         {
             self.notes = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for notes: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for notes: {e}"));
             self
         }
         pub fn publisher<T>(mut self, value: T) -> Self
@@ -10743,7 +10245,7 @@ pub mod builder {
             self.publisher = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for publisher: {}", e)
+                    format!("error converting supplied value for publisher: {e}")
                 });
             self
         }
@@ -10755,7 +10257,7 @@ pub mod builder {
             self.references = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for references: {}", e)
+                    format!("error converting supplied value for references: {e}")
                 });
             self
         }
@@ -10767,7 +10269,7 @@ pub mod builder {
             self.source_lang = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for source_lang: {}", e)
+                    format!("error converting supplied value for source_lang: {e}")
                 });
             self
         }
@@ -10778,9 +10280,7 @@ pub mod builder {
         {
             self.title = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for title: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for title: {e}"));
             self
         }
         pub fn tracking<T>(mut self, value: T) -> Self
@@ -10791,7 +10291,7 @@ pub mod builder {
             self.tracking = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for tracking: {}", e)
+                    format!("error converting supplied value for tracking: {e}")
                 });
             self
         }
@@ -10860,7 +10360,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
         pub fn version<T>(mut self, value: T) -> Self
@@ -10871,7 +10371,7 @@ pub mod builder {
             self.version = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for version: {}", e)
+                    format!("error converting supplied value for version: {e}")
                 });
             self
         }
@@ -10925,7 +10425,7 @@ pub mod builder {
             self.algorithm = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for algorithm: {}", e)
+                    format!("error converting supplied value for algorithm: {e}")
                 });
             self
         }
@@ -10936,9 +10436,7 @@ pub mod builder {
         {
             self.value = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for value: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for value: {e}"));
             self
         }
     }
@@ -10995,7 +10493,7 @@ pub mod builder {
         {
             self.date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for date: {}", e));
+                .map_err(|e| format!("error converting supplied value for date: {e}"));
             self
         }
         pub fn group_ids<T>(mut self, value: T) -> Self
@@ -11006,7 +10504,7 @@ pub mod builder {
             self.group_ids = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for group_ids: {}", e)
+                    format!("error converting supplied value for group_ids: {e}")
                 });
             self
         }
@@ -11017,9 +10515,7 @@ pub mod builder {
         {
             self.label = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for label: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for label: {e}"));
             self
         }
         pub fn product_ids<T>(mut self, value: T) -> Self
@@ -11030,7 +10526,7 @@ pub mod builder {
             self.product_ids = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_ids: {}", e)
+                    format!("error converting supplied value for product_ids: {e}")
                 });
             self
         }
@@ -11087,7 +10583,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
         pub fn product_id<T>(mut self, value: T) -> Self
@@ -11098,7 +10594,7 @@ pub mod builder {
             self.product_id = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_id: {}", e)
+                    format!("error converting supplied value for product_id: {e}")
                 });
             self
         }
@@ -11113,8 +10609,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for product_identification_helper: {}",
-                        e
+                        "error converting supplied value for product_identification_helper: {e}"
                     )
                 });
             self
@@ -11163,7 +10658,7 @@ pub mod builder {
             self.namespace = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for namespace: {}", e)
+                    format!("error converting supplied value for namespace: {e}")
                 });
             self
         }
@@ -11174,7 +10669,7 @@ pub mod builder {
         {
             self.uri = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for uri: {}", e));
+                .map_err(|e| format!("error converting supplied value for uri: {e}"));
             self
         }
     }
@@ -11256,7 +10751,7 @@ pub mod builder {
         {
             self.cpe = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for cpe: {}", e));
+                .map_err(|e| format!("error converting supplied value for cpe: {e}"));
             self
         }
         pub fn hashes<T>(mut self, value: T) -> Self
@@ -11266,9 +10761,7 @@ pub mod builder {
         {
             self.hashes = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for hashes: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for hashes: {e}"));
             self
         }
         pub fn model_numbers<T>(mut self, value: T) -> Self
@@ -11279,7 +10772,7 @@ pub mod builder {
             self.model_numbers = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for model_numbers: {}", e)
+                    format!("error converting supplied value for model_numbers: {e}")
                 });
             self
         }
@@ -11290,7 +10783,7 @@ pub mod builder {
         {
             self.purl = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for purl: {}", e));
+                .map_err(|e| format!("error converting supplied value for purl: {e}"));
             self
         }
         pub fn sbom_urls<T>(mut self, value: T) -> Self
@@ -11301,7 +10794,7 @@ pub mod builder {
             self.sbom_urls = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for sbom_urls: {}", e)
+                    format!("error converting supplied value for sbom_urls: {e}")
                 });
             self
         }
@@ -11313,7 +10806,7 @@ pub mod builder {
             self.serial_numbers = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for serial_numbers: {}", e)
+                    format!("error converting supplied value for serial_numbers: {e}")
                 });
             self
         }
@@ -11324,7 +10817,7 @@ pub mod builder {
         {
             self.skus = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for skus: {}", e));
+                .map_err(|e| format!("error converting supplied value for skus: {e}"));
             self
         }
         pub fn x_generic_uris<T>(mut self, value: T) -> Self
@@ -11335,7 +10828,7 @@ pub mod builder {
             self.x_generic_uris = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for x_generic_uris: {}", e)
+                    format!("error converting supplied value for x_generic_uris: {e}")
                 });
             self
         }
@@ -11395,7 +10888,7 @@ pub mod builder {
             self.system_name = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for system_name: {}", e)
+                    format!("error converting supplied value for system_name: {e}")
                 });
             self
         }
@@ -11406,7 +10899,7 @@ pub mod builder {
         {
             self.text = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for text: {}", e));
+                .map_err(|e| format!("error converting supplied value for text: {e}"));
             self
         }
     }
@@ -11460,7 +10953,7 @@ pub mod builder {
         {
             self.date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for date: {}", e));
+                .map_err(|e| format!("error converting supplied value for date: {e}"));
             self
         }
         pub fn party<T>(mut self, value: T) -> Self
@@ -11470,9 +10963,7 @@ pub mod builder {
         {
             self.party = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for party: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for party: {e}"));
             self
         }
         pub fn status<T>(mut self, value: T) -> Self
@@ -11482,9 +10973,7 @@ pub mod builder {
         {
             self.status = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for status: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for status: {e}"));
             self
         }
         pub fn summary<T>(mut self, value: T) -> Self
@@ -11497,7 +10986,7 @@ pub mod builder {
             self.summary = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for summary: {}", e)
+                    format!("error converting supplied value for summary: {e}")
                 });
             self
         }
@@ -11557,7 +11046,7 @@ pub mod builder {
             self.audience = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for audience: {}", e)
+                    format!("error converting supplied value for audience: {e}")
                 });
             self
         }
@@ -11569,7 +11058,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -11580,7 +11069,7 @@ pub mod builder {
         {
             self.text = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for text: {}", e));
+                .map_err(|e| format!("error converting supplied value for text: {e}"));
             self
         }
         pub fn title<T>(mut self, value: T) -> Self
@@ -11590,9 +11079,7 @@ pub mod builder {
         {
             self.title = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for title: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for title: {e}"));
             self
         }
     }
@@ -11649,7 +11136,7 @@ pub mod builder {
             self.group_id = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for group_id: {}", e)
+                    format!("error converting supplied value for group_id: {e}")
                 });
             self
         }
@@ -11661,7 +11148,7 @@ pub mod builder {
             self.product_ids = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_ids: {}", e)
+                    format!("error converting supplied value for product_ids: {e}")
                 });
             self
         }
@@ -11675,7 +11162,7 @@ pub mod builder {
             self.summary = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for summary: {}", e)
+                    format!("error converting supplied value for summary: {e}")
                 });
             self
         }
@@ -11759,7 +11246,7 @@ pub mod builder {
             self.first_affected = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for first_affected: {}", e)
+                    format!("error converting supplied value for first_affected: {e}")
                 });
             self
         }
@@ -11771,7 +11258,7 @@ pub mod builder {
             self.first_fixed = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for first_fixed: {}", e)
+                    format!("error converting supplied value for first_fixed: {e}")
                 });
             self
         }
@@ -11782,9 +11269,7 @@ pub mod builder {
         {
             self.fixed = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for fixed: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for fixed: {e}"));
             self
         }
         pub fn known_affected<T>(mut self, value: T) -> Self
@@ -11795,7 +11280,7 @@ pub mod builder {
             self.known_affected = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for known_affected: {}", e)
+                    format!("error converting supplied value for known_affected: {e}")
                 });
             self
         }
@@ -11808,7 +11293,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for known_not_affected: {}", e
+                        "error converting supplied value for known_not_affected: {e}"
                     )
                 });
             self
@@ -11821,7 +11306,7 @@ pub mod builder {
             self.last_affected = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for last_affected: {}", e)
+                    format!("error converting supplied value for last_affected: {e}")
                 });
             self
         }
@@ -11833,7 +11318,7 @@ pub mod builder {
             self.recommended = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for recommended: {}", e)
+                    format!("error converting supplied value for recommended: {e}")
                 });
             self
         }
@@ -11846,7 +11331,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for under_investigation: {}", e
+                        "error converting supplied value for under_investigation: {e}"
                     )
                 });
             self
@@ -11921,7 +11406,7 @@ pub mod builder {
             self.branches = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for branches: {}", e)
+                    format!("error converting supplied value for branches: {e}")
                 });
             self
         }
@@ -11934,7 +11419,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for full_product_names: {}", e
+                        "error converting supplied value for full_product_names: {e}"
                     )
                 });
             self
@@ -11947,7 +11432,7 @@ pub mod builder {
             self.product_groups = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_groups: {}", e)
+                    format!("error converting supplied value for product_groups: {e}")
                 });
             self
         }
@@ -11959,7 +11444,7 @@ pub mod builder {
             self.relationships = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for relationships: {}", e)
+                    format!("error converting supplied value for relationships: {e}")
                 });
             self
         }
@@ -12024,7 +11509,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -12036,7 +11521,7 @@ pub mod builder {
             self.contact_details = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for contact_details: {}", e)
+                    format!("error converting supplied value for contact_details: {e}")
                 });
             self
         }
@@ -12048,9 +11533,7 @@ pub mod builder {
             self.issuing_authority = value
                 .try_into()
                 .map_err(|e| {
-                    format!(
-                        "error converting supplied value for issuing_authority: {}", e
-                    )
+                    format!("error converting supplied value for issuing_authority: {e}")
                 });
             self
         }
@@ -12061,7 +11544,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
         pub fn namespace<T>(mut self, value: T) -> Self
@@ -12072,7 +11555,7 @@ pub mod builder {
             self.namespace = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for namespace: {}", e)
+                    format!("error converting supplied value for namespace: {e}")
                 });
             self
         }
@@ -12132,7 +11615,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -12144,7 +11627,7 @@ pub mod builder {
             self.summary = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for summary: {}", e)
+                    format!("error converting supplied value for summary: {e}")
                 });
             self
         }
@@ -12155,7 +11638,7 @@ pub mod builder {
         {
             self.url = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for url: {}", e));
+                .map_err(|e| format!("error converting supplied value for url: {e}"));
             self
         }
     }
@@ -12224,7 +11707,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -12236,9 +11719,7 @@ pub mod builder {
             self.full_product_name = value
                 .try_into()
                 .map_err(|e| {
-                    format!(
-                        "error converting supplied value for full_product_name: {}", e
-                    )
+                    format!("error converting supplied value for full_product_name: {e}")
                 });
             self
         }
@@ -12250,9 +11731,7 @@ pub mod builder {
             self.product_reference = value
                 .try_into()
                 .map_err(|e| {
-                    format!(
-                        "error converting supplied value for product_reference: {}", e
-                    )
+                    format!("error converting supplied value for product_reference: {e}")
                 });
             self
         }
@@ -12265,8 +11744,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for relates_to_product_reference: {}",
-                        e
+                        "error converting supplied value for relates_to_product_reference: {e}"
                     )
                 });
             self
@@ -12353,7 +11831,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -12364,7 +11842,7 @@ pub mod builder {
         {
             self.date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for date: {}", e));
+                .map_err(|e| format!("error converting supplied value for date: {e}"));
             self
         }
         pub fn details<T>(mut self, value: T) -> Self
@@ -12375,7 +11853,7 @@ pub mod builder {
             self.details = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for details: {}", e)
+                    format!("error converting supplied value for details: {e}")
                 });
             self
         }
@@ -12389,7 +11867,7 @@ pub mod builder {
             self.entitlements = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for entitlements: {}", e)
+                    format!("error converting supplied value for entitlements: {e}")
                 });
             self
         }
@@ -12401,7 +11879,7 @@ pub mod builder {
             self.group_ids = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for group_ids: {}", e)
+                    format!("error converting supplied value for group_ids: {e}")
                 });
             self
         }
@@ -12413,7 +11891,7 @@ pub mod builder {
             self.product_ids = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_ids: {}", e)
+                    format!("error converting supplied value for product_ids: {e}")
                 });
             self
         }
@@ -12427,9 +11905,7 @@ pub mod builder {
             self.restart_required = value
                 .try_into()
                 .map_err(|e| {
-                    format!(
-                        "error converting supplied value for restart_required: {}", e
-                    )
+                    format!("error converting supplied value for restart_required: {e}")
                 });
             self
         }
@@ -12440,7 +11916,7 @@ pub mod builder {
         {
             self.url = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for url: {}", e));
+                .map_err(|e| format!("error converting supplied value for url: {e}"));
             self
         }
     }
@@ -12500,7 +11976,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -12514,7 +11990,7 @@ pub mod builder {
             self.details = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for details: {}", e)
+                    format!("error converting supplied value for details: {e}")
                 });
             self
         }
@@ -12571,7 +12047,7 @@ pub mod builder {
         {
             self.date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for date: {}", e));
+                .map_err(|e| format!("error converting supplied value for date: {e}"));
             self
         }
         pub fn legacy_version<T>(mut self, value: T) -> Self
@@ -12584,7 +12060,7 @@ pub mod builder {
             self.legacy_version = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for legacy_version: {}", e)
+                    format!("error converting supplied value for legacy_version: {e}")
                 });
             self
         }
@@ -12595,9 +12071,7 @@ pub mod builder {
         {
             self.number = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for number: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for number: {e}"));
             self
         }
         pub fn summary<T>(mut self, value: T) -> Self
@@ -12608,7 +12082,7 @@ pub mod builder {
             self.summary = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for summary: {}", e)
+                    format!("error converting supplied value for summary: {e}")
                 });
             self
         }
@@ -12663,7 +12137,7 @@ pub mod builder {
         {
             self.text = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for text: {}", e));
+                .map_err(|e| format!("error converting supplied value for text: {e}"));
             self
         }
         pub fn tlp<T>(mut self, value: T) -> Self
@@ -12675,7 +12149,7 @@ pub mod builder {
         {
             self.tlp = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for tlp: {}", e));
+                .map_err(|e| format!("error converting supplied value for tlp: {e}"));
             self
         }
     }
@@ -12732,7 +12206,7 @@ pub mod builder {
             self.cvss_v2 = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for cvss_v2: {}", e)
+                    format!("error converting supplied value for cvss_v2: {e}")
                 });
             self
         }
@@ -12746,7 +12220,7 @@ pub mod builder {
             self.cvss_v3 = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for cvss_v3: {}", e)
+                    format!("error converting supplied value for cvss_v3: {e}")
                 });
             self
         }
@@ -12758,7 +12232,7 @@ pub mod builder {
             self.products = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for products: {}", e)
+                    format!("error converting supplied value for products: {e}")
                 });
             self
         }
@@ -12824,7 +12298,7 @@ pub mod builder {
             self.category = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for category: {}", e)
+                    format!("error converting supplied value for category: {e}")
                 });
             self
         }
@@ -12835,7 +12309,7 @@ pub mod builder {
         {
             self.date = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for date: {}", e));
+                .map_err(|e| format!("error converting supplied value for date: {e}"));
             self
         }
         pub fn details<T>(mut self, value: T) -> Self
@@ -12846,7 +12320,7 @@ pub mod builder {
             self.details = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for details: {}", e)
+                    format!("error converting supplied value for details: {e}")
                 });
             self
         }
@@ -12858,7 +12332,7 @@ pub mod builder {
             self.group_ids = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for group_ids: {}", e)
+                    format!("error converting supplied value for group_ids: {e}")
                 });
             self
         }
@@ -12870,7 +12344,7 @@ pub mod builder {
             self.product_ids = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_ids: {}", e)
+                    format!("error converting supplied value for product_ids: {e}")
                 });
             self
         }
@@ -12958,7 +12432,7 @@ pub mod builder {
             self.aliases = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for aliases: {}", e)
+                    format!("error converting supplied value for aliases: {e}")
                 });
             self
         }
@@ -12971,7 +12445,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for current_release_date: {}", e
+                        "error converting supplied value for current_release_date: {e}"
                     )
                 });
             self
@@ -12984,7 +12458,7 @@ pub mod builder {
             self.generator = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for generator: {}", e)
+                    format!("error converting supplied value for generator: {e}")
                 });
             self
         }
@@ -12995,7 +12469,7 @@ pub mod builder {
         {
             self.id = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for id: {}", e));
+                .map_err(|e| format!("error converting supplied value for id: {e}"));
             self
         }
         pub fn initial_release_date<T>(mut self, value: T) -> Self
@@ -13007,7 +12481,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for initial_release_date: {}", e
+                        "error converting supplied value for initial_release_date: {e}"
                     )
                 });
             self
@@ -13020,9 +12494,7 @@ pub mod builder {
             self.revision_history = value
                 .try_into()
                 .map_err(|e| {
-                    format!(
-                        "error converting supplied value for revision_history: {}", e
-                    )
+                    format!("error converting supplied value for revision_history: {e}")
                 });
             self
         }
@@ -13033,9 +12505,7 @@ pub mod builder {
         {
             self.status = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for status: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for status: {e}"));
             self
         }
         pub fn version<T>(mut self, value: T) -> Self
@@ -13046,7 +12516,7 @@ pub mod builder {
             self.version = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for version: {}", e)
+                    format!("error converting supplied value for version: {e}")
                 });
             self
         }
@@ -13103,9 +12573,7 @@ pub mod builder {
         {
             self.label = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for label: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for label: {e}"));
             self
         }
         pub fn url<T>(mut self, value: T) -> Self
@@ -13115,7 +12583,7 @@ pub mod builder {
         {
             self.url = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for url: {}", e));
+                .map_err(|e| format!("error converting supplied value for url: {e}"));
             self
         }
     }
@@ -13233,7 +12701,7 @@ pub mod builder {
             self.acknowledgments = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for acknowledgments: {}", e)
+                    format!("error converting supplied value for acknowledgments: {e}")
                 });
             self
         }
@@ -13244,7 +12712,7 @@ pub mod builder {
         {
             self.cve = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for cve: {}", e));
+                .map_err(|e| format!("error converting supplied value for cve: {e}"));
             self
         }
         pub fn cwe<T>(mut self, value: T) -> Self
@@ -13254,7 +12722,7 @@ pub mod builder {
         {
             self.cwe = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for cwe: {}", e));
+                .map_err(|e| format!("error converting supplied value for cwe: {e}"));
             self
         }
         pub fn discovery_date<T>(mut self, value: T) -> Self
@@ -13265,7 +12733,7 @@ pub mod builder {
             self.discovery_date = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for discovery_date: {}", e)
+                    format!("error converting supplied value for discovery_date: {e}")
                 });
             self
         }
@@ -13276,9 +12744,7 @@ pub mod builder {
         {
             self.flags = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for flags: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for flags: {e}"));
             self
         }
         pub fn ids<T>(mut self, value: T) -> Self
@@ -13288,7 +12754,7 @@ pub mod builder {
         {
             self.ids = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for ids: {}", e));
+                .map_err(|e| format!("error converting supplied value for ids: {e}"));
             self
         }
         pub fn involvements<T>(mut self, value: T) -> Self
@@ -13299,7 +12765,7 @@ pub mod builder {
             self.involvements = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for involvements: {}", e)
+                    format!("error converting supplied value for involvements: {e}")
                 });
             self
         }
@@ -13310,9 +12776,7 @@ pub mod builder {
         {
             self.notes = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for notes: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for notes: {e}"));
             self
         }
         pub fn product_status<T>(mut self, value: T) -> Self
@@ -13323,7 +12787,7 @@ pub mod builder {
             self.product_status = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for product_status: {}", e)
+                    format!("error converting supplied value for product_status: {e}")
                 });
             self
         }
@@ -13335,7 +12799,7 @@ pub mod builder {
             self.references = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for references: {}", e)
+                    format!("error converting supplied value for references: {e}")
                 });
             self
         }
@@ -13347,7 +12811,7 @@ pub mod builder {
             self.release_date = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for release_date: {}", e)
+                    format!("error converting supplied value for release_date: {e}")
                 });
             self
         }
@@ -13359,7 +12823,7 @@ pub mod builder {
             self.remediations = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for remediations: {}", e)
+                    format!("error converting supplied value for remediations: {e}")
                 });
             self
         }
@@ -13370,9 +12834,7 @@ pub mod builder {
         {
             self.scores = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for scores: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for scores: {e}"));
             self
         }
         pub fn threats<T>(mut self, value: T) -> Self
@@ -13383,7 +12845,7 @@ pub mod builder {
             self.threats = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for threats: {}", e)
+                    format!("error converting supplied value for threats: {e}")
                 });
             self
         }
@@ -13394,9 +12856,7 @@ pub mod builder {
         {
             self.title = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for title: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for title: {e}"));
             self
         }
     }

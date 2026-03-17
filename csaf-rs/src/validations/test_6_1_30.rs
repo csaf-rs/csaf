@@ -1,11 +1,11 @@
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::validation::ValidationError;
 use std::mem::discriminant;
 
 fn create_mixed_versioning_error(
-    doc_version: &ValidVersionNumber,
-    revision_number: &ValidVersionNumber,
+    doc_version: &CsafVersionNumber,
+    revision_number: &CsafVersionNumber,
     revision_index: &usize,
 ) -> ValidationError {
     ValidationError {
@@ -24,25 +24,12 @@ fn create_mixed_versioning_error(
 pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    let doc_version = match tracking.get_version() {
-        CsafVersionNumber::Valid(doc_version) => doc_version,
-        CsafVersionNumber::Invalid(err) => {
-            return Err(vec![err.get_validation_error("/document/version")]);
-        },
-    };
+    let doc_version = tracking.get_version();
     let doc_version_discriminant = discriminant(&doc_version);
 
     let mut errors: Option<Vec<ValidationError>> = None;
     for (revision_index, revision) in tracking.get_revision_history().iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
-            CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
-                continue;
-            },
-        };
+        let number = revision.get_number();
 
         if doc_version_discriminant != discriminant(&number) {
             errors
@@ -81,13 +68,12 @@ mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use std::str::FromStr;
 
     #[test]
     fn test_test_6_1_30() {
         let case_01 = Err(vec![create_mixed_versioning_error(
-            &ValidVersionNumber::from_str("2").unwrap(),
-            &ValidVersionNumber::from_str("1.0.0").unwrap(),
+            &CsafVersionNumber::from("2"),
+            &CsafVersionNumber::from("1.0.0"),
             &0,
         )]);
 

@@ -13,8 +13,8 @@ use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat,
-    DocumentStatus, Epss, LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory, QualitativeSeverityRating
+    CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,
+    LabelOfTheFlag, LabelOfTlp, NoteCategory, PartyCategory, QualitativeSeverityRating,
 };
 use crate::validation::ValidationError;
 use chrono::{DateTime, Utc};

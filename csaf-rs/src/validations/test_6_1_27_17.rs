@@ -34,7 +34,7 @@ fn create_incorrect_category_error(note_index: usize) -> ValidationError {
 ///
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` and only if the document language is English (i.e., `/document/lang` with value `en`) or unspecified.
 ///
-/// Exactly one item in /document/notes[] must have a title `Reasoning for Withdrawal` with category `description` with .
+/// Exactly one item in /document/notes[] must have a title `Reasoning for Withdrawal` with category `description`.
 pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 

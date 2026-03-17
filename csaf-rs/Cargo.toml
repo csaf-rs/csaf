@@ -19,12 +19,11 @@ converter = []
 wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:tsify", "dep:console_error_panic_hook"]
 
 [dependencies]
-regress = "0.10"
+regress = "0.11"
 serde = { version = "1", features = ["derive"] }
 serde_json = {  version = "1",  features = ["preserve_order"]}
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
-glob = "0.3"
 rust-embed = { version = "8", features = ["include-exclude"] }
 packageurl = "0.6.0-rc.1"
 uuid = { version = "1.17.0", features = ["v7", "serde"] }
@@ -34,7 +33,7 @@ serde-wasm-bindgen = { version = "0.6", optional = true }
 console_error_panic_hook = { version = "0.1", optional = true }
 semver = { version = "1" }
 thiserror = "2"
-jsonschema = { version = "0.44.0", default-features = false }
+jsonschema = { version = "0.45.0", default-features = false }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
@@ -43,11 +42,8 @@ uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 schemars = "0.8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-typify = "0.5"
-glob = "0.3"
+typify = "0.6"
 syn = "2"
 prettyplease = "0.2"
 thiserror = "2"
-json_dotpath = "1"
 quote = "1"
-proc-macro2 = "1"

@@ -45,7 +45,7 @@ impl DistributionTrait for RulesForSharingDocument20 {
         match self.tlp.as_ref() {
             None => Err(ValidationError {
                 message: "CSAF 2.1 requires the TLP property, but it is not set.".to_string(),
-                instance_path: "/document/distribution/sharing_group/tlp".to_string(),
+                instance_path: "/document/distribution/tlp".to_string(),
             }),
             Some(tlp) => Ok(tlp),
         }

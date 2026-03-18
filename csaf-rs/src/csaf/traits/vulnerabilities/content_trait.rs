@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
-use crate::schema::csaf2_0::schema::Score as Score20;
-use crate::schema::csaf2_1::schema::{Content as Content21, Epss};
+use crate::schema::csaf2_0::schema::Score;
+use crate::schema::csaf2_1::schema::{Content, Epss, QualitativeSeverityRating};
 use serde::de::Error as SerdeError;
 use serde_json::{Map, Value};
 
@@ -72,6 +72,14 @@ pub trait ContentTrait {
         self.get_epss().is_some()
     }
 
+    /// Returns a reference to the contained qualitative severity rating if it exists.
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating>;
+
+    /// Returns whether this content contains a qualitative severity rating.
+    fn has_qualitative_severity(&self) -> bool {
+        self.get_qualitative_severity().is_some()
+    }
+
     /// This function constructs a JSON path string that can be used to locate the specific
     /// content object within a CSAF document's JSON structure. The path format varies between
     /// CSAF versions due to structural differences in how metrics and content are organized.
@@ -98,7 +106,7 @@ pub trait ContentTrait {
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String;
 }
 
-impl ContentTrait for Score20 {
+impl ContentTrait for Score {
     fn has_ssvc(&self) -> bool {
         false
     }
@@ -131,12 +139,16 @@ impl ContentTrait for Score20 {
         &None::<Epss>
     }
 
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating> {
+        None
+    }
+
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
         format!("/vulnerabilities/{vulnerability_idx}/scores/{metric_idx}")
     }
 }
 
-impl ContentTrait for Content21 {
+impl ContentTrait for Content {
     fn has_ssvc(&self) -> bool {
         !self.ssvc_v2.is_empty()
     }
@@ -171,6 +183,10 @@ impl ContentTrait for Content21 {
 
     fn get_epss(&self) -> &Option<Epss> {
         &self.epss
+    }
+
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating> {
+        self.qualitative_severity_rating.as_ref()
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {

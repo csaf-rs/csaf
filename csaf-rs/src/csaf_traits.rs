@@ -34,3 +34,4 @@ pub use crate::csaf::traits::vulnerabilities::remediation_trait::RemediationTrai
 pub use crate::csaf::traits::vulnerabilities::threat_trait::ThreatTrait;
 pub use crate::csaf::traits::vulnerabilities::vulnerability_id_trait::VulnerabilityIdTrait;
 pub use crate::csaf::traits::vulnerabilities_trait::VulnerabilityTrait;
+pub use crate::csaf::types::csaf_cwe::Cwe;

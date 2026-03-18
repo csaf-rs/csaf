@@ -25,7 +25,7 @@ use crate::schema::csaf2_1::schema::{
     CategoryOfPublisher as CategoryOfPublisher21, CategoryOfReference as CategoryOfReference21,
     CategoryOfTheRemediation as Remediation21, CategoryOfTheThreat as CategoryOfTheThreat21,
     DocumentStatus as Status21, Epss, LabelOfTheFlag as LabelOfTheFlag21, LabelOfTlp as Tlp21,
-    NoteCategory as NoteCategory21, PartyCategory as PartyCategory21,
+    NoteCategory as NoteCategory21, PartyCategory as PartyCategory21, QualitativeSeverityRating,
 };
 use crate::validation::ValidationError;
 use serde::de::Error;
@@ -185,8 +185,12 @@ impl ContentTrait for Score {
         None
     }
 
-    fn get_epss(&self) -> &Option<Epss> {
-        &None::<Epss>
+    fn get_epss(&self) -> Option<&Epss> {
+        None
+    }
+
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating> {
+        None
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {

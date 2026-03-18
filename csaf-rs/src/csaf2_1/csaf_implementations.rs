@@ -18,9 +18,9 @@ use crate::schema::csaf2_1::schema::{
     CategoryOfTheThreat, CommonSecurityAdvisoryFramework, Content, CryptographicHashes, CsafVersion as CsafVersion21,
     DocumentGenerator, DocumentLevelMetaData, DocumentStatus, Epss, FileHash, FirstKnownExploitationDate, Flag,
     FullProductNameT, HelperToIdentifyTheProduct, Id, Involvement, LabelOfTheFlag, LabelOfTlp, Metric, Note,
-    NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, Reference, Relationship,
-    Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking, TrafficLightProtocolTlp,
-    Vulnerability,
+    NoteCategory, PartyCategory, ProductGroup, ProductStatus, ProductTree, Publisher, QualitativeSeverityRating,
+    Reference, Relationship, Remediation, Revision, RulesForDocumentSharing, SharingGroup, Threat, Tracking,
+    TrafficLightProtocolTlp, Vulnerability,
 };
 use crate::validation::ValidationError;
 use serde_json::{Map, Value};
@@ -140,8 +140,12 @@ impl ContentTrait for Content {
         }
     }
 
-    fn get_epss(&self) -> &Option<Epss> {
-        &self.epss
+    fn get_epss(&self) -> Option<&Epss> {
+        self.epss.as_ref()
+    }
+
+    fn get_qualitative_severity(&self) -> Option<&QualitativeSeverityRating> {
+        self.qualitative_severity_rating.as_ref()
     }
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {

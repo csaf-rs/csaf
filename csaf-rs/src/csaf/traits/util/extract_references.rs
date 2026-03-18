@@ -3,12 +3,12 @@ use crate::csaf_traits::{WithOptionalGroupIds, WithOptionalProductIds};
 /// Central helper function for extracting group references.
 ///
 /// This function implements the core logic for extracting group IDs and their JSON paths
-/// from an iterator of items that implement `WithGroupIds`. This avoids code duplication
+/// from an iterator of items that implement `WithOptionalGroupIds`. This avoids code duplication
 /// across multiple trait implementations.
 ///
 /// # Arguments
 ///
-/// * `items` - An iterator over items that implement WithGroupIds
+/// * `items` - An iterator over items that implement `WithOptionalGroupIds`
 /// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
 ///
 /// # Returns
@@ -35,12 +35,12 @@ fn extract_group_id_impl<'a, T: WithOptionalGroupIds + 'a>(
 /// Central helper function for extracting group references.
 ///
 /// This function implements the core logic for extracting group IDs and their JSON paths
-/// from an iterator of items that implement `WithProductIds`. This avoids code duplication
+/// from an iterator of items that implement `WithOptionalProductIds`. This avoids code duplication
 /// across multiple trait implementations.
 ///
 /// # Arguments
 ///
-/// * `items` - An iterator over items that implement WithProductIds
+/// * `items` - An iterator over items that implement `WithOptionalProductIds`
 /// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
 ///
 /// # Returns

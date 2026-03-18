@@ -30,13 +30,13 @@ fn create_incorrect_category_error(note_index: usize) -> ValidationError {
     }
 }
 
-/// 6.1.27.17 Reasoning for withdrawal
+/// 6.1.27.18 Reasoning for supersession
 ///
-/// This test only applies to documents with `/document/category` with value `csaf_withdrawn` and only if the document language is English (i.e., `/document/lang` with value `en`) or unspecified.
+/// This test only applies to documents with `/document/category` with value `csaf_superseded` and only if the document language is English (i.e., `/document/lang` with value `en`) or unspecified.
 ///
-/// If the document language is English or unspecified, it MUST be tested that exactly one item in document notes exists that has the title Reasoning for Withdrawal.
+/// If the document language is English or unspecified, it MUST be tested that exactly one item in document notes exists that has the title Reasoning for Supersession.
 /// The category of this item MUST be description.
-pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_18_document_notes_for_supersession(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -50,27 +50,27 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
     }
 
     let mut errors = Vec::new();
-    let mut withdrawals = Vec::new();
+    let mut supersessions = Vec::new();
 
     if let Some(notes) = doc.get_document().get_notes() {
         for (i_n, note) in notes.iter().enumerate() {
             if let Some(title) = note.get_title()
-                && title == "Reasoning for Withdrawal"
+                && title == "Reasoning for Supersession"
             {
                 if note.get_category() != NoteCategory::Description {
                     errors.push(create_incorrect_category_error(i_n));
                 }
-                withdrawals.push(i_n);
+                supersessions.push(i_n);
             }
         }
     }
 
     // The fact that there is none or more than one note with the required title is the primary error and we ignore the category check, which is
     // only relevant if there is exactly one occurence.
-    if withdrawals.is_empty() {
+    if supersessions.is_empty() {
         return Err(vec![create_missing_reasoning_error(&doc_category)]);
-    } else if withdrawals.len() > 1 {
-        return Err(withdrawals
+    } else if supersessions.len() > 1 {
+        return Err(supersessions
             .iter()
             .map(|f| create_duplicated_reasoning_error(&doc_category, *f))
             .collect::<Vec<_>>());
@@ -82,16 +82,16 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
+    DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafSuperseded]);
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_17
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_18
 {
     fn validate(
         &self,
         doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
     ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_17_document_notes_for_withdrawal(doc)
+        test_6_1_27_18_document_notes_for_supersession(doc)
     }
 }
 
@@ -101,24 +101,24 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_1_27_17() {
+    fn test_test_6_1_27_18() {
         let undefined_lang_wrong_category = Err(vec![create_incorrect_category_error(0)]);
         let undefined_lang_duplicate_title = Err(vec![
-            create_duplicated_reasoning_error(&CsafDocumentCategory::CsafWithdrawn, 0),
-            create_duplicated_reasoning_error(&CsafDocumentCategory::CsafWithdrawn, 1),
+            create_duplicated_reasoning_error(&CsafDocumentCategory::CsafSuperseded, 0),
+            create_duplicated_reasoning_error(&CsafDocumentCategory::CsafSuperseded, 1),
         ]);
         let lang_en_us_wrong_category = Err(vec![create_incorrect_category_error(0)]);
-        let undefined_lang_missing_reasoning = Err(vec![create_missing_reasoning_error(
-            &CsafDocumentCategory::CsafWithdrawn,
+        let lang_en_gb_missing_reasoning = Err(vec![create_missing_reasoning_error(
+            &CsafDocumentCategory::CsafSuperseded,
         )]);
-        TESTS_2_1.test_6_1_27_17.expect(
+        TESTS_2_1.test_6_1_27_18.expect(
             undefined_lang_wrong_category.clone(),
             undefined_lang_duplicate_title.clone(),
-            undefined_lang_wrong_category,
-            undefined_lang_duplicate_title,
-            lang_en_us_wrong_category,
-            undefined_lang_missing_reasoning.clone(),
-            undefined_lang_missing_reasoning,
+            undefined_lang_wrong_category.clone(),
+            undefined_lang_duplicate_title.clone(),
+            lang_en_us_wrong_category.clone(),
+            lang_en_gb_missing_reasoning.clone(),
+            lang_en_gb_missing_reasoning,
             Ok(()),
             Ok(()),
             Ok(()),

@@ -10,7 +10,7 @@ use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber};
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf::types::version_number::CsafVersionNumber;
-use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
+use ssvc::selection_list::SelectionList;
 use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::{
     CategoryOfPublisher, CategoryOfReference, CategoryOfTheRemediation, CategoryOfTheThreat, DocumentStatus, Epss,

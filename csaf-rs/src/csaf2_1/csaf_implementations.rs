@@ -12,7 +12,7 @@ use crate::csaf_traits::{
     RelationshipTrait, RemediationTrait, RevisionTrait, SharingGroupTrait, ThreatTrait, TlpTrait, TrackingTrait,
     VulnerabilityIdTrait, VulnerabilityTrait, WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
-use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
+use ssvc::selection_list::SelectionList;
 use crate::schema::csaf2_1::schema::{
     Branch, CategoryOfPublisher, CategoryOfReference, CategoryOfTheBranch, CategoryOfTheRemediation,
     CategoryOfTheThreat, CommonSecurityAdvisoryFramework, Content, CryptographicHashes, CsafVersion as CsafVersion21,

@@ -1,11 +1,11 @@
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 use std::mem::discriminant;
 
 fn create_mixed_versioning_error(
-    doc_version: &ValidVersionNumber,
-    revision_version: &ValidVersionNumber,
+    doc_version: &CsafVersionNumber,
+    revision_version: &CsafVersionNumber,
 ) -> ValidationError {
     ValidationError {
         message: format!(
@@ -16,8 +16,8 @@ fn create_mixed_versioning_error(
 }
 
 fn create_mixed_versioning_within_history_error(
-    first_version: &ValidVersionNumber,
-    second_version: &ValidVersionNumber,
+    first_version: &CsafVersionNumber,
+    second_version: &CsafVersionNumber,
     revision_index: &usize,
 ) -> ValidationError {
     let first_version_type = get_version_type_name(first_version);
@@ -30,10 +30,10 @@ fn create_mixed_versioning_within_history_error(
     }
 }
 
-fn get_version_type_name(v: &ValidVersionNumber) -> &'static str {
+fn get_version_type_name(v: &CsafVersionNumber) -> &'static str {
     match v {
-        ValidVersionNumber::SemVer(_) => "semantic versioning",
-        ValidVersionNumber::IntVer(_) => "integer versioning",
+        CsafVersionNumber::SemVer(_) => "semantic versioning",
+        CsafVersionNumber::IntVer(_) => "integer versioning",
     }
 }
 
@@ -41,13 +41,12 @@ fn get_version_type_name(v: &ValidVersionNumber) -> &'static str {
 ///
 /// `/document/tracking/version` and `document/tracking/revision_history[]/number` need to use
 /// the same versioning scheme (either integer versioning or semantic versioning) across the document.
-/// For this test, we take the document version as authoritative for the versioning scheme used in the document.
 pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // make sure revision history is consistent in itself
     let mut tuples = doc.get_document().get_tracking().get_revision_history_tuples();
     tuples.inplace_sort_by_date_then_number();
     let mut errors: Option<Vec<ValidationError>> = None;
-    let mut previous_version: Option<(ValidVersionNumber, usize)> = None;
+    let mut previous_version: Option<(CsafVersionNumber, usize)> = None;
     for (i_v, current_version) in tuples.iter().enumerate() {
         let current_number = current_version.number.clone();
         let current_type = discriminant(&current_number);
@@ -67,14 +66,8 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     }
 
     // now make sure revision history matches document versioning
-    let tracking = doc.get_document().get_tracking();
-    let doc_version = match tracking.get_version() {
-        CsafVersionNumber::Valid(doc_version) => doc_version,
-        CsafVersionNumber::Invalid(err) => {
-            return Err(vec![err.get_validation_error("/document/version")]);
-            // ToDo generate warning https://github.com/csaf-rs/csaf/issues/409
-        },
-    };
+    let doc_version = doc.get_document().get_tracking().get_version();
+
     if let Some((last_history_revision_number, _)) = previous_version
         && discriminant(&last_history_revision_number) != discriminant(&doc_version)
     {
@@ -118,39 +111,36 @@ mod tests {
     #[test]
     fn test_test_6_1_30() {
         let case_semver_then_intver_in_history = Err(vec![create_mixed_versioning_within_history_error(
-            &ValidVersionNumber::from_str("1.0.0").unwrap(),
-            &ValidVersionNumber::from_str("2").unwrap(),
+            &CsafVersionNumber::from("1.0.0"),
+            &CsafVersionNumber::from("2"),
             &1,
         )]);
         let case_intver_then_semver_in_history = Err(vec![create_mixed_versioning_within_history_error(
-            &ValidVersionNumber::from_str("1").unwrap(),
-            &ValidVersionNumber::from_str("2.0.0").unwrap(),
+            &CsafVersionNumber::from("1"),
+            &CsafVersionNumber::from("2.0.0"),
             &1,
         )]);
         let case_intver_history_semver_document = Err(vec![create_mixed_versioning_error(
-            &ValidVersionNumber::from_str("3.0.0").unwrap(),
-            &ValidVersionNumber::from_str("2").unwrap(),
+            &CsafVersionNumber::from("3.0.0"),
+            &CsafVersionNumber::from("2"),
         )]);
         let case_semver_history_intver_document = Err(vec![create_mixed_versioning_error(
-            &ValidVersionNumber::from_str("3").unwrap(),
-            &ValidVersionNumber::from_str("2.0.0").unwrap(),
+            &CsafVersionNumber::from("3"),
+            &CsafVersionNumber::from("2.0.0"),
         )]);
 
         let case_intver_then_semver_then_intver_in_history_semver_in_document = Err(vec![
             create_mixed_versioning_within_history_error(
-                &ValidVersionNumber::from_str("1").unwrap(),
-                &ValidVersionNumber::from_str("2.0.0").unwrap(),
+                &CsafVersionNumber::from("1"),
+                &CsafVersionNumber::from("2.0.0"),
                 &1,
             ),
             create_mixed_versioning_within_history_error(
-                &ValidVersionNumber::from_str("2.0.0").unwrap(),
-                &ValidVersionNumber::from_str("3").unwrap(),
+                &CsafVersionNumber::from("2.0.0"),
+                &CsafVersionNumber::from("3"),
                 &2,
             ),
-            create_mixed_versioning_error(
-                &ValidVersionNumber::from_str("4.0.0").unwrap(),
-                &ValidVersionNumber::from_str("3").unwrap(),
-            ),
+            create_mixed_versioning_error(&CsafVersionNumber::from("4.0.0"), &CsafVersionNumber::from("3")),
         ]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases

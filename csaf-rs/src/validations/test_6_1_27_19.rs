@@ -8,7 +8,7 @@ use crate::validation::ValidationError;
 fn create_missing_reference_error(document_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
-            "The document does not contain a reference where the summary starts with `Superseding Document` and has the category `external`  which is required for documents with category {document_category}"
+            "The document does not contain a reference where the summary starts with `Superseding Document` and has the category `external`  which is required for documents with category `{document_category}`"
         ),
         instance_path: "/document/references".to_string(),
     }

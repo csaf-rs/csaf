@@ -1,0 +1,52 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_security_advisory",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "lang": "en-US",
+    "notes": [
+      {
+        "category": "description",
+        "text": "This CSAF document contained example data and was superseded to create test data.",
+        "title": "Reasoning for Supersession"
+      }
+    ],
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "references": [
+      {
+        "category": "external",
+        "summary": "This is some external reference.",
+        "url": "https://example.com/.well-known/csaf/clear/2024/esa-2024-1234.json"
+      }
+    ],
+    "title": "Mandatory Test: Reference to Superseding Document (failing example 3: irrelevant document category)",
+    "tracking": {
+      "current_release_date": "2024-05-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-27-19-S11",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        },
+        {
+          "date": "2024-05-24T10:00:00.000Z",
+          "number": "2",
+          "summary": "Supersession."
+        }
+      ],
+      "status": "final",
+      "version": "2"
+    }
+  }
+}

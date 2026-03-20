@@ -8,7 +8,7 @@ use crate::validation::ValidationError;
 fn create_missing_reference_error(document_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
         message: format!(
-            "The document does not contain a reference where the summary starts with `Superseding Document` and has the category `external`  which is required for documents with category `{document_category}`"
+            "Document with category `{document_category}' must have at least one reference whose summary starts with `Superseding Document` and has the category `external`"
         ),
         instance_path: "/document/references".to_string(),
     }
@@ -27,7 +27,7 @@ fn create_incorrect_category_error(reference_index: usize) -> ValidationError {
 ///
 /// It MUST be tested that at least one item in document references exists that has a summary starting with "Superseding Document".
 /// The category of this item MUST be external.
-pub fn test_6_1_27_19_reference_to_supersedeing_document(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -57,10 +57,14 @@ pub fn test_6_1_27_19_reference_to_supersedeing_document(doc: &impl CsafTrait) -
         }
     }
 
-    // correct summary with wrong category has precedence
+    // We first check for an incorrect category, because if there is a reference with the correct summary but wrong category,
+    // the document is not valid, even if there is also a reference with correct summary and correct category.
+    // So the incorrect category has precedence over the missing reference. This way the error message is more specific and hints more
+    // directly to the wrong instance.
     if errors.clone().is_some_and(|e| !e.is_empty()) {
         return Err(errors.unwrap());
     }
+
     // completely missing reference with correct summary and category has second precedence
     if !has_external_reference_with_correct_summary {
         return Err(vec![create_missing_reference_error(
@@ -80,7 +84,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
         &self,
         doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
     ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_19_reference_to_supersedeing_document(doc)
+        test_6_1_27_19_reference_to_superseding_document(doc)
     }
 }
 

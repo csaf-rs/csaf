@@ -17,7 +17,7 @@ fn create_missing_reference_error(document_category: &CsafDocumentCategory) -> V
 fn create_incorrect_category_error(reference_index: usize) -> ValidationError {
     ValidationError {
         message: "The reference summary starts with the correct string \"Superseding Document\". However it uses the wrong category.".to_string(),
-        instance_path: format!("/document/references[{reference_index}]").to_string(),
+        instance_path: format!("/document/references[]/{reference_index}").to_string(),
     }
 }
 
@@ -42,6 +42,7 @@ pub fn test_6_1_27_19_reference_to_supersedeing_document(doc: &impl CsafTrait) -
 
     let mut has_external_reference_with_correct_summary = false;
     let mut errors: Option<Vec<ValidationError>> = None;
+    // Check for summary starting with "Superseding Document" and category external
     if let Some(references) = doc.get_document().get_references() {
         for (r_i, reference) in references.iter().enumerate() {
             if reference.get_summary().starts_with("Superseding Document") {
@@ -56,9 +57,11 @@ pub fn test_6_1_27_19_reference_to_supersedeing_document(doc: &impl CsafTrait) -
         }
     }
 
+    // correct summary with wrong category has precedence
     if errors.clone().is_some_and(|e| !e.is_empty()) {
         return Err(errors.unwrap());
     }
+    // completely missing reference with correct summary and category has second precedence
     if !has_external_reference_with_correct_summary {
         return Err(vec![create_missing_reference_error(
             &CsafDocumentCategory::CsafSuperseded,
@@ -89,7 +92,6 @@ mod tests {
     #[test]
     fn test_test_6_1_27_19() {
         let undefined_lang_wrong_category = Err(vec![create_incorrect_category_error(0)]);
-        // let lang_en_wrong_category = Err(vec![create_incorrect_category_error(0)]);
         let lang_en_missing_category = Err(vec![create_missing_reference_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);

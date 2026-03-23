@@ -2,6 +2,10 @@ use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 
+/// Threshold for the maximum number of errors to accumulate. 
+/// This is necessary to prevent performance issues in case of a very long revision history with many missing versions.
+const ACCUMULATION_THRESHOLD: usize = 10;
+
 /// 6.1.21 Missing Item in Revision History
 ///
 /// When ordered by their `date` field, all `/document/tracking/revision_history[]` items need to contain
@@ -17,33 +21,15 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 
     // We can safely unwrap here, as there has to be at least one item in rev_history_tuples
     let first_tuple = rev_history_tuples.first().unwrap();
-    let first_version = &first_tuple.number;
-    let first_number = first_version.get_major();
+    let mut start_of_sequence = first_tuple.number.clone();
 
     // Throw error if first version is not 0 or 1
-    if first_number > 1 {
+    if start_of_sequence.get_major() > 1 {
         return Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            first_version,
+            start_of_sequence.clone(),
             &first_tuple.path_index,
         )]);
     }
-
-    // let expected_last_number = rev_history_tuples.len() as u64 + first_number - 1;
-    // let previous_number = first_number;
-    // for revision_history_item in rev_history_tuples.iter().skip(1) {
-    //     let current_number = revision_history_item.number.get_major();
-    //     let expected_number = previous_number + 1;
-    //     if current_number != expected_number {
-    //         errors
-    //             .get_or_insert_with(Vec::new)
-    //             .push(test_6_1_21_err_missing_version_in_range(
-    //                 &revision_history_item.number,
-    //                 &expected_number,
-    //             ));
-    //     }
-    // }
-
-    // old
 
     // get the maximum version number to find all missing versions in between
     let max_number = rev_history_tuples
@@ -52,25 +38,30 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         .max()
         .unwrap();
 
-    for expected_number in first_number + 1..max_number {
+    while start_of_sequence.get_major() < max_number {
         let mut found = false;
+        if errors.as_ref().is_some_and(|list| list.len() > ACCUMULATION_THRESHOLD) {
+            return Err(vec![test_6_1_21_err_multiple_errors()]);
+        }
+        let expected_version = start_of_sequence.get_next_major_version();
         // search for the expected version in the revision history
         // this ignores ordering problems, because they are tested by 6.1.14
         for revision_history_item in rev_history_tuples.iter() {
-            if revision_history_item.number.clone().get_major() == expected_number {
+            if revision_history_item.number.clone().get_major() == expected_version.get_major() {
                 found = true;
                 break;
             }
         }
         if !found {
-            // We can just take the first tuple here, they are the same anyway (or violate 6.1.30)
             errors
                 .get_or_insert_with(Vec::new)
-                .push(test_6_1_21_err_missing_version_in_range(
-                    &first_version.get_next_major_version(),
+                .push(test_6_1_21_err_missing_version(
+                    &expected_version,
                 ));
         }
+        start_of_sequence = expected_version;
     }
+
     errors.map_or(Ok(()), Err)
 }
 
@@ -97,7 +88,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 }
 
 fn test_6_1_21_err_wrong_first_version_generator(
-    version: &CsafVersionNumber,
+    version: CsafVersionNumber,
     revision_index: &usize,
 ) -> ValidationError {
     let version_error = match version {
@@ -111,7 +102,7 @@ fn test_6_1_21_err_wrong_first_version_generator(
     }
 }
 
-fn test_6_1_21_err_missing_version_in_range(expected_version: &CsafVersionNumber) -> ValidationError {
+fn test_6_1_21_err_missing_version(expected_version: &CsafVersionNumber) -> ValidationError {
     let expected_number = expected_version.get_major();
     let version_error = match expected_version {
         CsafVersionNumber::IntVer(_) => format!("{expected_number}"),
@@ -124,6 +115,13 @@ fn test_6_1_21_err_missing_version_in_range(expected_version: &CsafVersionNumber
     }
 }
 
+fn test_6_1_21_err_multiple_errors() -> ValidationError {
+    ValidationError {
+        message: "Multiple missing versions in revision history found.".to_string(),
+        instance_path: "/document/tracking/revision_history".to_string(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -132,27 +130,31 @@ mod tests {
 
     #[test]
     fn test_test_6_1_21() {
-        let case_intver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
+        let case_intver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version(
             &CsafVersionNumber::from("2"),
         )]);
         let case_intver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            &CsafVersionNumber::from("2"),
+            CsafVersionNumber::from("2"),
             &0,
         )]);
-        let case_semver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
+        let case_semver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version(
             &CsafVersionNumber::from("2.0.0"),
         )]);
         let case_semver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
-            &CsafVersionNumber::from("2.0.0"),
+            CsafVersionNumber::from("2.0.0"),
             &0,
         )]);
-        let case_semver_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
+        let case_semver_missing_2 = Err(vec![test_6_1_21_err_missing_version(
             &CsafVersionNumber::from("2.0.0"),
         )]);
         let case_semver_multiple_single_versions_missing = Err(vec![
-            test_6_1_21_err_missing_version_in_range(&CsafVersionNumber::from("2.0.0")),
-            test_6_1_21_err_missing_version_in_range(&CsafVersionNumber::from("4.0.0")),
-            test_6_1_21_err_missing_version_in_range(&CsafVersionNumber::from("6.0.0")),
+            test_6_1_21_err_missing_version(&CsafVersionNumber::from("2.0.0")),
+            test_6_1_21_err_missing_version(&CsafVersionNumber::from("4.0.0")),
+            test_6_1_21_err_missing_version(&CsafVersionNumber::from("6.0.0")),
+            test_6_1_21_err_missing_version(&CsafVersionNumber::from("7.0.0")),
+        ]);
+        let case_too_many_errors = Err(vec![
+            test_6_1_21_err_multiple_errors()
         ]);
 
         TESTS_2_0.test_6_1_21.expect(
@@ -162,13 +164,13 @@ mod tests {
             case_semver_2_3_missing_1.clone(),
             case_semver_missing_2.clone(),
             case_semver_multiple_single_versions_missing.clone(),
-            Ok(()),
+            case_too_many_errors.clone(),
             Ok(()), // valid intver final start with 1
             Ok(()), // valid intver draft star with 0
             Ok(()), // valid semver final start with 1.0.0
         );
 
-        let case_intver_1_3_4_with_timezone_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
+        let case_intver_1_3_4_with_timezone_missing_2 = Err(vec![test_6_1_21_err_missing_version(
             &CsafVersionNumber::from("2"),
         )]);
 

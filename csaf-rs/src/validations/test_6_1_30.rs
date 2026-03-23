@@ -50,7 +50,6 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     for (i_v, current_version) in tuples.iter().enumerate() {
         let current_number = current_version.number.clone();
         let current_type = discriminant(&current_number);
-        
 
         if let Some((previous_number, _)) = previous_version
             && discriminant(&previous_number) != current_type
@@ -173,7 +172,8 @@ mod tests {
             case_intver_history_semver_document,
             case_semver_history_intver_document,
             case_intver_then_semver_then_intver_in_history_semver_in_document,
-            case_unordered_intver_semver_in_history_semver_in_document,            Ok(()), // only semver versioning
+            case_unordered_intver_semver_in_history_semver_in_document,
+            Ok(()), // only semver versioning
             Ok(()), // only intver versioning
         );
     }

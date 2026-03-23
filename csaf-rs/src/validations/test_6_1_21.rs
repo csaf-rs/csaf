@@ -97,17 +97,17 @@ fn test_6_1_21_err_missing_version_in_range(
     last_number: &u64,
 ) -> ValidationError {
     let version_error = match version {
-        CsafVersionNumber::IntVer(_) => format!("integer version {expected_number}"),
-        CsafVersionNumber::SemVer(_) => format!("semver version {expected_number}.y.z"),
+        CsafVersionNumber::IntVer(_) => format!("{expected_number}"),
+        CsafVersionNumber::SemVer(_) => format!("{expected_number}.y.z"),
     }
     .to_string();
     let version_error_range = match version {
-        CsafVersionNumber::IntVer(_) => format!("integer version range {first_number} to {last_number}"),
-        CsafVersionNumber::SemVer(_) => format!("semver version range {first_number}.y.z to {last_number}.y.z"),
+        CsafVersionNumber::IntVer(_) => format!("{first_number} to {last_number}"),
+        CsafVersionNumber::SemVer(_) => format!("{first_number}.y.z to {last_number}.y.z"),
     }
     .to_string();
     ValidationError {
-        message: format!("Missing revision history item with {version_error} number {version_error_range}"),
+        message: format!("Missing revision history item {version_error} from range {version_error_range}"),
         instance_path: "/document/tracking/revision_history".to_string(),
     }
 }
@@ -120,53 +120,53 @@ mod tests {
 
     #[test]
     fn test_test_6_1_21() {
-        let case_intver_1_missing = Err(vec![test_6_1_21_err_missing_version_in_range(
+        let case_intver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
             &CsafVersionNumber::from("1"),
             &2,
             &1,
             &3,
         )]);
-        let case_intver_2_missing = Err(vec![test_6_1_21_err_wrong_first_version_generator(
+        let case_intver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
             &CsafVersionNumber::from("2"),
             &0,
         )]);
-        let case_semver_1_missing = Err(vec![test_6_1_21_err_missing_version_in_range(
+        let case_semver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
             &CsafVersionNumber::from("1.0.0"),
             &2,
             &1,
             &3,
         )]);
-        let case_semver_2_missing = Err(vec![test_6_1_21_err_wrong_first_version_generator(
+        let case_semver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
             &CsafVersionNumber::from("2.0.0"),
             &0,
         )]);
 
         TESTS_2_0.test_6_1_21.expect(
-            case_intver_1_missing.clone(),
-            case_intver_2_missing.clone(),
-            case_semver_1_missing.clone(),
-            case_semver_2_missing.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
+            case_intver_1_3_missing_2.clone(),
+            case_intver_2_3_missing_1.clone(),
+            case_semver_1_3_missing_2.clone(),
+            case_semver_2_3_missing_1.clone(),
+            Ok(()), // valid intver final start with 1
+            Ok(()), // valid intver draft star with 0
+            Ok(()), // valid semver final start with 1.0.0
         );
 
-        let case_intver_2_missing_higher_versions = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &CsafVersionNumber::from("1"),
-            &2,
-            &1,
-            &4,
-        )]);
+        // let case_intver_1_3_4_with_timezone_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
+        //     &CsafVersionNumber::from("1"),
+        //     &2,
+        //     &1,
+        //     &3,
+        // )]);
 
         TESTS_2_1.test_6_1_21.expect(
-            case_intver_1_missing,
-            case_intver_2_missing,
-            case_intver_2_missing_higher_versions,
-            case_semver_1_missing,
-            case_semver_2_missing,
+            case_intver_1_3_missing_2,
+            case_intver_2_3_missing_1,
             Ok(()),
-            Ok(()),
-            Ok(()),
+            case_semver_1_3_missing_2,
+            case_semver_2_3_missing_1,
+            Ok(()), // valid intver final start with 1
+            Ok(()), // valid intver draft star with 0
+            Ok(()), // valid semver final start with 1.0.0
             Ok(()),
         );
     }

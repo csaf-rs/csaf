@@ -7,16 +7,21 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory test: Mixed Integer and Semantic Versioning (failing example 3: revision history with semver versioning but document has intver)",
+    "title": "Mandatory test: Mixed Integer and Semantic Versioning (failing example 5: unordered revision history with int and semver, semver in document)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-30-S03",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-30-S05",
       "initial_release_date": "2021-07-21T10:00:00.000Z",
       "revision_history": [
         {
+          "date": "2021-07-21T11:00:00.000Z",
+          "number": "3",
+          "summary": "Third version."
+        },
+        {
           "date": "2021-07-21T09:00:00.000Z",
-          "number": "1.0.0",
-          "summary": "Initial version."
+          "number": "1",
+          "summary": "First version."
         },
         {
           "date": "2021-07-21T10:00:00.000Z",
@@ -25,7 +30,7 @@
         }
       ],
       "status": "draft",
-      "version": "3"
+      "version": "4"
     }
   }
 }

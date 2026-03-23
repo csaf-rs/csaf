@@ -50,6 +50,7 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     for (i_v, current_version) in tuples.iter().enumerate() {
         let current_number = current_version.number.clone();
         let current_type = discriminant(&current_number);
+        
 
         if let Some((previous_number, _)) = previous_version
             && discriminant(&previous_number) != current_type
@@ -59,7 +60,7 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
                 .push(create_mixed_versioning_within_history_error(
                     &previous_number,
                     &current_number,
-                    &i_v,
+                    &current_version.path_index,
                 ));
         }
         previous_version = Some((current_number, i_v));
@@ -129,6 +130,19 @@ mod tests {
             &CsafVersionNumber::from("2.0.0"),
         )]);
 
+        let case_unordered_intver_semver_in_history_semver_in_document = Err(vec![
+            create_mixed_versioning_within_history_error(
+                &CsafVersionNumber::from("1"),
+                &CsafVersionNumber::from("2.0.0"),
+                &2,
+            ),
+            create_mixed_versioning_within_history_error(
+                &CsafVersionNumber::from("2.0.0"),
+                &CsafVersionNumber::from("3"),
+                &0,
+            ),
+        ]);
+
         let case_intver_then_semver_then_intver_in_history_semver_in_document = Err(vec![
             create_mixed_versioning_within_history_error(
                 &CsafVersionNumber::from("1"),
@@ -143,13 +157,13 @@ mod tests {
             create_mixed_versioning_error(&CsafVersionNumber::from("4.0.0"), &CsafVersionNumber::from("3")),
         ]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_1_30.expect(
             case_semver_then_intver_in_history.clone(),
             case_intver_then_semver_in_history.clone(),
             case_intver_history_semver_document.clone(),
             case_semver_history_intver_document.clone(),
             case_intver_then_semver_then_intver_in_history_semver_in_document.clone(),
+            case_unordered_intver_semver_in_history_semver_in_document.clone(),
             Ok(()), // only semver versioning
             Ok(()), // only intver versioning
         );
@@ -159,7 +173,7 @@ mod tests {
             case_intver_history_semver_document,
             case_semver_history_intver_document,
             case_intver_then_semver_then_intver_in_history_semver_in_document,
-            Ok(()), // only semver versioning
+            case_unordered_intver_semver_in_history_semver_in_document,            Ok(()), // only semver versioning
             Ok(()), // only intver versioning
         );
     }

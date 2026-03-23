@@ -413,9 +413,13 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-30-s04.json",
           "valid": false
+        },
+         {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-30-s05.json",
+          "valid": false
         }
       ],
-      "valid" : [
+      "valid": [
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-30-s11.json",
           "valid": true

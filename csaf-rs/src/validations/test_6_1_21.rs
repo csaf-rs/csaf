@@ -28,10 +28,34 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         )]);
     }
 
-    let last_number = rev_history_tuples.last().unwrap().number.get_major();
+    // let expected_last_number = rev_history_tuples.len() as u64 + first_number - 1;
+    // let previous_number = first_number;
+    // for revision_history_item in rev_history_tuples.iter().skip(1) {
+    //     let current_number = revision_history_item.number.get_major();
+    //     let expected_number = previous_number + 1;
+    //     if current_number != expected_number {
+    //         errors
+    //             .get_or_insert_with(Vec::new)
+    //             .push(test_6_1_21_err_missing_version_in_range(
+    //                 &revision_history_item.number,
+    //                 &expected_number,
+    //             ));
+    //     }
+    // }
 
-    for expected_number in first_number + 1..last_number {
+    // old
+
+    // get the maximum version number to find all missing versions in between
+    let max_number = rev_history_tuples
+        .iter()
+        .map(|item| item.number.get_major())
+        .max()
+        .unwrap();
+
+    for expected_number in first_number + 1..max_number {
         let mut found = false;
+        // search for the expected version in the revision history
+        // this ignores ordering problems, because they are tested by 6.1.14
         for revision_history_item in rev_history_tuples.iter() {
             if revision_history_item.number.clone().get_major() == expected_number {
                 found = true;
@@ -43,10 +67,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
             errors
                 .get_or_insert_with(Vec::new)
                 .push(test_6_1_21_err_missing_version_in_range(
-                    &first_version.clone(),
-                    &expected_number,
-                    &first_number,
-                    &last_number,
+                    &first_version.get_next_major_version(),
                 ));
         }
     }
@@ -90,24 +111,15 @@ fn test_6_1_21_err_wrong_first_version_generator(
     }
 }
 
-fn test_6_1_21_err_missing_version_in_range(
-    version: &CsafVersionNumber,
-    expected_number: &u64,
-    first_number: &u64,
-    last_number: &u64,
-) -> ValidationError {
-    let version_error = match version {
+fn test_6_1_21_err_missing_version_in_range(expected_version: &CsafVersionNumber) -> ValidationError {
+    let expected_number = expected_version.get_major();
+    let version_error = match expected_version {
         CsafVersionNumber::IntVer(_) => format!("{expected_number}"),
         CsafVersionNumber::SemVer(_) => format!("{expected_number}.y.z"),
     }
     .to_string();
-    let version_error_range = match version {
-        CsafVersionNumber::IntVer(_) => format!("{first_number} to {last_number}"),
-        CsafVersionNumber::SemVer(_) => format!("{first_number}.y.z to {last_number}.y.z"),
-    }
-    .to_string();
     ValidationError {
-        message: format!("Missing revision history item {version_error} from range {version_error_range}"),
+        message: format!("Missing revision history item {version_error}"),
         instance_path: "/document/tracking/revision_history".to_string(),
     }
 }
@@ -121,53 +133,55 @@ mod tests {
     #[test]
     fn test_test_6_1_21() {
         let case_intver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &CsafVersionNumber::from("1"),
-            &2,
-            &1,
-            &3,
+            &CsafVersionNumber::from("2"),
         )]);
         let case_intver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
             &CsafVersionNumber::from("2"),
             &0,
         )]);
         let case_semver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
-            &CsafVersionNumber::from("1.0.0"),
-            &2,
-            &1,
-            &3,
+            &CsafVersionNumber::from("2.0.0"),
         )]);
         let case_semver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
             &CsafVersionNumber::from("2.0.0"),
             &0,
         )]);
+        let case_semver_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
+            &CsafVersionNumber::from("2.0.0"),
+        )]);
+        let case_semver_multiple_single_versions_missing = Err(vec![
+            test_6_1_21_err_missing_version_in_range(&CsafVersionNumber::from("2.0.0")),
+            test_6_1_21_err_missing_version_in_range(&CsafVersionNumber::from("4.0.0")),
+            test_6_1_21_err_missing_version_in_range(&CsafVersionNumber::from("6.0.0")),
+        ]);
 
         TESTS_2_0.test_6_1_21.expect(
             case_intver_1_3_missing_2.clone(),
             case_intver_2_3_missing_1.clone(),
             case_semver_1_3_missing_2.clone(),
             case_semver_2_3_missing_1.clone(),
+            case_semver_missing_2.clone(),
+            case_semver_multiple_single_versions_missing.clone(),
+            Ok(()),
             Ok(()), // valid intver final start with 1
             Ok(()), // valid intver draft star with 0
             Ok(()), // valid semver final start with 1.0.0
         );
 
-        // let case_intver_1_3_4_with_timezone_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
-        //     &CsafVersionNumber::from("1"),
-        //     &2,
-        //     &1,
-        //     &3,
-        // )]);
+        let case_intver_1_3_4_with_timezone_missing_2 = Err(vec![test_6_1_21_err_missing_version_in_range(
+            &CsafVersionNumber::from("2"),
+        )]);
 
         TESTS_2_1.test_6_1_21.expect(
             case_intver_1_3_missing_2,
             case_intver_2_3_missing_1,
-            Ok(()),
+            case_intver_1_3_4_with_timezone_missing_2,
             case_semver_1_3_missing_2,
             case_semver_2_3_missing_1,
             Ok(()), // valid intver final start with 1
             Ok(()), // valid intver draft star with 0
             Ok(()), // valid semver final start with 1.0.0
-            Ok(()),
+            Ok(()), // valid intver with timezones
         );
     }
 }

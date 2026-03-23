@@ -54,6 +54,29 @@ impl CsafVersionNumber {
             CsafVersionNumber::SemVer(semver) => semver.get_major(),
         }
     }
+
+    /// Returns the next version number.
+    ///
+    /// Integer versions are incremented by 1.
+    /// Semantic versions perform a major bump, producing `x+1.0.0`.
+    pub fn get_next_major_version(&self) -> CsafVersionNumber {
+        match self {
+            CsafVersionNumber::IntVer(intver) => CsafVersionNumber::IntVer(IntVerVersion::new(
+                intver
+                    .get()
+                    .checked_add(1)
+                    .expect("Integer version overflow while incrementing"),
+            )),
+            CsafVersionNumber::SemVer(semver) => CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+                semver
+                    .get_major()
+                    .checked_add(1)
+                    .expect("Semantic version major overflow while incrementing"),
+                0,
+                0,
+            ))),
+        }
+    }
 }
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber
@@ -241,5 +264,19 @@ mod tests {
         let semver = CsafVersionNumber::from(&version_t_semver);
         assert!(matches!(semver, CsafVersionNumber::SemVer(_)));
         assert_eq!(semver.get_major(), 1);
+    }
+
+    #[test]
+    fn test_increment_intver() {
+        let version = CsafVersionNumber::from("42");
+
+        assert_eq!(version.get_next_major_version().get_major(), 43);
+    }
+
+    #[test]
+    fn test_increment_semver_major() {
+        let version = CsafVersionNumber::from("1.2.3-alpha+001");
+
+        assert_eq!(version.get_next_major_version().to_string(), "2.0.0");
     }
 }

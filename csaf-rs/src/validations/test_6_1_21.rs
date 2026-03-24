@@ -2,7 +2,7 @@ use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 
-/// Threshold for the maximum number of errors to accumulate. 
+/// Threshold for the maximum number of errors to accumulate.
 /// This is necessary to prevent performance issues in case of a very long revision history with many missing versions.
 const ACCUMULATION_THRESHOLD: usize = 10;
 
@@ -55,9 +55,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         if !found {
             errors
                 .get_or_insert_with(Vec::new)
-                .push(test_6_1_21_err_missing_version(
-                    &expected_version,
-                ));
+                .push(test_6_1_21_err_missing_version(&expected_version));
         }
         start_of_sequence = expected_version;
     }
@@ -130,32 +128,24 @@ mod tests {
 
     #[test]
     fn test_test_6_1_21() {
-        let case_intver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version(
-            &CsafVersionNumber::from("2"),
-        )]);
+        let case_intver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version(&CsafVersionNumber::from("2"))]);
         let case_intver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
             CsafVersionNumber::from("2"),
             &0,
         )]);
-        let case_semver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version(
-            &CsafVersionNumber::from("2.0.0"),
-        )]);
+        let case_semver_1_3_missing_2 = Err(vec![test_6_1_21_err_missing_version(&CsafVersionNumber::from("2.0.0"))]);
         let case_semver_2_3_missing_1 = Err(vec![test_6_1_21_err_wrong_first_version_generator(
             CsafVersionNumber::from("2.0.0"),
             &0,
         )]);
-        let case_semver_missing_2 = Err(vec![test_6_1_21_err_missing_version(
-            &CsafVersionNumber::from("2.0.0"),
-        )]);
+        let case_semver_missing_2 = Err(vec![test_6_1_21_err_missing_version(&CsafVersionNumber::from("2.0.0"))]);
         let case_semver_multiple_single_versions_missing = Err(vec![
             test_6_1_21_err_missing_version(&CsafVersionNumber::from("2.0.0")),
             test_6_1_21_err_missing_version(&CsafVersionNumber::from("4.0.0")),
             test_6_1_21_err_missing_version(&CsafVersionNumber::from("6.0.0")),
             test_6_1_21_err_missing_version(&CsafVersionNumber::from("7.0.0")),
         ]);
-        let case_too_many_errors = Err(vec![
-            test_6_1_21_err_multiple_errors()
-        ]);
+        let case_too_many_errors = Err(vec![test_6_1_21_err_multiple_errors()]);
 
         TESTS_2_0.test_6_1_21.expect(
             case_intver_1_3_missing_2.clone(),
@@ -170,9 +160,8 @@ mod tests {
             Ok(()), // valid semver final start with 1.0.0
         );
 
-        let case_intver_1_3_4_with_timezone_missing_2 = Err(vec![test_6_1_21_err_missing_version(
-            &CsafVersionNumber::from("2"),
-        )]);
+        let case_intver_1_3_4_with_timezone_missing_2 =
+            Err(vec![test_6_1_21_err_missing_version(&CsafVersionNumber::from("2"))]);
 
         TESTS_2_1.test_6_1_21.expect(
             case_intver_1_3_missing_2,

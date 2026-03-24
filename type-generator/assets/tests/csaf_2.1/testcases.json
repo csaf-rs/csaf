@@ -215,6 +215,18 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s02.json",
           "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s03.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s04.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s05.json",
+          "valid": false
         }
       ]
     },

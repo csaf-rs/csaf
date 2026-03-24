@@ -147,6 +147,11 @@ mod tests {
         ]);
         let case_too_many_errors = Err(vec![test_6_1_21_err_multiple_errors()]);
 
+        // Valid cases for both 2.0 and 2.1
+        // case 11: valid intver final start with 1
+        // case 12: valid intver draft start with 0
+        // case 13: valid semver final start with 1.0.0
+
         TESTS_2_0.test_6_1_21.expect(
             case_intver_1_3_missing_2.clone(),
             case_intver_2_3_missing_1.clone(),
@@ -155,9 +160,9 @@ mod tests {
             case_semver_missing_2.clone(),
             case_semver_multiple_single_versions_missing.clone(),
             case_too_many_errors.clone(),
-            Ok(()), // valid intver final start with 1
-            Ok(()), // valid intver draft star with 0
-            Ok(()), // valid semver final start with 1.0.0
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
 
         let case_intver_1_3_4_with_timezone_missing_2 =
@@ -169,9 +174,12 @@ mod tests {
             case_intver_1_3_4_with_timezone_missing_2,
             case_semver_1_3_missing_2,
             case_semver_2_3_missing_1,
-            Ok(()), // valid intver final start with 1
-            Ok(()), // valid intver draft star with 0
-            Ok(()), // valid semver final start with 1.0.0
+            case_semver_missing_2,
+            case_semver_multiple_single_versions_missing,
+            case_too_many_errors,
+            Ok(()),
+            Ok(()),
+            Ok(()),
             Ok(()), // valid intver with timezones
         );
     }

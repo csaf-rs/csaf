@@ -6,7 +6,7 @@ use crate::schema::csaf2_0::schema::{
 };
 use crate::schema::csaf2_1::schema::{
     Branch as Branch21, CategoryOfTheBranch as CategoryOfTheBranch21, FullProductNameT as FullProductNameT21,
-    ProductGroup as ProductGroup21, ProductTree as ProductTree21, Relationship as Relationship21,
+    ProductGroup as ProductGroup21, ProductPath as ProductPath21, ProductTree as ProductTree21,
 };
 use std::ops::Deref;
 
@@ -252,7 +252,7 @@ impl ProductTreeTrait for ProductTree20 {
 impl ProductTreeTrait for ProductTree21 {
     type BranchType = Branch21;
     type ProductGroupType = ProductGroup21;
-    type RelationshipType = Relationship21;
+    type RelationshipType = ProductPath21;
     type FullProductNameType = FullProductNameT21;
 
     fn get_branches(&self) -> Option<&Vec<Self::BranchType>> {
@@ -264,7 +264,7 @@ impl ProductTreeTrait for ProductTree21 {
     }
 
     fn get_relationships(&self) -> &Vec<Self::RelationshipType> {
-        &self.relationships
+        &self.product_paths
     }
 
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType> {

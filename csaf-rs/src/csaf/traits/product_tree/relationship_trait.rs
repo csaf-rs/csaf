@@ -37,7 +37,7 @@ impl RelationshipTrait<FullProductNameT> for ProductPath {
 
     fn get_relates_to_product_reference(&self) -> &String {
         todo!(
-            "Decide whether to handle product paths as relationship, relationships as product paths, or to handle them independently"
+            "Refactor RelationshipTrait into ProductPathTrait, and convert CSAF 2.0 Relationships into ProductPaths, see issue #503"
         );
     }
 

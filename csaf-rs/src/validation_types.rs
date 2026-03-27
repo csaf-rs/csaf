@@ -26,7 +26,7 @@ pub enum DocumentStatus {
 pub struct ValidationSummary {
     pub total: Statistic,
     pub passed: usize,
-    pub failed: Statistic,
+    pub failed: usize,
     pub skipped: usize,
     pub not_found: usize,
 }

@@ -1907,6 +1907,11 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            }
 ///          },
 ///          "additionalProperties": false
+///        },
+///        "x_extensions": {
+///          "title": "Document-level Extensions",
+///          "description": "Contains a list of extensions valid at the document property level of the CSAF document and associated with this document metadata.",
+///          "$ref": "#/$defs/extensions_t"
 ///        }
 ///      },
 ///      "additionalProperties": false
@@ -1970,45 +1975,36 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///          },
 ///          "minItems": 1
 ///        },
-///        "relationships": {
-///          "title": "List of relationships",
-///          "description": "Contains a list of relationships.",
+///        "product_paths": {
+///          "title": "List of product paths",
+///          "description": "Contains a list of product paths.",
 ///          "type": "array",
 ///          "items": {
-///            "title": "Relationship",
-///            "description": "Establishes a link between two existing full_product_name_t elements, allowing the document producer to define a combination of two products that form a new full_product_name entry.",
+///            "title": "Product path",
+///            "description": "Establishes a path along existing full_product_name_t elements, allowing the document producer to define a path of multiple products that form a new full_product_name entry.",
 ///            "type": "object",
 ///            "required": [
-///              "category",
+///              "beginning_product_reference",
 ///              "full_product_name",
-///              "product_reference",
-///              "relates_to_product_reference"
+///              "subpaths"
 ///            ],
 ///            "properties": {
-///              "category": {
-///                "title": "Relationship category",
-///                "description": "Defines the category of relationship for the referenced component.",
-///                "type": "string",
-///                "enum": [
-///                  "default_component_of",
-///                  "external_component_of",
-///                  "installed_on",
-///                  "installed_with",
-///                  "optional_component_of"
-///                ]
+///              "beginning_product_reference": {
+///                "title": "Beginning product reference",
+///                "description": "Holds a Product ID that refers to the Full Product Name element, which is the beginning node of the product path.",
+///                "$ref": "#/$defs/product_id_t"
 ///              },
 ///              "full_product_name": {
 ///                "$ref": "#/$defs/full_product_name_t"
 ///              },
-///              "product_reference": {
-///                "title": "Product reference",
-///                "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the first element of the relationship.",
-///                "$ref": "#/$defs/product_id_t"
-///              },
-///              "relates_to_product_reference": {
-///                "title": "Relates to product reference",
-///                "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
-///                "$ref": "#/$defs/product_id_t"
+///              "subpaths": {
+///                "title": "List of product subpaths",
+///                "description": "Contains an ordered list of product subpaths, each one relating to the path defined by all previous elements up to the beginning node of the product path.",
+///                "type": "array",
+///                "items": {
+///                  "$ref": "#/$defs/subpath_t"
+///                },
+///                "minItems": 1
 ///              }
 ///            },
 ///            "additionalProperties": false
@@ -2365,6 +2361,11 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                    },
 ///                    "ssvc_v2": {
 ///                      "type": "object"
+///                    },
+///                    "x_extensions": {
+///                      "title": "Metrics-content-level Extensions",
+///                      "description": "Contains a list of extensions valid at the metrics-content-level of the CSAF document and associated with this metric element.",
+///                      "$ref": "#/$defs/extensions_t"
 ///                    }
 ///                  },
 ///                  "additionalProperties": false
@@ -2598,11 +2599,21 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "description": "Gives the document producer the ability to apply a canonical name or title to the vulnerability.",
 ///            "type": "string",
 ///            "minLength": 1
+///          },
+///          "x_extensions": {
+///            "title": "Vulnerability-level Extensions",
+///            "description": "Contains a list of extensions valid at the vulnerability item level of the CSAF document and associated with this vulnerability element.",
+///            "$ref": "#/$defs/extensions_t"
 ///          }
 ///        },
 ///        "additionalProperties": false
 ///      },
 ///      "minItems": 1
+///    },
+///    "x_extensions": {
+///      "title": "Root-level Extensions",
+///      "description": "Contains a list of extensions valid at the root-level of the CSAF document and associated with this CSAF document.",
+///      "$ref": "#/$defs/extensions_t"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -2621,6 +2632,9 @@ pub struct CommonSecurityAdvisoryFramework {
     ///Represents a list of all relevant vulnerability information items.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub vulnerabilities: ::std::vec::Vec<Vulnerability>,
+    ///Contains a list of extensions valid at the root-level of the CSAF document and associated with this CSAF document.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub x_extensions: ::std::option::Option<ExtensionsT>,
 }
 impl CommonSecurityAdvisoryFramework {
     pub fn builder() -> builder::CommonSecurityAdvisoryFramework {
@@ -2771,6 +2785,11 @@ impl<'de> ::serde::Deserialize<'de> for ContactDetails {
 ///    },
 ///    "ssvc_v2": {
 ///      "type": "object"
+///    },
+///    "x_extensions": {
+///      "title": "Metrics-content-level Extensions",
+///      "description": "Contains a list of extensions valid at the metrics-content-level of the CSAF document and associated with this metric element.",
+///      "$ref": "#/$defs/extensions_t"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -2795,6 +2814,9 @@ pub struct Content {
     pub ssvc_v1: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub ssvc_v2: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+    ///Contains a list of extensions valid at the metrics-content-level of the CSAF document and associated with this metric element.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub x_extensions: ::std::option::Option<ExtensionsT>,
 }
 impl ::std::default::Default for Content {
     fn default() -> Self {
@@ -2806,6 +2828,7 @@ impl ::std::default::Default for Content {
             qualitative_severity_rating: Default::default(),
             ssvc_v1: Default::default(),
             ssvc_v2: Default::default(),
+            x_extensions: Default::default(),
         }
     }
 }
@@ -4017,6 +4040,11 @@ impl DocumentGenerator {
 ///        }
 ///      },
 ///      "additionalProperties": false
+///    },
+///    "x_extensions": {
+///      "title": "Document-level Extensions",
+///      "description": "Contains a list of extensions valid at the document property level of the CSAF document and associated with this document metadata.",
+///      "$ref": "#/$defs/extensions_t"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -4055,6 +4083,9 @@ pub struct DocumentLevelMetaData {
     ///This SHOULD be a canonical name for the document, and sufficiently unique to distinguish it from similar documents.
     pub title: TitleOfThisDocument,
     pub tracking: Tracking,
+    ///Contains a list of extensions valid at the document property level of the CSAF document and associated with this document metadata.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub x_extensions: ::std::option::Option<ExtensionsT>,
 }
 impl DocumentLevelMetaData {
     pub fn builder() -> builder::DocumentLevelMetaData {
@@ -4482,6 +4513,51 @@ impl Epss {
         Default::default()
     }
 }
+///Contains a list of extension elements for the current context.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "List of extensions",
+///  "description": "Contains a list of extension elements for the current context.",
+///  "type": "array",
+///  "items": {
+///    "type": "object"
+///  },
+///  "minItems": 1,
+///  "uniqueItems": true
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(transparent)]
+pub struct ExtensionsT(
+    pub Vec<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+);
+impl ::std::ops::Deref for ExtensionsT {
+    type Target = Vec<::serde_json::Map<::std::string::String, ::serde_json::Value>>;
+    fn deref(
+        &self,
+    ) -> &Vec<::serde_json::Map<::std::string::String, ::serde_json::Value>> {
+        &self.0
+    }
+}
+impl ::std::convert::From<ExtensionsT>
+for Vec<::serde_json::Map<::std::string::String, ::serde_json::Value>> {
+    fn from(value: ExtensionsT) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<
+    Vec<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+> for ExtensionsT {
+    fn from(
+        value: Vec<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    ) -> Self {
+        Self(value)
+    }
+}
 ///Contains one hash value and algorithm of the file to be identified.
 ///
 /// <details><summary>JSON schema</summary>
@@ -4860,16 +4936,16 @@ impl Flag {
 ///          "uniqueItems": true
 ///        },
 ///        "purls": {
-///          "title": "List of package URLs",
-///          "description": "Contains a list of package URLs (purl).",
+///          "title": "List of PURLs",
+///          "description": "Contains a list of Package-URLs (PURL).",
 ///          "type": "array",
 ///          "items": {
-///            "title": "package URL representation",
-///            "description": "The package URL (purl) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
+///            "title": "Package-URL representation",
+///            "description": "The Package-URL (PURL) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
 ///            "type": "string",
 ///            "format": "uri",
 ///            "minLength": 7,
-///            "pattern": "^pkg:[A-Za-z\\.\\-\\+][A-Za-z0-9\\.\\-\\+]*\\/.+"
+///            "pattern": "^pkg:[a-z][a-z0-9\\.\\-]*\\/.+"
 ///          },
 ///          "minItems": 1,
 ///          "uniqueItems": true
@@ -4901,11 +4977,11 @@ impl Flag {
 ///        },
 ///        "skus": {
 ///          "title": "List of stock keeping units",
-///          "description": "Contains a list of full or abbreviated (partial) stock keeping units.",
+///          "description": "Contains a list of stock keeping units.",
 ///          "type": "array",
 ///          "items": {
 ///            "title": "Stock keeping unit",
-///            "description": "Contains a full or abbreviated (partial) stock keeping unit (SKU) which is used in the ordering process to identify the component.",
+///            "description": "Contains a stock keeping unit (SKU) which is used in the ordering process to identify the component - possibly with placeholders.",
 ///            "type": "string",
 ///            "minLength": 1
 ///          },
@@ -4943,6 +5019,11 @@ impl Flag {
 ///        }
 ///      },
 ///      "additionalProperties": false
+///    },
+///    "x_extensions": {
+///      "title": "Product-level Extensions",
+///      "description": "Contains a list of extensions valid at the full product name element level of the CSAF document and associated with this full product name element.",
+///      "$ref": "#/$defs/extensions_t"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -4957,6 +5038,9 @@ pub struct FullProductNameT {
     pub product_id: ProductIdT,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub product_identification_helper: ::std::option::Option<HelperToIdentifyTheProduct>,
+    ///Contains a list of extensions valid at the full product name element level of the CSAF document and associated with this full product name element.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub x_extensions: ::std::option::Option<ExtensionsT>,
 }
 impl FullProductNameT {
     pub fn builder() -> builder::FullProductNameT {
@@ -5113,16 +5197,16 @@ impl GenericUri {
 ///      "uniqueItems": true
 ///    },
 ///    "purls": {
-///      "title": "List of package URLs",
-///      "description": "Contains a list of package URLs (purl).",
+///      "title": "List of PURLs",
+///      "description": "Contains a list of Package-URLs (PURL).",
 ///      "type": "array",
 ///      "items": {
-///        "title": "package URL representation",
-///        "description": "The package URL (purl) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
+///        "title": "Package-URL representation",
+///        "description": "The Package-URL (PURL) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
 ///        "type": "string",
 ///        "format": "uri",
 ///        "minLength": 7,
-///        "pattern": "^pkg:[A-Za-z\\.\\-\\+][A-Za-z0-9\\.\\-\\+]*\\/.+"
+///        "pattern": "^pkg:[a-z][a-z0-9\\.\\-]*\\/.+"
 ///      },
 ///      "minItems": 1,
 ///      "uniqueItems": true
@@ -5154,11 +5238,11 @@ impl GenericUri {
 ///    },
 ///    "skus": {
 ///      "title": "List of stock keeping units",
-///      "description": "Contains a list of full or abbreviated (partial) stock keeping units.",
+///      "description": "Contains a list of stock keeping units.",
 ///      "type": "array",
 ///      "items": {
 ///        "title": "Stock keeping unit",
-///        "description": "Contains a full or abbreviated (partial) stock keeping unit (SKU) which is used in the ordering process to identify the component.",
+///        "description": "Contains a stock keeping unit (SKU) which is used in the ordering process to identify the component - possibly with placeholders.",
 ///        "type": "string",
 ///        "minLength": 1
 ///      },
@@ -5211,7 +5295,7 @@ pub struct HelperToIdentifyTheProduct {
     ///Contains a list of model numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub model_numbers: ::std::option::Option<Vec<ModelNumber>>,
-    ///Contains a list of package URLs (purl).
+    ///Contains a list of Package-URLs (PURL).
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub purls: ::std::option::Option<Vec<::std::string::String>>,
     ///Contains a list of URLs where SBOMs for this product can be retrieved.
@@ -5220,7 +5304,7 @@ pub struct HelperToIdentifyTheProduct {
     ///Contains a list of serial numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub serial_numbers: ::std::option::Option<Vec<SerialNumber>>,
-    ///Contains a list of full or abbreviated (partial) stock keeping units.
+    ///Contains a list of stock keeping units.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub skus: ::std::vec::Vec<StockKeepingUnit>,
     ///Contains a list of identifiers which are either vendor-specific or derived from a standard not yet supported.
@@ -6070,6 +6154,11 @@ impl<'de> ::serde::Deserialize<'de> for LicenseExpression {
 ///        },
 ///        "ssvc_v2": {
 ///          "type": "object"
+///        },
+///        "x_extensions": {
+///          "title": "Metrics-content-level Extensions",
+///          "description": "Contains a list of extensions valid at the metrics-content-level of the CSAF document and associated with this metric element.",
+///          "$ref": "#/$defs/extensions_t"
 ///        }
 ///      },
 ///      "additionalProperties": false
@@ -7451,6 +7540,57 @@ impl<'de> ::serde::Deserialize<'de> for ProductIdT {
             })
     }
 }
+///Establishes a path along existing full_product_name_t elements, allowing the document producer to define a path of multiple products that form a new full_product_name entry.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Product path",
+///  "description": "Establishes a path along existing full_product_name_t elements, allowing the document producer to define a path of multiple products that form a new full_product_name entry.",
+///  "type": "object",
+///  "required": [
+///    "beginning_product_reference",
+///    "full_product_name",
+///    "subpaths"
+///  ],
+///  "properties": {
+///    "beginning_product_reference": {
+///      "title": "Beginning product reference",
+///      "description": "Holds a Product ID that refers to the Full Product Name element, which is the beginning node of the product path.",
+///      "$ref": "#/$defs/product_id_t"
+///    },
+///    "full_product_name": {
+///      "$ref": "#/$defs/full_product_name_t"
+///    },
+///    "subpaths": {
+///      "title": "List of product subpaths",
+///      "description": "Contains an ordered list of product subpaths, each one relating to the path defined by all previous elements up to the beginning node of the product path.",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/subpath_t"
+///      },
+///      "minItems": 1
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ProductPath {
+    ///Holds a Product ID that refers to the Full Product Name element, which is the beginning node of the product path.
+    pub beginning_product_reference: ProductIdT,
+    pub full_product_name: FullProductNameT,
+    ///Contains an ordered list of product subpaths, each one relating to the path defined by all previous elements up to the beginning node of the product path.
+    pub subpaths: ::std::vec::Vec<SubpathT>,
+}
+impl ProductPath {
+    pub fn builder() -> builder::ProductPath {
+        Default::default()
+    }
+}
 ///Contains different lists of product_ids which provide details on the status of the referenced product related to the current vulnerability.
 ///
 /// <details><summary>JSON schema</summary>
@@ -7627,45 +7767,36 @@ impl ProductStatus {
 ///      },
 ///      "minItems": 1
 ///    },
-///    "relationships": {
-///      "title": "List of relationships",
-///      "description": "Contains a list of relationships.",
+///    "product_paths": {
+///      "title": "List of product paths",
+///      "description": "Contains a list of product paths.",
 ///      "type": "array",
 ///      "items": {
-///        "title": "Relationship",
-///        "description": "Establishes a link between two existing full_product_name_t elements, allowing the document producer to define a combination of two products that form a new full_product_name entry.",
+///        "title": "Product path",
+///        "description": "Establishes a path along existing full_product_name_t elements, allowing the document producer to define a path of multiple products that form a new full_product_name entry.",
 ///        "type": "object",
 ///        "required": [
-///          "category",
+///          "beginning_product_reference",
 ///          "full_product_name",
-///          "product_reference",
-///          "relates_to_product_reference"
+///          "subpaths"
 ///        ],
 ///        "properties": {
-///          "category": {
-///            "title": "Relationship category",
-///            "description": "Defines the category of relationship for the referenced component.",
-///            "type": "string",
-///            "enum": [
-///              "default_component_of",
-///              "external_component_of",
-///              "installed_on",
-///              "installed_with",
-///              "optional_component_of"
-///            ]
+///          "beginning_product_reference": {
+///            "title": "Beginning product reference",
+///            "description": "Holds a Product ID that refers to the Full Product Name element, which is the beginning node of the product path.",
+///            "$ref": "#/$defs/product_id_t"
 ///          },
 ///          "full_product_name": {
 ///            "$ref": "#/$defs/full_product_name_t"
 ///          },
-///          "product_reference": {
-///            "title": "Product reference",
-///            "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the first element of the relationship.",
-///            "$ref": "#/$defs/product_id_t"
-///          },
-///          "relates_to_product_reference": {
-///            "title": "Relates to product reference",
-///            "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
-///            "$ref": "#/$defs/product_id_t"
+///          "subpaths": {
+///            "title": "List of product subpaths",
+///            "description": "Contains an ordered list of product subpaths, each one relating to the path defined by all previous elements up to the beginning node of the product path.",
+///            "type": "array",
+///            "items": {
+///              "$ref": "#/$defs/subpath_t"
+///            },
+///            "minItems": 1
 ///          }
 ///        },
 ///        "additionalProperties": false
@@ -7688,9 +7819,9 @@ pub struct ProductTree {
     ///Contains a list of product groups.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub product_groups: ::std::vec::Vec<ProductGroup>,
-    ///Contains a list of relationships.
+    ///Contains a list of product paths.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub relationships: ::std::vec::Vec<Relationship>,
+    pub product_paths: ::std::vec::Vec<ProductPath>,
 }
 impl ::std::default::Default for ProductTree {
     fn default() -> Self {
@@ -7698,7 +7829,7 @@ impl ::std::default::Default for ProductTree {
             branches: Default::default(),
             full_product_names: Default::default(),
             product_groups: Default::default(),
-            relationships: Default::default(),
+            product_paths: Default::default(),
         }
     }
 }
@@ -8050,76 +8181,14 @@ impl ::std::convert::From<::std::vec::Vec<Reference>> for ReferencesT {
         Self(value)
     }
 }
-///Establishes a link between two existing full_product_name_t elements, allowing the document producer to define a combination of two products that form a new full_product_name entry.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Relationship",
-///  "description": "Establishes a link between two existing full_product_name_t elements, allowing the document producer to define a combination of two products that form a new full_product_name entry.",
-///  "type": "object",
-///  "required": [
-///    "category",
-///    "full_product_name",
-///    "product_reference",
-///    "relates_to_product_reference"
-///  ],
-///  "properties": {
-///    "category": {
-///      "title": "Relationship category",
-///      "description": "Defines the category of relationship for the referenced component.",
-///      "type": "string",
-///      "enum": [
-///        "default_component_of",
-///        "external_component_of",
-///        "installed_on",
-///        "installed_with",
-///        "optional_component_of"
-///      ]
-///    },
-///    "full_product_name": {
-///      "$ref": "#/$defs/full_product_name_t"
-///    },
-///    "product_reference": {
-///      "title": "Product reference",
-///      "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the first element of the relationship.",
-///      "$ref": "#/$defs/product_id_t"
-///    },
-///    "relates_to_product_reference": {
-///      "title": "Relates to product reference",
-///      "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
-///      "$ref": "#/$defs/product_id_t"
-///    }
-///  },
-///  "additionalProperties": false
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
-#[serde(deny_unknown_fields)]
-pub struct Relationship {
-    ///Defines the category of relationship for the referenced component.
-    pub category: RelationshipCategory,
-    pub full_product_name: FullProductNameT,
-    ///Holds a Product ID that refers to the Full Product Name element, which is referenced as the first element of the relationship.
-    pub product_reference: ProductIdT,
-    ///Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.
-    pub relates_to_product_reference: ProductIdT,
-}
-impl Relationship {
-    pub fn builder() -> builder::Relationship {
-        Default::default()
-    }
-}
-///Defines the category of relationship for the referenced component.
+///Defines the category of relationship between the previous item and the referenced next product.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
 ///  "title": "Relationship category",
-///  "description": "Defines the category of relationship for the referenced component.",
+///  "description": "Defines the category of relationship between the previous item and the referenced next product.",
 ///  "type": "string",
 ///  "enum": [
 ///    "default_component_of",
@@ -8768,14 +8837,14 @@ impl<'de> ::serde::Deserialize<'de> for SharingGroupName {
             })
     }
 }
-///Contains a full or abbreviated (partial) stock keeping unit (SKU) which is used in the ordering process to identify the component.
+///Contains a stock keeping unit (SKU) which is used in the ordering process to identify the component - possibly with placeholders.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
 ///  "title": "Stock keeping unit",
-///  "description": "Contains a full or abbreviated (partial) stock keeping unit (SKU) which is used in the ordering process to identify the component.",
+///  "description": "Contains a stock keeping unit (SKU) which is used in the ordering process to identify the component - possibly with placeholders.",
 ///  "type": "string",
 ///  "minLength": 1
 ///}
@@ -8840,6 +8909,55 @@ impl<'de> ::serde::Deserialize<'de> for StockKeepingUnit {
             .map_err(|e: self::error::ConversionError| {
                 <D::Error as ::serde::de::Error>::custom(e.to_string())
             })
+    }
+}
+///Contains the next node along the current path and its relationship to the previous node.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Subpath",
+///  "description": "Contains the next node along the current path and its relationship to the previous node.",
+///  "type": "object",
+///  "required": [
+///    "category",
+///    "next_product_reference"
+///  ],
+///  "properties": {
+///    "category": {
+///      "title": "Relationship category",
+///      "description": "Defines the category of relationship between the previous item and the referenced next product.",
+///      "type": "string",
+///      "enum": [
+///        "default_component_of",
+///        "external_component_of",
+///        "installed_on",
+///        "installed_with",
+///        "optional_component_of"
+///      ]
+///    },
+///    "next_product_reference": {
+///      "title": "Next product reference",
+///      "description": "Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.",
+///      "$ref": "#/$defs/product_id_t"
+///    }
+///  },
+///  "additionalProperties": false
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SubpathT {
+    ///Defines the category of relationship between the previous item and the referenced next product.
+    pub category: RelationshipCategory,
+    ///Holds a Product ID that refers to the Full Product Name element, which is referenced as the second element of the relationship.
+    pub next_product_reference: ProductIdT,
+}
+impl SubpathT {
+    pub fn builder() -> builder::SubpathT {
+        Default::default()
     }
 }
 ///SHOULD represent any contextual details the document producers wish to make known about the acknowledgment or acknowledged parties.
@@ -10769,6 +10887,11 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///              },
 ///              "ssvc_v2": {
 ///                "type": "object"
+///              },
+///              "x_extensions": {
+///                "title": "Metrics-content-level Extensions",
+///                "description": "Contains a list of extensions valid at the metrics-content-level of the CSAF document and associated with this metric element.",
+///                "$ref": "#/$defs/extensions_t"
 ///              }
 ///            },
 ///            "additionalProperties": false
@@ -11002,6 +11125,11 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///      "description": "Gives the document producer the ability to apply a canonical name or title to the vulnerability.",
 ///      "type": "string",
 ///      "minLength": 1
+///    },
+///    "x_extensions": {
+///      "title": "Vulnerability-level Extensions",
+///      "description": "Contains a list of extensions valid at the vulnerability item level of the CSAF document and associated with this vulnerability element.",
+///      "$ref": "#/$defs/extensions_t"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -11060,6 +11188,9 @@ pub struct Vulnerability {
     ///Gives the document producer the ability to apply a canonical name or title to the vulnerability.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<Title>,
+    ///Contains a list of extensions valid at the vulnerability item level of the CSAF document and associated with this vulnerability element.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub x_extensions: ::std::option::Option<ExtensionsT>,
 }
 impl ::std::default::Default for Vulnerability {
     fn default() -> Self {
@@ -11080,6 +11211,7 @@ impl ::std::default::Default for Vulnerability {
             remediations: Default::default(),
             threats: Default::default(),
             title: Default::default(),
+            x_extensions: Default::default(),
         }
     }
 }
@@ -11534,6 +11666,10 @@ pub mod builder {
             ::std::vec::Vec<super::Vulnerability>,
             ::std::string::String,
         >,
+        x_extensions: ::std::result::Result<
+            ::std::option::Option<super::ExtensionsT>,
+            ::std::string::String,
+        >,
     }
     impl ::std::default::Default for CommonSecurityAdvisoryFramework {
         fn default() -> Self {
@@ -11542,6 +11678,7 @@ pub mod builder {
                 product_tree: Ok(Default::default()),
                 schema: Err("no value supplied for schema".to_string()),
                 vulnerabilities: Ok(Default::default()),
+                x_extensions: Ok(Default::default()),
             }
         }
     }
@@ -11592,6 +11729,18 @@ pub mod builder {
                 });
             self
         }
+        pub fn x_extensions<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ExtensionsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.x_extensions = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for x_extensions: {e}")
+                });
+            self
+        }
     }
     impl ::std::convert::TryFrom<CommonSecurityAdvisoryFramework>
     for super::CommonSecurityAdvisoryFramework {
@@ -11604,6 +11753,7 @@ pub mod builder {
                 product_tree: value.product_tree?,
                 schema: value.schema?,
                 vulnerabilities: value.vulnerabilities?,
+                x_extensions: value.x_extensions?,
             })
         }
     }
@@ -11615,6 +11765,7 @@ pub mod builder {
                 product_tree: Ok(value.product_tree),
                 schema: Ok(value.schema),
                 vulnerabilities: Ok(value.vulnerabilities),
+                x_extensions: Ok(value.x_extensions),
             }
         }
     }
@@ -11648,6 +11799,10 @@ pub mod builder {
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             ::std::string::String,
         >,
+        x_extensions: ::std::result::Result<
+            ::std::option::Option<super::ExtensionsT>,
+            ::std::string::String,
+        >,
     }
     impl ::std::default::Default for Content {
         fn default() -> Self {
@@ -11659,6 +11814,7 @@ pub mod builder {
                 qualitative_severity_rating: Ok(Default::default()),
                 ssvc_v1: Ok(Default::default()),
                 ssvc_v2: Ok(Default::default()),
+                x_extensions: Ok(Default::default()),
             }
         }
     }
@@ -11759,6 +11915,18 @@ pub mod builder {
                 });
             self
         }
+        pub fn x_extensions<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ExtensionsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.x_extensions = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for x_extensions: {e}")
+                });
+            self
+        }
     }
     impl ::std::convert::TryFrom<Content> for super::Content {
         type Error = super::error::ConversionError;
@@ -11773,6 +11941,7 @@ pub mod builder {
                 qualitative_severity_rating: value.qualitative_severity_rating?,
                 ssvc_v1: value.ssvc_v1?,
                 ssvc_v2: value.ssvc_v2?,
+                x_extensions: value.x_extensions?,
             })
         }
     }
@@ -11786,6 +11955,7 @@ pub mod builder {
                 qualitative_severity_rating: Ok(value.qualitative_severity_rating),
                 ssvc_v1: Ok(value.ssvc_v1),
                 ssvc_v2: Ok(value.ssvc_v2),
+                x_extensions: Ok(value.x_extensions),
             }
         }
     }
@@ -12019,6 +12189,10 @@ pub mod builder {
         >,
         title: ::std::result::Result<super::TitleOfThisDocument, ::std::string::String>,
         tracking: ::std::result::Result<super::Tracking, ::std::string::String>,
+        x_extensions: ::std::result::Result<
+            ::std::option::Option<super::ExtensionsT>,
+            ::std::string::String,
+        >,
     }
     impl ::std::default::Default for DocumentLevelMetaData {
         fn default() -> Self {
@@ -12036,6 +12210,7 @@ pub mod builder {
                 source_lang: Ok(Default::default()),
                 title: Err("no value supplied for title".to_string()),
                 tracking: Err("no value supplied for tracking".to_string()),
+                x_extensions: Ok(Default::default()),
             }
         }
     }
@@ -12194,6 +12369,18 @@ pub mod builder {
                 });
             self
         }
+        pub fn x_extensions<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ExtensionsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.x_extensions = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for x_extensions: {e}")
+                });
+            self
+        }
     }
     impl ::std::convert::TryFrom<DocumentLevelMetaData>
     for super::DocumentLevelMetaData {
@@ -12215,6 +12402,7 @@ pub mod builder {
                 source_lang: value.source_lang?,
                 title: value.title?,
                 tracking: value.tracking?,
+                x_extensions: value.x_extensions?,
             })
         }
     }
@@ -12234,6 +12422,7 @@ pub mod builder {
                 source_lang: Ok(value.source_lang),
                 title: Ok(value.title),
                 tracking: Ok(value.tracking),
+                x_extensions: Ok(value.x_extensions),
             }
         }
     }
@@ -12641,6 +12830,10 @@ pub mod builder {
             ::std::option::Option<super::HelperToIdentifyTheProduct>,
             ::std::string::String,
         >,
+        x_extensions: ::std::result::Result<
+            ::std::option::Option<super::ExtensionsT>,
+            ::std::string::String,
+        >,
     }
     impl ::std::default::Default for FullProductNameT {
         fn default() -> Self {
@@ -12648,6 +12841,7 @@ pub mod builder {
                 name: Err("no value supplied for name".to_string()),
                 product_id: Err("no value supplied for product_id".to_string()),
                 product_identification_helper: Ok(Default::default()),
+                x_extensions: Ok(Default::default()),
             }
         }
     }
@@ -12690,6 +12884,18 @@ pub mod builder {
                 });
             self
         }
+        pub fn x_extensions<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ExtensionsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.x_extensions = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for x_extensions: {e}")
+                });
+            self
+        }
     }
     impl ::std::convert::TryFrom<FullProductNameT> for super::FullProductNameT {
         type Error = super::error::ConversionError;
@@ -12700,6 +12906,7 @@ pub mod builder {
                 name: value.name?,
                 product_id: value.product_id?,
                 product_identification_helper: value.product_identification_helper?,
+                x_extensions: value.x_extensions?,
             })
         }
     }
@@ -12709,6 +12916,7 @@ pub mod builder {
                 name: Ok(value.name),
                 product_id: Ok(value.product_id),
                 product_identification_helper: Ok(value.product_identification_helper),
+                x_extensions: Ok(value.x_extensions),
             }
         }
     }
@@ -13439,6 +13647,95 @@ pub mod builder {
         }
     }
     #[derive(Clone, Debug)]
+    pub struct ProductPath {
+        beginning_product_reference: ::std::result::Result<
+            super::ProductIdT,
+            ::std::string::String,
+        >,
+        full_product_name: ::std::result::Result<
+            super::FullProductNameT,
+            ::std::string::String,
+        >,
+        subpaths: ::std::result::Result<
+            ::std::vec::Vec<super::SubpathT>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for ProductPath {
+        fn default() -> Self {
+            Self {
+                beginning_product_reference: Err(
+                    "no value supplied for beginning_product_reference".to_string(),
+                ),
+                full_product_name: Err(
+                    "no value supplied for full_product_name".to_string(),
+                ),
+                subpaths: Err("no value supplied for subpaths".to_string()),
+            }
+        }
+    }
+    impl ProductPath {
+        pub fn beginning_product_reference<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::ProductIdT>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.beginning_product_reference = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for beginning_product_reference: {e}"
+                    )
+                });
+            self
+        }
+        pub fn full_product_name<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::FullProductNameT>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.full_product_name = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for full_product_name: {e}")
+                });
+            self
+        }
+        pub fn subpaths<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::SubpathT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.subpaths = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for subpaths: {e}")
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<ProductPath> for super::ProductPath {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: ProductPath,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                beginning_product_reference: value.beginning_product_reference?,
+                full_product_name: value.full_product_name?,
+                subpaths: value.subpaths?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::ProductPath> for ProductPath {
+        fn from(value: super::ProductPath) -> Self {
+            Self {
+                beginning_product_reference: Ok(value.beginning_product_reference),
+                full_product_name: Ok(value.full_product_name),
+                subpaths: Ok(value.subpaths),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
     pub struct ProductStatus {
         first_affected: ::std::result::Result<
             ::std::option::Option<super::ProductsT>,
@@ -13651,8 +13948,8 @@ pub mod builder {
             ::std::vec::Vec<super::ProductGroup>,
             ::std::string::String,
         >,
-        relationships: ::std::result::Result<
-            ::std::vec::Vec<super::Relationship>,
+        product_paths: ::std::result::Result<
+            ::std::vec::Vec<super::ProductPath>,
             ::std::string::String,
         >,
     }
@@ -13662,7 +13959,7 @@ pub mod builder {
                 branches: Ok(Default::default()),
                 full_product_names: Ok(Default::default()),
                 product_groups: Ok(Default::default()),
-                relationships: Ok(Default::default()),
+                product_paths: Ok(Default::default()),
             }
         }
     }
@@ -13705,15 +14002,15 @@ pub mod builder {
                 });
             self
         }
-        pub fn relationships<T>(mut self, value: T) -> Self
+        pub fn product_paths<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::Relationship>>,
+            T: ::std::convert::TryInto<::std::vec::Vec<super::ProductPath>>,
             T::Error: ::std::fmt::Display,
         {
-            self.relationships = value
+            self.product_paths = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for relationships: {e}")
+                    format!("error converting supplied value for product_paths: {e}")
                 });
             self
         }
@@ -13727,7 +14024,7 @@ pub mod builder {
                 branches: value.branches?,
                 full_product_names: value.full_product_names?,
                 product_groups: value.product_groups?,
-                relationships: value.relationships?,
+                product_paths: value.product_paths?,
             })
         }
     }
@@ -13737,7 +14034,7 @@ pub mod builder {
                 branches: Ok(value.branches),
                 full_product_names: Ok(value.full_product_names),
                 product_groups: Ok(value.product_groups),
-                relationships: Ok(value.relationships),
+                product_paths: Ok(value.product_paths),
             }
         }
     }
@@ -13929,116 +14226,6 @@ pub mod builder {
                 category: Ok(value.category),
                 summary: Ok(value.summary),
                 url: Ok(value.url),
-            }
-        }
-    }
-    #[derive(Clone, Debug)]
-    pub struct Relationship {
-        category: ::std::result::Result<
-            super::RelationshipCategory,
-            ::std::string::String,
-        >,
-        full_product_name: ::std::result::Result<
-            super::FullProductNameT,
-            ::std::string::String,
-        >,
-        product_reference: ::std::result::Result<
-            super::ProductIdT,
-            ::std::string::String,
-        >,
-        relates_to_product_reference: ::std::result::Result<
-            super::ProductIdT,
-            ::std::string::String,
-        >,
-    }
-    impl ::std::default::Default for Relationship {
-        fn default() -> Self {
-            Self {
-                category: Err("no value supplied for category".to_string()),
-                full_product_name: Err(
-                    "no value supplied for full_product_name".to_string(),
-                ),
-                product_reference: Err(
-                    "no value supplied for product_reference".to_string(),
-                ),
-                relates_to_product_reference: Err(
-                    "no value supplied for relates_to_product_reference".to_string(),
-                ),
-            }
-        }
-    }
-    impl Relationship {
-        pub fn category<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<super::RelationshipCategory>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.category = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for category: {e}")
-                });
-            self
-        }
-        pub fn full_product_name<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<super::FullProductNameT>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.full_product_name = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for full_product_name: {e}")
-                });
-            self
-        }
-        pub fn product_reference<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<super::ProductIdT>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.product_reference = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for product_reference: {e}")
-                });
-            self
-        }
-        pub fn relates_to_product_reference<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<super::ProductIdT>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.relates_to_product_reference = value
-                .try_into()
-                .map_err(|e| {
-                    format!(
-                        "error converting supplied value for relates_to_product_reference: {e}"
-                    )
-                });
-            self
-        }
-    }
-    impl ::std::convert::TryFrom<Relationship> for super::Relationship {
-        type Error = super::error::ConversionError;
-        fn try_from(
-            value: Relationship,
-        ) -> ::std::result::Result<Self, super::error::ConversionError> {
-            Ok(Self {
-                category: value.category?,
-                full_product_name: value.full_product_name?,
-                product_reference: value.product_reference?,
-                relates_to_product_reference: value.relates_to_product_reference?,
-            })
-        }
-    }
-    impl ::std::convert::From<super::Relationship> for Relationship {
-        fn from(value: super::Relationship) -> Self {
-            Self {
-                category: Ok(value.category),
-                full_product_name: Ok(value.full_product_name),
-                product_reference: Ok(value.product_reference),
-                relates_to_product_reference: Ok(value.relates_to_product_reference),
             }
         }
     }
@@ -14518,6 +14705,74 @@ pub mod builder {
         }
     }
     #[derive(Clone, Debug)]
+    pub struct SubpathT {
+        category: ::std::result::Result<
+            super::RelationshipCategory,
+            ::std::string::String,
+        >,
+        next_product_reference: ::std::result::Result<
+            super::ProductIdT,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for SubpathT {
+        fn default() -> Self {
+            Self {
+                category: Err("no value supplied for category".to_string()),
+                next_product_reference: Err(
+                    "no value supplied for next_product_reference".to_string(),
+                ),
+            }
+        }
+    }
+    impl SubpathT {
+        pub fn category<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::RelationshipCategory>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.category = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {e}")
+                });
+            self
+        }
+        pub fn next_product_reference<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::ProductIdT>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.next_product_reference = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for next_product_reference: {e}"
+                    )
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<SubpathT> for super::SubpathT {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: SubpathT,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                category: value.category?,
+                next_product_reference: value.next_product_reference?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::SubpathT> for SubpathT {
+        fn from(value: super::SubpathT) -> Self {
+            Self {
+                category: Ok(value.category),
+                next_product_reference: Ok(value.next_product_reference),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
     pub struct Threat {
         category: ::std::result::Result<
             super::CategoryOfTheThreat,
@@ -14933,6 +15188,10 @@ pub mod builder {
             ::std::option::Option<super::Title>,
             ::std::string::String,
         >,
+        x_extensions: ::std::result::Result<
+            ::std::option::Option<super::ExtensionsT>,
+            ::std::string::String,
+        >,
     }
     impl ::std::default::Default for Vulnerability {
         fn default() -> Self {
@@ -14953,6 +15212,7 @@ pub mod builder {
                 remediations: Ok(Default::default()),
                 threats: Ok(Default::default()),
                 title: Ok(Default::default()),
+                x_extensions: Ok(Default::default()),
             }
         }
     }
@@ -15141,6 +15401,18 @@ pub mod builder {
                 .map_err(|e| format!("error converting supplied value for title: {e}"));
             self
         }
+        pub fn x_extensions<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ExtensionsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.x_extensions = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for x_extensions: {e}")
+                });
+            self
+        }
     }
     impl ::std::convert::TryFrom<Vulnerability> for super::Vulnerability {
         type Error = super::error::ConversionError;
@@ -15164,6 +15436,7 @@ pub mod builder {
                 remediations: value.remediations?,
                 threats: value.threats?,
                 title: value.title?,
+                x_extensions: value.x_extensions?,
             })
         }
     }
@@ -15186,6 +15459,7 @@ pub mod builder {
                 remediations: Ok(value.remediations),
                 threats: Ok(value.threats),
                 title: Ok(value.title),
+                x_extensions: Ok(value.x_extensions),
             }
         }
     }

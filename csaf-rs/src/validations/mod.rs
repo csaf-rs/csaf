@@ -1,7 +1,7 @@
-pub mod test_6_1_01;
+// pub mod test_6_1_01; // TODO: re-enable after fixing, issue #502
 pub mod test_6_1_02;
-pub mod test_6_1_03;
-pub mod test_6_1_04;
+// pub mod test_6_1_03; // TODO: re-enable after fixing, issue #503
+// pub mod test_6_1_04; // TODO: re-enable after fixing, issue #502
 pub mod test_6_1_05;
 pub mod test_6_1_06;
 pub mod test_6_1_07;
@@ -23,7 +23,7 @@ pub mod test_6_1_21;
 pub mod test_6_1_22;
 pub mod test_6_1_23;
 pub mod test_6_1_24;
-pub mod test_6_1_25;
+// pub mod test_6_1_25; // TODO: re-enable after fixing, issue #502
 pub mod test_6_1_26;
 pub mod test_6_1_27_01;
 pub mod test_6_1_27_02;

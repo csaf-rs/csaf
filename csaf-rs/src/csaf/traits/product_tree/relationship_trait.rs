@@ -1,5 +1,5 @@
 use crate::csaf_traits::ProductTrait;
-use crate::schema::csaf2_1::schema::{FullProductNameT, Relationship};
+use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath};
 use std::ops::Deref;
 
 /// Trait representing an abstract relationship in a product tree.
@@ -30,13 +30,15 @@ impl RelationshipTrait<crate::schema::csaf2_0::schema::FullProductNameT>
     }
 }
 
-impl RelationshipTrait<FullProductNameT> for Relationship {
+impl RelationshipTrait<FullProductNameT> for ProductPath {
     fn get_product_reference(&self) -> &String {
-        self.product_reference.deref()
+        &self.beginning_product_reference
     }
 
     fn get_relates_to_product_reference(&self) -> &String {
-        self.relates_to_product_reference.deref()
+        todo!(
+            "Refactor RelationshipTrait into ProductPathTrait, and convert CSAF 2.0 Relationships into ProductPaths, see issue #503"
+        );
     }
 
     fn get_full_product_name(&self) -> &FullProductNameT {

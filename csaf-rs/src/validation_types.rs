@@ -25,7 +25,7 @@ pub enum DocumentStatus {
 #[derive(Serialize)]
 pub struct ValidationSummary {
     pub total: Statistic,
-    pub passed: Statistic,
+    pub passed: usize,
     pub failed: Statistic,
     pub skipped: usize,
     pub not_found: usize,

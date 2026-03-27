@@ -6,7 +6,7 @@ pub struct ValidationResult {
     /// overall result, either valid, invalid, or undetermined (e.g. if no tests were executed)
     pub document_status: DocumentStatus,
     /// the CSAF spec tested against
-    pub version: String,
+    pub csaf_version: String,
     /// overview over the individual tests (x passed, y failed, runtime etc.)
     pub stats: ValidationSummary,
     /// the individual results
@@ -16,9 +16,9 @@ pub struct ValidationResult {
 /// The final status of the document after running all tests. This is determined by the individual test results and their severity.
 #[derive(Serialize, PartialEq)]
 pub enum DocumentStatus {
-    Undetermined,
-    Valid,
-    Invalid,
+    Undetermined, // cannot determine validity (e.g. no tests executed)
+    Valid,        // file is valid
+    Invalid,      // file is invalid
 }
 
 /// Summary of the test results, including counts of total tests, passed, failed, skipped, and not found.
@@ -34,7 +34,7 @@ pub struct ValidationSummary {
 /// Statistic for a group of tests, including the count of tests and counts of errors, warnings, and info findings.
 #[derive(Serialize)]
 pub struct Statistic {
-    pub count: usize,
+    pub test_count: usize,
     pub errors_count: usize,
     pub warnings_count: usize,
     pub info_count: usize,

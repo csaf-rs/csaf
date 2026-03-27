@@ -1,25 +1,25 @@
-use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait, RelationshipTrait};
+use crate::csaf_traits::{CsafTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
-fn generate_self_reference_product_error(index: usize) -> ValidationError {
+fn generate_self_reference_product_error(path: &str) -> ValidationError {
     ValidationError {
-        message: "Relationship references itself via product_reference".to_string(),
-        instance_path: format!("/product_tree/relationships/{index}/product_reference"),
+        message: "Product path references itself first product".to_string(),
+        instance_path: path.to_string(),
     }
 }
 
-fn generate_self_reference_relates_to_error(index: usize) -> ValidationError {
+fn generate_self_reference_relates_to_error(path: &str) -> ValidationError {
     ValidationError {
-        message: "Relationship references itself via relates_to_product_reference".to_string(),
-        instance_path: format!("/product_tree/relationships/{index}/relates_to_product_reference"),
+        message: "Product path references itself via related product".to_string(),
+        instance_path: path.to_string(),
     }
 }
 
-fn generate_cycle_error(cycle: &[String], relation_index: usize) -> ValidationError {
+fn generate_cycle_error(cycle: &[String], path: String) -> ValidationError {
     ValidationError {
-        message: format!("Found product relationship cycle: {}", cycle.join(" -> ")),
-        instance_path: format!("/product_tree/relationships/{relation_index}"),
+        message: format!("Found cycle in product path definitions: {}", cycle.join(" -> ")),
+        instance_path: path,
     }
 }
 
@@ -27,14 +27,14 @@ fn generate_cycle_error(cycle: &[String], relation_index: usize) -> ValidationEr
 ///
 /// # Returns
 /// - `Vec` of the product IDs forming the detected cycle
-/// - Index of the CSAF relation containing the product ID where the cycle was first detected
+/// - Path of the CSAF relation / product path containing the product ID where the cycle was first detected
 pub fn find_cycle<'a>(
-    relation_map: &'a HashMap<String, HashMap<String, usize>>,
+    relation_map: &'a HashMap<String, HashMap<String, String>>,
     product_id: &'a str,
     visited: &mut HashSet<&'a str>,
-) -> Option<(Vec<String>, usize)> {
+) -> Option<(Vec<String>, String)> {
     if !visited.insert(product_id) {
-        return Some((vec![product_id.to_string()], 0));
+        return Some((vec![product_id.to_string()], "".to_string()));
     }
     if let Some(next_vec) = relation_map.get(product_id) {
         for (next, r_i) in next_vec {
@@ -47,7 +47,7 @@ pub fn find_cycle<'a>(
                             // Reverse the cycle when it is complete
                             cycle.push(product_id.to_string());
                             cycle.reverse();
-                            return Some((cycle, *r_i));
+                            return Some((cycle, r_i.clone()));
                         }
                         // Back-trace the cycle to the first node
                         cycle.push(product_id.to_string());
@@ -64,35 +64,57 @@ pub fn find_cycle<'a>(
 pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     if let Some(tree) = doc.get_product_tree().as_ref() {
-        let mut relation_map = HashMap::<String, HashMap<String, usize>>::new();
-
-        for (i_r, r) in tree.get_relationships().iter().enumerate() {
-            let rel_prod_id = r.get_full_product_name().get_product_id();
-            if r.get_product_reference() == rel_prod_id {
+        let mut relation_map = HashMap::<String, HashMap<String, String>>::new();
+        for (pp_i, pp) in tree.get_product_paths().iter().enumerate() {
+            let rel_prod_id = pp.get_full_product_name().get_product_id();
+            if pp.get_beginning_product_reference() == rel_prod_id {
                 errors
                     .get_or_insert_with(Vec::new)
-                    .push(generate_self_reference_product_error(i_r));
-            } else if r.get_relates_to_product_reference() == rel_prod_id {
+                    .push(generate_self_reference_product_error(
+                        &pp.get_json_path_for_product_path_beginning_product_reference(pp_i),
+                    ));
+            } else if let Some(sp_i) = pp
+                .get_subpath_product_references()
+                .iter()
+                .position(|next| *next == rel_prod_id)
+            {
                 errors
                     .get_or_insert_with(Vec::new)
-                    .push(generate_self_reference_relates_to_error(i_r));
+                    .push(generate_self_reference_relates_to_error(
+                        &pp.get_json_path_for_product_path_subpath_product_reference(pp_i, sp_i),
+                    ));
             } else {
-                match relation_map.get_mut(r.get_product_reference()) {
+                match relation_map.get_mut(rel_prod_id) {
                     Some(v) => {
-                        v.insert(r.get_relates_to_product_reference().to_owned(), i_r);
+                        v.insert(
+                            pp.get_beginning_product_reference().to_string(),
+                            pp.get_json_path_for_product_path(pp_i),
+                        );
+                        pp.get_subpath_product_references().iter().for_each(|next| {
+                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
+                        });
                     },
                     None => {
-                        relation_map.insert(
-                            r.get_product_reference().to_owned(),
-                            HashMap::from([(r.get_relates_to_product_reference().to_owned(), i_r)]),
+                        let mut v = HashMap::new();
+                        v.insert(
+                            pp.get_beginning_product_reference().to_string(),
+                            pp.get_json_path_for_product_path(pp_i),
                         );
+                        pp.get_subpath_product_references().iter().for_each(|next| {
+                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
+                        });
+                        relation_map.insert(rel_prod_id.to_string(), v);
                     },
                 }
             }
         }
 
+        // Find all products that are part of any product path (either as beginning or next reference)
+        let products_in_product_path: HashSet<&String> =
+            relation_map.values().flat_map(|referenced| referenced.keys()).collect();
+
         // Perform cycle check
-        for product_id in relation_map.keys() {
+        for product_id in products_in_product_path {
             let mut visited = HashSet::new();
             if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
                 errors
@@ -135,15 +157,58 @@ mod tests {
 
     #[test]
     fn test_test_6_1_03() {
-        let shared_error_01 = Err(vec![generate_self_reference_relates_to_error(0)]);
-        let shared_error_02 = Err(vec![generate_self_reference_product_error(0)]);
-
-        TESTS_2_0
-            .test_6_1_3
-            .expect(shared_error_01.clone(), shared_error_02.clone());
-        TESTS_2_1
-            .test_6_1_3
-            .expect(shared_error_01.clone(), shared_error_02.clone());
+        TESTS_2_0.test_6_1_3.expect(
+            Err(vec![generate_self_reference_relates_to_error(
+                "/product_tree/relationships/0/relates_to_product_reference",
+            )]),
+            Err(vec![generate_self_reference_product_error(
+                "/product_tree/relationships/0/product_reference",
+            )]),
+            Err(vec![
+                generate_cycle_error(
+                    &[
+                        "CSAFPID-9080701".to_string(),
+                        "CSAFPID-9080702".to_string(),
+                        "CSAFPID-9080701".to_string(),
+                    ],
+                    "/product_tree/relationships/0".to_string(),
+                ),
+                generate_cycle_error(
+                    &[
+                        "CSAFPID-9080702".to_string(),
+                        "CSAFPID-9080701".to_string(),
+                        "CSAFPID-9080702".to_string(),
+                    ],
+                    "/product_tree/relationships/1".to_string(),
+                ),
+            ]),
+        );
+        TESTS_2_1.test_6_1_3.expect(
+            Err(vec![generate_self_reference_relates_to_error(
+                "/product_tree/product_paths/0/subpaths/0/next_product_reference",
+            )]),
+            Err(vec![generate_self_reference_product_error(
+                "/product_tree/product_paths/0/beginning_product_reference",
+            )]),
+            Err(vec![
+                generate_cycle_error(
+                    &[
+                        "CSAFPID-9080701".to_string(),
+                        "CSAFPID-9080702".to_string(),
+                        "CSAFPID-9080701".to_string(),
+                    ],
+                    "/product_tree/product_paths/0".to_string(),
+                ),
+                generate_cycle_error(
+                    &[
+                        "CSAFPID-9080702".to_string(),
+                        "CSAFPID-9080701".to_string(),
+                        "CSAFPID-9080702".to_string(),
+                    ],
+                    "/product_tree/product_paths/1".to_string(),
+                ),
+            ]),
+        );
     }
 
     #[test]
@@ -151,20 +216,20 @@ mod tests {
         // Create a relation map with a non-trivial cycle: B -> C -> D -> B
         let mut relation_map = HashMap::new();
 
-        relation_map.insert("A".to_string(), HashMap::from([("B".to_string(), 0)]));
+        relation_map.insert("A".to_string(), HashMap::from([("B".to_string(), "0".to_string())]));
         relation_map.insert(
             "B".to_string(),
-            HashMap::from([("C".to_string(), 1), ("E".to_string(), 2)]),
+            HashMap::from([("C".to_string(), "1".to_string()), ("E".to_string(), "2".to_string())]),
         );
         relation_map.insert(
             "C".to_string(),
-            HashMap::from([("D".to_string(), 3), ("F".to_string(), 4)]),
+            HashMap::from([("D".to_string(), "3".to_string()), ("F".to_string(), "4".to_string())]),
         );
-        relation_map.insert("D".to_string(), HashMap::from([("B".to_string(), 5)]));
+        relation_map.insert("D".to_string(), HashMap::from([("B".to_string(), "5".to_string())]));
 
         // Also add some nodes that aren't part of the cycle
-        relation_map.insert("E".to_string(), HashMap::from([("F".to_string(), 6)]));
-        relation_map.insert("F".to_string(), HashMap::from([("G".to_string(), 7)]));
+        relation_map.insert("E".to_string(), HashMap::from([("F".to_string(), "6".to_string())]));
+        relation_map.insert("F".to_string(), HashMap::from([("G".to_string(), "7".to_string())]));
 
         // Test cycle detection starting from the first node
         let mut visited = HashSet::new();
@@ -172,7 +237,7 @@ mod tests {
         assert!(result.is_some());
         let (cycle, relation_index) = result.unwrap();
         assert_eq!(cycle, vec!("B", "C", "D", "B"));
-        assert_eq!(relation_index, 1);
+        assert_eq!(relation_index, "1");
 
         // Test starting from a node that's part of the cycle
         let mut visited = HashSet::new();
@@ -180,7 +245,7 @@ mod tests {
         assert!(result.is_some());
         let (cycle, relation_index) = result.unwrap();
         assert_eq!(cycle, vec!("C", "D", "B", "C"));
-        assert_eq!(relation_index, 3);
+        assert_eq!(relation_index, "3");
 
         // Test starting from a node that's not part of any cycle
         let mut visited = HashSet::new();

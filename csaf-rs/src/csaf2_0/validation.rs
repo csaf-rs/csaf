@@ -66,9 +66,9 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Severity::Error,
             match test_id {
                 // mandatory tests
-                "6.1.1" => None, // Some(ValidatorForTest6_1_1.validate(self)), // TODO: re-enable after fixing, issue #502
+                "6.1.1" => Some(ValidatorForTest6_1_1.validate(self)),
                 "6.1.2" => Some(ValidatorForTest6_1_2.validate(self)),
-                "6.1.3" => None, // Some(ValidatorForTest6_1_3.validate(self)), // TODO: re-enable after fixing, issue #503
+                "6.1.3" => Some(ValidatorForTest6_1_3.validate(self)),
                 "6.1.4" => Some(ValidatorForTest6_1_4.validate(self)),
                 "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
                 "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),

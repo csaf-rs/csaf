@@ -165,6 +165,8 @@ mod tests {
             three_elements_all_same_algo,
             Ok(()),
             Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

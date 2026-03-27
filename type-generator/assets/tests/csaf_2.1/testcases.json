@@ -227,6 +227,20 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s05.json",
           "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s06.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s07.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-21-s11.json",
+          "valid": true
         }
       ]
     },

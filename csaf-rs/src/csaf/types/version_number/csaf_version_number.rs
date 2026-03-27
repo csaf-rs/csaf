@@ -77,6 +77,29 @@ impl CsafVersionNumber {
             ))),
         }
     }
+
+    /// Returns the previous version number.
+    ///
+    /// Integer versions are decremented by 1.
+    /// Semantic versions perform a major drop, producing `x-1.0.0`.
+    pub fn get_previous_major_version(&self) -> CsafVersionNumber {
+        match self {
+            CsafVersionNumber::IntVer(intver) => CsafVersionNumber::IntVer(IntVerVersion::new(
+                intver
+                    .get()
+                    .checked_sub(1)
+                    .expect("Integer version underflow while decrementing"),
+            )),
+            CsafVersionNumber::SemVer(semver) => CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+                semver
+                    .get_major()
+                    .checked_sub(1)
+                    .expect("Semantic version major underflow while decrementing"),
+                0,
+                0,
+            ))),
+        }
+    }
 }
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber

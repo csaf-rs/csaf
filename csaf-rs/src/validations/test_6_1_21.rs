@@ -2,10 +2,6 @@ use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 
-/// Threshold for the maximum number of errors to accumulate.
-/// This is necessary to prevent performance issues in case of a very long revision history with many missing versions.
-const ACCUMULATION_THRESHOLD: usize = 10;
-
 /// 6.1.21 Missing Item in Revision History
 ///
 /// When ordered by their `date` field, all `/document/tracking/revision_history[]` items need to contain
@@ -37,27 +33,36 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         .map(|item| item.number.get_major())
         .max()
         .unwrap();
-
+    let mut expected_version = start_of_sequence.clone();
     while start_of_sequence.get_major() < max_number {
         let mut found = false;
-        if errors.as_ref().is_some_and(|list| list.len() > ACCUMULATION_THRESHOLD) {
-            return Err(vec![test_6_1_21_err_multiple_errors()]);
-        }
-        let expected_version = start_of_sequence.get_next_major_version();
+        expected_version = expected_version.clone().get_next_major_version();
         // search for the expected version in the revision history
         // this ignores ordering problems, because they are tested by 6.1.14
         for revision_history_item in rev_history_tuples.iter() {
-            if revision_history_item.number.clone().get_major() == expected_version.get_major() {
+            if revision_history_item.number.clone().get_major() == expected_version.clone().get_major() {
                 found = true;
                 break;
             }
         }
-        if !found {
-            errors
-                .get_or_insert_with(Vec::new)
-                .push(test_6_1_21_err_missing_version(&expected_version));
+        if found {
+            let first_missing_version = start_of_sequence.get_next_major_version();
+            if first_missing_version.get_next_major_version() == expected_version {
+                // only 1 version missing
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(test_6_1_21_err_missing_version(&first_missing_version));
+            } else if first_missing_version != expected_version {
+                // multiple versions missing
+                errors
+                    .get_or_insert_with(Vec::new)
+                    .push(test_6_1_21_err_missing_version_range(
+                        &first_missing_version,
+                        &expected_version.get_previous_major_version(),
+                    ));
+            }
+            start_of_sequence = expected_version.clone();
         }
-        start_of_sequence = expected_version;
     }
 
     errors.map_or(Ok(()), Err)
@@ -113,9 +118,9 @@ fn test_6_1_21_err_missing_version(expected_version: &CsafVersionNumber) -> Vali
     }
 }
 
-fn test_6_1_21_err_multiple_errors() -> ValidationError {
+fn test_6_1_21_err_missing_version_range(from: &CsafVersionNumber, to: &CsafVersionNumber) -> ValidationError {
     ValidationError {
-        message: "Multiple missing versions in revision history found.".to_string(),
+        message: format!("Version range from {from} to {to} is missing from revision history."),
         instance_path: "/document/tracking/revision_history".to_string(),
     }
 }
@@ -139,13 +144,15 @@ mod tests {
             &0,
         )]);
         let case_semver_missing_2 = Err(vec![test_6_1_21_err_missing_version(&CsafVersionNumber::from("2.0.0"))]);
-        let case_semver_multiple_single_versions_missing = Err(vec![
+        let case_semver_multiple_single_versions_and_range_missing = Err(vec![
             test_6_1_21_err_missing_version(&CsafVersionNumber::from("2.0.0")),
             test_6_1_21_err_missing_version(&CsafVersionNumber::from("4.0.0")),
-            test_6_1_21_err_missing_version(&CsafVersionNumber::from("6.0.0")),
-            test_6_1_21_err_missing_version(&CsafVersionNumber::from("7.0.0")),
+            test_6_1_21_err_missing_version_range(&CsafVersionNumber::from("6.0.0"), &CsafVersionNumber::from("7.0.0")),
         ]);
-        let case_too_many_errors = Err(vec![test_6_1_21_err_multiple_errors()]);
+        let case_big_range_missing = Err(vec![test_6_1_21_err_missing_version_range(
+            &CsafVersionNumber::from("2.0.0"),
+            &CsafVersionNumber::from("99.0.0"),
+        )]);
 
         // Valid cases for both 2.0 and 2.1
         // case 11: valid intver final start with 1
@@ -158,8 +165,8 @@ mod tests {
             case_semver_1_3_missing_2.clone(),
             case_semver_2_3_missing_1.clone(),
             case_semver_missing_2.clone(),
-            case_semver_multiple_single_versions_missing.clone(),
-            case_too_many_errors.clone(),
+            case_semver_multiple_single_versions_and_range_missing.clone(),
+            case_big_range_missing.clone(),
             Ok(()),
             Ok(()),
             Ok(()),
@@ -175,8 +182,8 @@ mod tests {
             case_semver_1_3_missing_2,
             case_semver_2_3_missing_1,
             case_semver_missing_2,
-            case_semver_multiple_single_versions_missing,
-            case_too_many_errors,
+            case_semver_multiple_single_versions_and_range_missing,
+            case_big_range_missing,
             Ok(()),
             Ok(()),
             Ok(()),

@@ -15,7 +15,7 @@ fn create_stacked_categories_error(
     // generate list of "stacked category x (count), ..."
     let stacked_list: Vec<String> = stacked_categories
         .iter()
-        .map(|(cat, count)| format!("{} ({})", cat, count))
+        .map(|(cat, count)| format!("{cat} ({count})"))
         .collect();
     let stacked_list_str = stacked_list.join(", ");
     ValidationError {

@@ -31,7 +31,7 @@ pub fn test_6_1_61_multiple_stars_in_sku(doc: &impl CsafTrait) -> Result<(), Vec
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_1_61
+    for crate::csaf2_1::testcases::ValidatorForTest6_1_61
 {
     fn validate(
         &self,
@@ -45,7 +45,6 @@ for crate::csaf2_1::testcases::ValidatorForTest6_1_61
 mod tests {
     use super::*;
     use crate::csaf2_1::testcases::TESTS_2_1;
-
 
     #[test]
     fn test_test_6_1_61() {
@@ -63,14 +62,12 @@ mod tests {
         // Case 12: One unescaped star, multiple escaped stars
         // Case 13: Escaped stars, also escaped question mark
 
-
         TESTS_2_1.test_6_1_61.expect(
             case01_two_unescaped,
             case02_escaped_unescaped_mixed,
             Ok(()),
             Ok(()),
-            Ok(())
+            Ok(()),
         );
-
     }
 }

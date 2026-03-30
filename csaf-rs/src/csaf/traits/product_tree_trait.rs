@@ -79,6 +79,13 @@ pub trait ProductTreeTrait {
         ids
     }
 
+    /// Returns all product references from the product tree (groups + relationships).
+    fn get_all_product_references(&self) -> Vec<(String, String)> {
+        let mut ids = self.get_product_groups_product_references();
+        ids.extend(self.get_relationships_product_references());
+        ids
+    }
+
     // Visitors for node types in the tree
 
     /// A trait wrapper for `visit_all_products_generic()` that allows implementations to provide

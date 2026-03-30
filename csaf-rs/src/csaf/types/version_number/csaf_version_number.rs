@@ -200,7 +200,6 @@ impl PartialOrd for VersionNumber {
 // Transform a raw version string into a CsafVersionNumber.  As the schema validation is the same
 // for CSAF 2.0 and 2.1, we can just push the raw string through either before parsing it into a CsafVersionNumber.
 // This is only used for testing and not available on the public API
-#[cfg(test)]
 impl From<&str> for CsafVersionNumber {
     fn from(s: &str) -> Self {
         use std::str::FromStr;

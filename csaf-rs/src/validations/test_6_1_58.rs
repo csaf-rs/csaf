@@ -21,7 +21,7 @@ pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
 
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    // get all paths from root to leafs in the product tree
+    // get all paths from root to leaves in the product tree
     let leaf_paths = product_tree.collect_leaf_paths();
 
     // for every path
@@ -63,7 +63,7 @@ mod tests {
 
     #[test]
     fn test_6_1_58() {
-        // Case 01: Two path, both with version and version range
+        // Case 01: Two paths, both with version and version range
         let case_01 = Err(vec![
             create_both_product_version_version_range_error(
                 "/product_tree/branches/0/branches/0/branches/0/branches/0/product".to_string(),

@@ -27,7 +27,7 @@ fn create_stacked_categories_error(
 /// 6.1.57 Stacked Branch Categories
 ///
 /// In the product tree, the path from root to any FPN, all branch categories (except 'product_family')
-/// are only allowed occur once.
+/// are only allowed to occur once.
 pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
@@ -35,7 +35,7 @@ pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(),
         return Ok(()); // this will be a Passed::NoData later (#409)
     };
 
-    // get all paths from root to leafs in the product tree
+    // get all paths from root to leaves in the product tree
     let leaf_paths = product_tree.collect_leaf_paths();
 
     // for every path

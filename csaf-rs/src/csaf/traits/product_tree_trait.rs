@@ -162,7 +162,7 @@ pub trait ProductTreeTrait {
     /// depth-first traversal with backtracking.
     ///
     /// # Returns
-    /// A vector that for each leaf node contains a vector of tuples that contain:
+    /// A vector of tuples, one for each leaf node, where each tuple contains:
     /// - `Vec<&BranchType>`: references of branches from root to leaf
     /// - `String`: instance path (i.e. `/product_tree/branches/0/branches/0`)
     fn collect_leaf_paths(&self) -> Vec<(Vec<&Self::BranchType>, String)> {
@@ -252,7 +252,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// This is a helper method for `ProductTreeTrait::collect_leaf_paths()`.
     ///
     /// # Arguments
-    /// * `current_path` - A mutable vector for the branches along the current path
+    /// * `branches` - A mutable vector for the branches along the current path
     /// * `instance_path` - The current instance path
     ///
     /// # Returns

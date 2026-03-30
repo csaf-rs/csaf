@@ -51,8 +51,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         let found_expected_version = rev_history_tuples
             .iter()
             .map(|item| &item.number)
-            .find(|number| number.get_major() == expected_version.get_major())
-            .is_some();
+            .any(|number| number.get_major() == expected_version.get_major());
 
         if found_expected_version {
             if start_of_sequence == expected_version {

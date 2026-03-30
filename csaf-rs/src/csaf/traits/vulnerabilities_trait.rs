@@ -1,4 +1,6 @@
-use crate::csaf::traits::util::extract_references::{ExtractGroupReferences, ExtractProductReferences, define_reference_accessors};
+use crate::csaf::traits::util::extract_references::{
+    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
+};
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;

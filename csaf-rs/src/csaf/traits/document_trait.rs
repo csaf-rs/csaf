@@ -1,5 +1,7 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
-use crate::csaf::traits::util::extract_references::{ExtractGroupReferences, ExtractProductReferences, define_reference_accessors};
+use crate::csaf::traits::util::extract_references::{
+    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
+};
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf_traits::{DistributionTrait, DocumentReferenceTrait, NoteTrait, PublisherTrait, TrackingTrait};

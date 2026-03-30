@@ -36,14 +36,18 @@ pub trait CsafTrait {
     /// Returns all group IDs referenced in the document along with their JSON paths.
     fn get_all_group_references(&self) -> Vec<(String, String)> {
         let mut ids = self.get_document().get_all_group_references();
-        ids.extend(collect_references(self.get_vulnerabilities(), |v| v.get_all_group_references()));
+        ids.extend(collect_references(self.get_vulnerabilities(), |v| {
+            v.get_all_group_references()
+        }));
         ids
     }
 
     /// Returns all product IDs referenced in the document along with their JSON paths.
     fn get_all_product_references(&self) -> Vec<(String, String)> {
         let mut ids = self.get_document().get_all_product_references();
-        ids.extend(collect_references(self.get_vulnerabilities(), |v| v.get_all_product_references()));
+        ids.extend(collect_references(self.get_vulnerabilities(), |v| {
+            v.get_all_product_references()
+        }));
         if let Some(pt) = self.get_product_tree() {
             ids.extend(pt.get_all_product_references());
         }

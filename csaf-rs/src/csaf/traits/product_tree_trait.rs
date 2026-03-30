@@ -158,28 +158,50 @@ pub trait ProductTreeTrait {
 
     /// Collects all paths from the product tree root to each leaf node (FPN).
     ///
-    /// It also collects the instance path of that leaf node. For this, it utilizes recursion to do
+    /// It also collects the branch indices of that leaf node. For this, it utilizes recursion to do
     /// depth-first traversal with backtracking.
+    ///
+    /// The indices can be converted to an instance path string on demand via
+    /// [`build_leaf_instance_path`].
     ///
     /// # Returns
     /// A vector of tuples, one for each leaf node, where each tuple contains:
     /// - `Vec<&BranchType>`: references of branches from root to leaf
-    /// - `String`: instance path (i.e. `/product_tree/branches/0/branches/0`)
-    fn collect_leaf_paths(&self) -> Vec<(Vec<&Self::BranchType>, String)> {
-        let mut result: Vec<(Vec<&Self::BranchType>, String)> = Vec::new();
+    /// - `Vec<usize>`: branch indices along the path
+    fn collect_leaf_paths(&self) -> Vec<(Vec<&Self::BranchType>, Vec<usize>)> {
+        let mut result: Vec<(Vec<&Self::BranchType>, Vec<usize>)> = Vec::new();
 
         if let Some(branches) = self.get_branches().as_ref() {
-            // for each root branch, initialize a new vec of branches and path
+            // for each root branch, initialize a new vec of branches and indices
             for (i, branch) in branches.iter().enumerate() {
                 let mut current_path: Vec<&Self::BranchType> = Vec::new();
-                let instance_path = format!("/product_tree/branches/{i}");
+                let mut indices: Vec<usize> = vec![i];
                 // start recursion and collect all paths to leaf nodes into the result
-                result.extend(branch.collect_leaf_paths_rec(&mut current_path, instance_path));
+                branch.collect_leaf_paths_rec(&mut current_path, &mut indices, &mut result);
             }
         }
 
         result
     }
+}
+
+/// Constructs a JSON-pointer instance path from collected branch indices.
+///
+/// # Arguments
+/// - indices: slice of branch indices
+///
+/// # Returns
+/// instance path constructed from branch indices (exp. 0,0,0 -> "/product_tree/branches/0/branches/0/branches/0/product")
+pub fn build_leaf_instance_path(indices: &[usize]) -> String {
+    // 13 for "/product_tree" + per index (10 for "/branches/" + up to 5 digits) + 8 for "/product"
+    let mut path = String::with_capacity(13 + indices.len() * 15 + 8);
+    path.push_str("/product_tree");
+    for idx in indices {
+        path.push_str("/branches/");
+        path.push_str(idx.to_string().as_str());
+    }
+    path.push_str("/product");
+    path
 }
 
 /// Trait representing an abstract branch in a product tree.
@@ -252,44 +274,37 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// This is a helper method for `ProductTreeTrait::collect_leaf_paths()`.
     ///
     /// # Arguments
-    /// * `branches` - A mutable vector for the branches along the current path
-    /// * `instance_path` - The current instance path
-    ///
-    /// # Returns
-    /// A vector of tuples (vector of branches along the path, instance_path) for each leaf node found
+    /// * `branches_on_path` - A mutable vector for the branches along the current path
+    /// * `indices_on_path` - A mutable vector of branch indices along the current path
+    /// * `result` - A mutable vector to collect (branches, indices) tuples for each leaf node
     fn collect_leaf_paths_rec<'a>(
         &'a self,
-        branches: &mut Vec<&'a Self>,
-        instance_path: String,
-    ) -> Vec<(Vec<&'a Self>, String)> {
+        branches_on_path: &mut Vec<&'a Self>,
+        indices_on_path: &mut Vec<usize>,
+        result: &mut Vec<(Vec<&'a Self>, Vec<usize>)>,
+    ) {
         // push the current branch to the branches
-        branches.push(self);
+        branches_on_path.push(self);
 
-        let result = match self.get_branches() {
+        match self.get_branches() {
             // TODO: depending on how we implement extended schema validation, the children.is_empty() might not be necessary
-            Some(children) if !children.is_empty() => {
-                // there are still nodes to visit
-                let mut collected = Vec::new();
-                for (i, child) in children.iter().enumerate() {
-                    // add another level to the instance path and continue recursion
-                    let child_instance_path = format!("{}/branches/{}", instance_path, i);
-                    collected.extend(child.collect_leaf_paths_rec(branches, child_instance_path));
+            Some(branches) if !branches.is_empty() => {
+                // there are still nodes to visit, recurse for each branch
+                for (i, child) in branches.iter().enumerate() {
+                    indices_on_path.push(i);
+                    child.collect_leaf_paths_rec(branches_on_path, indices_on_path, result);
+                    indices_on_path.pop();
                 }
-                collected
             },
             _ => {
                 // we are at a leaf node
-                let leaf_path = format!("{instance_path}/product");
-                vec![(branches.clone(), leaf_path)]
+                result.push((branches_on_path.clone(), indices_on_path.clone()));
             },
         };
 
         // backtrack
-        branches.pop();
-        result
+        branches_on_path.pop();
     }
-
-
 }
 
 impl ProductTreeTrait for ProductTree20 {

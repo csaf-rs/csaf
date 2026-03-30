@@ -1,4 +1,4 @@
-use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
+use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait, build_leaf_instance_path};
 use crate::validation::ValidationError;
 
 fn create_both_product_version_version_range_error(instance_path: String) -> ValidationError {
@@ -25,7 +25,7 @@ pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
     let leaf_paths = product_tree.collect_leaf_paths();
 
     // for every path
-    for (path, path_str) in leaf_paths {
+    for (path, indices) in leaf_paths {
         // check if it contains one of the relevant categories
         let contains_product_version = path
             .iter()
@@ -38,7 +38,9 @@ pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
         if contains_product_version && contains_product_version_range {
             errors
                 .get_or_insert_default()
-                .push(create_both_product_version_version_range_error(path_str));
+                .push(create_both_product_version_version_range_error(
+                    build_leaf_instance_path(&indices),
+                ));
         }
     }
 

@@ -1,4 +1,4 @@
-use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
+use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait, build_leaf_instance_path};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
@@ -39,7 +39,7 @@ pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(),
     let leaf_paths = product_tree.collect_leaf_paths();
 
     // for every path
-    for (path, path_str) in leaf_paths {
+    for (path, indices) in leaf_paths {
         // generate a hashmap of category occurrences
         let mut categories_in_path_map: HashMap<&CategoryOfTheBranch, u64> = HashMap::new();
         for branch in &path {
@@ -53,17 +53,20 @@ pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(),
         }
 
         // filter hashmap to only categories that occur more than once
-        let stacked_categories: Vec<(&CategoryOfTheBranch, &u64)> = categories_in_path_map
+        let mut stacked_categories: Vec<(&CategoryOfTheBranch, &u64)> = categories_in_path_map
             .iter()
             .filter(|(_, count)| **count > 1)
             .map(|(cat, count)| (*cat, count))
             .collect();
+        // sort found categories deterministic
+        stacked_categories.sort_by_key(|(cat, _)| *cat);
 
         // if there are any, create an error for this path
         if !stacked_categories.is_empty() {
-            errors
-                .get_or_insert_default()
-                .push(create_stacked_categories_error(&stacked_categories, path_str));
+            errors.get_or_insert_default().push(create_stacked_categories_error(
+                &stacked_categories,
+                build_leaf_instance_path(&indices),
+            ));
         }
     }
 

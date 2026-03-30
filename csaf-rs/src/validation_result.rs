@@ -8,7 +8,7 @@ pub struct ValidationResult {
     /// the CSAF spec tested against
     pub csaf_version: String,
     /// overview over the individual tests (x passed, y failed etc.)
-    pub stats: ValidationSummary,
+    pub summary: ValidationSummary,
     /// the individual results
     pub results: Vec<TestRunResult>,
 }

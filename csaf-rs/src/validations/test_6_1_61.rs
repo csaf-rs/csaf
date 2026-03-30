@@ -30,22 +30,47 @@ pub fn test_6_1_61_multiple_stars_in_sku(doc: &impl CsafTrait) -> Result<(), Vec
     errors.map_or(Ok(()), Err)
 }
 
-// TODO: Implement this after test was merged upstream
-// impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-// for crate::csaf2_1::testcases::ValidatorForTest6_1_61
-// {
-//     fn validate(
-//         &self,
-//         doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-//     ) -> Result<(), Vec<ValidationError>> {
-//         test_6_1_61_multiple_stars_in_sku(doc)
-//     }
-// }
-//
-// #[cfg(test)]
-// mod tests {
-//
-//     #[test]
-//     fn test_test_6_1_61() {
-//     }
-// }
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+for crate::csaf2_1::testcases::ValidatorForTest6_1_61
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<ValidationError>> {
+        test_6_1_61_multiple_stars_in_sku(doc)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+
+
+    #[test]
+    fn test_test_6_1_61() {
+        let case01_two_unescaped = Err(vec![create_multiple_stars_sku_error(
+            &CsafStockKeepingUnit::from("NL*12*"),
+            "/product_tree/full_product_names/0",
+            0,
+        )]);
+        let case02_escaped_unescaped_mixed = Err(vec![create_multiple_stars_sku_error(
+            &CsafStockKeepingUnit::from("*P*\\*?*"),
+            "/product_tree/full_product_names/0",
+            0,
+        )]);
+        // Case 11: 5 SKUs, all with only one star
+        // Case 12: One unescaped star, multiple escaped stars
+        // Case 13: Escaped stars, also escaped question mark
+
+
+        TESTS_2_1.test_6_1_61.expect(
+            case01_two_unescaped,
+            case02_escaped_unescaped_mixed,
+            Ok(()),
+            Ok(()),
+            Ok(())
+        );
+
+    }
+}

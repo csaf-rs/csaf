@@ -14,12 +14,16 @@ pub trait ProductIdentificationHelperTrait {
     /// Returns the PURLs identifying the associated product.
     fn get_purls(&self) -> Option<&[String]>;
 
+    /// Returns the stock keeping units associated with this product.
     fn get_skus(&self) -> Vec<CsafStockKeepingUnit>;
 
+    /// Returns the model numbers associated with this product.
     fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>>;
 
+    /// Returns the serial numbers associated with this product.
     fn get_serial_numbers(&self) -> Option<Vec<CsafSerialNumber>>;
 
+    /// Returns the hashes associated with this product.
     fn get_hashes(&self) -> &Vec<Self::HashType>;
 }
 

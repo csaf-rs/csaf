@@ -110,6 +110,7 @@ fn fix_2_1_schema(value: &mut Value) {
         format!("{prefix}.cvss_v4"),
         format!("{prefix}.ssvc_v1"),
         format!("{prefix}.ssvc_v2"),
+        "$defs.extensions_t.items".to_string(),
     ];
     for path in fix_paths {
         value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();

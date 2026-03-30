@@ -1,4 +1,3 @@
-pub mod csaf_implementations;
 pub mod loader;
 #[path = "ssvc_dp.generated.rs"]
 pub mod ssvc_dp;

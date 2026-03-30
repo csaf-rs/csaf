@@ -114,7 +114,25 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 | 6.1.24 |                    |                    |
 | 6.1.25 |                    |                    |
 | 6.1.26 |                    |                    |
-| 6.1.27 |                    |                    |
+| 6.1.27.1 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.2 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.3 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.4 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.5 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.6 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.7 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.8 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.9 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.10 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.11 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.12 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.13 |                    |                    |
+| 6.1.27.14 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.15 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.16 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.17 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.18 | :white_check_mark: | :white_check_mark: |
+| 6.1.27.19 |                    |                    |
 | 6.1.28 |                    |                    |
 | 6.1.29 | :white_check_mark: | :white_check_mark: |
 | 6.1.30 |                    |                    |

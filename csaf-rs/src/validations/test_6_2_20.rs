@@ -4,8 +4,8 @@ use crate::{
     csaf::raw::RawDocument,
     helpers::{
         CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA, CVSS_V3_0_SCHEMA_URL,
-        CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_1_SCHEMA, CVSS_V4_0_1_SCHEMA_URL, SSVC_2_SCHEMA,
-        SSVC_2_SCHEMA_URL,
+        CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA, CVSS_V4_0_2_SCHEMA_URL, EXTENSION_METASCHEMA,
+        EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA, SSVC_2_SCHEMA_URL,
     },
     validation::ValidationError,
 };
@@ -51,10 +51,12 @@ static STRICT_VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| 
 
 static STRICT_VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
     jsonschema::options()
+        .with_resource(EXTENSION_METASCHEMA_URL, Resource::from_contents(make_strict(EXTENSION_METASCHEMA.clone())))
+        .with_resource(EXTENSION_SCHEMA_URL, Resource::from_contents(make_strict(EXTENSION_SCHEMA.clone())))
         .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())))
         .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
         .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
-        .with_resource(CVSS_V4_0_1_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V4_0_1_SCHEMA.clone())))
+        .with_resource(CVSS_V4_0_2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V4_0_2_SCHEMA.clone())))
         .with_resource(SSVC_2_SCHEMA_URL, Resource::from_contents(make_strict(SSVC_2_SCHEMA.clone())))
         .build(&make_strict(CSAF_2_1_SCHEMA.clone()))
         .unwrap()

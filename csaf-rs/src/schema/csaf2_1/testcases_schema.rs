@@ -74,11 +74,6 @@ pub struct FileT {
     ///States whether the test file is valid according to the CSAF standard.
     pub valid: bool,
 }
-impl ::std::convert::From<&FileT> for FileT {
-    fn from(value: &FileT) -> Self {
-        value.clone()
-    }
-}
 impl FileT {
     pub fn builder() -> builder::FileT {
         Default::default()
@@ -117,11 +112,6 @@ pub enum JsonSchema {
         rename = "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.1/test/validator/testcases_json_schema.json"
     )]
     HttpsRawGithubusercontentComOasisTcsCsafMasterCsaf21TestValidatorTestcasesJsonSchemaJson,
-}
-impl ::std::convert::From<&Self> for JsonSchema {
-    fn from(value: &JsonSchema) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for JsonSchema {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -200,11 +190,6 @@ impl ::std::convert::From<NameOfTheTestFile> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&NameOfTheTestFile> for NameOfTheTestFile {
-    fn from(value: &NameOfTheTestFile) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for NameOfTheTestFile {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -263,7 +248,7 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheTestFile {
 ///  "title": "Number of the test",
 ///  "description": "Contains the section number of the test in the specification.",
 ///  "type": "string",
-///  "pattern": "^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.20)|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-4])|([12]\\.4[0-9])|(2\\.50\\.[1-3])|(1\\.5[0-9])|(2\\.5[1-3]))$"
+///  "pattern": "^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.2[02])|(3\\.21\\.[1-9])|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-5])|([12]\\.4[0-9])|(1\\.5[0-9])|(2\\.50\\.[1-3])|(2\\.5[1-3])|(2\\.54\\.[1-4])|(1\\.60\\.[1-3])|(1\\.6[1]))$"
 ///}
 /// ```
 /// </details>
@@ -281,11 +266,6 @@ impl ::std::convert::From<NumberOfTheTest> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&NumberOfTheTest> for NumberOfTheTest {
-    fn from(value: &NumberOfTheTest) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for NumberOfTheTest {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -294,13 +274,13 @@ impl ::std::str::FromStr for NumberOfTheTest {
         static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
             ::regress::Regex::new(
-                    "^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.20)|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-4])|([12]\\.4[0-9])|(2\\.50\\.[1-3])|(1\\.5[0-9])|(2\\.5[1-3]))$",
+                    "^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.2[02])|(3\\.21\\.[1-9])|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-5])|([12]\\.4[0-9])|(1\\.5[0-9])|(2\\.50\\.[1-3])|(2\\.5[1-3])|(2\\.54\\.[1-4])|(1\\.60\\.[1-3])|(1\\.6[1]))$",
                 )
                 .unwrap()
         });
         if PATTERN.find(value).is_none() {
             return Err(
-                "doesn't match pattern \"^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.20)|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-4])|([12]\\.4[0-9])|(2\\.50\\.[1-3])|(1\\.5[0-9])|(2\\.5[1-3]))$\""
+                "doesn't match pattern \"^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.2[02])|(3\\.21\\.[1-9])|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-5])|([12]\\.4[0-9])|(1\\.5[0-9])|(2\\.50\\.[1-3])|(2\\.5[1-3])|(2\\.54\\.[1-4])|(1\\.60\\.[1-3])|(1\\.6[1]))$\""
                     .into(),
             );
         }
@@ -402,11 +382,6 @@ pub struct TestCasesForCsaf {
     ///Contains the current version of this schema
     pub testschema_version: TestSchemaVersion,
 }
-impl ::std::convert::From<&TestCasesForCsaf> for TestCasesForCsaf {
-    fn from(value: &TestCasesForCsaf) -> Self {
-        value.clone()
-    }
-}
 impl TestCasesForCsaf {
     pub fn builder() -> builder::TestCasesForCsaf {
         Default::default()
@@ -448,11 +423,6 @@ pub enum TestGroup {
     Mandatory,
     #[serde(rename = "recommended")]
     Recommended,
-}
-impl ::std::convert::From<&Self> for TestGroup {
-    fn from(value: &TestGroup) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for TestGroup {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -530,11 +500,6 @@ impl ::std::convert::TryFrom<::std::string::String> for TestGroup {
 pub enum TestSchemaVersion {
     #[serde(rename = "2.1")]
     X21,
-}
-impl ::std::convert::From<&Self> for TestSchemaVersion {
-    fn from(value: &TestSchemaVersion) -> Self {
-        value.clone()
-    }
 }
 impl ::std::fmt::Display for TestSchemaVersion {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -617,7 +582,7 @@ impl ::std::convert::TryFrom<::std::string::String> for TestSchemaVersion {
 ///      "title": "Number of the test",
 ///      "description": "Contains the section number of the test in the specification.",
 ///      "type": "string",
-///      "pattern": "^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.20)|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-4])|([12]\\.4[0-9])|(2\\.50\\.[1-3])|(1\\.5[0-9])|(2\\.5[1-3]))$"
+///      "pattern": "^6\\.(([1-3]\\.[1-9])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]))|(3\\.2[02])|(3\\.21\\.[1-9])|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.[1-5])|([12]\\.4[0-9])|(1\\.5[0-9])|(2\\.50\\.[1-3])|(2\\.5[1-3])|(2\\.54\\.[1-4])|(1\\.60\\.[1-3])|(1\\.6[1]))$"
 ///    },
 ///    "valid": {
 ///      "title": "List of valid examples",
@@ -647,11 +612,6 @@ pub struct TestT {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub valid: ::std::option::Option<Vec<FileT>>,
 }
-impl ::std::convert::From<&TestT> for TestT {
-    fn from(value: &TestT) -> Self {
-        value.clone()
-    }
-}
 impl TestT {
     pub fn builder() -> builder::TestT {
         Default::default()
@@ -680,7 +640,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
         pub fn valid<T>(mut self, value: T) -> Self
@@ -690,9 +650,7 @@ pub mod builder {
         {
             self.valid = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for valid: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for valid: {e}"));
             self
         }
     }
@@ -743,9 +701,7 @@ pub mod builder {
         {
             self.schema = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for schema: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for schema: {e}"));
             self
         }
         pub fn tests<T>(mut self, value: T) -> Self
@@ -755,9 +711,7 @@ pub mod builder {
         {
             self.tests = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for tests: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for tests: {e}"));
             self
         }
         pub fn testschema_version<T>(mut self, value: T) -> Self
@@ -769,7 +723,7 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!(
-                        "error converting supplied value for testschema_version: {}", e
+                        "error converting supplied value for testschema_version: {e}"
                     )
                 });
             self
@@ -825,7 +779,7 @@ pub mod builder {
             self.failures = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for failures: {}", e)
+                    format!("error converting supplied value for failures: {e}")
                 });
             self
         }
@@ -836,9 +790,7 @@ pub mod builder {
         {
             self.group = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for group: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for group: {e}"));
             self
         }
         pub fn id<T>(mut self, value: T) -> Self
@@ -848,7 +800,7 @@ pub mod builder {
         {
             self.id = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for id: {}", e));
+                .map_err(|e| format!("error converting supplied value for id: {e}"));
             self
         }
         pub fn valid<T>(mut self, value: T) -> Self
@@ -858,9 +810,7 @@ pub mod builder {
         {
             self.valid = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for valid: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for valid: {e}"));
             self
         }
     }

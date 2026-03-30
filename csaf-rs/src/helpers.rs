@@ -155,14 +155,27 @@ pub static CVSS_V3_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(schema_str).unwrap()
 });
 
-pub const CVSS_V4_0_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.1.json";
-pub static CVSS_V4_0_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/cvss-v4.0.rev.json");
+pub const CVSS_V4_0_2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.2.json";
+pub static CVSS_V4_0_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/cvss-v4.0.2.json");
     serde_json::from_str(schema_str).unwrap()
 });
 
 pub const SSVC_2_SCHEMA_URL: &str = "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json";
 pub static SSVC_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     let schema_str = include_str!("../assets/decision_point_selection_list_json_schema.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const EXTENSION_METASCHEMA_URL: &str =
+    "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json";
+pub static EXTENSION_METASCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/extension-metaschema.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const EXTENSION_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json";
+pub static EXTENSION_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/extension-content.json");
     serde_json::from_str(schema_str).unwrap()
 });

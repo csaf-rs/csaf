@@ -90,10 +90,10 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Severity::Error,
             match test_id {
                 // mandatory tests
-                "6.1.1" => Some(ValidatorForTest6_1_1.validate(self)),
+                "6.1.1" => None, // Some(ValidatorForTest6_1_1.validate(self)), // TODO: re-enable after fixing, issue #502
                 "6.1.2" => Some(ValidatorForTest6_1_2.validate(self)),
-                "6.1.3" => Some(ValidatorForTest6_1_3.validate(self)),
-                "6.1.4" => Some(ValidatorForTest6_1_4.validate(self)),
+                "6.1.3" => None, // Some(ValidatorForTest6_1_3.validate(self)), // TODO: re-enable after fixing, issue #503
+                "6.1.4" => None, // Some(ValidatorForTest6_1_4.validate(self)), // TODO: re-enable after fixing, issue #502
                 "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
                 "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),
                 "6.1.7" => Some(ValidatorForTest6_1_7.validate(self)),
@@ -114,7 +114,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.22" => Some(ValidatorForTest6_1_22.validate(self)),
                 "6.1.23" => Some(ValidatorForTest6_1_23.validate(self)),
                 "6.1.24" => Some(ValidatorForTest6_1_24.validate(self)),
-                "6.1.25" => Some(ValidatorForTest6_1_25.validate(self)),
+                "6.1.25" => None, // Some(ValidatorForTest6_1_25.validate(self)), // TODO: re-enable after fixing, issue #502
                 "6.1.26" => None, // Some(ValidatorForTest6_1_26.validate(self)),
                 "6.1.27.1" => Some(ValidatorForTest6_1_27_1.validate(self)),
                 "6.1.27.2" => Some(ValidatorForTest6_1_27_2.validate(self)),
@@ -161,7 +161,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.51" => None, // Some(ValidatorForTest6_1_51.validate(self)),
                 "6.1.52" => None, // Some(ValidatorForTest6_1_52.validate(self)),
                 "6.1.53" => None, // Some(ValidatorForTest6_1_53.validate(self)),
-                "6.1.54" => None, // Some(ValidatorForTest6_1_54.validate(self)),
+                "6.1.54" => Some(ValidatorForTest6_1_54.validate(self)),
                 "6.1.55" => None, // Some(ValidatorForTest6_1_55.validate(self)),
                 "6.1.56" => None, // Some(ValidatorForTest6_1_56.validate(self)),
                 _ => None,

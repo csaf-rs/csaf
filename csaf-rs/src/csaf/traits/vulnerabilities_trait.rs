@@ -20,7 +20,7 @@ use crate::schema::csaf2_1::schema::{
 
 /// Collects references from all vulnerabilities using the given extractor, prepending
 /// each path with `/vulnerabilities/{index}/`.
-pub fn collect_references<V: VulnerabilityTrait>(
+pub(crate) fn collect_references<V: VulnerabilityTrait>(
     vulnerabilities: &[V],
     extractor: impl Fn(&V) -> Vec<(String, String)>,
 ) -> Vec<(String, String)> {

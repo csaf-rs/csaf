@@ -183,37 +183,31 @@ macro_rules! define_reference_accessors {
         custom_product_extraction: [ $( $custom_product_extraction_method:ident ),* $(,)? ] $(,)?
     ) => {
         $(
-            /// Get all group references
+            /// Get all group references from this element
             fn $group_method(&self) -> Vec<(String, String)> {
                 self.$getter().extract_group_references($path)
             }
 
-            /// Get all product references
+            /// Get all product references from this element
             fn $product_method(&self) -> Vec<(String, String)> {
                 self.$getter().extract_product_references($path)
             }
         )*
 
-        /// Returns all group references across all sub-elements.
+        /// Returns all group references across all elements
         fn get_all_group_references(&self) -> Vec<(String, String)> {
-            [
-                $( self.$group_method(), )*
-                $( self.$custom_group_extraction_method(), )*
-            ]
-            .into_iter()
-            .flatten()
-            .collect()
+            let mut refs = Vec::new();
+            $( refs.extend(self.$group_method()); )*
+            $( refs.extend(self.$custom_group_extraction_method()); )*
+            refs
         }
 
-        /// Returns all product references across all sub-elements.
+        /// Returns all product references across all elements
         fn get_all_product_references(&self) -> Vec<(String, String)> {
-            [
-                $( self.$product_method(), )*
-                $( self.$custom_product_extraction_method(), )*
-            ]
-            .into_iter()
-            .flatten()
-            .collect()
+            let mut refs = Vec::new();
+            $( refs.extend(self.$product_method()); )*
+            $( refs.extend(self.$custom_product_extraction_method()); )*
+            refs
         }
     };
 }

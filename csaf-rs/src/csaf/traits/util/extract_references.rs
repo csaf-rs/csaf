@@ -133,3 +133,83 @@ impl<T: WithOptionalProductIds> ExtractProductReferences<T> for Vec<T> {
         extract_product_id_impl(self.iter(), path_prefix)
     }
 }
+
+/// Generates individual group/product reference extraction methods and aggregated
+/// `get_all_group_references` / `get_all_product_references` methods from a single
+/// field declaration.
+///
+/// # Parameters
+///
+/// - `both`: List of `(group_method, product_method, getter, "json_path")` tuples for fields
+///   that support both group and product reference extraction via
+///   `ExtractGroupReferences` / `ExtractProductReferences`.
+/// - `custom_group_extraction` (optional): List of already-implemented method names that return
+///   group-only references with special handling. These are included in
+///   `get_all_group_references` but **not** auto-generated.
+/// - `custom_product_extraction` (optional): List of already-implemented method names that return
+///   product-only references with special handling (e.g., metrics, product_status).
+///   These are included in `get_all_product_references` but **not** auto-generated.
+///
+/// # Example
+///
+/// ```ignore
+/// define_reference_accessors! {
+///     both: [
+///         (get_flags_group_references, get_flags_product_references,
+///          get_flags, "flags"),
+///         (get_threats_group_references, get_threats_product_references,
+///          get_threats, "threats"),
+///     ],
+///     custom_group_extraction: [],
+///     custom_product_extraction: [
+///         get_metrics_product_references,
+///     ],
+/// }
+/// ```
+///
+/// This generates:
+/// - `get_flags_group_references()`, `get_flags_product_references()`
+/// - `get_threats_group_references()`, `get_threats_product_references()`
+/// - `get_all_group_references()` aggregating flags + threats group refs
+/// - `get_all_product_references()` aggregating flags + threats product refs + metrics
+macro_rules! define_reference_accessors {
+    (
+        both: [
+            $(
+                ($group_method:ident, $product_method:ident, $getter:ident, $path:literal)
+            ),* $(,)?
+        ],
+        custom_group_extraction: [ $( $custom_group_extraction_method:ident ),* $(,)? ],
+        custom_product_extraction: [ $( $custom_product_extraction_method:ident ),* $(,)? ] $(,)?
+    ) => {
+        $(
+            /// Get all group references from this element
+            fn $group_method(&self) -> Vec<(String, String)> {
+                self.$getter().extract_group_references($path)
+            }
+
+            /// Get all product references from this element
+            fn $product_method(&self) -> Vec<(String, String)> {
+                self.$getter().extract_product_references($path)
+            }
+        )*
+
+        /// Returns all group references across all elements
+        fn get_all_group_references(&self) -> Vec<(String, String)> {
+            let mut refs = Vec::new();
+            $( refs.extend(self.$group_method()); )*
+            $( refs.extend(self.$custom_group_extraction_method()); )*
+            refs
+        }
+
+        /// Returns all product references across all elements
+        fn get_all_product_references(&self) -> Vec<(String, String)> {
+            let mut refs = Vec::new();
+            $( refs.extend(self.$product_method()); )*
+            $( refs.extend(self.$custom_product_extraction_method()); )*
+            refs
+        }
+    };
+}
+
+pub(crate) use define_reference_accessors;

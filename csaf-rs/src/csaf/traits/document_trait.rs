@@ -1,5 +1,7 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
-use crate::csaf::traits::util::extract_references::{ExtractGroupReferences, ExtractProductReferences};
+use crate::csaf::traits::util::extract_references::{
+    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
+};
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::csaf_language::CsafLanguage;
 use crate::csaf_traits::{DistributionTrait, DocumentReferenceTrait, NoteTrait, PublisherTrait, TrackingTrait};
@@ -43,13 +45,12 @@ pub trait DocumentTrait {
     /// Returns the notes associated with this document
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 
-    /// Utility function to get all group IDs referenced in notes along with their JSON paths
-    fn get_notes_group_references(&self) -> Vec<(String, String)> {
-        self.get_notes().extract_group_references("/document/notes")
-    }
-
-    fn get_notes_product_references(&self) -> Vec<(String, String)> {
-        self.get_notes().extract_product_references("/document/notes")
+    define_reference_accessors! {
+        both: [
+            (get_notes_group_references, get_notes_product_references, get_notes, "/document/notes"),
+        ],
+        custom_group_extraction: [],
+        custom_product_extraction: [],
     }
 
     /// Returns the language associated with this document.

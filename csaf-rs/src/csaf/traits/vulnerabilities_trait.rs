@@ -1,4 +1,6 @@
-use crate::csaf::traits::util::extract_references::{ExtractGroupReferences, ExtractProductReferences};
+use crate::csaf::traits::util::extract_references::{
+    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
+};
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
@@ -15,6 +17,23 @@ use crate::schema::csaf2_1::schema::{
     Involvement as Involvement21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21,
     Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
 };
+
+/// Collects references from all vulnerabilities using the given extractor, prepending
+/// each path with `/vulnerabilities/{index}/`.
+pub(crate) fn collect_references<V: VulnerabilityTrait>(
+    vulnerabilities: &[V],
+    extractor: impl Fn(&V) -> Vec<(String, String)>,
+) -> Vec<(String, String)> {
+    vulnerabilities
+        .iter()
+        .enumerate()
+        .flat_map(|(i, v)| {
+            extractor(v)
+                .into_iter()
+                .map(move |(id, path)| (id, format!("/vulnerabilities/{i}/{path}")))
+        })
+        .collect()
+}
 
 /// Trait representing an abstract vulnerability in a CSAF document.
 ///
@@ -50,15 +69,6 @@ pub trait VulnerabilityTrait {
     /// Retrieves a list of remediations associated with the vulnerability.
     fn get_remediations(&self) -> &Vec<Self::RemediationType>;
 
-    /// Utility function to get all group IDs referenced in remediations along with their JSON paths
-    fn get_remediations_group_references(&self) -> Vec<(String, String)> {
-        self.get_remediations().extract_group_references("remediations")
-    }
-
-    fn get_remediations_product_references(&self) -> Vec<(String, String)> {
-        self.get_remediations().extract_product_references("remediations")
-    }
-
     /// Retrieves the status of products affected by the vulnerability, if available.
     fn get_product_status(&self) -> &Option<Self::ProductStatusType>;
 
@@ -76,7 +86,7 @@ pub trait VulnerabilityTrait {
     /// Return the path in the JSON document where the metrics are located, used for error reporting
     fn get_metrics_path(&self) -> String;
 
-    /// Utility function to get all group IDs referenced in metrics along with their JSON paths
+    /// Utility function to get all product IDs referenced in metrics along with their JSON paths
     fn get_metrics_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
@@ -95,15 +105,6 @@ pub trait VulnerabilityTrait {
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
 
-    /// Utility function to get all group IDs referenced in threats along with their JSON paths
-    fn get_threats_group_references(&self) -> Vec<(String, String)> {
-        self.get_threats().extract_group_references("threats")
-    }
-
-    fn get_threats_product_references(&self) -> Vec<(String, String)> {
-        self.get_threats().extract_product_references("threats")
-    }
-
     /// Returns the date when this vulnerability was initially disclosed.
     fn get_disclosure_date(&self) -> Option<CsafDateTime>;
 
@@ -113,26 +114,8 @@ pub trait VulnerabilityTrait {
     /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
 
-    /// Utility function to get all group IDs referenced in flags along with their JSON paths
-    fn get_flags_group_references(&self) -> Vec<(String, String)> {
-        self.get_flags().extract_group_references("flags")
-    }
-
-    fn get_flags_product_references(&self) -> Vec<(String, String)> {
-        self.get_flags().extract_product_references("flags")
-    }
-
     /// Returns all involvements associated with this vulnerability.
     fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>>;
-
-    /// Utility function to get all group IDs referenced in involvements along with their JSON paths
-    fn get_involvement_group_references(&self) -> Vec<(String, String)> {
-        self.get_involvements().extract_group_references("involvements")
-    }
-
-    fn get_involvements_product_references(&self) -> Vec<(String, String)> {
-        self.get_involvements().extract_product_references("involvements")
-    }
 
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
@@ -146,28 +129,23 @@ pub trait VulnerabilityTrait {
     /// Returns the notes associated with this vulnerability.
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 
-    /// Utility function to get all group IDs referenced in notes along with their JSON paths
-    fn get_notes_group_references(&self) -> Vec<(String, String)> {
-        self.get_notes().extract_group_references("notes")
-    }
-
-    fn get_notes_product_references(&self) -> Vec<(String, String)> {
-        self.get_notes().extract_product_references("notes")
-    }
-
     /// Returns the information about the first known exploitation dates of this vulnerability.
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
 
-    /// Returns all product references associated with the first known exploitation dates of this vulnerability.
-    fn get_first_known_exploitation_dates_product_references(&self) -> Vec<(String, String)> {
-        self.get_first_known_exploitation_dates()
-            .extract_product_references("first_known_exploitation_dates")
-    }
-
-    /// Returns all product group references associated with the first known exploitation dates of this vulnerability.
-    fn get_first_known_exploitation_dates_group_references(&self) -> Vec<(String, String)> {
-        self.get_first_known_exploitation_dates()
-            .extract_group_references("first_known_exploitation_dates")
+    define_reference_accessors! {
+        both: [
+            (get_remediations_group_references,                     get_remediations_product_references,                     get_remediations,                     "remediations"),
+            (get_threats_group_references,                          get_threats_product_references,                          get_threats,                          "threats"),
+            (get_flags_group_references,                            get_flags_product_references,                            get_flags,                            "flags"),
+            (get_involvements_group_references,                     get_involvements_product_references,                     get_involvements,                     "involvements"),
+            (get_notes_group_references,                            get_notes_product_references,                            get_notes,                            "notes"),
+            (get_first_known_exploitation_dates_group_references,   get_first_known_exploitation_dates_product_references,   get_first_known_exploitation_dates,   "first_known_exploitation_dates"),
+        ],
+        custom_group_extraction: [],
+        custom_product_extraction: [
+            get_product_status_product_references,
+            get_metrics_product_references,
+        ],
     }
 }
 

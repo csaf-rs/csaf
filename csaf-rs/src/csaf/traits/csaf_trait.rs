@@ -1,3 +1,4 @@
+use crate::csaf::traits::vulnerabilities_trait::collect_references;
 use crate::csaf_traits::{DocumentTrait, ProductTreeTrait, VulnerabilityTrait};
 use crate::schema::csaf2_0::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework20,
@@ -26,87 +27,30 @@ pub trait CsafTrait {
     /// Returns the product tree of the CSAF document, if available.
     fn get_product_tree(&self) -> &Option<Self::ProductTreeType>;
 
-    fn get_product_tree_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        if let Some(product_tree) = self.get_product_tree() {
-            ids.append(&mut product_tree.get_product_groups_product_references());
-            ids.append(&mut product_tree.get_relationships_product_references());
-        }
-
-        ids
-    }
-
     /// Retrieves all vulnerabilities present in the CSAF document.
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType>;
 
-    /// Utility function to prepend a JSON path prefix to a list of (ID, path) tuples
-    fn prepend_path(prefix: &str, idx: &usize, id_path_tuples: Vec<(String, String)>) -> Vec<(String, String)> {
-        id_path_tuples
-            .iter()
-            .map(|(group_or_product_id, path)| (group_or_product_id.to_owned(), format!("/{prefix}/{idx}/{path}")))
-            .collect()
-    }
-
-    /// Utility function to get all group IDs referenced in vulnerabilities along with their JSON paths
-    fn get_vulnerability_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        for (vuln_index, vulnerability) in self.get_vulnerabilities().iter().enumerate() {
-            let getters = [
-                vulnerability.get_flags_group_references(),
-                vulnerability.get_involvement_group_references(),
-                vulnerability.get_notes_group_references(),
-                vulnerability.get_remediations_group_references(),
-                vulnerability.get_threats_group_references(),
-                vulnerability.get_first_known_exploitation_dates_group_references(),
-            ];
-            for getter in getters {
-                ids.append(&mut Self::prepend_path("vulnerabilities", &vuln_index, getter));
-            }
-        }
-        ids
-    }
-
-    /// Utility function to get all product IDs referenced in vulnerabilities along with their JSON paths
-    fn get_vulnerability_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        for (vuln_index, vulnerability) in self.get_vulnerabilities().iter().enumerate() {
-            let getters = [
-                vulnerability.get_flags_product_references(),
-                vulnerability.get_threats_product_references(),
-                vulnerability.get_remediations_product_references(),
-                vulnerability.get_product_status_product_references(),
-                vulnerability.get_metrics_product_references(),
-                vulnerability.get_notes_product_references(),
-                vulnerability.get_involvements_product_references(),
-                vulnerability.get_first_known_exploitation_dates_product_references(),
-            ];
-
-            for getter in getters {
-                ids.append(&mut Self::prepend_path("vulnerabilities", &vuln_index, getter));
-            }
-        }
-        ids
-    }
     /// Retrieves the document meta present in the CSAF document.
     fn get_document(&self) -> &Self::DocumentType;
 
-    /// Utility function to get all group IDs referenced in the document along with their JSON paths
+    /// Returns all group IDs referenced in the document along with their JSON paths.
     fn get_all_group_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        ids.append(&mut self.get_document().get_notes_group_references());
-        ids.append(&mut self.get_vulnerability_group_references());
+        let mut ids = self.get_document().get_all_group_references();
+        ids.extend(collect_references(self.get_vulnerabilities(), |v| {
+            v.get_all_group_references()
+        }));
         ids
     }
 
-    /// Utility function to get all product IDs referenced in the document along with their JSON paths
+    /// Returns all product IDs referenced in the document along with their JSON paths.
     fn get_all_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        ids.append(&mut self.get_document().get_notes_product_references());
-        ids.append(&mut self.get_vulnerability_product_references());
-        ids.append(&mut self.get_product_tree_product_references());
+        let mut ids = self.get_document().get_all_product_references();
+        ids.extend(collect_references(self.get_vulnerabilities(), |v| {
+            v.get_all_product_references()
+        }));
+        if let Some(pt) = self.get_product_tree() {
+            ids.extend(pt.get_all_product_references());
+        }
         ids
     }
 

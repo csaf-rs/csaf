@@ -12,6 +12,7 @@ pub mod test_result_comparison;
 pub mod test_structure;
 pub mod test_validation;
 pub mod validation;
+pub mod validation_result;
 pub mod validations;
 #[cfg(feature = "wasm")]
 pub mod wasm;

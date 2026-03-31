@@ -16,7 +16,7 @@ pub use crate::csaf::traits::document_trait::DocumentTrait;
 pub use crate::csaf::traits::product_tree::product_group_trait::ProductGroupTrait;
 pub use crate::csaf::traits::product_tree::product_trait::ProductTrait;
 pub use crate::csaf::traits::product_tree::relationship_trait::RelationshipTrait;
-pub use crate::csaf::traits::product_tree_trait::{BranchTrait, ProductTreeTrait};
+pub use crate::csaf::traits::product_tree_trait::{BranchTrait, ProductTreeTrait, build_leaf_instance_path};
 pub use crate::csaf::traits::shared::note_trait::NoteTrait;
 pub use crate::csaf::traits::util::generic_with::{
     WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,

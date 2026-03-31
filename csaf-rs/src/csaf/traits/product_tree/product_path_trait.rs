@@ -14,14 +14,18 @@ pub trait ProductPathTrait<FPN: ProductTrait> {
     /// Retrieves the full product name associated with the relationship.
     fn get_full_product_name(&self) -> &FPN;
 
-    /// Retrieves the JSON path for a product path
-    fn get_json_path_for_product_path(&self, pp_i: usize) -> String;
+    /// Retrieves the JSON path for a product path / relationship
+    fn get_json_path_for_product_path(&self, product_path_index: usize) -> String;
 
-    /// Retrieves the JSON path for the product reference at the beginning of a product path relationship.
-    fn get_json_path_for_product_path_beginning_product_reference(&self, pp_i: usize) -> String;
+    /// Retrieves the JSON path for the product reference at the beginning of a product path / relationship.
+    fn get_json_path_for_product_path_beginning_product_reference(&self, product_path_index: usize) -> String;
 
-    /// Retrieves the JSON path for the product reference at a subpath of a product path relationship
-    fn get_json_path_for_product_path_subpath_product_reference(&self, pp_i: usize, sp_i: usize) -> String;
+    /// Retrieves the JSON path for the product reference at a subpath of a product path / relationship
+    fn get_json_path_for_product_path_subpath_product_reference(
+        &self,
+        product_path_index: usize,
+        subpath_index: usize,
+    ) -> String;
 }
 
 impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Relationship {

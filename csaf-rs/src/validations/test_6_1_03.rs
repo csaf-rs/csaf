@@ -1,24 +1,36 @@
-use crate::csaf_traits::{CsafTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
+use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
 
-fn generate_self_reference_product_error(path: &str) -> ValidationError {
+fn generate_self_reference_product_error(version: &CsafVersion, path: &str) -> ValidationError {
     ValidationError {
-        message: "Product path references itself first product".to_string(),
+        message: if version == &CsafVersion::X21 {
+            "Product path references itself via 'beginning product reference'".to_string()
+        } else {
+            "Relationship references itself via 'product reference'".to_string()
+        },
         instance_path: path.to_string(),
     }
 }
 
-fn generate_self_reference_relates_to_error(path: &str) -> ValidationError {
+fn generate_self_reference_relates_to_error(version: &CsafVersion, path: &str) -> ValidationError {
     ValidationError {
-        message: "Product path references itself via related product".to_string(),
+        message: if version == &CsafVersion::X21 {
+            "Product path references itself via 'next product reference'".to_string()
+        } else {
+            "Relationship references itself via 'relates to product reference'".to_string()
+        },
         instance_path: path.to_string(),
     }
 }
 
-fn generate_cycle_error(cycle: &[String], path: String) -> ValidationError {
+fn generate_cycle_error(version: &CsafVersion, cycle: &[String], path: String) -> ValidationError {
     ValidationError {
-        message: format!("Found cycle in product path definitions: {}", cycle.join(" -> ")),
+        message: if version == &CsafVersion::X21 {
+            format!("Found cycle in product path definitions: {}", cycle.join(" -> "))
+        } else {
+            format!("Found cycle in relationship definitions: {}", cycle.join(" -> "))
+        },
         instance_path: path,
     }
 }
@@ -62,6 +74,7 @@ pub fn find_cycle<'a>(
 }
 
 pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+    let version = doc.get_document().get_csaf_version();
     let mut errors: Option<Vec<ValidationError>> = None;
     if let Some(tree) = doc.get_product_tree().as_ref() {
         let mut relation_map = HashMap::<String, HashMap<String, String>>::new();
@@ -71,6 +84,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                 errors
                     .get_or_insert_with(Vec::new)
                     .push(generate_self_reference_product_error(
+                        version,
                         &pp.get_json_path_for_product_path_beginning_product_reference(pp_i),
                     ));
             } else if let Some(sp_i) = pp
@@ -81,6 +95,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                 errors
                     .get_or_insert_with(Vec::new)
                     .push(generate_self_reference_relates_to_error(
+                        version,
                         &pp.get_json_path_for_product_path_subpath_product_reference(pp_i, sp_i),
                     ));
             } else {
@@ -119,7 +134,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
             if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
                 errors
                     .get_or_insert_with(Vec::new)
-                    .push(generate_cycle_error(&cycle, relation_index));
+                    .push(generate_cycle_error(version, &cycle, relation_index));
             }
         }
     }
@@ -159,13 +174,16 @@ mod tests {
     fn test_test_6_1_03() {
         TESTS_2_0.test_6_1_3.expect(
             Err(vec![generate_self_reference_relates_to_error(
+                &CsafVersion::X20,
                 "/product_tree/relationships/0/relates_to_product_reference",
             )]),
             Err(vec![generate_self_reference_product_error(
+                &CsafVersion::X20,
                 "/product_tree/relationships/0/product_reference",
             )]),
             Err(vec![
                 generate_cycle_error(
+                    &CsafVersion::X20,
                     &[
                         "CSAFPID-9080701".to_string(),
                         "CSAFPID-9080702".to_string(),
@@ -174,6 +192,7 @@ mod tests {
                     "/product_tree/relationships/0".to_string(),
                 ),
                 generate_cycle_error(
+                    &CsafVersion::X20,
                     &[
                         "CSAFPID-9080702".to_string(),
                         "CSAFPID-9080701".to_string(),
@@ -185,13 +204,16 @@ mod tests {
         );
         TESTS_2_1.test_6_1_3.expect(
             Err(vec![generate_self_reference_relates_to_error(
+                &CsafVersion::X21,
                 "/product_tree/product_paths/0/subpaths/0/next_product_reference",
             )]),
             Err(vec![generate_self_reference_product_error(
+                &CsafVersion::X21,
                 "/product_tree/product_paths/0/beginning_product_reference",
             )]),
             Err(vec![
                 generate_cycle_error(
+                    &CsafVersion::X21,
                     &[
                         "CSAFPID-9080701".to_string(),
                         "CSAFPID-9080702".to_string(),
@@ -200,6 +222,7 @@ mod tests {
                     "/product_tree/product_paths/0".to_string(),
                 ),
                 generate_cycle_error(
+                    &CsafVersion::X21,
                     &[
                         "CSAFPID-9080702".to_string(),
                         "CSAFPID-9080701".to_string(),

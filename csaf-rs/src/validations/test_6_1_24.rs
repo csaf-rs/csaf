@@ -11,7 +11,7 @@ fn generate_duplicate_involvement_error(
     vul_r: usize,
     inv_r: usize,
 ) -> ValidationError {
-    let date_str = date.as_ref().map_or("none".to_string(), |d| d.to_string());
+    let date_str = date.as_ref().map_or("none (optional property not present)".to_string(), |d| d.to_string());
     ValidationError {
         message: format!("Duplicate usage of tuple of involvement date '{date_str}' and party '{party}'"),
         instance_path: format!("/vulnerabilities/{vul_r}/involvements/{inv_r}"),
@@ -44,6 +44,8 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
                 // if the involvement does have a date, check if it's valid
                 let date = match involvement.get_date() {
                     // If the date is invalid, generate an error and skip this involvement (this will be a non-determinable later, #409)
+                    // TODO: #409 this will need to be handled differently between CSAF 2.0 and 2.1, as 2.1 provides this check already in 6.1.37,
+                    // while for 2.0, we will need to do that precondition check here (and throw the respective errors, while for 2.1 warnings should be sufficient)
                     Some(Invalid(err)) => {
                         errors.get_or_insert_default().push(
                             err.into_validation_error(&format!("/vulnerabilities/{vuln_i}/involvements/{inv_i}/date")),

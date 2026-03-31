@@ -11,7 +11,9 @@ fn generate_duplicate_involvement_error(
     vul_r: usize,
     inv_r: usize,
 ) -> ValidationError {
-    let date_str = date.as_ref().map_or("none (optional property not present)".to_string(), |d| d.to_string());
+    let date_str = date
+        .as_ref()
+        .map_or("none (optional property not present)".to_string(), |d| d.to_string());
     ValidationError {
         message: format!("Duplicate usage of tuple of involvement date '{date_str}' and party '{party}'"),
         instance_path: format!("/vulnerabilities/{vul_r}/involvements/{inv_r}"),

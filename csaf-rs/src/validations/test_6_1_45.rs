@@ -60,7 +60,6 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
         };
         chrono::DateTime::parse_from_rfc3339(&date)
             .map(|rev_datetime| {
-                println!("rev_datetime: {rev_datetime:?}, newest_revision_date: {newest_revision_date:?}");
                 newest_revision_date = match newest_revision_date {
                     None => Some(rev_datetime),
                     Some(prev_max) => Some(prev_max.max(rev_datetime)),

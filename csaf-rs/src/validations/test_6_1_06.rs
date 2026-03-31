@@ -83,82 +83,100 @@ mod tests {
 
     #[test]
     fn test_test_6_1_06() {
-        let case_01 = Err(vec![generate_err_msg(
+        let case_affected_not_affected = Err(vec![generate_err_msg(
             "CSAFPID-9080700",
             &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
             0,
         )]);
-        let case_02 = Err(vec![generate_err_msg(
+        let case_not_affected_fixed_vec = vec![generate_err_msg(
+            "CSAFPID-9080701",
+            &[ProductStatusGroup::NotAffected, ProductStatusGroup::Fixed],
+            0,
+        )];
+        let case_affected_under_investigation_vec = vec![generate_err_msg(
             "CSAFPID-9080700",
-            &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+            &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
+            0,
+        )];
+        let case_not_affected_under_investigation_vec = vec![generate_err_msg(
+            "CSAFPID-9080701",
+            &[ProductStatusGroup::NotAffected, ProductStatusGroup::UnderInvestigation],
+            0,
+        )];
+        let case_affected_fixed_vec = vec![generate_err_msg(
+            "CSAFPID-9080702",
+            &[ProductStatusGroup::Affected, ProductStatusGroup::Fixed],
+            0,
+        )];
+        let case_affected_unknown = Err(vec![generate_err_msg(
+            "CSAFPID-9080700",
+            &[ProductStatusGroup::Affected, ProductStatusGroup::Unknown],
             0,
         )]);
-        let case_03 = Err(vec![generate_err_msg(
+        let case_not_affected_unknown = Err(vec![generate_err_msg(
             "CSAFPID-9080700",
-            &[ProductStatusGroup::Affected, ProductStatusGroup::NotAffected],
+            &[ProductStatusGroup::NotAffected, ProductStatusGroup::Unknown],
             0,
         )]);
-        let case_04 = Err(vec![
-            generate_err_msg(
-                "CSAFPID-9080700",
-                &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
-                0,
-            ),
-            generate_err_msg(
-                "CSAFPID-9080701",
-                &[ProductStatusGroup::NotAffected, ProductStatusGroup::Fixed],
-                0,
-            ),
-        ]);
-        let case_05 = Err(vec![
-            generate_err_msg(
-                "CSAFPID-9080700",
-                &[ProductStatusGroup::Affected, ProductStatusGroup::UnderInvestigation],
-                0,
-            ),
-            generate_err_msg(
-                "CSAFPID-9080701",
-                &[ProductStatusGroup::NotAffected, ProductStatusGroup::UnderInvestigation],
-                0,
-            ),
-            generate_err_msg(
-                "CSAFPID-9080702",
-                &[ProductStatusGroup::Affected, ProductStatusGroup::Fixed],
-                0,
-            ),
-        ]);
+        let case_fixed_unknown = Err(vec![generate_err_msg(
+            "CSAFPID-9080700",
+            &[ProductStatusGroup::Fixed, ProductStatusGroup::Unknown],
+            0,
+        )]);
+        let case_under_investigation_unknown = Err(vec![generate_err_msg(
+            "CSAFPID-9080700",
+            &[ProductStatusGroup::UnderInvestigation, ProductStatusGroup::Unknown],
+            0,
+        )]);
 
         // CSAF 2.0 has 10 test cases (01-05, 11-15)
         TESTS_2_0.test_6_1_6.expect(
-            case_01.clone(),
-            case_02.clone(),
-            case_03.clone(),
-            case_04.clone(),
-            case_05.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
+            case_affected_not_affected.clone(),
+            case_affected_not_affected.clone(),
+            case_affected_not_affected.clone(),
+            Err(case_affected_under_investigation_vec
+                .clone()
+                .into_iter()
+                .chain(case_not_affected_fixed_vec.clone())
+                .collect()),
+            Err(case_affected_under_investigation_vec
+                .clone()
+                .into_iter()
+                .chain(case_not_affected_under_investigation_vec.clone())
+                .chain(case_affected_fixed_vec.clone())
+                .collect()),
+            Ok(()), // know_affected(0) & recommended(0)
+            Ok(()), // first_affected(0) & known_affected(0)
+            Ok(()), // known_affected(0) & last_affected(0)
+            Ok(()), // first_fixed(1) & fixed(1) + recommended(0) & under_investigation(0)
+            Ok(()), // first_affected(0) & known_affected(0) & recommended(0) + first_fixed(2) & fixed(2) + known_not_affected(1) & recommended(1)
         );
 
         // CSAF 2.1 has 12 test cases (01-06, 11-16)
         TESTS_2_1.test_6_1_6.expect(
-            case_01,
-            case_02,
-            case_03,
-            case_04,
-            case_05,
-            Err(vec![generate_err_msg(
-                "CSAFPID-9080700",
-                &[ProductStatusGroup::Affected, ProductStatusGroup::Unknown],
-                0,
-            )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
+            case_affected_not_affected.clone(),
+            case_affected_not_affected.clone(),
+            case_affected_not_affected.clone(),
+            Err(case_affected_under_investigation_vec
+                .clone()
+                .into_iter()
+                .chain(case_not_affected_fixed_vec)
+                .collect()),
+            Err(case_affected_under_investigation_vec
+                .clone()
+                .into_iter()
+                .chain(case_not_affected_under_investigation_vec)
+                .chain(case_affected_fixed_vec)
+                .collect()),
+            case_affected_unknown,
+            case_not_affected_unknown,
+            case_fixed_unknown,
+            case_under_investigation_unknown,
+            Ok(()), // know_affected(0) & recommended(0)
+            Ok(()), // first_affected(0) & known_affected(0)
+            Ok(()), // known_affected(0) & last_affected(0)
+            Ok(()), // first_fixed(1) & fixed(1) + recommended(0) & under_investigation(0)
+            Ok(()), // first_affected(0) & known_affected(0) & recommended(0) + first_fixed(2) & fixed(2) + known_not_affected(1) & recommended(1)
             Ok(()),
         );
     }

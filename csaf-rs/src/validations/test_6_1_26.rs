@@ -147,11 +147,29 @@ mod tests {
             &CsafVersion::X21,
         )]);
 
+        // Supplementary test cases
+        // CSAF 2.1 categories that should fail on CSAF 2.0
+        let deprecated_sec_advisory_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("csaf_deprecated_security_advisory"),
+            &CsafVersion::X20,
+        )]);
+        let withdrawn_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("csaf_withdrawn"),
+            &CsafVersion::X20,
+        )]);
+        let superseded_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
+            &CsafDocumentCategory::from("csaf_superseded"),
+            &CsafVersion::X20,
+        )]);
+
         TESTS_2_0.test_6_1_26.expect(
             case_01_shared.clone(),
             case_02_csaf20,
             case_03_csaf20,
             case_04_csaf20,
+            deprecated_sec_advisory_csaf20,
+            withdrawn_csaf20,
+            superseded_csaf20,
             Ok(()),
             Ok(()),
         );
@@ -185,15 +203,5 @@ mod tests {
         assert!(validate_document_category(&CsafDocumentCategory::from("Superseded"), &version).is_err());
         assert!(validate_document_category(&CsafDocumentCategory::from("V_eX"), &version).is_err());
         assert!(validate_document_category(&CsafDocumentCategory::from("veX"), &version).is_err());
-    }
-
-    #[test]
-    fn test_csaf_21_known_categories_fail_on_csaf_20() {
-        let version_20 = CsafVersion::X20;
-        assert!(
-            validate_document_category(&CsafDocumentCategory::CsafDeprecatedSecurityAdvisory, &version_20).is_err()
-        );
-        assert!(validate_document_category(&CsafDocumentCategory::CsafWithdrawn, &version_20).is_err());
-        assert!(validate_document_category(&CsafDocumentCategory::CsafSuperseded, &version_20).is_err());
     }
 }

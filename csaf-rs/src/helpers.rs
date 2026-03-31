@@ -2,20 +2,10 @@ use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use crate::csaf2_1::ssvc_dp::DecisionPoint;
 use chrono::NaiveDate;
 use rust_embed::RustEmbed;
+use serde_json::Value;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::ops::Deref;
 use std::sync::LazyLock;
-use uuid::{Uuid, uuid};
-
-/// Special name for public sharing groups
-pub static SG_NAME_PUBLIC: &str = "Public";
-/// Special name for private sharing groups
-pub static SG_NAME_PRIVATE: &str = "No sharing allowed";
-
-/// Special "max" UUID value
-pub static MAX_UUID: &Uuid = &uuid!("ffffffff-ffff-ffff-ffff-ffffffffffff");
-/// Special "nil" UUID value
-pub static NIL_UUID: &Uuid = &uuid!("00000000-0000-0000-0000-000000000000");
 
 pub fn resolve_product_groups<'a, I>(doc: &impl CsafTrait, product_groups: I) -> Option<BTreeSet<String>>
 where
@@ -50,12 +40,6 @@ pub static SSVC_DECISION_POINTS: LazyLock<SsvcDecisionPointsMap> = LazyLock::new
             let content = std::str::from_utf8(&file.data).unwrap();
             match serde_json::from_str::<DecisionPoint>(content) {
                 Ok(dp) => {
-                    println!(
-                        "Loaded SSVC decision point '{}' ({}, version {})",
-                        dp.key.deref(),
-                        dp.name.deref(),
-                        dp.version.deref()
-                    );
                     let key = (
                         dp.namespace.deref().to_owned(),
                         dp.key.deref().to_owned(),
@@ -139,4 +123,59 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyL
     }
 
     entries
+});
+
+pub const CSAF_2_0_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.0/csaf_json_schema.json";
+pub static CSAF_2_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/csaf_2.0_json_schema.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const CSAF_2_1_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json";
+pub static CSAF_2_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/csaf_2.1_json_schema.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const CVSS_V2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v2.0.json";
+pub static CVSS_V2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/cvss-v2.0.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const CVSS_V3_0_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.0.json";
+pub static CVSS_V3_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/cvss-v3.0.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const CVSS_V3_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.1.json";
+pub static CVSS_V3_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/cvss-v3.1.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const CVSS_V4_0_2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.2.json";
+pub static CVSS_V4_0_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/cvss-v4.0.2.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const SSVC_2_SCHEMA_URL: &str = "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json";
+pub static SSVC_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/decision_point_selection_list_json_schema.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const EXTENSION_METASCHEMA_URL: &str =
+    "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json";
+pub static EXTENSION_METASCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/extension-metaschema.json");
+    serde_json::from_str(schema_str).unwrap()
+});
+
+pub const EXTENSION_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json";
+pub static EXTENSION_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    let schema_str = include_str!("../assets/extension-content.json");
+    serde_json::from_str(schema_str).unwrap()
 });

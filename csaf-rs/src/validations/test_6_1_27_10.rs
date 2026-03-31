@@ -19,7 +19,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
     // Only execute this test for documents with category 'csaf_vex'
     // and if there are any vulnerabilities present
     if !PROFILE_TEST_CONFIG.matches_category(&doc_category) || vulnerabilities.is_empty() {
-        return Ok(());
+        return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
     let mut errors: Option<Vec<ValidationError>> = None;
@@ -66,12 +66,11 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         }
 
         // generate errors for all remaining known_affected product or group ids
-        for known_not_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
+        for known_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
             errors.get_or_insert_with(Vec::new).push(test_6_1_27_10_err_generator(
-                &doc_category,
-                known_not_affected_product_or_group_id.0.to_string(),
+                known_affected_product_or_group_id.0.to_string(),
                 v_i,
-                *known_not_affected_product_or_group_id.1,
+                *known_affected_product_or_group_id.1,
             ));
         }
     }
@@ -83,19 +82,16 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]);
 
 fn test_6_1_27_10_err_generator(
-    document_category: &CsafDocumentCategory,
     product_or_group_id: String,
     vuln_path_index: usize,
     known_affected_path_index: usize,
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "In documents with category '{document_category}', vulnerability product status 'known_affected' entries \
-            must have a corresponding action statement in 'remediations'. \
-            Found 'known_affected' product status entry '{product_or_group_id}' without action statement."
+            "No action statement found for 'known_affected' product status entry '{product_or_group_id}'."
         ),
         instance_path: format!(
-            "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_affected_path_index}"
+            "/vulnerabilities/{vuln_path_index}/product_status/known_affected/{known_affected_path_index}"
         ),
     }
 }
@@ -130,14 +126,29 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_10() {
-        let case_01 = Err(vec![test_6_1_27_10_err_generator(
-            &CsafDocumentCategory::CsafVex,
-            "CSAFPID-9080702".to_string(),
-            0,
-            2,
-        )]);
+        let case_one_product_missing_from_group =
+            Err(vec![test_6_1_27_10_err_generator("CSAFPID-9080702".to_string(), 0, 2)]);
+        let case_one_product_missing_from_products =
+            Err(vec![test_6_1_27_10_err_generator("CSAFPID-9080702".to_string(), 0, 2)]);
+        let case_missing_remediation = Err(vec![
+            test_6_1_27_10_err_generator("CSAFPID-9080700".to_string(), 0, 0),
+            test_6_1_27_10_err_generator("CSAFPID-9080701".to_string(), 0, 1),
+            test_6_1_27_10_err_generator("CSAFPID-9080702".to_string(), 0, 2),
+        ]);
 
-        TESTS_2_0.test_6_1_27_10.expect(case_01.clone());
-        TESTS_2_1.test_6_1_27_10.expect(case_01);
+        TESTS_2_0.test_6_1_27_10.expect(
+            case_one_product_missing_from_group.clone(),
+            case_missing_remediation.clone(),
+            case_one_product_missing_from_products.clone(),
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_1_27_10.expect(
+            case_one_product_missing_from_group,
+            case_missing_remediation,
+            case_one_product_missing_from_products,
+            Ok(()),
+            Ok(()),
+        );
     }
 }

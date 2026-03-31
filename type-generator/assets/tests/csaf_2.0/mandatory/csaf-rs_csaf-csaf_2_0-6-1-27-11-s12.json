@@ -1,0 +1,39 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Vulnerabilities (succeeding example 2: vulnerabilities exist for csaf_vex)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-27-11-S12",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "product_id": "CSAFPID-9080700",
+        "name": "Product A"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2017-0143"
+    }
+  ]
+}

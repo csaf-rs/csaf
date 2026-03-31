@@ -1,16 +1,12 @@
-use crate::csaf::types::csaf_version_number::{CsafVersionNumber, ValidVersionNumber};
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
-fn create_revision_history_error(
-    status: &DocumentStatus,
-    number: &ValidVersionNumber,
-    index: &usize,
-) -> ValidationError {
+fn create_revision_history_error(status: &DocumentStatus, number: &CsafVersionNumber, index: usize) -> ValidationError {
     let reason = match number {
-        ValidVersionNumber::IntVer(_) => "Version 0 is",
-        ValidVersionNumber::SemVer(_) => "Versions 0.y.z are",
+        CsafVersionNumber::IntVer(_) => "Version 0 is",
+        CsafVersionNumber::SemVer(_) => "Versions 0.y.z are",
     };
     ValidationError {
         message: format!(
@@ -30,31 +26,18 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     // This test is only relevant for documents with status 'interim' and 'final'
     let status = tracking.get_status();
     if !(DocumentStatus::Final == status || DocumentStatus::Interim == status) {
-        return Ok(());
+        return Ok(()); // ToDo return skipped/not applicable (https://github.com/csaf-rs/csaf/issues/409)
     }
 
     // Check that no revision history item has version 0 or 0.y.z
     let mut errors: Option<Vec<ValidationError>> = None;
     let revision_history = tracking.get_revision_history();
     for (revision_index, revision) in revision_history.iter().enumerate() {
-        let number = match revision.get_number() {
-            CsafVersionNumber::Valid(number) => number,
-            CsafVersionNumber::Invalid(err) => {
-                errors.get_or_insert_default().push(err.get_validation_error(
-                    format!("/document/tracking/revision_history/{revision_index}/number").as_str(),
-                ));
-                continue;
-            },
-        };
-
-        let is_zero = match &number {
-            ValidVersionNumber::IntVer(intver) => intver.get() == 0,
-            ValidVersionNumber::SemVer(semver) => semver.get_major() == 0,
-        };
-        if is_zero {
+        let number = revision.get_number();
+        if number.get_major() == 0 {
             errors
                 .get_or_insert_default()
-                .push(create_revision_history_error(&status, &number, &revision_index));
+                .push(create_revision_history_error(&status, &number, revision_index));
         }
     }
 
@@ -88,21 +71,28 @@ mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use std::str::FromStr;
 
     #[test]
     fn test_test_6_1_18() {
-        // TODO Unit tests for doc status
-        // TODO for invalid number
-        // TODO for semver with major 0
-        let case_01 = Err(vec![create_revision_history_error(
+        let case_intver_zero_status_final = Err(vec![create_revision_history_error(
             &DocumentStatus::Final,
-            &ValidVersionNumber::from_str("0").unwrap(),
-            &0,
+            &CsafVersionNumber::from("0"),
+            0,
+        )]);
+        let case_semver_zero_status_final = Err(vec![create_revision_history_error(
+            &DocumentStatus::Final,
+            &CsafVersionNumber::from("0.9.0"),
+            0,
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_18.expect(case_01.clone());
-        TESTS_2_1.test_6_1_18.expect(case_01);
+        // Case S11: Document status draft, revision history item with version 0.y.z
+        TESTS_2_0.test_6_1_18.expect(
+            case_intver_zero_status_final.clone(),
+            case_semver_zero_status_final.clone(),
+            Ok(()),
+        );
+        TESTS_2_1
+            .test_6_1_18
+            .expect(case_intver_zero_status_final, case_semver_zero_status_final, Ok(()));
     }
 }

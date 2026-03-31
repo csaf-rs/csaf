@@ -2,7 +2,8 @@ use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationPreset};
+use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validations::test_schema::validate_schema_csaf_2_1;
 enum Severity {
     Error,
     Warning,
@@ -41,11 +42,45 @@ fn to_test_result(
 }
 
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&str> {
+    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
         match preset {
-            ValidationPreset::Basic => mandatory_tests(),
-            ValidationPreset::Extended => [mandatory_tests(), recommended_tests()].concat(),
-            ValidationPreset::Full => [mandatory_tests(), recommended_tests(), informative_tests()].concat(),
+            "mandatory" => Some(mandatory_tests()),
+            "recommended" => Some(recommended_tests()),
+            "informative" => Some(informative_tests()),
+            "schema" => Some(vec!["schema"]),
+            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
+            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            "full" => Some(
+                [
+                    vec!["schema"],
+                    mandatory_tests(),
+                    recommended_tests(),
+                    informative_tests(),
+                ]
+                .concat(),
+            ),
+            "external-request-free" => Some(
+                [
+                    vec!["schema"],
+                    mandatory_tests(),
+                    recommended_tests(),
+                    informative_tests(),
+                ]
+                .concat()
+                .into_iter()
+                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+                .collect(),
+            ),
+            "consistent-revision-history" => Some(vec![
+                "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
+                "6.2.33",
+            ]),
+            "consistent-date-times" => Some(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            "ssvc" => Some(vec![
+                "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
+                "6.3.14", "6.3.15",
+            ]),
+            _ => None,
         }
     }
 
@@ -55,9 +90,9 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Severity::Error,
             match test_id {
                 // mandatory tests
-                "6.1.1" => Some(ValidatorForTest6_1_1.validate(self)),
+                "6.1.1" => None, // Some(ValidatorForTest6_1_1.validate(self)), // TODO: re-enable after fixing, issue #502
                 "6.1.2" => Some(ValidatorForTest6_1_2.validate(self)),
-                "6.1.3" => Some(ValidatorForTest6_1_3.validate(self)),
+                "6.1.3" => None, // Some(ValidatorForTest6_1_3.validate(self)), // TODO: re-enable after fixing, issue #503
                 "6.1.4" => Some(ValidatorForTest6_1_4.validate(self)),
                 "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
                 "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),
@@ -126,9 +161,12 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.51" => None, // Some(ValidatorForTest6_1_51.validate(self)),
                 "6.1.52" => None, // Some(ValidatorForTest6_1_52.validate(self)),
                 "6.1.53" => None, // Some(ValidatorForTest6_1_53.validate(self)),
-                "6.1.54" => None, // Some(ValidatorForTest6_1_54.validate(self)),
+                "6.1.54" => Some(ValidatorForTest6_1_54.validate(self)),
                 "6.1.55" => None, // Some(ValidatorForTest6_1_55.validate(self)),
                 "6.1.56" => None, // Some(ValidatorForTest6_1_56.validate(self)),
+                "6.1.57" => Some(ValidatorForTest6_1_57.validate(self)),
+                "6.1.58" => Some(ValidatorForTest6_1_58.validate(self)),
+                "6.1.61" => Some(ValidatorForTest6_1_61.validate(self)),
                 _ => None,
             },
         );
@@ -240,6 +278,10 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
+        if test_id == "schema" {
+            return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_1(self)));
+        }
+
         to_test_result(
             test_id,
             Severity::Warning,

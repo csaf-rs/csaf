@@ -1,4 +1,4 @@
-use crate::csaf_traits::CsafVersion;
+use crate::csaf::enums::csaf_version::CsafVersion;
 use crate::schema::csaf2_0::schema::DocumentCategory as DocumentCategory20;
 use crate::schema::csaf2_1::schema::DocumentCategory as DocumentCategory21;
 use std::fmt::{Display, Formatter, Result as FmtResult};

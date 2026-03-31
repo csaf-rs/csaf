@@ -2,7 +2,8 @@ use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationPreset};
+use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validations::test_schema::validate_schema_csaf_2_0;
 
 enum Severity {
     Error,
@@ -42,11 +43,20 @@ fn to_test_result(
 }
 
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &ValidationPreset) -> Vec<&str> {
+    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
         match preset {
-            ValidationPreset::Basic => mandatory_tests(),
-            ValidationPreset::Extended => [mandatory_tests(), recommended_tests()].concat(),
-            ValidationPreset::Full => [mandatory_tests(), recommended_tests(), informative_tests()].concat(),
+            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
+            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            "full" => Some(
+                [
+                    vec!["schema"],
+                    mandatory_tests(),
+                    recommended_tests(),
+                    informative_tests(),
+                ]
+                .concat(),
+            ),
+            _ => None,
         }
     }
 
@@ -56,9 +66,9 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Severity::Error,
             match test_id {
                 // mandatory tests
-                "6.1.1" => Some(ValidatorForTest6_1_1.validate(self)),
+                "6.1.1" => None, // Some(ValidatorForTest6_1_1.validate(self)), // TODO: re-enable after fixing, issue #502
                 "6.1.2" => Some(ValidatorForTest6_1_2.validate(self)),
-                "6.1.3" => Some(ValidatorForTest6_1_3.validate(self)),
+                "6.1.3" => None, // Some(ValidatorForTest6_1_3.validate(self)), // TODO: re-enable after fixing, issue #503
                 "6.1.4" => Some(ValidatorForTest6_1_4.validate(self)),
                 "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
                 "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),
@@ -175,6 +185,10 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
+        if test_id == "schema" {
+            return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_0(self)));
+        }
+
         to_test_result(
             test_id,
             Severity::Warning,

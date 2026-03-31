@@ -1,0 +1,52 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Multiple Use of Same Hash Algorithm (valid supplementary example 1 - two elements with different algorithms)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-25-S11",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700",
+        "product_identification_helper": {
+          "hashes": [
+            {
+              "file_hashes": [
+                {
+                  "algorithm": "sha256",
+                  "value": "026a37919b182ef7c63791e82c9645e2f897a3f0b73c7a6028c7febf62e93838"
+                },
+                {
+                  "algorithm": "sha512",
+                  "value": "c71a2ab0b9ed58abae331e6322b0d6d5aebade15996f4f66d5cc5f90dd2f0c2048368edb0f71059596cafc3c713b31532b556bfd590d7c71194b216f5bef259a"
+                }
+              ],
+              "filename": "product_a.so"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+

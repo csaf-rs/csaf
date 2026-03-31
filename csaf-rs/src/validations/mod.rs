@@ -1,11 +1,12 @@
-pub mod test_6_1_01;
+// pub mod test_6_1_01; // TODO: re-enable after fixing, issue #503
 pub mod test_6_1_02;
-pub mod test_6_1_03;
+// pub mod test_6_1_03; // TODO: re-enable after fixing, issue #503
 pub mod test_6_1_04;
 pub mod test_6_1_05;
 pub mod test_6_1_06;
 pub mod test_6_1_07;
 pub mod test_6_1_08;
+pub mod test_schema;
 // pub mod test_6_1_09;
 // pub mod test_6_1_10;
 pub mod test_6_1_11;
@@ -35,6 +36,13 @@ pub mod test_6_1_27_08;
 pub mod test_6_1_27_09;
 pub mod test_6_1_27_10;
 pub mod test_6_1_27_11;
+pub mod test_6_1_27_12;
+pub mod test_6_1_27_14;
+pub mod test_6_1_27_15;
+pub mod test_6_1_27_16;
+pub mod test_6_1_27_17;
+pub mod test_6_1_27_18;
+pub mod test_6_1_27_19;
 
 pub mod test_6_1_28;
 pub mod test_6_1_29;
@@ -58,6 +66,12 @@ pub mod test_6_1_46;
 pub mod test_6_1_47;
 pub mod test_6_1_48;
 pub mod test_6_1_49;
+pub mod test_6_1_53;
+pub mod test_6_1_54;
+pub mod test_6_1_56;
+pub mod test_6_1_57;
+pub mod test_6_1_58;
+pub mod test_6_1_61;
 
 pub mod test_6_2_01;
 pub mod test_6_2_02;

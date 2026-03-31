@@ -69,6 +69,7 @@ pub mod test_6_1_49;
 pub mod test_6_1_53;
 pub mod test_6_1_54;
 pub mod test_6_1_56;
+pub mod test_6_1_61;
 
 pub mod test_6_2_01;
 pub mod test_6_2_02;

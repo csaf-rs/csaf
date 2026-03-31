@@ -8,6 +8,7 @@ use crate::schema::csaf2_1::schema::{
     Branch as Branch21, CategoryOfTheBranch as CategoryOfTheBranch21, FullProductNameT as FullProductNameT21,
     ProductGroup as ProductGroup21, ProductPath as ProductPath21, ProductTree as ProductTree21,
 };
+use std::fmt::Write as _;
 use std::ops::Deref;
 
 /// Trait representing an abstract product tree in a CSAF document.
@@ -191,14 +192,14 @@ pub trait ProductTreeTrait {
 /// - indices: slice of branch indices
 ///
 /// # Returns
-/// instance path constructed from branch indices (exp. 0,0,0 -> "/product_tree/branches/0/branches/0/branches/0/product")
+/// instance path constructed from branch indices (e.g. 0,0,0 -> "/product_tree/branches/0/branches/0/branches/0/product")
 pub fn build_leaf_instance_path(indices: &[usize]) -> String {
     // 13 for "/product_tree" + per index (10 for "/branches/" + up to 5 digits) + 8 for "/product"
     let mut path = String::with_capacity(13 + indices.len() * 15 + 8);
     path.push_str("/product_tree");
     for idx in indices {
         path.push_str("/branches/");
-        path.push_str(idx.to_string().as_str());
+        write!(path, "{idx}").expect("Writing to a String should never fail");
     }
     path.push_str("/product");
     path

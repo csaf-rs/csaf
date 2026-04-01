@@ -119,12 +119,11 @@ jobs:
         run: cargo install cargo-auditable --locked
       - name: Update assets
         run: ./update_assets.sh
-      - name: Check compilation
-        run: cargo check --locked --target=${{ matrix.target.arch }} --verbose
       - name: Clippy check
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} -- -D warnings
       - name: Build
+        if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
       - name: Build WASM bindings
         if: ${{ matrix.target.arch == 'wasm32-wasip2' }}
@@ -140,7 +139,7 @@ jobs:
           name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Generate CycloneDX SBOM
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: cyclonedx-json

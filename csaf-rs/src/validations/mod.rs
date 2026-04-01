@@ -1,6 +1,6 @@
-// pub mod test_6_1_01; // TODO: re-enable after fixing, issue #503
+pub mod test_6_1_01;
 pub mod test_6_1_02;
-// pub mod test_6_1_03; // TODO: re-enable after fixing, issue #503
+pub mod test_6_1_03;
 pub mod test_6_1_04;
 pub mod test_6_1_05;
 pub mod test_6_1_06;

@@ -80,7 +80,7 @@ pub fn create_vector_parse_error(
     let version_str = match version {
         Version::V2 => "2.0",
         Version::V4 => "4.0",
-        _ => "3.x"
+        _ => "3.x",
     };
     ValidationError {
         message: format!("Could not parse vector string \"{vector_string}\" as CVSS {version_str}: {parse_error}"),

@@ -29,6 +29,10 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-03-s01.json",
           "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-03-s02.json",
+          "valid": false
         }
       ]
     },

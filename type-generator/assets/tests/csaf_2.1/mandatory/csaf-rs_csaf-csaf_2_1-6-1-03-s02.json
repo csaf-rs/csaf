@@ -13,10 +13,10 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory test: Circular Definition of Product ID (failing supplementary example 1 tests against product_reference)",
+    "title": "Mandatory test: Circular Definition of Product ID (failing supplementary example 2 tests a real cycle)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-03-S01",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-03-S02",
       "initial_release_date": "2021-07-21T10:00:00.000Z",
       "revision_history": [
         {
@@ -42,6 +42,19 @@
           "name": "Product B",
           "product_id": "CSAFPID-9080701"
         },
+        "beginning_product_reference": "CSAFPID-9080700",
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-9080702"
+          }
+        ]
+      },
+      {
+        "full_product_name": {
+          "name": "Product C",
+          "product_id": "CSAFPID-9080702"
+        },
         "beginning_product_reference": "CSAFPID-9080701",
         "subpaths": [
           {
@@ -50,6 +63,7 @@
           }
         ]
       }
+
     ]
   }
 }

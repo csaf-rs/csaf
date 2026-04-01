@@ -29,6 +29,10 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-03-s01.json",
           "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-03-s02.json",
+          "valid": false
         }
       ]
     },
@@ -252,6 +256,42 @@
       "valid": [
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-23-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.1.24",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-24-s01.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-24-s02.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-24-s03.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-24-s04.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-24-s11.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-24-s12.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-24-s13.json",
           "valid": true
         }
       ]
@@ -541,6 +581,16 @@
       ]
     },
     {
+      "id": "6.1.34",
+      "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-34-s01.json",
+          "valid": false
+        }
+      ]
+    },
+    {
       "id": "6.2.15",
       "group": "recommended",
       "failures": [
@@ -557,16 +607,6 @@
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-15-s11.json",
           "valid": true
-        }
-      ]
-    },
-    {
-      "id": "6.1.34",
-      "group": "mandatory",
-      "failures": [
-        {
-          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-34-s01.json",
-          "valid": false
         }
       ]
     }

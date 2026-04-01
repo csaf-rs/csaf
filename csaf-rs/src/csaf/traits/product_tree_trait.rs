@@ -1,4 +1,4 @@
-use crate::csaf::traits::product_tree::relationship_trait::RelationshipTrait;
+use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 use crate::csaf_traits::{CategoryOfTheBranch as CategoryOfTheBranchTrait, ProductGroupTrait, ProductTrait};
 use crate::schema::csaf2_0::schema::{
     Branch as Branch20, CategoryOfTheBranch as CategoryOfTheBranch20, FullProductNameT as FullProductNameT20,
@@ -25,7 +25,7 @@ pub trait ProductTreeTrait {
     type ProductGroupType: ProductGroupTrait;
 
     /// The associated type representing the type of relationships in the product tree.
-    type RelationshipType: RelationshipTrait<Self::FullProductNameType>;
+    type ProductPathType: ProductPathTrait<Self::FullProductNameType>;
 
     /// The associated type representing the type of the full product name.
     type FullProductNameType: ProductTrait;
@@ -39,7 +39,7 @@ pub trait ProductTreeTrait {
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
 
     /// Retrieves a reference to the list of relationships in the product tree.
-    fn get_relationships(&self) -> &Vec<Self::RelationshipType>;
+    fn get_product_paths(&self) -> &Vec<Self::ProductPathType>;
 
     /// Retrieves a reference to the list of full product names in the product tree.
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
@@ -66,15 +66,17 @@ pub trait ProductTreeTrait {
     fn get_relationships_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
-        for (rel_i, rel) in self.get_relationships().iter().enumerate() {
+        for (rel_i, rel) in self.get_product_paths().iter().enumerate() {
             ids.push((
-                rel.get_product_reference().to_owned(),
-                format!("/product_tree/relationships/{rel_i}/product_reference"),
+                rel.get_beginning_product_reference().to_owned(),
+                rel.get_json_path_for_product_path_beginning_product_reference(rel_i),
             ));
-            ids.push((
-                rel.get_relates_to_product_reference().to_owned(),
-                format!("/product_tree/relationships/{rel_i}/relates_to_product_reference"),
-            ));
+            for (sub_i, sub_ref) in rel.get_subpath_product_references().iter().enumerate() {
+                ids.push((
+                    sub_ref.to_string(),
+                    rel.get_json_path_for_product_path_subpath_product_reference(rel_i, sub_i),
+                ));
+            }
         }
 
         ids
@@ -140,7 +142,7 @@ pub trait ProductTreeTrait {
         }
 
         // Visit relationships
-        for (i, rel) in self.get_relationships().iter().enumerate() {
+        for (i, rel) in self.get_product_paths().iter().enumerate() {
             callback(
                 rel.get_full_product_name(),
                 &format!("/product_tree/relationships/{i}/full_product_name"),
@@ -318,7 +320,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
 impl ProductTreeTrait for ProductTree20 {
     type BranchType = Branch20;
     type ProductGroupType = ProductGroup20;
-    type RelationshipType = Relationship20;
+    type ProductPathType = Relationship20;
     type FullProductNameType = FullProductNameT20;
 
     fn get_branches(&self) -> Option<&Vec<Self::BranchType>> {
@@ -329,7 +331,7 @@ impl ProductTreeTrait for ProductTree20 {
         &self.product_groups
     }
 
-    fn get_relationships(&self) -> &Vec<Self::RelationshipType> {
+    fn get_product_paths(&self) -> &Vec<Self::ProductPathType> {
         &self.relationships
     }
 
@@ -345,7 +347,7 @@ impl ProductTreeTrait for ProductTree20 {
 impl ProductTreeTrait for ProductTree21 {
     type BranchType = Branch21;
     type ProductGroupType = ProductGroup21;
-    type RelationshipType = ProductPath21;
+    type ProductPathType = ProductPath21;
     type FullProductNameType = FullProductNameT21;
 
     fn get_branches(&self) -> Option<&Vec<Self::BranchType>> {
@@ -356,7 +358,7 @@ impl ProductTreeTrait for ProductTree21 {
         &self.product_groups
     }
 
-    fn get_relationships(&self) -> &Vec<Self::RelationshipType> {
+    fn get_product_paths(&self) -> &Vec<Self::ProductPathType> {
         &self.product_paths
     }
 

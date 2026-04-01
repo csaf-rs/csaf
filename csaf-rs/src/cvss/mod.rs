@@ -124,7 +124,8 @@ pub fn check_score_mismatch(
     instance_path: &str,
     errors: &mut Option<Vec<ValidationError>>,
 ) {
-    if actual != calculated {
+    // compare scores as scaled integers
+    if !((actual * 10.0).round() as i8) == ((calculated * 10.0).round() as i8) {
         errors.get_or_insert_default().push(create_score_mismatch_error(
             calculated,
             actual,
@@ -172,13 +173,13 @@ pub fn check_severity_mismatch(
 ///
 /// The severity ranges follow the CVSS v3/v4 specification.
 pub fn map_score_to_severity(score: Option<f64>) -> Option<Severity> {
-    let score = score?;
-    Some(match score {
-        0.0 => Severity::None,
-        s if s > 0.0 && s <= 3.9 => Severity::Low,
-        s if (4.0..=6.9).contains(&s) => Severity::Medium,
-        s if (7.0..=8.9).contains(&s) => Severity::High,
-        s if (9.0..=10.0).contains(&s) => Severity::Critical,
+    let scaled = (score? * 10.0).round() as i8;
+    Some(match scaled {
+        0 => Severity::None,
+        1..=39 => Severity::Low,
+        40..=69 => Severity::Medium,
+        70..=89 => Severity::High,
+        90..=100 => Severity::Critical,
         _ => return None,
     })
 }

@@ -10,7 +10,7 @@ use crate::validation::ValidationError;
 
 /// Validates CVSS v4 base score and base severity.
 ///
-/// The `vectorString` is taken as authoritative. It is calculate the expected score and severity
+/// The `vectorString` is taken as authoritative. It is used to calculate the expected score and severity,
 /// which are then compared against the values declared in the JSON.
 ///
 /// Checked fields: `baseScore`, `baseSeverity`

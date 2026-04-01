@@ -125,7 +125,7 @@ pub fn check_score_mismatch(
     errors: &mut Option<Vec<ValidationError>>,
 ) {
     // compare scores as scaled integers
-    if !((actual * 10.0).round() as i8) == ((calculated * 10.0).round() as i8) {
+    if (actual * 10.0).round() as i8 != (calculated * 10.0).round() as i8 {
         errors.get_or_insert_default().push(create_score_mismatch_error(
             calculated,
             actual,

@@ -77,8 +77,13 @@ pub fn create_vector_parse_error(
     parse_error: &cvss_rs::ParseError,
     instance_path: &str,
 ) -> ValidationError {
+    let version_str = match version {
+        Version::V2 => "2.0",
+        Version::V4 => "4.0",
+        _ => "3.x"
+    };
     ValidationError {
-        message: format!("Could not parse CVSS {version} vector string \"{vector_string}\": {parse_error}"),
+        message: format!("Could not parse vector string \"{vector_string}\" as CVSS {version_str}: {parse_error}"),
         instance_path: instance_path.to_string(),
     }
 }

@@ -73,7 +73,8 @@ jobs:
           else
             echo "targets=$FULL_TARGETS" >> $GITHUB_OUTPUT
           fi
-      - name: Publish dry-run 
+      - name: Publish dry-run
+        if: github.ref_type != 'tag'
         run: |
           cargo publish --dry-run -p csaf-rs --verbose --no-verify --locked
 
@@ -158,13 +159,8 @@ jobs:
     if: always()
     steps:
       - name: Check build status
-        run: |
-          if [ ${{ needs.build-matrix.result }} == 'success' ]; then
-            echo "All matrix builds succeeded."
-          else
-            echo "Some matrix builds failed."
-            exit 1
-          fi
+        if: needs.build-matrix.result != 'success'
+        run: exit 1
    
   devguard-secret-scanning: # uses gitleaks
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
@@ -218,7 +214,7 @@ jobs:
       - name: Install devguard-scanner
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
-          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@latest
+          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
       
       - name: Download all CDX artifacts
         uses: actions/download-artifact@v4

@@ -43,23 +43,27 @@ pub fn validate_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<
         },
     };
 
+    let calculated_base = parsed.calculated_base_score();
+    let calculated_temporal = parsed.calculated_temporal_score();
+    let calculated_environmental = parsed.calculated_environmental_score();
+
     // Validate scores
-    if let Some(calculated) = parsed.calculated_base_score() {
+    if let Some(calculated) = calculated_base {
         check_score_mismatch(cvss3.base_score, calculated, ScoreType::Base, instance_path, errors);
     }
     if let Some(actual) = cvss3.temporal_score
-        && let Some(calculated) = parsed.calculated_temporal_score()
+        && let Some(calculated) = calculated_temporal
     {
         check_score_mismatch(actual, calculated, ScoreType::Temporal, instance_path, errors);
     }
     if let Some(actual) = cvss3.environmental_score
-        && let Some(calculated) = parsed.calculated_environmental_score()
+        && let Some(calculated) = calculated_environmental
     {
         check_score_mismatch(actual, calculated, ScoreType::Environmental, instance_path, errors);
     }
 
     // Validate severities
-    if let Some(calculated) = map_score_to_severity(parsed.calculated_base_score()) {
+    if let Some(calculated) = map_score_to_severity(calculated_base) {
         check_severity_mismatch(
             &to_unified(&cvss3.base_severity),
             &calculated,
@@ -69,7 +73,7 @@ pub fn validate_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<
         );
     }
     if let Some(actual) = &cvss3.temporal_severity
-        && let Some(calculated) = map_score_to_severity(parsed.calculated_temporal_score())
+        && let Some(calculated) = map_score_to_severity(calculated_temporal)
     {
         check_severity_mismatch(
             &to_unified(actual),
@@ -80,7 +84,7 @@ pub fn validate_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<
         );
     }
     if let Some(actual) = &cvss3.environmental_severity
-        && let Some(calculated) = map_score_to_severity(parsed.calculated_environmental_score())
+        && let Some(calculated) = map_score_to_severity(calculated_environmental)
     {
         check_severity_mismatch(
             &to_unified(actual),

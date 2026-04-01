@@ -29,13 +29,15 @@ pub fn validate_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<
         },
     };
 
+    let calculated_full = parsed.calculated_full_score();
+
     // Validate base score (using full score which includes threat metric E if present)
-    if let Some(calculated) = parsed.calculated_full_score() {
+    if let Some(calculated) = calculated_full {
         check_score_mismatch(cvss4.base_score, calculated, ScoreType::Base, instance_path, errors);
     }
 
     // Validate base severity using base_severity() which converts to unified Severity
-    if let Some(calculated) = map_score_to_severity(parsed.calculated_full_score())
+    if let Some(calculated) = map_score_to_severity(calculated_full)
         && let Some(actual) = cvss4.base_severity()
     {
         check_severity_mismatch(&actual, &calculated, ScoreType::Base, instance_path, errors);

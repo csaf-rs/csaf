@@ -11,6 +11,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+concurrency: # cancel in-progress runs of the same workflow for the same PR, but allow multiple runs for different PRs or for pushes to main
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -51,7 +55,7 @@ jobs:
           fi
           echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
       - name: Compute build targets
-        id: get-targets
+        id: get-targets # this is a bit hacky but it allows us to have different targets for PRs and for main/tag builds without having to duplicate the entire matrix strategy
         run: |
           FULL_TARGETS=$(jq -cn '[
             {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"},

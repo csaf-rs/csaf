@@ -22,6 +22,7 @@ jobs:
       stable-version: ${{ steps.get-versions.outputs.stable-version }}
       git-version: ${{ steps.get-versions.outputs.git-version }}
       target-ref: ${{ steps.get-versions.outputs.targetref }}
+      targets: ${{ steps.get-targets.outputs.targets }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,6 +50,25 @@ jobs:
             TARGETREF=--defaultRef=${{ github.ref_name }}
           fi
           echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
+      - name: Compute build targets
+        id: get-targets
+        run: |
+          FULL_TARGETS=$(jq -cn '[
+            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"},
+            {"arch": "aarch64-unknown-linux-gnu",  "runs-on": "ubuntu-24.04-arm"},
+            {"arch": "aarch64-apple-darwin",        "runs-on": "macos-latest"},
+            {"arch": "x86_64-apple-darwin",         "runs-on": "macos-latest"},
+            {"arch": "x86_64-pc-windows-msvc",      "runs-on": "windows-latest",  "ext": ".exe"},
+            {"arch": "wasm32-wasip2",               "runs-on": "macos-latest",    "skip-test": true, "ext": ".wasm"}
+          ]')
+          PR_TARGETS=$(jq -cn '[
+            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"}
+          ]')
+          if [[ ${{ github.event_name }} == "pull_request" ]]; then
+            echo "targets=$PR_TARGETS" >> $GITHUB_OUTPUT
+          else
+            echo "targets=$FULL_TARGETS" >> $GITHUB_OUTPUT
+          fi
       - name: Publish dry-run 
         run: |
           cargo publish --dry-run -p csaf-rs --verbose --no-verify --locked
@@ -62,22 +82,7 @@ jobs:
         version: 
           - ${{ needs.prepare.outputs.msrv-version }}
           - ${{ needs.prepare.outputs.stable-version }}
-        target:
-          - arch: x86_64-unknown-linux-gnu
-            runs-on: ubuntu-latest
-          - arch:  aarch64-unknown-linux-gnu
-            runs-on: ubuntu-24.04-arm
-          - arch: aarch64-apple-darwin
-            runs-on: macos-latest
-          - arch: x86_64-apple-darwin
-            runs-on: macos-latest
-          - arch: x86_64-pc-windows-msvc
-            runs-on: windows-latest
-            ext: .exe
-          - arch: wasm32-wasip2
-            runs-on: macos-latest
-            skip-test: true
-            ext: .wasm
+        target: ${{ fromJson(needs.prepare.outputs.targets) }}
     runs-on: ${{ matrix.target.runs-on }}
     steps:
       - uses: actions/checkout@v4

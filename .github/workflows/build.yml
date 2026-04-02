@@ -11,6 +11,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+concurrency: # cancel in-progress runs of the same workflow for the same PR, but allow multiple runs for different PRs or for pushes to main
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -22,6 +26,7 @@ jobs:
       stable-version: ${{ steps.get-versions.outputs.stable-version }}
       git-version: ${{ steps.get-versions.outputs.git-version }}
       target-ref: ${{ steps.get-versions.outputs.targetref }}
+      targets: ${{ steps.get-targets.outputs.targets }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,7 +54,28 @@ jobs:
             TARGETREF=--defaultRef=${{ github.ref_name }}
           fi
           echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
-      - name: Publish dry-run 
+      - name: Compute build targets
+        id: get-targets # this is a bit hacky but it allows us to have different targets for PRs and for main/tag builds without having to duplicate the entire matrix strategy
+        run: |
+          FULL_TARGETS=$(jq -cn '[
+            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"},
+            {"arch": "aarch64-unknown-linux-gnu", "runs-on": "ubuntu-24.04-arm"},
+            {"arch": "aarch64-apple-darwin",      "runs-on": "macos-latest"},
+            {"arch": "x86_64-apple-darwin",       "runs-on": "macos-latest"},
+            {"arch": "x86_64-pc-windows-msvc",    "runs-on": "windows-latest",  "ext": ".exe"},
+            {"arch": "wasm32-wasip2",             "runs-on": "ubuntu-latest",    "skip-test": true, "ext": ".wasm"}
+          ]')
+          PR_TARGETS=$(jq -cn '[
+            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"},
+            {"arch": "wasm32-wasip2",             "runs-on": "ubuntu-latest",    "skip-test": true, "ext": ".wasm"}
+          ]')
+          if [[ ${{ github.event_name }} == "pull_request" ]]; then
+            echo "targets=$PR_TARGETS" >> $GITHUB_OUTPUT
+          else
+            echo "targets=$FULL_TARGETS" >> $GITHUB_OUTPUT
+          fi
+      - name: Publish dry-run
+        if: github.ref_type != 'tag'
         run: |
           cargo publish --dry-run -p csaf-rs --verbose --no-verify --locked
 
@@ -62,22 +88,7 @@ jobs:
         version: 
           - ${{ needs.prepare.outputs.msrv-version }}
           - ${{ needs.prepare.outputs.stable-version }}
-        target:
-          - arch: x86_64-unknown-linux-gnu
-            runs-on: ubuntu-latest
-          - arch:  aarch64-unknown-linux-gnu
-            runs-on: ubuntu-24.04-arm
-          - arch: aarch64-apple-darwin
-            runs-on: macos-latest
-          - arch: x86_64-apple-darwin
-            runs-on: macos-latest
-          - arch: x86_64-pc-windows-msvc
-            runs-on: windows-latest
-            ext: .exe
-          - arch: wasm32-wasip2
-            runs-on: macos-latest
-            skip-test: true
-            ext: .wasm
+        target: ${{ fromJson(needs.prepare.outputs.targets) }}
     runs-on: ${{ matrix.target.runs-on }}
     steps:
       - uses: actions/checkout@v4
@@ -110,8 +121,6 @@ jobs:
         run: cargo install cargo-auditable --locked
       - name: Update assets
         run: ./update_assets.sh
-      - name: Check compilation
-        run: cargo check --locked --target=${{ matrix.target.arch }} --verbose
       - name: Clippy check
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} -- -D warnings
@@ -131,13 +140,13 @@ jobs:
           name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Generate CycloneDX SBOM
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: cyclonedx-json
           artifact-name: csaf-validator_${{ matrix.target.arch }}_${{ matrix.version }}_${{ needs.prepare.outputs.git-version }}_sbom.cdx.json
       - name: Generate SPDX SBOM
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: spdx-json
@@ -150,13 +159,8 @@ jobs:
     if: always()
     steps:
       - name: Check build status
-        run: |
-          if [ ${{ needs.build-matrix.result }} == 'success' ]; then
-            echo "All matrix builds succeeded."
-          else
-            echo "Some matrix builds failed."
-            exit 1
-          fi
+        if: needs.build-matrix.result != 'success'
+        run: exit 1
    
   devguard-secret-scanning: # uses gitleaks
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
@@ -210,7 +214,7 @@ jobs:
       - name: Install devguard-scanner
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
-          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@latest
+          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
       
       - name: Download all CDX artifacts
         uses: actions/download-artifact@v4

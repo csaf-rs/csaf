@@ -125,7 +125,6 @@ jobs:
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} -- -D warnings
       - name: Build
-        # if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
       - name: Build WASM bindings
         if: ${{ matrix.target.arch == 'wasm32-wasip2' }}

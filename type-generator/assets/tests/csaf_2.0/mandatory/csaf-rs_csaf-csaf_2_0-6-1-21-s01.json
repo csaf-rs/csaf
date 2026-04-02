@@ -7,7 +7,7 @@
       "name": "OASIS CSAF TC",
       "namespace": "https://csaf.io"
     },
-    "title": "Mandatory test: Missing Item in Revision History (failing supplementary example 1)",
+    "title": "Mandatory test: Missing Item in Revision History (failing supplementary example 1: semver missing version 2.0.0)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-21-S01",

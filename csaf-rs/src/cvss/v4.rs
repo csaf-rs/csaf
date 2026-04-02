@@ -49,6 +49,7 @@ pub fn validate_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<
 ///
 /// The `vectorString` is taken as authoritative. Each metric property declared in the JSON
 /// is compared against the value parsed from the vector string, and mismatches are reported.
+/// Mismatches include the value being present in either the JSON or vector string and missing in the other.
 pub fn validate_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<ValidationError>>) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match CvssV4::from_str(&cvss4.vector_string) {
@@ -253,15 +254,15 @@ pub fn validate_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut Op
     );
 
     // Supplemental metrics
-    check_optional_field_mismatch("Safety", &cvss4.safety, &parsed.safety, instance_path, errors);
+    check_optional_field_mismatch("safety", &cvss4.safety, &parsed.safety, instance_path, errors);
     check_optional_field_mismatch(
-        "Automatable",
+        "automatable",
         &cvss4.automatable,
         &parsed.automatable,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch("Recovery", &cvss4.recovery, &parsed.recovery, instance_path, errors);
+    check_optional_field_mismatch("recovery", &cvss4.recovery, &parsed.recovery, instance_path, errors);
     check_optional_field_mismatch(
         "valueDensity",
         &cvss4.value_density,

@@ -4,7 +4,15 @@ use crate::{
     validation::ValidationError,
 };
 
-pub fn test_6_1_10_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+/// 6.1.10 Inconsistent CVSS
+///
+/// Checks for inconsistency between the vector and the values in the JSON, taking the vector as
+/// authoritative.
+///
+/// Generates an error if a CVSS 2.0,3.x,4.0 metric differs in value between the JSON and vector or is
+/// missing in either the JSON or vector and present in the other. For the later comparison, the "NotDefined"
+/// values are normalized to be "not present".
+pub fn test_6_1_10_inconsistent_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
@@ -28,7 +36,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::Commo
         &self,
         doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
     ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_10_invalid_cvss(doc)
+        test_6_1_10_inconsistent_cvss(doc)
     }
 }
 
@@ -39,7 +47,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
         &self,
         doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
     ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_10_invalid_cvss(doc)
+        test_6_1_10_inconsistent_cvss(doc)
     }
 }
 

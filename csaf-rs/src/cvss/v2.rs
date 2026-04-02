@@ -52,6 +52,11 @@ pub fn validate_scores(
     }
 }
 
+/// Validates CVSS v2 property consistency between the JSON object and the vector string.
+///
+/// The `vectorString` is taken as authoritative. Each metric property declared in the JSON
+/// is compared against the value parsed from the vector string, and mismatches are reported.
+/// Mismatches include the value being present in either the JSON or vector string and missing in the other.
 pub fn validate_consistency(
     cvss2: &CvssV2,
     _cvss_map: &serde_json::Map<String, Value>,

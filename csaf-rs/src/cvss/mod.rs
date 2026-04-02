@@ -49,7 +49,7 @@ pub fn validate_content_consistency(
 ///
 /// The `expected_version` parameter determines which version-specific validation is
 /// applied. [Version::V3_0] is used as a placeholder to convey that a CVSS v3 validation should be done.
-pub fn validate_scores(
+fn validate_scores(
     cvss_map: &serde_json::Map<String, Value>,
     instance_path: &str,
     errors: &mut Option<Vec<ValidationError>>,
@@ -85,7 +85,7 @@ pub fn validate_scores(
 ///
 /// The `expected_version` parameter determines which version-specific validation is
 /// applied. [Version::V3_0] is used as a placeholder to convey that a CVSS v3 validation should be done.
-pub fn validate_consistency(
+fn validate_consistency(
     cvss_map: &serde_json::Map<String, Value>,
     instance_path: &str,
     errors: &mut Option<Vec<ValidationError>>,

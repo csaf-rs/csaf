@@ -59,7 +59,6 @@ pub fn validate_scores(
 /// Mismatches include the value being present in either the JSON or vector string and missing in the other.
 pub fn validate_consistency(
     cvss2: &CvssV2,
-    _cvss_map: &serde_json::Map<String, Value>,
     instance_path: &str,
     errors: &mut Option<Vec<ValidationError>>,
 ) {

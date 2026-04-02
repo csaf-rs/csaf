@@ -96,7 +96,7 @@ fn validate_consistency(
     };
     match (expected_version, cvss_deserialized) {
         (Version::V2, Cvss::V2(cvss2)) => {
-            v2::validate_consistency(&cvss2, cvss_map, instance_path, errors);
+            v2::validate_consistency(&cvss2, instance_path, errors);
         },
         (Version::V3_0, Cvss::V3_0(cvss3) | Cvss::V3_1(cvss3)) => {
             v3::validate_consistency(&cvss3, instance_path, errors);

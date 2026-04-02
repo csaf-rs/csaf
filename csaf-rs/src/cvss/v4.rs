@@ -254,15 +254,16 @@ pub fn validate_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut Op
     );
 
     // Supplemental metrics
-    check_optional_field_mismatch("safety", &cvss4.safety, &parsed.safety, instance_path, errors);
+    // Safety, Automatable and Recovery are capitalized in the JSON schema
+    check_optional_field_mismatch("Safety", &cvss4.safety, &parsed.safety, instance_path, errors);
     check_optional_field_mismatch(
-        "automatable",
+        "Automatable",
         &cvss4.automatable,
         &parsed.automatable,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch("recovery", &cvss4.recovery, &parsed.recovery, instance_path, errors);
+    check_optional_field_mismatch("Recovery", &cvss4.recovery, &parsed.recovery, instance_path, errors);
     check_optional_field_mismatch(
         "valueDensity",
         &cvss4.value_density,

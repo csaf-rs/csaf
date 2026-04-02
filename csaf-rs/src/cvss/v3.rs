@@ -5,7 +5,8 @@ use cvss_rs::Version;
 use cvss_rs::v3::{CvssV3, Severity as V3Severity};
 
 use super::{
-    ScoreType, check_score_mismatch, check_severity_mismatch, create_vector_parse_error, map_score_to_severity,
+    ScoreType, check_optional_field_mismatch, check_score_mismatch, check_severity_mismatch, create_vector_parse_error,
+    map_score_to_severity,
 };
 use crate::validation::ValidationError;
 
@@ -94,4 +95,178 @@ pub fn validate_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<
             errors,
         );
     }
+}
+
+/// Validates CVSS v3 property consistency between the JSON object and the vector string.
+///
+/// The `vectorString` is taken as authoritative. Each metric property declared in the JSON
+/// is compared against the value parsed from the vector string, and mismatches are reported.
+pub fn validate_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+    // Parse vector string to get a struct with populated metrics for calculation
+    let parsed = match CvssV3::from_str(&cvss3.vector_string) {
+        Ok(p) => p,
+        Err(e) => {
+            errors.get_or_insert_default().push(create_vector_parse_error(
+                &cvss3.vector_string,
+                Version::V3_0,
+                &e,
+                instance_path,
+            ));
+            return;
+        },
+    };
+
+    // Base metrics
+    check_optional_field_mismatch(
+        "attackVector",
+        &cvss3.attack_vector,
+        &parsed.attack_vector,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "attackComplexity",
+        &cvss3.attack_complexity,
+        &parsed.attack_complexity,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "privilegesRequired",
+        &cvss3.privileges_required,
+        &parsed.privileges_required,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "userInteraction",
+        &cvss3.user_interaction,
+        &parsed.user_interaction,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch("scope", &cvss3.scope, &parsed.scope, instance_path, errors);
+    check_optional_field_mismatch(
+        "confidentialityImpact",
+        &cvss3.confidentiality_impact,
+        &parsed.confidentiality_impact,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "integrityImpact",
+        &cvss3.integrity_impact,
+        &parsed.integrity_impact,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "availabilityImpact",
+        &cvss3.availability_impact,
+        &parsed.availability_impact,
+        instance_path,
+        errors,
+    );
+
+    // Temporal metrics
+    check_optional_field_mismatch(
+        "exploitCodeMaturity",
+        &cvss3.exploit_code_maturity,
+        &parsed.exploit_code_maturity,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "remediationLevel",
+        &cvss3.remediation_level,
+        &parsed.remediation_level,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "reportConfidence",
+        &cvss3.report_confidence,
+        &parsed.report_confidence,
+        instance_path,
+        errors,
+    );
+
+    // Environmental metrics
+    check_optional_field_mismatch(
+        "confidentialityRequirement",
+        &cvss3.confidentiality_requirement,
+        &parsed.confidentiality_requirement,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "integrityRequirement",
+        &cvss3.integrity_requirement,
+        &parsed.integrity_requirement,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "availabilityRequirement",
+        &cvss3.availability_requirement,
+        &parsed.availability_requirement,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedAttackVector",
+        &cvss3.modified_attack_vector,
+        &parsed.modified_attack_vector,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedAttackComplexity",
+        &cvss3.modified_attack_complexity,
+        &parsed.modified_attack_complexity,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedPrivilegesRequired",
+        &cvss3.modified_privileges_required,
+        &parsed.modified_privileges_required,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedUserInteraction",
+        &cvss3.modified_user_interaction,
+        &parsed.modified_user_interaction,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedScope",
+        &cvss3.modified_scope,
+        &parsed.modified_scope,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedConfidentialityImpact",
+        &cvss3.modified_confidentiality_impact,
+        &parsed.modified_confidentiality_impact,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedIntegrityImpact",
+        &cvss3.modified_integrity_impact,
+        &parsed.modified_integrity_impact,
+        instance_path,
+        errors,
+    );
+    check_optional_field_mismatch(
+        "modifiedAvailabilityImpact",
+        &cvss3.modified_availability_impact,
+        &parsed.modified_availability_impact,
+        instance_path,
+        errors,
+    );
 }

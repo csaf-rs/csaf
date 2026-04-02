@@ -3,7 +3,6 @@ use crate::{
     cvss,
     validation::ValidationError,
 };
-use cvss_rs::Version;
 
 /// 6.1.9 Invalid CVSS computation
 ///
@@ -20,17 +19,7 @@ pub fn test_6_1_09_invalid_cvss_computation(doc: &impl CsafTrait) -> Result<(), 
                 let content = metric.get_content();
                 let instance_path = content.get_content_json_path(i_v, metric_index);
 
-                if let Some(cvss_map) = content.get_cvss_v2() {
-                    cvss::validate(cvss_map, &instance_path, &mut errors, Version::V2);
-                }
-
-                if let Some(cvss_map) = content.get_cvss_v3() {
-                    cvss::validate(cvss_map, &instance_path, &mut errors, Version::V3_0);
-                }
-
-                if let Some(cvss_map) = content.get_cvss_v4() {
-                    cvss::validate(cvss_map, &instance_path, &mut errors, Version::V4);
-                }
+                cvss::validate_content_scores(content, &instance_path, &mut errors);
             }
         }
     }

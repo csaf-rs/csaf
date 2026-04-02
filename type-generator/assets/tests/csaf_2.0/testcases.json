@@ -22,7 +22,7 @@
         }
       ]
     },
-   {
+    {
       "id": "6.1.3",
       "group": "mandatory",
       "failures": [
@@ -62,7 +62,7 @@
         }
       ]
     },
-     {
+    {
       "id": "6.1.13",
       "group": "mandatory",
       "failures": [
@@ -70,19 +70,19 @@
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-13-s01.json",
           "valid": false
         },
-         {
+        {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-13-s02.json",
           "valid": false
         },
-         {
+        {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-13-s03.json",
           "valid": false
         },
-         {
+        {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-13-s04.json",
           "valid": false
         },
-         {
+        {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-13-s05.json",
           "valid": false
         }
@@ -207,6 +207,32 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s02.json",
           "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s03.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s04.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s05.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s06.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s07.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s11.json",
+          "valid": true
         }
       ]
     },
@@ -388,7 +414,7 @@
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-10-s11.json",
           "valid": true
         },
-         {
+        {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-10-s12.json",
           "valid": true
         }
@@ -464,7 +490,7 @@
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-30-s04.json",
           "valid": false
         },
-         {
+        {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-30-s05.json",
           "valid": false
         }

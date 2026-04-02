@@ -93,27 +93,27 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 | 6.1.3 | :white_check_mark: | :white_check_mark: |
 | 6.1.4 | :white_check_mark: | :white_check_mark: |
 | 6.1.5 | :white_check_mark: | :white_check_mark: |
-| 6.1.6 | :white_check_mark: |                    |
+| 6.1.6 | :white_check_mark: | :white_check_mark: |
 | 6.1.7 | :white_check_mark: |                    |
 | 6.1.8 | :white_check_mark: |                    |
-| 6.1.9 | :white_check_mark:  |                    |
-| 6.1.10 | :white_check_mark: |                    |
-| 6.1.11 | :white_check_mark: | :white_check_mark: |
-| 6.1.12 | :white_check_mark: |                    |
+| 6.1.9 | :white_check_mark:  | :white_check_mark: |
+| 6.1.10 | :white_check_mark: | :white_check_mark: |
+| 6.1.11 | :white_check_mark: |                    |
+| 6.1.12 | :white_check_mark: | :white_check_mark: |
 | 6.1.13 | :white_check_mark: | :white_check_mark: |
 | 6.1.14 | :white_check_mark: |                    |
-| 6.1.15 | :white_check_mark: |                    |
-| 6.1.16 | :white_check_mark: |                    |
+| 6.1.15 | :white_check_mark: | :white_check_mark: |
+| 6.1.16 | :white_check_mark: | :white_check_mark: |
 | 6.1.17 | :white_check_mark: | :white_check_mark: |
-| 6.1.18 | :white_check_mark: |                    |
-| 6.1.19 | :white_check_mark: |                    |
-| 6.1.20 | :white_check_mark: |                    |
-| 6.1.21 | :white_check_mark: |                    |
-| 6.1.22 | :white_check_mark: |                    |
-| 6.1.23 | :white_check_mark: |                    |
-| 6.1.24 | :white_check_mark: |                    |
-| 6.1.25 | :white_check_mark: |                    |
-| 6.1.26 | :white_check_mark: |                    |
+| 6.1.18 | :white_check_mark: | :white_check_mark: |
+| 6.1.19 | :white_check_mark: | :white_check_mark: |
+| 6.1.20 | :white_check_mark: | :white_check_mark: |
+| 6.1.21 | :white_check_mark: | :white_check_mark: |
+| 6.1.22 | :white_check_mark: | :white_check_mark: |
+| 6.1.23 | :white_check_mark: | :white_check_mark: |
+| 6.1.24 | :white_check_mark: | :white_check_mark: |
+| 6.1.25 | :white_check_mark: | :white_check_mark: |
+| 6.1.26 | :white_check_mark: | :white_check_mark: |
 | 6.1.27.1 | :white_check_mark: | :white_check_mark: |
 | 6.1.27.2 | :white_check_mark: | :white_check_mark: |
 | 6.1.27.3 | :white_check_mark: | :white_check_mark: |
@@ -125,28 +125,28 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 | 6.1.27.9 | :white_check_mark: | :white_check_mark: |
 | 6.1.27.10 | :white_check_mark: | :white_check_mark: |
 | 6.1.27.11 | :white_check_mark: | :white_check_mark: |
-| 6.1.27.12 | :white_check_mark: | :white_check_mark: |
-| 6.1.27.13 | :white_check_mark: |                    |
-| 6.1.27.14 | :white_check_mark: | :white_check_mark: |
-| 6.1.27.15 | :white_check_mark: | :white_check_mark: |
-| 6.1.27.16 | :white_check_mark: | :white_check_mark: |
-| 6.1.27.17 | :white_check_mark: | :white_check_mark: |
-| 6.1.27.18 | :white_check_mark: | :white_check_mark: |
-| 6.1.27.19 | :white_check_mark: | :white_check_mark: |
-| 6.1.28 | :white_check_mark: |                    |
+| 6.1.27.12 | :o:                | :white_check_mark: |
+| 6.1.27.13 | :o:                |                    |
+| 6.1.27.14 | :o:                | :white_check_mark: |
+| 6.1.27.15 | :o:                | :white_check_mark: |
+| 6.1.27.16 | :o:                | :white_check_mark: |
+| 6.1.27.17 | :o:                | :white_check_mark: |
+| 6.1.27.18 | :o:                | :white_check_mark: |
+| 6.1.27.19 | :o:                | :white_check_mark: |
+| 6.1.28 | :white_check_mark: | :white_check_mark: |
 | 6.1.29 | :white_check_mark: | :white_check_mark: |
-| 6.1.30 | :white_check_mark: |                    |
-| 6.1.31 | :white_check_mark: |                    |
-| 6.1.32 | :white_check_mark: |                    |
+| 6.1.30 | :white_check_mark: | :white_check_mark: |
+| 6.1.31 | :white_check_mark: | :white_check_mark: |
+| 6.1.32 | :white_check_mark: | :white_check_mark: |
 | 6.1.33 | :white_check_mark: |                    |
-| 6.1.34 | :o:                |                    |
+| 6.1.34 | :o:                | :white_check_mark: |
 | 6.1.35 | :o:                |                    |
 | 6.1.36 | :o:                |                    |
 | 6.1.37 | :o:                |                    |
-| 6.1.38 | :o:                |                    |
-| 6.1.39 | :o:                |                    |
-| 6.1.40 | :o:                |                    |
-| 6.1.41 | :o:                |                    |
+| 6.1.38 | :o:                | :white_check_mark: |
+| 6.1.39 | :o:                | :white_check_mark: |
+| 6.1.40 | :o:                | :white_check_mark: |
+| 6.1.41 | :o:                | :white_check_mark: |
 | 6.1.42 | :o:                | :white_check_mark: |
 | 6.1.43 | :o:                | :white_check_mark: |
 | 6.1.44 | :o:                | :white_check_mark: |
@@ -158,14 +158,14 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 | 6.1.50 | :o:                |                    |
 | 6.1.51 | :o:                |                    |
 | 6.1.52 | :o:                |                    |
-| 6.1.53 | :o:                |                    |
-| 6.1.54 | :o:                |                    |
+| 6.1.53 | :o:                | :white_check_mark: |
+| 6.1.54 | :o:                | :white_check_mark: |
 | 6.1.55 | :o:                |                    |
-| 6.1.56 | :o:                |                    |
-| 6.1.57 | :o:                |                    |
-| 6.1.58 | :o:                |                    |
+| 6.1.56 | :o:                | :white_check_mark: |
+| 6.1.57 | :o:                | :white_check_mark: |
+| 6.1.58 | :o:                | :white_check_mark: |
 | 6.1.59 | :o:                |                    |
 | 6.1.60.1 | :o:                |                    |
 | 6.1.60.2 | :o:                |                    |
 | 6.1.60.3 | :o:                |                    |
-| 6.1.61 | :o:                |                    |
+| 6.1.61 | :o:                | :white_check_mark: |

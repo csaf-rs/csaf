@@ -305,7 +305,7 @@ pub fn create_field_missing_in_object_error<T: std::fmt::Display>(
 /// "not defined" variants are uniformly named `NotDefined`.
 /// TODO: This is really hacky and should be cleanly implemented in cvss-rs.
 /// Alternative to this, we can add a shared IsUndefined Trait to all metrics, but I considered that
-/// overly bloaty.
+/// overly bloated.
 fn is_not_defined(val: &impl std::fmt::Debug) -> bool {
     format!("{val:?}") == "NotDefined"
 }

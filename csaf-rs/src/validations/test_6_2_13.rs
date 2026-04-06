@@ -1,4 +1,4 @@
-use crate::{csaf::raw::RawDocument, validation::ValidationError};
+use crate::validation::ValidationError;
 use serde_json::Value;
 
 /// 6.2.13 Sorting
@@ -54,27 +54,7 @@ fn create_unsorted_keys_error(path: &str) -> ValidationError {
     }
 }
 
-impl crate::test_validation::TestValidator<RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_13
-{
-    fn validate(
-        &self,
-        document: &RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_13_sorting(document.get_json())
-    }
-}
-
-impl crate::test_validation::TestValidator<RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_13
-{
-    fn validate(
-        &self,
-        document: &RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_13_sorting(document.get_json())
-    }
-}
+crate::test_validation::impl_raw_string_validator!(ValidatorForTest6_2_13, test_6_2_13_sorting);
 
 #[cfg(test)]
 mod tests {

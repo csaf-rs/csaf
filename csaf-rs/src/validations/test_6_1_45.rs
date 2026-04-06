@@ -94,16 +94,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     Ok(())
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_45
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_45_inconsistent_disclosure_date(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_45, test_6_1_45_inconsistent_disclosure_date);
 
 #[cfg(test)]
 mod tests {

@@ -38,16 +38,7 @@ pub fn test_6_1_38_non_public_sharing_group_max_uuid(doc: &impl CsafTrait) -> Re
     Ok(())
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_38
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_38_non_public_sharing_group_max_uuid(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_38, test_6_1_38_non_public_sharing_group_max_uuid);
 
 #[cfg(test)]
 mod tests {

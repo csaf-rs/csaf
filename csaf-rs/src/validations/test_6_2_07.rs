@@ -31,27 +31,7 @@ fn create_missing_date_in_involvements_error(vulnerability_index: usize, involve
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_7
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_07_missing_date_in_involvements(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_7
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_07_missing_date_in_involvements(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_7, test_6_2_07_missing_date_in_involvements);
 
 #[cfg(test)]
 mod tests {

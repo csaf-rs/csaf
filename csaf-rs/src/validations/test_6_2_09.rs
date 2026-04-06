@@ -34,27 +34,7 @@ fn create_sha1_only_hash_error(path: &str, hash_index: usize) -> ValidationError
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_9
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_09_use_of_sha1_as_only_hash_algo(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_9
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_09_use_of_sha1_as_only_hash_algo(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_9, test_6_2_09_use_of_sha1_as_only_hash_algo);
 
 #[cfg(test)]
 mod tests {

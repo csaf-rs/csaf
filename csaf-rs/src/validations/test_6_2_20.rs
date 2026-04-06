@@ -1,7 +1,6 @@
 use std::sync::LazyLock;
 
 use crate::{
-    csaf::raw::RawDocument,
     helpers::{
         CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA, CVSS_V3_0_SCHEMA_URL,
         CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA, CVSS_V4_0_2_SCHEMA_URL, EXTENSION_METASCHEMA,
@@ -90,27 +89,16 @@ fn create_additional_properties_error(key: &str, path: &str) -> ValidationError 
     }
 }
 
-impl crate::test_validation::TestValidator<RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_20
-{
-    fn validate(
-        &self,
-        document: &RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_20_additional_properties(document.get_json(), &STRICT_VALIDATOR_2_0)
-    }
+fn test_6_2_20_validate_2_0(json: &Value) -> Result<(), Vec<ValidationError>> {
+    test_6_2_20_additional_properties(json, &STRICT_VALIDATOR_2_0)
 }
 
-impl crate::test_validation::TestValidator<RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_20
-{
-    fn validate(
-        &self,
-        document: &RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_20_additional_properties(document.get_json(), &STRICT_VALIDATOR_2_1)
-    }
+fn test_6_2_20_validate_2_1(json: &Value) -> Result<(), Vec<ValidationError>> {
+    test_6_2_20_additional_properties(json, &STRICT_VALIDATOR_2_1)
 }
+
+crate::test_validation::impl_raw_string_validator!(csaf2_0, ValidatorForTest6_2_20, test_6_2_20_validate_2_0);
+crate::test_validation::impl_raw_string_validator!(csaf2_1, ValidatorForTest6_2_20, test_6_2_20_validate_2_1);
 
 #[cfg(test)]
 mod tests {

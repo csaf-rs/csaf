@@ -50,27 +50,7 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_05_multiple_definition_of_product_group_id(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_05_multiple_definition_of_product_group_id(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_5, test_6_1_05_multiple_definition_of_product_group_id);
 
 #[cfg(test)]
 mod tests {

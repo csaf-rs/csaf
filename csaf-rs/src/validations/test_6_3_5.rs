@@ -50,27 +50,7 @@ pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_3_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_5_use_of_short_hash(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_3_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_5_use_of_short_hash(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_3_5, test_6_3_5_use_of_short_hash);
 
 #[cfg(test)]
 mod tests {

@@ -140,16 +140,7 @@ fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), V
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_37
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_37_date_and_time(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_37, test_6_1_37_date_and_time);
 
 #[cfg(test)]
 mod tests {

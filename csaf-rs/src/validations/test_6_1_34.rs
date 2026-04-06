@@ -27,16 +27,7 @@ pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), 
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_34
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_34_branches_recursion_depth(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_34, test_6_1_34_branches_recursion_depth);
 
 #[cfg(test)]
 mod tests {

@@ -84,16 +84,7 @@ pub fn test_6_1_27_18_document_notes_for_supersession(doc: &impl CsafTrait) -> R
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafSuperseded]);
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_18
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_18_document_notes_for_supersession(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_18, test_6_1_27_18_document_notes_for_supersession);
 
 #[cfg(test)]
 mod tests {

@@ -47,16 +47,7 @@ pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_58
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_58_product_version_and_product_version_range_in_one_path(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_58, test_6_1_58_product_version_and_product_version_range_in_one_path);
 
 #[cfg(test)]
 mod tests {

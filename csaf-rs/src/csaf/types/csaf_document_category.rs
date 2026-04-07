@@ -200,7 +200,8 @@ impl CsafDocumentCategory {
             .collect()
     }
 
-    /// Helper function to check if a string starts with `csaf_` (case-insensitive)
+    /// Helper function to check if a string starts with `csaf_`. See [Self::starts_with_csaf_underscore]
+    /// for more details.
     #[inline]
     fn string_starts_with_csaf_underscore(s: &str) -> bool {
         // Lowercase and Split the string at "csaf"
@@ -210,28 +211,21 @@ impl CsafDocumentCategory {
                 false
             },
             Some((prefix, postfix)) => {
-                match postfix.chars().next() {
-                    None => {
-                        // There are no characters after "csaf"
-                        false
-                    },
-                    Some(first_char_of_postfix) => {
-                        if !Self::UNDERSCORE_CHARACTERS.contains(&first_char_of_postfix) {
-                            // The character after "csaf" is not an underscore or underscore variant
-                            false
-                        } else {
-                            // Check if everything before "csaf" is only whitespace or hyphen / underscore variants
-                            // if yes, the string starts with "csaf_"
-                            Self::get_with_ignored_chars_removed(prefix).is_empty()
-                        }
-                    },
+                // Check if everything before "csaf" is only whitespace or hyphen / underscore variants
+                if !Self::get_with_ignored_chars_removed(prefix).is_empty() {
+                    return false;
                 }
+                postfix
+                    .chars()
+                    .next()
+                    .is_some_and(|c| Self::UNDERSCORE_CHARACTERS.contains(&c))
             },
         }
     }
 
-    /// Checks if the category string starts with `csaf_` (case-insensitive)
-    /// also checks that everything before `csaf_` consists only of whitespace, underscores and hyphens
+    /// Checks if the category string starts with `csaf_` (case-insensitive), where the `_` can be
+    /// any of the known underscore variant characters [Self::UNDERSCORE_CHARACTERS].
+    /// Also checks that everything before `csaf_` consists only of whitespace, underscores and hyphens variants.
     ///
     /// Examples:
     /// `csaf_base` -> true
@@ -251,6 +245,61 @@ impl CsafDocumentCategory {
         Self::string_starts_with_csaf_underscore(&self.to_string())
     }
 
+    /// Helper function to check if a string starts with `csaf_deprecated_`. See [Self::starts_with_csaf_deprecated]
+    /// for more details.
+    #[inline]
+    fn string_starts_with_csaf_deprecated_underscore(s: &str) -> bool {
+        let lower = s.to_lowercase();
+        // Split at "csaf"
+        match lower.split_once("csaf") {
+            None => false,
+            Some((prefix, after_csaf)) => {
+                // Everything before "csaf" must be only ignored chars
+                if !Self::get_with_ignored_chars_removed(prefix).is_empty() {
+                    return false;
+                }
+                // First char after "csaf" must be an underscore variant
+                let mut chars = after_csaf.chars();
+                if !chars.next().is_some_and(|c| Self::UNDERSCORE_CHARACTERS.contains(&c)) {
+                    return false;
+                }
+                let after_first_underscore = chars.as_str();
+                // Must continue with "deprecated" followed by another underscore variant
+                after_first_underscore.strip_prefix("deprecated").is_some_and(|s| {
+                    s.chars()
+                        .next()
+                        .is_some_and(|c| Self::UNDERSCORE_CHARACTERS.contains(&c))
+                })
+            },
+        }
+    }
+
+    /// Checks if the category string starts with `csaf_deprecated_` (case-insensitive), where the `_` can be
+    /// any of the known underscore variant characters [Self::UNDERSCORE_CHARACTERS].
+    /// Also checks that everything before `csaf_deprecated_` consists only of whitespace, underscores and hyphens variants.
+    ///
+    /// Examples:
+    /// `csaf_deprecated_security_advisory` -> true
+    /// ` csaf_deprecated_security_advisory` -> true
+    /// `CSAF_DEPRECATED_foo` -> true
+    /// `csaf＿deprecated＿foo` -> true
+    /// `csaf_base` -> false
+    /// `csaf_vex` -> false
+    pub fn starts_with_csaf_deprecated(&self) -> bool {
+        // The only known variant starting with csaf_deprecated_ is CsafDeprecatedSecurityAdvisory
+        if matches!(self, CsafDocumentCategory::CsafDeprecatedSecurityAdvisory) {
+            return true;
+        }
+
+        // For CsafBaseOther, check the actual string with unicode-aware logic
+        if let CsafDocumentCategory::CsafBaseOther(s) = self {
+            return Self::string_starts_with_csaf_deprecated_underscore(s);
+        }
+
+        // All other known variants don't start with csaf_deprecated_
+        false
+    }
+
     /// Helper function to normalize a category string
     #[inline]
     fn string_normalize(s: &str) -> String {
@@ -262,7 +311,7 @@ impl CsafDocumentCategory {
         normalized.strip_prefix("csaf").unwrap_or(&normalized).to_string()
     }
 
-    /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore
+    /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore.
     ///
     /// Examples:
     /// `csaf_base` -> `base`
@@ -298,123 +347,107 @@ impl Display for CsafDocumentCategory {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
-    mod string_starts_with_csaf_underscore_tests {
-        use super::*;
-
-        #[test]
-        fn test_exact_csaf_underscore_prefix_returns_true() {
-            // `csaf_basE` -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("csaf_basE"));
-        }
-
-        #[test]
-        fn test_uppercase_csaf_returns_true() {
-            // `CSAF_base` -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("CSAF_base"));
-        }
-
-        #[test]
-        fn test_leading_chars_before_csaf_underscore_returns_true() {
-            // ` csaf_base` -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore(" csaf_base"));
-            // `_csaf_base` -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("_csaf_base"));
-            // `-csaf_base` -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("-csaf_base"));
-            // `＿csaf_base` (this is U+FF3F Fullwidth Low Line!) -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("＿csaf_base"));
-            // `__csaf_base` -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("__csaf_base"));
-            // ` _ csaf_base` -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore(" _ csaf_base"));
-        }
-
-        #[test]
-        fn test_csaf_underscore_with_underscore_variant_returns_true() {
-            // `csaf＿base` with U+FF3F (Fullwidth Low Line) -> true
-            assert!(CsafDocumentCategory::string_starts_with_csaf_underscore("csaf＿base"));
-        }
-
-        #[test]
-        fn test_no_csaf_underscore_returns_false() {
-            // `saf_base` -> false
-            assert!(!CsafDocumentCategory::string_starts_with_csaf_underscore("saf_base"));
-        }
+    #[rstest]
+    // basic example
+    #[case("csaf_base", true)]
+    // casing
+    #[case("csaf_basE", true)]
+    #[case("CSAF_base", true)]
+    // leading (multiple) whitespace, hyphen, underscore variants
+    #[case(" csaf_base", true)]
+    #[case("_csaf_base", true)]
+    #[case("-csaf_base", true)]
+    // this is U+FF3F Fullwidth Low Line
+    #[case("＿csaf_base", true)]
+    #[case("__csaf_base", true)]
+    #[case(" _ csaf_base", true)]
+    // underscore variant in "middle" underscore
+    #[case("csaf＿base", true)]
+    // not starting with csaf
+    #[case("saf_base", false)]
+    fn string_starts_with_csaf_underscore(#[case] input: &str, #[case] expected: bool) {
+        assert_eq!(
+            CsafDocumentCategory::string_starts_with_csaf_underscore(input),
+            expected,
+            "input: {input:?}"
+        );
     }
 
-    mod normalize_tests {
-        use super::*;
+    #[rstest]
+    // basic example
+    #[case("csaf_deprecated_security_advisory", true)]
+    // known other categories
+    #[case("csaf_base", false)]
+    #[case("csaf_vex", false)]
+    #[case("csaf_security_advisory", false)]
+    #[case("csaf_informational_advisory", false)]
+    #[case("csaf_security_incident_response", false)]
+    #[case("csaf_withdrawn", false)]
+    #[case("csaf_superseded", false)]
+    // casing
+    #[case("CSAF_DEPRECATED_SOMETHING", true)]
+    #[case("Csaf_Deprecated_Something", true)]
+    // with underscore variants
+    #[case("csaf\u{FF3F}deprecated\u{FF3F}foo", true)]
+    #[case("csaf_deprecated\u{FF3F}bar", true)]
+    #[case("csaf\u{FF3F}deprecated_bar", true)]
+    // with leading underscore, hyphen, whitespace
+    #[case(" csaf_deprecated_foo", true)]
+    #[case("_csaf_deprecated_foo", true)]
+    #[case("-csaf_deprecated_foo", true)]
+    // no underscore before / after deprecated
+    #[case("csaf_deprecated", false)]
+    #[case("csafdeprecated_foo", false)]
+    // no csaf prefix
+    #[case("deprecated_something", false)]
+    #[case("some_other_category", false)]
+    fn string_starts_with_csaf_deprecated_underscore(#[case] input: &str, #[case] expected: bool) {
+        assert_eq!(
+            CsafDocumentCategory::string_starts_with_csaf_deprecated_underscore(input),
+            expected,
+            "input: {input:?}"
+        );
+    }
 
-        #[test]
-        fn test_known_profiles_normalize_correctly() {
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_base"), "base");
-            assert_eq!(
-                CsafDocumentCategory::string_normalize("csaf_informational_advisory"),
-                "informationaladvisory"
-            );
-            assert_eq!(
-                CsafDocumentCategory::string_normalize("csaf_security_incident_response"),
-                "securityincidentresponse"
-            );
-            assert_eq!(
-                CsafDocumentCategory::string_normalize("csaf_security_advisory"),
-                "securityadvisory"
-            );
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_vex"), "vex");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_withdrawn"), "withdrawn");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf_superseded"), "superseded");
-            assert_eq!(
-                CsafDocumentCategory::string_normalize("csaf_deprecated_security_advisory"),
-                "deprecatedsecurityadvisory"
-            );
-        }
-
-        #[test]
-        fn test_csaf_base_normalizes_to_base() {
-            // casing
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf-basE"), "base");
-            assert_eq!(CsafDocumentCategory::string_normalize("Csaf_base"), "base");
-
-            // we don't validate all the different hyphen / dash / underscore variants here
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf‐base"), "base");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf＿base"), "base");
-
-            // white spaces
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf base"), "base");
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf\tbase"), "base");
-
-            // multiple
-            assert_eq!(CsafDocumentCategory::string_normalize("csaf__base--"), "base");
-        }
-
-        #[test]
-        fn test_leading_chars_before_csaf_normalizes_correctly() {
-            // leading whitespace / underscore / hyphen -> `base`
-            assert_eq!(CsafDocumentCategory::string_normalize(" csaf_base"), "base");
-            assert_eq!(CsafDocumentCategory::string_normalize("_csaf_base"), "base");
-            assert_eq!(CsafDocumentCategory::string_normalize("-csaf_base"), "base");
-            // multiple leading ignored chars -> `base`
-            assert_eq!(CsafDocumentCategory::string_normalize("__csaf_base"), "base");
-        }
-
-        #[test]
-        fn test_without_csaf_prefix() {
-            // `saf_base` -> `safbase`
-            assert_eq!(CsafDocumentCategory::string_normalize("saf_base"), "safbase");
-            // `_saf_base` -> `safbase`
-            assert_eq!(CsafDocumentCategory::string_normalize("_saf_base"), "safbase");
-            // `Some_Other-Category` -> `someothercategory`
-            assert_eq!(
-                CsafDocumentCategory::string_normalize("Some_Other-Category"),
-                "someothercategory"
-            );
-        }
-
-        #[test]
-        fn test_empty_after_csaf_prefix() {
-            // `Csaf_` -> ``
-            assert_eq!(CsafDocumentCategory::string_normalize("Csaf_"), "");
-        }
+    #[rstest]
+    // Known profiles
+    #[case("csaf_base", "base")]
+    #[case("csaf_informational_advisory", "informationaladvisory")]
+    #[case("csaf_security_incident_response", "securityincidentresponse")]
+    #[case("csaf_security_advisory", "securityadvisory")]
+    #[case("csaf_vex", "vex")]
+    #[case("csaf_withdrawn", "withdrawn")]
+    #[case("csaf_superseded", "superseded")]
+    #[case("csaf_deprecated_security_advisory", "deprecatedsecurityadvisory")]
+    // Casing variants
+    #[case("csaf-basE", "base")]
+    #[case("Csaf_base", "base")]
+    // Hyphen / dash / underscore variants
+    #[case("csaf‐base", "base")]
+    #[case("csaf＿base", "base")]
+    // Whitespace variants
+    #[case("csaf base", "base")]
+    #[case("csaf\tbase", "base")]
+    // Multiple ignored chars
+    #[case("csaf__base--", "base")]
+    // Leading ignored chars
+    #[case(" csaf_base", "base")]
+    #[case("_csaf_base", "base")]
+    #[case("-csaf_base", "base")]
+    #[case("__csaf_base", "base")]
+    // Without csaf prefix
+    #[case("saf_base", "safbase")]
+    #[case("_saf_base", "safbase")]
+    #[case("Some_Other-Category", "someothercategory")]
+    // Empty after csaf prefix
+    #[case("Csaf_", "")]
+    fn string_normalize(#[case] input: &str, #[case] expected: &str) {
+        assert_eq!(
+            CsafDocumentCategory::string_normalize(input),
+            expected,
+            "input: {input:?}"
+        );
     }
 }

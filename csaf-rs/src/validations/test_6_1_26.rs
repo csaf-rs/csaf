@@ -48,7 +48,7 @@ fn test_6_1_26_err_generator_starts_with_csaf(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document category '{doc_category}' is prohibited. Only the following values starting with 'csaf_' are allowed: {}",
+            "Document category '{doc_category}' is prohibited. Only the following values starting with 'csaf_' (or similar) are allowed: {}",
             CsafDocumentCategory::known_profile_concat(version)
         ),
         instance_path: "/document/category".to_string(),

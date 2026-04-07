@@ -17,7 +17,7 @@ pub trait TestValidator<Doc> {
     fn validate(&self, doc: &Doc) -> Result<(), Vec<ValidationError>>;
 }
 
-/// Macro to generate the boilerplate `TestValidator` impl blocks for validation tests.
+/// Macro to generate the boilerplate `TestValidator<CommonSecurityAdvisoryFramework>` impl blocks for validation tests.
 ///
 /// # Usage
 ///
@@ -68,18 +68,7 @@ macro_rules! impl_validator {
 
 pub(crate) use impl_validator;
 
-pub trait TestValidatorWithRawString {
-    /// Validate a CSAF document according to this test's requirements, with access to the raw string content.
-    ///
-    /// # Arguments
-    /// * `raw` - The raw string content of the document
-    /// # Returns
-    /// * `Ok(())` if validation passes
-    /// * `Err(Vec<ValidationError>)` if validation fails
-    fn validate(&self, raw: &str) -> Result<(), Vec<ValidationError>>;
-}
-
-/// Macro to generate the boilerplate `TestValidator<RawDocument` impl blocks for validation
+/// Macro to generate the boilerplate `TestValidator<RawDocument<CommonSecurityAdvisoryFramework>>` impl blocks for validation
 /// tests that operate on raw JSON.
 ///
 /// # Usage

@@ -1,4 +1,4 @@
-use crate::csaf::types::csaf_language::CsafLanguage;
+use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
 

@@ -3,7 +3,7 @@ use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf::types::csaf_language::CsafLanguage;
+use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{DistributionTrait, DocumentReferenceTrait, NoteTrait, PublisherTrait, TrackingTrait};
 use crate::schema::csaf2_0::schema::{
     CsafVersion as CsafVersion20, DocumentLevelMetaData as DocumentLevelMetaData20, Note as Note20,

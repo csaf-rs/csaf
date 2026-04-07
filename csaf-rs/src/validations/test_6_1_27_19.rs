@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf::types::csaf_language::CsafLanguage;
+use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentReferenceTrait, DocumentTrait};
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::CategoryOfReference;
@@ -34,10 +34,10 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
     match doc.get_document().get_lang() {
-        Some(CsafLanguage::DefaultLanguage(_)) | Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
-        Some(CsafLanguage::Valid(valid_lang)) if !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
-        Some(_) => {},                                                                      // this is english
-        None => {},                                                                         // no language set
+        Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(CsafLanguage::Valid(valid_lang)) if valid_lang.is_default() || !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(_) => {}, // this is english
+        None => {},    // no language set
     }
 
     let mut has_external_reference_with_correct_summary = false;

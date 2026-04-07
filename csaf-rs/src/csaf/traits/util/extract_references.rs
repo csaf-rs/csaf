@@ -71,12 +71,7 @@ fn extract_product_id_impl<'a, T: WithOptionalProductIds + 'a>(
 ///
 /// Implemented for:
 /// - `Option<&Vec<T>>`
-/// - `&Option<Vec<T>>`
 /// - `Vec<T>`
-///
-/// TODO: As already discussed, we should simplify / align our return params here.
-/// It does not make sense to have the same functionality return either `Option<&Vec<T>>` or
-/// `&Option<Vec<T>>` in some cases. When this is done, we can remove the unused case.
 pub trait ExtractGroupReferences<T: WithOptionalGroupIds> {
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)>;
 }
@@ -84,12 +79,6 @@ pub trait ExtractGroupReferences<T: WithOptionalGroupIds> {
 impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for Option<&Vec<T>> {
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
         extract_group_id_impl(self.iter().flat_map(|x| x.iter()), path_prefix)
-    }
-}
-
-impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for &Option<Vec<T>> {
-    fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
-        extract_group_id_impl(self.iter().flatten(), path_prefix)
     }
 }
 
@@ -106,12 +95,7 @@ impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for Vec<T> {
 ///
 /// Implemented for:
 /// - `Option<&Vec<T>>`
-/// - `&Option<Vec<T>>`
 /// - `Vec<T>`
-///
-/// TODO: As already discussed, we should simplify / align our return params here.
-/// It does not make sense to have the same functionality return either `Option<&Vec<T>>` or
-/// `&Option<Vec<T>>` in some cases. When this is done, we can remove the unused case.
 pub trait ExtractProductReferences<T: WithOptionalProductIds> {
     fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)>;
 }
@@ -119,12 +103,6 @@ pub trait ExtractProductReferences<T: WithOptionalProductIds> {
 impl<T: WithOptionalProductIds> ExtractProductReferences<T> for Option<&Vec<T>> {
     fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)> {
         extract_product_id_impl(self.iter().flat_map(|x| x.iter()), path_prefix)
-    }
-}
-
-impl<T: WithOptionalProductIds> ExtractProductReferences<T> for &Option<Vec<T>> {
-    fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)> {
-        extract_product_id_impl(self.iter().flatten(), path_prefix)
     }
 }
 

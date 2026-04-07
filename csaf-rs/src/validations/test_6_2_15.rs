@@ -44,27 +44,7 @@ fn create_default_language_error(lang_tag: String, instance_path: &str) -> Valid
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_15
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_15_use_of_default_language(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_15
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_15_use_of_default_language(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_15, test_6_2_15_use_of_default_language);
 
 #[cfg(test)]
 mod tests {

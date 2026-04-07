@@ -101,27 +101,10 @@ fn test_6_1_33_err_generator(
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_33
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_33_multiple_flags_with_vex_codes_per_product(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_33
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_33_multiple_flags_with_vex_codes_per_product(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_33,
+    test_6_1_33_multiple_flags_with_vex_codes_per_product
+);
 
 #[cfg(test)]
 mod tests {

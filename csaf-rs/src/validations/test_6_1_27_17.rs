@@ -84,16 +84,11 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_17
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_17_document_notes_for_withdrawal(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_27_17,
+    test_6_1_27_17_document_notes_for_withdrawal
+);
 
 #[cfg(test)]
 mod tests {

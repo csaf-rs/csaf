@@ -35,27 +35,7 @@ fn generate_err_msg(product_id: &str, path: &str) -> ValidationError {
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_2
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_02_multiple_definition_of_product_id(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_2
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_02_multiple_definition_of_product_id(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_2, test_6_1_02_multiple_definition_of_product_id);
 
 #[cfg(test)]
 mod tests {

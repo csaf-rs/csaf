@@ -38,27 +38,10 @@ pub fn test_6_1_29_remediation_without_product_reference(doc: &impl CsafTrait) -
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_29
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_29_remediation_without_product_reference(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_29
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_29_remediation_without_product_reference(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_29,
+    test_6_1_29_remediation_without_product_reference
+);
 
 #[cfg(test)]
 mod tests {

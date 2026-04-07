@@ -21,16 +21,7 @@ static MISSING_TLP_LABEL_ERROR: LazyLock<ValidationError> = LazyLock::new(|| Val
     instance_path: "/document/distribution/tlp/label".to_string(),
 });
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_10
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_10_missing_tlp_label(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_0, ValidatorForTest6_2_10, test_6_2_10_missing_tlp_label);
 
 #[cfg(test)]
 mod tests {

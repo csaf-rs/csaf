@@ -224,7 +224,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     fn get_name(&self) -> &str;
 
     /// Retrieves the full product name associated with this branch, if available.
-    fn get_product(&self) -> &Option<FPN>;
+    fn get_product(&self) -> Option<&FPN>;
 
     /// Recursively visits all branches in the tree structure,
     /// applying the provided callback function to each branch.
@@ -243,7 +243,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// * `Err(Vec<ValidationError>)` if the callback returns an error for any branch
     fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str)) {
         callback(self, path);
-        if let Some(branches) = self.get_branches().as_ref() {
+        if let Some(branches) = self.get_branches() {
             for (i, branch) in branches.iter().enumerate() {
                 branch.visit_branches_rec(&format!("{path}/branches/{i}"), callback);
             }
@@ -397,8 +397,8 @@ impl BranchTrait<FullProductNameT20> for Branch20 {
         self.name.deref()
     }
 
-    fn get_product(&self) -> &Option<FullProductNameT20> {
-        &self.product
+    fn get_product(&self) -> Option<&FullProductNameT20> {
+        self.product.as_ref()
     }
 }
 
@@ -428,7 +428,7 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
         self.name.deref()
     }
 
-    fn get_product(&self) -> &Option<FullProductNameT21> {
-        &self.product
+    fn get_product(&self) -> Option<&FullProductNameT21> {
+        self.product.as_ref()
     }
 }

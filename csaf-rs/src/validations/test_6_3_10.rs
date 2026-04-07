@@ -14,7 +14,7 @@ fn create_product_version_range_error(path: &str) -> ValidationError {
 pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(product_tree) = doc.get_product_tree().as_ref() {
+    if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
             if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange {
                 errors

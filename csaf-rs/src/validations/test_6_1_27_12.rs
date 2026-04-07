@@ -32,7 +32,6 @@ pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         if vulnerability
             .get_product_status()
-            .as_ref()
             .and_then(|ps| ps.get_known_affected())
             .is_none()
         {

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         // Map to store each key with all of its paths
         let mut products_with_paths: HashMap<String, Vec<String>> = HashMap::new();
         tree.visit_all_products(&mut |product, path| {

@@ -10,7 +10,7 @@ pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // for each product in the product tree, check all product identification helper hashes for MD5 as the only hash algorithm
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
             if let Some(helper) = fpn.get_product_identification_helper() {
                 for (h_i, hash) in helper.get_hashes().iter().enumerate() {

@@ -12,7 +12,7 @@ fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> Valid
 
 pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // TODO This can be wasSkipped in the future
-    let Some(branches) = doc.get_product_tree().as_ref().and_then(|t| t.get_branches()) else {
+    let Some(branches) = doc.get_product_tree().and_then(|t| t.get_branches()) else {
         return Ok(());
     };
 

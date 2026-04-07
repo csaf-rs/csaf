@@ -82,7 +82,7 @@ fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&
 pub fn test_6_1_31_version_range_in_product_version_branch_name(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
-    let Some(product_tree) = doc.get_product_tree().as_ref() else {
+    let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
     };
 

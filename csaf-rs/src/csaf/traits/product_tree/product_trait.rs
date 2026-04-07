@@ -19,7 +19,7 @@ pub trait ProductTrait {
     fn get_name(&self) -> &str;
 
     /// Returns the product identification helper associated with the full product name.
-    fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType>;
+    fn get_product_identification_helper(&self) -> Option<&Self::ProductIdentificationHelperType>;
 }
 
 impl ProductTrait for FullProductNameT20 {
@@ -33,8 +33,8 @@ impl ProductTrait for FullProductNameT20 {
         self.name.deref()
     }
 
-    fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType> {
-        &self.product_identification_helper
+    fn get_product_identification_helper(&self) -> Option<&Self::ProductIdentificationHelperType> {
+        self.product_identification_helper.as_ref()
     }
 }
 
@@ -49,7 +49,7 @@ impl ProductTrait for FullProductNameT21 {
         self.name.deref()
     }
 
-    fn get_product_identification_helper(&self) -> &Option<Self::ProductIdentificationHelperType> {
-        &self.product_identification_helper
+    fn get_product_identification_helper(&self) -> Option<&Self::ProductIdentificationHelperType> {
+        self.product_identification_helper.as_ref()
     }
 }

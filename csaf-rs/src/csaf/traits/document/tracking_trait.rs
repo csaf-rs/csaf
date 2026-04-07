@@ -66,7 +66,7 @@ pub trait TrackingTrait {
     fn get_initial_release_date(&self) -> CsafDateTime;
 
     /// Returns the generator information for this document
-    fn get_generator(&self) -> &Option<Self::GeneratorType>;
+    fn get_generator(&self) -> Option<&Self::GeneratorType>;
 
     /// Returns the revision history for this document
     fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
@@ -113,8 +113,8 @@ impl TrackingTrait for Tracking20 {
         CsafDateTime::from(&self.initial_release_date)
     }
 
-    fn get_generator(&self) -> &Option<Self::GeneratorType> {
-        &self.generator
+    fn get_generator(&self) -> Option<&Self::GeneratorType> {
+        self.generator.as_ref()
     }
 
     fn get_revision_history(&self) -> &Vec<Self::RevisionType> {
@@ -150,8 +150,8 @@ impl TrackingTrait for Tracking21 {
         CsafDateTime::from(&self.initial_release_date)
     }
 
-    fn get_generator(&self) -> &Option<Self::GeneratorType> {
-        &self.generator
+    fn get_generator(&self) -> Option<&Self::GeneratorType> {
+        self.generator.as_ref()
     }
 
     fn get_revision_history(&self) -> &Vec<Self::RevisionType> {

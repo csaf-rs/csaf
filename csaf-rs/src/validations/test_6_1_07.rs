@@ -30,7 +30,7 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
                     .entry(metric_type.to_owned())
                     .or_default()
                     // Third map: source (or none) =>
-                    .entry(metric.get_source().as_ref().map(|s| s.to_owned()))
+                    .entry(metric.get_source().map(|s| s.to_owned()))
                     .or_default()
                     // vector with json paths that provide this metric type for this product and source
                     .push(content.get_content_json_path(vulnerability_index, metric_index));

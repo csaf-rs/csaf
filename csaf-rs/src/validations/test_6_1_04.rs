@@ -11,7 +11,7 @@ fn generate_err_msg(ref_id: &str, ref_path: &str) -> ValidationError {
 
 pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = Option::None;
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         let mut known_groups = HashSet::<String>::new();
         for g in tree.get_product_groups().iter() {
             known_groups.insert(g.get_group_id().to_owned());

@@ -18,7 +18,7 @@ pub trait DistributionTrait {
     type TlpType: TlpTrait;
 
     /// Returns the sharing group for this distribution
-    fn get_sharing_group(&self) -> &Option<Self::SharingGroupType>;
+    fn get_sharing_group(&self) -> Option<&Self::SharingGroupType>;
 
     /// Returns the TLP information for this distribution with CSAF 2.0 semantics
     fn get_tlp_20(&self) -> Option<&Self::TlpType>;
@@ -31,8 +31,8 @@ impl DistributionTrait for RulesForSharingDocument20 {
     type SharingGroupType = NotPresentInCsaf20;
     type TlpType = TrafficLightProtocolTlp20;
 
-    fn get_sharing_group(&self) -> &Option<Self::SharingGroupType> {
-        &None
+    fn get_sharing_group(&self) -> Option<&Self::SharingGroupType> {
+        None
     }
 
     /// Return TLP as ref Option, it is an option anyway
@@ -56,8 +56,8 @@ impl DistributionTrait for RulesForDocumentSharing21 {
     type SharingGroupType = SharingGroup21;
     type TlpType = TrafficLightProtocolTlp21;
 
-    fn get_sharing_group(&self) -> &Option<Self::SharingGroupType> {
-        &self.sharing_group
+    fn get_sharing_group(&self) -> Option<&Self::SharingGroupType> {
+        self.sharing_group.as_ref()
     }
 
     /// We normalize to Option here because property was optional in CSAF 2.0

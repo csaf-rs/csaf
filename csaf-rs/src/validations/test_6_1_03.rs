@@ -76,7 +76,7 @@ pub fn find_cycle<'a>(
 pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let version = doc.get_document().get_csaf_version();
     let mut errors: Option<Vec<ValidationError>> = None;
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         let mut relation_map = HashMap::<String, HashMap<String, String>>::new();
         for (pp_i, pp) in tree.get_product_paths().iter().enumerate() {
             let rel_prod_id = pp.get_full_product_name().get_product_id();

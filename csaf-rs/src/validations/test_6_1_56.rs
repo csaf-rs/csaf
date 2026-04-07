@@ -42,7 +42,7 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
         if let Some(metrics) = vulnerability.get_metrics() {
             for (m_i, metric) in metrics.iter().enumerate() {
                 for product_id in metric.get_products() {
-                    let product_id_source_tuple = (product_id.to_owned(), metric.get_source().to_owned());
+                    let product_id_source_tuple = (product_id.to_owned(), metric.get_source().map(|s| s.to_owned()));
                     let content = metric.get_content();
                     let has_ratings_tuple = (
                         m_i,

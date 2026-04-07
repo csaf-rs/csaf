@@ -23,6 +23,7 @@ impl fmt::Display for DateProperty {
 }
 
 fn create_date_too_new_error(
+    doc_status: &DocumentStatus,
     date: &ValidCsafDateTime,
     newest_revision_date: &ValidCsafDateTime,
     v_i: usize,
@@ -31,7 +32,7 @@ fn create_date_too_new_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "The {property} '{date}' of the first known exploitation date is newer than the newest revision date ({newest_revision_date})"
+            "The {property} '{date}' of the first known exploitation date is newer than the newest revision date ({newest_revision_date}) on a document with status {doc_status}"
         ),
         instance_path: format!("/vulnerabilities/{v_i}/first_known_exploitation_dates/{f_i}/{property}"),
     }
@@ -73,6 +74,7 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
                 if let Valid(date) = first_known_exploitation_date.get_date() {
                     if date > newest_revision.valid_date {
                         errors.get_or_insert_default().push(create_date_too_new_error(
+                            &status,
                             &date,
                             &newest_revision.valid_date,
                             v_i,
@@ -87,6 +89,7 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
                 if let Valid(exploitation_date) = first_known_exploitation_date.get_exploitation_date() {
                     if exploitation_date > newest_revision.valid_date {
                         errors.get_or_insert_default().push(create_date_too_new_error(
+                            &status,
                             &exploitation_date,
                             &newest_revision.valid_date,
                             v_i,
@@ -121,6 +124,7 @@ mod tests {
         let case_01_newest_revision_date = ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap();
         let case_01_date_and_exploit_date_after_newest_rev_date = Err(vec![
             create_date_too_new_error(
+                &DocumentStatus::Final,
                 &ValidCsafDateTime::from_str("2024-01-24T13:00:00.000Z").unwrap(),
                 &case_01_newest_revision_date,
                 0,
@@ -128,6 +132,7 @@ mod tests {
                 DateProperty::Date,
             ),
             create_date_too_new_error(
+                &DocumentStatus::Final,
                 &ValidCsafDateTime::from_str("2024-01-24T12:34:56.789Z").unwrap(),
                 &case_01_newest_revision_date,
                 0,
@@ -139,6 +144,7 @@ mod tests {
         let case_02_newest_revision_date = ValidCsafDateTime::from_str("2024-03-26T09:59:59.999998-07:00").unwrap();
         let case_02_multiple_vulns_multiple_first_exploit_dates_also_timezones = Err(vec![
             create_date_too_new_error(
+                &DocumentStatus::Final,
                 &ValidCsafDateTime::from_str("2024-03-27T10:00:00.000+17:00").unwrap(),
                 &case_02_newest_revision_date,
                 1,
@@ -146,6 +152,7 @@ mod tests {
                 DateProperty::Date,
             ),
             create_date_too_new_error(
+                &DocumentStatus::Final,
                 &ValidCsafDateTime::from_str("2024-03-25T23:00:00.000-18:00").unwrap(),
                 &case_02_newest_revision_date,
                 1,
@@ -153,6 +160,7 @@ mod tests {
                 DateProperty::ExploitationDate,
             ),
             create_date_too_new_error(
+                &DocumentStatus::Final,
                 &ValidCsafDateTime::from_str("2024-03-25T23:29:59.999999-17:30").unwrap(),
                 &case_02_newest_revision_date,
                 1,
@@ -160,6 +168,7 @@ mod tests {
                 DateProperty::Date,
             ),
             create_date_too_new_error(
+                &DocumentStatus::Final,
                 &ValidCsafDateTime::from_str("2024-03-27T07:59:59.999999+15:00").unwrap(),
                 &case_02_newest_revision_date,
                 1,

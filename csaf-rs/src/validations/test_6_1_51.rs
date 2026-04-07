@@ -7,6 +7,7 @@ use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
 fn create_epss_timestamp_too_new_error(
+    doc_status: &DocumentStatus,
     epss_timestamp: &ValidCsafDateTime,
     i_v: usize,
     newest_revision_date: &ValidCsafDateTime,
@@ -14,7 +15,7 @@ fn create_epss_timestamp_too_new_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "EPSS timestamp ({epss_timestamp}) for vulnerability at index {i_v} is newer than the newest revision date ({newest_revision_date})"
+            "EPSS timestamp ({epss_timestamp}) for vulnerability at index {i_v} is newer than the newest revision date ({newest_revision_date}) on a document with status {doc_status}.",
         ),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/epss/timestamp"),
     }
@@ -55,6 +56,7 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
                             // TODO fix this after #503
                             if valid_timestamp > newest_revision.valid_date {
                                 errors.get_or_insert_default().push(create_epss_timestamp_too_new_error(
+                                    &status,
                                     &valid_timestamp,
                                     i_v,
                                     &newest_revision.valid_date,
@@ -85,18 +87,21 @@ mod tests {
     #[test]
     fn test_test_6_1_51() {
         let case_01_too_late_new_timezone = Err(vec![create_epss_timestamp_too_new_error(
+            &DocumentStatus::Final,
             &ValidCsafDateTime::from_str("2024-07-13T10:00:00.000Z").unwrap(),
             0,
             &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
             0,
         )]);
         let case_02_too_new_neg_timezone_offset = Err(vec![create_epss_timestamp_too_new_error(
+            &DocumentStatus::Final,
             &ValidCsafDateTime::from_str("2024-02-28T14:30:00.000-20:00").unwrap(),
             0,
             &ValidCsafDateTime::from_str("2024-02-29T10:00:00.000Z").unwrap(),
             0,
         )]);
         let case_03_too_new_pos_timezone_offset = Err(vec![create_epss_timestamp_too_new_error(
+            &DocumentStatus::Final,
             &ValidCsafDateTime::from_str("2024-02-29T14:30:00.000+04:00").unwrap(),
             0,
             &ValidCsafDateTime::from_str("2024-02-29T10:00:00.000Z").unwrap(),

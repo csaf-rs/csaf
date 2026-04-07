@@ -345,8 +345,6 @@ mod tests {
         expand_subtag_range("a ", "az");
     }
 
-
-
     #[rstest]
     // language subtag is inserted
     #[case("%%\nType: language\nSubtag: en\n%%\n", "language", vec![("en".to_string(), false)])]
@@ -415,10 +413,7 @@ mod tests {
         parse_registry(input, &mut map);
         assert_eq!(
             map["language"],
-            vec![
-                ("qaa".to_string(), true),
-                ("en".to_string(), false),
-            ]
+            vec![("qaa".to_string(), true), ("en".to_string(), false),]
         );
     }
 }

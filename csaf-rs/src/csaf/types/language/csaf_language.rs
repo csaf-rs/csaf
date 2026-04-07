@@ -1,6 +1,8 @@
 use super::invalid_language::CsafLanguageError;
 use super::valid_language::ValidCsafLanguage;
-use crate::csaf::types::language::language_subtags::{is_valid_grandfathered_subtag, is_valid_language_subtag, is_valid_region_subtag, is_valid_script_subtag};
+use crate::csaf::types::language::language_subtags::{
+    is_valid_grandfathered_subtag, is_valid_language_subtag, is_valid_region_subtag, is_valid_script_subtag,
+};
 use crate::schema::csaf2_0::schema::LangT as LangT20;
 use crate::schema::csaf2_1::schema::LangT as LangT21;
 use oxilangtag::LanguageTag;
@@ -152,21 +154,21 @@ mod tests {
 
     #[rstest]
     // invalid primary only
-    #[case("EZ",           CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    #[case("EZ", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
     // invalid script only
-    #[case("en-Wxyz",      CsafLanguageError::InvalidScriptSubtag)]
+    #[case("en-Wxyz", CsafLanguageError::InvalidScriptSubtag)]
     // invalid region only
-    #[case("en-QK",        CsafLanguageError::InvalidRegionSubtag)]
+    #[case("en-QK", CsafLanguageError::InvalidRegionSubtag)]
     // invalid primary + valid region
-    #[case("EZ-US",        CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    #[case("EZ-US", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
     // invalid primary + invalid script → primary takes precedence
-    #[case("EZ-Wxyz",      CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    #[case("EZ-Wxyz", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
     // invalid primary + invalid region → primary takes precedence
-    #[case("EZ-QK",        CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    #[case("EZ-QK", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
     // valid primary + invalid script + invalid region → script takes precedence
-    #[case("en-Wxyz-QK",   CsafLanguageError::InvalidScriptSubtag)]
+    #[case("en-Wxyz-QK", CsafLanguageError::InvalidScriptSubtag)]
     // all three invalid → primary takes precedence
-    #[case("EZ-Wxyz-QK",   CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    #[case("EZ-Wxyz-QK", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
     fn test_invalid_primary_language_subtag(
         #[case] input: &str,
         #[case] expected_error: fn(String, String) -> CsafLanguageError,
@@ -179,7 +181,6 @@ mod tests {
             expected_error(String::new(), String::new())
         );
     }
-
 
     #[rstest]
     // Valid vs Valid
@@ -200,7 +201,8 @@ mod tests {
     #[case("en-QK", "i-default")] // Invalid vs Valid (default)
     #[case("en-QK", "x-private")] // Invalid vs Valid (private use)
     #[case("en-US", "en-GB")] // differnt region
-    #[case("en-Latn-GB", "de-Latg-GB")] // different script
+    #[case("en-Latn-GB", "de-Latg-GB")]
+    // different script
     // TODO: Revisit this once equality has been clarified upstream
     // To we want to consider variants for equality (in this case, does the currency
     // being set to CAD matter to the document?)
@@ -208,5 +210,4 @@ mod tests {
     fn test_languages_not_equal(#[case] a: &str, #[case] b: &str) {
         assert_ne!(CsafLanguage::from(&a.to_string()), CsafLanguage::from(&b.to_string()));
     }
-
 }

@@ -82,7 +82,6 @@ impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for Option<&Vec<T>> {
     }
 }
 
-
 impl<T: WithOptionalGroupIds> ExtractGroupReferences<T> for Vec<T> {
     fn extract_group_references(&self, path_prefix: &str) -> Vec<(String, String)> {
         extract_group_id_impl(self.iter(), path_prefix)
@@ -106,7 +105,6 @@ impl<T: WithOptionalProductIds> ExtractProductReferences<T> for Option<&Vec<T>> 
         extract_product_id_impl(self.iter().flat_map(|x| x.iter()), path_prefix)
     }
 }
-
 
 impl<T: WithOptionalProductIds> ExtractProductReferences<T> for Vec<T> {
     fn extract_product_references(&self, path_prefix: &str) -> Vec<(String, String)> {

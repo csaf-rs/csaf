@@ -1,8 +1,3 @@
-// This code is shared between the build script (via `#[path]`) and the library
-// (for testing). The functions are not called from library code at runtime.
-// Without this attribute, cargo will complain here.
-#![allow(dead_code)]
-
 use std::collections::HashMap;
 
 /// Convert a character to a 0-based index relative to the base of its case

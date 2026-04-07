@@ -88,12 +88,12 @@ fn generate_kind_section(kind: &str, subtags: &[(String, bool)]) -> impl quote::
 
         #[doc = #is_valid_doc]
         pub fn #is_valid_fn(subtag: &str) -> bool {
-            lookup(#array_ident, &subtag.to_lowercase()).is_some()
+            lookup(#array_ident, &subtag.to_ascii_lowercase()).is_some()
         }
 
         #[doc = #is_private_doc]
         pub fn #is_private_fn(subtag: &str) -> bool {
-            lookup(#array_ident, &subtag.to_lowercase()).is_some_and(|(_, is_private_use)| is_private_use)
+            lookup(#array_ident, &subtag.to_ascii_lowercase()).is_some_and(|(_, is_private_use)| is_private_use)
         }
     }
 }

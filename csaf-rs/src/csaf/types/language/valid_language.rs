@@ -1,5 +1,5 @@
 use crate::csaf::types::language::language_subtags::{
-    lookup_language_subtag, lookup_region_subtag, lookup_script_subtag,
+    is_language_private_use, is_region_private_use, is_script_private_use,
 };
 use oxilangtag::LanguageTag;
 use std::fmt::{Display, Formatter};
@@ -37,15 +37,9 @@ impl ValidCsafLanguage {
     /// or if the primary language, script or region subtag itself is registered as private use (e.g. `qtx` from `qaa..qtz`).
     pub fn is_private_use(&self) -> bool {
         self.0.private_use().is_some()
-            || lookup_language_subtag(self.0.primary_language()).is_some_and(|(_, is_private_use)| is_private_use)
-            || self
-                .0
-                .script()
-                .is_some_and(|s| lookup_script_subtag(s).is_some_and(|(_, is_private_use)| is_private_use))
-            || self
-                .0
-                .region()
-                .is_some_and(|r| lookup_region_subtag(r).is_some_and(|(_, is_private_use)| is_private_use))
+            || is_language_private_use(self.0.primary_language())
+            || self.0.script().is_some_and(|s| is_script_private_use(s))
+            || self.0.region().is_some_and(|r| is_region_private_use(r))
     }
 
     /// Checks if the primary language subtag is case-insensitive `"en"` (English).

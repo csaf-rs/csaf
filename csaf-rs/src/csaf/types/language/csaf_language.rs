@@ -59,7 +59,7 @@ impl From<&String> for CsafLanguage {
         };
 
         // Grandfathered tags are valid and skip further validation
-        // This includes the efault language (i-default) tags
+        // This includes the default language (i-default) tags
         if is_valid_grandfathered_subtag(parsed_lang_tag.as_str()) {
             return CsafLanguage::Valid(ValidCsafLanguage::new(parsed_lang_tag));
         }
@@ -72,7 +72,7 @@ impl From<&String> for CsafLanguage {
             return CsafLanguage::Valid(ValidCsafLanguage::new(parsed_lang_tag));
         }
 
-        // TODO: Also discuss if we want this precendence of primary -> script -> region,
+        // TODO: Also discuss if we want this precedence of primary -> script -> region,
         // or if we want to expose everything "wrong" with the tag to the consumers.
         // Validate primary language subtag
         if !is_valid_language_subtag(parsed_lang_tag.primary_language()) {
@@ -93,7 +93,7 @@ impl From<&String> for CsafLanguage {
                 input_lang_tag.to_string(),
                 CsafLanguageError::InvalidScriptSubtag(
                     input_lang_tag.to_string(),
-                    parsed_lang_tag.primary_language().to_string(),
+                    script.to_string()
                 ),
             );
         }
@@ -106,7 +106,7 @@ impl From<&String> for CsafLanguage {
                 input_lang_tag.to_string(),
                 CsafLanguageError::InvalidRegionSubtag(
                     input_lang_tag.to_string(),
-                    parsed_lang_tag.primary_language().to_string(),
+                    region.to_string(),
                 ),
             );
         }
@@ -144,11 +144,11 @@ mod tests {
     #[case("en-GB-oxendict")]
     // extensions are not validated
     #[case("en-US-u-ca-buddhist")]
-    fn test_valid_language_parses(#[case] input: &str) {
+    fn test_valid_language_tag_parses(#[case] input: &str) {
         let lang = CsafLanguage::from(&input.to_string());
         assert!(
             matches!(lang, CsafLanguage::Valid(_)),
-            "Expected InvalidPrimaryLanguageSubtag for '{input}'"
+            "Expected Valid for '{input}'"
         );
     }
 
@@ -169,7 +169,7 @@ mod tests {
     #[case("en-Wxyz-QK", CsafLanguageError::InvalidScriptSubtag)]
     // all three invalid → primary takes precedence
     #[case("EZ-Wxyz-QK", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
-    fn test_invalid_primary_language_subtag(
+    fn test_invalid_language_tag_throws_error(
         #[case] input: &str,
         #[case] expected_error: fn(String, String) -> CsafLanguageError,
     ) {

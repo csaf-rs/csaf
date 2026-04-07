@@ -12,3 +12,9 @@ pub fn add_ignore_clippy(file: &mut syn::File) {
     let doc_attr = syn::parse_quote! { #![allow(clippy::all)] };
     file.attrs.insert(0, doc_attr);
 }
+
+pub fn add_ignore_dead_code(file: &mut syn::File) {
+    let doc_attr = syn::parse_quote! { #![allow(dead_code)] };
+    file.attrs.insert(0, doc_attr);
+}
+

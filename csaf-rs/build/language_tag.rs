@@ -4,7 +4,7 @@ use std::fs;
 use std::path::Path;
 
 use super::BuildError;
-use super::util::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_rustfmt};
+use super::util::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt};
 
 const LANGUAGE_REGISTRY: &str = include_str!("../assets/language-subtag-registry.txt");
 
@@ -79,6 +79,8 @@ pub fn generate() -> Result<(), BuildError> {
     // add headers
     add_ignore_rustfmt(&mut file);
     add_ignore_clippy(&mut file);
+    // TODO: This should be removed in the future, i.e. we should only generate needed code.
+    add_ignore_dead_code(&mut file);
 
     // Pretty-print the generated code.
     let code = prettyplease::unparse(&file);
@@ -91,7 +93,7 @@ pub fn generate() -> Result<(), BuildError> {
         .join("language_subtags.generated.rs");
     fs::write(&out_path, code)?;
 
-    println!("cargo:rerun-if-changed=../assets/language-subtag-registry.txt");
+    println!("cargo:rerun-if-changed=assets/language-subtag-registry.txt");
     Ok(())
 }
 
@@ -241,14 +243,14 @@ fn generate_kind_section(kind: &str, subtags: &[(String, bool)]) -> impl quote::
 
     let array_ident = format_ident!("{}_SUBTAGS_ARRAY", kind.to_uppercase());
     let is_valid_fn = format_ident!("is_valid_{}_subtag", kind);
-    let lookup_fn = format_ident!("lookup_{}_subtag", kind);
+    let is_private_fn = format_ident!("is_{}_private_use", kind);
 
     let is_valid_doc = format!(
         "Checks if a given subtag is a valid {} subtag. Lower cases the input before checking.",
         kind,
     );
-    let lookup_doc = format!(
-        "Looks up a {} subtag and returns `(tag, is_private_use)` if found. Lower cases the input before checking.",
+    let is_private_doc = format!(
+        "Checks if a given {} subtag is registered as private use. Lower cases the input before checking.",
         kind,
     );
 
@@ -262,9 +264,9 @@ fn generate_kind_section(kind: &str, subtags: &[(String, bool)]) -> impl quote::
             lookup(#array_ident, &subtag.to_lowercase()).is_some()
         }
 
-        #[doc = #lookup_doc]
-        pub fn #lookup_fn(subtag: &str) -> Option<(&'static str, bool)> {
-            lookup(#array_ident, &subtag.to_lowercase())
+        #[doc = #is_private_doc]
+        pub fn #is_private_fn(subtag: &str) -> bool {
+            lookup(#array_ident, &subtag.to_lowercase()).is_some_and(|(_, is_private_use)| is_private_use)
         }
     }
 }

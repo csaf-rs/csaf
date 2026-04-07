@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #![allow(clippy::all)]
 #![cfg_attr(any(), rustfmt::skip)]
 /*!
@@ -8805,9 +8806,10 @@ pub static LANGUAGE_SUBTAGS_ARRAY: &[(&str, bool)] = &[
 pub fn is_valid_language_subtag(subtag: &str) -> bool {
     lookup(LANGUAGE_SUBTAGS_ARRAY, &subtag.to_lowercase()).is_some()
 }
-///Looks up a language subtag and returns `(tag, is_private_use)` if found. Lower cases the input before checking.
-pub fn lookup_language_subtag(subtag: &str) -> Option<(&'static str, bool)> {
+///Checks if a given language subtag is registered as private use. Lower cases the input before checking.
+pub fn is_language_private_use(subtag: &str) -> bool {
     lookup(LANGUAGE_SUBTAGS_ARRAY, &subtag.to_lowercase())
+        .is_some_and(|(_, is_private_use)| is_private_use)
 }
 pub static REGION_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("001", false),
@@ -9158,9 +9160,10 @@ pub static REGION_SUBTAGS_ARRAY: &[(&str, bool)] = &[
 pub fn is_valid_region_subtag(subtag: &str) -> bool {
     lookup(REGION_SUBTAGS_ARRAY, &subtag.to_lowercase()).is_some()
 }
-///Looks up a region subtag and returns `(tag, is_private_use)` if found. Lower cases the input before checking.
-pub fn lookup_region_subtag(subtag: &str) -> Option<(&'static str, bool)> {
+///Checks if a given region subtag is registered as private use. Lower cases the input before checking.
+pub fn is_region_private_use(subtag: &str) -> bool {
     lookup(REGION_SUBTAGS_ARRAY, &subtag.to_lowercase())
+        .is_some_and(|(_, is_private_use)| is_private_use)
 }
 pub static SCRIPT_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("adlm", false),
@@ -9442,9 +9445,10 @@ pub static SCRIPT_SUBTAGS_ARRAY: &[(&str, bool)] = &[
 pub fn is_valid_script_subtag(subtag: &str) -> bool {
     lookup(SCRIPT_SUBTAGS_ARRAY, &subtag.to_lowercase()).is_some()
 }
-///Looks up a script subtag and returns `(tag, is_private_use)` if found. Lower cases the input before checking.
-pub fn lookup_script_subtag(subtag: &str) -> Option<(&'static str, bool)> {
+///Checks if a given script subtag is registered as private use. Lower cases the input before checking.
+pub fn is_script_private_use(subtag: &str) -> bool {
     lookup(SCRIPT_SUBTAGS_ARRAY, &subtag.to_lowercase())
+        .is_some_and(|(_, is_private_use)| is_private_use)
 }
 pub static GRANDFATHERED_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("art-lojban", false),
@@ -9478,7 +9482,8 @@ pub static GRANDFATHERED_SUBTAGS_ARRAY: &[(&str, bool)] = &[
 pub fn is_valid_grandfathered_subtag(subtag: &str) -> bool {
     lookup(GRANDFATHERED_SUBTAGS_ARRAY, &subtag.to_lowercase()).is_some()
 }
-///Looks up a grandfathered subtag and returns `(tag, is_private_use)` if found. Lower cases the input before checking.
-pub fn lookup_grandfathered_subtag(subtag: &str) -> Option<(&'static str, bool)> {
+///Checks if a given grandfathered subtag is registered as private use. Lower cases the input before checking.
+pub fn is_grandfathered_private_use(subtag: &str) -> bool {
     lookup(GRANDFATHERED_SUBTAGS_ARRAY, &subtag.to_lowercase())
+        .is_some_and(|(_, is_private_use)| is_private_use)
 }

@@ -104,7 +104,11 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
     Ok(())
 }
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_36, test_6_1_36_status_group_contradicting_remediation_categories);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_36,
+    test_6_1_36_status_group_contradicting_remediation_categories
+);
 
 #[cfg(test)]
 mod tests {

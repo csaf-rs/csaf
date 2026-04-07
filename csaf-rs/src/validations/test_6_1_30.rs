@@ -80,7 +80,10 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_30, test_6_1_30_mixed_integer_and_semantic_versioning);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_30,
+    test_6_1_30_mixed_integer_and_semantic_versioning
+);
 
 #[cfg(test)]
 mod tests {

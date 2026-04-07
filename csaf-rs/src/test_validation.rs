@@ -104,26 +104,32 @@ macro_rules! impl_raw_string_validator {
         $crate::test_validation::impl_raw_string_validator!(csaf2_1, $validator, $validate_fn);
     };
     (csaf2_0, $validator:ident, $validate_fn:path) => {
-        impl crate::test_validation::TestValidator<
+        impl
+            crate::test_validation::TestValidator<
                 crate::csaf::raw::RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
             > for crate::csaf2_0::testcases::$validator
         {
             fn validate(
                 &self,
-                document: &crate::csaf::raw::RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
+                document: &crate::csaf::raw::RawDocument<
+                    crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+                >,
             ) -> Result<(), Vec<crate::validation::ValidationError>> {
                 $validate_fn(document.get_json())
             }
         }
     };
     (csaf2_1, $validator:ident, $validate_fn:path) => {
-        impl crate::test_validation::TestValidator<
+        impl
+            crate::test_validation::TestValidator<
                 crate::csaf::raw::RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
             > for crate::csaf2_1::testcases::$validator
         {
             fn validate(
                 &self,
-                document: &crate::csaf::raw::RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
+                document: &crate::csaf::raw::RawDocument<
+                    crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+                >,
             ) -> Result<(), Vec<crate::validation::ValidationError>> {
                 $validate_fn(document.get_json())
             }
@@ -132,4 +138,3 @@ macro_rules! impl_raw_string_validator {
 }
 
 pub(crate) use impl_raw_string_validator;
-

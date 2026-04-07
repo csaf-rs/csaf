@@ -38,7 +38,10 @@ pub fn test_6_1_29_remediation_without_product_reference(doc: &impl CsafTrait) -
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_29, test_6_1_29_remediation_without_product_reference);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_29,
+    test_6_1_29_remediation_without_product_reference
+);
 
 #[cfg(test)]
 mod tests {

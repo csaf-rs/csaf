@@ -94,7 +94,11 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     Ok(())
 }
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_45, test_6_1_45_inconsistent_disclosure_date);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_45,
+    test_6_1_45_inconsistent_disclosure_date
+);
 
 #[cfg(test)]
 mod tests {

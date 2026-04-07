@@ -48,7 +48,11 @@ pub fn test_6_1_53_inconsistent_exploitation_date(doc: &impl CsafTrait) -> Resul
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_53, test_6_1_53_inconsistent_exploitation_date);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_53,
+    test_6_1_53_inconsistent_exploitation_date
+);
 
 #[cfg(test)]
 mod tests {

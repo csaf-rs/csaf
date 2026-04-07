@@ -106,7 +106,10 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_31, test_6_1_31_version_range_in_product_version_branch_name);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_31,
+    test_6_1_31_version_range_in_product_version_branch_name
+);
 
 #[cfg(test)]
 mod tests {

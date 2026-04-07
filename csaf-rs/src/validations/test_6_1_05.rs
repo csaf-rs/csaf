@@ -50,7 +50,10 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_5, test_6_1_05_multiple_definition_of_product_group_id);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_5,
+    test_6_1_05_multiple_definition_of_product_group_id
+);
 
 #[cfg(test)]
 mod tests {

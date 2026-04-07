@@ -37,7 +37,10 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     Ok(())
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_2_6, test_6_2_06_older_current_release_than_rev_history);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_2_6,
+    test_6_2_06_older_current_release_than_rev_history
+);
 
 #[cfg(test)]
 mod tests {

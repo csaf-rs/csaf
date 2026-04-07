@@ -43,7 +43,11 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
     CsafDocumentCategory::CsafSuperseded,
 ]);
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_14, test_6_1_27_14_document_notes_with_description);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_27_14,
+    test_6_1_27_14_document_notes_with_description
+);
 
 #[cfg(test)]
 mod tests {

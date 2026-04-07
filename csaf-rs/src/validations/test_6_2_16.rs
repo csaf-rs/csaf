@@ -30,7 +30,10 @@ fn create_missing_product_identification_helper_error(instance_path: &str) -> Va
     }
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_2_16, test_6_2_16_missing_product_identification_helper);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_2_16,
+    test_6_2_16_missing_product_identification_helper
+);
 
 #[cfg(test)]
 mod tests {

@@ -38,7 +38,11 @@ pub fn test_6_1_38_non_public_sharing_group_max_uuid(doc: &impl CsafTrait) -> Re
     Ok(())
 }
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_38, test_6_1_38_non_public_sharing_group_max_uuid);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_38,
+    test_6_1_38_non_public_sharing_group_max_uuid
+);
 
 #[cfg(test)]
 mod tests {

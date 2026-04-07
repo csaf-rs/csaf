@@ -30,7 +30,10 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_4, test_6_1_04_missing_definition_of_product_group_id);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_4,
+    test_6_1_04_missing_definition_of_product_group_id
+);
 
 #[cfg(test)]
 mod tests {

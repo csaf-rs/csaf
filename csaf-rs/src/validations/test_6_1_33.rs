@@ -101,7 +101,10 @@ fn test_6_1_33_err_generator(
     }
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_33, test_6_1_33_multiple_flags_with_vex_codes_per_product);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_33,
+    test_6_1_33_multiple_flags_with_vex_codes_per_product
+);
 
 #[cfg(test)]
 mod tests {

@@ -31,7 +31,11 @@ pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Resul
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_43, test_6_1_43_multiple_stars_in_model_number);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_43,
+    test_6_1_43_multiple_stars_in_model_number
+);
 
 #[cfg(test)]
 mod tests {

@@ -47,7 +47,11 @@ pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_58, test_6_1_58_product_version_and_product_version_range_in_one_path);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_58,
+    test_6_1_58_product_version_and_product_version_range_in_one_path
+);
 
 #[cfg(test)]
 mod tests {

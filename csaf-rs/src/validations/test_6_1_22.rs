@@ -40,7 +40,10 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_22, test_6_1_22_multiple_definition_in_revision_history);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_22,
+    test_6_1_22_multiple_definition_in_revision_history
+);
 
 #[cfg(test)]
 mod tests {

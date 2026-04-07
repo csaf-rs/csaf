@@ -34,7 +34,10 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_19, test_6_1_19_revision_history_entries_for_prerelease_versions);
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_19,
+    test_6_1_19_revision_history_entries_for_prerelease_versions
+);
 
 #[cfg(test)]
 mod tests {

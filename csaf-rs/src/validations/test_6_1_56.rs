@@ -76,7 +76,11 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_56, test_6_1_56_cvss_and_qualitative_severity_rating);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_56,
+    test_6_1_56_cvss_and_qualitative_severity_rating
+);
 
 #[cfg(test)]
 mod tests {

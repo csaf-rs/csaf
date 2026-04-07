@@ -77,7 +77,11 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafSuperseded]);
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_19, test_6_1_27_19_reference_to_superseding_document);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_27_19,
+    test_6_1_27_19_reference_to_superseding_document
+);
 
 #[cfg(test)]
 mod tests {

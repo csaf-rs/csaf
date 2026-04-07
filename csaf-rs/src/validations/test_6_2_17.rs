@@ -19,7 +19,7 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     let mut errors: Option<Vec<ValidationError>> = None;
 
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
-        if let Some(ids) = vuln.get_ids().as_ref() {
+        if let Some(ids) = vuln.get_ids() {
             for (i_i, id) in ids.iter().enumerate() {
                 if CVE_REGEX.is_match(id.get_text()) {
                     errors

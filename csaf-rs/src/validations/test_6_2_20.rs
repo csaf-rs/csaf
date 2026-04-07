@@ -97,8 +97,8 @@ fn test_6_2_20_validate_2_1(json: &Value) -> Result<(), Vec<ValidationError>> {
     test_6_2_20_additional_properties(json, &STRICT_VALIDATOR_2_1)
 }
 
-crate::test_validation::impl_raw_string_validator!(csaf2_0, ValidatorForTest6_2_20, test_6_2_20_validate_2_0);
-crate::test_validation::impl_raw_string_validator!(csaf2_1, ValidatorForTest6_2_20, test_6_2_20_validate_2_1);
+crate::test_validation::impl_raw_json_validator!(csaf2_0, ValidatorForTest6_2_20, test_6_2_20_validate_2_0);
+crate::test_validation::impl_raw_json_validator!(csaf2_1, ValidatorForTest6_2_20, test_6_2_20_validate_2_1);
 
 #[cfg(test)]
 mod tests {

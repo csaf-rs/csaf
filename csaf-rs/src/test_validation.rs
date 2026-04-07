@@ -76,22 +76,22 @@ pub(crate) use impl_validator;
 ///
 /// For tests that apply to both CSAF 2.0 and 2.1:
 /// ```ignore
-/// impl_raw_string_validator!(ValidatorForTest6_2_13, test_6_2_13_sorting);
+/// impl_raw_json_validator!(ValidatorForTest6_2_13, test_6_2_13_sorting);
 /// ```
 ///
 /// For tests that only apply to CSAF 2.0:
 /// ```ignore
-/// impl_raw_string_validator!(csaf2_0, ValidatorForTest, some_validate_fn);
+/// impl_raw_json_validator!(csaf2_0, ValidatorForTest, some_validate_fn);
 /// ```
 ///
 /// For tests that only apply to CSAF 2.1:
 /// ```ignore
-/// impl_raw_string_validator!(csaf2_1, ValidatorForTest, some_validate_fn);
+/// impl_raw_json_validator!(csaf2_1, ValidatorForTest, some_validate_fn);
 /// ```
-macro_rules! impl_raw_string_validator {
+macro_rules! impl_raw_json_validator {
     ($validator:ident, $validate_fn:path) => {
-        $crate::test_validation::impl_raw_string_validator!(csaf2_0, $validator, $validate_fn);
-        $crate::test_validation::impl_raw_string_validator!(csaf2_1, $validator, $validate_fn);
+        $crate::test_validation::impl_raw_json_validator!(csaf2_0, $validator, $validate_fn);
+        $crate::test_validation::impl_raw_json_validator!(csaf2_1, $validator, $validate_fn);
     };
     (csaf2_0, $validator:ident, $validate_fn:path) => {
         impl
@@ -127,4 +127,4 @@ macro_rules! impl_raw_string_validator {
     };
 }
 
-pub(crate) use impl_raw_string_validator;
+pub(crate) use impl_raw_json_validator;

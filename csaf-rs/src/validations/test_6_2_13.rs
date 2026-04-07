@@ -54,7 +54,7 @@ fn create_unsorted_keys_error(path: &str) -> ValidationError {
     }
 }
 
-crate::test_validation::impl_raw_string_validator!(ValidatorForTest6_2_13, test_6_2_13_sorting);
+crate::test_validation::impl_raw_json_validator!(ValidatorForTest6_2_13, test_6_2_13_sorting);
 
 #[cfg(test)]
 mod tests {

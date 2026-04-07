@@ -5,7 +5,7 @@ use crate::validation::ValidationError;
 
 fn create_usage_of_deprecated_profile_error(category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
-        message: format!("Document category '{category}' starts with 'csaf_deprecated_'"),
+        message: format!("Document category '{category}' starts with 'csaf_deprecated_' (or similar)"),
         instance_path: "/document/category".to_string(),
     }
 }

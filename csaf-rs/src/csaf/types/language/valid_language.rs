@@ -25,7 +25,7 @@ impl ValidCsafLanguage {
     /// Available only to tests, will panic on invalid input.
     #[cfg(test)]
     pub fn new_for_tests(input: &str) -> Self {
-        Self(LanguageTag::parse(input.to_string()).expect("ValidCsafLanguage::new was called with invalid input."))
+        Self(LanguageTag::parse(input.to_string()).expect("ValidCsafLanguage::new_for_tests was called with invalid input."))
     }
 
     /// Checks if this is the grandfathered default language tag (`i-default`).

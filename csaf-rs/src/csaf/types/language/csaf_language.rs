@@ -191,11 +191,11 @@ mod tests {
     #[case("en-US", "en-QK")] // Valid vs Invalid
     #[case("en-QK", "i-default")] // Invalid vs Valid (default)
     #[case("en-QK", "x-private")] // Invalid vs Valid (private use)
-    #[case("en-US", "en-GB")] // differnt region
+    #[case("en-US", "en-GB")] // different region
     #[case("en-Latn-GB", "de-Latg-GB")]
     // different script
     // TODO: Revisit this once equality has been clarified upstream
-    // To we want to consider variants for equality (in this case, does the currency
+    // Do we want to consider variants for equality (in this case, does the currency
     // being set to CAD matter to the document?)
     #[case("en-US", "en-US-u-cu-cad")]
     fn test_languages_not_equal(#[case] a: &str, #[case] b: &str) {

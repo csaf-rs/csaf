@@ -80,7 +80,7 @@ pub trait TrackingTrait {
                 Valid(valid_date) => {
                     revision_history.push(RevisionHistoryItem {
                         path_index: i_r,
-                        date: valid_date.get_as_utc().to_owned(),
+                        date: valid_date.get_as_utc(),
                         date_string: valid_date.get_raw_string().to_string(),
                         number: revision.get_number(),
                         valid_date,

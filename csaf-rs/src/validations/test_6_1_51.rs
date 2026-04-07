@@ -62,10 +62,8 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
                                 ));
                             }
                         },
-                        CsafEpss::Invalid(err) => {
-                            errors.get_or_insert_default().push(err.into_validation_error(&format!(
-                                "/vulnerabilities/{i_v}/metrics/{i_m}/content/epss/timestamp"
-                            )));
+                        CsafEpss::Invalid(_) => {
+                            // TODO: This will be a NonDeterminable (#409) later
                         },
                     }
                 }

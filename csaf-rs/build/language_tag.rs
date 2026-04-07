@@ -76,14 +76,10 @@ fn generate_kind_section(kind: &str, subtags: &[(String, bool)]) -> impl quote::
     let is_valid_fn = format_ident!("is_valid_{}_subtag", kind);
     let is_private_fn = format_ident!("is_{}_private_use", kind);
 
-    let is_valid_doc = format!(
-        "Checks if a given subtag is a valid {} subtag. Lower cases the input before checking.",
-        kind,
-    );
-    let is_private_doc = format!(
-        "Checks if a given {} subtag is registered as private use. Lower cases the input before checking.",
-        kind,
-    );
+    let is_valid_doc =
+        format!("Checks if a given subtag is a valid {kind} subtag. Lower cases the input before checking.");
+    let is_private_doc =
+        format!("Checks if a given {kind} subtag is registered as private use. Lower cases the input before checking.");
 
     quote! {
         pub static #array_ident: &[(&str, bool)] = &[

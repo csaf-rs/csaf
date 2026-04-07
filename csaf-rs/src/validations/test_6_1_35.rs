@@ -39,8 +39,10 @@ fn create_contradicting_remediations_error(
 }
 
 pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+    // TODO #409 early return + no data
+    let mut errors: Option<Vec<ValidationError>> = None;
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
-        // Data struct to store observed remediation categories per product IT
+        // Data struct to store observed remediation categories per product ID
         let mut product_categories: BTreeMap<String, Vec<CategoryOfTheRemediation>> = BTreeMap::new();
         for (r_i, r) in v.get_remediations().iter().enumerate() {
             // Only handle Remediations having product IDs associated
@@ -58,15 +60,16 @@ pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<()
                             // Checks if the current category conflicts with any other in the group of mutually exclusive ones.
                             || MUT_EX_STATES.contains(&cat) && exist_cat_set.iter().any(|e_cat| MUT_EX_STATES.contains(e_cat))
                         {
-                            return Err(vec![create_contradicting_remediations_error(
+                            errors.get_or_insert_default().push(create_contradicting_remediations_error(
                                 &p,
                                 exist_cat_set,
                                 cat,
                                 v_i,
                                 r_i,
-                            )]);
+                            ));
+                        } else {
+                            exist_cat_set.push(cat);
                         }
-                        exist_cat_set.push(cat);
                     } else {
                         product_categories.insert(p, Vec::from([cat]));
                     }
@@ -74,7 +77,7 @@ pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<()
             }
         }
     }
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_35, test_6_1_35_contradicting_remediations);
@@ -86,33 +89,38 @@ mod tests {
 
     #[test]
     fn test_test_6_1_35() {
-        // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
-        TESTS_2_1.test_6_1_35.expect(
-            Err(vec![create_contradicting_remediations_error(
-                "CSAFPID-9080700",
-                &[CategoryOfTheRemediation::NoFixPlanned],
-                CategoryOfTheRemediation::VendorFix,
-                0,
-                1,
-            )]),
-            Err(vec![create_contradicting_remediations_error(
-                "CSAFPID-9080700",
-                &[CategoryOfTheRemediation::NoneAvailable],
-                CategoryOfTheRemediation::Mitigation,
-                0,
-                1,
-            )]),
-            Err(vec![create_contradicting_remediations_error(
-                "CSAFPID-9080702",
-                &[
-                    CategoryOfTheRemediation::Workaround,
-                    CategoryOfTheRemediation::FixPlanned,
-                ],
-                CategoryOfTheRemediation::OptionalPatch,
-                0,
-                2,
-            )]),
-            Err(vec![create_contradicting_remediations_error(
+
+        // TODO: Improve test coverage (issue #526)
+
+        let case_01_mutually_exclusive_via_product = Err(vec![create_contradicting_remediations_error(
+            "CSAFPID-9080700",
+            &[CategoryOfTheRemediation::NoFixPlanned],
+            CategoryOfTheRemediation::VendorFix,
+            0,
+            1,
+        )]);
+
+        let case_02_exclusive_none_available_via_group = Err(vec![create_contradicting_remediations_error(
+            "CSAFPID-9080700",
+            &[CategoryOfTheRemediation::NoneAvailable],
+            CategoryOfTheRemediation::Mitigation,
+            0,
+            1,
+        )]);
+
+        let case_03_exclusive_optional_path_via_group = Err(vec![create_contradicting_remediations_error(
+            "CSAFPID-9080702",
+            &[
+                CategoryOfTheRemediation::Workaround,
+                CategoryOfTheRemediation::FixPlanned,
+            ],
+            CategoryOfTheRemediation::OptionalPatch,
+            0,
+            2,
+        )]);
+
+        let case_04_exclusive_optional_patch_via_groups_multiple_products = Err(vec![
+            create_contradicting_remediations_error(
                 "CSAFPID-9080701",
                 &[
                     CategoryOfTheRemediation::Mitigation,
@@ -121,7 +129,29 @@ mod tests {
                 CategoryOfTheRemediation::OptionalPatch,
                 0,
                 2,
-            )]),
+            ),
+            create_contradicting_remediations_error(
+                "CSAFPID-9080702",
+                &[
+                    CategoryOfTheRemediation::Mitigation,
+                    CategoryOfTheRemediation::FixPlanned,
+                ],
+                CategoryOfTheRemediation::OptionalPatch,
+                0,
+                2,
+            ),
+        ]);
+
+        // Case 01: One product, one remediation
+        // Case 02: One product, one group, exclusive optional patch only on the product
+        // Case 03: One product, one group, exlusive optional patch only on the group
+        // Case 04: Two groups, exclusive optional patch applies only to one group
+
+        TESTS_2_1.test_6_1_35.expect(
+            case_01_mutually_exclusive_via_product,
+            case_02_exclusive_none_available_via_group,
+            case_03_exclusive_optional_path_via_group,
+            case_04_exclusive_optional_patch_via_groups_multiple_products,
             Ok(()),
             Ok(()),
             Ok(()),

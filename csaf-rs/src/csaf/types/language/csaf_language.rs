@@ -91,10 +91,7 @@ impl From<&String> for CsafLanguage {
         {
             return CsafLanguage::Invalid(
                 input_lang_tag.to_string(),
-                CsafLanguageError::InvalidScriptSubtag(
-                    input_lang_tag.to_string(),
-                    script.to_string()
-                ),
+                CsafLanguageError::InvalidScriptSubtag(input_lang_tag.to_string(), script.to_string()),
             );
         }
 
@@ -104,10 +101,7 @@ impl From<&String> for CsafLanguage {
         {
             return CsafLanguage::Invalid(
                 input_lang_tag.to_string(),
-                CsafLanguageError::InvalidRegionSubtag(
-                    input_lang_tag.to_string(),
-                    region.to_string(),
-                ),
+                CsafLanguageError::InvalidRegionSubtag(input_lang_tag.to_string(), region.to_string()),
             );
         }
 
@@ -146,10 +140,7 @@ mod tests {
     #[case("en-US-u-ca-buddhist")]
     fn test_valid_language_tag_parses(#[case] input: &str) {
         let lang = CsafLanguage::from(&input.to_string());
-        assert!(
-            matches!(lang, CsafLanguage::Valid(_)),
-            "Expected Valid for '{input}'"
-        );
+        assert!(matches!(lang, CsafLanguage::Valid(_)), "Expected Valid for '{input}'");
     }
 
     #[rstest]

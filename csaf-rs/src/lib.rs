@@ -1,13 +1,13 @@
 #[cfg(feature = "converter")]
 pub mod converter;
 pub mod csaf;
-pub(crate) mod language_tag_parser;
 pub mod csaf2_0;
 pub mod csaf2_1;
 pub mod csaf_traits;
 pub(crate) mod cvss;
 pub mod document_category_test_helper;
 pub mod helpers;
+pub(crate) mod language_tag_parser;
 pub mod schema;
 pub mod test_result_comparison;
 pub mod test_structure;

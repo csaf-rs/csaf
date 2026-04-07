@@ -1,7 +1,7 @@
-use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
-use crate::csaf::types::csaf_epss::CsafEpss;
+use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, DocumentTrait, MetricTrait, RevisionHistorySortable, TrackingTrait, VulnerabilityTrait,
+    ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, RevisionHistorySortable, TrackingTrait,
+    VulnerabilityTrait,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
@@ -50,19 +50,19 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
         if let Some(metrics) = vulnerability.get_metrics() {
             for (i_m, metric) in metrics.iter().enumerate() {
                 if let Some(epss) = metric.get_content().get_epss() {
-                    match CsafEpss::from(epss) {
-                        CsafEpss::Valid(valid_epss) => {
+                    match epss.get_timestamp() {
+                        CsafDateTime::Valid(valid_timestamp) => {
                             // TODO fix this after #503
-                            if valid_epss.timestamp > newest_revision.valid_date {
+                            if valid_timestamp > newest_revision.valid_date {
                                 errors.get_or_insert_default().push(create_epss_timestamp_too_new_error(
-                                    &valid_epss.timestamp,
+                                    &valid_timestamp,
                                     i_v,
                                     &newest_revision.valid_date,
                                     i_m,
                                 ));
                             }
                         },
-                        CsafEpss::Invalid(_) => {
+                        CsafDateTime::Invalid(_) => {
                             // TODO: This will be a NonDeterminable (#409) later
                         },
                     }

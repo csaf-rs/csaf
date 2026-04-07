@@ -22,6 +22,7 @@ pub use crate::csaf::traits::util::generic_with::{
     WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
 pub use crate::csaf::traits::vulnerabilities::content_trait::ContentTrait;
+pub use crate::csaf::traits::vulnerabilities::epss_trait::EpssTrait;
 pub use crate::csaf::traits::vulnerabilities::file_hash_trait::FileHashTrait;
 pub use crate::csaf::traits::vulnerabilities::first_known_exploit_date_trait::FirstKnownExploitationDatesTrait;
 pub use crate::csaf::traits::vulnerabilities::flag_trait::FlagTrait;

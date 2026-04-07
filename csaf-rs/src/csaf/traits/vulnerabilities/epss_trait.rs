@@ -31,7 +31,6 @@ impl EpssTrait for NotPresentInCsaf20 {
     }
 }
 
-// CSAF 2.1 implementation
 impl EpssTrait for Epss {
     fn get_percentile(&self) -> &Percentile {
         &self.percentile
@@ -45,4 +44,3 @@ impl EpssTrait for Epss {
         CsafDateTime::from(&self.timestamp)
     }
 }
-

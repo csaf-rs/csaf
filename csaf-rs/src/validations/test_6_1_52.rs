@@ -41,7 +41,7 @@ fn create_date_too_new_error(
 ///
 /// For each first known exploitation dates item, it is tested that the values of its `date` and
 /// `exploitation_date` properties are both earlier than or equal to the `date` of the newest item
-/// of the `revision_history` (taking timezones into consideration) if the document 
+/// of the `revision_history` (taking timezones into consideration) if the document
 /// status is `final` or `interim`.
 pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
     doc: &impl CsafTrait,

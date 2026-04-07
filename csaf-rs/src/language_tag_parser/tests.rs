@@ -1,4 +1,4 @@
-use super::parser::*;
+use super::parser::{char_to_index, expand_subtag_range, index_to_char, make_subtags_map, parse_registry};
 use rstest::rstest;
 
 #[test]

@@ -14,7 +14,7 @@ pub trait MetricTrait {
     fn get_content(&self) -> &Self::ContentType;
 
     /// Retrieves the "source" (i.e., description of the metrics' origin) of this metric.
-    fn get_source(&self) -> &Option<String>;
+    fn get_source(&self) -> Option<&String>;
 }
 
 impl MetricTrait for Score20 {
@@ -28,8 +28,8 @@ impl MetricTrait for Score20 {
         self
     }
 
-    fn get_source(&self) -> &Option<String> {
-        &None
+    fn get_source(&self) -> Option<&String> {
+        None
     }
 }
 
@@ -44,7 +44,7 @@ impl MetricTrait for Metric21 {
         &self.content
     }
 
-    fn get_source(&self) -> &Option<String> {
-        &self.source
+    fn get_source(&self) -> Option<&String> {
+        self.source.as_ref()
     }
 }

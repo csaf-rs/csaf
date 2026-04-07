@@ -13,7 +13,7 @@ fn generate_multiple_group_id_definition_error(group_id: &str, path: &str) -> Va
 /// Checks that all product group IDs defined in the document are unique.
 pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Check if there is a product tree, if there isn't, this test can be skipped
-    let Some(tree) = doc.get_product_tree().as_ref() else {
+    let Some(tree) = doc.get_product_tree() else {
         // This will be WasSkipped in the future
         return Ok(());
     };

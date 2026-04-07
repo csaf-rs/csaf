@@ -70,7 +70,7 @@ pub trait VulnerabilityTrait {
     fn get_remediations(&self) -> &Vec<Self::RemediationType>;
 
     /// Retrieves the status of products affected by the vulnerability, if available.
-    fn get_product_status(&self) -> &Option<Self::ProductStatusType>;
+    fn get_product_status(&self) -> Option<&Self::ProductStatusType>;
 
     fn get_product_status_product_references(&self) -> Vec<(String, String)> {
         if let Some(product_status) = self.get_product_status() {
@@ -90,7 +90,7 @@ pub trait VulnerabilityTrait {
     fn get_metrics_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
-        if let Some(metrics) = self.get_metrics().as_ref() {
+        if let Some(metrics) = self.get_metrics() {
             let metric_path = self.get_metrics_path();
             for (metric_i, metric) in metrics.iter().enumerate() {
                 for (x_i, x) in metric.get_products().enumerate() {
@@ -166,8 +166,8 @@ impl VulnerabilityTrait for Vulnerability20 {
         &self.remediations
     }
 
-    fn get_product_status(&self) -> &Option<Self::ProductStatusType> {
-        &self.product_status
+    fn get_product_status(&self) -> Option<&Self::ProductStatusType> {
+        self.product_status.as_ref()
     }
 
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>> {
@@ -234,8 +234,8 @@ impl VulnerabilityTrait for Vulnerability21 {
         &self.remediations
     }
 
-    fn get_product_status(&self) -> &Option<Self::ProductStatusType> {
-        &self.product_status
+    fn get_product_status(&self) -> Option<&Self::ProductStatusType> {
+        self.product_status.as_ref()
     }
 
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>> {

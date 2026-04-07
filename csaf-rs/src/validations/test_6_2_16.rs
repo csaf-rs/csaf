@@ -10,7 +10,7 @@ use crate::validation::ValidationError;
 pub fn test_6_2_16_missing_product_identification_helper(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
             if fpn.get_product_identification_helper().is_none() {
                 errors

@@ -19,7 +19,7 @@ static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^vers:[a-z.\-
 pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(product_tree) = doc.get_product_tree().as_ref() {
+    if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
             if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange
                 && !VERS_REGEX.is_match(branch.get_name())

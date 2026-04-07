@@ -28,7 +28,7 @@ pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Resu
     let references = doc.get_all_product_references_ids();
 
     // Visit all product id definitions and check if they are referenced
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
             if !references.contains(fpn.get_product_id()) {
                 errors

@@ -13,7 +13,7 @@ where
 {
     let product_groups: Vec<&String> = product_groups.into_iter().collect();
 
-    doc.get_product_tree().as_ref().map(|product_tree| {
+    doc.get_product_tree().map(|product_tree| {
         product_tree
             .get_product_groups()
             .iter()

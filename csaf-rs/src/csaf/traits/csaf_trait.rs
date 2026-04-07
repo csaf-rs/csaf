@@ -25,7 +25,7 @@ pub trait CsafTrait {
     type DocumentType: DocumentTrait;
 
     /// Returns the product tree of the CSAF document, if available.
-    fn get_product_tree(&self) -> &Option<Self::ProductTreeType>;
+    fn get_product_tree(&self) -> Option<&Self::ProductTreeType>;
 
     /// Retrieves all vulnerabilities present in the CSAF document.
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType>;
@@ -68,8 +68,8 @@ impl CsafTrait for CommonSecurityAdvisoryFramework20 {
     type ProductTreeType = ProductTree20;
     type DocumentType = DocumentLevelMetaData20;
 
-    fn get_product_tree(&self) -> &Option<Self::ProductTreeType> {
-        &self.product_tree
+    fn get_product_tree(&self) -> Option<&Self::ProductTreeType> {
+        self.product_tree.as_ref()
     }
 
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType> {
@@ -86,8 +86,8 @@ impl CsafTrait for CommonSecurityAdvisoryFramework21 {
     type ProductTreeType = ProductTree21;
     type DocumentType = DocumentLevelMetaData21;
 
-    fn get_product_tree(&self) -> &Option<Self::ProductTreeType> {
-        &self.product_tree
+    fn get_product_tree(&self) -> Option<&Self::ProductTreeType> {
+        self.product_tree.as_ref()
     }
 
     fn get_vulnerabilities(&self) -> &Vec<Self::VulnerabilityType> {

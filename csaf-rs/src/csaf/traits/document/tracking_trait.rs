@@ -1,5 +1,5 @@
-use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
+use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{GeneratorTrait, RevisionTrait, WithDate};
 use crate::schema::csaf2_0::schema::{
@@ -24,6 +24,7 @@ pub struct RevisionHistoryItem {
     pub date_string: String,
     pub date: DateTime<Utc>,
     pub number: CsafVersionNumber,
+    pub valid_date: ValidCsafDateTime,
 }
 
 /// Trait providing sorting functionality for revision history
@@ -82,6 +83,7 @@ pub trait TrackingTrait {
                         date: valid_date.get_as_utc().to_owned(),
                         date_string: valid_date.get_raw_string().to_string(),
                         number: revision.get_number(),
+                        valid_date,
                     });
                 },
                 Invalid(error) => {

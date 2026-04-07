@@ -112,10 +112,10 @@ pub trait VulnerabilityTrait {
     fn get_discovery_date(&self) -> Option<CsafDateTime>;
 
     /// Returns all flags associated with this vulnerability.
-    fn get_flags(&self) -> &Option<Vec<Self::FlagType>>;
+    fn get_flags(&self) -> Option<&Vec<Self::FlagType>>;
 
     /// Returns all involvements associated with this vulnerability.
-    fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>>;
+    fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>>;
 
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&String>;
@@ -124,7 +124,7 @@ pub trait VulnerabilityTrait {
     fn get_cwe(&self) -> Option<Vec<Cwe>>;
 
     /// Returns the vulnerability IDs associated with this vulnerability.
-    fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>>;
+    fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>>;
 
     /// Returns the notes associated with this vulnerability.
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
@@ -190,12 +190,12 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.discovery_date.as_ref().map(CsafDateTime::from)
     }
 
-    fn get_flags(&self) -> &Option<Vec<Self::FlagType>> {
-        &self.flags
+    fn get_flags(&self) -> Option<&Vec<Self::FlagType>> {
+        self.flags.as_ref()
     }
 
-    fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>> {
-        &self.involvements
+    fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>> {
+        self.involvements.as_ref()
     }
 
     fn get_cve(&self) -> Option<&String> {
@@ -206,8 +206,8 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
     }
 
-    fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
-        &self.ids
+    fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {
+        self.ids.as_ref()
     }
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
@@ -258,12 +258,12 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.discovery_date.as_ref().map(CsafDateTime::from)
     }
 
-    fn get_flags(&self) -> &Option<Vec<Self::FlagType>> {
-        &self.flags
+    fn get_flags(&self) -> Option<&Vec<Self::FlagType>> {
+        self.flags.as_ref()
     }
 
-    fn get_involvements(&self) -> &Option<Vec<Self::InvolvementType>> {
-        &self.involvements
+    fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>> {
+        self.involvements.as_ref()
     }
 
     fn get_cve(&self) -> Option<&String> {
@@ -274,8 +274,8 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())
     }
 
-    fn get_ids(&self) -> &Option<Vec<Self::VulnerabilityIdType>> {
-        &self.ids
+    fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {
+        self.ids.as_ref()
     }
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {

@@ -1,6 +1,7 @@
 #[cfg(feature = "converter")]
 pub mod converter;
 pub mod csaf;
+pub(crate) mod language_tag_parser;
 pub mod csaf2_0;
 pub mod csaf2_1;
 pub mod csaf_traits;

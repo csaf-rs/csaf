@@ -38,8 +38,8 @@ impl ValidCsafLanguage {
     pub fn is_private_use(&self) -> bool {
         self.0.private_use().is_some()
             || is_language_private_use(self.0.primary_language())
-            || self.0.script().is_some_and(|s| is_script_private_use(s))
-            || self.0.region().is_some_and(|r| is_region_private_use(r))
+            || self.0.script().is_some_and(is_script_private_use)
+            || self.0.region().is_some_and(is_region_private_use)
     }
 
     /// Checks if the primary language subtag is case-insensitive `"en"` (English).

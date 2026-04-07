@@ -60,13 +60,15 @@ pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<()
                             // Checks if the current category conflicts with any other in the group of mutually exclusive ones.
                             || MUT_EX_STATES.contains(&cat) && exist_cat_set.iter().any(|e_cat| MUT_EX_STATES.contains(e_cat))
                         {
-                            errors.get_or_insert_default().push(create_contradicting_remediations_error(
-                                &p,
-                                exist_cat_set,
-                                cat,
-                                v_i,
-                                r_i,
-                            ));
+                            errors
+                                .get_or_insert_default()
+                                .push(create_contradicting_remediations_error(
+                                    &p,
+                                    exist_cat_set,
+                                    cat,
+                                    v_i,
+                                    r_i,
+                                ));
                         } else {
                             exist_cat_set.push(cat);
                         }
@@ -89,7 +91,6 @@ mod tests {
 
     #[test]
     fn test_test_6_1_35() {
-
         // TODO: Improve test coverage (issue #526)
 
         let case_01_mutually_exclusive_via_product = Err(vec![create_contradicting_remediations_error(

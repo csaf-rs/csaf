@@ -215,7 +215,10 @@ impl CsafDocumentCategory {
                 if !Self::get_with_ignored_chars_removed(prefix).is_empty() {
                     return false;
                 }
-                postfix.chars().next().is_some_and(|c| Self::UNDERSCORE_CHARACTERS.contains(&c))
+                postfix
+                    .chars()
+                    .next()
+                    .is_some_and(|c| Self::UNDERSCORE_CHARACTERS.contains(&c))
             },
         }
     }
@@ -262,10 +265,12 @@ impl CsafDocumentCategory {
                 }
                 let after_first_underscore = chars.as_str();
                 // Must continue with "deprecated" followed by another underscore variant
-                after_first_underscore
-                    .strip_prefix("deprecated")
-                    .is_some_and(|s| s.chars().next().is_some_and(|c| Self::UNDERSCORE_CHARACTERS.contains(&c)))
-            }
+                after_first_underscore.strip_prefix("deprecated").is_some_and(|s| {
+                    s.chars()
+                        .next()
+                        .is_some_and(|c| Self::UNDERSCORE_CHARACTERS.contains(&c))
+                })
+            },
         }
     }
 
@@ -394,10 +399,10 @@ mod tests {
     #[case("-csaf_deprecated_foo", true)]
     // no underscore before / after deprecated
     #[case("csaf_deprecated", false)]
-    #[case("csafdeprecated_foo", false)]   // no underscore after csaf
+    #[case("csafdeprecated_foo", false)]
     // no csaf prefix
-    #[case("deprecated_something", false)] // no csaf prefix
-    #[case("some_other_category", false)]   // no csaf prefix
+    #[case("deprecated_something", false)]
+    #[case("some_other_category", false)]
     fn string_starts_with_csaf_deprecated_underscore(#[case] input: &str, #[case] expected: bool) {
         assert_eq!(
             CsafDocumentCategory::string_starts_with_csaf_deprecated_underscore(input),
@@ -405,7 +410,6 @@ mod tests {
             "input: {input:?}"
         );
     }
-
 
     #[rstest]
     // Known profiles

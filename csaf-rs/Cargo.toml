@@ -40,6 +40,9 @@ spdx = "0.13.4"
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 
+[dev-dependencies]
+rstest = "0.26.1"
+
 [build-dependencies]
 schemars = "0.8"
 serde = { version = "1", features = ["derive"] }

@@ -65,27 +65,7 @@ fn test_6_1_25_err_generator(
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_25
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_25_multiple_use_of_same_hash_algorithm(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_25
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_25_multiple_use_of_same_hash_algorithm(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_25, test_6_1_25_multiple_use_of_same_hash_algorithm);
 
 #[cfg(test)]
 mod tests {

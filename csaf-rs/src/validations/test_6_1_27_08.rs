@@ -41,27 +41,7 @@ fn test_6_1_27_08_err_generator(document_category: &CsafDocumentCategory, vuln_p
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_8
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_08_vulnerability_id(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_8
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_08_vulnerability_id(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_27_8, test_6_1_27_08_vulnerability_id);
 
 #[cfg(test)]
 mod tests {

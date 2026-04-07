@@ -35,16 +35,7 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
     CsafDocumentCategory::CsafSuperseded,
 ]);
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_16
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_16_revision_history(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_16, test_6_1_27_16_revision_history);
 
 #[cfg(test)]
 mod tests {

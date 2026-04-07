@@ -41,27 +41,7 @@ pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Resu
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_01_unused_definition_of_product_id(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_01_unused_definition_of_product_id(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_1, test_6_2_01_unused_definition_of_product_id);
 
 #[cfg(test)]
 mod tests {

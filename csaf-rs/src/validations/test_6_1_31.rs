@@ -106,27 +106,10 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_31
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_31_version_range_in_product_version_branch_name(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_31
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_31_version_range_in_product_version_branch_name(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_31,
+    test_6_1_31_version_range_in_product_version_branch_name
+);
 
 #[cfg(test)]
 mod tests {

@@ -29,27 +29,7 @@ pub fn test_6_1_10_inconsistent_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Val
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_10
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_10_inconsistent_cvss(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_10
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_10_inconsistent_cvss(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_10, test_6_1_10_inconsistent_cvss);
 
 #[cfg(test)]
 mod tests {

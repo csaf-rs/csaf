@@ -27,27 +27,7 @@ pub fn test_6_1_09_invalid_cvss_computation(doc: &impl CsafTrait) -> Result<(), 
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_9
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_09_invalid_cvss_computation(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_9
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_09_invalid_cvss_computation(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_9, test_6_1_09_invalid_cvss_computation);
 
 #[cfg(test)]
 mod tests {

@@ -17,7 +17,8 @@ pub trait TestValidator<Doc> {
     fn validate(&self, doc: &Doc) -> Result<(), Vec<ValidationError>>;
 }
 
-/// Macro to generate the boilerplate `TestValidator<CommonSecurityAdvisoryFramework>` impl blocks for validation tests.
+/// Macro to generate the boilerplate `TestValidator<CommonSecurityAdvisoryFramework>` impl blocks
+/// for validation tests.
 ///
 /// # Usage
 ///
@@ -68,8 +69,8 @@ macro_rules! impl_validator {
 
 pub(crate) use impl_validator;
 
-/// Macro to generate the boilerplate `TestValidator<RawDocument<CommonSecurityAdvisoryFramework>>` impl blocks for validation
-/// tests that operate on raw JSON.
+/// Macro to generate the boilerplate `TestValidator<RawDocument<CommonSecurityAdvisoryFramework>>`
+/// impl blocks for validation tests that operate on raw JSON.
 ///
 /// # Usage
 ///

@@ -6,8 +6,11 @@ pub mod csaf2_1;
 pub mod csaf_traits;
 pub(crate) mod cvss;
 pub mod document_category_test_helper;
-pub mod generated;
 pub mod helpers;
+// This code is shared between the build script (via `#[path]` directly to language_tag_parser/parser.rs) and the library
+// (for testing of the parser).
+#[cfg(test)]
+pub(crate) mod language_tag_parser;
 pub mod schema;
 pub mod test_result_comparison;
 pub mod test_structure;

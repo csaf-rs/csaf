@@ -1,4 +1,4 @@
-use crate::csaf::types::csaf_language::CsafLanguage;
+use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
 
@@ -38,7 +38,7 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_12, test_6_1_12_lang
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf::types::csaf_language::CsafLanguage::Invalid;
+    use crate::csaf::types::language::CsafLanguage::Invalid;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 

@@ -45,13 +45,16 @@ impl ValidCsafLanguage {
             || self.0.region().is_some_and(is_region_private_use)
     }
 
-    /// Collects the "reasons" are language tag is private use.
+    /// Gets the "reasons" a language tag is private use.
     ///
     /// If there are reasons this tag is private, they are inherently ordered to match the order in the tag, i.e.
-    /// 1. Primary Language (exp. `qaa`)
-    /// 2. Script (exp. `Qaaa`)
-    /// 3. Region (exp. `QM`)
-    /// 4. Dedicated Private Use Tag (exp. `x-private-use`)
+    /// 1. [PrivateUseReason::PrivateUsePrimaryLangSubtag] (exp. `qaa`)
+    /// 2. [PrivateUseReason::PrivateUseScriptSubtag] (exp. `Qaaa`)
+    /// 3. [PrivateUseReason::PrivateUseRegionSubtag] (exp. `QM`)
+    /// 4. [PrivateUseReason::PrivateUseSubtag] (exp. `x-private-use`)
+    ///
+    /// If the language tag is a "only private use"  tag (exp. `x-private-use`), only a [PrivateUseReason::PrivateUseSubtag] will be
+    /// returned.
     ///
     /// Returns:
     /// * `Some(Vec<PrivateUseReason>)` if the language tag is private use, with the vector containing
@@ -66,19 +69,19 @@ impl ValidCsafLanguage {
                     self.0.primary_language().to_string(),
                 ));
         }
-        if self.0.script().is_some_and(is_script_private_use) {
+        if let Some(script) = self.0.script()
+            && is_script_private_use(script)
+        {
             result
                 .get_or_insert_default()
-                .push(PrivateUseReason::PrivateUseScriptSubtag(
-                    self.0.script().unwrap().to_string(),
-                ));
+                .push(PrivateUseReason::PrivateUseScriptSubtag(script.to_string()));
         }
-        if self.0.region().is_some_and(is_region_private_use) {
+        if let Some(region) = self.0.region()
+            && is_region_private_use(region)
+        {
             result
                 .get_or_insert_default()
-                .push(PrivateUseReason::PrivateUseRegionSubtag(
-                    self.0.region().unwrap().to_string(),
-                ));
+                .push(PrivateUseReason::PrivateUseRegionSubtag(region.to_string()));
         }
         if let Some(private_use_subtag) = self.0.private_use() {
             result
@@ -209,7 +212,49 @@ mod tests {
     #[case("en-QM", Some(vec![PrivateUseReason::PrivateUseRegionSubtag("QM".to_string())]))]
     // private use extension subtag
     #[case("x-private-use", Some(vec![PrivateUseReason::PrivateUseSubtag("x-private-use".to_string())]))]
-    // multiple reasons combined
+    // two reasons combined
+    #[case("qaa-Qaaa", Some(vec![
+        PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
+        PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string()),
+    ]))]
+    #[case("qaa-QM", Some(vec![
+        PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
+        PrivateUseReason::PrivateUseRegionSubtag("QM".to_string()),
+    ]))]
+    #[case("qaa-x-foo", Some(vec![
+        PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
+        PrivateUseReason::PrivateUseSubtag("x-foo".to_string()),
+    ]))]
+    #[case("en-Qaaa-x-foo", Some(vec![
+        PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string()),
+        PrivateUseReason::PrivateUseSubtag("x-foo".to_string()),
+    ]))]
+    #[case("en-XZ-x-bar", Some(vec![
+        PrivateUseReason::PrivateUseRegionSubtag("XZ".to_string()),
+        PrivateUseReason::PrivateUseSubtag("x-bar".to_string()),
+    ]))]
+    // three reasons combined
+    #[case("qaa-Qaaa-QM", Some(vec![
+        PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
+        PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string()),
+        PrivateUseReason::PrivateUseRegionSubtag("QM".to_string()),
+    ]))]
+    #[case("qaa-Qaaa-x-baz", Some(vec![
+        PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
+        PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string()),
+        PrivateUseReason::PrivateUseSubtag("x-baz".to_string()),
+    ]))]
+    #[case("qaa-QM-x-quux", Some(vec![
+        PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
+        PrivateUseReason::PrivateUseRegionSubtag("QM".to_string()),
+        PrivateUseReason::PrivateUseSubtag("x-quux".to_string()),
+    ]))]
+    #[case("en-Qaaa-XA-x-test", Some(vec![
+        PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string()),
+        PrivateUseReason::PrivateUseRegionSubtag("XA".to_string()),
+        PrivateUseReason::PrivateUseSubtag("x-test".to_string()),
+    ]))]
+    // all four reasons combined
     #[case("qaa-Qaaa-QM-x-private-use", Some(vec![
         PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
         PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string()),

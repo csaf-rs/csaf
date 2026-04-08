@@ -2,7 +2,6 @@ use crate::csaf::types::language::CsafLanguage;
 use crate::csaf::types::language::valid_language::PrivateUseReason;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
-use std::fmt::{Display, Formatter};
 
 /// 6.2.14 Use of Private Language
 ///
@@ -55,26 +54,12 @@ fn create_private_language_error(lang_tag: String, instance_path: &str) -> Valid
     }
 }
 
-// Display specific to this test
-impl Display for PrivateUseReason {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PrivateUseReason::PrivateUseSubtag(subtag) => write!(f, "Subtag '{subtag}' is a private use subtag"),
-            PrivateUseReason::PrivateUsePrimaryLangSubtag(primary_lang) => {
-                write!(f, "Primary Language Subtag '{primary_lang}' is private use")
-            },
-            PrivateUseReason::PrivateUseScriptSubtag(script) => write!(f, "Script subtag '{script}' is private use"),
-            PrivateUseReason::PrivateUseRegionSubtag(region) => write!(f, "Region subtag '{region}' is private use"),
-        }
-    }
-}
-
 fn create_private_language_error_from_reasons(
     lang_tag: String,
     reasons: &[PrivateUseReason],
     instance_path: &str,
 ) -> ValidationError {
-    // Reasons are constructed in a sorted order, so no sorting is necessary here
+    // Reasons are constructed in the fixed order from ValidCsafLanguage::get_private_use, so no sorting is necessary here
     let reasons_str = reasons
         .iter()
         .map(|reason| reason.to_string())
@@ -149,11 +134,18 @@ mod tests {
             "/document/lang",
         )]);
 
-        let case_s01_private_use_tag = Err(vec![create_private_language_error_from_reasons(
-            "en-x-this-is-private".to_string(),
-            &[PrivateUseReason::PrivateUseSubtag("x-this-is-private".to_string())],
-            "/document/lang",
-        )]);
+        let case_s01_private_use_tag = Err(vec![
+            create_private_language_error_from_reasons(
+                "x-this-is-private".to_string(),
+                &[PrivateUseReason::PrivateUseSubtag("x-this-is-private".to_string())],
+                "/document/lang",
+            ),
+            create_private_language_error_from_reasons(
+                "en-x-this-is-private".to_string(),
+                &[PrivateUseReason::PrivateUseSubtag("x-this-is-private".to_string())],
+                "/document/source_lang",
+            ),
+        ]);
 
         let case_s02_multiple_reasons = Err(vec![create_private_language_error_from_reasons(
             "qtx-Qabc-XP-x-this-is-private".to_string(),

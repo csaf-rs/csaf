@@ -8,12 +8,13 @@
         "label": "CLEAR"
       }
     },
-    "lang": "en-x-this-is-private",
+    "lang": "x-this-is-private",
     "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
+    "source_lang": "en-x-this-is-private",
     "title": "Recommended Test: Use of Private Language (failing supplementary example 1 - private use subtag)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",

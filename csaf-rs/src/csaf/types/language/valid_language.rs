@@ -48,12 +48,12 @@ impl ValidCsafLanguage {
     /// Gets the "reasons" a language tag is private use.
     ///
     /// If there are reasons this tag is private, they are inherently ordered to match the order in the tag, i.e.
-    /// 1. [PrivateUseReason::PrivateUsePrimaryLangSubtag] (exp. `qaa`)
-    /// 2. [PrivateUseReason::PrivateUseScriptSubtag] (exp. `Qaaa`)
-    /// 3. [PrivateUseReason::PrivateUseRegionSubtag] (exp. `QM`)
-    /// 4. [PrivateUseReason::PrivateUseSubtag] (exp. `x-private-use`)
+    /// 1. [PrivateUseReason::PrivateUsePrimaryLangSubtag] (e.g. `qaa`)
+    /// 2. [PrivateUseReason::PrivateUseScriptSubtag] (e.g. `Qaaa`)
+    /// 3. [PrivateUseReason::PrivateUseRegionSubtag] (e.g. `QM`)
+    /// 4. [PrivateUseReason::PrivateUseSubtag] (e.g. `x-private-use`)
     ///
-    /// If the language tag is a "only private use"  tag (exp. `x-private-use`), only a [PrivateUseReason::PrivateUseSubtag] will be
+    /// If the language tag is a "standalone" private use tag (e.g. `x-private-use`), only a [PrivateUseReason::PrivateUseSubtag] will be
     /// returned.
     ///
     /// Returns:
@@ -104,6 +104,21 @@ pub enum PrivateUseReason {
     PrivateUsePrimaryLangSubtag(String),
     PrivateUseScriptSubtag(String),
     PrivateUseRegionSubtag(String),
+}
+
+/// So far, only used during 6.2.14, if we get more use cases for it, we should consider moving
+/// this into the specific test.
+impl Display for PrivateUseReason {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PrivateUseReason::PrivateUseSubtag(subtag) => write!(f, "Private use subtag '{subtag}'"),
+            PrivateUseReason::PrivateUsePrimaryLangSubtag(primary_lang) => {
+                write!(f, "Private use primary language subtag '{primary_lang}'")
+            },
+            PrivateUseReason::PrivateUseScriptSubtag(script) => write!(f, "Private use script subtag '{script}'"),
+            PrivateUseReason::PrivateUseRegionSubtag(region) => write!(f, "Private use region subtag '{region}'"),
+        }
+    }
 }
 
 impl Deref for ValidCsafLanguage {

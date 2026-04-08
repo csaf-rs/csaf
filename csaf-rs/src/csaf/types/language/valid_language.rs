@@ -45,10 +45,48 @@ impl ValidCsafLanguage {
             || self.0.region().is_some_and(is_region_private_use)
     }
 
+    /// Collects the "reasons" are language tag is private use.
+    ///
+    /// If there are reasons this tag is private, they are inherently ordered to match the order in the tag, i.e.
+    /// 1. Primary Language (exp. `qaa`)
+    /// 2. Script (exp. `Qaaa`)
+    /// 3. Region (exp. `QM`)
+    /// 4. Dedicated Private Use Tag (exp. `x-private-use`)
+    ///
+    /// Returns:
+    /// * `Some(Vec<PrivateUseReason>)` if the language tag is private use, with the vector containing
+    /// the specific [PrivateUseReason]'s listed above
+    /// * `None` if the language tag is not private use
+    pub fn get_private_use(&self) -> Option<Vec<PrivateUseReason>> {
+        let mut result: Option<Vec<PrivateUseReason>> = None;
+        if is_language_private_use(self.0.primary_language()) {
+            result.get_or_insert_default().push(PrivateUseReason::PrivateUsePrimaryLangSubtag(self.0.primary_language().to_string()));
+        }
+        if self.0.script().is_some_and(is_script_private_use) {
+            result.get_or_insert_default().push(PrivateUseReason::PrivateUseScriptSubtag(self.0.script().unwrap().to_string()));
+        }
+        if self.0.region().is_some_and(is_region_private_use) {
+            result.get_or_insert_default().push(PrivateUseReason::PrivateUseRegionSubtag(self.0.region().unwrap().to_string()));
+        }
+        if let Some(private_use_subtag) = self.0.private_use() {
+            result.get_or_insert_default().push(PrivateUseReason::PrivateUseSubtag(private_use_subtag.to_string()));
+        }
+        result
+    }
+
     /// Checks if the primary language subtag is case-insensitive `"en"` (English).
     pub fn is_english(&self) -> bool {
         self.0.primary_language().eq_ignore_ascii_case("en")
     }
+}
+
+/// Utility enum used in the return value in [ValidCsafLanguage::get_private_use]
+#[derive(Debug, PartialEq)]
+pub enum PrivateUseReason {
+    PrivateUseSubtag(String),
+    PrivateUsePrimaryLangSubtag(String),
+    PrivateUseScriptSubtag(String),
+    PrivateUseRegionSubtag(String),
 }
 
 impl Deref for ValidCsafLanguage {
@@ -143,5 +181,29 @@ mod tests {
             expected,
             "Unexpected is_private_use() result for '{input}'"
         );
+    }
+
+    #[rstest]
+    // not private use
+    #[case("en-US", None)]
+    #[case("i-default", None)]
+    // private use primary language subtag
+    #[case("qaa", Some(vec![PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string())]))]
+    // private use script subtag
+    #[case("en-Qaaa", Some(vec![PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string())]))]
+    // private use region subtag
+    #[case("en-QM", Some(vec![PrivateUseReason::PrivateUseRegionSubtag("QM".to_string())]))]
+    // private use extension subtag
+    #[case("x-private-use", Some(vec![PrivateUseReason::PrivateUseSubtag("x-private-use".to_string())]))]
+    // multiple reasons combined
+    #[case("qaa-Qaaa-QM-x-private-use", Some(vec![
+        PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string()),
+        PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string()),
+        PrivateUseReason::PrivateUseRegionSubtag("QM".to_string()),
+        PrivateUseReason::PrivateUseSubtag("x-private-use".to_string()),
+    ]))]
+    fn test_get_private_use(#[case] input: &str, #[case] expected: Option<Vec<PrivateUseReason>>) {
+        let lang = ValidCsafLanguage::new_for_tests(input);
+        assert_eq!(lang.get_private_use(), expected, "Mismatch for '{input}'");
     }
 }

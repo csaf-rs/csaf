@@ -22,7 +22,7 @@ pub fn test_6_2_15_use_of_default_language(doc: &impl CsafTrait) -> Result<(), V
 
 /// Helper function to validate a `lang` tag and check if it is the default language.
 ///
-/// If the optional language tag is `Some` and is the default language (`i-default`), an
+/// If the optional language tag is `Some`, is a valid tag, and is the default language (`i-default`, case-insensitive), an
 /// error will be added to `errors` vector.
 ///
 /// # Arguments

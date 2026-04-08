@@ -98,66 +98,66 @@ mod tests {
     fn test_test_6_2_14() {
         let case_01_private_primary_lang = Err(vec![create_private_language_error_from_reasons(
             "qtx".to_string(),
-            &vec![PrivateUseReason::PrivateUsePrimaryLangSubtag("qtx".to_string())],
+            &[PrivateUseReason::PrivateUsePrimaryLangSubtag("qtx".to_string())],
             "/document/lang",
         )]);
         let case_02_private_primary_source_lang = Err(vec![create_private_language_error_from_reasons(
             "qcb".to_string(),
-            &vec![PrivateUseReason::PrivateUsePrimaryLangSubtag("qcb".to_string())],
+            &[PrivateUseReason::PrivateUsePrimaryLangSubtag("qcb".to_string())],
             "/document/source_lang",
         )]);
         let case_03_both_private_primary_lang = Err(vec![
             create_private_language_error_from_reasons(
                 "qdq".to_string(),
-                &vec![PrivateUseReason::PrivateUsePrimaryLangSubtag("qdq".to_string())],
+                &[PrivateUseReason::PrivateUsePrimaryLangSubtag("qdq".to_string())],
                 "/document/lang",
             ),
             create_private_language_error_from_reasons(
                 "qcb".to_string(),
-                &vec![PrivateUseReason::PrivateUsePrimaryLangSubtag("qcb".to_string())],
+                &[PrivateUseReason::PrivateUsePrimaryLangSubtag("qcb".to_string())],
                 "/document/source_lang",
             ),
         ]);
 
         let case_04_private_region_qm = Err(vec![create_private_language_error_from_reasons(
             "en-QM".to_string(),
-            &vec![PrivateUseReason::PrivateUseRegionSubtag("QM".to_string())],
+            &[PrivateUseReason::PrivateUseRegionSubtag("QM".to_string())],
             "/document/lang",
         )]);
 
         let case_05_private_region_xp = Err(vec![create_private_language_error_from_reasons(
             "en-XP".to_string(),
-            &vec![PrivateUseReason::PrivateUseRegionSubtag("XP".to_string())],
+            &[PrivateUseReason::PrivateUseRegionSubtag("XP".to_string())],
             "/document/lang",
         )]);
 
         let case_06_private_script_qabc = Err(vec![create_private_language_error_from_reasons(
             "en-Qabc".to_string(),
-            &vec![PrivateUseReason::PrivateUseScriptSubtag("Qabc".to_string())],
+            &[PrivateUseReason::PrivateUseScriptSubtag("Qabc".to_string())],
             "/document/lang",
         )]);
 
         let case_07_private_region_aa = Err(vec![create_private_language_error_from_reasons(
             "en-AA".to_string(),
-            &vec![PrivateUseReason::PrivateUseRegionSubtag("AA".to_string())],
+            &[PrivateUseReason::PrivateUseRegionSubtag("AA".to_string())],
             "/document/lang",
         )]);
 
         let case_08_private_region_zz = Err(vec![create_private_language_error_from_reasons(
             "fr-ZZ".to_string(),
-            &vec![PrivateUseReason::PrivateUseRegionSubtag("ZZ".to_string())],
+            &[PrivateUseReason::PrivateUseRegionSubtag("ZZ".to_string())],
             "/document/lang",
         )]);
 
         let case_s01_private_use_tag = Err(vec![create_private_language_error_from_reasons(
             "en-x-this-is-private".to_string(),
-            &vec![PrivateUseReason::PrivateUseSubtag("x-this-is-private".to_string())],
+            &[PrivateUseReason::PrivateUseSubtag("x-this-is-private".to_string())],
             "/document/lang",
         )]);
 
         let case_s02_multiple_reasons = Err(vec![create_private_language_error_from_reasons(
             "qtx-Qabc-XP-x-this-is-private".to_string(),
-            &vec![
+            &[
                 PrivateUseReason::PrivateUsePrimaryLangSubtag("qtx".to_string()),
                 PrivateUseReason::PrivateUseScriptSubtag("Qabc".to_string()),
                 PrivateUseReason::PrivateUseRegionSubtag("XP".to_string()),

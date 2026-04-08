@@ -55,7 +55,7 @@ impl ValidCsafLanguage {
     ///
     /// Returns:
     /// * `Some(Vec<PrivateUseReason>)` if the language tag is private use, with the vector containing
-    /// the specific [PrivateUseReason]'s listed above
+    ///   the specific [PrivateUseReason]'s listed above
     /// * `None` if the language tag is not private use
     pub fn get_private_use(&self) -> Option<Vec<PrivateUseReason>> {
         let mut result: Option<Vec<PrivateUseReason>> = None;

@@ -71,7 +71,7 @@ impl Display for PrivateUseReason {
 
 fn create_private_language_error_from_reasons(
     lang_tag: String,
-    reasons: &Vec<PrivateUseReason>,
+    reasons: &[PrivateUseReason],
     instance_path: &str,
 ) -> ValidationError {
     // Reasons are constructed in a sorted order, so no sorting is necessary here

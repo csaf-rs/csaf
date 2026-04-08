@@ -9,15 +9,14 @@ use crate::validation::ValidationError;
 fn create_epss_timestamp_too_new_error(
     doc_status: &DocumentStatus,
     epss_timestamp: &ValidCsafDateTime,
-    i_v: usize,
     newest_revision_date: &ValidCsafDateTime,
-    i_m: usize,
+    content_json_path: &str,
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "EPSS timestamp ({epss_timestamp}) for vulnerability at index {i_v} is newer than the newest revision date ({newest_revision_date}) on a document with status {doc_status}.",
+            "EPSS timestamp ({epss_timestamp}) is newer than the newest revision date ({newest_revision_date}) on a document with status {doc_status}.",
         ),
-        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/epss/timestamp"),
+        instance_path: format!("{content_json_path}/epss/timestamp"),
     }
 }
 
@@ -50,17 +49,18 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
             for (i_m, metric) in metrics.iter().enumerate() {
-                if let Some(epss) = metric.get_content().get_epss() {
+                let content = metric.get_content();
+                if let Some(epss) = content.get_epss() {
                     match epss.get_timestamp() {
                         CsafDateTime::Valid(valid_timestamp) => {
                             // TODO fix this after #503
                             if valid_timestamp > newest_revision.valid_date {
+                                let content_json_path = content.get_content_json_path(i_v, i_m);
                                 errors.get_or_insert_default().push(create_epss_timestamp_too_new_error(
                                     &status,
                                     &valid_timestamp,
-                                    i_v,
                                     &newest_revision.valid_date,
-                                    i_m,
+                                    &content_json_path,
                                 ));
                             }
                         },
@@ -89,23 +89,20 @@ mod tests {
         let case_01_too_late_new_timezone = Err(vec![create_epss_timestamp_too_new_error(
             &DocumentStatus::Final,
             &ValidCsafDateTime::from_str("2024-07-13T10:00:00.000Z").unwrap(),
-            0,
             &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
-            0,
+            "/vulnerabilities/0/metrics/0/content",
         )]);
         let case_02_too_new_neg_timezone_offset = Err(vec![create_epss_timestamp_too_new_error(
             &DocumentStatus::Final,
             &ValidCsafDateTime::from_str("2024-02-28T14:30:00.000-20:00").unwrap(),
-            0,
             &ValidCsafDateTime::from_str("2024-02-29T10:00:00.000Z").unwrap(),
-            0,
+            "/vulnerabilities/0/metrics/0/content",
         )]);
         let case_03_too_new_pos_timezone_offset = Err(vec![create_epss_timestamp_too_new_error(
             &DocumentStatus::Final,
             &ValidCsafDateTime::from_str("2024-02-29T14:30:00.000+04:00").unwrap(),
-            0,
             &ValidCsafDateTime::from_str("2024-02-29T10:00:00.000Z").unwrap(),
-            0,
+            "/vulnerabilities/0/metrics/0/content",
         )]);
 
         // Case 11: Same timestamp in newest rev history and EPSS

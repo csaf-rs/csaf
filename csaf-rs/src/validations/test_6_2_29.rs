@@ -23,11 +23,7 @@ pub fn test_6_2_29_usage_of_nil_uuid(doc: &impl CsafTrait) -> Result<(), Vec<Val
     Ok(())
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_2_29,
-    test_6_2_29_usage_of_nil_uuid
-);
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_29, test_6_2_29_usage_of_nil_uuid);
 
 #[cfg(test)]
 mod tests {
@@ -42,11 +38,6 @@ mod tests {
         // Case 11: sharing group with a regular UUID
         // Case 12: no sharing group present
 
-        TESTS_2_1.test_6_2_29.expect(
-            err,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_29.expect(err, Ok(()), Ok(()));
     }
 }
-

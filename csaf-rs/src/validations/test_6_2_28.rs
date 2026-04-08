@@ -23,11 +23,7 @@ pub fn test_6_2_28_usage_of_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<Val
     Ok(())
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_2_28,
-    test_6_2_28_usage_of_max_uuid
-);
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_28, test_6_2_28_usage_of_max_uuid);
 
 #[cfg(test)]
 mod tests {
@@ -42,11 +38,6 @@ mod tests {
         // Case 11: no sharing group present
         // Case 12: sharing group with a regular UUID
 
-        TESTS_2_1.test_6_2_28.expect(
-            err,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_28.expect(err, Ok(()), Ok(()));
     }
 }
-

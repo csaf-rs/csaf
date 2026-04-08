@@ -1,8 +1,8 @@
-use std::fmt::{Display, Formatter};
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf::types::language::valid_language::PrivateUseReason;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
+use std::fmt::{Display, Formatter};
 
 /// 6.2.14 Use of Private Language
 ///
@@ -36,11 +36,13 @@ fn validate_private_language(lang: Option<CsafLanguage>, json_path: &str, errors
     if let Some(CsafLanguage::Valid(valid_lang)) = lang
         && let Some(private_use_reasons) = valid_lang.get_private_use()
     {
-        errors.get_or_insert_default().push(create_private_language_error_from_reasons(
-            valid_lang.as_str().to_string(),
-            &private_use_reasons,
-            json_path,
-        ));
+        errors
+            .get_or_insert_default()
+            .push(create_private_language_error_from_reasons(
+                valid_lang.as_str().to_string(),
+                &private_use_reasons,
+                json_path,
+            ));
     }
 }
 
@@ -58,21 +60,29 @@ impl Display for PrivateUseReason {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             PrivateUseReason::PrivateUseSubtag(subtag) => write!(f, "Subtag '{subtag}' is a private use subtag"),
-            PrivateUseReason::PrivateUsePrimaryLangSubtag(primary_lang) => write!(f, "Primary Language Subtag '{primary_lang}' is private use"),
+            PrivateUseReason::PrivateUsePrimaryLangSubtag(primary_lang) => {
+                write!(f, "Primary Language Subtag '{primary_lang}' is private use")
+            },
             PrivateUseReason::PrivateUseScriptSubtag(script) => write!(f, "Script subtag '{script}' is private use"),
             PrivateUseReason::PrivateUseRegionSubtag(region) => write!(f, "Region subtag '{region}' is private use"),
         }
     }
 }
 
-fn create_private_language_error_from_reasons(lang_tag: String, reasons: &Vec<PrivateUseReason>, instance_path: &str) -> ValidationError {
+fn create_private_language_error_from_reasons(
+    lang_tag: String,
+    reasons: &Vec<PrivateUseReason>,
+    instance_path: &str,
+) -> ValidationError {
     // Reasons are constructed in a sorted order, so no sorting is necessary here
-    let reasons_str = reasons.iter().map(|reason| reason.to_string())
+    let reasons_str = reasons
+        .iter()
+        .map(|reason| reason.to_string())
         .collect::<Vec<String>>()
         .join(", ");
     ValidationError {
         message: format!("The language tag '{lang_tag}' contains subtags reserved for private use: {reasons_str}"),
-        instance_path: instance_path.to_string()
+        instance_path: instance_path.to_string(),
     }
 }
 

@@ -60,16 +60,30 @@ impl ValidCsafLanguage {
     pub fn get_private_use(&self) -> Option<Vec<PrivateUseReason>> {
         let mut result: Option<Vec<PrivateUseReason>> = None;
         if is_language_private_use(self.0.primary_language()) {
-            result.get_or_insert_default().push(PrivateUseReason::PrivateUsePrimaryLangSubtag(self.0.primary_language().to_string()));
+            result
+                .get_or_insert_default()
+                .push(PrivateUseReason::PrivateUsePrimaryLangSubtag(
+                    self.0.primary_language().to_string(),
+                ));
         }
         if self.0.script().is_some_and(is_script_private_use) {
-            result.get_or_insert_default().push(PrivateUseReason::PrivateUseScriptSubtag(self.0.script().unwrap().to_string()));
+            result
+                .get_or_insert_default()
+                .push(PrivateUseReason::PrivateUseScriptSubtag(
+                    self.0.script().unwrap().to_string(),
+                ));
         }
         if self.0.region().is_some_and(is_region_private_use) {
-            result.get_or_insert_default().push(PrivateUseReason::PrivateUseRegionSubtag(self.0.region().unwrap().to_string()));
+            result
+                .get_or_insert_default()
+                .push(PrivateUseReason::PrivateUseRegionSubtag(
+                    self.0.region().unwrap().to_string(),
+                ));
         }
         if let Some(private_use_subtag) = self.0.private_use() {
-            result.get_or_insert_default().push(PrivateUseReason::PrivateUseSubtag(private_use_subtag.to_string()));
+            result
+                .get_or_insert_default()
+                .push(PrivateUseReason::PrivateUseSubtag(private_use_subtag.to_string()));
         }
         result
     }

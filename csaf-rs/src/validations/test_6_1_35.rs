@@ -109,7 +109,7 @@ mod tests {
             1,
         )]);
 
-        let case_03_exclusive_optional_path_via_group = Err(vec![create_contradicting_remediations_error(
+        let case_03_exclusive_optional_patch_via_group = Err(vec![create_contradicting_remediations_error(
             "CSAFPID-9080702",
             &[
                 CategoryOfTheRemediation::Workaround,
@@ -143,15 +143,15 @@ mod tests {
             ),
         ]);
 
-        // Case 01: One product, one remediation
-        // Case 02: One product, one group, exclusive optional patch only on the product
-        // Case 03: One product, one group, exlusive optional patch only on the group
-        // Case 04: Two groups, exclusive optional patch applies only to one group
+        // Case 11: One product, one remediation
+        // Case 12: One product, one group, exclusive optional patch only on the product
+        // Case 13: One product, one group, exclusive optional patch only on the group
+        // Case 14: Two groups, exclusive optional patch applies only to one group
 
         TESTS_2_1.test_6_1_35.expect(
             case_01_mutually_exclusive_via_product,
             case_02_exclusive_none_available_via_group,
-            case_03_exclusive_optional_path_via_group,
+            case_03_exclusive_optional_patch_via_group,
             case_04_exclusive_optional_patch_via_groups_multiple_products,
             Ok(()),
             Ok(()),

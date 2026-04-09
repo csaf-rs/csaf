@@ -6,3 +6,4 @@ pub mod revision_trait;
 pub mod sharing_group_trait;
 pub mod tlp_trait;
 pub mod tracking_trait;
+pub mod license_expression_trait;

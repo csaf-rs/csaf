@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use crate::csaf::traits::util::generic_with::{WithDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 
@@ -39,6 +40,14 @@ impl WithOptionalGroupIds for NotPresentInCsaf20 {
 
 impl WithDate for NotPresentInCsaf20 {
     fn get_date(&self) -> CsafDateTime {
+        self.into_any()
+    }
+}
+
+impl Deref for NotPresentInCsaf20 {
+    type Target = String;
+
+    fn deref(&self) -> &String {
         self.into_any()
     }
 }

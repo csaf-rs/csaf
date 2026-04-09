@@ -1,7 +1,9 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
+use crate::csaf::traits::document::license_expression_trait::LicenseExpressionTrait;
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
+use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{DistributionTrait, DocumentReferenceTrait, NoteTrait, PublisherTrait, TrackingTrait};
@@ -10,11 +12,7 @@ use crate::schema::csaf2_0::schema::{
     Publisher as Publisher20, Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20,
     Tracking as Tracking20,
 };
-use crate::schema::csaf2_1::schema::{
-    CsafVersion as CsafVersion21, DocumentLevelMetaData as DocumentLevelMetaData21, Note as Note21,
-    Publisher as Publisher21, Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21,
-    Tracking as Tracking21,
-};
+use crate::schema::csaf2_1::schema::{CsafVersion as CsafVersion21, DocumentLevelMetaData as DocumentLevelMetaData21, LicenseExpression as LicenseExpression21, Note as Note21, Publisher as Publisher21, Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21};
 use crate::validation::ValidationError;
 
 /// Trait representing document meta-level information
@@ -33,6 +31,8 @@ pub trait DocumentTrait {
 
     type DocumentReferenceType: DocumentReferenceTrait;
 
+    type LicenseExpressionType: LicenseExpressionTrait;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
 
@@ -41,6 +41,8 @@ pub trait DocumentTrait {
 
     /// Returns the distribution information for this document with CSAF 2.0 semantics
     fn get_distribution_20(&self) -> Option<&Self::DistributionType>;
+
+    fn get_license_expression(&self) -> Option<&Self::LicenseExpressionType>;
 
     /// Returns the notes associated with this document
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
@@ -77,6 +79,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     type NoteType = Note20;
     type PublisherType = Publisher20;
     type DocumentReferenceType = Reference20;
+    type LicenseExpressionType = NotPresentInCsaf20;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -127,6 +130,11 @@ impl DocumentTrait for DocumentLevelMetaData20 {
             CsafVersion20::X20 => &CsafVersion::X20,
         }
     }
+
+    fn get_license_expression(&self) -> Option<&Self::LicenseExpressionType> {
+        // License Expression does not exist on CSAF 2.0
+        None
+    }
 }
 
 impl DocumentTrait for DocumentLevelMetaData21 {
@@ -135,6 +143,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     type NoteType = Note21;
     type PublisherType = Publisher21;
     type DocumentReferenceType = Reference21;
+    type LicenseExpressionType = LicenseExpression21;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -149,6 +158,11 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     fn get_distribution_20(&self) -> Option<&Self::DistributionType> {
         Some(&self.distribution)
     }
+
+    fn get_license_expression(&self) -> Option<&Self::LicenseExpressionType> {
+        self.license_expression.as_ref()
+    }
+
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
         self.notes.as_deref()

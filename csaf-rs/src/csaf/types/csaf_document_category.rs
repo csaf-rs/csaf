@@ -1,8 +1,8 @@
+use crate::csaf::consts::chars::{is_hyphen_dash_char, is_invisible_char, is_underscore_char};
 use crate::csaf::enums::csaf_version::CsafVersion;
 use crate::schema::csaf2_0::schema::DocumentCategory as DocumentCategory20;
 use crate::schema::csaf2_1::schema::DocumentCategory as DocumentCategory21;
 use std::fmt::{Display, Formatter, Result as FmtResult};
-use crate::csaf::consts::chars::{is_hyphen_dash_char, is_invisible_char, is_underscore_char};
 
 /// Shared Enum representing document categories
 /// Contains well-known categories of CSAF version 2.0 and 2.1 as enum variants
@@ -121,8 +121,6 @@ impl CsafDocumentCategory {
             .map(|profile| (profile.normalize(), profile.clone()))
             .collect()
     }
-    
-  
 
     /// Helper function to remove whitespace, underscores and (various unicode) dashes / hyphens from a string
     ///
@@ -131,16 +129,11 @@ impl CsafDocumentCategory {
     /// In CSAF 2.1, this was clarified to include "[...] minus, white space, and underscore [...] and
     /// "[...] Dash and hyphen characters (independent of their graphical variants) [...]". This is a best-effort
     /// implementation to cover as many of these characters as possible (and might need to be updated).
-    /// 
+    ///
     /// We additionally cover some zero-width / invisible characters which would also break validation.
     fn get_with_ignored_chars_removed(s: &str) -> String {
         s.chars()
-            .filter(|c| {
-                !(c.is_whitespace()
-                    || is_invisible_char(c)
-                    || is_hyphen_dash_char(c)
-                    || is_underscore_char(c))
-            })
+            .filter(|c| !(c.is_whitespace() || is_invisible_char(c) || is_hyphen_dash_char(c) || is_underscore_char(c)))
             .collect()
     }
 
@@ -159,10 +152,7 @@ impl CsafDocumentCategory {
                 if !Self::get_with_ignored_chars_removed(prefix).is_empty() {
                     return false;
                 }
-                postfix
-                    .chars()
-                    .next()
-                    .is_some_and(|c| is_underscore_char(&c))
+                postfix.chars().next().is_some_and(|c| is_underscore_char(&c))
             },
         }
     }
@@ -209,11 +199,9 @@ impl CsafDocumentCategory {
                 }
                 let after_first_underscore = chars.as_str();
                 // Must continue with "deprecated" followed by another underscore variant
-                after_first_underscore.strip_prefix("deprecated").is_some_and(|s| {
-                    s.chars()
-                        .next()
-                        .is_some_and(|c| is_underscore_char(&c))
-                })
+                after_first_underscore
+                    .strip_prefix("deprecated")
+                    .is_some_and(|s| s.chars().next().is_some_and(|c| is_underscore_char(&c)))
             },
         }
     }

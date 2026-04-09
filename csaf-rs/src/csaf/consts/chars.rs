@@ -1,4 +1,4 @@
-const HYPHEN_DASH_CHARACTERS: &'static [char] = &[
+const HYPHEN_DASH_CHARACTERS: &[char] = &[
     '\u{002D}', // hyphen-minus U+002D
     '\u{02D7}', // modifier letter minus sign U+02D7
     '\u{05BE}', // hebrew punctuation maqaf U+05BE
@@ -39,7 +39,7 @@ const HYPHEN_DASH_CHARACTERS: &'static [char] = &[
     '\u{FF0D}', // fullwidth hyphen-minus U+FF0D
 ];
 
-const UNDERSCORE_CHARACTERS: &'static [char] = &[
+const UNDERSCORE_CHARACTERS: &[char] = &[
     '\u{005F}',  // low line U+005F
     '\u{02CD}',  // modifier letter low macron U+02CD
     '\u{FF3F}',  // fullwidth low line U+FF3F
@@ -56,7 +56,7 @@ const UNDERSCORE_CHARACTERS: &'static [char] = &[
     '\u{FE4F}',  // wavy low line U+FE4F
 ];
 
-const INVISIBLE_CHARACTERS: &'static [char] = &[
+const INVISIBLE_CHARACTERS: &[char] = &[
     '\u{00AD}', // Soft Hyphen
     '\u{034F}', // Combining Grapheme Joiner
     '\u{180E}', // Mongolian Vowel Separator

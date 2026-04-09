@@ -6977,6 +6977,8 @@ impl<
         case_06: Result<(), Vec<crate::validation::ValidationError>>,
         case_07: Result<(), Vec<crate::validation::ValidationError>>,
         case_08: Result<(), Vec<crate::validation::ValidationError>>,
+        case_s01: Result<(), Vec<crate::validation::ValidationError>>,
+        case_s02: Result<(), Vec<crate::validation::ValidationError>>,
         case_11: Result<(), Vec<crate::validation::ValidationError>>,
         case_12: Result<(), Vec<crate::validation::ValidationError>>,
     ) {
@@ -7061,7 +7063,27 @@ impl<
             ::new(serde_json::from_str:: < serde_json::Value > (& content)
             .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
             "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-08.json", "08", e))) },
-            case_08), ("11", { let path =
+            case_08), ("s01", { let path =
+            "../type-generator/assets/tests/csaf_2.0/optional/csaf-rs_csaf-csaf_2_0-6-2-14-s01.json";
+            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
+            panic!("Failed to load {} (case {}): {}",
+            "optional/csaf-rs_csaf-csaf_2_0-6-2-14-s01.json", "s01", e)); crate
+            ::csaf::raw::RawDocument:: < crate
+            ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
+            ::new(serde_json::from_str:: < serde_json::Value > (& content)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/csaf-rs_csaf-csaf_2_0-6-2-14-s01.json", "s01", e))) }, case_s01),
+            ("s02", { let path =
+            "../type-generator/assets/tests/csaf_2.0/optional/csaf-rs_csaf-csaf_2_0-6-2-14-s02.json";
+            let content = std::fs::read_to_string(path).unwrap_or_else(| e |
+            panic!("Failed to load {} (case {}): {}",
+            "optional/csaf-rs_csaf-csaf_2_0-6-2-14-s02.json", "s02", e)); crate
+            ::csaf::raw::RawDocument:: < crate
+            ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework >
+            ::new(serde_json::from_str:: < serde_json::Value > (& content)
+            .unwrap_or_else(| e | panic!("Failed to parse {} (case {}): {}",
+            "optional/csaf-rs_csaf-csaf_2_0-6-2-14-s02.json", "s02", e))) }, case_s02),
+            ("11", { let path =
             "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-14-11.json";
             let content = std::fs::read_to_string(path).unwrap_or_else(| e |
             panic!("Failed to load {} (case {}): {}",

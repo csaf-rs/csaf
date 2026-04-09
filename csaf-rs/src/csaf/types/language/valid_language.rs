@@ -8,7 +8,7 @@ use std::ops::Deref;
 /// Newtype wrapper around [`oxilangtag::LanguageTag`] representing a valid CSAF language tag.
 ///
 /// This includes regular language tags (e.g. `en-US`), the default language tag (`i-default`),
-/// and private use language tags (e.g. `x-private`, `de-x-foo-bar`).
+/// and private-use language tags (e.g. `x-private`, `de-x-foo-bar`).
 ///
 /// Exposes the API of [`oxilangtag::LanguageTag`] and some additional utility methods for validation tests.
 #[derive(Debug, Clone)]
@@ -36,8 +36,8 @@ impl ValidCsafLanguage {
         self.0.as_str().eq_ignore_ascii_case("i-default")
     }
 
-    /// Checks if this language tag contains a private use component (e.g. `x-private` or `de-x-foo`)
-    /// or if the primary language, script or region subtag itself is registered as private use (e.g. `qtx` from `qaa..qtz`).
+    /// Checks if this language tag contains a private-use subtag (e.g. `x-private` or `de-x-foo`)
+    /// or if the primary language, script or region subtag itself is registered as private-use (e.g. `qtx` from `qaa..qtz`).
     pub fn is_private_use(&self) -> bool {
         self.0.private_use().is_some()
             || is_language_private_use(self.0.primary_language())
@@ -45,7 +45,7 @@ impl ValidCsafLanguage {
             || self.0.region().is_some_and(is_region_private_use)
     }
 
-    /// Gets the "reasons" a language tag is private use.
+    /// Gets the "reasons" a language tag is private-use.
     ///
     /// If there are reasons this tag is private, they are inherently ordered to match the order in the tag, i.e.
     /// 1. [PrivateUseReason::PrivateUsePrimaryLangSubtag] (e.g. `qaa`)
@@ -53,13 +53,13 @@ impl ValidCsafLanguage {
     /// 3. [PrivateUseReason::PrivateUseRegionSubtag] (e.g. `QM`)
     /// 4. [PrivateUseReason::PrivateUseSubtag] (e.g. `x-private-use`)
     ///
-    /// If the language tag is a "standalone" private use tag (e.g. `x-private-use`), only a [PrivateUseReason::PrivateUseSubtag] will be
+    /// If the language tag is a "standalone" private-use tag (e.g. `x-private-use`), only a [PrivateUseReason::PrivateUseSubtag] will be
     /// returned.
     ///
     /// Returns:
-    /// * `Some(Vec<PrivateUseReason>)` if the language tag is private use, with the vector containing
-    ///   the specific [PrivateUseReason]'s listed above
-    /// * `None` if the language tag is not private use
+    /// * `Some(Vec<PrivateUseReason>)` if the language tag is private-use, with the vector containing
+    ///   the specific [PrivateUseReason] values listed above
+    /// * `None` if the language tag is not private-use
     pub fn get_private_use(&self) -> Option<Vec<PrivateUseReason>> {
         let mut result: Option<Vec<PrivateUseReason>> = None;
         if is_language_private_use(self.0.primary_language()) {
@@ -111,12 +111,12 @@ pub enum PrivateUseReason {
 impl Display for PrivateUseReason {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            PrivateUseReason::PrivateUseSubtag(subtag) => write!(f, "Private use subtag '{subtag}'"),
+            PrivateUseReason::PrivateUseSubtag(subtag) => write!(f, "Private-use subtag '{subtag}'"),
             PrivateUseReason::PrivateUsePrimaryLangSubtag(primary_lang) => {
-                write!(f, "Private use primary language subtag '{primary_lang}'")
+                write!(f, "Private-use primary language subtag '{primary_lang}'")
             },
-            PrivateUseReason::PrivateUseScriptSubtag(script) => write!(f, "Private use script subtag '{script}'"),
-            PrivateUseReason::PrivateUseRegionSubtag(region) => write!(f, "Private use region subtag '{region}'"),
+            PrivateUseReason::PrivateUseScriptSubtag(script) => write!(f, "Private-use script subtag '{script}'"),
+            PrivateUseReason::PrivateUseRegionSubtag(region) => write!(f, "Private-use region subtag '{region}'"),
         }
     }
 }
@@ -171,7 +171,7 @@ mod tests {
     #[case("En", true)]
     // with region
     #[case("en-US", true)]
-    // with private use
+    // with private-use
     #[case("en-x-private", true)]
     // not en
     #[case("es", false)]
@@ -189,7 +189,7 @@ mod tests {
     }
 
     #[rstest]
-    // private-use extension
+    // private-use subtag
     #[case("x-private", true)]
     #[case("en-x-foo", true)]
     // private-use primary language subtag (qaa..qtz)
@@ -201,7 +201,7 @@ mod tests {
     // private-use region subtag (XA..XZ, ZZ)
     #[case("en-XA", true)]
     #[case("en-ZZ", true)]
-    // not private use
+    // not private-use
     #[case("en", false)]
     #[case("en-US", false)]
     #[case("fr-Latn", false)]
@@ -216,16 +216,16 @@ mod tests {
     }
 
     #[rstest]
-    // not private use
+    // not private-use
     #[case("en-US", None)]
     #[case("i-default", None)]
-    // private use primary language subtag
+    // private-use primary language subtag
     #[case("qaa", Some(vec![PrivateUseReason::PrivateUsePrimaryLangSubtag("qaa".to_string())]))]
-    // private use script subtag
+    // private-use script subtag
     #[case("en-Qaaa", Some(vec![PrivateUseReason::PrivateUseScriptSubtag("Qaaa".to_string())]))]
-    // private use region subtag
+    // private-use region subtag
     #[case("en-QM", Some(vec![PrivateUseReason::PrivateUseRegionSubtag("QM".to_string())]))]
-    // private use extension subtag
+    // private-use subtag
     #[case("x-private-use", Some(vec![PrivateUseReason::PrivateUseSubtag("x-private-use".to_string())]))]
     // two reasons combined
     #[case("qaa-Qaaa", Some(vec![

@@ -1,9 +1,9 @@
 pub mod distribution_trait;
 pub mod document_references_trait;
 pub mod generator_trait;
+pub mod license_expression_trait;
 pub mod publisher_trait;
 pub mod revision_trait;
 pub mod sharing_group_trait;
 pub mod tlp_trait;
 pub mod tracking_trait;
-pub mod license_expression_trait;

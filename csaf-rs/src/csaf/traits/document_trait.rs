@@ -12,7 +12,11 @@ use crate::schema::csaf2_0::schema::{
     Publisher as Publisher20, Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20,
     Tracking as Tracking20,
 };
-use crate::schema::csaf2_1::schema::{CsafVersion as CsafVersion21, DocumentLevelMetaData as DocumentLevelMetaData21, LicenseExpression as LicenseExpression21, Note as Note21, Publisher as Publisher21, Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21};
+use crate::schema::csaf2_1::schema::{
+    CsafVersion as CsafVersion21, DocumentLevelMetaData as DocumentLevelMetaData21,
+    LicenseExpression as LicenseExpression21, Note as Note21, Publisher as Publisher21, Reference as Reference21,
+    RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
+};
 use crate::validation::ValidationError;
 
 /// Trait representing document meta-level information
@@ -162,7 +166,6 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     fn get_license_expression(&self) -> Option<&Self::LicenseExpressionType> {
         self.license_expression.as_ref()
     }
-
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
         self.notes.as_deref()

@@ -20,12 +20,10 @@ fn create_empty_license_expression_error() -> ValidationError {
 /// Test 6.2.43: Missing License Expression
 ///
 /// It MUST be tested that the license expression is present and set.
-/// 
+///
 /// A CSAF Validator SHALL differentiate in the error message between the key
 /// being present but having no or an empty value and not being present at all.
-pub fn test_6_2_43_missing_license_expression(
-    doc: &impl CsafTrait
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_43_missing_license_expression(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
 
     match document.get_license_expression() {

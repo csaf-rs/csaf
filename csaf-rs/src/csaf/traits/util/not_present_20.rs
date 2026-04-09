@@ -1,6 +1,6 @@
-use std::ops::Deref;
 use crate::csaf::traits::util::generic_with::{WithDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use std::ops::Deref;
 
 /// Marker type for features that are not present in CSAF 2.0.
 ///

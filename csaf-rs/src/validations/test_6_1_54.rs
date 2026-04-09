@@ -1,7 +1,7 @@
-use spdx::Expression;
 use crate::csaf::traits::document::license_expression_trait::LicenseExpressionTrait;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
+use spdx::Expression;
 
 fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> ValidationError {
     ValidationError {
@@ -55,9 +55,7 @@ fn parse_license_as_allowed_in_csaf(license: &impl LicenseExpressionTrait) -> Re
 ///
 /// It MUST be tested that the license expression is valid.
 /// To implement this test, it is deemed sufficient to check for the ABNF defined in annex B of [SPDX301] and the restriction on the DocumentRef part given in 3.2.2.7.
-pub fn test_6_1_54_invalid_license_expression(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_54_invalid_license_expression(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
 
     document

@@ -19,9 +19,9 @@ fn create_empty_document_language_error() -> ValidationError {
 
 /// 6.2.12 Missing Document Language
 ///
-/// It MUST be tested that the `/document/language` is present and set. 
-/// 
-/// A CSAF Validator SHALL differentiate in the error message between the key being present 
+/// It MUST be tested that the `/document/language` is present and set.
+///
+/// A CSAF Validator SHALL differentiate in the error message between the key being present
 /// but having no or an empty value and not being present at all.
 pub fn test_6_2_12_missing_document_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();

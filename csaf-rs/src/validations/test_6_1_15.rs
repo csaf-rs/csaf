@@ -11,7 +11,8 @@ static MISSING_SOURCE_LANG_ERROR: LazyLock<ValidationError> = LazyLock::new(|| V
 });
 
 static EMPTY_SOURCE_LANG_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "source_lang is present with empty value, but is required when the publisher category is 'translator'.".to_string(),
+    message: "source_lang is present with empty value, but is required when the publisher category is 'translator'."
+        .to_string(),
     instance_path: SOURCE_LANG_INSTANCE_PATH.to_string(),
 });
 

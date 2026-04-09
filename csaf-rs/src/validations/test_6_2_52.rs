@@ -11,7 +11,7 @@ use crate::validation::ValidationError;
 /// The warning MUST differentiate between the values mentioned in section 3.1.4.3.2
 /// and those not mentioned there.
 ///
-/// For now, we do not distinguish between algorithms that are supported and mentioned in the spec,
+/// TODO: For now, we do not distinguish between algorithms that are supported and mentioned in the spec,
 /// but the methods are already there.
 pub fn test_6_2_52_unknown_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
@@ -43,7 +43,7 @@ fn create_unknown_hash_algorithm_error(
     file_hash_index: usize,
 ) -> ValidationError {
     let message = match algorithm.is_mentioned_in_spec() {
-        // Right now, is_supported == is_mentioned_in_spec, and this only gets called when
+        // TODO Right now, is_supported == is_mentioned_in_spec, and this only gets called when
         // !is_supported, so this can't be reached.
         true => format!(
             "Hash algorithm '{algorithm}' is listed in the specification but not supported by this implementation"

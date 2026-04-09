@@ -46,7 +46,14 @@ impl CsafHashAlgorithm {
         }
     }
 
-    /// Checks if the algorithm is a known/supported algorithm.
+    /// Checks if a hash algorithm is listed in the specification under section 3.1.4.3.2.
+    /// As the [CsafHashAlgorithm] enum is taken from the 2.1 specification, we can just check
+    /// if it is a non-[CsafHashAlgorithm::Other] variant after normalization.
+    ///
+    /// TODO: There technically is a difference between the algorithms listed in CSAF 2.0 and CSAF 2.1.
+    /// CSAF 2.1 has [CsafHashAlgorithm::Mdc2], which CSAF 2.0 does not list.
+    /// As this functionality is only available to CSAF 2.1 documents right now, and validating
+    /// CSAF 2.0 as 2.1 has not been implemented, we do not need to make that distinction (yet).
     pub fn is_mentioned_in_spec(&self) -> bool {
         match self {
             CsafHashAlgorithm::Other(_) => !matches!(self.normalize(), CsafHashAlgorithm::Other(_)),
@@ -54,11 +61,12 @@ impl CsafHashAlgorithm {
         }
     }
 
-    /// In the future, there will need to be a distinction between algorithms "supported" by the impl
-    /// and the algorithms "mentioned in the spec", which need to all be supported.
+    /// TODO: In the future, there will need to be a distinction between algorithms "supported" by the impl
+    /// and the algorithms "mentioned in the spec", which should all be supported.
     /// I.e. supported should be the superset of "mentioned in spec".
     ///
-    /// For now, we just return "is_mentioned_in_spec".
+    /// For now, we just return "is_mentioned_in_spec", as we have no concept of "supported" hash
+    /// algorithms yet.
     pub fn is_supported_algorithm(&self) -> bool {
         self.is_mentioned_in_spec()
     }
@@ -239,13 +247,13 @@ mod tests {
     // Known algorithm
     #[case(CsafHashAlgorithm::Sha256, true)]
     // Other variant that is not a known variant with different casing
-    #[case(CsafHashAlgorithm::Other("custom".to_string()), false)]
-    #[case(CsafHashAlgorithm::Other("Custom".to_string()), false)]
+    #[case(CsafHashAlgorithm::Other("notin-spec".to_string()), false)]
+    #[case(CsafHashAlgorithm::Other("notin-spec".to_string()), false)]
     // Other variant that is a known variant with different casing
     #[case(CsafHashAlgorithm::Other("WHIRLPOOL".to_string()), true)]
     #[case(CsafHashAlgorithm::Other("MD5".to_string()), true)]
     #[case(CsafHashAlgorithm::Other("SHA3-256".to_string()), true)]
-    fn test_is_known_algorithm(#[case] algo: CsafHashAlgorithm, #[case] expected: bool) {
+    fn test_is_mentioned_in_spec(#[case] algo: CsafHashAlgorithm, #[case] expected: bool) {
         assert_eq!(algo.is_mentioned_in_spec(), expected);
     }
 

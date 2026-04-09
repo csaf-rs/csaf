@@ -244,6 +244,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.45" => None,   // Some(ValidatorForTest6_2_45.validate(self)),
                 "6.2.46" => None,   // Some(ValidatorForTest6_2_46.validate(self)),
                 "6.2.47" => None,   // Some(ValidatorForTest6_2_47.validate(self)),
+                "6.2.48" => Some(ValidatorForTest6_2_48.validate(self)),
                 _ => None,
             },
         );

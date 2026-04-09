@@ -27,17 +27,25 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
         if let Some(helper) = product.get_product_identification_helper() {
             for (hash_i, hash) in helper.get_hashes().iter().enumerate() {
                 // Iterate over file_hashes, build hashmap of all encountered algos and their indices
-                let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<usize>>::new();
+                let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<(Option<CsafHashAlgorithm>, usize)>>::new();
                 for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                    let file_hash_is = algorithms.entry(file_hash.get_algorithm()).or_default();
-                    file_hash_is.push(file_hash_i);
+                    let original_algorithm = file_hash.get_algorithm();
+                    let normalized_algorithm = original_algorithm.normalize();
+                    let original_algo_if_normalized = if original_algorithm != normalized_algorithm {
+                        Some(original_algorithm)
+                    } else {
+                        None
+                    };
+                    let file_hash_is = algorithms.entry(normalized_algorithm).or_default();
+                    file_hash_is.push((original_algo_if_normalized, file_hash_i));
                 }
                 // For each algo found multiple times, generate error message for all indices with the algo
-                for (algo, file_hash_is) in &algorithms {
+                for (normalized_algo, file_hash_is) in &algorithms {
                     if file_hash_is.len() > 1 {
-                        for file_hash_i in file_hash_is.iter() {
-                            errors.get_or_insert_with(Vec::new).push(test_6_1_25_err_generator(
-                                algo,
+                        for (original_algo, file_hash_i) in file_hash_is.iter() {
+                            errors.get_or_insert_default().push(test_6_1_25_err_generator(
+                                normalized_algo,
+                                original_algo.as_ref(),
                                 path.to_string(),
                                 hash_i.to_string(),
                                 file_hash_i.to_string(),
@@ -52,13 +60,20 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
 }
 
 fn test_6_1_25_err_generator(
-    algorithm: &CsafHashAlgorithm,
+    normalized_algo: &CsafHashAlgorithm,
+    original_algo: Option<&CsafHashAlgorithm>,
     path: String,
     hash_i: String,
     file_hash_i: String,
 ) -> ValidationError {
+    let message = match original_algo {
+        Some(original) => format!(
+            "Multiple use of the same hash algorithm '{normalized_algo}' (written as '{original}') in file_hashes"
+        ),
+        None => format!("Multiple use of the same hash algorithm '{normalized_algo}' in file_hashes"),
+    };
     ValidationError {
-        message: format!("Multiple use of the same hash algorithm '{algorithm}' in file_hashes"),
+        message,
         instance_path: format!(
             "{path}/product_identification_helper/hashes/{hash_i}/file_hashes/{file_hash_i}/algorithm"
         ),
@@ -78,18 +93,21 @@ mod tests {
         // Case 01: one file_hashes, with two elements, both with same algorithm
         // Case S01: one file_hashes, with three elements, two with same algorithm
         // Case S02: one file_hashes, with three elements, all with same algorithm
+        // Case S03: (CSAF 2.0 only) one file_hashes, with two elements, same algorithm in different casing ("MD5" -> Other("MD5"), "md5" -> Md5)
         // Case S11: one file_hashes, with two elements, both with different algorithms
         // Case S12: two file_hashes, each with one element, both with same algorithm
 
         let one_file_hash_two_hashes_same_algo = Err(vec![
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
+                None,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "0".to_string(),
             ),
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
+                None,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "1".to_string(),
@@ -99,12 +117,14 @@ mod tests {
         let three_elements_two_same_algo = Err(vec![
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
+                None,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "0".to_string(),
             ),
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
+                None,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "2".to_string(),
@@ -114,21 +134,42 @@ mod tests {
         let three_elements_all_same_algo = Err(vec![
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
+                None,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "0".to_string(),
             ),
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
+                None,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "1".to_string(),
             ),
             test_6_1_25_err_generator(
                 &CsafHashAlgorithm::Sha256,
+                None,
                 "/product_tree/full_product_names/0".to_string(),
                 "0".to_string(),
                 "2".to_string(),
+            ),
+        ]);
+
+        // S03: "MD5" (Other("MD5")) and "md5" (Md5) are the same algorithm with different casing
+        let two_elements_same_algo_different_casing = Err(vec![
+            test_6_1_25_err_generator(
+                &CsafHashAlgorithm::Md5,
+                Some(&CsafHashAlgorithm::Other("MD5".to_string())),
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "0".to_string(),
+            ),
+            test_6_1_25_err_generator(
+                &CsafHashAlgorithm::Md5,
+                None,
+                "/product_tree/full_product_names/0".to_string(),
+                "0".to_string(),
+                "1".to_string(),
             ),
         ]);
 
@@ -136,6 +177,7 @@ mod tests {
             one_file_hash_two_hashes_same_algo.clone(),
             three_elements_two_same_algo.clone(),
             three_elements_all_same_algo.clone(),
+            two_elements_same_algo_different_casing,
             Ok(()),
             Ok(()),
         );

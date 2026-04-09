@@ -1,3 +1,4 @@
+use crate::csaf::consts::chars::is_invisible_char;
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 
@@ -13,16 +14,17 @@ fn create_misuse_at_vendor_name_error(vendor_name: &str, path: &str) -> Validati
 }
 
 /// Checks if a name is `Open Source` (case-insensitive, white space insensitive).
+///
+/// We additionally remove zero-width/invisible chars that would otherwise break the matching ([is_invisible_char])
 #[inline]
 fn is_open_source(name: &str) -> bool {
     let normalized: String = name
         .chars()
-        .filter(|c| !c.is_whitespace())
+        .filter(|c| !c.is_whitespace() && !is_invisible_char(c))
         .collect::<String>()
         .to_lowercase();
     normalized == "opensource"
 }
-
 /// 6.2.48 Misuse at Vendor Name
 ///
 /// For each item in branches with category `vendor` it MUST be tested that the name is not
@@ -94,7 +96,7 @@ mod tests {
     #[case("Open\tSource")]
     #[case("Open\nSource")]
     #[case("Open\u{00A0}Source")]
-    #[case("Open\u{200B}Source"	)]
+    #[case("Open\u{200B}Source")]
     fn test_is_open_source_true(#[case] name: &str) {
         assert!(
             is_open_source(name),

@@ -1,8 +1,7 @@
-use spdx::Expression;
-
-use crate::csaf_traits::CsafTrait;
-use crate::schema::csaf2_1::schema::LicenseExpression;
+use crate::csaf::traits::document::license_expression_trait::LicenseExpressionTrait;
+use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
+use spdx::Expression;
 
 fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> ValidationError {
     ValidationError {
@@ -13,9 +12,9 @@ fn create_invalid_license_expression_error(license_expression: &str, error: &str
 
 /// Parses the given license expression using the SPDX parser with specific options that align with the requirements of CSAF.
 /// For example, unknown SPDX identifiers should not fail test 6.1.54, whereas expressions with DocumentRef are not allowed.
-fn parse_license_as_allowed_in_csaf(license: &LicenseExpression) -> Result<Expression, spdx::ParseError> {
+fn parse_license_as_allowed_in_csaf(license: &impl LicenseExpressionTrait) -> Result<Expression, spdx::ParseError> {
     let expression = Expression::parse_mode(
-        license.as_str(),
+        license,
         spdx::ParseMode {
             allow_slash_as_or_operator: false,
             allow_imprecise_license_names: false,
@@ -55,19 +54,16 @@ fn parse_license_as_allowed_in_csaf(license: &LicenseExpression) -> Result<Expre
 /// 6.1.54 License Expression
 ///
 /// It MUST be tested that the license expression is valid.
-/// To implement this test, it it deemed sufficient to check for the ABNF defined in annex B of [SPDX301] and the restriction on the DocumentRef part given in 3.2.2.7.
-pub fn test_6_1_54_invalid_license_expression(
-    doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-) -> Result<(), Vec<ValidationError>> {
+/// To implement this test, it is deemed sufficient to check for the ABNF defined in annex B of [SPDX301] and the restriction on the DocumentRef part given in 3.2.2.7.
+pub fn test_6_1_54_invalid_license_expression(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
 
     document
-        .license_expression
-        .as_ref()
+        .get_license_expression()
         .map(|license| match parse_license_as_allowed_in_csaf(license) {
             Ok(_) => Ok(()),
             Err(error) => Err(vec![create_invalid_license_expression_error(
-                license.as_str(),
+                license,
                 format!("Error at position {}: {}", error.span.start, error.reason).as_str(),
             )]),
         })

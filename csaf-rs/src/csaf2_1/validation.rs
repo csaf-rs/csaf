@@ -201,7 +201,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                         status: TestResultStatus::Skipped,
                     };
                 },
-                "6.2.14" => None, // Some(ValidatorForTest6_2_14.validate(self)),
+                "6.2.14" => Some(ValidatorForTest6_2_14.validate(self)),
                 "6.2.15" => Some(ValidatorForTest6_2_15.validate(self)),
                 "6.2.16" => Some(ValidatorForTest6_2_16.validate(self)),
                 "6.2.17" => Some(ValidatorForTest6_2_17.validate(self)),
@@ -215,7 +215,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                     };
                 },
                 "6.2.21" => None, // Some(ValidatorForTest6_2_21.validate(self)),
-                "6.2.22" => None, // Some(ValidatorForTest6_2_22.validate(self)),
+                "6.2.22" => Some(ValidatorForTest6_2_22.validate(self)),
                 "6.2.23" => None, // Some(ValidatorForTest6_2_23.validate(self)),
                 "6.2.24" => None, // Some(ValidatorForTest6_2_24.validate(self)),
                 "6.2.25" => None, // Some(ValidatorForTest6_2_25.validate(self)),

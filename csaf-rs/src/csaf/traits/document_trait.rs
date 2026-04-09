@@ -75,6 +75,9 @@ pub trait DocumentTrait {
     fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
 
     fn get_csaf_version(&self) -> &CsafVersion;
+
+    /// Returns the title of this document
+    fn get_title(&self) -> &str;
 }
 
 impl DocumentTrait for DocumentLevelMetaData20 {
@@ -139,6 +142,10 @@ impl DocumentTrait for DocumentLevelMetaData20 {
         // License Expression does not exist on CSAF 2.0
         None
     }
+
+    fn get_title(&self) -> &str {
+        &self.title
+    }
 }
 
 impl DocumentTrait for DocumentLevelMetaData21 {
@@ -195,5 +202,9 @@ impl DocumentTrait for DocumentLevelMetaData21 {
         match self.csaf_version {
             CsafVersion21::X21 => &CsafVersion::X21,
         }
+    }
+
+    fn get_title(&self) -> &str {
+        &self.title
     }
 }

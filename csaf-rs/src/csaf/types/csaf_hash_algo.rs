@@ -248,7 +248,7 @@ mod tests {
     #[case(CsafHashAlgorithm::Sha256, true)]
     // Other variant that is not a known variant with different casing
     #[case(CsafHashAlgorithm::Other("notin-spec".to_string()), false)]
-    #[case(CsafHashAlgorithm::Other("notin-spec".to_string()), false)]
+    #[case(CsafHashAlgorithm::Other("NOTIN-SPEC".to_string()), false)]
     // Other variant that is a known variant with different casing
     #[case(CsafHashAlgorithm::Other("WHIRLPOOL".to_string()), true)]
     #[case(CsafHashAlgorithm::Other("MD5".to_string()), true)]
@@ -266,7 +266,7 @@ mod tests {
     #[case(CsafHashAlgorithm::Other("CustomHash".to_string()), CsafHashAlgorithm::Other("customhash".to_string()))]
     // Other variant whose lowercase matches a known algorithm should become the known algorithm
     #[case(CsafHashAlgorithm::Other("SHA1".to_string()), CsafHashAlgorithm::Sha1)]
-    fn test_convert_to_lowercase(#[case] input: CsafHashAlgorithm, #[case] expected: CsafHashAlgorithm) {
+    fn test_lowercase_algorithm(#[case] input: CsafHashAlgorithm, #[case] expected: CsafHashAlgorithm) {
         assert_eq!(CsafHashAlgorithm::lowercase_algorithm(&input), expected);
     }
 

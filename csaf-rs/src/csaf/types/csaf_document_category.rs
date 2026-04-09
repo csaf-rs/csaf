@@ -158,7 +158,7 @@ impl CsafDocumentCategory {
     }
 
     /// Checks if the category string starts with `csaf_` (case-insensitive), where the `_` can be
-    /// any of the known underscore variant characters [Self::UNDERSCORE_CHARACTERS].
+    /// any of the known underscore variant characters via [is_underscore_char].
     /// Also checks that everything before `csaf_` consists only of whitespace, underscores and hyphens variants.
     ///
     /// Examples:
@@ -207,7 +207,7 @@ impl CsafDocumentCategory {
     }
 
     /// Checks if the category string starts with `csaf_deprecated_` (case-insensitive), where the `_` can be
-    /// any of the known underscore variant characters [Self::UNDERSCORE_CHARACTERS].
+    /// any of the known underscore variant characters via [is_underscore_char].
     /// Also checks that everything before `csaf_deprecated_` consists only of whitespace, underscores and hyphens variants.
     ///
     /// Examples:

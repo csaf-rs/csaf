@@ -26,6 +26,9 @@ fn create_disclosure_date_newer_than_revision_error(
 /// The result of the test is dependent upon the time of the execution of the test - it might change for
 /// a given CSAF document over time. However, the latest version of a CSAF document should always pass
 /// the test.
+///
+/// Unlike test 6.1.45, this test applies regardless of TLP/status, and additionally takes the datetime of test
+/// execution into consideration.
 pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Get sorted revision history and find the newest entry
     let mut revision_history = doc.get_document().get_tracking().get_revision_history_tuples();
@@ -54,7 +57,7 @@ pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> 
                             .get_or_insert_default()
                             .push(create_disclosure_date_newer_than_revision_error(
                                 &valid_disclosure_date,
-                                &newest_revision_date,
+                                newest_revision_date,
                                 i_v,
                             ));
                     }
@@ -101,7 +104,6 @@ mod tests {
             0,
         )]);
 
-        // TODO add passing cases
         // Case 11: disclosure_date equals newest revision date
         // Case 12: disclosure_date is definitely not in the past (9999-12-31)
         // Case 13: disclosure_date is earlier than newest revision, with timezones

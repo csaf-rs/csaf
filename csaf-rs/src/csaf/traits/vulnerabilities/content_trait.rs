@@ -13,6 +13,22 @@ fn get_cvss_version(cvss: &Map<String, Value>) -> Option<String> {
 
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
+    /// Returns all cvss metric types present.
+    fn get_cvss_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
+        let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
+        if let Some(version) = self.get_cvss_v2().and_then(get_cvss_version) {
+            types.push(CsafVulnerabilityMetric::CvssV2(version));
+        }
+        if let Some(version) = self.get_cvss_v3().and_then(get_cvss_version) {
+            types.push(CsafVulnerabilityMetric::CvssV3(version));
+        }
+        if let Some(version) = self.get_cvss_v4().and_then(get_cvss_version) {
+            types.push(CsafVulnerabilityMetric::CvssV4(version));
+        }
+        types
+    }
+
+    /// Returns all metric types present.
     fn get_vulnerability_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
         let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
         if self.has_ssvc() {
@@ -29,6 +45,9 @@ pub trait ContentTrait {
         }
         if self.has_epss() {
             types.push(CsafVulnerabilityMetric::Epss);
+        }
+        if self.has_qualitative_severity() {
+            types.push(CsafVulnerabilityMetric::QualitativeSeverityRating);
         }
         types
     }

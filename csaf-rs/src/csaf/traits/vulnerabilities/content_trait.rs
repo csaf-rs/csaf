@@ -30,18 +30,9 @@ pub trait ContentTrait {
 
     /// Returns all metric types present.
     fn get_vulnerability_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
-        let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
+        let mut types: Vec<CsafVulnerabilityMetric> = self.get_cvss_metric_types();
         if self.has_ssvc() {
             types.push(CsafVulnerabilityMetric::SsvcV1);
-        }
-        if let Some(version) = self.get_cvss_v2().and_then(get_cvss_version) {
-            types.push(CsafVulnerabilityMetric::CvssV2(version));
-        }
-        if let Some(version) = self.get_cvss_v3().and_then(get_cvss_version) {
-            types.push(CsafVulnerabilityMetric::CvssV3(version));
-        }
-        if let Some(version) = self.get_cvss_v4().and_then(get_cvss_version) {
-            types.push(CsafVulnerabilityMetric::CvssV4(version));
         }
         if self.has_epss() {
             types.push(CsafVulnerabilityMetric::Epss);

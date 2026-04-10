@@ -42,7 +42,7 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
 
 /// Test 6.1.7 Multiple Scores with Same Version per Product
 ///
-/// For each item in `/vulnerabilities it MUST be tested that the same Product ID
+/// For each item in `/vulnerabilities` it MUST be tested that the same Product ID
 /// is not a member of more than one CVSS vector with the same version and same source.
 pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;

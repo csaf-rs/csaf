@@ -52,7 +52,7 @@ pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> 
                     // Check if the disclosure_date is in the past
                     // if so, check if the disclosure date is newer than the newest revision date
                     // if so, return an error
-                    if valid_disclosure_date.get_as_utc() <= now && &valid_disclosure_date > newest_revision_date {
+                    if valid_disclosure_date.get_as_utc() < now && &valid_disclosure_date > newest_revision_date {
                         errors
                             .get_or_insert_default()
                             .push(create_disclosure_date_newer_than_revision_error(

@@ -61,7 +61,7 @@ pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> 
                                 i_v,
                             ));
                     }
-                }
+                },
                 CsafDateTime::Invalid(_) => {
                     // TODO: This will be a NonDeterminable (#409) later
                 },
@@ -86,23 +86,26 @@ mod tests {
 
     #[test]
     fn test_test_6_2_33() {
-        let case_01_disclosure_date_newer_than_newest_rev = Err(vec![create_disclosure_date_newer_than_revision_error(
-            &ValidCsafDateTime::from_str("2024-02-24T10:00:00.000Z").unwrap(),
-            &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
-            0,
-        )]);
+        let case_01_disclosure_date_newer_than_newest_rev =
+            Err(vec![create_disclosure_date_newer_than_revision_error(
+                &ValidCsafDateTime::from_str("2024-02-24T10:00:00.000Z").unwrap(),
+                &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
+                0,
+            )]);
 
-        let case_02_disclosure_date_newer_than_newest_rev_with_timezone = Err(vec![create_disclosure_date_newer_than_revision_error(
-            &ValidCsafDateTime::from_str("2024-02-23T14:00:00.000-21:00").unwrap(),
-            &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
-            0,
-        )]);
+        let case_02_disclosure_date_newer_than_newest_rev_with_timezone =
+            Err(vec![create_disclosure_date_newer_than_revision_error(
+                &ValidCsafDateTime::from_str("2024-02-23T14:00:00.000-21:00").unwrap(),
+                &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
+                0,
+            )]);
 
-        let case_03_disclosure_date_newer_than_newest_rev_with_timezone = Err(vec![create_disclosure_date_newer_than_revision_error(
-            &ValidCsafDateTime::from_str("2024-02-24T14:00:00.000-07:00").unwrap(),
-            &ValidCsafDateTime::from_str("2024-02-24T10:00:00.000Z").unwrap(),
-            0,
-        )]);
+        let case_03_disclosure_date_newer_than_newest_rev_with_timezone =
+            Err(vec![create_disclosure_date_newer_than_revision_error(
+                &ValidCsafDateTime::from_str("2024-02-24T14:00:00.000-07:00").unwrap(),
+                &ValidCsafDateTime::from_str("2024-02-24T10:00:00.000Z").unwrap(),
+                0,
+            )]);
 
         // Case 11: disclosure_date equals newest revision date
         // Case 12: disclosure_date is definitely not in the past (9999-12-31)
@@ -118,4 +121,3 @@ mod tests {
         );
     }
 }
-

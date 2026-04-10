@@ -29,7 +29,7 @@ pub fn test_6_1_29_remediation_without_product_reference(doc: &impl CsafTrait) -
             // Through the schema, it is ensured that if they are not None, they contain at least one entry
             if remediation.get_product_ids().is_none() && remediation.get_group_ids().is_none() {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_missing_product_reference_error(vuln_i, rem_i));
             }
         }

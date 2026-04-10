@@ -67,7 +67,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 
         // generate errors for all remaining known_affected product or group ids
         for known_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
-            errors.get_or_insert_with(Vec::new).push(test_6_1_27_10_err_generator(
+            errors.get_or_insert_default().push(test_6_1_27_10_err_generator(
                 known_affected_product_or_group_id.0.to_string(),
                 v_i,
                 *known_affected_product_or_group_id.1,

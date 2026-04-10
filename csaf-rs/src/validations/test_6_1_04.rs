@@ -21,7 +21,7 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
         for (ref_id, ref_path) in product_group_references.iter() {
             if !known_groups.contains(ref_id) {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(generate_err_msg(ref_id, ref_path));
             }
         }

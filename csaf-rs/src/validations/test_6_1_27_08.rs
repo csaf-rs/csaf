@@ -21,7 +21,7 @@ pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<V
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_cve().is_none() && vulnerability.get_ids().is_none() {
             errors
-                .get_or_insert_with(Vec::new)
+                .get_or_insert_default()
                 .push(test_6_1_27_08_err_generator(&doc_category, &v_i));
         }
     }

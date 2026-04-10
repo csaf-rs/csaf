@@ -15,7 +15,7 @@ fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<Vali
     for (ref_id, ref_path) in references.iter() {
         if !definitions_set.contains(ref_id) {
             errors
-                .get_or_insert_with(Vec::new)
+                .get_or_insert_default()
                 .push(generate_err_msg(ref_id, ref_path));
         }
     }

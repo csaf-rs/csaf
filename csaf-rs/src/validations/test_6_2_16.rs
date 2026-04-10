@@ -14,7 +14,7 @@ pub fn test_6_2_16_missing_product_identification_helper(doc: &impl CsafTrait) -
         tree.visit_all_products(&mut |fpn, path| {
             if fpn.get_product_identification_helper().is_none() {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_missing_product_identification_helper_error(path));
             }
         });

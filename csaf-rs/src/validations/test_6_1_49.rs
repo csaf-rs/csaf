@@ -49,7 +49,6 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
     let document = doc.get_document();
     let tracking = document.get_tracking();
 
-    // Check if the document status is "final" or "interim"
     skip_if_document_status_is_not!(tracking.get_status(), Final, Interim);
 
     // Parse the date of each revision and find the newest one

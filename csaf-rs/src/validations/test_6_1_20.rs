@@ -20,7 +20,6 @@ fn create_status_version_error(status: &DocumentStatus, version: &SemVerVersion)
 pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    // Check if the document status is not "final" or "interim"
     let status = tracking.get_status();
     skip_if_document_status_is_not!(status, Final, Interim);
 

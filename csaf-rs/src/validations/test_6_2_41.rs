@@ -29,7 +29,6 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Va
     let document = doc.get_document();
     let tracking = document.get_tracking();
 
-    // Only check for final or interim documents
     skip_if_document_status_is_not!(tracking.get_status(), Final, Interim);
 
     // Get sorted revision history and find the newest entry

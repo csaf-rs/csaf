@@ -31,7 +31,6 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
     let tracking = document.get_tracking();
     let status = tracking.get_status();
 
-    // Check if the document status is "final" or "interim"
     skip_if_document_status_is_not!(status, Final, Interim);
 
     // Get sorted revision history and find the newest entry

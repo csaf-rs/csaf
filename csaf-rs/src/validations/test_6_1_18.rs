@@ -24,7 +24,6 @@ fn create_revision_history_error(status: &DocumentStatus, number: &CsafVersionNu
 pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    // This test is only relevant for documents with status 'interim' and 'final'
     let status = tracking.get_status();
     skip_if_document_status_is_not!(status, Final, Interim);
 

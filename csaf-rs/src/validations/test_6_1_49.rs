@@ -1,10 +1,10 @@
 use std::sync::LazyLock;
 
+use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
-use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 use chrono::{DateTime, FixedOffset};
 
@@ -48,12 +48,9 @@ fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usi
 pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
-    let status = tracking.get_status();
 
     // Check if the document status is "final" or "interim"
-    if status != DocumentStatus::Final && status != DocumentStatus::Interim {
-        return Ok(());
-    }
+    skip_if_document_status_is_not!(tracking.get_status(), Final, Interim);
 
     // Parse the date of each revision and find the newest one
     let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;

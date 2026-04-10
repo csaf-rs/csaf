@@ -1,3 +1,4 @@
+use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, RevisionHistorySortable, TrackingTrait,
@@ -31,9 +32,7 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
     let status = tracking.get_status();
 
     // Check if the document status is "final" or "interim"
-    if status != DocumentStatus::Final && status != DocumentStatus::Interim {
-        return Ok(());
-    }
+    skip_if_document_status_is_not!(status, Final, Interim);
 
     // Get sorted revision history and find the newest entry
     let mut revision_history = tracking.get_revision_history_tuples();

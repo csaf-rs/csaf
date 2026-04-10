@@ -40,10 +40,10 @@ fn generate_status_version_error(
 pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    // Test does not apply if document status is "draft" (#409)
+    // This test passes if the document is draft, as the secondary condition is always met.
     let doc_status = tracking.get_status();
     if DocumentStatus::Draft == doc_status {
-        return Ok(()); // ToDo return skipped/not applicable (#409)
+        return Ok(());
     }
 
     let doc_version = tracking.get_version();

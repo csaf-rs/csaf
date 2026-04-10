@@ -1,3 +1,4 @@
+use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
@@ -21,9 +22,7 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
 
     // Check if the document status is not "final" or "interim"
     let status = tracking.get_status();
-    if !(status == DocumentStatus::Final || status == DocumentStatus::Interim) {
-        return Ok(()); // ToDo return skipped/not applicable (#409)
-    }
+    skip_if_document_status_is_not!(status, Final, Interim);
 
     match tracking.get_version() {
         // If version is integer versioning, this test does not apply

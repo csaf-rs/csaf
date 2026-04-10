@@ -9,7 +9,7 @@ fn create_same_timestamp_error(
     date: &ValidCsafDateTime,
     conflicting_indices: &[usize],
 ) -> ValidationError {
-    // generate a join string of the duplicate revision history items dates excluding the current one
+    // join the duplicate revision history date indices excluding the current one
     let conflicting_indices_not_current = conflicting_indices
         .iter()
         .filter(|idx| *idx != &index)

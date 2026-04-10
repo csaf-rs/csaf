@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, CsafVersion, DistributionTrait, DocumentTrait};
 use crate::validation::ValidationError;
 use std::sync::LazyLock;
 
@@ -6,14 +6,19 @@ use std::sync::LazyLock;
 ///
 /// `/document/distribution/tlp/label` must be set.
 pub fn test_6_2_10_missing_tlp_label(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // We just need to consider get_distribution_20 / get_tlp_20 here, in CSAF 2.1 this field is mandatory and
-    // validated via the schema. This test will not run for CSAF 2.1 documents.
-    if let Some(distribution_20) = doc.get_document().get_distribution_20()
-        && distribution_20.get_tlp_20().is_some()
-    {
-        return Ok(());
+    // In CSAF 2.1 this field is mandatory and validated via the schema, so we skip this test
+    if doc.get_document().get_csaf_version() == &CsafVersion::X21 {
+        return Ok(()); // TODO #409 wasSkipped
     }
-    Err(vec![MISSING_TLP_LABEL_ERROR.clone()])
+    // We just need to consider get_distribution_20 / get_tlp_20 here. If either is missing, return an error
+    if doc.get_document().get_distribution_20()
+        .and_then(|d| d.get_tlp_20())
+        .is_none()
+    {
+        Err(vec![MISSING_TLP_LABEL_ERROR.clone()])
+    } else {
+        Ok(())
+    }
 }
 
 static MISSING_TLP_LABEL_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {

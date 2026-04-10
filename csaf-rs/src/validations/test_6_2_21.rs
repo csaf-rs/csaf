@@ -10,11 +10,16 @@ fn create_same_timestamp_error(
     conflicting_indices: &[usize],
 ) -> ValidationError {
     // generate a join string of the duplicate revision history items dates excluding the current one
-    let conflicting_indices_not_current = conflicting_indices.iter().filter(|idx| *idx != &index).map(|idx| idx.to_string()).collect::<Vec<String>>().join(", ");
+    let conflicting_indices_not_current = conflicting_indices
+        .iter()
+        .filter(|idx| *idx != &index)
+        .map(|idx| idx.to_string())
+        .collect::<Vec<String>>()
+        .join(", ");
 
     ValidationError {
         message: format!(
-            "The timestamp '{date}' of this revision history item is also used by item items at the position(s) {conflicting_indices_not_current}."
+            "The timestamp '{date}' of this revision history item is also used by item at the position(s) {conflicting_indices_not_current}."
         ),
         instance_path: format!("/document/tracking/revision_history/{index}/date"),
     }
@@ -24,36 +29,36 @@ fn create_same_timestamp_error(
 ///
 /// It MUST be tested that the timestamps of all items in the revision history are pairwise disjoint,
 /// taking timezones into account.
-pub fn test_6_2_21_same_timestamps_in_revision_history(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_21_same_timestamps_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let revision_history = doc.get_document().get_tracking().get_revision_history_tuples();
 
-    let mut datetime_path_lookup: HashMap<&ValidCsafDateTime, Vec<usize>> = HashMap::new();
+    // lookup of ValidCsafDateTime (hash function uses normalized utc)
+    // to a vec containing each occurrence of that normalized utc
+    // with its path index and "original" ValidCsafDateTime to preserve timezones etc.
+    let mut datetime_path_lookup: HashMap<&ValidCsafDateTime, Vec<(usize, &ValidCsafDateTime)>> = HashMap::new();
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // does the lookup already contain the datetime
     for item in &revision_history {
         match datetime_path_lookup.get_mut(&item.valid_date) {
-            // push the path into the vec
-            Some(indices) => {
-                indices.push(item.path_index);
-            }
-            // create a vec with this path
+            // push the path and original datetime into the vec
+            Some(entries) => {
+                entries.push((item.path_index, &item.valid_date));
+            },
+            // create a vec with this path and datetime
             None => {
-                datetime_path_lookup.insert(&item.valid_date, vec![item.path_index]);
-            }
+                datetime_path_lookup.insert(&item.valid_date, vec![(item.path_index, &item.valid_date)]);
+            },
         }
     }
 
     // filter out all date times that appeared more than once, generate an error for each
-    for (valid_datetime, indices) in datetime_path_lookup.iter().filter(|(_, indices)| indices.len() > 1) {
-        for index in indices.iter() {
-            errors.get_or_insert_default().push(create_same_timestamp_error(
-                *index,
-                valid_datetime,
-                &indices,
-            ));
+    for (_, entries) in datetime_path_lookup.iter().filter(|(_, entries)| entries.len() > 1) {
+        let indices: Vec<usize> = entries.iter().map(|(idx, _)| *idx).collect();
+        for (index, original_datetime) in entries.iter() {
+            errors
+                .get_or_insert_default()
+                .push(create_same_timestamp_error(*index, original_datetime, &indices));
         }
     }
 
@@ -69,8 +74,8 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::str::FromStr;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use std::str::FromStr;
 
     #[test]
     fn test_test_6_2_21() {
@@ -95,26 +100,74 @@ mod tests {
 
         let conflicting_indices_03: &[usize] = &[0, 1, 2, 3, 4, 5, 6, 7];
         let case_03 = Err(vec![
-            create_same_timestamp_error(0, &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000Z").unwrap(), conflicting_indices_03),
-            create_same_timestamp_error(1, &ValidCsafDateTime::from_str("2024-01-21T11:00:00.000+01:00").unwrap(), conflicting_indices_03),
-            create_same_timestamp_error(2, &ValidCsafDateTime::from_str("2024-01-21T20:00:00.000+10:00").unwrap(), conflicting_indices_03),
-            create_same_timestamp_error(3, &ValidCsafDateTime::from_str("2024-01-21T05:00:00.000-05:00").unwrap(), conflicting_indices_03),
-            create_same_timestamp_error(4, &ValidCsafDateTime::from_str("2024-01-21T13:00:00.000+03:00").unwrap(), conflicting_indices_03),
-            create_same_timestamp_error(5, &ValidCsafDateTime::from_str("2024-01-21T07:00:00.000-03:00").unwrap(), conflicting_indices_03),
-            create_same_timestamp_error(6, &ValidCsafDateTime::from_str("2024-01-21T00:00:00.000-10:00").unwrap(), conflicting_indices_03),
-            create_same_timestamp_error(7, &ValidCsafDateTime::from_str("2024-01-22T00:00:00.000+14:00").unwrap(), conflicting_indices_03),
+            create_same_timestamp_error(
+                0,
+                &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000Z").unwrap(),
+                conflicting_indices_03,
+            ),
+            create_same_timestamp_error(
+                1,
+                &ValidCsafDateTime::from_str("2024-01-21T11:00:00.000+01:00").unwrap(),
+                conflicting_indices_03,
+            ),
+            create_same_timestamp_error(
+                2,
+                &ValidCsafDateTime::from_str("2024-01-21T20:00:00.000+10:00").unwrap(),
+                conflicting_indices_03,
+            ),
+            create_same_timestamp_error(
+                3,
+                &ValidCsafDateTime::from_str("2024-01-21T05:00:00.000-05:00").unwrap(),
+                conflicting_indices_03,
+            ),
+            create_same_timestamp_error(
+                4,
+                &ValidCsafDateTime::from_str("2024-01-21T13:00:00.000+03:00").unwrap(),
+                conflicting_indices_03,
+            ),
+            create_same_timestamp_error(
+                5,
+                &ValidCsafDateTime::from_str("2024-01-21T07:00:00.000-03:00").unwrap(),
+                conflicting_indices_03,
+            ),
+            create_same_timestamp_error(
+                6,
+                &ValidCsafDateTime::from_str("2024-01-21T00:00:00.000-10:00").unwrap(),
+                conflicting_indices_03,
+            ),
+            create_same_timestamp_error(
+                7,
+                &ValidCsafDateTime::from_str("2024-01-22T00:00:00.000+14:00").unwrap(),
+                conflicting_indices_03,
+            ),
         ]);
 
         let conflicting_indices_04: &[usize] = &[0, 1];
         let case_04_subsecond_precision = Err(vec![
-            create_same_timestamp_error(0, &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000000Z").unwrap(), conflicting_indices_04),
-            create_same_timestamp_error(1, &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000Z").unwrap(), conflicting_indices_04),
+            create_same_timestamp_error(
+                0,
+                &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000000Z").unwrap(),
+                conflicting_indices_04,
+            ),
+            create_same_timestamp_error(
+                1,
+                &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000Z").unwrap(),
+                conflicting_indices_04,
+            ),
         ]);
 
         let conflicting_indices_05: &[usize] = &[0, 1];
         let case_05_empty_timezone_expr = Err(vec![
-            create_same_timestamp_error(0, &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000+00:00").unwrap(), conflicting_indices_05),
-            create_same_timestamp_error(1, &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000Z").unwrap(), conflicting_indices_05),
+            create_same_timestamp_error(
+                0,
+                &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000+00:00").unwrap(),
+                conflicting_indices_05,
+            ),
+            create_same_timestamp_error(
+                1,
+                &ValidCsafDateTime::from_str("2024-01-21T10:00:00.000Z").unwrap(),
+                conflicting_indices_05,
+            ),
         ]);
 
         // Cases 11-13: Valid (all timestamps are distinct, with subsecond precision and timezones)
@@ -130,4 +183,3 @@ mod tests {
         );
     }
 }
-

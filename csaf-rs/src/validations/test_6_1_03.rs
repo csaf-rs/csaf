@@ -82,7 +82,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
             let rel_prod_id = pp.get_full_product_name().get_product_id();
             if pp.get_beginning_product_reference() == rel_prod_id {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(generate_self_reference_product_error(
                         version,
                         &pp.get_json_path_for_product_path_beginning_product_reference(pp_i),
@@ -93,7 +93,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                 .position(|next| *next == rel_prod_id)
             {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(generate_self_reference_relates_to_error(
                         version,
                         &pp.get_json_path_for_product_path_subpath_product_reference(pp_i, sp_i),
@@ -133,7 +133,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
             let mut visited = HashSet::new();
             if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(generate_cycle_error(version, &cycle, relation_index));
             }
         }

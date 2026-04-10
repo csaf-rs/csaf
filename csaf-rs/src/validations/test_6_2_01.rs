@@ -32,7 +32,7 @@ pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Resu
         tree.visit_all_products(&mut |fpn, path| {
             if !references.contains(fpn.get_product_id()) {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_unused_product_id_error(fpn.get_product_id(), path));
             }
         });

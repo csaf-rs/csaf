@@ -29,7 +29,7 @@ fn check_product_status_group_for_missing_metrics<'a>(
     // if not, generate an error
     for (sg_p_i, product_id) in status_group_product_ids.enumerate() {
         if !remediation_product_ids.contains(product_id) {
-            errors.get_or_insert_with(Vec::new).push(create_missing_metric_error(
+            errors.get_or_insert_default().push(create_missing_metric_error(
                 vulnerability_index,
                 status_group_name,
                 sg_p_i,

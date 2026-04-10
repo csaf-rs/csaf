@@ -50,7 +50,7 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
                 if let Some(paths) = product_path_map.get(product) {
                     for path in paths {
                         errors
-                            .get_or_insert_with(Vec::new)
+                            .get_or_insert_default()
                             .push(create_cvss_v2_only_error(path.clone()));
                     }
                 }

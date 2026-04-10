@@ -51,7 +51,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
                     for (s, paths) in metrics_map_2.iter() {
                         if paths.len() > 1 {
                             for path in paths {
-                                errors.get_or_insert_with(Vec::new).push(create_validation_error(
+                                errors.get_or_insert_default().push(create_validation_error(
                                     m,
                                     p,
                                     path.to_owned(),

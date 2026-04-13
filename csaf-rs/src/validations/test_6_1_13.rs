@@ -40,22 +40,22 @@ mod tests {
     #[test]
     fn test_test_6_1_13() {
         // Shared expected results (only "purl"/"purls" field name differs between 2.0 and 2.1)
-        let case_01_missing_name = |field: &str| -> Result<(), Vec<ValidationError>> {
+        let case_01_missing_name = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
             Err(vec![
                 PurlParseError::new("pkg:maven/@1.3.4", packageurl::Error::MissingName).into_validation_error(format!(
-                    "/product_tree/full_product_names/0/product_identification_helper/{field}/0"
+                    "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
                 )),
             ])
         };
 
-        let case_02_or_s06_type_prohibits_namespace = |field: &str| -> Result<(), Vec<ValidationError>> {
+        let case_02_or_s06_type_prohibits_namespace = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
             Err(vec![
                 PurlParseError::new(
                     "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
                     packageurl::Error::TypeProhibitsNamespace("oci".to_string()),
                 )
                 .into_validation_error(format!(
-                    "/product_tree/full_product_names/0/product_identification_helper/{field}/0"
+                    "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
                 )),
             ])
         };
@@ -64,15 +64,15 @@ mod tests {
         // Case 12/S12: valid purl with repo url
 
         TESTS_2_0.test_6_1_13.expect(
-            case_01_missing_name("purl"),
-            case_02_or_s06_type_prohibits_namespace("purl"),
+            case_01_missing_name("purl", ""),
+            case_02_or_s06_type_prohibits_namespace("purl", ""),
             Ok(()),
             Ok(()),
         );
 
         TESTS_2_1.test_6_1_13.expect(
-            case_01_missing_name("purls"),
-            case_02_or_s06_type_prohibits_namespace("purls"),
+            case_01_missing_name("purls", "/0"),
+            case_02_or_s06_type_prohibits_namespace("purls", "/0"),
             Ok(()),
             Ok(()),
         );

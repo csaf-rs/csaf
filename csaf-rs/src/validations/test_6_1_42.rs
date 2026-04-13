@@ -42,7 +42,7 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
                                 .push(i);
                         },
                         Invalid(_) => {
-                            // ToDo #409 create percondition failed warning
+                            // ToDo #409 create precondition failed warning
                             continue;
                         },
                     };

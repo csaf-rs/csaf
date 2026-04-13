@@ -87,7 +87,7 @@ pub trait TrackingTrait {
                     });
                 },
                 Invalid(error) => {
-                    panic!("{}", error)
+                    continue; // TODO: Remove this afer return type refactor
                 },
             }
         }

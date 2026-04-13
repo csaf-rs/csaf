@@ -98,7 +98,8 @@ fn fix_2_0_schema(value: &mut Value) {
     for path in fix_paths {
         value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
     }
-    remove_datetime_formats(value);
+    remove_format(value, "date-time");
+    remove_format(value, "uri");
 }
 
 /// Patches (unsupported) external schemas to the plain object type for CSAF 2.1.
@@ -115,26 +116,25 @@ fn fix_2_1_schema(value: &mut Value) {
     for path in fix_paths {
         value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
     }
-    remove_datetime_formats(value);
+    remove_format(value, "date-time");
+    remove_format(value, "uri");
 }
 
-/// Recursively searches for "format": "date-time" and removes this format.
-fn remove_datetime_formats(value: &mut Value) {
+/// Recursively searches for a specific "format" value and removes it.
+fn remove_format(value: &mut Value, format_value: &str) {
     if let Value::Object(map) = value {
         if let Some(format) = map.get("format")
-            && format.as_str() == Some("date-time")
+            && format.as_str() == Some(format_value)
         {
-            // Remove the format property entirely
             map.remove("format");
         }
 
-        // Recursively process all values in the object
         for (_, v) in map.iter_mut() {
-            remove_datetime_formats(v);
+            remove_format(v, format_value);
         }
     } else if let Value::Array(arr) = value {
         for item in arr.iter_mut() {
-            remove_datetime_formats(item);
+            remove_format(item, format_value);
         }
     }
 }

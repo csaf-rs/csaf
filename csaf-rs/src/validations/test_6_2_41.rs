@@ -1,9 +1,9 @@
+use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, RevisionHistorySortable, TrackingTrait,
     VulnerabilityTrait,
 };
-use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 use chrono::TimeDelta;
 
@@ -28,12 +28,8 @@ fn create_old_epss_timestamp_error(
 pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
-    let status = tracking.get_status();
 
-    // Only check for final or interim documents
-    if status != DocumentStatus::Final && status != DocumentStatus::Interim {
-        return Ok(());
-    }
+    skip_if_document_status_is_not!(tracking.get_status(), Final, Interim);
 
     // Get sorted revision history and find the newest entry
     let mut revision_history = tracking.get_revision_history_tuples();

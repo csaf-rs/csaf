@@ -25,7 +25,7 @@ pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> R
                 && !VERS_REGEX.is_match(branch.get_name())
             {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_product_version_range_without_vers_error(branch.get_name(), path));
             }
         });

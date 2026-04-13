@@ -1,5 +1,5 @@
 use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
-use crate::csaf_traits::{CategoryOfTheBranch as CategoryOfTheBranchTrait, ProductGroupTrait, ProductTrait};
+use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
 use crate::schema::csaf2_0::schema::{
     Branch as Branch20, CategoryOfTheBranch as CategoryOfTheBranch20, FullProductNameT as FullProductNameT20,
     ProductGroup as ProductGroup20, ProductTree as ProductTree20, Relationship as Relationship20,
@@ -219,7 +219,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// Returns an optional reference to the child branches of this branch.
     fn get_branches(&self) -> Option<&Vec<Self>>;
 
-    fn get_category(&self) -> &CategoryOfTheBranchTrait;
+    fn get_category(&self) -> &CategoryOfTheBranch;
 
     fn get_name(&self) -> &str;
 
@@ -376,20 +376,20 @@ impl BranchTrait<FullProductNameT20> for Branch20 {
         self.branches.as_deref()
     }
 
-    fn get_category(&self) -> &CategoryOfTheBranchTrait {
+    fn get_category(&self) -> &CategoryOfTheBranch {
         match self.category {
-            CategoryOfTheBranch20::Architecture => &CategoryOfTheBranchTrait::Architecture,
-            CategoryOfTheBranch20::HostName => &CategoryOfTheBranchTrait::HostName,
-            CategoryOfTheBranch20::Language => &CategoryOfTheBranchTrait::Language,
-            CategoryOfTheBranch20::Legacy => &CategoryOfTheBranchTrait::Legacy,
-            CategoryOfTheBranch20::PatchLevel => &CategoryOfTheBranchTrait::PatchLevel,
-            CategoryOfTheBranch20::ProductFamily => &CategoryOfTheBranchTrait::ProductFamily,
-            CategoryOfTheBranch20::ProductName => &CategoryOfTheBranchTrait::ProductName,
-            CategoryOfTheBranch20::ProductVersion => &CategoryOfTheBranchTrait::ProductVersion,
-            CategoryOfTheBranch20::ProductVersionRange => &CategoryOfTheBranchTrait::ProductVersionRange,
-            CategoryOfTheBranch20::ServicePack => &CategoryOfTheBranchTrait::ServicePack,
-            CategoryOfTheBranch20::Specification => &CategoryOfTheBranchTrait::Specification,
-            CategoryOfTheBranch20::Vendor => &CategoryOfTheBranchTrait::Vendor,
+            CategoryOfTheBranch20::Architecture => &CategoryOfTheBranch::Architecture,
+            CategoryOfTheBranch20::HostName => &CategoryOfTheBranch::HostName,
+            CategoryOfTheBranch20::Language => &CategoryOfTheBranch::Language,
+            CategoryOfTheBranch20::Legacy => &CategoryOfTheBranch::Legacy,
+            CategoryOfTheBranch20::PatchLevel => &CategoryOfTheBranch::PatchLevel,
+            CategoryOfTheBranch20::ProductFamily => &CategoryOfTheBranch::ProductFamily,
+            CategoryOfTheBranch20::ProductName => &CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch20::ProductVersion => &CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch20::ProductVersionRange => &CategoryOfTheBranch::ProductVersionRange,
+            CategoryOfTheBranch20::ServicePack => &CategoryOfTheBranch::ServicePack,
+            CategoryOfTheBranch20::Specification => &CategoryOfTheBranch::Specification,
+            CategoryOfTheBranch20::Vendor => &CategoryOfTheBranch::Vendor,
         }
     }
 
@@ -407,20 +407,20 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
         self.branches.as_deref()
     }
 
-    fn get_category(&self) -> &CategoryOfTheBranchTrait {
+    fn get_category(&self) -> &CategoryOfTheBranch {
         match self.category {
-            CategoryOfTheBranch21::Architecture => &CategoryOfTheBranchTrait::Architecture,
-            CategoryOfTheBranch21::HostName => &CategoryOfTheBranchTrait::HostName,
-            CategoryOfTheBranch21::Language => &CategoryOfTheBranchTrait::Language,
-            CategoryOfTheBranch21::PatchLevel => &CategoryOfTheBranchTrait::PatchLevel,
-            CategoryOfTheBranch21::ProductFamily => &CategoryOfTheBranchTrait::ProductFamily,
-            CategoryOfTheBranch21::ProductName => &CategoryOfTheBranchTrait::ProductName,
-            CategoryOfTheBranch21::ProductVersion => &CategoryOfTheBranchTrait::ProductVersion,
-            CategoryOfTheBranch21::ProductVersionRange => &CategoryOfTheBranchTrait::ProductVersionRange,
-            CategoryOfTheBranch21::ServicePack => &CategoryOfTheBranchTrait::ServicePack,
-            CategoryOfTheBranch21::Specification => &CategoryOfTheBranchTrait::Specification,
-            CategoryOfTheBranch21::Vendor => &CategoryOfTheBranchTrait::Vendor,
-            CategoryOfTheBranch21::Platform => &CategoryOfTheBranchTrait::Platform,
+            CategoryOfTheBranch21::Architecture => &CategoryOfTheBranch::Architecture,
+            CategoryOfTheBranch21::HostName => &CategoryOfTheBranch::HostName,
+            CategoryOfTheBranch21::Language => &CategoryOfTheBranch::Language,
+            CategoryOfTheBranch21::PatchLevel => &CategoryOfTheBranch::PatchLevel,
+            CategoryOfTheBranch21::ProductFamily => &CategoryOfTheBranch::ProductFamily,
+            CategoryOfTheBranch21::ProductName => &CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch21::ProductVersion => &CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch21::ProductVersionRange => &CategoryOfTheBranch::ProductVersionRange,
+            CategoryOfTheBranch21::ServicePack => &CategoryOfTheBranch::ServicePack,
+            CategoryOfTheBranch21::Specification => &CategoryOfTheBranch::Specification,
+            CategoryOfTheBranch21::Vendor => &CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch21::Platform => &CategoryOfTheBranch::Platform,
         }
     }
 

@@ -29,7 +29,7 @@ pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Resul
                 // Through the schema, it is ensured that if they are not None, they contain at least one entry
                 if flag.get_product_ids().is_none() && flag.get_group_ids().is_none() {
                     errors
-                        .get_or_insert_with(Vec::new)
+                        .get_or_insert_default()
                         .push(create_flag_without_product_reference_error(vuln_i, flag_i));
                 }
             }

@@ -44,7 +44,7 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
                         // Must always match
                         if current_value != *base_value {
                             errors
-                                .get_or_insert_with(Vec::new)
+                                .get_or_insert_default()
                                 .push(create_purl_consistency_error(path, i));
                         }
                     } else {

@@ -29,7 +29,7 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
                 if groups.len() > 1 {
                     let mut affected_groups = groups;
                     affected_groups.sort();
-                    errors.get_or_insert_with(Vec::new).push(generate_err_msg(
+                    errors.get_or_insert_default().push(generate_err_msg(
                         &product_id,
                         &affected_groups,
                         vulnerability_index,

@@ -38,11 +38,11 @@ fn generate_status_version_error(
 /// For `/document/version` to be `0`, `0.y.z` or contain a pre-release part (e.g. `-alpha`),
 /// the `/document/status` must be `draft`.
 ///
-/// This implementation check this in an inverted order:
+/// This implementation checks this in an inverted order:
 /// We first check if `/document/status` is `draft`. If so, the secondary condition is always fulfilled,
 /// and this test can only pass, so we can return early.
-/// If not, we know the secondary critera is not fulfilled, and we can check if `/document/version`
-/// meets one of the failing criteria, and generate error/errors for the failing criteria.
+/// If not, we know the secondary criteria is not fulfilled, and we can check if `/document/version`
+/// meets one of the failing criteria and generate the corresponding error(s).
 pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 

@@ -86,7 +86,7 @@ pub trait TrackingTrait {
                         valid_date,
                     });
                 },
-                Invalid(error) => {
+                Invalid(_) => {
                     continue; // TODO: Remove this afer return type refactor
                 },
             }

@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistoryItem, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
 use crate::validation::ValidationError;
 
 fn create_older_current_release_date_error(
@@ -26,10 +26,10 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     // We can safely unwrap here because empty revision histories would not parse schema validation
     let newest_rev_history_item_date = match rev_history.last() {
         None => return Ok(()), // TODO #409 return a precondition failed here,
-        Some(x) => x
+        Some(x) => x,
     };
     let Valid(current_release_date) = current_release_date else {
-        return Ok(()) // TODO #409 return a precondition failed here
+        return Ok(()); // TODO #409 return a precondition failed here
     };
     if current_release_date.get_as_utc() < newest_rev_history_item_date.date {
         return Err(vec![create_older_current_release_date_error(

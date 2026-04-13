@@ -13,7 +13,7 @@ fn get_cvss_version(cvss: &Map<String, Value>) -> Option<String> {
 
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
-    /// Returns all cvss metric types present.
+    /// Returns all CVSS metric types present.
     fn get_cvss_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
         let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
         if let Some(version) = self.get_cvss_v2().and_then(get_cvss_version) {

@@ -1,3 +1,4 @@
+use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
     CsafTrait, DistributionTrait, DocumentTrait, RevisionHistorySortable, TlpTrait, TrackingTrait, VulnerabilityTrait,
@@ -29,10 +30,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     let tracking = document.get_tracking();
     let status = tracking.get_status();
 
-    // Check if the document status is "final" or "interim"
-    if status != DocumentStatus::Final && status != DocumentStatus::Interim {
-        return Ok(());
-    }
+    skip_if_document_status_is_not!(status, Final, Interim);
 
     // Check if the document is TLP:CLEAR
     let is_tlp_clear = match document.get_distribution_21() {

@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
-use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
+use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
+use std::collections::HashMap;
 
 fn create_same_timestamp_error(
     index: usize,
@@ -30,7 +29,7 @@ fn create_same_timestamp_error(
 /// It MUST be tested that the timestamps of all items in the revision history are pairwise disjoint,
 /// taking timezones into account.
 pub fn test_6_2_21_same_timestamps_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let revision_history = doc.get_document().get_tracking().get_revision_history_tuples();
+    let revision_history = doc.get_document().get_tracking().aggregate_revision_history();
 
     // lookup of ValidCsafDateTime (hash function uses normalized utc)
     // to a vec containing each occurrence of that normalized utc
@@ -40,14 +39,21 @@ pub fn test_6_2_21_same_timestamps_in_revision_history(doc: &impl CsafTrait) -> 
 
     // does the lookup already contain the datetime
     for item in &revision_history {
-        match datetime_path_lookup.get_mut(&item.valid_date) {
-            // push the path and original datetime into the vec
-            Some(entries) => {
-                entries.push((item.path_index, &item.valid_date));
+        match &item.date {
+            CsafDateTime::Valid(valid_date) => {
+                match datetime_path_lookup.get_mut(valid_date) {
+                    // push the path and original datetime into the vec
+                    Some(entries) => {
+                        entries.push((item.path_index, valid_date));
+                    },
+                    // create a vec with this path and datetime
+                    None => {
+                        datetime_path_lookup.insert(valid_date, vec![(item.path_index, valid_date)]);
+                    },
+                }
             },
-            // create a vec with this path and datetime
-            None => {
-                datetime_path_lookup.insert(&item.valid_date, vec![(item.path_index, &item.valid_date)]);
+            CsafDateTime::Invalid(_) => {
+                return Ok(()); // TODO #409 this will be nondeterminable later
             },
         }
     }

@@ -1,7 +1,7 @@
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
+use crate::csaf::aggregations::revision_history::UnvalidatedCsafRevisionHistory;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf::types::version_number::CsafVersionNumber;
-use crate::csaf_traits::{GeneratorTrait, RevisionTrait, WithDate};
+use crate::csaf_traits::{GeneratorTrait, RevisionTrait};
 use crate::schema::csaf2_0::schema::{
     DocumentGenerator as DocumentGenerator20, DocumentStatus as DocumentStatus20, Revision as Revision20,
     Tracking as Tracking20,
@@ -72,26 +72,9 @@ pub trait TrackingTrait {
     /// Returns the revision history for this document
     fn get_revision_history(&self) -> &Vec<Self::RevisionType>;
 
-    /// Utility function to get revision history as structs containing revision history path index, date and number
-    fn get_revision_history_tuples(&self) -> RevisionHistory {
-        let mut revision_history: RevisionHistory = Vec::new();
-        for (i_r, revision) in self.get_revision_history().iter().enumerate() {
-            match revision.get_date() {
-                Valid(valid_date) => {
-                    revision_history.push(RevisionHistoryItem {
-                        path_index: i_r,
-                        date: valid_date.get_as_utc(),
-                        date_string: valid_date.get_raw_string().to_string(),
-                        number: revision.get_number(),
-                        valid_date,
-                    });
-                },
-                Invalid(_) => {
-                    continue; // TODO: Remove this afer return type refactor
-                },
-            }
-        }
-        revision_history
+    /// Aggregate the revision history
+    fn aggregate_revision_history(&self) -> UnvalidatedCsafRevisionHistory {
+        UnvalidatedCsafRevisionHistory::from(self.get_revision_history())
     }
 
     /// Returns the status of this document

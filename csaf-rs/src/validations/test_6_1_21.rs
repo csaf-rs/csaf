@@ -1,4 +1,6 @@
-use crate::csaf::types::version_number::CsafVersionNumber;
+use crate::csaf::types::version_number::{
+    CsafVersionNumber, INTEGER_VER_ONE, INTEGER_VER_ZERO, SEMANTIC_VER_ONE, SEMANTIC_VER_ZERO,
+};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 
@@ -14,22 +16,22 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // Generate and sort the revision history tuples by date first and by number second
-    let mut rev_history_tuples = doc.get_document().get_tracking().aggregate_revision_history();
-    rev_history_tuples.inplace_sort_by_date_then_number();
+    let mut revision_history = doc.get_document().get_tracking().aggregate_revision_history();
+    revision_history.inplace_sort_by_date_then_number();
 
-    let first_tuple = if let Some(first) = rev_history_tuples.first() {
-        first
-    } else {
-        return Ok(()); // ToDo #409 this should be Skipped: Precondition failed
+    // This checks if the revision history isn't empty
+    let newest_revision_item = match revision_history.first() {
+        Some(rev) => rev,
+        None => return Ok(()), // TODO this should be a #409 precondition failed #409
     };
 
     // Throw error if first version is not 0 or 1
-    if first_tuple.number.get_major() > 1 {
+    if newest_revision_item.number.get_major() > 1 {
         errors
             .get_or_insert_default()
             .push(test_6_1_21_err_wrong_first_version_generator(
-                first_tuple.number.clone(),
-                &first_tuple.path_index,
+                newest_revision_item.number.clone(),
+                &newest_revision_item.path_index,
             ));
     }
 
@@ -38,7 +40,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         doc.get_document().get_tracking().get_version(),
     );
     // get the maximum version number to find all missing versions in between
-    let max_number = rev_history_tuples
+    let max_number = revision_history
         .iter()
         .map(|item| item.number.get_major())
         .max()
@@ -49,7 +51,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 
         // search for the expected version in the revision history
         // this ignores ordering problems, because they are tested by 6.1.14
-        let found_expected_version = rev_history_tuples
+        let found_expected_version = revision_history
             .iter()
             .map(|item| &item.number)
             .any(|number| number.get_major() == expected_version.get_major());
@@ -91,12 +93,10 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 /// while respecting the versioning scheme from document version.
 fn get_first_expected_version(status: DocumentStatus, document_version: CsafVersionNumber) -> CsafVersionNumber {
     match (status, document_version) {
-        (DocumentStatus::Draft | DocumentStatus::Interim, CsafVersionNumber::IntVer(_)) => CsafVersionNumber::from("0"),
-        (DocumentStatus::Final, CsafVersionNumber::IntVer(_)) => CsafVersionNumber::from("1"),
-        (DocumentStatus::Draft | DocumentStatus::Interim, CsafVersionNumber::SemVer(_)) => {
-            CsafVersionNumber::from("0.0.0")
-        },
-        (DocumentStatus::Final, CsafVersionNumber::SemVer(_)) => CsafVersionNumber::from("1.0.0"),
+        (DocumentStatus::Draft | DocumentStatus::Interim, CsafVersionNumber::IntVer(_)) => INTEGER_VER_ZERO,
+        (DocumentStatus::Final, CsafVersionNumber::IntVer(_)) => INTEGER_VER_ONE,
+        (DocumentStatus::Draft | DocumentStatus::Interim, CsafVersionNumber::SemVer(_)) => SEMANTIC_VER_ZERO,
+        (DocumentStatus::Final, CsafVersionNumber::SemVer(_)) => SEMANTIC_VER_ONE,
     }
 }
 
@@ -104,7 +104,6 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_21, test_6_1_21_miss
 
 fn test_6_1_21_err_wrong_first_version_generator(
     version: CsafVersionNumber,
-    version: &CsafVersionNumber,
     revision_index: &usize,
 ) -> ValidationError {
     let version_error = match version {

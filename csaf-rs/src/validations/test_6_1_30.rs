@@ -45,13 +45,13 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     let tracking = doc.get_document().get_tracking();
     // make sure revision history is consistent in itself
     let mut errors: Option<Vec<ValidationError>> = None;
-    let mut previous_version: Option<(CsafVersionNumber, usize)> = None;
+    let mut previous_version: Option<CsafVersionNumber> = None;
 
     for (i_v, current_version) in tracking.get_revision_history().iter().enumerate() {
-        let current_number = current_version.number.clone();
+        let current_number = current_version.get_number().clone();
         let current_type = discriminant(&current_number);
 
-        if let Some((previous_number, _)) = previous_version
+        if let Some(previous_number) = previous_version
             && discriminant(&previous_number) != current_type
         {
             errors
@@ -59,16 +59,16 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
                 .push(create_mixed_versioning_within_history_error(
                     &previous_number,
                     &current_number,
-                    &current_version.path_index,
+                    &i_v,
                 ));
         }
-        previous_version = Some((current_number, i_v));
+        previous_version = Some(current_number);
     }
 
     // now make sure revision history matches document versioning
     let doc_version = doc.get_document().get_tracking().get_version();
 
-    if let Some((last_history_revision_number, _)) = previous_version
+    if let Some(last_history_revision_number) = previous_version
         && discriminant(&last_history_revision_number) != discriminant(&doc_version)
     {
         errors.get_or_insert_default().push(create_mixed_versioning_error(

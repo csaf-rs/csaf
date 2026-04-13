@@ -46,7 +46,7 @@ fn generate_status_version_error(
 pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    // This is explicitly **NOT** a wasSkipped. The tests prose does not contain any language of skipping,
+    // This is explicitly **NOT** a wasSkipped. The tests prose does not mention skipping,
     // we just check the two relevant conditions in inverted order and return early here.
     let doc_status = tracking.get_status();
     if DocumentStatus::Draft == doc_status {

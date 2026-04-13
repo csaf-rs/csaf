@@ -22,7 +22,7 @@ pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Ve
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_notes().is_none() {
             errors
-                .get_or_insert_with(Vec::new)
+                .get_or_insert_default()
                 .push(test_6_1_27_05_err_generator(&doc_category, &v_i));
         }
     }

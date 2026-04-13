@@ -14,7 +14,7 @@ pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<
                 // if not, generate an error
                 if involvement.get_date().is_none() {
                     errors
-                        .get_or_insert_with(Vec::new)
+                        .get_or_insert_default()
                         .push(create_missing_date_in_involvements_error(v_i, inv_i));
                 }
             }

@@ -16,7 +16,7 @@ pub fn test_6_3_3_missing_cve(doc: &impl CsafTrait) -> Result<(), Vec<Validation
 
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if vuln.get_cve().is_none() {
-            errors.get_or_insert_with(Vec::new).push(create_missing_cve_error(v_i));
+            errors.get_or_insert_default().push(create_missing_cve_error(v_i));
         }
     }
 

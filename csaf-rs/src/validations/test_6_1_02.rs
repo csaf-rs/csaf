@@ -18,7 +18,7 @@ pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Re
             if paths.len() > 1 {
                 for path in paths {
                     errors
-                        .get_or_insert_with(Vec::new)
+                        .get_or_insert_default()
                         .push(generate_err_msg(&product_id, &path));
                 }
             }

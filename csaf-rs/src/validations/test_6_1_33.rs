@@ -55,7 +55,7 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
                     flag_flag_i_group_ids_arr.iter().map(|(label, _, _)| *label).collect();
                 // generate error
                 for (label, flag_i, group_id) in flag_flag_i_group_ids_arr {
-                    errors.get_or_insert_with(Vec::new).push(test_6_1_33_err_generator(
+                    errors.get_or_insert_default().push(test_6_1_33_err_generator(
                         &product_id,
                         &labels,
                         label,

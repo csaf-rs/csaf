@@ -23,7 +23,7 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Vali
             for (i_i, id) in ids.iter().enumerate() {
                 if CVE_REGEX.is_match(id.get_text()) {
                     errors
-                        .get_or_insert_with(Vec::new)
+                        .get_or_insert_default()
                         .push(create_cve_in_ids_error(id.get_text(), v_i, i_i));
                 }
             }

@@ -13,7 +13,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
     let cvss20_validator = create_validator(include_str!("../../assets/cvss-v2.0.json"));
     let cvss30_validator = create_validator(include_str!("../../assets/cvss-v3.0.json"));
     let cvss31_validator = create_validator(include_str!("../../assets/cvss-v3.1.json"));
-    let cvss40_validator = create_draft_validator(include_str!("../../assets/cvss-v4.0.rev.json"));
+    let cvss40_validator = create_draft_validator(include_str!("../../assets/cvss-v4.0.2.json"));
 
     let mut errors: Vec<ValidationError> = Vec::new();
 
@@ -58,27 +58,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_8
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_08_invalid_cvss(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_8
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_08_invalid_cvss(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_8, test_6_1_08_invalid_cvss);
 
 fn create_validator(schema_str: &str) -> Validator {
     jsonschema::validator_for(&serde_json::from_str(schema_str).unwrap()).unwrap()

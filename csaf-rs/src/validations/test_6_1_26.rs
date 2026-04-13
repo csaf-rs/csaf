@@ -48,7 +48,7 @@ fn test_6_1_26_err_generator_starts_with_csaf(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Document category '{doc_category}' is prohibited. Only the following values starting with 'csaf_' are allowed: {}",
+            "Document category '{doc_category}' is prohibited. Only the following values starting with 'csaf_' (or similar) are allowed: {}",
             CsafDocumentCategory::known_profile_concat(version)
         ),
         instance_path: "/document/category".to_string(),
@@ -67,27 +67,7 @@ fn test_6_1_26_err_generator_too_similar(
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_26
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_26_prohibited_document_category(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_26
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_26_prohibited_document_category(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_26, test_6_1_26_prohibited_document_category);
 
 #[cfg(test)]
 mod tests {

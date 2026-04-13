@@ -1,4 +1,4 @@
-File-Date: 2025-08-25
+File-Date: 2026-04-09
 %%
 Type: language
 Subtag: aa
@@ -769,9 +769,9 @@ Added: 2005-10-16
 %%
 Type: language
 Subtag: ny
-Description: Nyanja
-Description: Chewa
 Description: Chichewa
+Description: Chewa
+Description: Nyanja
 Added: 2005-10-16
 Suppress-Script: Latn
 %%
@@ -803,6 +803,9 @@ Scope: macrolanguage
 %%
 Type: language
 Subtag: os
+Description: Iron Ossetic
+Description: Iron
+Description: Iron Ossetian
 Description: Ossetian
 Description: Ossetic
 Added: 2005-10-16
@@ -5669,7 +5672,7 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: boe
-Description: Mundabli
+Description: Mundabli-Mufu
 Added: 2009-07-29
 %%
 Type: language
@@ -10513,6 +10516,11 @@ Type: language
 Subtag: dyi
 Description: Djimini Senoufo
 Added: 2009-07-29
+%%
+Type: language
+Subtag: dyl
+Description: Bhutanese Sign Language
+Added: 2026-04-09
 %%
 Type: language
 Subtag: dym
@@ -20008,6 +20016,11 @@ Description: Lefa
 Added: 2009-07-29
 %%
 Type: language
+Subtag: lfb
+Description: Buu (Cameroon)
+Added: 2026-04-09
+%%
+Type: language
 Subtag: lfn
 Description: Lingua Franca Nova
 Added: 2009-07-29
@@ -21104,7 +21117,7 @@ Macrolanguage: zh
 %%
 Type: language
 Subtag: lui
-Description: Luiseno
+Description: Luiseño
 Added: 2005-10-16
 %%
 Type: language
@@ -27531,6 +27544,11 @@ Description: Walungge
 Added: 2009-07-29
 %%
 Type: language
+Subtag: olb
+Description: Oli-Bodiman
+Added: 2026-04-09
+%%
+Type: language
 Subtag: old
 Description: Mochi
 Added: 2009-07-29
@@ -27897,6 +27915,13 @@ Type: language
 Subtag: osc
 Description: Oscan
 Added: 2009-07-29
+%%
+Type: language
+Subtag: osd
+Description: Digor Ossetic
+Description: Digor
+Description: Digor Ossetian
+Added: 2026-04-09
 %%
 Type: language
 Subtag: osi
@@ -31530,6 +31555,11 @@ Type: language
 Subtag: scx
 Description: Sicel
 Added: 2009-07-29
+%%
+Type: language
+Subtag: scz
+Description: Shaetlan
+Added: 2026-04-09
 %%
 Type: language
 Subtag: sda
@@ -41431,6 +41461,8 @@ Type: language
 Subtag: yol
 Description: Yola
 Added: 2009-07-29
+Deprecated: 2026-04-09
+Preferred-Value: enm
 %%
 Type: language
 Subtag: yom
@@ -43489,6 +43521,13 @@ Added: 2009-07-29
 Preferred-Value: dup
 Prefix: ms
 Macrolanguage: ms
+%%
+Type: extlang
+Subtag: dyl
+Description: Bhutanese Sign Language
+Added: 2026-04-09
+Preferred-Value: dyl
+Prefix: sgn
 %%
 Type: extlang
 Subtag: ecs
@@ -48438,6 +48477,13 @@ Description: Simplified form
 Added: 2015-12-29
 %%
 Type: variant
+Subtag: slepe
+Description: Sorbian dialect of Schleife
+Added: 2026-04-09
+Prefix: dsb
+Comments: Spoken in the Free State of Saxony in Germany
+%%
+Type: variant
 Subtag: solba
 Description: The Stolvizza dialect of Resian
 Description: The Solbica dialect of Resian
@@ -48461,6 +48507,13 @@ Added: 2017-02-23
 Prefix: en
 Prefix: es
 Comments: A variety of contact dialects of English and Spanish
+%%
+Type: variant
+Subtag: stadi
+Description: The "Stadin slangi" dialect of Finnish
+Added: 2026-04-09
+Prefix: fi
+Comments: "Stadi" means the city of Helsinki in the dialect.
 %%
 Type: variant
 Subtag: surmiran
@@ -48492,6 +48545,16 @@ Description: Synnejysk
 Description: South Jutish
 Added: 2021-07-17
 Prefix: da
+%%
+Type: variant
+Subtag: taglish
+Description: Tagalog-English code-switching
+Added: 2026-04-09
+Prefix: en
+Prefix: tl
+Prefix: fil
+Comments: This subtag represents Taglish, wherever it is different from
+  straight Tagalog or straight English.
 %%
 Type: variant
 Subtag: tailo

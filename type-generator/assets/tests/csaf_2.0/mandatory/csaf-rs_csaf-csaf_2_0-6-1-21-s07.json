@@ -1,0 +1,26 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "OASIS CSAF TC",
+      "namespace": "https://csaf.io"
+    },
+    "title": "Mandatory test: Missing Item in Revision History (failing supplementary example 7: range until 4 missing)",
+    "tracking": {
+      "current_release_date": "2026-03-09T11:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-21-S07",
+      "initial_release_date": "2026-03-09T11:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2026-03-09T11:00:00.000Z",
+          "number": "4",
+          "summary": "4"
+        }
+      ],
+      "status": "final",
+      "version": "4"
+    }
+  }
+}

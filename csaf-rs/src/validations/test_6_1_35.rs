@@ -77,16 +77,7 @@ pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<()
     Ok(())
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_35
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_35_contradicting_remediations(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_35, test_6_1_35_contradicting_remediations);
 
 #[cfg(test)]
 mod tests {

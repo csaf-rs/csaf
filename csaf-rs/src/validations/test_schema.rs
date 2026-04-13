@@ -7,8 +7,8 @@ use crate::{
     csaf::raw::RawDocument,
     helpers::{
         CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA, CVSS_V3_0_SCHEMA_URL,
-        CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_1_SCHEMA, CVSS_V4_0_1_SCHEMA_URL, SSVC_2_SCHEMA,
-        SSVC_2_SCHEMA_URL,
+        CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA, CVSS_V4_0_2_SCHEMA_URL, EXTENSION_METASCHEMA,
+        EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA, SSVC_2_SCHEMA_URL,
     },
     validation::ValidationError,
 };
@@ -34,12 +34,20 @@ static VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
 static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
     jsonschema::options()
         .should_validate_formats(true)
+        .with_resource(
+            EXTENSION_METASCHEMA_URL,
+            Resource::from_contents(use_draft_schema(EXTENSION_METASCHEMA.clone())),
+        )
+        .with_resource(
+            EXTENSION_SCHEMA_URL,
+            Resource::from_contents(use_draft_schema(EXTENSION_SCHEMA.clone())),
+        )
         .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(CVSS_V2_SCHEMA.clone()))
         .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))
         .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))
         .with_resource(
-            CVSS_V4_0_1_SCHEMA_URL,
-            Resource::from_contents(use_draft_schema(CVSS_V4_0_1_SCHEMA.clone())),
+            CVSS_V4_0_2_SCHEMA_URL,
+            Resource::from_contents(use_draft_schema(CVSS_V4_0_2_SCHEMA.clone())),
         )
         .with_resource(SSVC_2_SCHEMA_URL, Resource::from_contents(SSVC_2_SCHEMA.clone()))
         .build(&use_draft_schema(CSAF_2_1_SCHEMA.clone()))
@@ -77,6 +85,7 @@ pub fn validate_schema_csaf_2_1(
     document: &RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
 ) -> Result<(), Vec<ValidationError>> {
     validate_schema(document.get_json(), &VALIDATOR_2_1)
+    // TODO: validate extensions
 }
 
 #[cfg(test)]
@@ -94,8 +103,14 @@ mod tests {
                 concat!("-schema-", $case, ".json")
             ));
             let actual = validate_schema(&serde_json::from_str(file_content).unwrap(), $validator);
-            crate::test_result_comparison::compare_test_results(&actual, &$expected, "schema", $case)
-                .unwrap_or_else(|e| panic!("{}", e));
+            crate::test_result_comparison::compare_test_results(
+                &actual,
+                &$expected,
+                concat!("V", $csaf_major, "_", $csaf_minor),
+                "schema",
+                $case,
+            )
+            .unwrap_or_else(|e| panic!("{}", e));
         };
     }
 

@@ -67,7 +67,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 
         // generate errors for all remaining known_affected product or group ids
         for known_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
-            errors.get_or_insert_with(Vec::new).push(test_6_1_27_10_err_generator(
+            errors.get_or_insert_default().push(test_6_1_27_10_err_generator(
                 known_affected_product_or_group_id.0.to_string(),
                 v_i,
                 *known_affected_product_or_group_id.1,
@@ -96,27 +96,7 @@ fn test_6_1_27_10_err_generator(
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_10
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_10_action_statement(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_10
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_10_action_statement(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_27_10, test_6_1_27_10_action_statement);
 
 #[cfg(test)]
 mod tests {

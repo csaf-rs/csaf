@@ -10,11 +10,11 @@ use crate::validation::ValidationError;
 pub fn test_6_2_16_missing_product_identification_helper(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
             if fpn.get_product_identification_helper().is_none() {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_missing_product_identification_helper_error(path));
             }
         });
@@ -30,27 +30,10 @@ fn create_missing_product_identification_helper_error(instance_path: &str) -> Va
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_16
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_16_missing_product_identification_helper(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_16
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_16_missing_product_identification_helper(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_2_16,
+    test_6_2_16_missing_product_identification_helper
+);
 
 #[cfg(test)]
 mod tests {

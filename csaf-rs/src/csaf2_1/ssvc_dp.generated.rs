@@ -139,11 +139,6 @@ pub struct DecisionPoint {
     #[serde(default = "defaults::decision_point_version")]
     pub version: Version,
 }
-impl ::std::convert::From<&DecisionPoint> for DecisionPoint {
-    fn from(value: &DecisionPoint) -> Self {
-        value.clone()
-    }
-}
 impl DecisionPoint {
     pub fn builder() -> builder::DecisionPoint {
         Default::default()
@@ -209,11 +204,6 @@ pub struct DecisionPointValue {
     pub key: Key,
     pub name: Name,
 }
-impl ::std::convert::From<&DecisionPointValue> for DecisionPointValue {
-    fn from(value: &DecisionPointValue) -> Self {
-        value.clone()
-    }
-}
 impl DecisionPointValue {
     pub fn builder() -> builder::DecisionPointValue {
         Default::default()
@@ -243,11 +233,6 @@ impl ::std::ops::Deref for Definition {
 impl ::std::convert::From<Definition> for ::std::string::String {
     fn from(value: Definition) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Definition> for Definition {
-    fn from(value: &Definition) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for Definition {
@@ -333,11 +318,6 @@ impl ::std::ops::Deref for Key {
 impl ::std::convert::From<Key> for ::std::string::String {
     fn from(value: Key) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Key> for Key {
-    fn from(value: &Key) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for Key {
@@ -426,11 +406,6 @@ impl ::std::convert::From<Name> for ::std::string::String {
         value.0
     }
 }
-impl ::std::convert::From<&Name> for Name {
-    fn from(value: &Name) -> Self {
-        value.clone()
-    }
-}
 impl ::std::str::FromStr for Name {
     type Err = self::error::ConversionError;
     fn from_str(
@@ -511,11 +486,6 @@ impl ::std::ops::Deref for Namespace {
 impl ::std::convert::From<Namespace> for ::std::string::String {
     fn from(value: Namespace) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Namespace> for Namespace {
-    fn from(value: &Namespace) -> Self {
-        value.clone()
     }
 }
 impl ::std::str::FromStr for Namespace {
@@ -612,11 +582,6 @@ impl ::std::ops::Deref for Version {
 impl ::std::convert::From<Version> for ::std::string::String {
     fn from(value: Version) -> Self {
         value.0
-    }
-}
-impl ::std::convert::From<&Version> for Version {
-    fn from(value: &Version) -> Self {
-        value.clone()
     }
 }
 impl ::std::default::Default for Version {
@@ -724,7 +689,7 @@ pub mod builder {
             self.definition = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for definition: {}", e)
+                    format!("error converting supplied value for definition: {e}")
                 });
             self
         }
@@ -735,7 +700,7 @@ pub mod builder {
         {
             self.key = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for key: {}", e));
+                .map_err(|e| format!("error converting supplied value for key: {e}"));
             self
         }
         pub fn name<T>(mut self, value: T) -> Self
@@ -745,7 +710,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
         pub fn namespace<T>(mut self, value: T) -> Self
@@ -756,7 +721,7 @@ pub mod builder {
             self.namespace = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for namespace: {}", e)
+                    format!("error converting supplied value for namespace: {e}")
                 });
             self
         }
@@ -768,7 +733,7 @@ pub mod builder {
             self.schema_version = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for schema_version: {}", e)
+                    format!("error converting supplied value for schema_version: {e}")
                 });
             self
         }
@@ -779,9 +744,7 @@ pub mod builder {
         {
             self.values = value
                 .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for values: {}", e)
-                });
+                .map_err(|e| format!("error converting supplied value for values: {e}"));
             self
         }
         pub fn version<T>(mut self, value: T) -> Self
@@ -792,7 +755,7 @@ pub mod builder {
             self.version = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for version: {}", e)
+                    format!("error converting supplied value for version: {e}")
                 });
             self
         }
@@ -850,7 +813,7 @@ pub mod builder {
             self.definition = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for definition: {}", e)
+                    format!("error converting supplied value for definition: {e}")
                 });
             self
         }
@@ -861,7 +824,7 @@ pub mod builder {
         {
             self.key = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for key: {}", e));
+                .map_err(|e| format!("error converting supplied value for key: {e}"));
             self
         }
         pub fn name<T>(mut self, value: T) -> Self
@@ -871,7 +834,7 @@ pub mod builder {
         {
             self.name = value
                 .try_into()
-                .map_err(|e| format!("error converting supplied value for name: {}", e));
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
             self
         }
     }

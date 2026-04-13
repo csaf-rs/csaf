@@ -1,0 +1,47 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "OASIS CSAF TC",
+      "namespace": "https://csaf.io"
+    },
+    "title": "Mandatory Test: Missing Item in Revision History (failing supplementary example 4: semver missing multiple single versions)",
+    "tracking": {
+      "current_release_date": "2024-01-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-21-S04",
+      "initial_release_date": "2023-08-22T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2026-03-09T11:00:00.000Z",
+          "number": "1.0.0",
+          "summary": "1.0.0"
+        },
+        {
+          "date": "2026-03-11T11:00:00.000Z",
+          "number": "3.0.0",
+          "summary": "3.0.0"
+        },
+        {
+          "date": "2026-03-13T11:00:00.000Z",
+          "number": "5.0.0",
+          "summary": "5.0.0"
+        },
+        {
+          "date": "2026-03-15T11:00:00.000Z",
+          "number": "8.0.0",
+          "summary": "8.0.0"
+        }
+      ],
+      "status": "final",
+      "version": "8.0.0"
+    }
+  }
+}

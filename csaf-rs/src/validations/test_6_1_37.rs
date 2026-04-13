@@ -1,6 +1,9 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait, WithDate, WithOptionalDate};
+use crate::csaf_traits::{
+    CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, TrackingTrait, VulnerabilityTrait, WithDate,
+    WithOptionalDate,
+};
 use crate::validation::ValidationError;
 use regex::Regex;
 use std::sync::LazyLock;
@@ -94,6 +97,10 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
                     &date.get_date(),
                     &format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/date"),
                 )?;
+                check_datetime(
+                    &date.get_exploitation_date(),
+                    &format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/exploitation_date"),
+                )?;
             }
         }
     }
@@ -133,16 +140,7 @@ fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), V
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_37
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_37_date_and_time(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_37, test_6_1_37_date_and_time);
 
 #[cfg(test)]
 mod tests {

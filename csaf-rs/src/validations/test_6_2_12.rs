@@ -17,27 +17,7 @@ static MISSING_DOCUMENT_LANGUAGE: LazyLock<ValidationError> = LazyLock::new(|| V
     instance_path: "/document/lang".to_string(),
 });
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_12
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_12_missing_document_language(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_12
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_12_missing_document_language(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_12, test_6_2_12_missing_document_language);
 
 #[cfg(test)]
 mod tests {

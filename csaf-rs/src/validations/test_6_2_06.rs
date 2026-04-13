@@ -24,10 +24,12 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     let mut rev_history = doc.get_document().get_tracking().aggregate_revision_history();
     rev_history.inplace_sort_by_date_then_number();
     // We can safely unwrap here because empty revision histories would not parse schema validation
-    // TODO: Remove this unwrap and panic stuff after refactor
-    let newest_rev_history_item_date = rev_history.last().unwrap();
+    let newest_rev_history_item_date = match rev_history.last() {
+        None => return Ok(()), // TODO #409 return a precondition failed here,
+        Some(x) => x,
+    };
     let Valid(current_release_date) = current_release_date else {
-        panic!();
+        return Ok(()); // TODO #409 return a precondition failed here
     };
     let Valid(newest_rev_history_item_date) = &newest_rev_history_item_date.date else {
         panic!();
@@ -41,27 +43,10 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     Ok(())
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_6
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_06_older_current_release_than_rev_history(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_6
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_06_older_current_release_than_rev_history(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_2_6,
+    test_6_2_06_older_current_release_than_rev_history
+);
 
 #[cfg(test)]
 mod tests {

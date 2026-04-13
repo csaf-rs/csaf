@@ -1,4 +1,3 @@
-pub mod csaf_implementations;
 pub mod loader;
 pub mod test_structure_impl;
 #[path = "testcases.generated.rs"]

@@ -39,6 +39,7 @@ fn extract_test_doc(
 
 fn generate_test_cases_from_json(
     csaf_doc_type: TokenStream,
+    csaf_version: &str,
     base_dir: &str,
     additional_base_dir: &str,
     testcases: &serde_json::Value,
@@ -200,6 +201,7 @@ fn generate_test_cases_from_json(
                         crate::test_result_comparison::compare_test_results(
                             &actual,
                             &expected,
+                            #csaf_version,
                             Self::ID,
                             case_num
                         ).unwrap_or_else(|e| panic!("{}", e));
@@ -280,6 +282,7 @@ pub fn generate_testcases(
     let (mandatory_tests, recommended_tests, informative_tests, test_struct_defs, test_instances) =
         generate_test_cases_from_json(
             csaf_doc_type,
+            format!("{csaf_version:?}").as_str(),
             base_dir,
             additional_base_dir,
             &testcases,

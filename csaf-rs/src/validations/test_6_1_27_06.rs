@@ -22,7 +22,7 @@ pub fn test_6_1_27_06_product_status(doc: &impl CsafTrait) -> Result<(), Vec<Val
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_product_status().is_none() {
             errors
-                .get_or_insert_with(Vec::new)
+                .get_or_insert_default()
                 .push(test_6_1_27_06_err_generator(&doc_category, &v_i));
         }
     }
@@ -43,27 +43,7 @@ fn test_6_1_27_06_err_generator(document_category: &CsafDocumentCategory, vuln_p
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_6
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_06_product_status(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_6
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_06_product_status(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_27_6, test_6_1_27_06_product_status);
 
 #[cfg(test)]
 mod tests {

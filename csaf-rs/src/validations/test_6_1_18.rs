@@ -1,3 +1,4 @@
+use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
@@ -23,11 +24,8 @@ fn create_revision_history_error(status: &DocumentStatus, number: &CsafVersionNu
 pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    // This test is only relevant for documents with status 'interim' and 'final'
     let status = tracking.get_status();
-    if !(DocumentStatus::Final == status || DocumentStatus::Interim == status) {
-        return Ok(()); // ToDo return skipped/not applicable (https://github.com/csaf-rs/csaf/issues/409)
-    }
+    skip_if_document_status_is_not!(status, Final, Interim);
 
     // Check that no revision history item has version 0 or 0.y.z
     let mut errors: Option<Vec<ValidationError>> = None;
@@ -44,27 +42,7 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_18
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_18_released_revision_history(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_18
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_18_released_revision_history(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_18, test_6_1_18_released_revision_history);
 
 #[cfg(test)]
 mod tests {

@@ -44,7 +44,7 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
                         // Must always match
                         if current_value != *base_value {
                             errors
-                                .get_or_insert_with(Vec::new)
+                                .get_or_insert_default()
                                 .push(create_purl_consistency_error(path, i));
                         }
                     } else {
@@ -59,16 +59,7 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_42
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_42_purl_consistency(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_42, test_6_1_42_purl_consistency);
 
 #[cfg(test)]
 mod tests {

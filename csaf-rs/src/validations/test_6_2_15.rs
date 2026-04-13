@@ -1,4 +1,4 @@
-use crate::csaf::types::csaf_language::CsafLanguage;
+use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
 
@@ -22,7 +22,7 @@ pub fn test_6_2_15_use_of_default_language(doc: &impl CsafTrait) -> Result<(), V
 
 /// Helper function to validate a `lang` tag and check if it is the default language.
 ///
-/// If the optional language tag is `Some` and is the default language (`i-default`), an
+/// If the optional language tag is `Some`, is a valid tag, and is the default language (`i-default`, case-insensitive), an
 /// error will be added to `errors` vector.
 ///
 /// # Arguments
@@ -30,10 +30,13 @@ pub fn test_6_2_15_use_of_default_language(doc: &impl CsafTrait) -> Result<(), V
 /// - `json_path`: The JSON path to the language tag
 /// - `errors`: A mutable reference to the errors vector
 fn validate_default_language(lang: Option<CsafLanguage>, json_path: &str, errors: &mut Option<Vec<ValidationError>>) {
-    if let Some(CsafLanguage::DefaultLanguage(lang_tag)) = lang {
-        errors
-            .get_or_insert_default()
-            .push(create_default_language_error(lang_tag, json_path));
+    if let Some(CsafLanguage::Valid(valid_lang)) = lang
+        && valid_lang.is_default()
+    {
+        errors.get_or_insert_default().push(create_default_language_error(
+            valid_lang.as_str().to_string(),
+            json_path,
+        ));
     }
 }
 
@@ -44,27 +47,7 @@ fn create_default_language_error(lang_tag: String, instance_path: &str) -> Valid
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_15
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_15_use_of_default_language(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_15
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_15_use_of_default_language(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_15, test_6_2_15_use_of_default_language);
 
 #[cfg(test)]
 mod tests {

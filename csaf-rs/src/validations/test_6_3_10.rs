@@ -14,11 +14,11 @@ fn create_product_version_range_error(path: &str) -> ValidationError {
 pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(product_tree) = doc.get_product_tree().as_ref() {
+    if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
             if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_product_version_range_error(path));
             }
         });
@@ -27,27 +27,7 @@ pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Resul
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_3_10
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_10_usage_of_product_version_range(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_3_10
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_10_usage_of_product_version_range(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_3_10, test_6_3_10_usage_of_product_version_range);
 
 #[cfg(test)]
 mod tests {

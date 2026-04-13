@@ -94,23 +94,25 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
                 for (i, purl_str) in purls.iter().enumerate() {
                     // Check against PURL spec, because it has to be valid
                     if let Err(e) = PackageUrl::from_str(purl_str) {
-                        errors
-                            .get_or_insert_with(Vec::new)
-                            .push(generate_purl_format_error_message(version, purl_str, e.into(), path, i));
+                        errors.get_or_insert_default().push(generate_purl_format_error_message(
+                            version,
+                            purl_str,
+                            e.into(),
+                            path,
+                            i,
+                        ));
                         continue;
                     }
 
                     // Check against regex from standard, because it is more strict in some ways (e.g. it prohibits double // after scheme)
                     if !PURL_REGEX.is_match(purl_str) {
-                        errors
-                            .get_or_insert_with(Vec::new)
-                            .push(generate_purl_format_error_message(
-                                version,
-                                purl_str,
-                                PurlParseError::CsafError,
-                                path,
-                                i,
-                            ));
+                        errors.get_or_insert_default().push(generate_purl_format_error_message(
+                            version,
+                            purl_str,
+                            PurlParseError::CsafError,
+                            path,
+                            i,
+                        ));
                     }
                 }
             }
@@ -120,27 +122,7 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_13
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_13_purl(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_13
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_13_purl(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_13, test_6_1_13_purl);
 
 #[cfg(test)]
 mod tests {

@@ -35,12 +35,19 @@ fn generate_status_version_error(
 
 /// 6.1.17 Document Status Draft
 ///
-/// For `/document/version` to be 0, 0.y.z or contain a pre-release part,`/document/status` must be "draft".
-/// This checks the inverse: If the document status is not "draft", the version must not be 0, 0.y.z or contain a pre-release part.
+/// For `/document/version` to be `0`, `0.y.z` or contain a pre-release part (e.g. `-alpha`),
+/// the `/document/status` must be `draft`.
+///
+/// This implementation check this in an inverted order:
+/// We first check if `/document/status` is `draft`. If so, the secondary condition is always fulfilled,
+/// and this test can only pass, so we can return early.
+/// If not, we know the secondary critera is not fulfilled, and we can check if `/document/version`
+/// meets one of the failing criteria, and generate error/errors for the failing criteria.
 pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    // This test passes if the document is draft, as the secondary condition is always met.
+    // This is explicitly **NOT** a wasSkipped. The tests prose does not contain any language of skipping,
+    // we just check the two relevant conditions in inverted order and return early here.
     let doc_status = tracking.get_status();
     if DocumentStatus::Draft == doc_status {
         return Ok(());

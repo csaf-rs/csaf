@@ -38,14 +38,15 @@ pub(crate) fn extract_test_entries_from_json(
             },
         };
 
-        let mut docs: Vec<RawTestCase> = Vec::new();
+        let mut failures: Vec<RawTestCase> = Vec::new();
+        let mut valid: Vec<RawTestCase> = Vec::new();
 
         let mut collect = |test: &serde_json::Value, dir: &str| {
-            if let Some(failures) = test["failures"].as_array() {
-                extract_test_doc(failures, dir, &mut docs);
+            if let Some(failing_cases) = test["failures"].as_array() {
+                extract_test_doc(failing_cases, dir, &mut failures);
             }
             if let Some(valid_cases) = test.get("valid").and_then(|v| v.as_array()) {
-                extract_test_doc(valid_cases, dir, &mut docs);
+                extract_test_doc(valid_cases, dir, &mut valid);
             }
         };
 
@@ -61,6 +62,11 @@ pub(crate) fn extract_test_entries_from_json(
                 collect(additional_test, supplemental_base_dir);
             }
         }
+
+        // Merge failing and valid cases, but have all failing cases from both sources first and
+        // then all valid cases from both sources second
+        let mut docs = failures;
+        docs.append(&mut valid);
 
         // Check for duplicate case numbers which would cause compile errors
         // in the generated code output

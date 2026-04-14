@@ -4,8 +4,12 @@ use crate::validation::ValidationError;
 
 /// 6.1.13 PURL
 ///
-/// Checks the validity of PURLs in the document. Validation is done via a Regex specified in the standard first and then
-/// again through the packageurl::purl parser.
+/// Checks the validity of PURLs in the document. There are different Regex's for the `purl` / `purls` field in CSAF 2.0 and 2.1.
+/// These are enforced during deserialization into the schema types. [CsafPurl] wraps the schema types
+/// and parses the PURL string into a `packageurl::PackageUrl` struct, which performs the actual validation according to the PURL specification.
+///
+/// In this test, we just check if any purls are [CsafPurl::Invalid] and report the errors provided by `packageurl`.
+/// If a purl failed the respective regex, the schema validation failed already, so this test does not run.
 pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 

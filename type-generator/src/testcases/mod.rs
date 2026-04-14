@@ -33,7 +33,7 @@ pub(crate) struct RawTest {
     pub docs: Vec<RawTestCase>,
 }
 
-/// A raw test case entry extract from JSON. Contains the case number,
+/// A raw test case entry extracted from JSON. Contains the case number,
 /// the name, and the base directory of its path.
 pub(crate) struct RawTestCase {
     pub case_num: String,

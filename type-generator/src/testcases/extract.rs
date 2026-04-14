@@ -31,8 +31,8 @@ pub(crate) fn extract_test_entries_from_json(
             "mandatory" => Mandatory,
             "optional" | "recommended" => OptionalRecommended,
             "informative" => Informative,
-            _ => {
-                panic!("test group should be 'mandatory', 'optional', 'recommended' or 'informative'")
+            unknown => {
+                panic!("test '{id}': unknown group '{unknown}', expected 'mandatory', 'optional', 'recommended' or 'informative'")
             },
         };
 
@@ -60,8 +60,8 @@ pub(crate) fn extract_test_entries_from_json(
             }
         }
 
-        // Check for duplicate case numbers which would cause compile errors i
-        // n the generated code output
+        // Check for duplicate case numbers which would cause compile errors
+        // in the generated code output
         if let Some(dup) = docs.iter().map(|d| &d.case_num).find(|c| !seen.insert((*c).clone())) {
             panic!("duplicate case number '{dup}' in test '{id}'");
         }

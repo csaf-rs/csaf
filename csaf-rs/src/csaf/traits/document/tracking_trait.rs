@@ -86,8 +86,8 @@ pub trait TrackingTrait {
                         valid_date,
                     });
                 },
-                Invalid(error) => {
-                    panic!("{}", error)
+                Invalid(_) => {
+                    continue; // TODO: Remove this afer return type refactor
                 },
             }
         }

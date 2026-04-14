@@ -259,7 +259,7 @@ jobs:
   publish-crates:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write    
     needs:
       - build-platforms

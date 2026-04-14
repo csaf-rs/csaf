@@ -32,7 +32,9 @@ pub(crate) fn extract_test_entries_from_json(
             "optional" | "recommended" => OptionalRecommended,
             "informative" => Informative,
             unknown => {
-                panic!("test '{id}': unknown group '{unknown}', expected 'mandatory', 'optional', 'recommended' or 'informative'")
+                panic!(
+                    "test '{id}': unknown group '{unknown}', expected 'mandatory', 'optional', 'recommended' or 'informative'"
+                )
             },
         };
 

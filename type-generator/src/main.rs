@@ -1,11 +1,12 @@
 mod build_helper;
 mod file_helper;
 mod schema_generator;
-mod testcase_generator;
+mod testcases;
 
 use crate::build_helper::BuildError;
 use crate::schema_generator::build_from_schema;
-use crate::testcase_generator::{CsafVersion, generate_testcases};
+use crate::testcases::CsafVersion;
+use crate::testcases::generate_testcases;
 use clap::Parser;
 use json_dotpath::DotPaths;
 use serde_json::{Value, json};

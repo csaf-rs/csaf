@@ -44,6 +44,9 @@ uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 [dev-dependencies]
 rstest = "0.26.1"
 
+[package.metadata.docs.rs]
+rustc-args = ["--cfg", "docsrs"]
+
 [build-dependencies]
 schemars = "0.8"
 serde = { version = "1", features = ["derive"] }

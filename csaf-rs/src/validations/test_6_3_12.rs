@@ -10,10 +10,7 @@ fn create_missing_cvss_v4_error(instance_path: String, cvss_versions: &[CsafVuln
         .collect::<Vec<String>>()
         .join(", ");
     ValidationError {
-        message: format!(
-            "The metric contains {} but does not include a CVSS v4.0 score.",
-            versions_str
-        ),
+        message: format!("The metric contains {versions_str} but does not include a CVSS v4.0 score."),
         instance_path,
     }
 }

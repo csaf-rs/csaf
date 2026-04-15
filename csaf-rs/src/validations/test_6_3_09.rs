@@ -22,18 +22,17 @@ fn create_branch_categories_error(
     };
     ValidationError {
         message: format!(
-            "Branch path to product does not follow the recommended sequence of the categories 'vendor' -> 'product_name' -> 'product_version'. \
-             Along the categories of this path '{full_display}', the following sequence was found: '{found_display}'"
+            "Branch path to product does not follow the recommended sequence of the categories 'vendor' -> 'product_name' -> 'product_version'. Along the categories of this path '{full_display}', the following sequence was found: '{found_display}'"
         ),
         instance_path,
     }
 }
 
 /// Required category sequence for branch paths.
-const REQUIRED_CATEGORIES_ORDER: [CategoryOfTheBranch; 3] = [
-    CategoryOfTheBranch::Vendor,
-    CategoryOfTheBranch::ProductName,
-    CategoryOfTheBranch::ProductVersion,
+const REQUIRED_CATEGORIES_ORDER: [&CategoryOfTheBranch; 3] = [
+    &CategoryOfTheBranch::Vendor,
+    &CategoryOfTheBranch::ProductName,
+    &CategoryOfTheBranch::ProductVersion,
 ];
 
 /// 6.3.9 Branch Categories
@@ -56,18 +55,17 @@ pub fn test_6_3_9_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<Vali
 
     // for every path to a leaf node
     for (path, indices) in leaf_paths {
-        // get all categories along the path
-        let all_categories: Vec<&CategoryOfTheBranch> = path.iter().map(|b| b.get_category()).collect();
-
         // filter to only the categories relevant to this rule, preserving order
-        let relevant: Vec<&CategoryOfTheBranch> = all_categories
+        let relevant: Vec<&CategoryOfTheBranch> = path
             .iter()
-            .copied()
+            .map(|b| b.get_category())
             .filter(|c| REQUIRED_CATEGORIES_ORDER.contains(c))
             .collect();
 
         // Check whether the filtered list matches the required sequence exactly
-        if !relevant.iter().copied().eq(REQUIRED_CATEGORIES_ORDER.iter()) {
+        if !relevant.iter().eq(REQUIRED_CATEGORIES_ORDER.iter()) {
+            // collect all categories only when needed for the error message
+            let all_categories: Vec<&CategoryOfTheBranch> = path.iter().map(|b| b.get_category()).collect();
             errors.get_or_insert_default().push(create_branch_categories_error(
                 &all_categories,
                 &relevant,

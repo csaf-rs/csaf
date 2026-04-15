@@ -51,7 +51,7 @@ fn check_uncovered_affected_products<'a>(
 /// The test MUST fail, if any Product ID (type `/$defs/product_id_t`) in the product status group
 /// Affected is not covered by any CVSS object.
 ///
-/// This essentially two test at once for each vulnerability. We generate separate error messages for both.
+/// This is essentially two tests at once for each vulnerability. We generate separate error messages for both.
 pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
@@ -85,7 +85,7 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<Valid
 
         // check that all affected products (first_affected, known_affected, last_affected) are covered by at least one CVSS object
         // TODO: There is a `get_all_by_product_status` on the ProductStatus trait, but that drops the
-        // paths. This will be refactored into a aggregation type, and then this should be revisited as
+        // paths. This will be refactored into an aggregation type, and then this should be revisited as
         // a use case for another, similar aggregation.
         if let Some(product_status) = vulnerability.get_product_status() {
             check_uncovered_affected_products(

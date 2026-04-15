@@ -37,6 +37,14 @@ Contains IANA's language subtag registry found at
 https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry.
 Assumed to be public domain material, according to https://www.iana.org/help/licensing-terms.
 
+- `scancode-licensedb.json`
+
+Contains the index of ScanCode LicenseDB licenses found at
+https://scancode-licensedb.aboutcode.org/index.json
+Licensed under the Creative Commons Attribution License 4.0 (CC-BY-4.0).
+Copyright (c) nexB Inc. and others. ScanCode is a trademark of nexB Inc.
+
+
 ### Metric resources
 
 Schema definitions for metric content

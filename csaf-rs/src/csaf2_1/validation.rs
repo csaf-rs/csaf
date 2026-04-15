@@ -162,7 +162,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.52" => Some(ValidatorForTest6_1_52.validate(self)),
                 "6.1.53" => Some(ValidatorForTest6_1_53.validate(self)),
                 "6.1.54" => Some(ValidatorForTest6_1_54.validate(self)),
-                "6.1.55" => None, // Some(ValidatorForTest6_1_55.validate(self)),
+                "6.1.55" => Some(ValidatorForTest6_1_55.validate(self)),
                 "6.1.56" => Some(ValidatorForTest6_1_56.validate(self)),
                 "6.1.57" => Some(ValidatorForTest6_1_57.validate(self)),
                 "6.1.58" => Some(ValidatorForTest6_1_58.validate(self)),

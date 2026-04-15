@@ -125,6 +125,35 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyL
     entries
 });
 
+#[derive(::serde::Deserialize)]
+pub struct ScancodeLicense {
+    pub license_key: String,
+    pub category: String,
+    pub spdx_license_key: Option<String>,
+    pub other_spdx_license_keys: Vec<String>,
+    pub is_exception: bool,
+    pub is_deprecated: bool,
+    pub json: String,
+    pub yaml: String,
+    pub html: String,
+    pub license: String,
+}
+
+pub static SCANCODE_LICENSEDB_LICENSES: LazyLock<HashSet<String>> = LazyLock::new(|| {
+    let licenses: Vec<ScancodeLicense> =
+        serde_json::from_str(include_str!("../assets/scancode-licensedb.json")).unwrap();
+    licenses
+        .into_iter()
+        .flat_map(|license| {
+            std::iter::once(&license.spdx_license_key)
+                .filter_map(|key| key.as_ref())
+                .chain(license.other_spdx_license_keys.iter())
+                .filter_map(|key| key.strip_prefix("LicenseRef-").map(|k| k.to_string()))
+                .collect::<Vec<String>>()
+        })
+        .collect()
+});
+
 pub const CSAF_2_0_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.0/csaf_json_schema.json";
 pub static CSAF_2_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     let schema_str = include_str!("../assets/csaf_2.0_json_schema.json");

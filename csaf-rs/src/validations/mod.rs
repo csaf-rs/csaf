@@ -107,8 +107,8 @@ pub mod test_6_2_41;
 pub mod test_6_2_48;
 pub mod test_6_2_52;
 
+pub mod test_6_3_02;
 pub mod test_6_3_1;
-// pub mod test_6_3_2;
 pub mod test_6_3_3;
 pub mod test_6_3_4;
 pub mod test_6_3_5;

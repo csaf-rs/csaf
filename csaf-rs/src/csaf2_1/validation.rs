@@ -263,8 +263,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Severity::Info,
             match test_id {
                 // informative tests
-                "6.3.1" => None,  // Some(ValidatorForTests6_3_1.validate(self)),
-                "6.3.2" => None,  // Some(ValidatorForTests6_3_2.validate(self)),
+                "6.3.1" => None, // Some(ValidatorForTests6_3_1.validate(self)),
+                "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
                 "6.3.3" => None,  // Some(ValidatorForTests6_3_3.validate(self)),
                 "6.3.4" => None,  // Some(ValidatorForTests6_3_4.validate(self)),
                 "6.3.5" => None,  // Some(ValidatorForTests6_3_5.validate(self)),

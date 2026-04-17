@@ -1,118 +1,28 @@
-use crate::csaf_traits::{
-    CsafTrait, CsafVersion, DocumentTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
-};
+use crate::csaf::types::purl::csaf_purl::CsafPurl;
+use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
-use packageurl::PackageUrl;
-use regex::Regex;
-use std::str::FromStr;
-use std::sync::LazyLock;
-
-static PURL_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^pkg:[A-Za-z.\-+][A-Za-z0-9.\-+]*/.+").unwrap());
-
-fn get_purl_instance_path_substring(csaf_version: &CsafVersion) -> &'static str {
-    match csaf_version {
-        CsafVersion::X20 => "purl",
-        CsafVersion::X21 => "purls",
-    }
-}
-
-fn generate_purl_format_error_message(
-    csaf_version: &CsafVersion,
-    purl_str: &str,
-    error: PurlParseError,
-    path: &str,
-    index: usize,
-) -> ValidationError {
-    ValidationError {
-        message: format!("Invalid PURL format: {purl_str}, Error: {error}"),
-        instance_path: format!(
-            "{}/product_identification_helper/{}/{}",
-            path,
-            get_purl_instance_path_substring(csaf_version),
-            index
-        ),
-    }
-}
-
-#[derive(thiserror::Error, Debug, PartialEq, Eq)]
-pub enum PurlParseError {
-    #[error("invalid scheme: {0:?}")]
-    InvalidScheme(String),
-    #[error("missing scheme")]
-    MissingScheme,
-    #[error("invalid type: {0:?}")]
-    InvalidType(String),
-    #[error("missing type")]
-    MissingType,
-    #[error("invalid key: {0:?}")]
-    InvalidKey(String),
-    #[error("missing name")]
-    MissingName,
-    #[error("no namespace allowed for type {0:?}")]
-    TypeProhibitsNamespace(String),
-    #[error("invalid namespace component: {0:?}")]
-    InvalidNamespaceComponent(String),
-    #[error("invalid subpath segment: {0:?}")]
-    InvalidSubpathSegment(String),
-    #[error("utf-8 decoding failed")]
-    DecodingError,
-    #[error("unsupported in CSAF")]
-    CsafError,
-}
-
-impl From<packageurl::Error> for PurlParseError {
-    fn from(err: packageurl::Error) -> Self {
-        match err {
-            packageurl::Error::InvalidScheme(scheme) => PurlParseError::InvalidScheme(scheme),
-            packageurl::Error::InvalidType(typ) => PurlParseError::InvalidType(typ),
-            packageurl::Error::InvalidKey(key) => PurlParseError::InvalidKey(key),
-            packageurl::Error::MissingName => PurlParseError::MissingName,
-            packageurl::Error::TypeProhibitsNamespace(typ) => PurlParseError::TypeProhibitsNamespace(typ),
-            packageurl::Error::InvalidNamespaceComponent(component) => {
-                PurlParseError::InvalidNamespaceComponent(component)
-            },
-            packageurl::Error::MissingScheme => PurlParseError::MissingScheme,
-            packageurl::Error::MissingType => PurlParseError::MissingType,
-            packageurl::Error::InvalidSubpathSegment(segment) => PurlParseError::InvalidSubpathSegment(segment),
-            packageurl::Error::DecodingError(_) => PurlParseError::DecodingError,
-        }
-    }
-}
 
 /// 6.1.13 PURL
-/// Checks the validity of PURLs in the document. Validation is done via a Regex specified in the standard and
-/// via the packageurl::purl parser.
+///
+/// Checks the validity of PURLs in the document. There are different regexes for the `purl` / `purls` field in CSAF 2.0 and 2.1.
+/// These are enforced during deserialization into the schema types. [CsafPurl] wraps the schema types
+/// and parses the PURL string into a `packageurl::PackageUrl` struct, which performs the actual validation according to the PURL specification.
+///
+/// In this test, we just check if any purls are [CsafPurl::Invalid] and report the errors found.
+/// If a purl failed the respective regex, the schema validation failed already, so this test (currently) does not run.
 pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
-        let version = doc.get_document().get_csaf_version();
         product_tree.visit_all_products(&mut |product, path| {
             if let Some(helper) = product.get_product_identification_helper()
                 && let Some(purls) = helper.get_purls()
             {
-                for (i, purl_str) in purls.iter().enumerate() {
-                    // Check against PURL spec, because it has to be valid
-                    if let Err(e) = PackageUrl::from_str(purl_str) {
-                        errors.get_or_insert_default().push(generate_purl_format_error_message(
-                            version,
-                            purl_str,
-                            e.into(),
-                            path,
-                            i,
-                        ));
-                        continue;
-                    }
-
-                    // Check against regex from standard, because it is more strict in some ways (e.g. it prohibits double // after scheme)
-                    if !PURL_REGEX.is_match(purl_str) {
-                        errors.get_or_insert_default().push(generate_purl_format_error_message(
-                            version,
-                            purl_str,
-                            PurlParseError::CsafError,
-                            path,
-                            i,
-                        ));
+                for (i_p, purl) in purls.into_iter().enumerate() {
+                    if let CsafPurl::Invalid(e) = purl {
+                        errors
+                            .get_or_insert_default()
+                            .push(e.into_validation_error(helper.get_purls_json_path(path, i_p)))
                     }
                 }
             }
@@ -127,139 +37,49 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_13, test_6_1_13_purl
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::purl::{PurlParseError, PurlParseErrorKind};
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_13() {
-        TESTS_2_0.test_6_1_13.expect(
-            Err(vec![generate_purl_format_error_message(
-                &CsafVersion::X20,
-                "pkg:maven/@1.3.4",
-                PurlParseError::MissingName,
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
+        // Shared expected results (only "purl"/"purls" field name differs between 2.0 and 2.1)
+        let case_01_missing_name = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
             Err(vec![
-                generate_purl_format_error_message(
-                    // missing scheme
-                    &CsafVersion::X20,
-                    "somepackage",
-                    PurlParseError::MissingScheme,
-                    "/product_tree/full_product_names/0",
-                    0,
-                ),
-                generate_purl_format_error_message(
-                    // missing scheme because colon can't be encoded
-                    &CsafVersion::X20,
-                    "pkg%3Amaven%2Flogging",
-                    PurlParseError::MissingScheme,
-                    "/product_tree/full_product_names/1",
-                    0,
-                ),
-            ]),
-            Err(vec![generate_purl_format_error_message(
-                // invalid scheme
-                &CsafVersion::X20,
-                "http://maven/logging@1.3.4",
-                PurlParseError::InvalidScheme("http".to_string()),
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![generate_purl_format_error_message(
-                // prohibited double / after scheme
-                &CsafVersion::X20,
-                "pkg://maven/logging@1.3.4",
-                PurlParseError::CsafError,
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![generate_purl_format_error_message(
-                // missing type
-                &CsafVersion::X20,
-                "pkg:/somepackage",
-                PurlParseError::MissingType,
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![generate_purl_format_error_message(
-                // missing type
-                &CsafVersion::X20,
-                "pkg:ma%3Fen/somepackage",
-                PurlParseError::InvalidType("ma%3Fen".to_string()),
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
+                PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName)
+                    .into_validation_error(format!(
+                        "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
+                    )),
+            ])
+        };
+
+        let case_02_or_s06_type_prohibits_namespace = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
+            Err(vec![
+                PurlParseError::new_for_test(
+                    "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
+                    PurlParseErrorKind::TypeProhibitsNamespace("oci".to_string()),
+                )
+                .into_validation_error(format!(
+                    "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
+                )),
+            ])
+        };
+
+        // Case 11/S11: valid purl
+        // Case 12/S12: valid purl with repo url
+
+        TESTS_2_0.test_6_1_13.expect(
+            case_01_missing_name("purl", ""),
+            case_02_or_s06_type_prohibits_namespace("purl", ""),
+            Ok(()),
+            Ok(()),
         );
 
-        // CSAF 2.1 has 4 test cases (01, 02, 11, 12)
         TESTS_2_1.test_6_1_13.expect(
-            Err(vec![generate_purl_format_error_message(
-                &CsafVersion::X21,
-                "pkg:maven/@1.3.4",
-                PurlParseError::MissingName,
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![generate_purl_format_error_message(
-                &CsafVersion::X21,
-                "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
-                PurlParseError::TypeProhibitsNamespace("oci".to_string()),
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![
-                generate_purl_format_error_message(
-                    // missing scheme
-                    &CsafVersion::X21,
-                    "somepackage",
-                    PurlParseError::MissingScheme,
-                    "/product_tree/full_product_names/0",
-                    0,
-                ),
-                generate_purl_format_error_message(
-                    // missing scheme because colon can't be encoded
-                    &CsafVersion::X21,
-                    "pkg%3Amaven%2Flogging",
-                    PurlParseError::MissingScheme,
-                    "/product_tree/full_product_names/1",
-                    0,
-                ),
-            ]),
-            Err(vec![generate_purl_format_error_message(
-                // invalid scheme
-                &CsafVersion::X21,
-                "http://maven/logging@1.3.4",
-                PurlParseError::InvalidScheme("http".to_string()),
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![generate_purl_format_error_message(
-                // prohibited double / after scheme
-                &CsafVersion::X21,
-                "pkg://maven/logging@1.3.4",
-                PurlParseError::CsafError,
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![generate_purl_format_error_message(
-                // missing type
-                &CsafVersion::X21,
-                "pkg:/somepackage",
-                PurlParseError::MissingType,
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Err(vec![generate_purl_format_error_message(
-                // missing type
-                &CsafVersion::X21,
-                "pkg:ma%3Fen/somepackage",
-                PurlParseError::InvalidType("ma%3Fen".to_string()),
-                "/product_tree/full_product_names/0",
-                0,
-            )]),
-            Ok(()), // case_11
-            Ok(()), // case_12
+            case_01_missing_name("purls", "/0"),
+            case_02_or_s06_type_prohibits_namespace("purls", "/0"),
+            Ok(()),
+            Ok(()),
         );
     }
 }

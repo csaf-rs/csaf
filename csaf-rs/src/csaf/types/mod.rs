@@ -5,4 +5,5 @@ pub mod csaf_hash_algo;
 pub mod csaf_product_id_helper_number;
 pub mod csaf_vuln_metric;
 pub mod language;
+pub mod purl;
 pub mod version_number;

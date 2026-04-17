@@ -56,7 +56,7 @@ impl PurlParseError {
     }
 }
 
-/// Map all [packageurl::Error]'s to our internal [PurlParseErrorKind].
+/// Map all [packageurl::Error]s to our internal [PurlParseErrorKind].
 impl From<packageurl::Error> for PurlParseErrorKind {
     fn from(error: packageurl::Error) -> Self {
         match error {

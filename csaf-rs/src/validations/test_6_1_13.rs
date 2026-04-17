@@ -4,7 +4,7 @@ use crate::validation::ValidationError;
 
 /// 6.1.13 PURL
 ///
-/// Checks the validity of PURLs in the document. There are different Regex's for the `purl` / `purls` field in CSAF 2.0 and 2.1.
+/// Checks the validity of PURLs in the document. There are different regexes for the `purl` / `purls` field in CSAF 2.0 and 2.1.
 /// These are enforced during deserialization into the schema types. [CsafPurl] wraps the schema types
 /// and parses the PURL string into a `packageurl::PackageUrl` struct, which performs the actual validation according to the PURL specification.
 ///

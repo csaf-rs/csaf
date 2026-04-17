@@ -30,12 +30,12 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
                 for (i, purl) in purls.into_iter().enumerate() {
                     // check purl validation result
                     match purl {
-                        Valid(mut p) => {
+                        Valid(p) => {
                             bases_map
                                 // create hashmap if it does not exist
                                 .get_or_insert_default()
                                 // create entry for base if it does not exist
-                                .entry(p.clear_qualifiers().to_string())
+                                .entry(p.base_without_qualifiers().to_owned())
                                 // create vec if it does not exist
                                 .or_default()
                                 // push path index into vec

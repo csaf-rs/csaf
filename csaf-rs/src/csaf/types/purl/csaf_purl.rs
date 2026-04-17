@@ -1,30 +1,33 @@
 use crate::schema::csaf2_0::schema::PackageUrlRepresentation as PackageUrlRepresentation20;
 use crate::schema::csaf2_1::schema::PackageUrlRepresentation as PackageUrlRepresentation21;
-use crate::validation::ValidationError;
+pub use crate::csaf::types::purl::purl_error::{PurlParseError, PurlParseErrorKind};
+pub use crate::csaf::types::purl::valid_purl::ValidPurl;
 use packageurl::PackageUrl;
 use std::ops::Deref;
 use std::str::FromStr;
 
 /// Represents a parsed CSAF PURL that is either valid or invalid.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CsafPurl {
     /// A successfully parsed and validated PURL.
-    Valid(PackageUrl<'static>),
+    Valid(ValidPurl),
     /// A PURL that failed parsing or validation.
     Invalid(PurlParseError),
-}
-
-#[derive(Debug)]
-pub struct PurlParseError {
-    pub purl_str: String,
-    pub error: packageurl::Error,
 }
 
 impl CsafPurl {
     fn parse(purl_str: &str) -> CsafPurl {
         match PackageUrl::from_str(purl_str) {
-            Ok(purl) => CsafPurl::Valid(purl),
-            Err(e) => CsafPurl::Invalid(PurlParseError::new(purl_str, e)),
+            Ok(mut purl) => {
+                let normalized_purl = purl.to_string();
+                let base_without_qualifiers = purl.clear_qualifiers().to_string();
+                CsafPurl::Valid(ValidPurl::new(
+                    purl_str.to_owned(),
+                    normalized_purl,
+                    base_without_qualifiers,
+                ))
+            },
+            Err(e) => CsafPurl::Invalid(PurlParseError::from_packageurl_error(purl_str, e)),
         }
     }
 }
@@ -41,21 +44,6 @@ impl From<&PackageUrlRepresentation21> for CsafPurl {
     }
 }
 
-impl PurlParseError {
-    pub fn new(purl_str: &str, error: packageurl::Error) -> Self {
-        PurlParseError {
-            purl_str: purl_str.to_owned(),
-            error,
-        }
-    }
-
-    pub fn into_validation_error(self, instance_path: String) -> ValidationError {
-        ValidationError {
-            message: format!("Invalid PURL format: {}, Error: {}", self.purl_str, self.error),
-            instance_path,
-        }
-    }
-}
 
 #[cfg(test)]
 mod test_purl_regex_parsing {
@@ -107,11 +95,13 @@ mod test_purl_regex_parsing {
 #[cfg(test)]
 mod test_purl_full_pipeline {
     use crate::csaf::enums::csaf_version::CsafVersion;
-    use crate::csaf::types::purl::csaf_purl::{CsafPurl, PurlParseError};
+    use crate::csaf::types::purl::{PurlParseError, PurlParseErrorKind};
     use crate::schema::csaf2_0::schema::PackageUrlRepresentation as PackageUrlRepresentation20;
     use crate::schema::csaf2_1::schema::PackageUrlRepresentation as PackageUrlRepresentation21;
     use rstest::rstest;
     use std::str::FromStr;
+
+    use super::*;
 
     /// Helper function for the CSAF 2.0 / 2.1 matrix test.
     fn to_csaf_purl(purl_str: &str, version: &CsafVersion) -> CsafPurl {
@@ -130,25 +120,38 @@ mod test_purl_full_pipeline {
     }
 
     #[rstest]
-    #[case::missing_name("pkg:maven/@1.3.4", packageurl::Error::MissingName)]
-    #[case::type_prohibits_namespace("pkg:oci/com.example/product-A@sha256%3Add134261219b2", packageurl::Error::TypeProhibitsNamespace("oci".to_string()))]
-    /// Invalid purls passed the regex of their respective CSAF version.. These mirror 6.1.13 test cases.
-    /// TODO: Tinker a bit more, if we can find suppl test cases here.
+    #[case::missing_name_only_version("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName)]
+    #[case::type_prohibits_namespace_oci("pkg:oci/com.example/product-A@sha256%3Add134261219b2", PurlParseErrorKind::TypeProhibitsNamespace("oci".to_string()))]
+    #[case::type_prohibits_namespace_cargo("pkg:cargo/somenamespace/somecrate", PurlParseErrorKind::TypeProhibitsNamespace("cargo".to_string()))]
+    #[case::type_prohibits_namespace_nuget("pkg:nuget/somenamespace/somepackage", PurlParseErrorKind::TypeProhibitsNamespace("nuget".to_string()))]
+    #[case::invalid_key_leading_digit("pkg:maven/somenamespace/lib?1stkey=value", PurlParseErrorKind::InvalidKey("1stkey".to_string()))]
+    #[case::invalid_key_with_plus("pkg:maven/somenamespace/lib?bad+key=value", PurlParseErrorKind::InvalidKey("bad+key".to_string()))]
+    #[case::invalid_namespace_encoded_slash("pkg:maven/somename%2Fspace/name", PurlParseErrorKind::InvalidNamespaceComponent("somename/space".to_string()))]
+    #[case::invalid_subpath_encoded_slash("pkg:maven/somenamespace/name#seg%2Fment", PurlParseErrorKind::InvalidSubpathSegment("seg/ment".to_string()))]
+    /// Invalid PURLs that pass the CSAF regex (stage 1) but fail `packageurl` parsing (stage 2).
+    /// The regex is a flat structural check (basically `^pkg:TYPE/.+`) and cannot validate:
+    /// - decomposed structure (empty name after splitting namespace/name)
+    /// - type-specific semantic rules (namespace prohibition)
+    /// - qualifier key validity
+    /// - percent-decoding results (decoded `/` in namespace/subpath components)
+    /// TODO: All of these are to be considered for 6.1.13 supplemental tests.
     fn test_invalid_purl(
         #[case] purl_str: &str,
-        #[case] expected_error: packageurl::Error,
+        #[case] expected_error: PurlParseErrorKind,
         #[values(CsafVersion::X20, CsafVersion::X21)] version: CsafVersion,
     ) {
         let csaf_purl = to_csaf_purl(purl_str, &version);
 
-        let expected = PurlParseError::new(purl_str, expected_error).into_validation_error(String::new());
+        let expected = PurlParseError::new_for_test(purl_str, expected_error).into_validation_error(String::new());
 
         match csaf_purl {
             CsafPurl::Invalid(err) => {
                 let actual = err.into_validation_error(String::new());
                 assert_eq!(actual, expected);
             },
-            CsafPurl::Valid(_) => panic!("Expected purl to fail packageurl validation, but it passed"),
+            CsafPurl::Valid(_) => {
+                panic!("Expected purl to fail packageurl validation, but it passed")
+            }
         }
     }
 
@@ -163,14 +166,14 @@ mod test_purl_full_pipeline {
     #[case::deb_with_arch_arm64("pkg:deb/debian/curl@8.13.0-5~bpo12+1+deb12u12?arch=arm64")]
     #[case::deb_with_arch_armel("pkg:deb/debian/curl@7.1.0-5?arch=armel")]
     #[case::deb_without_namespace("pkg:deb/curl@8.13.0-5~bpo12+1?arch=i386")]
-    // Some additional valid purls from the test data
+    /// Test the happy path with some additional valid purls from the test data.
     fn test_valid_purl(#[case] input: &str, #[values(CsafVersion::X20, CsafVersion::X21)] version: CsafVersion) {
         let csaf_purl = to_csaf_purl(input, &version);
         match csaf_purl {
             CsafPurl::Valid(_) => {},
             CsafPurl::Invalid(err) => panic!(
                 "Expected purl to pass packageurl validation, but it failed: {}",
-                err.error
+                err.kind()
             ),
         }
     }

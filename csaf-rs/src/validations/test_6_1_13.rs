@@ -8,8 +8,8 @@ use crate::validation::ValidationError;
 /// These are enforced during deserialization into the schema types. [CsafPurl] wraps the schema types
 /// and parses the PURL string into a `packageurl::PackageUrl` struct, which performs the actual validation according to the PURL specification.
 ///
-/// In this test, we just check if any purls are [CsafPurl::Invalid] and report the errors provided by `packageurl`.
-/// If a purl failed the respective regex, the schema validation failed already, so this test does not run.
+/// In this test, we just check if any purls are [CsafPurl::Invalid] and report the errors found.
+/// If a purl failed the respective regex, the schema validation failed already, so this test (currently) does not run.
 pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
@@ -37,7 +37,7 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_13, test_6_1_13_purl
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf::types::purl::csaf_purl::PurlParseError;
+    use crate::csaf::types::purl::{PurlParseError, PurlParseErrorKind};
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
@@ -46,7 +46,7 @@ mod tests {
         // Shared expected results (only "purl"/"purls" field name differs between 2.0 and 2.1)
         let case_01_missing_name = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
             Err(vec![
-                PurlParseError::new("pkg:maven/@1.3.4", packageurl::Error::MissingName).into_validation_error(format!(
+                PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName).into_validation_error(format!(
                     "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
                 )),
             ])
@@ -54,9 +54,9 @@ mod tests {
 
         let case_02_or_s06_type_prohibits_namespace = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
             Err(vec![
-                PurlParseError::new(
+                PurlParseError::new_for_test(
                     "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
-                    packageurl::Error::TypeProhibitsNamespace("oci".to_string()),
+                    PurlParseErrorKind::TypeProhibitsNamespace("oci".to_string()),
                 )
                 .into_validation_error(format!(
                     "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"

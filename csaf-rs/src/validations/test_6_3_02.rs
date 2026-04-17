@@ -1,14 +1,14 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 
-fn create_cvss_v3_0_used_error(content_path: &String) -> ValidationError {
+fn create_cvss_v3_0_used_error(content_path: &str) -> ValidationError {
     ValidationError {
         message: "CVSS v3.0 is used (version is '3.0').".to_string(),
         instance_path: format!("{content_path}/cvss_v3/version"),
     }
 }
 
-fn create_cvss_v3_0_vector_string_error(content_path: &String) -> ValidationError {
+fn create_cvss_v3_0_vector_string_error(content_path: &str) -> ValidationError {
     ValidationError {
         message: "CVSS v3.0 is used (vectorString prefix is 'CVSS:3.0/').".to_string(),
         instance_path: format!("{content_path}/cvss_v3/vectorString"),
@@ -20,7 +20,7 @@ fn create_cvss_v3_0_vector_string_error(content_path: &String) -> ValidationErro
 /// For each item in the list of metrics which contains the cvss_v3 object under content
 /// it MUST be tested that CVSS v3.0 is not used.
 ///
-/// Using the cvss deserialization here is to resource intensive for this simple test.
+/// Using the CVSS deserialization here is too resource-intensive for this simple test.
 /// We only need to check if the two relevant fields `cvss_v3/version` and `cvss_v3/vectorString`
 /// indicate CVSS v3.0, which can be done with simple string comparisons.
 ///
@@ -75,25 +75,25 @@ mod tests {
     #[test]
     fn test_test_6_3_2() {
         let case_01_v3_0_used_csaf_20 = Err(vec![
-            create_cvss_v3_0_used_error(&"/vulnerabilities/0/scores/0".to_string()),
-            create_cvss_v3_0_vector_string_error(&"/vulnerabilities/0/scores/0".to_string()),
+            create_cvss_v3_0_used_error("/vulnerabilities/0/scores/0"),
+            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/scores/0"),
         ]);
         let case_01_v3_0_used_csaf_21 = Err(vec![
-            create_cvss_v3_0_used_error(&"/vulnerabilities/0/metrics/0/content".to_string()),
-            create_cvss_v3_0_vector_string_error(&"/vulnerabilities/0/metrics/0/content".to_string()),
+            create_cvss_v3_0_used_error("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/metrics/0/content"),
         ]);
 
         let case_02_mixed_some_with_v3_0_csaf_20 = Err(vec![
-            create_cvss_v3_0_used_error(&"/vulnerabilities/0/scores/0".to_string()),
-            create_cvss_v3_0_vector_string_error(&"/vulnerabilities/0/scores/0".to_string()),
-            create_cvss_v3_0_used_error(&"/vulnerabilities/2/scores/0".to_string()),
-            create_cvss_v3_0_vector_string_error(&"/vulnerabilities/2/scores/0".to_string()),
+            create_cvss_v3_0_used_error("/vulnerabilities/0/scores/0"),
+            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/scores/0"),
+            create_cvss_v3_0_used_error("/vulnerabilities/2/scores/0"),
+            create_cvss_v3_0_vector_string_error("/vulnerabilities/2/scores/0"),
         ]);
         let case_02_mixed_some_with_v3_0_csaf_21 = Err(vec![
-            create_cvss_v3_0_used_error(&"/vulnerabilities/0/metrics/0/content".to_string()),
-            create_cvss_v3_0_vector_string_error(&"/vulnerabilities/0/metrics/0/content".to_string()),
-            create_cvss_v3_0_used_error(&"/vulnerabilities/2/metrics/0/content".to_string()),
-            create_cvss_v3_0_vector_string_error(&"/vulnerabilities/2/metrics/0/content".to_string()),
+            create_cvss_v3_0_used_error("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_used_error("/vulnerabilities/2/metrics/0/content"),
+            create_cvss_v3_0_vector_string_error("/vulnerabilities/2/metrics/0/content"),
         ]);
 
         // Case 11: 1 vuln with v3.1

@@ -663,6 +663,16 @@
           "valid": true
         }
       ]
+    },
+    {
+      "id": "6.3.12",
+      "group": "informative",
+      "failures": [
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-12-s01.json",
+          "valid": false
+        }
+      ]
     }
   ]
 }

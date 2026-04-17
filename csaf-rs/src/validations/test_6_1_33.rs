@@ -31,7 +31,7 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
                 // iterate over all group ids, resolve each group id separately
                 if let Some(group_ids) = flag.get_group_ids() {
                     for group_id in group_ids {
-                        if let Some(resolved_product_ids) = resolve_product_groups(doc, [group_id].into_iter()) {
+                        if let Some(resolved_product_ids) = resolve_product_groups(doc, [group_id]) {
                             // add the resolved product ids to the product_id_to_flags map with group id
                             for product_id in resolved_product_ids {
                                 product_id_to_flags_map.entry(product_id).or_default().push((

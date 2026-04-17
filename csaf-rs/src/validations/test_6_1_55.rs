@@ -54,32 +54,30 @@ fn is_english_or_default(doc: &impl CsafTrait) -> bool {
 
 fn expect_exactly_one_license_text(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     if let Some(notes) = doc.get_document().get_notes() {
+        let mut errors: Vec<ValidationError> = Vec::new();
         let license_notes = notes
             .iter()
-            .filter(|note| note.get_title().is_some_and(|title| title == "License"))
-            .count();
-        if license_notes > 1 {
-            return Err(vec![create_multiple_license_text_error()]);
-        } else if license_notes < 1 {
-            return Err(vec![create_missing_license_text_error()]);
-        }
-
-        let errors: Vec<ValidationError> = notes
-            .iter()
             .enumerate()
-            .filter_map(|(note_index, note)| {
-                if note.get_title().is_some_and(|title| title == "License")
-                    && note.get_category() != NoteCategory::LegalDisclaimer
-                {
-                    Some(create_incorrect_license_text_category_error(
-                        &format!("/document/notes/{note_index}/category"),
-                        &note.get_category(),
-                    ))
+            .filter(|(note_index, note)| {
+                if note.get_title().is_some_and(|title| title == "License") {
+                    if note.get_category() != NoteCategory::LegalDisclaimer {
+                        errors.push(create_incorrect_license_text_category_error(
+                            &format!("/document/notes/{note_index}/category"),
+                            &note.get_category(),
+                        ));
+                    }
+                    true
                 } else {
-                    None
+                    false
                 }
             })
-            .collect();
+            .count();
+        if license_notes > 1 {
+            errors.push(create_multiple_license_text_error());
+        } else if license_notes < 1 {
+            errors.push(create_missing_license_text_error());
+        }
+
         if errors.is_empty() { Ok(()) } else { Err(errors) }
     } else {
         Err(vec![create_missing_license_text_error()])
@@ -119,16 +117,20 @@ mod tests {
     #[test]
     fn test_test_6_1_55() {
         // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success case)
+        let case_01_category_other = Err(vec![create_incorrect_license_text_category_error(
+            "/document/notes/0/category",
+            &NoteCategory::Other,
+        )]);
+        let case_02_category_general = Err(vec![create_incorrect_license_text_category_error(
+            "/document/notes/0/category",
+            &NoteCategory::General,
+        )]);
+        let case_s01_multiple = Err(vec![create_multiple_license_text_error()]);
+
         TESTS_2_1.test_6_1_55.expect(
-            Err(vec![create_incorrect_license_text_category_error(
-                "/document/notes/0/category",
-                &NoteCategory::Other,
-            )]),
-            Err(vec![create_incorrect_license_text_category_error(
-                "/document/notes/0/category",
-                &NoteCategory::General,
-            )]),
-            Err(vec![create_multiple_license_text_error()]),
+            case_01_category_other,
+            case_02_category_general,
+            case_s01_multiple,
             Ok(()),
             Ok(()),
             Ok(()),

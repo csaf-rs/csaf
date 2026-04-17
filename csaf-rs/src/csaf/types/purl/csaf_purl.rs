@@ -1,7 +1,7 @@
-use crate::schema::csaf2_0::schema::PackageUrlRepresentation as PackageUrlRepresentation20;
-use crate::schema::csaf2_1::schema::PackageUrlRepresentation as PackageUrlRepresentation21;
 pub use crate::csaf::types::purl::purl_error::{PurlParseError, PurlParseErrorKind};
 pub use crate::csaf::types::purl::valid_purl::ValidPurl;
+use crate::schema::csaf2_0::schema::PackageUrlRepresentation as PackageUrlRepresentation20;
+use crate::schema::csaf2_1::schema::PackageUrlRepresentation as PackageUrlRepresentation21;
 use packageurl::PackageUrl;
 use std::ops::Deref;
 use std::str::FromStr;
@@ -43,7 +43,6 @@ impl From<&PackageUrlRepresentation21> for CsafPurl {
         CsafPurl::parse(purl.deref())
     }
 }
-
 
 #[cfg(test)]
 mod test_purl_regex_parsing {
@@ -151,7 +150,7 @@ mod test_purl_full_pipeline {
             },
             CsafPurl::Valid(_) => {
                 panic!("Expected purl to fail packageurl validation, but it passed")
-            }
+            },
         }
     }
 

@@ -46,9 +46,10 @@ mod tests {
         // Shared expected results (only "purl"/"purls" field name differs between 2.0 and 2.1)
         let case_01_missing_name = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
             Err(vec![
-                PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName).into_validation_error(format!(
-                    "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
-                )),
+                PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName)
+                    .into_validation_error(format!(
+                        "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
+                    )),
             ])
         };
 

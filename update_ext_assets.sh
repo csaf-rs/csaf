@@ -44,3 +44,4 @@ rsync_url() {
 }
 
 rsync_url https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry csaf-rs/assets/language-subtag-registry.txt
+rsync_url https://scancode-licensedb.aboutcode.org/index.json csaf-rs/assets/scancode-licensedb.json

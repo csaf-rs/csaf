@@ -1,34 +1,22 @@
-use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, ProductGroupsByIdMap, ProductStatusGroup, VulnerabilityTrait};
 use crate::validation::ValidationError;
-use std::collections::HashMap;
 
 pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = vulnerability.get_product_status() {
-            let product_status_map = product_status.get_all_by_product_status();
+            let product_to_groups = ProductGroupsByIdMap::from(product_status);
 
-            // Invert the map: product_id -> list of ProductStatusGroups
-            let mut product_to_groups: HashMap<String, Vec<ProductStatusGroup>> = HashMap::new();
-
-            for (group, product_ids) in product_status_map {
-                if group == ProductStatusGroup::Recommended {
-                    // recommended products must not be checked for contradictions
-                    continue;
-                }
-                for product_id in product_ids {
-                    product_to_groups
-                        .entry(product_id.to_owned())
-                        .or_default()
-                        .push(group.clone());
-                }
-            }
-
+            // TODO improve error messages now that the offending product paths are available
             // Check for products with multiple status groups (contradictions)
             for (product_id, groups) in product_to_groups {
-                if groups.len() > 1 {
-                    let mut affected_groups = groups;
-                    affected_groups.sort();
+                let mut affected_groups: Vec<ProductStatusGroup> = groups
+                    .into_keys()
+                    .filter(|g| *g != ProductStatusGroup::Recommended)
+                    .collect();
+                // sort for deterministic errors
+                affected_groups.sort();
+                if affected_groups.len() > 1 {
                     errors.get_or_insert_default().push(generate_err_msg(
                         &product_id,
                         &affected_groups,

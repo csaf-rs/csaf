@@ -1,3 +1,4 @@
+pub mod aggregation;
 pub mod consts;
 pub mod enums;
 pub mod loader;

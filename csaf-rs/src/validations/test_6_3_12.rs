@@ -1,5 +1,7 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
-use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, ProductStatusTrait, VulnerabilityTrait};
+use crate::csaf_traits::{
+    ContentTrait, CsafTrait, MetricTrait, ProductStatusGroup, ProductStatusGroupMap, VulnerabilityTrait,
+};
 use crate::validation::ValidationError;
 use std::collections::HashSet;
 
@@ -19,27 +21,6 @@ fn create_affected_product_not_covered_error(product_id: &str, instance_path: St
     ValidationError {
         message: format!("Affected product {product_id} is not covered by any CVSS score."),
         instance_path,
-    }
-}
-
-/// Helper to check products from an affected status category and push errors
-/// for any that are not covered by a CVSS object.
-fn check_uncovered_affected_products<'a>(
-    products_covered_by_cvss: &HashSet<String>,
-    products_in_status_group: Option<impl Iterator<Item = &'a String> + 'a>,
-    v_i: usize,
-    status_name: &str,
-    errors: &mut Option<Vec<ValidationError>>,
-) {
-    if let Some(products_in_group_iter) = products_in_status_group {
-        for (p_i, product_id) in products_in_group_iter.enumerate() {
-            if !products_covered_by_cvss.contains(product_id) {
-                let path = format!("/vulnerabilities/{v_i}/product_status/{status_name}/{p_i}");
-                errors
-                    .get_or_insert_default()
-                    .push(create_affected_product_not_covered_error(product_id, path));
-            }
-        }
     }
 }
 
@@ -84,31 +65,22 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<Valid
         }
 
         // check that all affected products (first_affected, known_affected, last_affected) are covered by at least one CVSS object
-        // TODO: There is a `get_all_by_product_status` on the ProductStatus trait, but that drops the
-        // paths. This will be refactored into an aggregation type, and then this should be revisited as
-        // a use case for another, similar aggregation.
         if let Some(product_status) = vulnerability.get_product_status() {
-            check_uncovered_affected_products(
-                &products_covered_by_cvss,
-                product_status.get_first_affected(),
-                v_i,
-                "first_affected",
-                &mut errors,
-            );
-            check_uncovered_affected_products(
-                &products_covered_by_cvss,
-                product_status.get_known_affected(),
-                v_i,
-                "known_affected",
-                &mut errors,
-            );
-            check_uncovered_affected_products(
-                &products_covered_by_cvss,
-                product_status.get_last_affected(),
-                v_i,
-                "last_affected",
-                &mut errors,
-            );
+            let status_map = ProductStatusGroupMap::from(product_status);
+            if let Some(affected) = status_map.get(&ProductStatusGroup::Affected) {
+                for (product_id, entries) in affected {
+                    if !products_covered_by_cvss.contains(product_id) {
+                        for entry in entries {
+                            errors
+                                .get_or_insert_default()
+                                .push(create_affected_product_not_covered_error(
+                                    product_id,
+                                    entry.json_path(v_i),
+                                ));
+                        }
+                    }
+                }
+            }
         }
     }
 

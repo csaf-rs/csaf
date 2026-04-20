@@ -1,7 +1,9 @@
 use std::fmt::{Display, Formatter};
 
+use crate::csaf::enums::product_status::ProductStatus;
+
 /// Enum representing product status groups
-#[derive(PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
 pub enum ProductStatusGroup {
     // first_affected, known_affected, last_affected
     Affected,
@@ -26,6 +28,21 @@ impl Display for ProductStatusGroup {
             ProductStatusGroup::UnderInvestigation => write!(f, "under investigation"),
             ProductStatusGroup::Unknown => write!(f, "unknown"),
             ProductStatusGroup::Recommended => write!(f, "recommended"),
+        }
+    }
+}
+
+impl From<&ProductStatus> for ProductStatusGroup {
+    fn from(status: &ProductStatus) -> Self {
+        match status {
+            ProductStatus::FirstAffected | ProductStatus::KnownAffected | ProductStatus::LastAffected => {
+                ProductStatusGroup::Affected
+            },
+            ProductStatus::KnownNotAffected => ProductStatusGroup::NotAffected,
+            ProductStatus::Fixed | ProductStatus::FirstFixed => ProductStatusGroup::Fixed,
+            ProductStatus::UnderInvestigation => ProductStatusGroup::UnderInvestigation,
+            ProductStatus::Unknown => ProductStatusGroup::Unknown,
+            ProductStatus::Recommended => ProductStatusGroup::Recommended,
         }
     }
 }

@@ -1,16 +1,12 @@
-use crate::csaf_traits::ProductStatusGroup;
-use crate::schema::csaf2_1::schema::ProductStatus;
-use std::collections::{HashMap, HashSet};
+use crate::csaf::enums::product_status::ProductStatus;
+use crate::schema::csaf2_1::schema::ProductStatus as ProductStatus2_1;
 use std::ops::Deref;
 
-/// Helper macro to add product status groups to a HashMap
-macro_rules! add_product_status {
-    ($result:ident, $status_group:expr, $getter:expr) => {
-        if let Some(products) = $getter {
-            $result
-                .entry($status_group)
-                .or_insert_with(HashSet::new)
-                .extend(products);
+/// Helper macro to implement a getter that returns an optional iterator over product IDs.
+macro_rules! impl_product_status_getter {
+    ($method:ident, $field:ident) => {
+        fn $method(&self) -> Option<impl Iterator<Item = &String> + '_> {
+            self.$field.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
         }
     };
 }
@@ -44,6 +40,31 @@ pub trait ProductStatusTrait {
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
+    /// Returns all product IDs grouped by their [`ProductStatus`]. The original index is
+    /// implicit in the Vec<String> index.
+    fn get_products_by_status(&self) -> Vec<(ProductStatus, Vec<String>)> {
+        fn collect(products: Option<impl Iterator<Item = impl AsRef<str>>>) -> Vec<String> {
+            products
+                .map(|iter| iter.map(|s| s.as_ref().to_owned()).collect())
+                .unwrap_or_default()
+        }
+
+        vec![
+            (ProductStatus::FirstAffected, collect(self.get_first_affected())),
+            (ProductStatus::LastAffected, collect(self.get_last_affected())),
+            (ProductStatus::KnownAffected, collect(self.get_known_affected())),
+            (ProductStatus::KnownNotAffected, collect(self.get_known_not_affected())),
+            (ProductStatus::Fixed, collect(self.get_fixed())),
+            (ProductStatus::FirstFixed, collect(self.get_first_fixed())),
+            (
+                ProductStatus::UnderInvestigation,
+                collect(self.get_under_investigation()),
+            ),
+            (ProductStatus::Unknown, collect(self.get_unknown())),
+            (ProductStatus::Recommended, collect(self.get_recommended())),
+        ]
+    }
+
     /// Helper method to add product references with a given label to the result vector.
     fn extract_product_references<'a>(
         &self,
@@ -71,74 +92,17 @@ pub trait ProductStatusTrait {
         self.extract_product_references(&mut ids, self.get_unknown(), "unknown");
         ids
     }
-
-    /// Returns a `HashMap` containing all product IDs grouped by their statuses.
-    fn get_all_by_product_status(&self) -> HashMap<ProductStatusGroup, HashSet<&String>> {
-        let mut result: HashMap<ProductStatusGroup, HashSet<&String>> = HashMap::new();
-
-        // affected
-        add_product_status!(result, ProductStatusGroup::Affected, self.get_first_affected());
-        add_product_status!(result, ProductStatusGroup::Affected, self.get_last_affected());
-        add_product_status!(result, ProductStatusGroup::Affected, self.get_known_affected());
-
-        // not affected
-        add_product_status!(result, ProductStatusGroup::NotAffected, self.get_known_not_affected());
-
-        // fixed
-        add_product_status!(result, ProductStatusGroup::Fixed, self.get_fixed());
-        add_product_status!(result, ProductStatusGroup::Fixed, self.get_first_fixed());
-
-        // under investigation
-        add_product_status!(
-            result,
-            ProductStatusGroup::UnderInvestigation,
-            self.get_under_investigation()
-        );
-
-        // unknown
-        add_product_status!(result, ProductStatusGroup::Unknown, self.get_unknown());
-
-        // recommended
-        add_product_status!(result, ProductStatusGroup::Recommended, self.get_recommended());
-
-        result
-    }
 }
 
 impl ProductStatusTrait for crate::schema::csaf2_0::schema::ProductStatus {
-    fn get_first_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.first_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_first_fixed(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.first_fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_fixed(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_known_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.known_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_known_not_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.known_not_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_last_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.last_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_recommended(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.recommended.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.under_investigation
-            .as_ref()
-            .map(|p| (*p).iter().map(|x| x.deref()))
-    }
+    impl_product_status_getter!(get_first_affected, first_affected);
+    impl_product_status_getter!(get_first_fixed, first_fixed);
+    impl_product_status_getter!(get_fixed, fixed);
+    impl_product_status_getter!(get_known_affected, known_affected);
+    impl_product_status_getter!(get_known_not_affected, known_not_affected);
+    impl_product_status_getter!(get_last_affected, last_affected);
+    impl_product_status_getter!(get_recommended, recommended);
+    impl_product_status_getter!(get_under_investigation, under_investigation);
 
     /// Not specified for CSAF 2.0, so `None`
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_> {
@@ -146,42 +110,14 @@ impl ProductStatusTrait for crate::schema::csaf2_0::schema::ProductStatus {
     }
 }
 
-impl ProductStatusTrait for ProductStatus {
-    fn get_first_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.first_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_first_fixed(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.first_fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_fixed(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.fixed.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_known_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.known_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_known_not_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.known_not_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_last_affected(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.last_affected.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_recommended(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.recommended.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.under_investigation
-            .as_ref()
-            .map(|p| (*p).iter().map(|x| x.deref()))
-    }
-
-    fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.unknown.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
+impl ProductStatusTrait for ProductStatus2_1 {
+    impl_product_status_getter!(get_first_affected, first_affected);
+    impl_product_status_getter!(get_first_fixed, first_fixed);
+    impl_product_status_getter!(get_fixed, fixed);
+    impl_product_status_getter!(get_known_affected, known_affected);
+    impl_product_status_getter!(get_known_not_affected, known_not_affected);
+    impl_product_status_getter!(get_last_affected, last_affected);
+    impl_product_status_getter!(get_recommended, recommended);
+    impl_product_status_getter!(get_under_investigation, under_investigation);
+    impl_product_status_getter!(get_unknown, unknown);
 }

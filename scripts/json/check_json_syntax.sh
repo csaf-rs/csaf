@@ -37,7 +37,7 @@ while IFS= read -r file; do
   else
     ((++VALID))
   fi
-done < <(find . \( -path './target' -o -path './.git' -o -path './csaf' -o -path './ssvc' -o -path './csaf-rs/assets' -o -path './.vscode' -o -path './scripts' \) -prune -o -name '*.json' -print)
+done < <(find . \( -name 'target' -o -path './.git' -o -path './csaf' -o -path './ssvc' -o -path './csaf-rs/assets' -o -path './.vscode' -o -path './scripts' \) -prune -o -name '*.json' -not -name '*testcases.json' -not -name '*testcases_json_schema.json' -print)
 
 echo ""
 echo "Results: $VALID valid, $INVALID invalid ($(( VALID + INVALID )) total)"

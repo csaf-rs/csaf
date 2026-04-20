@@ -55,7 +55,10 @@ pub trait ProductStatusTrait {
             (ProductStatus::KnownNotAffected, collect(self.get_known_not_affected())),
             (ProductStatus::Fixed, collect(self.get_fixed())),
             (ProductStatus::FirstFixed, collect(self.get_first_fixed())),
-            (ProductStatus::UnderInvestigation, collect(self.get_under_investigation())),
+            (
+                ProductStatus::UnderInvestigation,
+                collect(self.get_under_investigation()),
+            ),
             (ProductStatus::Unknown, collect(self.get_unknown())),
             (ProductStatus::Recommended, collect(self.get_recommended())),
         ]

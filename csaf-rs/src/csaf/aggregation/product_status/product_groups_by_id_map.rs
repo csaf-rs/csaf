@@ -36,7 +36,8 @@ impl<T: ProductStatusTrait> From<&T> for ProductGroupsByIdMap {
         for (status, products) in ps.get_products_by_status() {
             let group = ProductStatusGroup::from(&status);
             for (index, product_id) in products.into_iter().enumerate() {
-                result.0
+                result
+                    .0
                     .entry(product_id)
                     .or_default()
                     .insert(ProductStatusGroupAndPath {

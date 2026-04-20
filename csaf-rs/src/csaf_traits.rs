@@ -1,4 +1,6 @@
-pub use crate::csaf::aggregation::product_status::product_groups_by_id_map::{ProductGroupsByIdMap, ProductStatusGroupAndPath};
+pub use crate::csaf::aggregation::product_status::product_groups_by_id_map::{
+    ProductGroupsByIdMap, ProductStatusGroupAndPath,
+};
 pub use crate::csaf::aggregation::product_status::product_status_group_map::{
     ProductStatusAndPath, ProductStatusGroupMap,
 };

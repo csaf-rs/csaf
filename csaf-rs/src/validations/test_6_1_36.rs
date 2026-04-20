@@ -84,9 +84,7 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                         {
                             return Err(vec![create_not_affected_conflict_error(&p, &cat, v_i, r_i)]);
                         }
-                        if status_map.contains(&ProductStatusGroup::Fixed, &p)
-                            && FIXED_CONFLICTS.contains(&cat)
-                        {
+                        if status_map.contains(&ProductStatusGroup::Fixed, &p) && FIXED_CONFLICTS.contains(&cat) {
                             return Err(vec![create_fixed_conflict_error(&p, &cat, v_i, r_i)]);
                         }
                     }

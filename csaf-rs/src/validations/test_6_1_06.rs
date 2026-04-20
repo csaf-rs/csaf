@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, ProductGroupsByIdMap, ProductStatusGroup, VulnerabilityTrait};
 use crate::validation::ValidationError;
 
-
 pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
@@ -11,7 +10,11 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
             // TODO improve error messages now that the offending product paths are available
             // Check for products with multiple status groups (contradictions)
             for (product_id, groups) in product_to_groups {
-                let mut affected_groups: Vec<ProductStatusGroup> = groups.into_iter().filter(|g| g.status_group != ProductStatusGroup::Recommended).map(|g| g.status_group).collect();
+                let mut affected_groups: Vec<ProductStatusGroup> = groups
+                    .into_iter()
+                    .filter(|g| g.status_group != ProductStatusGroup::Recommended)
+                    .map(|g| g.status_group)
+                    .collect();
                 // sort for deterministic errors
                 affected_groups.sort();
                 // dedup, as products can be in statuses that map to the same group (exp. 'affected' and 'last_affected')

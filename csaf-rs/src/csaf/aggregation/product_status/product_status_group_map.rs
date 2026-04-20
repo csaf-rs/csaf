@@ -1,5 +1,5 @@
-use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::IntoIter;
+use std::collections::{HashMap, HashSet};
 use std::ops::{Deref, DerefMut};
 
 use crate::csaf::enums::product_status::ProductStatus;
@@ -58,7 +58,6 @@ impl ProductStatusGroupMap {
             .is_some_and(|entries| entries.iter().any(|e| e.product_id == product_id))
     }
 }
-
 
 impl Deref for ProductStatusGroupMap {
     type Target = HashMap<ProductStatusGroup, HashSet<ProductStatusAndPath>>;

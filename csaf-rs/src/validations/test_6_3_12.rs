@@ -1,5 +1,8 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
-use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, ProductStatusAndPath, ProductStatusGroup, ProductStatusGroupMap, VulnerabilityTrait};
+use crate::csaf_traits::{
+    ContentTrait, CsafTrait, MetricTrait, ProductStatusAndPath, ProductStatusGroup, ProductStatusGroupMap,
+    VulnerabilityTrait,
+};
 use crate::validation::ValidationError;
 use std::collections::HashSet;
 
@@ -21,7 +24,6 @@ fn create_affected_product_not_covered_error(product_id: &str, instance_path: St
         instance_path,
     }
 }
-
 
 /// 6.3.12 Missing CVSS v4.0
 ///

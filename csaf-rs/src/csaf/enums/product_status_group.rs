@@ -35,12 +35,11 @@ impl Display for ProductStatusGroup {
 impl From<&ProductStatus> for ProductStatusGroup {
     fn from(status: &ProductStatus) -> Self {
         match status {
-            ProductStatus::FirstAffected
-            | ProductStatus::KnownAffected
-            | ProductStatus::LastAffected => ProductStatusGroup::Affected,
+            ProductStatus::FirstAffected | ProductStatus::KnownAffected | ProductStatus::LastAffected => {
+                ProductStatusGroup::Affected
+            },
             ProductStatus::KnownNotAffected => ProductStatusGroup::NotAffected,
-            ProductStatus::Fixed
-            | ProductStatus::FirstFixed => ProductStatusGroup::Fixed,
+            ProductStatus::Fixed | ProductStatus::FirstFixed => ProductStatusGroup::Fixed,
             ProductStatus::UnderInvestigation => ProductStatusGroup::UnderInvestigation,
             ProductStatus::Unknown => ProductStatusGroup::Unknown,
             ProductStatus::Recommended => ProductStatusGroup::Recommended,

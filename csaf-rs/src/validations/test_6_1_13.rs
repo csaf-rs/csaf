@@ -1,6 +1,6 @@
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
 use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 
 /// 6.1.13 PURL
 ///
@@ -22,7 +22,7 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
                     if let CsafPurl::Invalid(e) = purl {
                         errors
                             .get_or_insert_default()
-                            .push(e.into_validation_error(helper.get_purls_json_path(path, i_p)))
+                            .push(e.into_validation_error(&helper.get_purls_json_path(path, i_p)))
                     }
                 }
             }
@@ -47,7 +47,7 @@ mod tests {
         let case_01_missing_name = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
             Err(vec![
                 PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName)
-                    .into_validation_error(format!(
+                    .into_validation_error(&format!(
                         "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
                     )),
             ])
@@ -59,7 +59,7 @@ mod tests {
                     "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
                     PurlParseErrorKind::TypeProhibitsNamespace("oci".to_string()),
                 )
-                .into_validation_error(format!(
+                .into_validation_error(&format!(
                     "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
                 )),
             ])

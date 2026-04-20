@@ -2,7 +2,7 @@
   "document": {
     "category": "csaf_vex",
     "csaf_version": "2.0",
-   "publisher": {
+    "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
@@ -47,7 +47,7 @@
           "label": "vulnerable_code_not_present",
           "product_ids": [
             "CSAFPID-9080700",
-             "CSAFPID-9080701"
+            "CSAFPID-9080701"
           ]
         }
       ],

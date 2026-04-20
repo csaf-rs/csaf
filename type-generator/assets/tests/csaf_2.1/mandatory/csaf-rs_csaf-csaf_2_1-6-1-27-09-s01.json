@@ -45,7 +45,7 @@
       }
     ]
   },
- "vulnerabilities": [
+  "vulnerabilities": [
     {
       "cve": "CVE-2017-0145",
       "flags": [
@@ -53,7 +53,7 @@
           "label": "vulnerable_code_not_present",
           "product_ids": [
             "CSAFPID-9080700",
-             "CSAFPID-9080701"
+            "CSAFPID-9080701"
           ]
         }
       ],

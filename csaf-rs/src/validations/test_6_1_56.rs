@@ -44,11 +44,7 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
                 for product_id in metric.get_products() {
                     let product_id_source_tuple = (product_id.to_owned(), metric.get_source().map(|s| s.to_owned()));
                     let content = metric.get_content();
-                    let has_ratings_tuple = (
-                        m_i,
-                        content.has_cvss_v2() || content.has_cvss_v3() || content.has_cvss_v4(),
-                        content.has_qualitative_severity(),
-                    );
+                    let has_ratings_tuple = (m_i, content.has_any_cvss(), content.has_qualitative_severity());
                     ratings_map
                         .get_or_insert_default()
                         .entry(product_id_source_tuple)

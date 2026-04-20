@@ -43,10 +43,7 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<Valid
         if let Some(metrics) = vulnerability.get_metrics() {
             for (m_i, metric) in metrics.iter().enumerate() {
                 let content = metric.get_content();
-                // aggregate if any cvss score is present
-                let has_any_cvss = content.has_cvss_v2() || content.has_cvss_v3() || content.has_cvss_v4();
-
-                if has_any_cvss {
+                if content.has_any_cvss() {
                     // collect products covered by this CVSS metric
                     for product_id in metric.get_products() {
                         products_covered_by_cvss.insert(product_id.clone());

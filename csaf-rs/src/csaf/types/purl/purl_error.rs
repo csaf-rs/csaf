@@ -46,7 +46,6 @@ impl PurlParseError {
     pub fn kind(&self) -> &PurlParseErrorKind {
         &self.kind
     }
-
 }
 
 impl IntoValidationError for PurlParseError {

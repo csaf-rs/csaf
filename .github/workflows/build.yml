@@ -282,7 +282,10 @@ jobs:
           cp target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a "$LIB_DIR/"
       - name: Run Go tests
         working-directory: go
-        run: go test -v ./csaf_ffi/
+        run: |
+          GOOS=$(go env GOOS)
+          GOARCH=$(go env GOARCH)
+          CGO_LDFLAGS="-L$(pwd)/csaf_ffi/lib/${GOOS}_${GOARCH}" go test -v ./csaf_ffi/
       - name: Archive Go static library
         uses: actions/upload-artifact@v4
         with:

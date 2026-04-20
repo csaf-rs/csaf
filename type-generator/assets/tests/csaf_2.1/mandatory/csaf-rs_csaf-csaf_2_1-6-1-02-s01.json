@@ -96,11 +96,11 @@
         ]
       },
       {
+        "beginning_product_reference": "CSAFPID-9080700",
         "full_product_name": {
           "name": "P1",
           "product_id": "CSAFPID-9080701"
         },
-        "beginning_product_reference": "CSAFPID-9080700",
         "subpaths": [
           {
             "category": "default_component_of",

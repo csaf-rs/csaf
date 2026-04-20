@@ -8,12 +8,12 @@
         "label": "CLEAR"
       }
     },
-    "source_lang": "EZ",
     "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
+    "source_lang": "EZ",
     "title": "Mandatory test: Language (failing supplementary example 1 - invalid source_lang only)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",

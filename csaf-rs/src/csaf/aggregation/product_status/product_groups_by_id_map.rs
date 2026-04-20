@@ -5,7 +5,7 @@ use std::ops::{Deref, DerefMut};
 use crate::csaf_traits::{ProductStatusAndPath, ProductStatusGroup, ProductStatusTrait};
 
 /// Aggregation of product IDs, mapped to their [`ProductStatusGroup`], preserving
-/// the original [`ProductStatus`] and index each product originated from.
+/// the original [`crate::csaf::enums::product_status::ProductStatus`] and the index each product originated from.
 #[derive(Debug, Clone)]
 pub struct ProductGroupsByIdMap(HashMap<String, HashMap<ProductStatusGroup, Vec<ProductStatusAndPath>>>);
 

@@ -6,7 +6,7 @@ use crate::csaf::aggregation::product_status::ProductStatusAndPath;
 use crate::csaf_traits::{ProductStatusGroup, ProductStatusTrait};
 
 /// Aggregation of product IDs grouped by their [`ProductStatusGroup`], preserving
-/// the original [`ProductStatus`] and index each product originated from.
+/// the original [`crate::csaf::enums::product_status::ProductStatus`] and the index each product originated from.
 #[derive(Debug, Clone)]
 pub struct ProductStatusGroupMap(HashMap<ProductStatusGroup, HashMap<String, Vec<ProductStatusAndPath>>>);
 

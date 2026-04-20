@@ -4,7 +4,7 @@ pub mod product_groups_by_id_map;
 pub mod product_status_group_map;
 
 /// A product status entry with its original [`ProductStatus`] and the index
-/// within the original status list.
+/// each product originated from.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ProductStatusAndPath {
     pub status: ProductStatus,

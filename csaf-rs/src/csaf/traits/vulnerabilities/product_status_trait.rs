@@ -40,7 +40,8 @@ pub trait ProductStatusTrait {
     /// Return a reference to the list of product IDs with unknown status.
     fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
 
-    /// Returns all product IDs grouped by their [`ProductStatus`].
+    /// Returns all product IDs grouped by their [`ProductStatus`]. The original index is
+    /// implicit in the Vec<String> index.
     fn get_products_by_status(&self) -> Vec<(ProductStatus, Vec<String>)> {
         fn collect(products: Option<impl Iterator<Item = impl AsRef<str>>>) -> Vec<String> {
             products

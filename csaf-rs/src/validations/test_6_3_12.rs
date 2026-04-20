@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, MetricTrait, ProductStatusAndPath, ProductStatusGroup, ProductStatusGroupMap,
+    ContentTrait, CsafTrait, MetricTrait, ProductStatusGroup, ProductStatusGroupMap,
     VulnerabilityTrait,
 };
 use crate::validation::ValidationError;
@@ -69,18 +69,16 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<Valid
         if let Some(product_status) = vulnerability.get_product_status() {
             let status_map = ProductStatusGroupMap::from(product_status);
             if let Some(affected) = status_map.get(&ProductStatusGroup::Affected) {
-                let mut affected_entries: Vec<&ProductStatusAndPath> = affected.iter().collect();
-                // Sort by status and index to produce deterministic error ordering
-                affected_entries.sort_by(|a, b| a.status.cmp(&b.status).then(a.index.cmp(&b.index)));
-
-                for entry in affected_entries {
-                    if !products_covered_by_cvss.contains(&entry.product_id) {
-                        errors
-                            .get_or_insert_default()
-                            .push(create_affected_product_not_covered_error(
-                                &entry.product_id,
-                                entry.json_path(v_i),
-                            ));
+                for (product_id, entries) in affected{
+                    if !products_covered_by_cvss.contains(product_id) {
+                        for entry in entries {
+                            errors
+                                .get_or_insert_default()
+                                .push(create_affected_product_not_covered_error(
+                                    product_id,
+                                    entry.json_path(v_i),
+                                ));
+                        }
                     }
                 }
             }

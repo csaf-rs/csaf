@@ -11,13 +11,12 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
             // Check for products with multiple status groups (contradictions)
             for (product_id, groups) in product_to_groups {
                 let mut affected_groups: Vec<ProductStatusGroup> = groups
-                    .into_iter()
-                    .filter(|g| g.status_group != ProductStatusGroup::Recommended)
-                    .map(|g| g.status_group)
+                    .into_keys()
+                    .filter(|g| *g != ProductStatusGroup::Recommended)
                     .collect();
                 // sort for deterministic errors
                 affected_groups.sort();
-                // dedup, as products can be in statuses that map to the same group (exp. 'affected' and 'last_affected')
+                // dedup, as products can be in statuses that map to the same group (e.g. 'affected' and 'last_affected')
                 affected_groups.dedup();
                 if affected_groups.len() > 1 {
                     errors.get_or_insert_default().push(generate_err_msg(

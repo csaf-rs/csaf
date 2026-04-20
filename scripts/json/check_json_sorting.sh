@@ -53,7 +53,7 @@ while IFS= read -r file; do
   else
     ((++SORTED))
   fi
-done < <(find ./type-generator/assets/tests -name '*.json' -not -name '*6-2-13*' -not -name '*6_2_13*')
+done < <(find ./type-generator/assets/tests -name '*.json' -not -name '*6-2-13*' -not -name '*6_2_13*' -not -name 'testcases.json' -not -name 'testcases_json_schema.json')
 
 echo ""
 if [ "$FIX" -eq 1 ]; then

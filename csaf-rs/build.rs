@@ -1,10 +1,6 @@
 use std::io;
 use thiserror::Error;
 
-#[path = "build/language_tag.rs"]
-mod language_tag;
-#[path = "src/language_tag_parser/parser.rs"]
-mod language_tag_parser;
 #[path = "build/schema.rs"]
 mod schema;
 #[path = "build/util.rs"]
@@ -56,8 +52,6 @@ fn main() -> Result<(), BuildError> {
     for (input, output, schema_patch) in &schema_configs {
         schema::build(input, output, schema_patch)?;
     }
-
-    language_tag::generate()?;
 
     Ok(())
 }

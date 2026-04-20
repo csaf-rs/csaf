@@ -1,5 +1,5 @@
-use std::collections::hash_map::IntoIter;
 use std::collections::HashMap;
+use std::collections::hash_map::IntoIter;
 use std::ops::{Deref, DerefMut};
 
 use crate::csaf::aggregation::product_status::ProductStatusAndPath;

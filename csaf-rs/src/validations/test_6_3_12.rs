@@ -1,7 +1,6 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, MetricTrait, ProductStatusGroup, ProductStatusGroupMap,
-    VulnerabilityTrait,
+    ContentTrait, CsafTrait, MetricTrait, ProductStatusGroup, ProductStatusGroupMap, VulnerabilityTrait,
 };
 use crate::validation::ValidationError;
 use std::collections::HashSet;
@@ -69,7 +68,7 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<Valid
         if let Some(product_status) = vulnerability.get_product_status() {
             let status_map = ProductStatusGroupMap::from(product_status);
             if let Some(affected) = status_map.get(&ProductStatusGroup::Affected) {
-                for (product_id, entries) in affected{
+                for (product_id, entries) in affected {
                     if !products_covered_by_cvss.contains(product_id) {
                         for entry in entries {
                             errors

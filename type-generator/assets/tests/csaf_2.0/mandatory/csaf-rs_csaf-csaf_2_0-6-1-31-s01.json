@@ -26,24 +26,24 @@
   "product_tree": {
     "branches": [
       {
-        "category": "vendor",
-        "name": "Example Company",
         "branches": [
           {
-            "category": "product_name",
-            "name": "Product A",
             "branches": [
               {
                 "category": "product_version",
                 "name": "ALL",
                 "product": {
-                  "product_id": "CSAFPID-9080700",
-                  "name": "Example Company Product A ALL"
+                  "name": "Example Company Product A ALL",
+                  "product_id": "CSAFPID-9080700"
                 }
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product A"
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Example Company"
       }
     ]
   }

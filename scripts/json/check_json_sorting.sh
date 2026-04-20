@@ -11,6 +11,13 @@
 
 set -euo pipefail
 
+# Always run from the repository root so results are deterministic
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "Error: not inside a git repository." >&2
+  exit 1
+}
+cd "$REPO_ROOT"
+
 FIX=0
 QUIET=0
 for arg in "$@"; do
@@ -32,7 +39,8 @@ while IFS= read -r file; do
   if ! sort_diff=$(diff <(jq --sort-keys . "$file") <(jq . "$file") 2>&1); then
     if [ "$FIX" -eq 1 ]; then
       tmp=$(mktemp)
-      jq --sort-keys . "$file" > "$tmp" && mv "$tmp" "$file"
+      jq --sort-keys . "$file" > "$tmp" && cp "$tmp" "$file"
+      rm -f "$tmp"
       echo "Fixed sorting: $file"
       ((++FIXED))
     else

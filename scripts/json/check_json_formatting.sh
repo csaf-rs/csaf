@@ -37,7 +37,8 @@ while IFS= read -r file; do
   if ! fmt_diff=$(diff <(jq . "$file") "$file" 2>&1); then
     if [ "$FIX" -eq 1 ]; then
       tmp=$(mktemp)
-      jq . "$file" > "$tmp" && mv "$tmp" "$file"
+      jq . "$file" > "$tmp" && cp "$tmp" "$file"
+      rm -f "$tmp"
       echo "Fixed formatting: $file"
       ((++FIXED))
     else

@@ -16,8 +16,6 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
                     .collect();
                 // sort for deterministic errors
                 affected_groups.sort();
-                // dedup, as products can be in statuses that map to the same group (e.g. 'affected' and 'last_affected')
-                affected_groups.dedup();
                 if affected_groups.len() > 1 {
                     errors.get_or_insert_default().push(generate_err_msg(
                         &product_id,

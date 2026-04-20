@@ -16,6 +16,9 @@ impl<T: ProductStatusTrait> From<&T> for ProductStatusGroupMap {
         let mut result = Self(HashMap::new());
 
         for (status, products) in ps.get_products_by_status() {
+            if products.is_empty() {
+                continue;
+            }
             let group = ProductStatusGroup::from(&status);
             let entry = result.0.entry(group).or_default();
             for (index, product_id) in products.into_iter().enumerate() {

@@ -211,6 +211,8 @@ jobs:
           key: wasm-bindings
       - name: Update rustup
         run: rustup update stable --no-self-update
+      - name: Prepare target
+        run: rustup target add wasm32-unknown-unknown
       - name: Install uniffi-bindgen-js
         run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
       - name: Build UniFFI WASM bindings
@@ -265,6 +267,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.stable-version }}-${{ needs.prepare.outputs.git-version }}
+          path: target/${{ matrix.target.target-arch }}/release/
       - name: Generate Go bindings
         run: |
           uniffi-bindgen-go \

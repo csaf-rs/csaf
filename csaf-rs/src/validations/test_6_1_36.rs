@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusTrait, RemediationTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusGroupMap, RemediationTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::ValidationError;
 
@@ -65,11 +65,7 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
 ) -> Result<(), Vec<ValidationError>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = v.get_product_status() {
-            let all_by_status = product_status.get_all_by_product_status();
-            // Collect Product IDs that may cause conflicts
-            let affected_products = all_by_status.get(&ProductStatusGroup::Affected);
-            let not_affected_products = all_by_status.get(&ProductStatusGroup::NotAffected);
-            let fixed_products = all_by_status.get(&ProductStatusGroup::Fixed);
+            let status_map = ProductStatusGroupMap::from(product_status);
             // Iterate over remediations
             for (r_i, r) in v.get_remediations().iter().enumerate() {
                 // Only handle Remediations having product IDs associated
@@ -78,20 +74,17 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
                     let cat = r.get_category();
                     // Iterate over product IDs
                     for p in product_ids {
-                        if let Some(affected_products) = affected_products
-                            && affected_products.contains(&p)
+                        if status_map.contains(&ProductStatusGroup::Affected, &p)
                             && cat == CategoryOfTheRemediation::OptionalPatch
                         {
                             return Err(vec![create_affected_conflict_error(&p, &cat, v_i, r_i)]);
                         }
-                        if let Some(not_affected_products) = not_affected_products
-                            && not_affected_products.contains(&p)
+                        if status_map.contains(&ProductStatusGroup::NotAffected, &p)
                             && NOT_AFFECTED_CONFLICTS.contains(&cat)
                         {
                             return Err(vec![create_not_affected_conflict_error(&p, &cat, v_i, r_i)]);
                         }
-                        if let Some(fixed_products) = fixed_products
-                            && fixed_products.contains(&p)
+                        if status_map.contains(&ProductStatusGroup::Fixed, &p)
                             && FIXED_CONFLICTS.contains(&cat)
                         {
                             return Err(vec![create_fixed_conflict_error(&p, &cat, v_i, r_i)]);

@@ -1,5 +1,10 @@
+pub use crate::csaf::aggregation::product_status::product_groups_by_id_map::{ProductGroupsByIdMap, ProductStatusGroupAndPath};
+pub use crate::csaf::aggregation::product_status::product_status_group_map::{
+    ProductStatusAndPath, ProductStatusGroupMap,
+};
 pub use crate::csaf::enums::category_of_the_branch::CategoryOfTheBranch;
 pub use crate::csaf::enums::csaf_version::CsafVersion;
+pub use crate::csaf::enums::product_status::ProductStatus;
 pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
 pub use crate::csaf::traits::csaf_trait::CsafTrait;
 pub use crate::csaf::traits::document::distribution_trait::DistributionTrait;

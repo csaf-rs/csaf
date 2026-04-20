@@ -90,8 +90,7 @@ pub mod error {
 ///      "items": {
 ///        "title": "URL of acknowledgment",
 ///        "description": "Contains the URL or location of the reference to be acknowledged.",
-///        "type": "string",
-///        "format": "uri"
+///        "type": "string"
 ///      },
 ///      "minItems": 1
 ///    }
@@ -189,8 +188,7 @@ impl Acknowledgment {
 ///        "items": {
 ///          "title": "URL of acknowledgment",
 ///          "description": "Contains the URL or location of the reference to be acknowledged.",
-///          "type": "string",
-///          "format": "uri"
+///          "type": "string"
 ///        },
 ///        "minItems": 1
 ///      }
@@ -310,8 +308,7 @@ impl<'de> ::serde::Deserialize<'de> for AdditionalRestartInformation {
 ///    "namespace": {
 ///      "title": "Namespace of aggregate severity",
 ///      "description": "Points to the namespace so referenced.",
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    },
 ///    "text": {
 ///      "title": "Text of aggregate severity",
@@ -1484,7 +1481,6 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///      "title": "JSON schema",
 ///      "description": "Contains the URL of the CSAF JSON schema which the document promises to be valid for.",
 ///      "type": "string",
-///      "format": "uri",
 ///      "enum": [
 ///        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json"
 ///      ]
@@ -1518,8 +1514,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "namespace": {
 ///              "title": "Namespace of aggregate severity",
 ///              "description": "Points to the namespace so referenced.",
-///              "type": "string",
-///              "format": "uri"
+///              "type": "string"
 ///            },
 ///            "text": {
 ///              "title": "Text of aggregate severity",
@@ -1636,8 +1631,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                    "https://www.us-cert.gov/tlp",
 ///                    "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Kritis/Merkblatt_TLP.pdf"
 ///                  ],
-///                  "type": "string",
-///                  "format": "uri"
+///                  "type": "string"
 ///                }
 ///              },
 ///              "additionalProperties": false
@@ -1724,8 +1718,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "https://csaf.io",
 ///                "https://www.example.com"
 ///              ],
-///              "type": "string",
-///              "format": "uri"
+///              "type": "string"
 ///            }
 ///          },
 ///          "additionalProperties": false
@@ -2376,8 +2369,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "source": {
 ///                  "title": "Source",
 ///                  "description": "Contains the URL of the source that originally determined the metric.",
-///                  "type": "string",
-///                  "format": "uri"
+///                  "type": "string"
 ///                }
 ///              },
 ///              "additionalProperties": false
@@ -2541,8 +2533,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "url": {
 ///                  "title": "URL to the remediation",
 ///                  "description": "Contains the URL where to obtain the remediation.",
-///                  "type": "string",
-///                  "format": "uri"
+///                  "type": "string"
 ///                }
 ///              },
 ///              "additionalProperties": false
@@ -3651,8 +3642,7 @@ impl DocumentGenerator {
 ///        "namespace": {
 ///          "title": "Namespace of aggregate severity",
 ///          "description": "Points to the namespace so referenced.",
-///          "type": "string",
-///          "format": "uri"
+///          "type": "string"
 ///        },
 ///        "text": {
 ///          "title": "Text of aggregate severity",
@@ -3769,8 +3759,7 @@ impl DocumentGenerator {
 ///                "https://www.us-cert.gov/tlp",
 ///                "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Kritis/Merkblatt_TLP.pdf"
 ///              ],
-///              "type": "string",
-///              "format": "uri"
+///              "type": "string"
 ///            }
 ///          },
 ///          "additionalProperties": false
@@ -3857,8 +3846,7 @@ impl DocumentGenerator {
 ///            "https://csaf.io",
 ///            "https://www.example.com"
 ///          ],
-///          "type": "string",
-///          "format": "uri"
+///          "type": "string"
 ///        }
 ///      },
 ///      "additionalProperties": false
@@ -4943,7 +4931,6 @@ impl Flag {
 ///            "title": "Package-URL representation",
 ///            "description": "The Package-URL (PURL) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
 ///            "type": "string",
-///            "format": "uri",
 ///            "minLength": 7,
 ///            "pattern": "^pkg:[a-z][a-z0-9\\.\\-]*\\/.+"
 ///          },
@@ -4957,8 +4944,7 @@ impl Flag {
 ///          "items": {
 ///            "title": "SBOM URL",
 ///            "description": "Contains a URL of one SBOM for this product.",
-///            "type": "string",
-///            "format": "uri"
+///            "type": "string"
 ///          },
 ///          "minItems": 1
 ///        },
@@ -5003,14 +4989,12 @@ impl Flag {
 ///              "namespace": {
 ///                "title": "Namespace of the generic URI",
 ///                "description": "Refers to a URL which provides the name and knowledge about the specification used or is the namespace in which these values are valid.",
-///                "type": "string",
-///                "format": "uri"
+///                "type": "string"
 ///              },
 ///              "uri": {
 ///                "title": "URI",
 ///                "description": "Contains the identifier itself.",
-///                "type": "string",
-///                "format": "uri"
+///                "type": "string"
 ///              }
 ///            },
 ///            "additionalProperties": false
@@ -5064,14 +5048,12 @@ impl FullProductNameT {
 ///    "namespace": {
 ///      "title": "Namespace of the generic URI",
 ///      "description": "Refers to a URL which provides the name and knowledge about the specification used or is the namespace in which these values are valid.",
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    },
 ///    "uri": {
 ///      "title": "URI",
 ///      "description": "Contains the identifier itself.",
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -5204,7 +5186,6 @@ impl GenericUri {
 ///        "title": "Package-URL representation",
 ///        "description": "The Package-URL (PURL) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
 ///        "type": "string",
-///        "format": "uri",
 ///        "minLength": 7,
 ///        "pattern": "^pkg:[a-z][a-z0-9\\.\\-]*\\/.+"
 ///      },
@@ -5218,8 +5199,7 @@ impl GenericUri {
 ///      "items": {
 ///        "title": "SBOM URL",
 ///        "description": "Contains a URL of one SBOM for this product.",
-///        "type": "string",
-///        "format": "uri"
+///        "type": "string"
 ///      },
 ///      "minItems": 1
 ///    },
@@ -5264,14 +5244,12 @@ impl GenericUri {
 ///          "namespace": {
 ///            "title": "Namespace of the generic URI",
 ///            "description": "Refers to a URL which provides the name and knowledge about the specification used or is the namespace in which these values are valid.",
-///            "type": "string",
-///            "format": "uri"
+///            "type": "string"
 ///          },
 ///          "uri": {
 ///            "title": "URI",
 ///            "description": "Contains the identifier itself.",
-///            "type": "string",
-///            "format": "uri"
+///            "type": "string"
 ///          }
 ///        },
 ///        "additionalProperties": false
@@ -5297,7 +5275,7 @@ pub struct HelperToIdentifyTheProduct {
     pub model_numbers: ::std::option::Option<Vec<ModelNumber>>,
     ///Contains a list of Package-URLs (PURL).
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub purls: ::std::option::Option<Vec<::std::string::String>>,
+    pub purls: ::std::option::Option<Vec<PackageUrlRepresentation>>,
     ///Contains a list of URLs where SBOMs for this product can be retrieved.
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub sbom_urls: ::std::vec::Vec<::std::string::String>,
@@ -5560,7 +5538,6 @@ impl<'de> ::serde::Deserialize<'de> for IssuingAuthority {
 ///  "title": "JSON schema",
 ///  "description": "Contains the URL of the CSAF JSON schema which the document promises to be valid for.",
 ///  "type": "string",
-///  "format": "uri",
 ///  "enum": [
 ///    "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json"
 ///  ]
@@ -6169,8 +6146,7 @@ impl<'de> ::serde::Deserialize<'de> for LicenseExpression {
 ///    "source": {
 ///      "title": "Source",
 ///      "description": "Contains the URL of the source that originally determined the metric.",
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -6867,6 +6843,88 @@ impl ::std::convert::From<NotesT> for ::std::vec::Vec<Note> {
 impl ::std::convert::From<::std::vec::Vec<Note>> for NotesT {
     fn from(value: ::std::vec::Vec<Note>) -> Self {
         Self(value)
+    }
+}
+///The Package-URL (PURL) attribute refers to a method for reliably identifying and locating software packages external to this specification.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Package-URL representation",
+///  "description": "The Package-URL (PURL) attribute refers to a method for reliably identifying and locating software packages external to this specification.",
+///  "type": "string",
+///  "minLength": 7,
+///  "pattern": "^pkg:[a-z][a-z0-9\\.\\-]*\\/.+"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct PackageUrlRepresentation(::std::string::String);
+impl ::std::ops::Deref for PackageUrlRepresentation {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<PackageUrlRepresentation> for ::std::string::String {
+    fn from(value: PackageUrlRepresentation) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for PackageUrlRepresentation {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 7usize {
+            return Err("shorter than 7 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^pkg:[a-z][a-z0-9\\.\\-]*\\/.+").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err(
+                "doesn't match pattern \"^pkg:[a-z][a-z0-9\\.\\-]*\\/.+\"".into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for PackageUrlRepresentation {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for PackageUrlRepresentation {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for PackageUrlRepresentation {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for PackageUrlRepresentation {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
     }
 }
 ///Defines the category of the involved party.
@@ -7936,8 +7994,7 @@ impl ::std::convert::From<Vec<ProductIdT>> for ProductsT {
 ///        "https://csaf.io",
 ///        "https://www.example.com"
 ///      ],
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -8091,8 +8148,7 @@ impl ::std::convert::TryFrom<::std::string::String> for QualitativeSeverityRatin
 ///    "url": {
 ///      "title": "URL of reference",
 ///      "description": "Provides the URL for the reference.",
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -8152,8 +8208,7 @@ impl Reference {
 ///      "url": {
 ///        "title": "URL of reference",
 ///        "description": "Provides the URL for the reference.",
-///        "type": "string",
-///        "format": "uri"
+///        "type": "string"
 ///      }
 ///    },
 ///    "additionalProperties": false
@@ -8367,8 +8422,7 @@ impl ::std::convert::TryFrom<::std::string::String> for RelationshipCategory {
 ///    "url": {
 ///      "title": "URL to the remediation",
 ///      "description": "Contains the URL where to obtain the remediation.",
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -8602,8 +8656,7 @@ impl Revision {
 ///            "https://www.us-cert.gov/tlp",
 ///            "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Kritis/Merkblatt_TLP.pdf"
 ///          ],
-///          "type": "string",
-///          "format": "uri"
+///          "type": "string"
 ///        }
 ///      },
 ///      "additionalProperties": false
@@ -10256,8 +10309,7 @@ impl Tracking {
 ///        "https://www.us-cert.gov/tlp",
 ///        "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Kritis/Merkblatt_TLP.pdf"
 ///      ],
-///      "type": "string",
-///      "format": "uri"
+///      "type": "string"
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -10902,8 +10954,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "source": {
 ///            "title": "Source",
 ///            "description": "Contains the URL of the source that originally determined the metric.",
-///            "type": "string",
-///            "format": "uri"
+///            "type": "string"
 ///          }
 ///        },
 ///        "additionalProperties": false
@@ -11067,8 +11118,7 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "url": {
 ///            "title": "URL to the remediation",
 ///            "description": "Contains the URL where to obtain the remediation.",
-///            "type": "string",
-///            "format": "uri"
+///            "type": "string"
 ///          }
 ///        },
 ///        "additionalProperties": false
@@ -12991,7 +13041,7 @@ pub mod builder {
             ::std::string::String,
         >,
         purls: ::std::result::Result<
-            ::std::option::Option<Vec<::std::string::String>>,
+            ::std::option::Option<Vec<super::PackageUrlRepresentation>>,
             ::std::string::String,
         >,
         sbom_urls: ::std::result::Result<
@@ -13063,7 +13113,7 @@ pub mod builder {
         pub fn purls<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<
-                ::std::option::Option<Vec<::std::string::String>>,
+                ::std::option::Option<Vec<super::PackageUrlRepresentation>>,
             >,
             T::Error: ::std::fmt::Display,
         {

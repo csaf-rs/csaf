@@ -33,6 +33,12 @@ jobs:
           submodules: 'true'
           fetch-depth: 0
           fetch-tags: true
+      - name: Check JSON syntax
+        run: ./scripts/json/check_json_syntax.sh
+      - name: Check JSON formatting
+        run: ./scripts/json/check_json_formatting.sh
+      - name: Check JSON sorting
+        run: ./scripts/json/check_json_sorting.sh
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Format check

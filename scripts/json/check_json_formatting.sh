@@ -32,16 +32,16 @@ while IFS= read -r file; do
       tmp=$(mktemp)
       jq . "$file" > "$tmp" && mv "$tmp" "$file"
       echo "Fixed formatting: $file"
-      ((FIXED++))
+      ((++FIXED))
     else
       echo "⚠Malformatted JSON found: $file"
       if [ "$QUIET" -eq 0 ]; then
         echo "$fmt_diff" | head -50 | sed 's/^/   /'
       fi
-      ((MAL_FORMATTED++))
+      ((++MAL_FORMATTED))
     fi
   else
-    ((WELL_FORMATTED++))
+    ((++WELL_FORMATTED))
   fi
 done < <(find . -name '*.json' -not -path './target/*' -not -path './.git/*' -not -path './csaf/*' -not -path './ssvc/*' -not -path './csaf-rs/assets/*' -not -path './.vscode/*' -not -path './scripts/*')
 

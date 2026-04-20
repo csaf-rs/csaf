@@ -26,7 +26,7 @@ UNSORTED=0
 FIXED=0
 while IFS= read -r file; do
   if ! jq empty "$file" 2>/dev/null; then
-    # skip invalid JSON files, those are caught by validate_json.sh
+    # skip invalid JSON files, those are caught by check_json_syntax.sh
     continue
   fi
   if ! sort_diff=$(diff <(jq --sort-keys . "$file") <(jq . "$file") 2>&1); then
@@ -34,16 +34,16 @@ while IFS= read -r file; do
       tmp=$(mktemp)
       jq --sort-keys . "$file" > "$tmp" && mv "$tmp" "$file"
       echo "Fixed sorting: $file"
-      ((FIXED++))
+      ((++FIXED))
     else
       echo "Unsorted keys in JSON: $file"
       if [ "$QUIET" -eq 0 ]; then
         echo "$sort_diff" | head -50 | sed 's/^/   /'
       fi
-      ((UNSORTED++))
+      ((++UNSORTED))
     fi
   else
-    ((SORTED++))
+    ((++SORTED))
   fi
 done < <(find ./type-generator/assets/tests -name '*.json' -not -name '*6-2-13*' -not -name '*6_2_13*')
 

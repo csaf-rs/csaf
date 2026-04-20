@@ -26,9 +26,9 @@ while IFS= read -r file; do
     if [ "$QUIET" -eq 0 ]; then
       echo "   $jq_err"
     fi
-    ((INVALID++))
+    ((++INVALID))
   else
-    ((VALID++))
+    ((++VALID))
   fi
 done < <(find . -name '*.json' -not -path './target/*' -not -path './.git/*' -not -path './csaf/*' -not -path './ssvc/*' -not -path './csaf-rs/assets/*' -not -path './.vscode/*' -not -path './scripts/*')
 

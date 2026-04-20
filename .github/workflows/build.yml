@@ -34,11 +34,11 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
       - name: Check JSON syntax
-        run: ./scripts/json/check_json_syntax.sh
+        run: ./scripts/json/check_json_syntax.sh --quiet
       - name: Check JSON formatting
-        run: ./scripts/json/check_json_formatting.sh
+        run: ./scripts/json/check_json_formatting.sh --quiet
       - name: Check JSON sorting
-        run: ./scripts/json/check_json_sorting.sh
+        run: ./scripts/json/check_json_sorting.sh --quiet
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Format check

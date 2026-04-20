@@ -8,7 +8,7 @@
         "label": "CLEAR"
       }
     },
-   "publisher": {
+    "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"

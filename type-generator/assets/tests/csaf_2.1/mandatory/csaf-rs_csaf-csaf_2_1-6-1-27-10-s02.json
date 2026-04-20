@@ -45,7 +45,7 @@
       }
     ]
   },
- "vulnerabilities": [
+  "vulnerabilities": [
     {
       "cve": "CVE-2017-0145",
       "product_status": {

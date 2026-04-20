@@ -74,6 +74,11 @@ pub trait ContentTrait {
         self.get_cvss_v4().is_some()
     }
 
+    /// Returns whether this content contains any CVSS metric (v2, v3, or v4).
+    fn has_any_cvss(&self) -> bool {
+        self.has_cvss_v2() || self.has_cvss_v3() || self.has_cvss_v4()
+    }
+
     /// Returns a reference to the contained EPSS metric if it exists.
     fn get_epss(&self) -> Option<&Epss>;
 

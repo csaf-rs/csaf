@@ -46,7 +46,7 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
                     let content = metric.get_content();
                     let has_ratings_tuple = (
                         m_i,
-                        content.has_cvss_v2() || content.has_cvss_v3() || content.has_cvss_v4(),
+                        content.has_any_cvss(),
                         content.has_qualitative_severity(),
                     );
                     ratings_map

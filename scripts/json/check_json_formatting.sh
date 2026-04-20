@@ -9,6 +9,13 @@
 
 set -euo pipefail
 
+# Always run from the repository root so results are deterministic
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "Error: not inside a git repository." >&2
+  exit 1
+}
+cd "$REPO_ROOT"
+
 FIX=0
 QUIET=0
 for arg in "$@"; do
@@ -43,7 +50,7 @@ while IFS= read -r file; do
   else
     ((++WELL_FORMATTED))
   fi
-done < <(find . -name '*.json' -not -path './target/*' -not -path './.git/*' -not -path './csaf/*' -not -path './ssvc/*' -not -path './csaf-rs/assets/*' -not -path './.vscode/*' -not -path './scripts/*')
+done < <(find . \( -path './target' -o -path './.git' -o -path './csaf' -o -path './ssvc' -o -path './csaf-rs/assets' -o -path './.vscode' -o -path './scripts' \) -prune -o -name '*.json' -print)
 
 echo ""
 if [ "$FIX" -eq 1 ]; then

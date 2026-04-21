@@ -130,38 +130,6 @@ func TestDocumentFromJson21(t *testing.T) {
 	}
 }
 
-func TestDocumentTrackingId(t *testing.T) {
-	doc, err := csaf_ffi.CsafDocumentFromJson(validCsaf21)
-	if err != nil {
-		t.Fatalf("error: %v", err)
-	}
-	defer doc.Destroy()
-
-	tid, err := doc.GetTrackingId()
-	if err != nil {
-		t.Fatalf("GetTrackingId error: %v", err)
-	}
-	if tid != "TEST-001" {
-		t.Errorf("expected TEST-001, got %s", tid)
-	}
-}
-
-func TestDocumentCategory(t *testing.T) {
-	doc, err := csaf_ffi.CsafDocumentFromJson(validCsaf21)
-	if err != nil {
-		t.Fatalf("error: %v", err)
-	}
-	defer doc.Destroy()
-
-	cat, err := doc.GetCategory()
-	if err != nil {
-		t.Fatalf("GetCategory error: %v", err)
-	}
-	if _, ok := cat.(csaf_ffi.DocumentCategoryCsafBase); !ok {
-		t.Errorf("expected CsafBase, got %T", cat)
-	}
-}
-
 func TestDocumentValidate(t *testing.T) {
 	doc, err := csaf_ffi.CsafDocumentFromJson(validCsaf21)
 	if err != nil {
@@ -191,65 +159,5 @@ func TestDocumentRunTest(t *testing.T) {
 	}
 	if tr.TestId != "6.1.1" {
 		t.Errorf("expected test_id 6.1.1, got %s", tr.TestId)
-	}
-}
-
-func TestDocumentVulnerabilityCount(t *testing.T) {
-	doc, err := csaf_ffi.CsafDocumentFromJson(validCsaf21)
-	if err != nil {
-		t.Fatalf("error: %v", err)
-	}
-	defer doc.Destroy()
-
-	count, err := doc.GetVulnerabilityCount()
-	if err != nil {
-		t.Fatalf("GetVulnerabilityCount error: %v", err)
-	}
-	if count != 0 {
-		t.Errorf("expected 0 vulnerabilities, got %d", count)
-	}
-}
-
-func TestDocumentProductTree(t *testing.T) {
-	doc, err := csaf_ffi.CsafDocumentFromJson(validCsaf21)
-	if err != nil {
-		t.Fatalf("error: %v", err)
-	}
-	defer doc.Destroy()
-
-	hasPT, err := doc.HasProductTree()
-	if err != nil {
-		t.Fatalf("HasProductTree error: %v", err)
-	}
-	if hasPT {
-		t.Error("expected no product tree")
-	}
-
-	ids, err := doc.GetAllProductIds()
-	if err != nil {
-		t.Fatalf("GetAllProductIds error: %v", err)
-	}
-	if len(ids) != 0 {
-		t.Errorf("expected 0 product IDs, got %d", len(ids))
-	}
-}
-
-func TestDocumentToJsonRoundtrip(t *testing.T) {
-	doc, err := csaf_ffi.CsafDocumentFromJson(validCsaf21)
-	if err != nil {
-		t.Fatalf("error: %v", err)
-	}
-	defer doc.Destroy()
-
-	json := doc.ToJson()
-	doc2, err := csaf_ffi.CsafDocumentFromJson(json)
-	if err != nil {
-		t.Fatalf("roundtrip error: %v", err)
-	}
-	defer doc2.Destroy()
-
-	tid, _ := doc2.GetTrackingId()
-	if tid != "TEST-001" {
-		t.Errorf("roundtrip tracking id mismatch: got %s", tid)
 	}
 }

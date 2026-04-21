@@ -61,19 +61,9 @@ export interface Cwe {
   version: string | null;
 }
 
-export interface Note {
-  category: string;
-  title: string | null;
-}
-
 export interface ProductReference {
   productId: string;
   jsonPath: string;
-}
-
-export interface VulnerabilityId {
-  systemName: string;
-  text: string;
 }
 
 /** Status of a single test execution. */
@@ -82,8 +72,6 @@ export type TestResultStatus =
   | { tag: 'Failure', errors: ValidationError[], warnings: ValidationError[], infos: ValidationError[] }
   | { tag: 'NotFound' }
   | { tag: 'Skipped' };
-
-export type CategoryOfTheBranch = 'Architecture' | 'HostName' | 'Language' | 'Legacy' | 'PatchLevel' | 'Platform' | 'ProductFamily' | 'ProductName' | 'ProductVersion' | 'ProductVersionRange' | 'ServicePack' | 'Specification' | 'Vendor';
 
 export type CsafDateTime =
   | { tag: 'Valid', rawString: string, utcString: string }
@@ -107,14 +95,6 @@ export type DocumentCategory =
   | { tag: 'CsafBaseOther', value: string };
 
 export type ProductStatusGroup = 'Affected' | 'NotAffected' | 'Fixed' | 'UnderInvestigation' | 'Unknown' | 'Recommended';
-
-export type VulnerabilityMetric =
-  | { tag: 'SsvcV1' }
-  | { tag: 'CvssV2', version: string }
-  | { tag: 'CvssV3', version: string }
-  | { tag: 'CvssV4', version: string }
-  | { tag: 'Epss' }
-  | { tag: 'QualitativeSeverityRating' };
 
 /**
  * A parsed CSAF document (2.0 or 2.1).
@@ -189,196 +169,6 @@ export class CsafDocument {
       _rt.scratchReset();
     }
   }
-  /**
-   * Get all group references across all vulnerabilities.
-   * @throws {CsafError}
-   */
-  getAllGroupReferences(): ProductReference[] {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_all_group_references', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readSequence((_r) => _liftProductReference(_r)); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Get all product IDs referenced in the document.
-   * @throws {CsafError}
-   */
-  getAllProductIds(): string[] {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_all_product_ids', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readSequence((_r) => _r.readString()); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Get all product references across all vulnerabilities.
-   * @throws {CsafError}
-   */
-  getAllProductReferences(): ProductReference[] {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_all_product_references', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readSequence((_r) => _liftProductReference(_r)); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Document category (e.g., csaf_vex, csaf_security_advisory).
-   * @throws {CsafError}
-   */
-  getCategory(): DocumentCategory {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_category', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return _liftDocumentCategory(r); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Current release date.
-   * @throws {CsafError}
-   */
-  getCurrentReleaseDate(): CsafDateTime {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_current_release_date', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return _liftCsafDateTime(r); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Initial release date.
-   * @throws {CsafError}
-   */
-  getInitialReleaseDate(): CsafDateTime {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_initial_release_date', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return _liftCsafDateTime(r); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Document language tag, if present.
-   * @throws {CsafError}
-   */
-  getLang(): CsafLanguage | null {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_lang', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readOptional((_r) => _liftCsafLanguage(_r)); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Publisher category as a string.
-   * @throws {CsafError}
-   */
-  getPublisherCategory(): string {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_publisher_category', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftString(_rt.readRustBufferElements(_retPtr));
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Document title.
-   * @throws {CsafError}
-   */
-  getTitle(): string {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_title', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftString(_rt.readRustBufferElements(_retPtr));
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Tracking ID.
-   * @throws {CsafError}
-   */
-  getTrackingId(): string {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_tracking_id', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftString(_rt.readRustBufferElements(_retPtr));
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
   /** The CSAF version of this document. */
   getVersion(): CsafVersion {
     this._assertLive();
@@ -406,124 +196,6 @@ export class CsafDocument {
       _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_version_string', _argPtr, _retPtr);
       _rt.checkCallStatus(_retPtr + 24);
       const _result = _rt.liftString(_rt.readRustBufferElements(_retPtr));
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Number of vulnerabilities in the document.
-   * @throws {CsafError}
-   */
-  getVulnerabilityCount(): bigint {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(5 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_vulnerability_count', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 8, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.readU64Element(_retPtr);
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Get the CVE identifier for a vulnerability at the given index.
-   * @throws {CsafError}
-   */
-  getVulnerabilityCve(index: bigint): string | null {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(2 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    _rt.writeU64Element(_argPtr + 8, BigInt(index));
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_vulnerability_cve', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readOptional((_r) => _r.readString()); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Get CWE entries for a vulnerability at the given index.
-   * @throws {CsafError}
-   */
-  getVulnerabilityCwes(index: bigint): Cwe[] {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(2 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    _rt.writeU64Element(_argPtr + 8, BigInt(index));
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_vulnerability_cwes', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readSequence((_r) => _liftCwe(_r)); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Get disclosure date for a vulnerability at the given index.
-   * @throws {CsafError}
-   */
-  getVulnerabilityDisclosureDate(index: bigint): CsafDateTime | null {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(2 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    _rt.writeU64Element(_argPtr + 8, BigInt(index));
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_vulnerability_disclosure_date', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readOptional((_r) => _liftCsafDateTime(_r)); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Get vulnerability IDs (non-CVE) for a vulnerability at the given index.
-   * @throws {CsafError}
-   */
-  getVulnerabilityIds(index: bigint): VulnerabilityId[] {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(2 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    _rt.writeU64Element(_argPtr + 8, BigInt(index));
-    const _retPtr = _rt.scratchAlloc(7 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_get_vulnerability_ids', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 24, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.liftFromBuffer(_rt.readRustBufferElements(_retPtr), (r) => { return r.readSequence((_r) => _liftVulnerabilityId(_r)); });
-      return _result;
-    } finally {
-      _rt.scratchReset();
-    }
-  }
-  /**
-   * Whether the document has a product tree.
-   * @throws {CsafError}
-   */
-  hasProductTree(): boolean {
-    this._assertLive();
-    const _clonedHandle = _rt.cloneObjectHandle('uniffi_csaf_ffi_fn_clone_csafdocument', this._handle);
-    const _argPtr = _rt.scratchAlloc(1 * 8);
-    _rt.writeHandleElement(_argPtr, _clonedHandle);
-    const _retPtr = _rt.scratchAlloc(5 * 8);
-    try {
-      _rt.call('uniffi_ffibuffer_csaf_ffi_fn_method_csafdocument_has_product_tree', _argPtr, _retPtr);
-      _rt.checkCallStatus(_retPtr + 8, (rb) => _liftErrorCsafError(rb));
-      const _result = _rt.readBoolElement(_retPtr);
       return _result;
     } finally {
       _rt.scratchReset();
@@ -676,17 +348,6 @@ function _liftCwe(r: UniFFIReader): Cwe {
   };
 }
 
-function _lowerNote(w: UniFFIWriter, value: Note): void {
-  w.writeString(value.category);
-  w.writeOptional(value.title, (_w, _v) => { _w.writeString(_v); });
-}
-function _liftNote(r: UniFFIReader): Note {
-  return {
-    category: r.readString(),
-    title: r.readOptional((_r) => _r.readString()),
-  };
-}
-
 function _lowerProductReference(w: UniFFIWriter, value: ProductReference): void {
   w.writeString(value.productId);
   w.writeString(value.jsonPath);
@@ -695,17 +356,6 @@ function _liftProductReference(r: UniFFIReader): ProductReference {
   return {
     productId: r.readString(),
     jsonPath: r.readString(),
-  };
-}
-
-function _lowerVulnerabilityId(w: UniFFIWriter, value: VulnerabilityId): void {
-  w.writeString(value.systemName);
-  w.writeString(value.text);
-}
-function _liftVulnerabilityId(r: UniFFIReader): VulnerabilityId {
-  return {
-    systemName: r.readString(),
-    text: r.readString(),
   };
 }
 
@@ -746,40 +396,6 @@ function _liftTestResultStatus(r: UniFFIReader): TestResultStatus {
     return { tag: 'Skipped' };
   }
   throw new Error(`Unknown TestResultStatus ordinal: ${ordinal}`);
-}
-
-function _lowerCategoryOfTheBranch(w: UniFFIWriter, value: CategoryOfTheBranch): void {
-  if (value === 'Architecture') { w.writeI32(1); return; }
-  if (value === 'HostName') { w.writeI32(2); return; }
-  if (value === 'Language') { w.writeI32(3); return; }
-  if (value === 'Legacy') { w.writeI32(4); return; }
-  if (value === 'PatchLevel') { w.writeI32(5); return; }
-  if (value === 'Platform') { w.writeI32(6); return; }
-  if (value === 'ProductFamily') { w.writeI32(7); return; }
-  if (value === 'ProductName') { w.writeI32(8); return; }
-  if (value === 'ProductVersion') { w.writeI32(9); return; }
-  if (value === 'ProductVersionRange') { w.writeI32(10); return; }
-  if (value === 'ServicePack') { w.writeI32(11); return; }
-  if (value === 'Specification') { w.writeI32(12); return; }
-  if (value === 'Vendor') { w.writeI32(13); return; }
-  throw new Error(`Unknown CategoryOfTheBranch variant: ${value}`);
-}
-function _liftCategoryOfTheBranch(r: UniFFIReader): CategoryOfTheBranch {
-  const ordinal = r.readI32();
-  if (ordinal === 1) return 'Architecture';
-  if (ordinal === 2) return 'HostName';
-  if (ordinal === 3) return 'Language';
-  if (ordinal === 4) return 'Legacy';
-  if (ordinal === 5) return 'PatchLevel';
-  if (ordinal === 6) return 'Platform';
-  if (ordinal === 7) return 'ProductFamily';
-  if (ordinal === 8) return 'ProductName';
-  if (ordinal === 9) return 'ProductVersion';
-  if (ordinal === 10) return 'ProductVersionRange';
-  if (ordinal === 11) return 'ServicePack';
-  if (ordinal === 12) return 'Specification';
-  if (ordinal === 13) return 'Vendor';
-  throw new Error(`Unknown CategoryOfTheBranch ordinal: ${ordinal}`);
 }
 
 function _lowerCsafDateTime(w: UniFFIWriter, value: CsafDateTime): void {
@@ -933,59 +549,6 @@ function _liftProductStatusGroup(r: UniFFIReader): ProductStatusGroup {
   if (ordinal === 5) return 'Unknown';
   if (ordinal === 6) return 'Recommended';
   throw new Error(`Unknown ProductStatusGroup ordinal: ${ordinal}`);
-}
-
-function _lowerVulnerabilityMetric(w: UniFFIWriter, value: VulnerabilityMetric): void {
-  if (value.tag === 'SsvcV1') {
-    w.writeI32(1);
-    return;
-  }
-  if (value.tag === 'CvssV2') {
-    w.writeI32(2);
-    w.writeString(value.version);
-    return;
-  }
-  if (value.tag === 'CvssV3') {
-    w.writeI32(3);
-    w.writeString(value.version);
-    return;
-  }
-  if (value.tag === 'CvssV4') {
-    w.writeI32(4);
-    w.writeString(value.version);
-    return;
-  }
-  if (value.tag === 'Epss') {
-    w.writeI32(5);
-    return;
-  }
-  if (value.tag === 'QualitativeSeverityRating') {
-    w.writeI32(6);
-    return;
-  }
-  throw new Error(`Unknown VulnerabilityMetric variant: ${(value as any).tag}`);
-}
-function _liftVulnerabilityMetric(r: UniFFIReader): VulnerabilityMetric {
-  const ordinal = r.readI32();
-  if (ordinal === 1) {
-    return { tag: 'SsvcV1' };
-  }
-  if (ordinal === 2) {
-    return { tag: 'CvssV2', version: r.readString() };
-  }
-  if (ordinal === 3) {
-    return { tag: 'CvssV3', version: r.readString() };
-  }
-  if (ordinal === 4) {
-    return { tag: 'CvssV4', version: r.readString() };
-  }
-  if (ordinal === 5) {
-    return { tag: 'Epss' };
-  }
-  if (ordinal === 6) {
-    return { tag: 'QualitativeSeverityRating' };
-  }
-  throw new Error(`Unknown VulnerabilityMetric ordinal: ${ordinal}`);
 }
 
 function _liftErrorCsafError(rb: any): CsafError {

@@ -60,8 +60,8 @@ pub(crate) struct SubtagEntry {
 
 /// Generates the language subtags array from the registry text file.
 pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
-    let registry_path = Path::new(target_folder).join("assets/language-subtag-registry.txt");
-    let registry = fs::read_to_string(&registry_path).map_err(|e| {
+    let registry_path = Path::new("assets/language-subtag-registry.txt");
+    let registry = fs::read_to_string(registry_path).map_err(|e| {
         std::io::Error::new(
             e.kind(),
             format!(

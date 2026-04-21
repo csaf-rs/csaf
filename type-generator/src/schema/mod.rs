@@ -6,10 +6,12 @@ use serde_json::Value;
 
 use crate::build_errors::BuildError;
 
+pub type SchemaPatchFn = dyn Fn(&mut Value) -> Result<(), BuildError>;
+
 pub struct SchemaConfig {
     pub input: &'static str,
     pub output: &'static str,
-    pub patch: Option<&'static dyn Fn(&mut Value) -> Result<(), BuildError>>,
+    pub patch: Option<&'static SchemaPatchFn>,
 }
 
 /// Loads, patches, and generates types for a given schema configuration.

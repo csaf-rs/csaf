@@ -11,12 +11,11 @@ use crate::build_errors::BuildError;
 use crate::utils::codegen_snippets::{
     GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt,
 };
-use crate::utils::write_to_fs::write_generated_file;
+use crate::utils::read_write_fs::{read_file_to_string, write_generated_file};
 use generate::generate_kind_section;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::fmt;
-use std::fs;
 use std::path::Path;
 
 /// The kinds of subtags we extract from the language subtag registry.
@@ -64,15 +63,7 @@ pub(crate) struct SubtagEntry {
 /// Generates the language subtags array from the registry text file.
 pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
     let registry_path = Path::new("assets/language-subtag-registry.txt");
-    let registry = fs::read_to_string(registry_path).map_err(|e| {
-        std::io::Error::new(
-            e.kind(),
-            format!(
-                "Failed to read language subtag registry at {}: {e}",
-                registry_path.display()
-            ),
-        )
-    })?;
+    let registry = read_file_to_string(registry_path)?;
 
     let mut subtags_by_kind: HashMap<SubtagKind, Vec<SubtagEntry>> = make_subtags_map();
 

@@ -1,12 +1,11 @@
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use std::fs;
 use std::path::Path;
 
 use crate::{
     build_errors::BuildError,
     utils::codegen_snippets::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_rustfmt},
-    utils::write_to_fs::write_generated_file,
+    utils::read_write_fs::{read_file_to_string, write_generated_file},
 };
 
 pub mod config;
@@ -75,10 +74,9 @@ pub fn generate_testcases(config: &TestcaseConfig, target_path: &str) -> Result<
     let supplemental_input = config.supplemental_input;
     let output = config.output;
     let csaf_version = config.csaf_version;
-
-
-    let content = fs::read_to_string(input)?;
-    let supplemental_content = fs::read_to_string(supplemental_input)?;
+    
+    let content = read_file_to_string(Path::new(input))?;
+    let supplemental_content = read_file_to_string(Path::new(supplemental_input))?;
 
     // Extract base directory from input path (directory containing testcases.json)
     let base_dir = Path::new(input)

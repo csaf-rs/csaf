@@ -26,7 +26,7 @@ Additionally create language subtag registry types from the IANA registry
 cargo run -- --generate-language-tags
 ```
 
-By default, the target folder is set to `../csaf-rs` and the generator is creating files the specific subfolder used in this library, but you can override it by passing the `--target-folder` option.
+By default, the target folder is set to `../csaf-rs`, and the generator creates files in the specific subfolders used in this library, but you can override it by passing the `--target-folder` option.
 
 | Type | Default target folder|  
 | --- | --- |  

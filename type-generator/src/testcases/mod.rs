@@ -4,12 +4,23 @@ use std::fs;
 use std::path::Path;
 
 use crate::{
-    build_helper::BuildError,
-    file_helper::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_rustfmt},
+    build_errors::BuildError,
+    utils::codegen_snippets::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_rustfmt},
+    utils::write_to_fs::write_generated_file,
 };
 
+pub mod config;
 mod extract;
 mod generate;
+
+pub use config::get_testcase_configs;
+
+pub struct TestcaseConfig {
+    pub input: &'static str,
+    pub supplemental_input: &'static str,
+    pub output: &'static str,
+    pub csaf_version: CsafVersion,
+}
 
 #[derive(Debug, Clone, Copy)]
 pub enum CsafVersion {
@@ -59,15 +70,12 @@ pub(crate) struct GeneratedTest {
 }
 
 /// Generates testcases module from testcases.json
-pub fn generate_testcases(
-    input: &str,
-    supplemental_input: &str,
-    output: &str,
-    csaf_version: CsafVersion,
-    target_path: &str,
-) -> Result<(), BuildError> {
-    println!("cargo:rerun-if-changed={input}");
-    println!("cargo:rerun-if-changed={supplemental_input}");
+pub fn generate_testcases(config: &TestcaseConfig, target_path: &str) -> Result<(), BuildError> {
+    let input = config.input;
+    let supplemental_input = config.supplemental_input;
+    let output = config.output;
+    let csaf_version = config.csaf_version;
+
 
     let content = fs::read_to_string(input)?;
     let supplemental_content = fs::read_to_string(supplemental_input)?;
@@ -127,8 +135,8 @@ pub fn generate_testcases(
 
     let code = prettyplease::unparse(&file);
 
-    let out_path = Path::new(&target_path).join("src").join(output);
-    fs::write(&out_path, code)?;
+    let relative_path = format!("src/{output}");
+    write_generated_file(target_path, &relative_path, &code, "generated testcases")?;
 
     Ok(())
 }

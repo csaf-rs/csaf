@@ -1,17 +1,15 @@
-mod build_helper;
-mod file_helper;
+mod build_errors;
 mod language_tags;
-mod schema_generator;
+mod schema;
 mod testcases;
+mod utils;
 
-use crate::build_helper::BuildError;
+use crate::build_errors::BuildError;
 use crate::language_tags::generate_language_tags;
-use crate::schema_generator::build_from_schema;
-use crate::testcases::CsafVersion;
-use crate::testcases::generate_testcases;
+use crate::schema::build_schema;
+use crate::schema::config::{get_schemas, get_testcases_schemas};
+use crate::testcases::{generate_testcases, get_testcase_configs};
 use clap::Parser;
-use json_dotpath::DotPaths;
-use serde_json::{Value, json};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -37,31 +35,20 @@ fn main() -> Result<(), BuildError> {
     let args = Args::parse();
 
     // Execute all listed schema builds
-    for (input, output, schema_patch) in &get_schemas() {
-        build_from_schema(input, output, schema_patch, args.target_folder.clone());
+    for schema in &get_schemas() {
+        build_schema(schema, &args.target_folder)?;
     }
 
     if args.include_test_schema {
-        for (input, output, schema_patch) in &get_testcases_schemas() {
-            build_from_schema(input, output, schema_patch, args.target_folder.clone());
+        for schema in &get_testcases_schemas() {
+            build_schema(schema, &args.target_folder)?;
         }
     }
 
     if args.create_test_definitions {
-        _ = generate_testcases(
-            "../csaf/csaf_2.0/test/validator/data/testcases.json",
-            "../type-generator/assets/tests/csaf_2.0/testcases.json",
-            "csaf2_0/testcases.generated.rs",
-            CsafVersion::V2_0,
-            &args.target_folder,
-        );
-        _ = generate_testcases(
-            "../csaf/csaf_2.1/test/validator/data/testcases.json",
-            "../type-generator/assets/tests/csaf_2.1/testcases.json",
-            "csaf2_1/testcases.generated.rs",
-            CsafVersion::V2_1,
-            &args.target_folder,
-        );
+        for config in &get_testcase_configs() {
+            generate_testcases(config, &args.target_folder)?;
+        }
     }
 
     if args.generate_language_tags {
@@ -69,84 +56,4 @@ fn main() -> Result<(), BuildError> {
     }
 
     Ok(())
-}
-
-type SchemaInfo = (&'static str, &'static str, Option<&'static dyn Fn(&mut Value)>);
-
-fn get_schemas() -> Vec<SchemaInfo> {
-    vec![
-        (
-            "assets/csaf_2.0_json_schema.json",
-            "csaf2_0/schema.rs",
-            Some(&fix_2_0_schema as &dyn Fn(&mut Value)),
-        ),
-        (
-            "assets/csaf_2.1_json_schema.json",
-            "csaf2_1/schema.rs",
-            Some(&fix_2_1_schema),
-        ),
-    ]
-}
-
-fn get_testcases_schemas() -> Vec<SchemaInfo> {
-    vec![
-        (
-            "assets/csaf_2.0_testcases_json_schema.json",
-            "csaf2_0/testcases_schema.rs",
-            None,
-        ),
-        (
-            "assets/csaf_2.1_testcases_json_schema.json",
-            "csaf2_1/testcases_schema.rs",
-            None,
-        ),
-    ]
-}
-
-/// Patches (unsupported) external schemas to the plain object type for CSAF 2.0.
-fn fix_2_0_schema(value: &mut Value) {
-    let prefix = "properties.vulnerabilities.items.properties.scores.items.properties";
-    let fix_paths = [format!("{prefix}.cvss_v2"), format!("{prefix}.cvss_v3")];
-    for path in fix_paths {
-        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
-    }
-    remove_format(value, "date-time");
-    remove_format(value, "uri");
-}
-
-/// Patches (unsupported) external schemas to the plain object type for CSAF 2.1.
-fn fix_2_1_schema(value: &mut Value) {
-    let prefix = "properties.vulnerabilities.items.properties.metrics.items.properties.content.properties";
-    let fix_paths = [
-        format!("{prefix}.cvss_v2"),
-        format!("{prefix}.cvss_v3"),
-        format!("{prefix}.cvss_v4"),
-        format!("{prefix}.ssvc_v1"),
-        format!("{prefix}.ssvc_v2"),
-        "$defs.extensions_t.items".to_string(),
-    ];
-    for path in fix_paths {
-        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
-    }
-    remove_format(value, "date-time");
-    remove_format(value, "uri");
-}
-
-/// Recursively searches for a specific "format" value and removes it.
-fn remove_format(value: &mut Value, format_value: &str) {
-    if let Value::Object(map) = value {
-        if let Some(format) = map.get("format")
-            && format.as_str() == Some(format_value)
-        {
-            map.remove("format");
-        }
-
-        for (_, v) in map.iter_mut() {
-            remove_format(v, format_value);
-        }
-    } else if let Value::Array(arr) = value {
-        for item in arr.iter_mut() {
-            remove_format(item, format_value);
-        }
-    }
 }

@@ -7,8 +7,11 @@ mod generate;
 #[cfg(test)]
 mod tests;
 
-use crate::build_helper::BuildError;
-use crate::file_helper::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt};
+use crate::build_errors::BuildError;
+use crate::utils::codegen_snippets::{
+    GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt,
+};
+use crate::utils::write_to_fs::write_generated_file;
 use generate::generate_kind_section;
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -117,26 +120,12 @@ pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
     let code = prettyplease::unparse(&file);
 
     // write the file
-    let out_path = Path::new(target_folder)
-        .join("src")
-        .join("csaf")
-        .join("types")
-        .join("language")
-        .join("language_subtags.generated.rs");
-    // This is only none if outpath starts at root.
-    if let Some(parent) = out_path.parent() {
-        fs::create_dir_all(parent).map_err(|e| {
-            std::io::Error::new(
-                e.kind(),
-                format!(
-                    "Failed to create output directory for language subtags at {}: {e}",
-                    parent.display()
-                ),
-            )
-        })?;
-    }
-    println!("Writing generated language subtags to: {}", out_path.display());
-    fs::write(&out_path, code)?;
+    write_generated_file(
+        target_folder,
+        "src/csaf/types/language/language_subtags.generated.rs",
+        &code,
+        "generated language subtags",
+    )?;
 
     Ok(())
 }

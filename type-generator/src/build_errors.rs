@@ -3,12 +3,12 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum BuildError {
-    #[error("I/O error")]
+    #[error("I/O error: {0}")]
     Io(#[from] io::Error),
-    #[error("JSON schema error")]
+    #[error("JSON schema error: {0}")]
     Schema(#[from] typify::Error),
-    #[error("Rust syntax error")]
+    #[error("Rust syntax error: {0}")]
     Syntax(#[from] syn::Error),
-    #[error("JSON parsing error")]
+    #[error("JSON parsing error: {0}")]
     Json(#[from] serde_json::Error),
 }

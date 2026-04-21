@@ -1,4 +1,4 @@
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,12 +46,13 @@ impl PurlParseError {
     pub fn kind(&self) -> &PurlParseErrorKind {
         &self.kind
     }
+}
 
-    /// Construct a [ValidationError] from this [PurlParseError].
-    pub fn into_validation_error(self, instance_path: String) -> ValidationError {
+impl IntoValidationError for PurlParseError {
+    fn into_validation_error(self, instance_path: &str) -> ValidationError {
         ValidationError {
             message: format!("Invalid PURL format: {}, Error: {}", self.original_purl, self.kind),
-            instance_path,
+            instance_path: instance_path.to_string(),
         }
     }
 }

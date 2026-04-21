@@ -15,6 +15,11 @@ impl std::fmt::Display for ValidationError {
     }
 }
 
+/// Trait for types that can be converted into a [`ValidationError`] by providing an instance path.
+pub trait IntoValidationError {
+    fn into_validation_error(self, instance_path: &str) -> ValidationError;
+}
+
 /// Result of executing a single test
 #[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
 #[serde(rename_all = "camelCase")]

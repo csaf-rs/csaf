@@ -1,4 +1,4 @@
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 
 /// Represents an error that occurred while parsing or validating a language tag in a CSAF document.
 #[derive(Debug, PartialEq, Clone)]
@@ -13,8 +13,9 @@ pub enum CsafLanguageError {
     InvalidRegionSubtag(String, String),
 }
 
-impl CsafLanguageError {
-    pub fn into_validation_error(self, instance_path: &str) -> ValidationError {
+impl IntoValidationError for CsafLanguageError {
+    fn into_validation_error(self, instance_path: &str) -> ValidationError {
+        let instance_path = instance_path.to_string();
         match self {
             CsafLanguageError::ParserError(invalid_lang_tag, parser_error) => ValidationError {
                 message: format!(

@@ -1,6 +1,6 @@
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();

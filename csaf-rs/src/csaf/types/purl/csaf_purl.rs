@@ -97,6 +97,7 @@ mod test_purl_full_pipeline {
     use crate::csaf::types::purl::{PurlParseError, PurlParseErrorKind};
     use crate::schema::csaf2_0::schema::PackageUrlRepresentation as PackageUrlRepresentation20;
     use crate::schema::csaf2_1::schema::PackageUrlRepresentation as PackageUrlRepresentation21;
+    use crate::validation::IntoValidationError;
     use rstest::rstest;
     use std::str::FromStr;
 
@@ -141,11 +142,11 @@ mod test_purl_full_pipeline {
     ) {
         let csaf_purl = to_csaf_purl(purl_str, &version);
 
-        let expected = PurlParseError::new_for_test(purl_str, expected_error).into_validation_error(String::new());
+        let expected = PurlParseError::new_for_test(purl_str, expected_error).into_validation_error("");
 
         match csaf_purl {
             CsafPurl::Invalid(err) => {
-                let actual = err.into_validation_error(String::new());
+                let actual = err.into_validation_error("");
                 assert_eq!(actual, expected);
             },
             CsafPurl::Valid(_) => {

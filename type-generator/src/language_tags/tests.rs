@@ -1,4 +1,5 @@
-use super::parser::{char_to_index, expand_subtag_range, index_to_char, make_subtags_map, parse_registry};
+use super::extract::{char_to_index, expand_subtag_range, index_to_char, make_subtags_map, parse_registry};
+use super::{SubtagEntry, SubtagKind};
 use rstest::rstest;
 
 #[test]
@@ -72,27 +73,35 @@ fn panics_on_whitespace_in_start() {
     expand_subtag_range("a ", "az");
 }
 
+/// Helper to construct a `SubtagEntry` concisely in tests.
+fn entry(subtag: &str, is_private: bool) -> SubtagEntry {
+    SubtagEntry {
+        subtag: subtag.to_string(),
+        is_private,
+    }
+}
+
 #[rstest]
 // language subtag is inserted
-#[case("%%\nType: language\nSubtag: en\n%%\n", "language", vec![("en".to_string(), false)])]
+#[case("%%\nType: language\nSubtag: en\n%%\n", SubtagKind::Language, vec![entry("en", false)])]
 // region subtag is inserted
-#[case("%%\nType: region\nSubtag: DE\n%%\n", "region", vec![("DE".to_string(), false)])]
+#[case("%%\nType: region\nSubtag: DE\n%%\n", SubtagKind::Region, vec![entry("DE", false)])]
 // script subtag is inserted
-#[case("%%\nType: script\nSubtag: Latn\n%%\n", "script", vec![("Latn".to_string(), false)])]
+#[case("%%\nType: script\nSubtag: Latn\n%%\n", SubtagKind::Script, vec![entry("Latn", false)])]
 // private-use flag is detected
-#[case("%%\nType: language\nSubtag: qaa\nDescription: Private use\n%%\n", "language", vec![("qaa".to_string(), true)])]
+#[case("%%\nType: language\nSubtag: qaa\nDescription: Private use\n%%\n", SubtagKind::Language, vec![entry("qaa", true)])]
 // range subtag is expanded
-#[case("%%\nType: language\nSubtag: aa..ac\n%%\n", "language", vec![("aa".to_string(), false), ("ab".to_string(), false), ("ac".to_string(), false)])]
+#[case("%%\nType: language\nSubtag: aa..ac\n%%\n", SubtagKind::Language, vec![entry("aa", false), entry("ab", false), entry("ac", false)])]
 // grandfathered tag using "Tag:" is inserted
-#[case("%%\nType: grandfathered\nTag: i-default\nDescription: Default Language\n%%\n", "grandfathered", vec![("i-default".to_string(), false)])]
+#[case("%%\nType: grandfathered\nTag: i-default\nDescription: Default Language\n%%\n", SubtagKind::Grandfathered, vec![entry("i-default", false)])]
 fn parse_registry_single_block(
     #[case] input: &str,
-    #[case] expected_key: &str,
-    #[case] expected_entries: Vec<(String, bool)>,
+    #[case] expected_key: SubtagKind,
+    #[case] expected_entries: Vec<SubtagEntry>,
 ) {
     let mut map = make_subtags_map();
     parse_registry(input, &mut map);
-    assert_eq!(map[expected_key], expected_entries);
+    assert_eq!(map[&expected_key], expected_entries);
 }
 
 #[rstest]
@@ -119,8 +128,8 @@ fn parse_registry_multiple_blocks() {
     let input = "%%\nType: language\nSubtag: en\n%%\nType: region\nSubtag: DE\n%%\n";
     let mut map = make_subtags_map();
     parse_registry(input, &mut map);
-    assert_eq!(map["language"], vec![("en".to_string(), false)]);
-    assert_eq!(map["region"], vec![("DE".to_string(), false)]);
+    assert_eq!(map[&SubtagKind::Language], vec![entry("en", false)]);
+    assert_eq!(map[&SubtagKind::Region], vec![entry("DE", false)]);
 }
 
 #[test]
@@ -129,7 +138,7 @@ fn parse_registry_flushes_last_block_without_trailing_separator() {
     let input = "%%\nType: language\nSubtag: en";
     let mut map = make_subtags_map();
     parse_registry(input, &mut map);
-    assert_eq!(map["language"], vec![("en".to_string(), false)]);
+    assert_eq!(map[&SubtagKind::Language], vec![entry("en", false)]);
 }
 
 #[test]
@@ -138,8 +147,5 @@ fn parse_registry_private_use_resets_between_blocks() {
     let input = "%%\nType: language\nSubtag: qaa\nDescription: Private use\n%%\nType: language\nSubtag: en\n%%\n";
     let mut map = make_subtags_map();
     parse_registry(input, &mut map);
-    assert_eq!(
-        map["language"],
-        vec![("qaa".to_string(), true), ("en".to_string(), false),]
-    );
+    assert_eq!(map[&SubtagKind::Language], vec![entry("qaa", true), entry("en", false)]);
 }

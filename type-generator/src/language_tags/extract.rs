@@ -1,8 +1,9 @@
+use crate::language_tags::{SubtagEntry, SubtagKind};
 use std::collections::HashMap;
 
 /// Convert a character to a 0-based index relative to the base of its case
 #[inline]
-pub(super) fn char_to_index(c: char) -> u8 {
+pub(crate) fn char_to_index(c: char) -> u8 {
     if c.is_ascii_lowercase() {
         c as u8 - b'a'
     } else {
@@ -13,7 +14,7 @@ pub(super) fn char_to_index(c: char) -> u8 {
 /// Convert a 0-based index back to a character, preserving the case of the
 /// reference character.
 #[inline]
-pub(super) fn index_to_char(idx: u8, lowercase: bool) -> char {
+pub(crate) fn index_to_char(idx: u8, lowercase: bool) -> char {
     if lowercase {
         char::from(b'a' + idx)
     } else {
@@ -21,20 +22,17 @@ pub(super) fn index_to_char(idx: u8, lowercase: bool) -> char {
     }
 }
 
-// If you want to extract other tags: just add their "key" here!
-pub(super) const SUBTAG_KINDS: &[&str] = &["language", "region", "script", "grandfathered"];
-
-/// Creates an empty subtag map pre-populated with all [`SUBTAG_KINDS`] as keys.
+/// Creates an empty subtag map pre-populated with all [`SubtagKind`] variants as keys.
 #[inline]
-pub(super) fn make_subtags_map() -> HashMap<&'static str, Vec<(String, bool)>> {
-    SUBTAG_KINDS.iter().map(|&k| (k, Vec::new())).collect()
+pub(crate) fn make_subtags_map() -> HashMap<SubtagKind, Vec<SubtagEntry>> {
+    SubtagKind::ALL.iter().map(|&k| (k, Vec::new())).collect()
 }
 
 /// Parses registry line-by-line and populates `map` with the subtags found.
 ///
 /// The registry uses `%%` as a block separator. For each block the fields
 /// `Type:`, `Subtag:`, and `Description: Private use` are extracted.
-pub(super) fn parse_registry(registry: &str, map: &mut HashMap<&str, Vec<(String, bool)>>) {
+pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<SubtagEntry>>) {
     // init
     let mut current_entry_type: Option<String> = None;
     let mut current_subtag: Option<String> = None;
@@ -78,26 +76,32 @@ fn push_block_into_map(
     entry_type: &Option<String>,
     subtag: &Option<String>,
     is_private_use: bool,
-    map: &mut HashMap<&str, Vec<(String, bool)>>,
+    map: &mut HashMap<SubtagKind, Vec<SubtagEntry>>,
 ) {
     // if all fields are filled and the entry type is one of the types we want to extract
     if let (Some(entry_type), Some(subtag)) = (entry_type, subtag)
-        && let Some(&kind) = SUBTAG_KINDS.iter().find(|&&k| k == entry_type.as_str())
+        && let Some(&kind) = SubtagKind::ALL.iter().find(|k| k.registry_key() == entry_type.as_str())
     {
         // the subtag is a range ("qaa..qtz"), expand it
-        let entries: Vec<(String, bool)> = if let Some((start, end)) = subtag.split_once("..") {
+        let entries: Vec<SubtagEntry> = if let Some((start, end)) = subtag.split_once("..") {
             expand_subtag_range(start, end)
                 .into_iter()
-                .map(|t| (t, is_private_use))
+                .map(|t| SubtagEntry {
+                    subtag: t,
+                    is_private: is_private_use,
+                })
                 .collect()
         }
         // its a single subtag
         else {
-            vec![(subtag.clone(), is_private_use)]
+            vec![SubtagEntry {
+                subtag: subtag.clone(),
+                is_private: is_private_use,
+            }]
         };
         // put the entries in the map
-        map.get_mut(kind)
-            .expect("SubtagKind registry_key must be present in map – all keys from SUBTAG_KINDS should have been inserted during initialization")
+        map.get_mut(&kind)
+            .expect("SubtagKind must be present in map – all variants should have been inserted during initialization")
             .extend(entries);
     }
 }
@@ -109,7 +113,7 @@ fn push_block_into_map(
 /// Panics if:
 /// * `start` and `end` have different length
 /// * `start` or `end` contain non-alphabetic ASCII chars
-pub(super) fn expand_subtag_range(start: &str, end: &str) -> Vec<String> {
+pub(crate) fn expand_subtag_range(start: &str, end: &str) -> Vec<String> {
     // validate input
     assert_eq!(start.len(), end.len(), "Range endpoints must have the same length");
     assert!(

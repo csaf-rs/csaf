@@ -1,9 +1,11 @@
 mod build_helper;
 mod file_helper;
+mod language_tags;
 mod schema_generator;
 mod testcases;
 
 use crate::build_helper::BuildError;
+use crate::language_tags::generate_language_tags;
 use crate::schema_generator::build_from_schema;
 use crate::testcases::CsafVersion;
 use crate::testcases::generate_testcases;
@@ -21,6 +23,10 @@ struct Args {
     /// Whether to include generation of test definitions
     #[arg(short, long, default_value_t = false)]
     create_test_definitions: bool,
+
+    /// Whether to include generation of language tags
+    #[arg(short = 'l', long, default_value_t = false)]
+    generate_language_tags: bool,
 
     /// Target folder for generated code, ../csaf-rs by default
     #[arg(short, long, default_value = "../csaf-rs")]
@@ -57,6 +63,11 @@ fn main() -> Result<(), BuildError> {
             &args.target_folder,
         );
     }
+
+    if args.generate_language_tags {
+        generate_language_tags(&args.target_folder)?;
+    }
+
     Ok(())
 }
 

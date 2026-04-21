@@ -74,7 +74,7 @@ pub fn generate_testcases(config: &TestcaseConfig, target_path: &str) -> Result<
     let supplemental_input = config.supplemental_input;
     let output = config.output;
     let csaf_version = config.csaf_version;
-    
+
     let content = read_file_to_string(Path::new(input))?;
     let supplemental_content = read_file_to_string(Path::new(supplemental_input))?;
 

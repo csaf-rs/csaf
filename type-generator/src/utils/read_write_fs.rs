@@ -64,4 +64,3 @@ pub fn read_file_to_string(path: &Path) -> Result<String, BuildError> {
         ))
     })
 }
-

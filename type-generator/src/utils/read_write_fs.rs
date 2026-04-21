@@ -31,7 +31,23 @@ pub fn write_generated_file(
     content: &str,
     title: &str,
 ) -> Result<(), BuildError> {
-    let out_path = resolve_path(Path::new(target_folder)).join(relative_path);
+    let rel = Path::new(relative_path);
+
+    // Reject absolute paths to avoid writing outside the target folder.
+    if rel.has_root() {
+        return Err(BuildError::PathEscape(format!(
+            "relative_path must not be absolute: {relative_path}"
+        )));
+    }
+
+    // Reject any ".." components to avoid writing outside the target folder.
+    if rel.components().any(|c| matches!(c, std::path::Component::ParentDir)) {
+        return Err(BuildError::PathEscape(format!(
+            "relative_path must not contain '..' components: {relative_path}"
+        )));
+    }
+
+    let out_path = resolve_path(Path::new(target_folder)).join(rel);
 
     if let Some(parent) = out_path.parent() {
         fs::create_dir_all(parent).map_err(|e| {

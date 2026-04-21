@@ -2,6 +2,7 @@ use json_dotpath::DotPaths;
 use serde_json::{Value, json};
 
 use super::SchemaConfig;
+use crate::build_errors::BuildError;
 
 pub fn get_schemas() -> Vec<SchemaConfig> {
     vec![
@@ -34,18 +35,19 @@ pub fn get_testcases_schemas() -> Vec<SchemaConfig> {
 }
 
 /// Patches (unsupported) external schemas to the plain object type for CSAF 2.0.
-fn fix_2_0_schema(value: &mut Value) {
+fn fix_2_0_schema(value: &mut Value) -> Result<(), BuildError> {
     let prefix = "properties.vulnerabilities.items.properties.scores.items.properties";
     let fix_paths = [format!("{prefix}.cvss_v2"), format!("{prefix}.cvss_v3")];
     for path in fix_paths {
-        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
+        patch_dot_set(value, &path, json!({"type": "object"}))?;
     }
     remove_format(value, "date-time");
     remove_format(value, "uri");
+    Ok(())
 }
 
 /// Patches (unsupported) external schemas to the plain object type for CSAF 2.1.
-fn fix_2_1_schema(value: &mut Value) {
+fn fix_2_1_schema(value: &mut Value) -> Result<(), BuildError> {
     let prefix = "properties.vulnerabilities.items.properties.metrics.items.properties.content.properties";
     let fix_paths = [
         format!("{prefix}.cvss_v2"),
@@ -56,10 +58,21 @@ fn fix_2_1_schema(value: &mut Value) {
         "$defs.extensions_t.items".to_string(),
     ];
     for path in fix_paths {
-        value.dot_set(path.as_str(), json!({"type": "object"})).unwrap();
+        patch_dot_set(value, &path, json!({"type": "object"}))?;
     }
     remove_format(value, "date-time");
     remove_format(value, "uri");
+    Ok(())
+}
+
+/// Applies `dot_set` and returns a structured error on failure.
+fn patch_dot_set(value: &mut Value, path: &str, replacement: Value) -> Result<(), BuildError> {
+    value.dot_set(path, replacement).map_err(|e| {
+        BuildError::SchemaPatch(format!(
+            "failed to patch schema at path '{path}': {e}. \
+             The upstream schema structure may have changed."
+        ))
+    })
 }
 
 /// Recursively searches for a specific "format" value and removes it.

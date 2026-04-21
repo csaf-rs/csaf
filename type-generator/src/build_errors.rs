@@ -11,4 +11,8 @@ pub enum BuildError {
     Syntax(#[from] syn::Error),
     #[error("JSON parsing error: {0}")]
     Json(#[from] serde_json::Error),
+    #[error("Path escape error: {0}")]
+    PathEscape(String),
+    #[error("Schema patch error: {0}")]
+    SchemaPatch(String),
 }

@@ -15,23 +15,23 @@ use clap::Parser;
 #[command(version, about, long_about = None)]
 struct Args {
     /// Generate schema definitions
-    #[arg(short = 's', long, default_value_t = false)]
+    #[arg(long, default_value_t = false)]
     schema: bool,
 
     /// Generate test schema definitions
-    #[arg(short = 't', long, default_value_t = false)]
+    #[arg(long, default_value_t = false)]
     test_schema: bool,
 
     /// Generate test definitions
-    #[arg(short = 'd', long, default_value_t = false)]
+    #[arg(long, default_value_t = false)]
     test_definitions: bool,
 
     /// Generate language tags
-    #[arg(short = 'l', long, default_value_t = false)]
+    #[arg(long, default_value_t = false)]
     language_tags: bool,
 
     /// Target folder for generated code, ../csaf-rs by default
-    #[arg(short = 'o', long, default_value = "../csaf-rs")]
+    #[arg(long, default_value = "../csaf-rs")]
     target_folder: String,
 }
 

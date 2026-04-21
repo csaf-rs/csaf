@@ -9,7 +9,7 @@ use crate::build_errors::BuildError;
 pub struct SchemaConfig {
     pub input: &'static str,
     pub output: &'static str,
-    pub patch: Option<&'static dyn Fn(&mut Value)>,
+    pub patch: Option<&'static dyn Fn(&mut Value) -> Result<(), BuildError>>,
 }
 
 /// Loads, patches, and generates types for a given schema configuration.

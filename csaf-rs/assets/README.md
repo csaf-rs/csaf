@@ -31,12 +31,6 @@ This is a 1:1 copy from the respective repository (i.e., git submodule), cloned 
 
 ## External Assets
 
-- `language-subtag-registry.txt`
-
-Contains IANA's language subtag registry found at 
-https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry.
-Assumed to be public domain material, according to https://www.iana.org/help/licensing-terms.
-
 - `scancode-licensedb.json`
 
 Contains the index of ScanCode LicenseDB licenses found at

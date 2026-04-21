@@ -28,6 +28,9 @@ jobs:
       - name: Run cargo check (for .rs file re-generation)
         run: cargo check
 
+      - name: Regenerate language subtag table
+        run: cargo run --manifest-path type-generator/Cargo.toml -- --generate-language-tags
+
       - name: Create PR
         uses: peter-evans/create-pull-request@v7
         with:

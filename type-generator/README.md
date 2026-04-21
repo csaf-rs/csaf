@@ -21,17 +21,23 @@ Additionally create types for the testcases itself, to work with them in a type 
 cargo run -- --create-test-definitions
 ```
 
-By default the target folder is set to `../csaf-rs` and the generator is creating files the specific subfolder used in this library, but you can override it by passing the `--target-folder` option.
+Additionally create language subtag registry types from the IANA registry
+```
+cargo run -- --generate-language-tags
+```
 
-| Type | Default target folder|
-| --- | --- |
-| CSAF-Schema | `csaf-rs/src/schema/<VERSION>/schema.rs` |
-| CSAF-Testcases-Schema | `csaf-rs/src/schema/<VERSION>/testcases_schema.rs` |
-| CSAF-Testcases | `csaf-rs/src/<VERSION>/testcases.generated.rs` |
+By default, the target folder is set to `../csaf-rs` and the generator is creating files the specific subfolder used in this library, but you can override it by passing the `--target-folder` option.
+
+| Type | Default target folder|  
+| --- | --- |  
+| CSAF-Schema | `csaf-rs/src/schema/<VERSION>/schema.rs` |  
+| CSAF-Testcases-Schema | `csaf-rs/src/schema/<VERSION>/testcases_schema.rs` |  
+| CSAF-Testcases | `csaf-rs/src/<VERSION>/testcases.generated.rs` |  
+| Language-Subtags | `csaf-rs/src/csaf/types/language/language_subtags.generated.rs` |
 
 You can always see the available options by running `cargo run -- --help`.
 
-## Custom test cases (see [supplementary tests](assets/tests/supplementary_tests.md))
+## Custom test cases (see [supplementary tests](assets/README.md))
 
 If you want to add custom test cases, you can put them in `assets/tests` in the same manner as they are in the `csaf` folder (JSON file + listed in `testcases.json`)
 > Make sure to run the generator with `-i -c` afterwards, to the new cases get picked up and the code is upated.

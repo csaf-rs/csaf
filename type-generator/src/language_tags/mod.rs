@@ -62,11 +62,13 @@ pub(crate) struct SubtagEntry {
 pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
     let registry_path = Path::new(target_folder).join("assets/language-subtag-registry.txt");
     let registry = fs::read_to_string(&registry_path).map_err(|e| {
-        eprintln!(
-            "Failed to read language subtag registry at {}: {e}",
-            registry_path.display()
-        );
-        e
+        std::io::Error::new(
+            e.kind(),
+            format!(
+                "Failed to read language subtag registry at {}: {e}",
+                registry_path.display()
+            ),
+        )
     })?;
 
     let mut subtags_by_kind: HashMap<SubtagKind, Vec<SubtagEntry>> = make_subtags_map();

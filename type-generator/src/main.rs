@@ -31,7 +31,7 @@ struct Args {
     language_tags: bool,
 
     /// Target folder for generated code, ../csaf-rs by default
-    #[arg(short, long, default_value = "../csaf-rs")]
+    #[arg(short = 'o', long, default_value = "../csaf-rs")]
     target_folder: String,
 }
 
@@ -39,8 +39,7 @@ fn main() -> Result<(), BuildError> {
     let args = Args::parse();
 
     // If no specific generation is requested, run all
-    let run_all =
-        !args.schema && !args.test_schema && !args.test_definitions && !args.language_tags;
+    let run_all = !args.schema && !args.test_schema && !args.test_definitions && !args.language_tags;
 
     if run_all || args.schema {
         for schema in &get_schemas() {

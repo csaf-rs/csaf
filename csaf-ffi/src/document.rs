@@ -7,14 +7,12 @@ use std::sync::{Arc, Mutex};
 use csaf::csaf::raw::{HasParsed, RawDocument};
 use csaf::csaf2_0::loader::load_document_from_str as load_2_0;
 use csaf::csaf2_1::loader::load_document_from_str as load_2_1;
-use csaf::csaf_traits::*;
 use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
 use csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
 use csaf::validation::{validate_by_preset, validate_by_test, validate_by_tests};
 
-use crate::types::*;
 // Explicitly resolve ambiguity with same-named types from csaf::csaf_traits::*
-use crate::types::{CsafVersion, Cwe};
+use crate::types::CsafVersion;
 use crate::{CsafError, ValidationResult};
 
 // ---------------------------------------------------------------------------
@@ -25,10 +23,6 @@ enum DocumentInner {
     V20(RawDocument<Csaf20>),
     V21(RawDocument<Csaf21>),
 }
-
-// ---------------------------------------------------------------------------
-// CsafDocument — the main UniFFI Object
-// ---------------------------------------------------------------------------
 
 /// A parsed CSAF document (2.0 or 2.1).
 ///
@@ -41,38 +35,8 @@ pub struct CsafDocument {
     raw_json: String,
 }
 
-// Macro to dispatch a trait method across both versions.
-// Locks the Mutex, gets parsed, and invokes the body.
-macro_rules! dispatch {
-    ($self:expr, |$doc:ident| $body:expr) => {{
-        let guard = $self.inner.lock().map_err(|_| CsafError::LoadError {
-            message: "lock poisoned".into(),
-        })?;
-        match &*guard {
-            DocumentInner::V20(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                let $doc = parsed;
-                Ok($body)
-            },
-            DocumentInner::V21(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                let $doc = parsed;
-                Ok($body)
-            },
-        }
-    }};
-}
-
 #[uniffi::export]
 impl CsafDocument {
-    // -- Constructors -------------------------------------------------------
-
     /// Parse a CSAF document from JSON, auto-detecting the version.
     #[uniffi::constructor]
     pub fn from_json(json_str: String) -> Result<Arc<Self>, CsafError> {
@@ -118,8 +82,6 @@ impl CsafDocument {
             raw_json: json_str,
         }))
     }
-
-    // -- Validation ---------------------------------------------------------
 
     /// Run validation with the given preset ("basic", "extended", "full").
     pub fn validate(&self, preset: String) -> Result<ValidationResult, CsafError> {
@@ -194,8 +156,6 @@ impl CsafDocument {
         Ok(result.into())
     }
 
-    // -- Core accessors -----------------------------------------------------
-
     /// The CSAF version of this document.
     pub fn get_version(&self) -> CsafVersion {
         match self.version_string.as_str() {
@@ -212,136 +172,5 @@ impl CsafDocument {
     /// The original JSON string used to create this document.
     pub fn to_json(&self) -> String {
         self.raw_json.clone()
-    }
-
-    // -- Document-level metadata --------------------------------------------
-
-    /// Document title.
-    pub fn get_title(&self) -> Result<String, CsafError> {
-        dispatch!(self, |doc| doc.get_document().get_tracking().get_id().clone())
-    }
-
-    /// Document category (e.g., csaf_vex, csaf_security_advisory).
-    pub fn get_category(&self) -> Result<DocumentCategory, CsafError> {
-        dispatch!(self, |doc| (&doc.get_document().get_category()).into())
-    }
-
-    /// Document language tag, if present.
-    pub fn get_lang(&self) -> Result<Option<CsafLanguage>, CsafError> {
-        dispatch!(self, |doc| doc.get_document().get_lang().as_ref().map(|l| l.into()))
-    }
-
-    /// Tracking ID.
-    pub fn get_tracking_id(&self) -> Result<String, CsafError> {
-        dispatch!(self, |doc| doc.get_document().get_tracking().get_id().clone())
-    }
-
-    /// Current release date.
-    pub fn get_current_release_date(&self) -> Result<CsafDateTime, CsafError> {
-        dispatch!(self, |doc| (&doc
-            .get_document()
-            .get_tracking()
-            .get_current_release_date())
-            .into())
-    }
-
-    /// Initial release date.
-    pub fn get_initial_release_date(&self) -> Result<CsafDateTime, CsafError> {
-        dispatch!(self, |doc| (&doc
-            .get_document()
-            .get_tracking()
-            .get_initial_release_date())
-            .into())
-    }
-
-    /// Publisher category as a string.
-    pub fn get_publisher_category(&self) -> Result<String, CsafError> {
-        dispatch!(self, |doc| format!(
-            "{:?}",
-            doc.get_document().get_publisher().get_category()
-        ))
-    }
-
-    // -- Vulnerabilities ----------------------------------------------------
-
-    /// Number of vulnerabilities in the document.
-    pub fn get_vulnerability_count(&self) -> Result<u64, CsafError> {
-        dispatch!(self, |doc| doc.get_vulnerabilities().len() as u64)
-    }
-
-    /// Get the CVE identifier for a vulnerability at the given index.
-    pub fn get_vulnerability_cve(&self, index: u64) -> Result<Option<String>, CsafError> {
-        dispatch!(self, |doc| doc
-            .get_vulnerabilities()
-            .get(index as usize)
-            .and_then(|v| v.get_cve().cloned()))
-    }
-
-    /// Get CWE entries for a vulnerability at the given index.
-    pub fn get_vulnerability_cwes(&self, index: u64) -> Result<Vec<Cwe>, CsafError> {
-        dispatch!(self, |doc| doc
-            .get_vulnerabilities()
-            .get(index as usize)
-            .and_then(|v| v.get_cwe())
-            .unwrap_or_default()
-            .iter()
-            .map(|c| c.into())
-            .collect())
-    }
-
-    /// Get vulnerability IDs (non-CVE) for a vulnerability at the given index.
-    pub fn get_vulnerability_ids(&self, index: u64) -> Result<Vec<VulnerabilityId>, CsafError> {
-        dispatch!(self, |doc| doc
-            .get_vulnerabilities()
-            .get(index as usize)
-            .and_then(|v| v.get_ids())
-            .map(|ids| {
-                ids.iter()
-                    .map(|id| VulnerabilityId {
-                        system_name: id.get_system_name().clone(),
-                        text: id.get_text().clone(),
-                    })
-                    .collect()
-            })
-            .unwrap_or_default())
-    }
-
-    /// Get disclosure date for a vulnerability at the given index.
-    pub fn get_vulnerability_disclosure_date(&self, index: u64) -> Result<Option<CsafDateTime>, CsafError> {
-        dispatch!(self, |doc| {
-            doc.get_vulnerabilities()
-                .get(index as usize)
-                .and_then(|v| v.get_disclosure_date())
-                .as_ref()
-                .map(|dt| dt.into())
-        })
-    }
-
-    /// Get all product references across all vulnerabilities.
-    pub fn get_all_product_references(&self) -> Result<Vec<ProductReference>, CsafError> {
-        dispatch!(self, |doc| {
-            doc.get_all_product_references().into_iter().map(Into::into).collect()
-        })
-    }
-
-    /// Get all group references across all vulnerabilities.
-    pub fn get_all_group_references(&self) -> Result<Vec<ProductReference>, CsafError> {
-        dispatch!(self, |doc| doc
-            .get_all_group_references()
-            .into_iter()
-            .map(Into::into)
-            .collect())
-    }
-
-    // -- Product Tree -------------------------------------------------------
-
-    /// Whether the document has a product tree.
-    pub fn has_product_tree(&self) -> Result<bool, CsafError> {
-        dispatch!(self, |doc| doc.get_product_tree().is_some())
-    }
-
-    /// Get all product IDs referenced in the document.
-    pub fn get_all_product_ids(&self) -> Result<Vec<String>, CsafError> {
-        dispatch!(self, |doc| doc.get_all_product_references_ids())
     }
 }

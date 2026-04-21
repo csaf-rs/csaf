@@ -25,11 +25,12 @@ jobs:
       - name: Update external assets
         run: ./update_ext_assets.sh
 
+      - name: Regenerate types from schema
+        working-directory: type-generator
+        run: cargo run -- --generate-language-tags
+
       - name: Run cargo check (for .rs file re-generation)
         run: cargo check
-
-      - name: Regenerate language subtag table
-        run: cargo run --manifest-path type-generator/Cargo.toml -- --generate-language-tags
 
       - name: Create PR
         uses: peter-evans/create-pull-request@v7

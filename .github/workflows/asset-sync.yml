@@ -31,6 +31,10 @@ jobs:
       - name: Run update_assets.sh
         run: ./update_assets.sh
 
+      - name: Regenerate types from schema
+        working-directory: type-generator
+        run: cargo run -- --generate-language-tags
+
       - name: Run cargo check (for .rs file re-generation)
         run: cargo check
 

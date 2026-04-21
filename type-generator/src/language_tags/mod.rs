@@ -123,6 +123,18 @@ pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
         .join("types")
         .join("language")
         .join("language_subtags.generated.rs");
+    // This is only none if outpath starts at root.
+    if let Some(parent) = out_path.parent() {
+        fs::create_dir_all(parent).map_err(|e| {
+            std::io::Error::new(
+                e.kind(),
+                format!(
+                    "Failed to create output directory for language subtags at {}: {e}",
+                    parent.display()
+                ),
+            )
+        })?;
+    }
     println!("Writing generated language subtags to: {}", out_path.display());
     fs::write(&out_path, code)?;
 

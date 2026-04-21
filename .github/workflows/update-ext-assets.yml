@@ -27,10 +27,10 @@ jobs:
 
       - name: Regenerate types from schema
         working-directory: type-generator
-        run: cargo run -- --generate-language-tags
+        run: cargo run --locked -- --generate-language-tags
 
       - name: Run cargo check (for .rs file re-generation)
-        run: cargo check
+        run: cargo check --locked
 
       - name: Create PR
         uses: peter-evans/create-pull-request@v7

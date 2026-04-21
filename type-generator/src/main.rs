@@ -14,17 +14,21 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Whether to include generation of test schema definitions
-    #[arg(short, long, default_value_t = false)]
-    include_test_schema: bool,
+    /// Generate schema definitions
+    #[arg(short = 's', long, default_value_t = false)]
+    schema: bool,
 
-    /// Whether to include generation of test definitions
-    #[arg(short, long, default_value_t = false)]
-    create_test_definitions: bool,
+    /// Generate test schema definitions
+    #[arg(short = 't', long, default_value_t = false)]
+    test_schema: bool,
 
-    /// Whether to include generation of language tags
+    /// Generate test definitions
+    #[arg(short = 'd', long, default_value_t = false)]
+    test_definitions: bool,
+
+    /// Generate language tags
     #[arg(short = 'l', long, default_value_t = false)]
-    generate_language_tags: bool,
+    language_tags: bool,
 
     /// Target folder for generated code, ../csaf-rs by default
     #[arg(short, long, default_value = "../csaf-rs")]
@@ -34,24 +38,29 @@ struct Args {
 fn main() -> Result<(), BuildError> {
     let args = Args::parse();
 
-    // Execute all listed schema builds
-    for schema in &get_schemas() {
-        build_schema(schema, &args.target_folder)?;
+    // If no specific generation is requested, run all
+    let run_all =
+        !args.schema && !args.test_schema && !args.test_definitions && !args.language_tags;
+
+    if run_all || args.schema {
+        for schema in &get_schemas() {
+            build_schema(schema, &args.target_folder)?;
+        }
     }
 
-    if args.include_test_schema {
+    if run_all || args.test_schema {
         for schema in &get_testcases_schemas() {
             build_schema(schema, &args.target_folder)?;
         }
     }
 
-    if args.create_test_definitions {
+    if run_all || args.test_definitions {
         for config in &get_testcase_configs() {
             generate_testcases(config, &args.target_folder)?;
         }
     }
 
-    if args.generate_language_tags {
+    if run_all || args.language_tags {
         generate_language_tags(&args.target_folder)?;
     }
 

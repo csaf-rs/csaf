@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
@@ -42,7 +44,37 @@ fn to_test_result(
     }
 }
 
+pub enum Preset {
+    Basic,
+    Extended,
+    Full,
+}
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Preset::Basic => write!(f, "basic"),
+            Preset::Extended => write!(f, "extended"),
+            Preset::Full => write!(f, "full"),
+        }
+    }
+}
+impl From<&str> for Preset {
+    fn from(value: &str) -> Self {
+        match value {
+            "basic" => Preset::Basic,
+            "extended" => Preset::Extended,
+            "full" => Preset::Full,
+            _ => panic!("Unknown preset: {value}"),
+        }
+    }
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
+    type PresetType = Preset;
+    fn get_presets() -> Vec<Self::PresetType> {
+        vec![Preset::Basic, Preset::Extended, Preset::Full]
+    }
+
     fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
         match preset {
             "basic" => Some([vec!["schema"], mandatory_tests()].concat()),

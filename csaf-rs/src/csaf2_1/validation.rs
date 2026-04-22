@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
@@ -41,7 +43,74 @@ fn to_test_result(
     }
 }
 
+pub enum Preset {
+    Mandatory,
+    Recommended,
+    Informative,
+    Schema,
+    Basic,
+    Extended,
+    Full,
+    ExternalRequestFree,
+    ConsistentRevisionHistory,
+    ConsistentDateTimes,
+    Ssvc,
+}
+
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Preset::Mandatory => write!(f, "mandatory"),
+            Preset::Recommended => write!(f, "recommended"),
+            Preset::Informative => write!(f, "informative"),
+            Preset::Schema => write!(f, "schema"),
+            Preset::Basic => write!(f, "basic"),
+            Preset::Extended => write!(f, "extended"),
+            Preset::Full => write!(f, "full"),
+            Preset::ExternalRequestFree => write!(f, "external-request-free"),
+            Preset::ConsistentRevisionHistory => write!(f, "consistent-revision-history"),
+            Preset::ConsistentDateTimes => write!(f, "consistent-date-times"),
+            Preset::Ssvc => write!(f, "ssvc"),
+        }
+    }
+}
+impl From<&str> for Preset {
+    fn from(value: &str) -> Self {
+        match value {
+            "mandatory" => Preset::Mandatory,
+            "recommended" => Preset::Recommended,
+            "informative" => Preset::Informative,
+            "schema" => Preset::Schema,
+            "basic" => Preset::Basic,
+            "extended" => Preset::Extended,
+            "full" => Preset::Full,
+            "external-request-free" => Preset::ExternalRequestFree,
+            "consistent-revision-history" => Preset::ConsistentRevisionHistory,
+            "consistent-date-times" => Preset::ConsistentDateTimes,
+            "ssvc" => Preset::Ssvc,
+            _ => panic!("Unknown preset: {value}"),
+        }
+    }
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
+    type PresetType = Preset;
+    fn get_presets() -> Vec<Self::PresetType> {
+        vec![
+            Preset::Mandatory,
+            Preset::Recommended,
+            Preset::Informative,
+            Preset::Schema,
+            Preset::Basic,
+            Preset::Extended,
+            Preset::Full,
+            Preset::ExternalRequestFree,
+            Preset::ConsistentRevisionHistory,
+            Preset::ConsistentDateTimes,
+            Preset::Ssvc,
+        ]
+    }
+
     fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
         match preset {
             "mandatory" => Some(mandatory_tests()),

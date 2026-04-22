@@ -82,6 +82,10 @@ pub trait Validate {
 ///
 /// It can then be used to validate documents with [validate_by_preset] or [validate_by_tests].
 pub trait Validatable {
+    type PresetType;
+    /// Return the available presets
+    fn get_presets() -> Vec<Self::PresetType>;
+
     /// Returns the test IDs belonging to a preset
     fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>>;
 

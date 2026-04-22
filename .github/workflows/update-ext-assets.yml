@@ -27,7 +27,7 @@ jobs:
 
       - name: Regenerate language tags from subtag registry
         working-directory: type-generator
-        run: cargo run --locked -- --language-tags
+        run: cargo run --locked -- --generate-language-tags
 
       - name: Run cargo check (for .rs file re-generation)
         run: cargo check --locked

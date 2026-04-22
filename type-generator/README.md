@@ -6,36 +6,24 @@ Optionally you can create types for the testcases schema and a structure for the
 
 # Usage
 
-By default, all generations are run:
+Create rust types for the CSAF schema
 ```
 cargo run
 ```
 
-To run only specific generations, pass one or more flags. Only the selected generations will run:
-
-Only create types for the CSAF schema
+Additionally create types for the testcases.json file
 ```
-cargo run -- --schema
+cargo run -- --include-test-schema
 ```
 
-Only create types for the testcases.json file
+Additionally create types for the testcases itself, to work with them in a type safe manner
 ```
-cargo run -- --test-schema
-```
-
-Only create types for the testcases itself, to work with them in a type safe manner
-```
-cargo run -- --test-definitions
+cargo run -- --create-test-definitions
 ```
 
-Only create language subtag registry types from the IANA registry
+Additionally create language subtag registry types from the IANA registry
 ```
-cargo run -- --language-tags
-```
-
-Combine flags to run multiple specific generations
-```
-cargo run -- --schema --test-schema
+cargo run -- --generate-language-tags
 ```
 
 By default, the target folder is set to `../csaf-rs`, and the generator creates files in the specific subfolders used in this library, but you can override it by passing the `--target-folder` option.
@@ -52,4 +40,4 @@ You can always see the available options by running `cargo run -- --help`.
 ## Custom test cases (see [supplementary tests](assets/README.md))
 
 If you want to add custom test cases, you can put them in `assets/tests` in the same manner as they are in the `csaf` folder (JSON file + listed in `testcases.json`)
-> Make sure to run the generator with `--test-definitions` afterward, so the new cases get picked up and the code is updated.
+> Make sure to run the generator with `-i -c` afterwards, to the new cases get picked up and the code is updated.

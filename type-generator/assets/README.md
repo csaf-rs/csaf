@@ -14,6 +14,9 @@ This folder contains assets used by the type-generator to produce generated Rust
 See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
 They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
+These files are used to generate the schema and test schema types in `csaf-rs`
+via `cargo run -- --schema` and `cargo run -- --test-schema`.
+
 ## External Assets
 
 ### IANA Language Subtag Registry
@@ -25,7 +28,7 @@ https://www.iana.org/assignments/language-subtag-registry/language-subtag-regist
 Assumed to be public domain material, according to https://www.iana.org/help/licensing-terms.
 
 This file is used to generate `csaf-rs/src/csaf/types/language/language_subtags.generated.rs`
-via `cargo run -- --generate-language-tags`.
+via `cargo run -- --language-tags`.
 
 ## Supplementary Test Cases
 
@@ -42,5 +45,5 @@ Naming conventions:
 - Highlight the use case of the test in the `document/title` and optionally in the test code.
 
 These test cases are used (along with the upstream test cases) to generate test definitions in `csaf-rs` via
-`cargo run -- --create-test-definitions`.
+`cargo run -- --test-definitions`.
 

@@ -36,7 +36,7 @@ jobs:
       - name: Use cache
         uses: Swatinem/rust-cache@v2
         with:
-          key: prepare-${{ needs.prepare.outputs.git-version }}
+          key: prepare-${{ steps.get-versions.outputs.git-version }}
       - name: Check JSON syntax
         run: ./scripts/json/check_json_syntax.sh --quiet
       - name: Check JSON formatting
@@ -101,8 +101,7 @@ jobs:
           cargo publish --dry-run --verbose --no-verify --locked
 
   build-matrix:
-    needs:
-      - prepare
+    needs: prepare
     permissions:
       contents: write
     strategy:
@@ -176,13 +175,12 @@ jobs:
 
 
   build-platforms:
-    needs:
-      - build-matrix
+    needs: build-matrix
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check build status
-        if: needs.build-matrix.result != 'success' || needs.check-type-generator.result != 'success'
+        if: needs.build-matrix.result != 'success'
         run: exit 1
    
   devguard-secret-scanning: # uses gitleaks

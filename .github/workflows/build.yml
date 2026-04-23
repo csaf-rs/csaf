@@ -33,6 +33,10 @@ jobs:
           submodules: 'true'
           fetch-depth: 0
           fetch-tags: true
+      - name: Use cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: prepare-${{ needs.prepare.outputs.git-version }}
       - name: Check JSON syntax
         run: ./scripts/json/check_json_syntax.sh --quiet
       - name: Check JSON formatting
@@ -45,6 +49,17 @@ jobs:
         run: |
           rustup component add rustfmt
           cargo fmt --all -- --check -l
+      - name: Run type-generator
+        run: cargo run -p type-generator
+      - name: Check for uncommitted changes in generated files
+        run: |
+          if ! git diff --exit-code csaf-rs/src/; then
+            echo ""
+            echo "::error::Generated schema files are out of date!"
+            echo "The files in csaf-rs/src/schema/ do not match the output of the type-generator."
+            echo "Please run 'cargo run -p type-generator' and commit the updated files."
+            exit 1
+          fi
       - name: Extract versions
         id: get-versions
         run: |
@@ -86,7 +101,8 @@ jobs:
           cargo publish --dry-run --verbose --no-verify --locked
 
   build-matrix:
-    needs: prepare
+    needs:
+      - prepare
     permissions:
       contents: write
     strategy:
@@ -160,12 +176,13 @@ jobs:
 
 
   build-platforms:
-    needs: build-matrix
+    needs:
+      - build-matrix
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check build status
-        if: needs.build-matrix.result != 'success'
+        if: needs.build-matrix.result != 'success' || needs.check-type-generator.result != 'success'
         run: exit 1
    
   devguard-secret-scanning: # uses gitleaks

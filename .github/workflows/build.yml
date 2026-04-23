@@ -184,11 +184,24 @@ jobs:
       - name: Install cargo-llvm-cov
         run: cargo install cargo-llvm-cov --locked
 
+      - name: Generate coverage
+        run: cargo llvm-cov --locked --workspace --json > /tmp/coverage.json
+
       - name: Coverage summary
         run: |
           echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          cargo llvm-cov --locked --workspace --json --summary-only | ./scripts/coverage_summary.sh >> $GITHUB_STEP_SUMMARY
+          ./scripts/coverage_summary.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>Per-file coverage</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          ./scripts/coverage_per_file.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+      - name: Cleanup coverage
+        if: always()
+        run: rm -f /tmp/coverage.json
 
   devguard-secret-scanning: # uses gitleaks
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')

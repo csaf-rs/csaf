@@ -188,9 +188,7 @@ jobs:
         run: |
           echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cargo llvm-cov --locked --workspace --summary-only --text >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          cargo llvm-cov --locked --workspace --json --summary-only | ./scripts/coverage_summary.sh >> $GITHUB_STEP_SUMMARY
 
   devguard-secret-scanning: # uses gitleaks
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')

@@ -189,7 +189,7 @@ jobs:
           echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cargo llvm-cov --locked --workspace --text 2>&1 >> $GITHUB_STEP_SUMMARY
+          cargo llvm-cov --locked --workspace --summary-only --text >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   devguard-secret-scanning: # uses gitleaks

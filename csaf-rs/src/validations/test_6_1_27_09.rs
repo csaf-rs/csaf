@@ -82,7 +82,7 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         // generate errors for all remaining known_not_affected product or group ids
         for known_not_affected_group_id in known_not_affected_product_or_group_ids.iter() {
             errors.get_or_insert_default().push(test_6_1_27_09_err_generator(
-                known_not_affected_group_id.0.to_string(),
+                known_not_affected_group_id.0.clone(),
                 v_i,
                 *known_not_affected_group_id.1,
             ));

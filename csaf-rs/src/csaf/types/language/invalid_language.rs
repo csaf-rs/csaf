@@ -21,26 +21,26 @@ impl IntoValidationError for CsafLanguageError {
                 message: format!(
                     "Invalid language code '{invalid_lang_tag}': parser failed with error: {parser_error}"
                 ),
-                instance_path: instance_path.to_string(),
+                instance_path: instance_path.clone(),
             },
             CsafLanguageError::InvalidPrimaryLanguageSubtag(invalid_lang_tag, primary_lang_subtag) => ValidationError {
                 message: format!(
                     "Invalid language code '{invalid_lang_tag}': primary language subtag '{primary_lang_subtag}' is not a valid primary language subtag"
                 ),
-                instance_path: instance_path.to_string(),
+                instance_path: instance_path.clone(),
             },
 
             CsafLanguageError::InvalidScriptSubtag(invalid_lang_tag, script_subtag) => ValidationError {
                 message: format!(
                     "Invalid language code '{invalid_lang_tag}': script subtag '{script_subtag}' is not a valid script subtag"
                 ),
-                instance_path: instance_path.to_string(),
+                instance_path: instance_path.clone(),
             },
             CsafLanguageError::InvalidRegionSubtag(invalid_lang_tag, region_sub_tag) => ValidationError {
                 message: format!(
                     "Invalid language code '{invalid_lang_tag}': region subtag '{region_sub_tag}' is not a valid region subtag"
                 ),
-                instance_path: instance_path.to_string(),
+                instance_path,
             },
         }
     }

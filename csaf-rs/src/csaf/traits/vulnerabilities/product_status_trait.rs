@@ -74,7 +74,7 @@ pub trait ProductStatusTrait {
     ) {
         if let Some(iter) = products {
             for (x_i, x) in iter.enumerate() {
-                ids.push(((*x).to_owned(), format!("product_status/{label}/{x_i}")));
+                ids.push(((*x).clone(), format!("product_status/{label}/{x_i}")));
             }
         }
     }

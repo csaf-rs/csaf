@@ -53,7 +53,7 @@ pub trait ProductTreeTrait {
         for (pg_i, pg) in self.get_product_groups().iter().enumerate() {
             for (p_i, p) in pg.get_product_ids().enumerate() {
                 ids.push((
-                    (*p).to_owned(),
+                    (*p).clone(),
                     format!("/product_tree/product_groups/{pg_i}/product_ids/{p_i}"),
                 ));
             }
@@ -73,7 +73,7 @@ pub trait ProductTreeTrait {
             ));
             for (sub_i, sub_ref) in rel.get_subpath_product_references().iter().enumerate() {
                 ids.push((
-                    sub_ref.to_string(),
+                    (*sub_ref).clone(),
                     rel.get_json_path_for_product_path_subpath_product_reference(rel_i, sub_i),
                 ));
             }

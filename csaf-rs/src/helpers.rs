@@ -19,7 +19,7 @@ where
             .iter()
             .filter(|x| product_groups.iter().any(|g| *g == x.get_group_id()))
             .flat_map(|x| x.get_product_ids())
-            .map(|p| p.to_string())
+            .cloned()
             .collect()
     })
 }

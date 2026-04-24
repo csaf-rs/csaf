@@ -178,6 +178,12 @@ jobs:
         with:
           submodules: 'true'
 
+      - name: Use cache
+        id: rust-cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: coverage
+
       - name: Update rustup
         run: rustup update stable --no-self-update
 

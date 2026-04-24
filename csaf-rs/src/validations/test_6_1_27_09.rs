@@ -1,10 +1,10 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::resolve_product_groups;
 use crate::csaf_traits::{
     CsafTrait, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait, WithOptionalGroupIds,
     WithOptionalProductIds,
 };
 use crate::document_category_test_helper::DocumentCategoryTestConfig;
-use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};

@@ -167,7 +167,49 @@ jobs:
       - name: Check build status
         if: needs.build-matrix.result != 'success'
         run: exit 1
-   
+
+  coverage:
+    needs:
+      - prepare
+      - build-platforms
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Use cache
+        id: rust-cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: coverage
+
+      - name: Update rustup
+        if: steps.rust-cache.outputs.cache-hit != 'true'
+        run: rustup update stable --no-self-update
+
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov --locked
+
+      - name: Generate coverage
+        run: cargo llvm-cov --locked --workspace --json > /tmp/coverage.json
+
+      - name: Coverage summary
+        run: |
+          echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          ./scripts/coverage_summary.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>Per-file coverage</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          ./scripts/coverage_per_file.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+      - name: Cleanup coverage
+        if: always()
+        run: rm -f /tmp/coverage.json
+
   devguard-secret-scanning: # uses gitleaks
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
     needs: 

@@ -9,7 +9,9 @@ pub mod document_category_test_helper;
 pub mod helpers;
 pub(crate) mod macros;
 pub mod schema;
+#[cfg(test)]
 pub mod test_result_comparison;
+#[cfg(test)]
 pub mod test_structure;
 pub mod test_validation;
 pub mod validation;

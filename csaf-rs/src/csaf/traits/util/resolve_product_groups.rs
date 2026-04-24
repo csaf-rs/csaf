@@ -6,8 +6,10 @@ use std::collections::{BTreeSet, HashSet};
 /// Looks up each given group ID in the document's product tree and collects
 /// all product IDs belonging to groups.
 ///
-/// Returns a deduplicated, sorted set of product IDs, or `None` if the document
-/// has no product tree or none of the requested group IDs matched.
+/// Returns `Some` with a deduplicated, sorted set of product IDs, or `None` if the document
+/// has no product tree or if there were no product IDs resolved for the given group IDs.
+/// The latter can be caused by the group IDs not existing in the product tree and / or the
+/// group IDs not being associated with any product IDs.
 ///
 /// # Arguments
 ///

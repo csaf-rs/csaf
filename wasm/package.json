@@ -1,0 +1,21 @@
+{
+  "name": "@csaf-rs/csaf-wasm",
+  "version": "0.3.1",
+  "type": "module",
+  "description": "CSAF validation via WASM (UniFFI-generated bindings)",
+  "main": "csaf_ffi.ts",
+  "license": "Apache-2.0",
+  "scripts": {
+    "demo": "vite --config demo/vite.config.ts",
+    "demo:build": "vite build --config demo/vite.config.ts"
+  },
+  "devDependencies": {
+    "vite": "^6.3.1",
+    "typescript": "^5.8.3",
+    "codemirror": "^6.0.1",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@codemirror/view": "^6.36.0",
+    "@codemirror/state": "^6.5.0"
+  }
+}

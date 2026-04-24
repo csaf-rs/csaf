@@ -71,7 +71,7 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
 
         // merge the resolved product ids from group ids into the directly found product ids
         if let Some(resolved_product_ids) =
-            resolve_product_groups(doc, &found_group_ids.into_iter().collect::<Vec<_>>())
+            resolve_product_groups(doc, &found_group_ids)
         {
             found_product_ids.extend(resolved_product_ids.iter().map(|product_id| product_id.to_owned()));
         }

@@ -1,8 +1,8 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentReferenceTrait, DocumentTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {

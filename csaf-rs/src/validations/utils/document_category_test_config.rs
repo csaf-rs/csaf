@@ -33,6 +33,8 @@ impl DocumentCategoryTestConfig {
     }
 
     /// Sets additional categories specific to CSAF 2.0.
+    /// This is currently unused, but might be necessary later if CSAF 2.0 and 2.1 drift further.
+    #[allow(dead_code)]
     pub const fn csaf20(mut self, categories: &'static [CsafDocumentCategory]) -> Self {
         self.csaf20_categories = Some(categories);
         self

@@ -4,8 +4,6 @@ use crate::csaf_traits::{
     CsafTrait, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait, WithOptionalGroupIds,
     WithOptionalProductIds,
 };
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
-use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
 use crate::validation::ValidationError;
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;

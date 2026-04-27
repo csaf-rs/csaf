@@ -54,7 +54,7 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
             }
         }
         if let Some(ratings_map) = ratings_map {
-            for ((product_id, source), ratings) in ratings_map.iter() {
+            for ((product_id, source), ratings) in &ratings_map {
                 let has_cvss_score = ratings.iter().any(|(_, has_cvss, _)| *has_cvss);
                 if has_cvss_score {
                     for (m_i, _, has_qualitative) in ratings {

@@ -48,37 +48,29 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
             vulnerability
                 .get_flags_group_references()
                 .iter()
-                .map(|(group_id, _)| group_id.to_owned())
-                .collect::<Vec<String>>(),
+                .map(|(group_id, _)| group_id.to_owned()),
         );
         found_product_ids.extend(
             vulnerability
                 .get_flags_product_references()
                 .iter()
-                .map(|(product_id, _)| product_id.to_owned())
-                .collect::<Vec<String>>(),
+                .map(|(product_id, _)| product_id.to_owned()),
         );
 
         // gather from threats with category impact
         for threat in vulnerability.get_threats().iter() {
             if threat.get_category() == CategoryOfTheThreat::Impact {
                 if let Some(group_ids) = threat.get_group_ids() {
-                    found_group_ids.extend(group_ids.map(|group_id| group_id.to_owned()).collect::<Vec<String>>());
+                    found_group_ids.extend(group_ids.map(|group_id| group_id.to_owned()));
                 }
                 if let Some(product_ids) = threat.get_product_ids() {
-                    found_product_ids.extend(
-                        product_ids
-                            .map(|product_id| product_id.to_owned())
-                            .collect::<Vec<String>>(),
-                    );
+                    found_product_ids.extend(product_ids.map(|product_id| product_id.to_owned()));
                 }
             }
         }
 
         // merge the resolved product ids from group ids into the directly found product ids
-        if let Some(resolved_product_ids) =
-            resolve_product_groups(doc, &found_group_ids.into_iter().collect::<Vec<_>>())
-        {
+        if let Some(resolved_product_ids) = resolve_product_groups(doc, &found_group_ids) {
             found_product_ids.extend(resolved_product_ids.iter().map(|product_id| product_id.to_owned()));
         }
 

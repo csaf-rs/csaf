@@ -1,3 +1,7 @@
 [workspace]
 members = ["csaf-validator", "csaf-rs", "type-generator", "csaf-converter"]
 resolver = "2"
+
+[workspace.lints.clippy]
+needless_collect = "deny"
+

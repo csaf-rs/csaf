@@ -56,7 +56,7 @@ static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
 
 fn create_schema_error(err: String, path: &str) -> ValidationError {
     ValidationError {
-        message: err.clone(),
+        message: err,
         instance_path: match path.len() {
             0 => "/".to_string(),
             _ => path.to_string(),
@@ -142,11 +142,11 @@ mod tests {
         )]);
 
         // checks for CSAF 2.0
-        check_file!(2, 0, "s01", &VALIDATOR_2_0, min_properties.clone());
-        check_file!(2, 0, "s02", &VALIDATOR_2_0, pattern.clone());
-        check_file!(2, 0, "s03", &VALIDATOR_2_0, min_items.clone());
-        check_file!(2, 0, "s04", &VALIDATOR_2_0, min_length.clone());
-        check_file!(2, 0, "s05", &VALIDATOR_2_0, non_unique.clone());
+        check_file!(2, 0, "s01", &VALIDATOR_2_0, min_properties);
+        check_file!(2, 0, "s02", &VALIDATOR_2_0, pattern);
+        check_file!(2, 0, "s03", &VALIDATOR_2_0, min_items);
+        check_file!(2, 0, "s04", &VALIDATOR_2_0, min_length);
+        check_file!(2, 0, "s05", &VALIDATOR_2_0, non_unique);
 
         // checks for CSAF 2.1
         check_file!(2, 1, "s01", &VALIDATOR_2_1, min_properties);

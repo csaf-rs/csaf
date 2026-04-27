@@ -6,4 +6,5 @@ resolver = "2"
 needless_collect = "deny"
 exit = "deny"
 implicit_clone = "deny"
+redundant_clone = "deny"
 

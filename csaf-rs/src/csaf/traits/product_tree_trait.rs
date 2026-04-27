@@ -9,7 +9,6 @@ use crate::schema::csaf2_1::schema::{
     ProductGroup as ProductGroup21, ProductPath as ProductPath21, ProductTree as ProductTree21,
 };
 use std::fmt::Write as _;
-use std::ops::Deref;
 
 /// Trait representing an abstract product tree in a CSAF document.
 ///
@@ -53,7 +52,7 @@ pub trait ProductTreeTrait {
         for (pg_i, pg) in self.get_product_groups().iter().enumerate() {
             for (p_i, p) in pg.get_product_ids().enumerate() {
                 ids.push((
-                    (*p).clone(),
+                    p.to_owned(),
                     format!("/product_tree/product_groups/{pg_i}/product_ids/{p_i}"),
                 ));
             }
@@ -71,9 +70,9 @@ pub trait ProductTreeTrait {
                 rel.get_beginning_product_reference().to_owned(),
                 rel.get_json_path_for_product_path_beginning_product_reference(rel_i),
             ));
-            for (sub_i, sub_ref) in rel.get_subpath_product_references().iter().enumerate() {
+            for (sub_i, sub_ref) in rel.get_subpath_product_references().into_iter().enumerate() {
                 ids.push((
-                    (*sub_ref).clone(),
+                    sub_ref.to_owned(),
                     rel.get_json_path_for_product_path_subpath_product_reference(rel_i, sub_i),
                 ));
             }
@@ -394,7 +393,7 @@ impl BranchTrait<FullProductNameT20> for Branch20 {
     }
 
     fn get_name(&self) -> &str {
-        self.name.deref()
+        self.name.as_str()
     }
 
     fn get_product(&self) -> Option<&FullProductNameT20> {
@@ -425,7 +424,7 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
     }
 
     fn get_name(&self) -> &str {
-        self.name.deref()
+        self.name.as_str()
     }
 
     fn get_product(&self) -> Option<&FullProductNameT21> {

@@ -16,9 +16,9 @@ pub enum CsafLanguageError {
 impl IntoValidationError for CsafLanguageError {
     fn into_validation_error(self, instance_path: &str) -> ValidationError {
         let message = match self {
-            CsafLanguageError::ParserError(invalid_lang_tag, parser_error) => format!(
-                "Invalid language code '{invalid_lang_tag}': parser failed with error: {parser_error}"
-            ),
+            CsafLanguageError::ParserError(invalid_lang_tag, parser_error) => {
+                format!("Invalid language code '{invalid_lang_tag}': parser failed with error: {parser_error}")
+            },
             CsafLanguageError::InvalidPrimaryLanguageSubtag(invalid_lang_tag, primary_lang_subtag) => format!(
                 "Invalid language code '{invalid_lang_tag}': primary language subtag '{primary_lang_subtag}' is not a valid primary language subtag"
             ),

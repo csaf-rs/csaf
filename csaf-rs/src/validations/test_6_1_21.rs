@@ -83,8 +83,7 @@ fn test_6_1_21_err_missing_version(expected_version: CsafVersionNumber) -> Valid
     let version_error = match expected_version {
         CsafVersionNumber::IntVer(_) => format!("{expected_number}"),
         CsafVersionNumber::SemVer(_) => format!("{expected_number}.y.z"),
-    }
-    .to_string();
+    };
     ValidationError {
         message: format!("Missing revision history item {version_error}"),
         instance_path: "/document/tracking/revision_history".to_string(),

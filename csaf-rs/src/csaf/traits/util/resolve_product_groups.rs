@@ -32,7 +32,7 @@ where
         .filter(|x| product_groups.contains(x.get_group_id()))
         // resolve the group into its product ids
         .flat_map(|x| x.get_product_ids())
-        .map(|p| p.to_string())
+        .cloned()
         .collect();
 
     if product_ids.is_empty() {

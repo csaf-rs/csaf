@@ -102,23 +102,23 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                 match relation_map.get_mut(rel_prod_id) {
                     Some(v) => {
                         v.insert(
-                            pp.get_beginning_product_reference().to_string(),
+                            pp.get_beginning_product_reference().clone(),
                             pp.get_json_path_for_product_path(pp_i),
                         );
                         pp.get_subpath_product_references().iter().for_each(|next| {
-                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
+                            v.insert((*next).clone(), pp.get_json_path_for_product_path(pp_i));
                         });
                     },
                     None => {
                         let mut v = HashMap::new();
                         v.insert(
-                            pp.get_beginning_product_reference().to_string(),
+                            pp.get_beginning_product_reference().clone(),
                             pp.get_json_path_for_product_path(pp_i),
                         );
                         pp.get_subpath_product_references().iter().for_each(|next| {
-                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
+                            v.insert((*next).clone(), pp.get_json_path_for_product_path(pp_i));
                         });
-                        relation_map.insert(rel_prod_id.to_string(), v);
+                        relation_map.insert(rel_prod_id.clone(), v);
                     },
                 }
             }

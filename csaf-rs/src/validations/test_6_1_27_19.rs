@@ -17,7 +17,7 @@ fn create_missing_reference_error(document_category: &CsafDocumentCategory) -> V
 fn create_incorrect_category_error(reference_index: usize) -> ValidationError {
     ValidationError {
         message: "The reference summary starts with the correct string \"Superseding Document\". However it uses the wrong category.".to_string(),
-        instance_path: format!("/document/references[]/{reference_index}").to_string(),
+        instance_path: format!("/document/references/{reference_index}").to_string(),
     }
 }
 

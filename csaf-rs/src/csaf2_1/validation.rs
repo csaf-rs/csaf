@@ -43,6 +43,7 @@ fn to_test_result(
     }
 }
 
+#[derive(Copy, Clone)]
 pub enum Preset {
     Mandatory,
     Recommended,
@@ -74,21 +75,23 @@ impl Display for Preset {
         }
     }
 }
-impl From<&str> for Preset {
-    fn from(value: &str) -> Self {
+impl TryFrom<&str> for Preset {
+    type Error = String;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            "mandatory" => Preset::Mandatory,
-            "recommended" => Preset::Recommended,
-            "informative" => Preset::Informative,
-            "schema" => Preset::Schema,
-            "basic" => Preset::Basic,
-            "extended" => Preset::Extended,
-            "full" => Preset::Full,
-            "external-request-free" => Preset::ExternalRequestFree,
-            "consistent-revision-history" => Preset::ConsistentRevisionHistory,
-            "consistent-date-times" => Preset::ConsistentDateTimes,
-            "ssvc" => Preset::Ssvc,
-            _ => panic!("Unknown preset: {value}"),
+            "mandatory" => Ok(Preset::Mandatory),
+            "recommended" => Ok(Preset::Recommended),
+            "informative" => Ok(Preset::Informative),
+            "schema" => Ok(Preset::Schema),
+            "basic" => Ok(Preset::Basic),
+            "extended" => Ok(Preset::Extended),
+            "full" => Ok(Preset::Full),
+            "external-request-free" => Ok(Preset::ExternalRequestFree),
+            "consistent-revision-history" => Ok(Preset::ConsistentRevisionHistory),
+            "consistent-date-times" => Ok(Preset::ConsistentDateTimes),
+            "ssvc" => Ok(Preset::Ssvc),
+            _ => Err(format!("Unknown preset: {value}")),
         }
     }
 }
@@ -111,45 +114,40 @@ impl Validatable for CommonSecurityAdvisoryFramework {
         ]
     }
 
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
+    fn tests_in_preset(preset: Self::PresetType) -> Vec<&'static str> {
         match preset {
-            "mandatory" => Some(mandatory_tests()),
-            "recommended" => Some(recommended_tests()),
-            "informative" => Some(informative_tests()),
-            "schema" => Some(vec!["schema"]),
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            "external-request-free" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat()
-                .into_iter()
-                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
-                .collect(),
-            ),
-            "consistent-revision-history" => Some(vec![
+            Preset::Mandatory => mandatory_tests(),
+            Preset::Recommended => recommended_tests(),
+            Preset::Informative => informative_tests(),
+            Preset::Schema => vec!["schema"],
+            Preset::Basic => [vec!["schema"], mandatory_tests()].concat(),
+            Preset::Extended => [vec!["schema"], mandatory_tests(), recommended_tests()].concat(),
+            Preset::Full => [
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat(),
+            Preset::ExternalRequestFree => [
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()
+            .into_iter()
+            .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+            .collect(),
+            Preset::ConsistentRevisionHistory => vec![
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
                 "6.2.33",
-            ]),
-            "consistent-date-times" => Some(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
-            "ssvc" => Some(vec![
+            ],
+            Preset::ConsistentDateTimes => vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"],
+            Preset::Ssvc => vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
-            ]),
-            _ => None,
+            ],
         }
     }
 

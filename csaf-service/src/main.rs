@@ -17,11 +17,11 @@ use crate::models::ErrorResponse;
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        handlers::list_presets,
-        handlers::get_preset_tests,
-        handlers::validate,
-        handlers::validate_file,
-        handlers::health,
+        handlers::get_presets::get_presets,
+        handlers::get_preset_tests::get_preset_tests,
+        handlers::validate::validate,
+        handlers::validate::validate_file,
+        handlers::health::health,
     ),
     components(schemas(
         PresetsResponse,
@@ -51,7 +51,7 @@ async fn main() {
     let addr = format!("0.0.0.0:{port}");
 
     let app = Router::new()
-        .route("/api/v1/csaf/{version}/presets", get(list_presets))
+        .route("/api/v1/csaf/{version}/presets", get(get_presets))
         .route("/api/v1/csaf/{version}/presets/{preset}/tests", get(get_preset_tests))
         .route("/api/v1/csaf/{version}/validate", post(validate))
         .route("/api/v1/csaf/{version}/validate/file", post(validate_file))

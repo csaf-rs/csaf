@@ -8,3 +8,17 @@ pub enum CsafVersion {
     X20,
     X21,
 }
+
+impl TryFrom<String> for CsafVersion {
+    type Error = String;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_str() {
+            "2.0" => Ok(CsafVersion::X20),
+            "2.1" => Ok(CsafVersion::X21),
+            _ => Err(format!(
+                "Unsupported CSAF version: {value}. Supported versions are 2.0 and 2.1."
+            )),
+        }
+    }
+}

@@ -3,7 +3,9 @@
 //! This module provides WebAssembly bindings for validating CSAF documents in the browser.
 
 use crate::csaf2_0::loader::load_document_from_str as load_document_from_str_2_0;
+use crate::csaf2_0::validation::Preset as Preset2_0;
 use crate::csaf2_1::loader::load_document_from_str as load_document_from_str_2_1;
+use crate::csaf2_1::validation::Preset as Preset2_1;
 use crate::validation::{ValidationResult, validate_by_preset};
 use wasm_bindgen::prelude::*;
 
@@ -62,7 +64,7 @@ pub fn validate_csaf(json_str: &str, preset: &str) -> Result<ValidationResult, J
 fn validate_2_0(json_str: &str, preset: &str) -> Result<ValidationResult, String> {
     let document =
         load_document_from_str_2_0(json_str).map_err(|e| format!("Failed to load CSAF 2.0 document: {e}"))?;
-
+    let preset = Preset2_0::try_from(preset)?;
     Ok(validate_by_preset(&document, "2.0", preset))
 }
 
@@ -71,6 +73,7 @@ fn validate_2_1(json_str: &str, preset: &str) -> Result<ValidationResult, String
     let document =
         load_document_from_str_2_1(json_str).map_err(|e| format!("Failed to load CSAF 2.1 document: {e}"))?;
 
+    let preset = Preset2_1::try_from(preset)?;
     Ok(validate_by_preset(&document, "2.1", preset))
 }
 

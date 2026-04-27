@@ -1,3 +1,5 @@
+use std::vec;
+
 use axum::{
     Json,
     body::Bytes,
@@ -5,6 +7,8 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
+use csaf::csaf2_0::validation::Preset as Preset2_0;
+use csaf::csaf2_1::validation::Preset as Preset2_1;
 use csaf::{
     csaf::loader::detect_version_from_json,
     csaf2_0::loader::load_document_from_str as load_2_0,
@@ -147,11 +151,9 @@ fn run_validation(
     json_str: &str,
     parsed: &serde_json::Value,
 ) -> Result<Json<csaf::validation::ValidationResult>, (StatusCode, Json<ErrorResponse>)> {
-    let version = resolve_version(path_version, parsed)
-        .map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
+    let version = resolve_version(path_version, parsed).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
 
-    let test_ids = resolve_test_ids(&version, query)
-        .map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
+    let test_ids = resolve_test_ids(&version, query).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
 
     let test_id_refs: Vec<&str> = test_ids.iter().map(|s| s.as_str()).collect();
 
@@ -205,12 +207,10 @@ fn resolve_test_ids(version: &str, query: &ValidateQuery) -> Result<Vec<String>,
     let preset = query.preset.as_deref().unwrap_or("basic");
 
     let tests = match version {
-        "2.0" => CsafDoc20::tests_in_preset(preset),
-        "2.1" => CsafDoc21::tests_in_preset(preset),
-        _ => None,
+        "2.0" => CsafDoc20::tests_in_preset(Preset2_0::try_from(preset)?),
+        "2.1" => CsafDoc21::tests_in_preset(Preset2_1::try_from(preset)?),
+        _ => vec![],
     };
 
-    tests
-        .map(|ids| ids.into_iter().map(|s| s.to_string()).collect())
-        .ok_or_else(|| format!("Unknown preset '{preset}' for CSAF version {version}"))
+    Ok(tests.into_iter().map(|s| s.to_string()).collect::<Vec<String>>())
 }

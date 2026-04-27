@@ -44,6 +44,7 @@ fn to_test_result(
     }
 }
 
+#[derive(Copy, Clone)]
 pub enum Preset {
     Basic,
     Extended,
@@ -58,13 +59,15 @@ impl Display for Preset {
         }
     }
 }
-impl From<&str> for Preset {
-    fn from(value: &str) -> Self {
+impl TryFrom<&str> for Preset {
+    type Error = String;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            "basic" => Preset::Basic,
-            "extended" => Preset::Extended,
-            "full" => Preset::Full,
-            _ => panic!("Unknown preset: {value}"),
+            "basic" => Ok(Preset::Basic),
+            "extended" => Ok(Preset::Extended),
+            "full" => Ok(Preset::Full),
+            _ => Err(format!("Unknown preset: {value}")),
         }
     }
 }
@@ -75,20 +78,17 @@ impl Validatable for CommonSecurityAdvisoryFramework {
         vec![Preset::Basic, Preset::Extended, Preset::Full]
     }
 
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
+    fn tests_in_preset(preset: Self::PresetType) -> Vec<&'static str> {
         match preset {
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            _ => None,
+            Preset::Basic => [vec!["schema"], mandatory_tests()].concat(),
+            Preset::Extended => [vec!["schema"], mandatory_tests(), recommended_tests()].concat(),
+            Preset::Full => [
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat(),
         }
     }
 

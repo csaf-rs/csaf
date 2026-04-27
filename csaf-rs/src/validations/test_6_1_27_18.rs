@@ -109,9 +109,9 @@ mod tests {
         TESTS_2_1.test_6_1_27_18.expect(
             undefined_lang_wrong_category.clone(),
             undefined_lang_duplicate_title.clone(),
-            undefined_lang_wrong_category.clone(),
-            undefined_lang_duplicate_title.clone(),
-            lang_en_us_wrong_category.clone(),
+            undefined_lang_wrong_category,
+            undefined_lang_duplicate_title,
+            lang_en_us_wrong_category,
             lang_en_gb_missing_reasoning.clone(),
             lang_en_gb_missing_reasoning,
             Ok(()),

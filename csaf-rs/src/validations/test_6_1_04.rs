@@ -71,8 +71,8 @@ mod tests {
 
         TESTS_2_0.test_6_1_4.expect(
             case_threats.clone(),      // threats
-            case_flags.clone(),        // flags
-            case_remediations.clone(), // remediations
+            case_flags,        // flags
+            case_remediations, // remediations
             Ok(()),
             Ok(()),
         );

@@ -63,6 +63,6 @@ mod tests {
             .expect(shared_error_01.clone(), shared_error_02.clone());
         TESTS_2_1
             .test_6_1_2
-            .expect(shared_error_01.clone(), shared_error_02.clone());
+            .expect(shared_error_01, shared_error_02);
     }
 }

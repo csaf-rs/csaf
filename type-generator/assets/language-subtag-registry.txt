@@ -1,4 +1,4 @@
-File-Date: 2026-04-09
+File-Date: 2026-04-21
 %%
 Type: language
 Subtag: aa
@@ -48268,6 +48268,13 @@ Comments: The subtag represents the alphabet codified by Franc Serafin
   Metelko and used from 1825 to 1833.
 %%
 Type: variant
+Subtag: moderat
+Description: The moderate (conservative, i.e. Danish-like) spelling
+  variant of Bokmål
+Added: 2026-04-21
+Prefix: nb
+%%
+Type: variant
 Subtag: monoton
 Description: Monotonic Greek
 Added: 2006-12-11
@@ -48421,6 +48428,12 @@ Added: 2010-06-29
 Prefix: rm
 Comments: Puter is one of the five traditional written standards or
   "idioms" of the Romansh language.
+%%
+Type: variant
+Subtag: radikalt
+Description: Radical (i.e. Nynorsk-like) spelling variant of Bokmål
+Added: 2026-04-21
+Prefix: nb
 %%
 Type: variant
 Subtag: rigik

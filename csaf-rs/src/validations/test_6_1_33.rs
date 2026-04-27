@@ -1,5 +1,5 @@
+use crate::csaf_traits::resolve_product_groups;
 use crate::csaf_traits::{CsafTrait, FlagTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds};
-use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::LabelOfTheFlag;
 use crate::validation::ValidationError;
 use std::collections::HashMap;

@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductTrait, ProductTreeTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_unused_product_id_error(product_id: &str, path: &str) -> ValidationError {
     ValidationError {

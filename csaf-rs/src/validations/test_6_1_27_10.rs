@@ -1,8 +1,8 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::resolve_product_groups;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
-use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 use std::collections::{HashMap, HashSet};
 
 /// 6.1.27.10 Action Statement
@@ -42,21 +42,17 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
             vulnerability
                 .get_remediations_product_references()
                 .iter()
-                .map(|(product_id, _)| product_id.to_owned())
-                .collect::<Vec<String>>(),
+                .map(|(product_id, _)| product_id.to_owned()),
         );
         found_group_ids.extend(
             vulnerability
                 .get_remediations_group_references()
                 .iter()
-                .map(|(group_id, _)| group_id.to_owned())
-                .collect::<Vec<String>>(),
+                .map(|(group_id, _)| group_id.to_owned()),
         );
 
         // merge the resolved product ids from group ids into the directly found product ids
-        if let Some(resolved_product_ids) =
-            resolve_product_groups(doc, &found_group_ids.into_iter().collect::<Vec<_>>())
-        {
+        if let Some(resolved_product_ids) = resolve_product_groups(doc, &found_group_ids) {
             found_product_ids.extend(resolved_product_ids.iter().map(|product_id| product_id.to_owned()));
         }
 

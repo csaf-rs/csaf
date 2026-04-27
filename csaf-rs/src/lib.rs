@@ -5,7 +5,6 @@ pub mod csaf2_0;
 pub mod csaf2_1;
 pub mod csaf_traits;
 pub(crate) mod cvss;
-pub mod document_category_test_helper;
 pub mod helpers;
 pub(crate) mod macros;
 pub mod schema;

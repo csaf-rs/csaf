@@ -19,14 +19,14 @@ fn create_duplicated_reasoning_error(document_category: &CsafDocumentCategory, n
         message: format!(
             "Duplicate note with title `Reasoning for Withdrawal` found while only one is allowed for documents with category {document_category}"
         ),
-        instance_path: format!("/document/notes[{note_index}]").to_string(),
+        instance_path: format!("/document/notes[{note_index}]"),
     }
 }
 
 fn create_incorrect_category_error(note_index: usize) -> ValidationError {
     ValidationError {
         message: "The note has the correct title. However it uses the wrong category.".to_string(),
-        instance_path: format!("/document/notes[{note_index}]").to_string(),
+        instance_path: format!("/document/notes[{note_index}]"),
     }
 }
 

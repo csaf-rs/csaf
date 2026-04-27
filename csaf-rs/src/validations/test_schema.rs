@@ -56,7 +56,7 @@ static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
 
 fn create_schema_error(err: String, path: &str) -> ValidationError {
     ValidationError {
-        message: err.clone(),
+        message: err,
         instance_path: match path.len() {
             0 => "/".to_string(),
             _ => path.to_string(),

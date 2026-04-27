@@ -7,4 +7,6 @@ needless_collect = "deny"
 exit = "deny"
 implicit_clone = "deny"
 redundant_clone = "deny"
+zero_sized_map_values = "deny"
+explicit_iter_loop = "deny"
 

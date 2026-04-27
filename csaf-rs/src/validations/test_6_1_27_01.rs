@@ -35,7 +35,7 @@ pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Val
     // check if there is a document note with the required category
     let mut found_valid_note = false;
     if let Some(notes) = doc.get_document().get_notes() {
-        for note in notes.iter() {
+        for note in notes {
             let category = note.get_category();
             if category == NoteCategory::Description
                 || category == NoteCategory::Details

@@ -1,8 +1,8 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_missing_note_error(doc_category: CsafDocumentCategory) -> ValidationError {
     ValidationError {

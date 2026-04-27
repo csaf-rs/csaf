@@ -22,7 +22,7 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
                 if let Some(product_ids) = flag.get_product_ids() {
                     for product_id in product_ids {
                         product_id_to_flags_map
-                            .entry(product_id.to_string())
+                            .entry(product_id.clone())
                             .or_default()
                             .push((label, flag_i, None));
                     }
@@ -37,7 +37,7 @@ pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrai
                                 product_id_to_flags_map.entry(product_id).or_default().push((
                                     label,
                                     flag_i,
-                                    Some(group_id.to_string()),
+                                    Some(group_id.clone()),
                                 ));
                             }
                         }

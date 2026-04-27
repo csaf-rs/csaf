@@ -60,9 +60,9 @@ mod tests {
         )]);
         TESTS_2_0.test_6_1_27_3.expect(case_informational_advisory.clone());
         TESTS_2_1.test_6_1_27_3.expect(
-            case_informational_advisory.clone(),
-            case_withdrawn.clone(),
-            case_superseded.clone(),
+            case_informational_advisory,
+            case_withdrawn,
+            case_superseded,
             Ok(()),
             Ok(()),
             Ok(()),

@@ -36,7 +36,7 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + With
             None
         } else {
             let mut product_set: BTreeSet<String> = match self.get_product_ids() {
-                Some(product_ids) => product_ids.map(|id| (*id).to_owned()).collect(),
+                Some(product_ids) => product_ids.cloned().collect(),
                 None => BTreeSet::new(),
             };
             if let Some(product_groups) = self.get_group_ids()

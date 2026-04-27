@@ -58,7 +58,7 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         );
 
         // gather from threats with category impact
-        for threat in vulnerability.get_threats().iter() {
+        for threat in vulnerability.get_threats() {
             if threat.get_category() == CategoryOfTheThreat::Impact {
                 if let Some(group_ids) = threat.get_group_ids() {
                     found_group_ids.extend(group_ids.map(|group_id| group_id.to_owned()));
@@ -75,14 +75,14 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         }
 
         // remove all found product ids from known_not_affected_product_or_group_ids
-        for product_id in found_product_ids.iter() {
+        for product_id in &found_product_ids {
             known_not_affected_product_or_group_ids.remove(product_id);
         }
 
         // generate errors for all remaining known_not_affected product or group ids
-        for known_not_affected_group_id in known_not_affected_product_or_group_ids.iter() {
+        for known_not_affected_group_id in &known_not_affected_product_or_group_ids {
             errors.get_or_insert_default().push(test_6_1_27_09_err_generator(
-                known_not_affected_group_id.0.to_string(),
+                known_not_affected_group_id.0.clone(),
                 v_i,
                 *known_not_affected_group_id.1,
             ));

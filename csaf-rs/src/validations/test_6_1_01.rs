@@ -12,7 +12,7 @@ fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<Vali
 
     let references = doc.get_all_product_references();
     let mut errors: Option<Vec<ValidationError>> = Option::None;
-    for (ref_id, ref_path) in references.iter() {
+    for (ref_id, ref_path) in &references {
         if !definitions_set.contains(ref_id) {
             errors.get_or_insert_default().push(generate_err_msg(ref_id, ref_path));
         }

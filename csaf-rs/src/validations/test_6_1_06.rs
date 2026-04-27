@@ -124,14 +124,13 @@ mod tests {
         TESTS_2_1.test_6_1_6.expect(
             case_affected_not_affected.clone(),
             case_affected_not_affected.clone(),
-            case_affected_not_affected.clone(),
+            case_affected_not_affected,
             Err(case_affected_under_investigation_vec
                 .clone()
                 .into_iter()
                 .chain(case_not_affected_fixed_vec)
                 .collect()),
             Err(case_affected_under_investigation_vec
-                .clone()
                 .into_iter()
                 .chain(case_not_affected_under_investigation_vec)
                 .chain(case_affected_fixed_vec)

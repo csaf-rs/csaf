@@ -31,20 +31,20 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
                     // add all vulnerability metrics of this metric to the product -> vulnerability metrics map
                     for vulnerability_metric in content.get_vulnerability_metric_types() {
                         product_metrics_map
-                            .entry(product.to_string())
+                            .entry(product.clone())
                             .or_default()
                             .insert(vulnerability_metric);
                     }
                     // add the path of this metric to the product -> paths map
                     product_path_map
-                        .entry(product.to_string())
+                        .entry(product.clone())
                         .or_default()
                         .insert(content.get_content_json_path(v_i, m_i));
                 }
             }
         }
         // for each product that has only CVSS v2 as vulnerability metric,
-        for (product, metrics_set) in product_metrics_map.iter() {
+        for (product, metrics_set) in &product_metrics_map {
             if metrics_set.len() == 1 && matches!(metrics_set.iter().next(), Some(CsafVulnerabilityMetric::CvssV2(_))) {
                 // create an error for each path it was encountered at
                 if let Some(paths) = product_path_map.get(product) {

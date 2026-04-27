@@ -57,14 +57,14 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         }
 
         // remove all found product ids from hashmap
-        for product_id in found_product_ids.iter() {
+        for product_id in &found_product_ids {
             known_affected_product_or_group_ids.remove(product_id);
         }
 
         // generate errors for all remaining known_affected product or group ids
-        for known_affected_product_or_group_id in known_affected_product_or_group_ids.iter() {
+        for known_affected_product_or_group_id in &known_affected_product_or_group_ids {
             errors.get_or_insert_default().push(test_6_1_27_10_err_generator(
-                known_affected_product_or_group_id.0.to_string(),
+                known_affected_product_or_group_id.0.clone(),
                 v_i,
                 *known_affected_product_or_group_id.1,
             ));

@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::resolve_product_groups;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
-use crate::helpers::resolve_product_groups;
 use crate::validation::ValidationError;
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 use std::collections::{HashMap, HashSet};

@@ -25,6 +25,7 @@ pub use crate::csaf::traits::shared::note_trait::NoteTrait;
 pub use crate::csaf::traits::util::generic_with::{
     WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
+pub use crate::csaf::traits::util::resolve_product_groups::resolve_product_groups;
 pub use crate::csaf::traits::vulnerabilities::content_trait::ContentTrait;
 pub use crate::csaf::traits::vulnerabilities::epss_trait::EpssTrait;
 pub use crate::csaf::traits::vulnerabilities::file_hash_trait::FileHashTrait;

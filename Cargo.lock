@@ -324,7 +324,6 @@ dependencies = [
  "serde_json",
  "spdx",
  "ssvc",
- "thiserror 2.0.18",
  "tsify",
  "uuid",
  "wasm-bindgen",

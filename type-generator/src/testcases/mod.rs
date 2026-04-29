@@ -4,7 +4,7 @@ use std::path::Path;
 
 use crate::{
     build_errors::BuildError,
-    utils::codegen_snippets::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_rustfmt},
+    utils::codegen_snippets::{add_generated_code_header, add_ignore_clippy, add_ignore_rustfmt},
     utils::read_write_fs::{read_file_to_string, write_generated_file},
 };
 
@@ -120,14 +120,13 @@ pub fn generate_testcases(config: &TestcaseConfig, target_path: &str) -> Result<
     // Write to file
     let test_struct_defs = &test_cases.test_struct_defs;
     let tokens = quote! {
-        #![doc = #GENERATED_CODE_HEADER]
-
         #(#test_struct_defs)*
 
         #group_defs
     };
 
     let mut file: syn::File = syn::parse2(tokens)?;
+    add_generated_code_header(&mut file);
     add_ignore_rustfmt(&mut file);
     add_ignore_clippy(&mut file);
 

@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf::types::csaf_language::CsafLanguage;
+use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_missing_reasoning_error(document_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
@@ -19,14 +19,14 @@ fn create_duplicated_reasoning_error(document_category: &CsafDocumentCategory, n
         message: format!(
             "Duplicate note with title `Reasoning for Withdrawal` found while only one is allowed for documents with category {document_category}"
         ),
-        instance_path: format!("/document/notes[{note_index}]").to_string(),
+        instance_path: format!("/document/notes[{note_index}]"),
     }
 }
 
 fn create_incorrect_category_error(note_index: usize) -> ValidationError {
     ValidationError {
         message: "The note has the correct title. However it uses the wrong category.".to_string(),
-        instance_path: format!("/document/notes[{note_index}]").to_string(),
+        instance_path: format!("/document/notes[{note_index}]"),
     }
 }
 
@@ -43,10 +43,10 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
     match doc.get_document().get_lang() {
-        Some(CsafLanguage::DefaultLanguage(_)) | Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
-        Some(CsafLanguage::Valid(valid_lang)) if !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
-        Some(_) => {},                                                                      // this is english
-        None => {},                                                                         // no language set
+        Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(CsafLanguage::Valid(valid_lang)) if valid_lang.is_default() || !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
+        Some(_) => {}, // this is english
+        None => {},    // no language set
     }
 
     let mut errors = Vec::new();
@@ -84,16 +84,11 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_17
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_17_document_notes_for_withdrawal(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_27_17,
+    test_6_1_27_17_document_notes_for_withdrawal
+);
 
 #[cfg(test)]
 mod tests {

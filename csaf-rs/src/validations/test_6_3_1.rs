@@ -31,26 +31,26 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
                     // add all vulnerability metrics of this metric to the product -> vulnerability metrics map
                     for vulnerability_metric in content.get_vulnerability_metric_types() {
                         product_metrics_map
-                            .entry(product.to_string())
+                            .entry(product.clone())
                             .or_default()
                             .insert(vulnerability_metric);
                     }
                     // add the path of this metric to the product -> paths map
                     product_path_map
-                        .entry(product.to_string())
+                        .entry(product.clone())
                         .or_default()
                         .insert(content.get_content_json_path(v_i, m_i));
                 }
             }
         }
         // for each product that has only CVSS v2 as vulnerability metric,
-        for (product, metrics_set) in product_metrics_map.iter() {
+        for (product, metrics_set) in &product_metrics_map {
             if metrics_set.len() == 1 && matches!(metrics_set.iter().next(), Some(CsafVulnerabilityMetric::CvssV2(_))) {
                 // create an error for each path it was encountered at
                 if let Some(paths) = product_path_map.get(product) {
                     for path in paths {
                         errors
-                            .get_or_insert_with(Vec::new)
+                            .get_or_insert_default()
                             .push(create_cvss_v2_only_error(path.clone()));
                     }
                 }
@@ -61,27 +61,7 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_3_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_3_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_3_1, test_6_3_1_use_of_cvss_v2_as_only_scoring_system);
 
 #[cfg(test)]
 mod tests {

@@ -5,9 +5,12 @@ license = "Apache-2.0"
 repository = "https://github.com/csaf-rs/csaf"
 keywords = ["csaf"]
 readme = "../README.md"
-version = "0.3.1"
+version = "0.4.1"
 edition = "2024"
 rust-version = "1.88.0"
+
+[lints]
+workspace = true
 
 [lib]
 name = "csaf"
@@ -19,6 +22,7 @@ converter = []
 wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:tsify", "dep:console_error_panic_hook"]
 
 [dependencies]
+cvss-rs = "0.3.0"
 regress = "0.11"
 serde = { version = "1", features = ["derive"] }
 serde_json = {  version = "1",  features = ["preserve_order"]}
@@ -35,10 +39,17 @@ semver = { version = "1" }
 thiserror = "2"
 jsonschema = { version = "0.45.0", default-features = false }
 spdx = "0.13.4"
+oxilangtag = "0.1.5"
 ssvc = { path = "../../ssvc" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
+
+[dev-dependencies]
+rstest = "0.26.1"
+
+[package.metadata.docs.rs]
+rustc-args = ["--cfg", "docsrs"]
 
 [build-dependencies]
 schemars = "0.8"

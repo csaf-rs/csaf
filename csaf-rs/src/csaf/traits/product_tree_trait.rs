@@ -1,0 +1,433 @@
+use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
+use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
+use crate::schema::csaf2_0::schema::{
+    Branch as Branch20, CategoryOfTheBranch as CategoryOfTheBranch20, FullProductNameT as FullProductNameT20,
+    ProductGroup as ProductGroup20, ProductTree as ProductTree20, Relationship as Relationship20,
+};
+use crate::schema::csaf2_1::schema::{
+    Branch as Branch21, CategoryOfTheBranch as CategoryOfTheBranch21, FullProductNameT as FullProductNameT21,
+    ProductGroup as ProductGroup21, ProductPath as ProductPath21, ProductTree as ProductTree21,
+};
+use std::fmt::Write as _;
+
+/// Trait representing an abstract product tree in a CSAF document.
+///
+/// The `ProductTreeTrait` defines the structure of a product tree and allows
+/// access to its product groups.
+pub trait ProductTreeTrait {
+    // Type Associations
+
+    /// The associated type representing the type of branch in the product tree.
+    type BranchType: BranchTrait<Self::FullProductNameType>;
+
+    /// The associated type representing the type of product groups in the product tree.
+    type ProductGroupType: ProductGroupTrait;
+
+    /// The associated type representing the type of relationships in the product tree.
+    type ProductPathType: ProductPathTrait<Self::FullProductNameType>;
+
+    /// The associated type representing the type of the full product name.
+    type FullProductNameType: ProductTrait;
+
+    // Simple Getter methods
+
+    /// Returns an optional reference to the list of branches in the product tree.
+    fn get_branches(&self) -> Option<&Vec<Self::BranchType>>;
+
+    /// Retrieves a reference to the list of product groups in the product tree.
+    fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
+
+    /// Retrieves a reference to the list of relationships in the product tree.
+    fn get_product_paths(&self) -> &Vec<Self::ProductPathType>;
+
+    /// Retrieves a reference to the list of full product names in the product tree.
+    fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
+
+    // Aggregator functions for product references
+
+    /// Utility function to get all product references in product groups along with their JSON paths
+    fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (pg_i, pg) in self.get_product_groups().iter().enumerate() {
+            for (p_i, p) in pg.get_product_ids().enumerate() {
+                ids.push((
+                    p.to_owned(),
+                    format!("/product_tree/product_groups/{pg_i}/product_ids/{p_i}"),
+                ));
+            }
+        }
+
+        ids
+    }
+
+    /// Utility function to get all product references in relationships along with their JSON paths
+    fn get_relationships_product_references(&self) -> Vec<(String, String)> {
+        let mut ids: Vec<(String, String)> = Vec::new();
+
+        for (rel_i, rel) in self.get_product_paths().iter().enumerate() {
+            ids.push((
+                rel.get_beginning_product_reference().to_owned(),
+                rel.get_json_path_for_product_path_beginning_product_reference(rel_i),
+            ));
+            for (sub_i, sub_ref) in rel.get_subpath_product_references().into_iter().enumerate() {
+                ids.push((
+                    sub_ref.to_owned(),
+                    rel.get_json_path_for_product_path_subpath_product_reference(rel_i, sub_i),
+                ));
+            }
+        }
+
+        ids
+    }
+
+    /// Returns all product references from the product tree (groups + relationships).
+    fn get_all_product_references(&self) -> Vec<(String, String)> {
+        let mut ids = self.get_product_groups_product_references();
+        ids.extend(self.get_relationships_product_references());
+        ids
+    }
+
+    // Visitors for node types in the tree
+
+    /// A trait wrapper for `visit_all_products_generic()` that allows implementations to provide
+    /// type-specific callbacks for product traversal.
+    ///
+    /// This method is intended to be implemented by trait objects to handle their specific
+    /// product name types while reusing the generic traversal logic defined in
+    /// `visit_all_products_generic()`.
+    ///
+    /// # Parameters
+    /// * `callback` - A mutable function that takes a reference to a product and its path string,
+    ///   returning a `Result<(), ValidationError>`. The callback will be invoked with the concrete
+    ///   type specified by the implementing trait.
+    ///
+    /// # Returns
+    /// * `Ok(())` if all products were visited successfully
+    /// * `Err(ValidationError)` if the callback returned an error for any product
+    ///
+    /// # Implementation Notes
+    /// Trait implementers should typically implement this by delegating to
+    /// `visit_all_products_generic()` with the same callback.
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str));
+
+    /// Visits all product references in the product tree by invoking the provided callback for each
+    /// product. Returns with collected error Results provided by `callback`, if occurring.
+    ///
+    /// This method traverses all locations in the product tree where products can be referenced:
+    /// - Products within branches (recursively)
+    /// - Full product names at the top level
+    /// - Full product names within relationships
+    ///
+    /// # Parameters
+    /// * `callback` - A mutable function that takes a reference to a product and its path string
+    ///   and returns a `Result<(), Vec<ValidationError>>`. The path string represents the JSON
+    ///   pointer to the product's location in the document.
+    ///
+    /// # Returns
+    /// * `Ok(())` if all products were visited successfully
+    /// * `Err(Vec<ValidationError>)` if any callback(s) returned errors for any products
+    fn visit_all_products_generic(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
+        // Visit products in branches
+        self.visit_all_branches(&mut |branch: &Self::BranchType, path| {
+            if let Some(product_ref) = branch.get_product() {
+                callback(product_ref, &format!("{path}/product"));
+            }
+        });
+
+        // Visit full_product_names
+        for (i, fpn) in self.get_full_product_names().iter().enumerate() {
+            callback(fpn, &format!("/product_tree/full_product_names/{i}"));
+        }
+
+        // Visit relationships
+        for (i, rel) in self.get_product_paths().iter().enumerate() {
+            callback(
+                rel.get_full_product_name(),
+                &format!("/product_tree/relationships/{i}/full_product_name"),
+            );
+        }
+    }
+
+    /// Visits all branches in the product tree by invoking the provided callback for each branch.
+    ///
+    /// This method traverses all branches in the product tree recursively, calling the callback
+    /// function for each branch with its path.
+    ///
+    /// # Parameters
+    /// * `callback` - A mutable function that takes a reference to a branch and its path string.
+    ///   The path string represents the JSON pointer to the branch's location in the document.
+    fn visit_all_branches(&self, callback: &mut impl FnMut(&Self::BranchType, &str)) {
+        if let Some(branches) = self.get_branches().as_ref() {
+            for (i, branch) in branches.iter().enumerate() {
+                branch.visit_branches_rec(&format!("/product_tree/branches/{i}"), callback);
+            }
+        }
+    }
+
+    /// Collects all paths from the product tree root to each leaf node (FPN).
+    ///
+    /// It also collects the branch indices of that leaf node. For this, it utilizes recursion to do
+    /// depth-first traversal with backtracking.
+    ///
+    /// The indices can be converted to an instance path string on demand via
+    /// [`build_leaf_instance_path`].
+    ///
+    /// # Returns
+    /// A vector of tuples, one for each leaf node, where each tuple contains:
+    /// - `Vec<&BranchType>`: references of branches from root to leaf
+    /// - `Vec<usize>`: branch indices along the path
+    fn collect_leaf_paths(&self) -> Vec<(Vec<&Self::BranchType>, Vec<usize>)> {
+        let mut result: Vec<(Vec<&Self::BranchType>, Vec<usize>)> = Vec::new();
+
+        if let Some(branches) = self.get_branches().as_ref() {
+            // for each root branch, initialize a new vec of branches and indices
+            for (i, branch) in branches.iter().enumerate() {
+                let mut current_path: Vec<&Self::BranchType> = Vec::new();
+                let mut indices: Vec<usize> = vec![i];
+                // start recursion and collect all paths to leaf nodes into the result
+                branch.collect_leaf_paths_rec(&mut current_path, &mut indices, &mut result);
+            }
+        }
+
+        result
+    }
+}
+
+/// Constructs a JSON-pointer instance path from collected branch indices.
+///
+/// # Arguments
+/// - indices: slice of branch indices
+///
+/// # Returns
+/// instance path constructed from branch indices (e.g. 0,0,0 -> "/product_tree/branches/0/branches/0/branches/0/product")
+pub fn build_leaf_instance_path(indices: &[usize]) -> String {
+    // 13 for "/product_tree" + per index (10 for "/branches/" + up to 5 digits) + 8 for "/product"
+    let mut path = String::with_capacity(13 + indices.len() * 15 + 8);
+    path.push_str("/product_tree");
+    for idx in indices {
+        path.push_str("/branches/");
+        write!(path, "{idx}").expect("Writing to a String should never fail");
+    }
+    path.push_str("/product");
+    path
+}
+
+/// Trait representing an abstract branch in a product tree.
+pub trait BranchTrait<FPN: ProductTrait>: Sized {
+    /// Returns an optional reference to the child branches of this branch.
+    fn get_branches(&self) -> Option<&Vec<Self>>;
+
+    fn get_category(&self) -> &CategoryOfTheBranch;
+
+    fn get_name(&self) -> &str;
+
+    /// Retrieves the full product name associated with this branch, if available.
+    fn get_product(&self) -> Option<&FPN>;
+
+    /// Recursively visits all branches in the tree structure,
+    /// applying the provided callback function to each branch.
+    ///
+    /// This method traverses the entire branch hierarchy, starting from the current branch and
+    /// proceeding depth-first through all child branches. For each branch, it calls the
+    /// provided callback function with the branch object and its path representation.
+    ///
+    /// # Parameters
+    /// * `path` - A string representing the current path in the branch hierarchy
+    /// * `callback` - A mutable function that takes a reference to Self and the
+    ///   current path string and returns a Result
+    ///
+    /// # Returns
+    /// * `Ok(())` if the traversal completes successfully
+    /// * `Err(Vec<ValidationError>)` if the callback returns an error for any branch
+    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str)) {
+        callback(self, path);
+        if let Some(branches) = self.get_branches() {
+            for (i, branch) in branches.iter().enumerate() {
+                branch.visit_branches_rec(&format!("{path}/branches/{i}"), callback);
+            }
+        }
+    }
+
+    /// Searches for branches that exceed the maximum allowed depth in the branch hierarchy.
+    ///
+    /// This method recursively checks if the branch structure exceeds the specified depth limit.
+    /// It traverses the branch hierarchy depth-first, decrementing the remaining depth parameter
+    /// at each level. If branches are found beyond the allowed depth, it returns the path to the
+    /// first excessive branch.
+    ///
+    /// # Parameters
+    /// * `remaining_depth` - The maximum number of branch levels still allowed
+    ///
+    /// # Returns
+    /// * `Some(String)` containing the path to the first branch that exceeds the allowed depth
+    /// * `None` if no branches exceed the allowed depth
+    fn find_excessive_branch_depth(&self, remaining_depth: u32) -> Option<String> {
+        if let Some(branches) = self.get_branches() {
+            // If we've reached the depth limit and there are branches, we've found a violation
+            if remaining_depth == 1 {
+                return Some("/branches/0".to_string());
+            }
+            for (i, branch) in branches.iter().enumerate() {
+                if let Some(sub_path) = branch.find_excessive_branch_depth(remaining_depth - 1) {
+                    return Some(format!("/branches/{i}{sub_path}"));
+                }
+            }
+        }
+        None
+    }
+
+    /// Recursively collects the branches and their indices from the current branch to all leaf nodes.
+    /// Utilizes depth-first traversal with backtracking.
+    ///
+    /// This is a helper method for `ProductTreeTrait::collect_leaf_paths()`.
+    ///
+    /// # Arguments
+    /// * `branches_on_path` - A mutable vector for the branches along the current path
+    /// * `indices_on_path` - A mutable vector of branch indices along the current path
+    /// * `result` - A mutable vector to collect (branches, indices) tuples for each leaf node
+    fn collect_leaf_paths_rec<'a>(
+        &'a self,
+        branches_on_path: &mut Vec<&'a Self>,
+        indices_on_path: &mut Vec<usize>,
+        result: &mut Vec<(Vec<&'a Self>, Vec<usize>)>,
+    ) {
+        // push the current branch to the branches
+        branches_on_path.push(self);
+
+        match self.get_branches() {
+            // TODO: depending on how we implement extended schema validation, the children.is_empty() might not be necessary
+            Some(branches) if !branches.is_empty() => {
+                // there are still nodes to visit, recurse for each branch
+                for (i, child) in branches.iter().enumerate() {
+                    indices_on_path.push(i);
+                    child.collect_leaf_paths_rec(branches_on_path, indices_on_path, result);
+                    indices_on_path.pop();
+                }
+            },
+            _ => {
+                // we are at a leaf node
+                result.push((branches_on_path.clone(), indices_on_path.clone()));
+            },
+        };
+
+        // backtrack
+        branches_on_path.pop();
+    }
+}
+
+impl ProductTreeTrait for ProductTree20 {
+    type BranchType = Branch20;
+    type ProductGroupType = ProductGroup20;
+    type ProductPathType = Relationship20;
+    type FullProductNameType = FullProductNameT20;
+
+    fn get_branches(&self) -> Option<&Vec<Self::BranchType>> {
+        self.branches.as_deref()
+    }
+
+    fn get_product_groups(&self) -> &Vec<Self::ProductGroupType> {
+        &self.product_groups
+    }
+
+    fn get_product_paths(&self) -> &Vec<Self::ProductPathType> {
+        &self.relationships
+    }
+
+    fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType> {
+        &self.full_product_names
+    }
+
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
+        self.visit_all_products_generic(callback)
+    }
+}
+
+impl ProductTreeTrait for ProductTree21 {
+    type BranchType = Branch21;
+    type ProductGroupType = ProductGroup21;
+    type ProductPathType = ProductPath21;
+    type FullProductNameType = FullProductNameT21;
+
+    fn get_branches(&self) -> Option<&Vec<Self::BranchType>> {
+        self.branches.as_deref()
+    }
+
+    fn get_product_groups(&self) -> &Vec<Self::ProductGroupType> {
+        &self.product_groups
+    }
+
+    fn get_product_paths(&self) -> &Vec<Self::ProductPathType> {
+        &self.product_paths
+    }
+
+    fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType> {
+        &self.full_product_names
+    }
+
+    fn visit_all_products(&self, callback: &mut impl FnMut(&Self::FullProductNameType, &str)) {
+        self.visit_all_products_generic(callback)
+    }
+}
+
+impl BranchTrait<FullProductNameT20> for Branch20 {
+    fn get_branches(&self) -> Option<&Vec<Self>> {
+        self.branches.as_deref()
+    }
+
+    fn get_category(&self) -> &CategoryOfTheBranch {
+        match self.category {
+            CategoryOfTheBranch20::Architecture => &CategoryOfTheBranch::Architecture,
+            CategoryOfTheBranch20::HostName => &CategoryOfTheBranch::HostName,
+            CategoryOfTheBranch20::Language => &CategoryOfTheBranch::Language,
+            CategoryOfTheBranch20::Legacy => &CategoryOfTheBranch::Legacy,
+            CategoryOfTheBranch20::PatchLevel => &CategoryOfTheBranch::PatchLevel,
+            CategoryOfTheBranch20::ProductFamily => &CategoryOfTheBranch::ProductFamily,
+            CategoryOfTheBranch20::ProductName => &CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch20::ProductVersion => &CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch20::ProductVersionRange => &CategoryOfTheBranch::ProductVersionRange,
+            CategoryOfTheBranch20::ServicePack => &CategoryOfTheBranch::ServicePack,
+            CategoryOfTheBranch20::Specification => &CategoryOfTheBranch::Specification,
+            CategoryOfTheBranch20::Vendor => &CategoryOfTheBranch::Vendor,
+        }
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    fn get_product(&self) -> Option<&FullProductNameT20> {
+        self.product.as_ref()
+    }
+}
+
+impl BranchTrait<FullProductNameT21> for Branch21 {
+    fn get_branches(&self) -> Option<&Vec<Self>> {
+        self.branches.as_deref()
+    }
+
+    fn get_category(&self) -> &CategoryOfTheBranch {
+        match self.category {
+            CategoryOfTheBranch21::Architecture => &CategoryOfTheBranch::Architecture,
+            CategoryOfTheBranch21::HostName => &CategoryOfTheBranch::HostName,
+            CategoryOfTheBranch21::Language => &CategoryOfTheBranch::Language,
+            CategoryOfTheBranch21::PatchLevel => &CategoryOfTheBranch::PatchLevel,
+            CategoryOfTheBranch21::ProductFamily => &CategoryOfTheBranch::ProductFamily,
+            CategoryOfTheBranch21::ProductName => &CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch21::ProductVersion => &CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch21::ProductVersionRange => &CategoryOfTheBranch::ProductVersionRange,
+            CategoryOfTheBranch21::ServicePack => &CategoryOfTheBranch::ServicePack,
+            CategoryOfTheBranch21::Specification => &CategoryOfTheBranch::Specification,
+            CategoryOfTheBranch21::Vendor => &CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch21::Platform => &CategoryOfTheBranch::Platform,
+        }
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    fn get_product(&self) -> Option<&FullProductNameT21> {
+        self.product.as_ref()
+    }
+}

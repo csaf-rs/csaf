@@ -34,27 +34,10 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_19
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_19_revision_history_entries_for_prerelease_versions(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_19
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_19_revision_history_entries_for_prerelease_versions(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_19,
+    test_6_1_19_revision_history_entries_for_prerelease_versions
+);
 
 #[cfg(test)]
 mod tests {

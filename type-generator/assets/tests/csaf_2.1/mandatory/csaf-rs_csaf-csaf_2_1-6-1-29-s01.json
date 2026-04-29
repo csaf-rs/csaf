@@ -111,11 +111,11 @@
         {
           "category": "no_fix_planned",
           "details": "These products are end-of-life. Therefore, no fix will be provided.",
-          "product_ids": [
-            "CSAFPID-9080702"
-          ],
           "group_ids": [
             "CSAFGID-0001"
+          ],
+          "product_ids": [
+            "CSAFPID-9080702"
           ]
         },
         {
@@ -126,4 +126,3 @@
     }
   ]
 }
-

@@ -6,6 +6,9 @@ edition = "2024"
 rust-version = "1.88.0"
 publish = false
 
+[lints]
+workspace = true
+
 [dependencies]
 schemars = "0.8"
 clap = {version =  "4.5.53", features = ["derive"]}
@@ -17,3 +20,6 @@ typify = "0.6"
 prettyplease = "0.2"
 quote = "1"
 proc-macro2 = "1"
+
+[dev-dependencies]
+rstest = "0.26.1"

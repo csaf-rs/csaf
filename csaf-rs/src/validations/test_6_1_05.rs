@@ -13,7 +13,7 @@ fn generate_multiple_group_id_definition_error(group_id: &str, path: &str) -> Va
 /// Checks that all product group IDs defined in the document are unique.
 pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Check if there is a product tree, if there isn't, this test can be skipped
-    let Some(tree) = doc.get_product_tree().as_ref() else {
+    let Some(tree) = doc.get_product_tree() else {
         // This will be WasSkipped in the future
         return Ok(());
     };
@@ -50,27 +50,10 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_05_multiple_definition_of_product_group_id(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_05_multiple_definition_of_product_group_id(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    ValidatorForTest6_1_5,
+    test_6_1_05_multiple_definition_of_product_group_id
+);
 
 #[cfg(test)]
 mod tests {

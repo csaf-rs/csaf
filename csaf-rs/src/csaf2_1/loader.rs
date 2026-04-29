@@ -46,7 +46,7 @@ mod tests {
                     .revision_history(vec![
                         Revision::builder()
                             .number("1")
-                            .date(now.clone())
+                            .date(now)
                             .summary("test")
                             .try_into()
                             .unwrap(),

@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_must_not_have_vuln_element_error(doc_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
@@ -39,27 +39,7 @@ pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     Ok(())
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_3
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_03_vulnerability(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_3
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_03_vulnerability(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_27_3, test_6_1_27_03_vulnerability);
 
 #[cfg(test)]
 mod tests {
@@ -80,9 +60,9 @@ mod tests {
         )]);
         TESTS_2_0.test_6_1_27_3.expect(case_informational_advisory.clone());
         TESTS_2_1.test_6_1_27_3.expect(
-            case_informational_advisory.clone(),
-            case_withdrawn.clone(),
-            case_superseded.clone(),
+            case_informational_advisory,
+            case_withdrawn,
+            case_superseded,
             Ok(()),
             Ok(()),
             Ok(()),

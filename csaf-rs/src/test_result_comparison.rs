@@ -14,6 +14,7 @@ use crate::validation::ValidationError;
 pub fn compare_test_results(
     actual: &Result<(), Vec<ValidationError>>,
     expected: &Result<(), Vec<ValidationError>>,
+    csaf_version: &str,
     test_id: &str,
     case_num: &str,
 ) -> Result<(), String> {
@@ -27,9 +28,7 @@ pub fn compare_test_results(
             let mut errors: Vec<String> = Vec::new();
             if actual_errs.len() != expected_errs.len() {
                 errors.push(format!(
-                    "Test {} case {}: Error count mismatch - expected {} error(s) but got {}",
-                    test_id,
-                    case_num,
+                    "CSAF {csaf_version}: Test {test_id} case {case_num}: Error count mismatch - expected {} error(s) but got {}",
                     expected_errs.len(),
                     actual_errs.len()
                 ));
@@ -41,8 +40,8 @@ pub fn compare_test_results(
                     actual_err.message == expected_err.message && actual_err.instance_path == expected_err.instance_path
                 }) {
                     errors.push(format!(
-                        "Test {} case {}: Expected error not found: '{}', path: '{}'",
-                        test_id, case_num, expected_err.message, expected_err.instance_path
+                        "CSAF {csaf_version}: Test {test_id} case {case_num}: Expected error not found: '{}', path: '{}'",
+                        expected_err.message, expected_err.instance_path
                     ));
                 }
             }
@@ -51,8 +50,8 @@ pub fn compare_test_results(
                     expected_err.message == actual_err.message && expected_err.instance_path == actual_err.instance_path
                 }) {
                     errors.push(format!(
-                        "Test {} case {}: Found not expected error: '{}', path: '{}'",
-                        test_id, case_num, actual_err.message, actual_err.instance_path
+                        "CSAF {csaf_version}: Test {test_id} case {case_num}: Found not expected error: '{}', path: '{}'",
+                        actual_err.message, actual_err.instance_path
                     ));
                 }
             }
@@ -65,12 +64,12 @@ pub fn compare_test_results(
         (Ok(()), Err(expected_errors)) => {
             let mut errors: Vec<String> = Vec::new();
             errors.push(format!(
-                "Test {test_id} case {case_num}: Expected failure but validation passed."
+                "CSAF {csaf_version}: Test {test_id} case {case_num}: Expected failure but validation passed."
             ));
             for err in expected_errors {
                 errors.push(format!(
-                    "Test {} case {}: Expected error: '{}', path: '{}'",
-                    test_id, case_num, err.message, err.instance_path
+                    "CSAF {csaf_version}: Test {test_id} case {case_num}: Expected error: '{}', path: '{}'",
+                    err.message, err.instance_path
                 ));
             }
             Err(errors.join("\n"))
@@ -78,15 +77,13 @@ pub fn compare_test_results(
         (Err(actual_errs), Ok(())) => {
             let mut errors: Vec<String> = Vec::new();
             errors.push(format!(
-                "Test {} case {}: Expected success but validation failed with {} error(s).",
-                test_id,
-                case_num,
+                "CSAF {csaf_version}: Test {test_id} case {case_num}: Expected success but validation failed with {} error(s).",
                 actual_errs.len()
             ));
             for err in actual_errs {
                 errors.push(format!(
-                    "Test {} case {}: Not expected error: '{}', path: '{}'",
-                    test_id, case_num, err.message, err.instance_path
+                    "CSAF {csaf_version}: Test {test_id} case {case_num}: Not expected error: '{}', path: '{}'",
+                    err.message, err.instance_path
                 ));
             }
             Err(errors.join("\n"))

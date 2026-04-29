@@ -1,8 +1,8 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_missing_description_note(document_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
@@ -43,16 +43,11 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
     CsafDocumentCategory::CsafSuperseded,
 ]);
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_14
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_14_document_notes_with_description(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_27_14,
+    test_6_1_27_14_document_notes_with_description
+);
 
 #[cfg(test)]
 mod tests {

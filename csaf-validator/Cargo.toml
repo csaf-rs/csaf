@@ -5,13 +5,16 @@ license = "Apache-2.0"
 repository = "https://github.com/csaf-rs/csaf"
 keywords = ["csaf"]
 readme = "../README.md"
-version = "0.3.1"
+version = "0.4.1"
 edition = "2024"
 rust-version = "1.88.0"
+
+[lints]
+workspace = true
 
 [dependencies]
 anstream = "0.6.7"
 anstyle = "1.0.8"
 anyhow = "1.0.93"
 clap = { version = "4.5.23", features = ["derive"] }
-csaf-rs = { path = "../csaf-rs", version = "0.3.1" }
+csaf-rs = { path = "../csaf-rs", version = "0.4.1" }

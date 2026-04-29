@@ -49,16 +49,7 @@ pub fn test_6_1_41_missing_sharing_group_name(doc: &impl CsafTrait) -> Result<()
     Ok(())
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_41
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_41_missing_sharing_group_name(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_41, test_6_1_41_missing_sharing_group_name);
 
 #[cfg(test)]
 mod tests {
@@ -77,9 +68,9 @@ mod tests {
             // Case 02: NIL UUID without name
             nil_uuid_err.clone(),
             // Case 03: Max UUID with wrong name
-            max_uuid_err.clone(),
+            max_uuid_err,
             // Case 04: Nil UUID with wrong name
-            nil_uuid_err.clone(),
+            nil_uuid_err,
             // Case 11: Max UUID with correct name "Public"
             Ok(()),
             // Case 12: Nil UUID with correct name "No sharing allowed"

@@ -68,33 +68,45 @@
         "product_id": "CSAFPID-9080700"
       }
     ],
-    "relationships": [
+    "product_paths": [
       {
-        "category": "default_component_of",
+        "beginning_product_reference": "CSAFPID-9080700",
         "full_product_name": {
           "name": "P3",
           "product_id": "CSAFPID-9080702"
         },
-        "product_reference": "CSAFPID-9080700",
-        "relates_to_product_reference": "CSAFPID-9080701"
+        "subpaths": [
+          {
+            "category": "default_component_of",
+            "next_product_reference": "CSAFPID-9080701"
+          }
+        ]
       },
       {
-        "category": "default_component_of",
+        "beginning_product_reference": "CSAFPID-9080700",
         "full_product_name": {
           "name": "P3",
           "product_id": "CSAFPID-9080702"
         },
-        "product_reference": "CSAFPID-9080700",
-        "relates_to_product_reference": "CSAFPID-9080701"
+        "subpaths": [
+          {
+            "category": "default_component_of",
+            "next_product_reference": "CSAFPID-9080701"
+          }
+        ]
       },
       {
-        "category": "default_component_of",
+        "beginning_product_reference": "CSAFPID-9080700",
         "full_product_name": {
           "name": "P1",
           "product_id": "CSAFPID-9080701"
         },
-        "product_reference": "CSAFPID-9080700",
-        "relates_to_product_reference": "CSAFPID-9080701"
+        "subpaths": [
+          {
+            "category": "default_component_of",
+            "next_product_reference": "CSAFPID-9080701"
+          }
+        ]
       }
     ]
   }

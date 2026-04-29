@@ -1,6 +1,6 @@
-use crate::csaf::types::csaf_language::CsafLanguage;
+use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
@@ -33,32 +33,12 @@ fn validate_language(lang: Option<CsafLanguage>, json_path: &str, errors: &mut O
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_12
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_12_language(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_12
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_12_language(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_12, test_6_1_12_language);
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf::types::csaf_language::CsafLanguage::Invalid;
+    use crate::csaf::types::language::CsafLanguage::Invalid;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
@@ -75,7 +55,7 @@ mod tests {
         let case_01_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/lang")]);
         let case_s01_source_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/source_lang")]);
         let case_s02_both_langs_invalid = Err(vec![
-            ez_error.clone().into_validation_error("/document/lang"),
+            ez_error.into_validation_error("/document/lang"),
             zzz_error.into_validation_error("/document/source_lang"),
         ]);
 

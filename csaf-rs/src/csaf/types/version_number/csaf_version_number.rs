@@ -54,6 +54,52 @@ impl CsafVersionNumber {
             CsafVersionNumber::SemVer(semver) => semver.get_major(),
         }
     }
+
+    /// Returns the next version number.
+    ///
+    /// Integer versions are incremented by 1.
+    /// Semantic versions perform a major bump, producing `x+1.0.0`.
+    pub fn get_next_major_version(&self) -> CsafVersionNumber {
+        match self {
+            CsafVersionNumber::IntVer(intver) => CsafVersionNumber::IntVer(IntVerVersion::new(
+                intver
+                    .get()
+                    .checked_add(1)
+                    .expect("Integer version overflow while incrementing"),
+            )),
+            CsafVersionNumber::SemVer(semver) => CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+                semver
+                    .get_major()
+                    .checked_add(1)
+                    .expect("Semantic version major overflow while incrementing"),
+                0,
+                0,
+            ))),
+        }
+    }
+
+    /// Returns the previous version number.
+    ///
+    /// Integer versions are decremented by 1.
+    /// Semantic versions perform a major drop, producing `x-1.0.0`.
+    pub fn get_previous_major_version(&self) -> CsafVersionNumber {
+        match self {
+            CsafVersionNumber::IntVer(intver) => CsafVersionNumber::IntVer(IntVerVersion::new(
+                intver
+                    .get()
+                    .checked_sub(1)
+                    .expect("Integer version underflow while decrementing"),
+            )),
+            CsafVersionNumber::SemVer(semver) => CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+                semver
+                    .get_major()
+                    .checked_sub(1)
+                    .expect("Semantic version major underflow while decrementing"),
+                0,
+                0,
+            ))),
+        }
+    }
 }
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber
@@ -154,7 +200,6 @@ impl PartialOrd for VersionNumber {
 // Transform a raw version string into a CsafVersionNumber.  As the schema validation is the same
 // for CSAF 2.0 and 2.1, we can just push the raw string through either before parsing it into a CsafVersionNumber.
 // This is only used for testing and not available on the public API
-#[cfg(test)]
 impl From<&str> for CsafVersionNumber {
     fn from(s: &str) -> Self {
         use std::str::FromStr;
@@ -241,5 +286,19 @@ mod tests {
         let semver = CsafVersionNumber::from(&version_t_semver);
         assert!(matches!(semver, CsafVersionNumber::SemVer(_)));
         assert_eq!(semver.get_major(), 1);
+    }
+
+    #[test]
+    fn test_increment_intver() {
+        let version = CsafVersionNumber::from("42");
+
+        assert_eq!(version.get_next_major_version().get_major(), 43);
+    }
+
+    #[test]
+    fn test_increment_semver_major() {
+        let version = CsafVersionNumber::from("1.2.3-alpha+001");
+
+        assert_eq!(version.get_next_major_version().to_string(), "2.0.0");
     }
 }

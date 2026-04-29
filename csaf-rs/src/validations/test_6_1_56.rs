@@ -42,13 +42,9 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
         if let Some(metrics) = vulnerability.get_metrics() {
             for (m_i, metric) in metrics.iter().enumerate() {
                 for product_id in metric.get_products() {
-                    let product_id_source_tuple = (product_id.to_owned(), metric.get_source().to_owned());
+                    let product_id_source_tuple = (product_id.to_owned(), metric.get_source().map(|s| s.to_owned()));
                     let content = metric.get_content();
-                    let has_ratings_tuple = (
-                        m_i,
-                        content.has_cvss_v2() || content.has_cvss_v3() || content.has_cvss_v4(),
-                        content.has_qualitative_severity(),
-                    );
+                    let has_ratings_tuple = (m_i, content.has_any_cvss(), content.has_qualitative_severity());
                     ratings_map
                         .get_or_insert_default()
                         .entry(product_id_source_tuple)
@@ -58,7 +54,7 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
             }
         }
         if let Some(ratings_map) = ratings_map {
-            for ((product_id, source), ratings) in ratings_map.iter() {
+            for ((product_id, source), ratings) in &ratings_map {
                 let has_cvss_score = ratings.iter().any(|(_, has_cvss, _)| *has_cvss);
                 if has_cvss_score {
                     for (m_i, _, has_qualitative) in ratings {
@@ -76,16 +72,11 @@ pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) ->
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_56
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_56_cvss_and_qualitative_severity_rating(doc)
-    }
-}
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_56,
+    test_6_1_56_cvss_and_qualitative_severity_rating
+);
 
 #[cfg(test)]
 mod tests {

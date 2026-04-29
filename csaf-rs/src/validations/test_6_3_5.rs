@@ -27,14 +27,14 @@ fn create_short_hash_error(
 pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
             if let Some(helper) = fpn.get_product_identification_helper() {
                 for (h_i, hash) in helper.get_hashes().iter().enumerate() {
                     for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
                         let file_hash_len = file_hash.get_hash().len();
                         if file_hash_len < 64 {
-                            errors.get_or_insert_with(Vec::new).push(create_short_hash_error(
+                            errors.get_or_insert_default().push(create_short_hash_error(
                                 path,
                                 h_i,
                                 fh_i,
@@ -50,27 +50,7 @@ pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_3_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_5_use_of_short_hash(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_3_5
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_3_5_use_of_short_hash(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_3_5, test_6_3_5_use_of_short_hash);
 
 #[cfg(test)]
 mod tests {

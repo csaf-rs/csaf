@@ -30,14 +30,12 @@ fn check_product_status_group_for_missing_remediations<'a>(
     // if not, generate an error
     for (sg_p_i, product_id) in status_group_product_ids.enumerate() {
         if !remediation_product_ids.contains(product_id) {
-            errors
-                .get_or_insert_with(Vec::new)
-                .push(create_missing_remediation_error(
-                    vulnerability_index,
-                    status_group_name,
-                    sg_p_i,
-                    product_id,
-                ));
+            errors.get_or_insert_default().push(create_missing_remediation_error(
+                vulnerability_index,
+                status_group_name,
+                sg_p_i,
+                product_id,
+            ));
         }
     }
 }
@@ -118,27 +116,7 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_2
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_02_missing_remediations(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_2
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_02_missing_remediations(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_2, test_6_2_02_missing_remediations);
 
 #[cfg(test)]
 mod tests {

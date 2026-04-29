@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_missing_affected_products_error(
     document_category: &CsafDocumentCategory,
@@ -32,7 +32,6 @@ pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         if vulnerability
             .get_product_status()
-            .as_ref()
             .and_then(|ps| ps.get_known_affected())
             .is_none()
         {
@@ -46,16 +45,7 @@ pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafSecurityAdvisory]);
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_12
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_12_affected_products(doc)
-    }
-}
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_12, test_6_1_27_12_affected_products);
 
 #[cfg(test)]
 mod tests {

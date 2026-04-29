@@ -37,27 +37,7 @@ fn create_build_metadata_in_rev_history_error(number: &SemVerVersion, revision_i
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_4
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_04_build_metadata_in_rev_history(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_4
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_04_build_metadata_in_rev_history(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_4, test_6_2_04_build_metadata_in_rev_history);
 
 #[cfg(test)]
 mod tests {

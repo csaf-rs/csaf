@@ -19,13 +19,13 @@ static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^vers:[a-z.\-
 pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(product_tree) = doc.get_product_tree().as_ref() {
+    if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
             if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange
                 && !VERS_REGEX.is_match(branch.get_name())
             {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_product_version_range_without_vers_error(branch.get_name(), path));
             }
         });
@@ -34,27 +34,7 @@ pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> R
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_2_18
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_18_product_version_range_without_vers(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_2_18
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_2_18_product_version_range_without_vers(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_2_18, test_6_2_18_product_version_range_without_vers);
 
 #[cfg(test)]
 mod tests {

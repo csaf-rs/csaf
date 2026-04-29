@@ -18,10 +18,10 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
     let mut product_metrics: ProductMap = HashMap::new();
     for (metric_index, metric) in metrics.unwrap().iter().enumerate() {
         let content = metric.get_content();
-        let present_metric_types = content.get_vulnerability_metric_types();
+        let present_metric_types = content.get_cvss_metric_types();
 
         for product_id in metric.get_products() {
-            for metric_type in present_metric_types.iter() {
+            for metric_type in &present_metric_types {
                 product_metrics
                     // First map: product id =>
                     .entry(product_id.to_owned())
@@ -30,7 +30,7 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
                     .entry(metric_type.to_owned())
                     .or_default()
                     // Third map: source (or none) =>
-                    .entry(metric.get_source().as_ref().map(|s| s.to_owned()))
+                    .entry(metric.get_source().map(|s| s.to_owned()))
                     .or_default()
                     // vector with json paths that provide this metric type for this product and source
                     .push(content.get_content_json_path(vulnerability_index, metric_index));
@@ -40,18 +40,21 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
     Some(product_metrics)
 }
 
-/// Test 6.1.7: Check for multiple identical metric types per vulnerability.
+/// Test 6.1.7 Multiple Scores with Same Version per Product
+///
+/// For each item in `/vulnerabilities` it MUST be tested that the same Product ID
+/// is not a member of more than one CVSS vector with the same version and same source.
 pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         let product_metrics = gather_product_metrics(vulnerability, vulnerability_index);
         if let Some(product_metrics) = product_metrics {
-            for (p, metrics_map) in product_metrics.iter() {
-                for (m, metrics_map_2) in metrics_map.iter() {
-                    for (s, paths) in metrics_map_2.iter() {
+            for (p, metrics_map) in &product_metrics {
+                for (m, metrics_map_2) in metrics_map {
+                    for (s, paths) in metrics_map_2 {
                         if paths.len() > 1 {
                             for path in paths {
-                                errors.get_or_insert_with(Vec::new).push(create_validation_error(
+                                errors.get_or_insert_default().push(create_validation_error(
                                     m,
                                     p,
                                     path.to_owned(),
@@ -67,27 +70,7 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_7
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_07_multiple_same_scores_per_product(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_7
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_07_multiple_same_scores_per_product(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_7, test_6_1_07_multiple_same_scores_per_product);
 
 fn create_validation_error(
     score_type: &CsafVulnerabilityMetric,

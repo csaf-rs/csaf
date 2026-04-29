@@ -1,8 +1,8 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_missing_note_error(doc_category: CsafDocumentCategory) -> ValidationError {
     ValidationError {
@@ -35,7 +35,7 @@ pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Val
     // check if there is a document note with the required category
     let mut found_valid_note = false;
     if let Some(notes) = doc.get_document().get_notes() {
-        for note in notes.iter() {
+        for note in notes {
             let category = note.get_category();
             if category == NoteCategory::Description
                 || category == NoteCategory::Details
@@ -56,27 +56,7 @@ pub fn test_6_1_27_01_document_notes(doc: &impl CsafTrait) -> Result<(), Vec<Val
     Ok(())
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_27_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_01_document_notes(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_27_1
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_27_01_document_notes(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_27_1, test_6_1_27_01_document_notes);
 
 #[cfg(test)]
 mod tests {

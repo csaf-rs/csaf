@@ -4,14 +4,17 @@ pub mod csaf;
 pub mod csaf2_0;
 pub mod csaf2_1;
 pub mod csaf_traits;
-pub mod document_category_test_helper;
-pub mod generated;
+pub(crate) mod cvss;
 pub mod helpers;
+pub(crate) mod macros;
 pub mod schema;
+#[cfg(test)]
 pub mod test_result_comparison;
+#[cfg(test)]
 pub mod test_structure;
 pub mod test_validation;
 pub mod validation;
+pub mod validation_result;
 pub mod validations;
 #[cfg(feature = "wasm")]
 pub mod wasm;

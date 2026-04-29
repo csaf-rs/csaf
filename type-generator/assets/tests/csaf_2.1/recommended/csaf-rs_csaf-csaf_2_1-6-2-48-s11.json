@@ -1,0 +1,62 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Recommended Test: Misuse at Vendor Name (valid supplementary example 1 - non-vendor category with Open Source name)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-48-S11",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "branches": [
+                  {
+                    "category": "product_version",
+                    "name": "8.5.0",
+                    "product": {
+                      "name": "Open Source curl 8.5.0",
+                      "product_id": "CSAFPID-908070601"
+                    }
+                  }
+                ],
+                "category": "product_name",
+                "name": "curl"
+              }
+            ],
+            "category": "product_family",
+            "name": "Open Source"
+          }
+        ],
+        "category": "vendor",
+        "name": "curl"
+      }
+    ]
+  }
+}

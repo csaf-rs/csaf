@@ -5,7 +5,7 @@ use std::collections::HashMap;
 pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    if let Some(tree) = doc.get_product_tree().as_ref() {
+    if let Some(tree) = doc.get_product_tree() {
         // Map to store each key with all of its paths
         let mut products_with_paths: HashMap<String, Vec<String>> = HashMap::new();
         tree.visit_all_products(&mut |product, path| {
@@ -18,7 +18,7 @@ pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Re
             if paths.len() > 1 {
                 for path in paths {
                     errors
-                        .get_or_insert_with(Vec::new)
+                        .get_or_insert_default()
                         .push(generate_err_msg(&product_id, &path));
                 }
             }
@@ -35,27 +35,7 @@ fn generate_err_msg(product_id: &str, path: &str) -> ValidationError {
     }
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_2
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_02_multiple_definition_of_product_id(doc)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_2
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
-        test_6_1_02_multiple_definition_of_product_id(doc)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_2, test_6_1_02_multiple_definition_of_product_id);
 
 #[cfg(test)]
 mod tests {
@@ -81,8 +61,6 @@ mod tests {
         TESTS_2_0
             .test_6_1_2
             .expect(shared_error_01.clone(), shared_error_02.clone());
-        TESTS_2_1
-            .test_6_1_2
-            .expect(shared_error_01.clone(), shared_error_02.clone());
+        TESTS_2_1.test_6_1_2.expect(shared_error_01, shared_error_02);
     }
 }

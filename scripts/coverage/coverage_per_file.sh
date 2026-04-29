@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Converts cargo-llvm-cov JSON output (stdin) into a per-file Markdown coverage table.
-# Usage: cargo llvm-cov --json ... | ./scripts/coverage_per_file.sh
+# Usage: cargo llvm-cov --json ... | ./scripts/coverage/coverage_per_file.sh
 
 set -euo pipefail
 

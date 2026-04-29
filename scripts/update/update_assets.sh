@@ -5,6 +5,15 @@
 # are in sync with the submodules. Failing to run this script before the build might result in unexpected
 # behavior due to mismatches between embedded assets and the library version!
 
+set -euo pipefail
+
+# Always run from the repository root so paths are deterministic
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "Error: not inside a git repository." >&2
+  exit 1
+}
+cd "$REPO_ROOT"
+
 rsync -c csaf/csaf_2.0/json_schema/csaf_json_schema.json csaf-rs/assets/csaf_2.0_json_schema.json
 rsync -c csaf/csaf_2.1/json_schema/csaf.json csaf-rs/assets/csaf_2.1_json_schema.json
 rsync -c csaf/csaf_2.1/json_schema/extension-content.json csaf-rs/assets/extension-content.json

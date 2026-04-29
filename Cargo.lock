@@ -314,23 +314,18 @@ dependencies = [
  "jsonschema",
  "oxilangtag",
  "packageurl",
- "prettyplease",
- "quote",
  "regex",
  "regress 0.11.1",
  "rstest",
  "rust-embed",
- "schemars",
  "semver",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "spdx",
  "ssvc",
- "syn",
  "thiserror 2.0.18",
  "tsify",
- "typify",
  "uuid",
  "wasm-bindgen",
 ]
@@ -522,12 +517,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "glob"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cc23270f6e1808e30a928bdc84dea0b9b4136a8bc82338574f23baf47bbd280"
-
-[[package]]
 name = "getrandom"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -539,6 +528,12 @@ dependencies = [
  "wasip2",
  "wasip3",
 ]
+
+[[package]]
+name = "glob"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0cc23270f6e1808e30a928bdc84dea0b9b4136a8bc82338574f23baf47bbd280"
 
 [[package]]
 name = "globset"
@@ -1396,7 +1391,9 @@ dependencies = [
 
 [[package]]
 name = "ssvc"
-version = "0.0.0"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aebb72b9145f9d78b72421f94170b4ba8059a3d08e8e5a3d3a13817fd209c886"
 dependencies = [
  "chrono",
  "prettyplease",

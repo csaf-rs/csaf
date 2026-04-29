@@ -1,7 +1,7 @@
-use ssvc::selection_list::SelectionList;
-use ssvc::validation::SsvcError;
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
+use ssvc::selection_list::SelectionList;
+use ssvc::validation::SsvcError;
 
 fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
     ValidationError {
@@ -11,9 +11,7 @@ fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usi
 }
 
 /// Test function for invocation by users, does not permit usage of the "test" namespace.
-pub fn test_6_1_48_ssvc_decision_points(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     test_6_1_48_ssvc_decision_points_internal(doc, ssvc::validation::validate_selection_list)
 }
 
@@ -38,7 +36,9 @@ fn test_6_1_48_ssvc_decision_points_internal(
                                         let path_suffix = ssvc_error.instance_path.join("/");
                                         ValidationError {
                                             message: ssvc_error.message,
-                                            instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/{path_suffix}"),
+                                            instance_path: format!(
+                                                "/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/{path_suffix}"
+                                            ),
                                         }
                                     })
                                     .collect();
@@ -77,7 +77,8 @@ mod tests {
     #[test]
     fn test_test_6_1_48() {
         let case_01 = Err(vec![ValidationError {
-            message: "The SSVC decision point 'ssvc::Mission Impact' (version 1.0.0) doesn't have a value with key 'D'".to_string(),
+            message: "The SSVC decision point 'ssvc::Mission Impact' (version 1.0.0) doesn't have a value with key 'D'"
+                .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
         }]);
         let case_02 = Err(vec![ValidationError {
@@ -85,7 +86,9 @@ mod tests {
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
         }]);
         let case_03 = Err(vec![ValidationError {
-            message: "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
+            message:
+                "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
+                    .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
         }]);
         let case_04 = Err(vec![ValidationError {
@@ -93,7 +96,9 @@ mod tests {
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
         }]);
         let case_05 = Err(vec![ValidationError {
-            message: "The SSVC decision point 'cvss::Attack Complexity' (version 3.0.1) doesn't have a value with key 'E'".to_string(),
+            message:
+                "The SSVC decision point 'cvss::Attack Complexity' (version 3.0.1) doesn't have a value with key 'E'"
+                    .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
         }]);
         let case_06 = Err(vec![ValidationError {

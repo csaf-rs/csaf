@@ -1,29 +1,8 @@
-use crate::csaf2_1::ssvc_dp::DecisionPoint;
-use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use chrono::NaiveDate;
 use rust_embed::RustEmbed;
 use serde_json::Value;
-use std::collections::{BTreeSet, HashMap};
 use std::collections::{HashMap, HashSet};
-use std::ops::Deref;
 use std::sync::LazyLock;
-
-pub fn resolve_product_groups<'a, I>(doc: &impl CsafTrait, product_groups: I) -> Option<BTreeSet<String>>
-where
-    I: IntoIterator<Item = &'a String>,
-{
-    let product_groups: Vec<&String> = product_groups.into_iter().collect();
-
-    doc.get_product_tree().as_ref().map(|product_tree| {
-        product_tree
-            .get_product_groups()
-            .iter()
-            .filter(|x| product_groups.iter().any(|g| *g == x.get_group_id()))
-            .flat_map(|x| x.get_product_ids())
-            .map(|p| p.to_string())
-            .collect()
-    })
-}
 
 #[derive(RustEmbed)]
 #[folder = "assets/cwe/"]

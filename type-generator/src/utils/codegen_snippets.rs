@@ -22,4 +22,3 @@ pub fn add_generated_code_header(file: &mut syn::File) {
     let doc_attr: syn::Attribute = syn::parse_quote! { #![doc = #GENERATED_CODE_HEADER] };
     file.attrs.insert(0, doc_attr);
 }
-

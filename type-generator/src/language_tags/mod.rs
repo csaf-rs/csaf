@@ -8,7 +8,9 @@ mod generate;
 mod tests;
 
 use crate::build_errors::BuildError;
-use crate::utils::codegen_snippets::{add_generated_code_header, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt};
+use crate::utils::codegen_snippets::{
+    add_generated_code_header, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt,
+};
 use crate::utils::read_write_fs::{read_file_to_string, write_generated_file};
 use generate::generate_kind_section;
 use proc_macro2::TokenStream;

@@ -8,8 +8,6 @@ use crate::utils::read_write_fs::read_file_to_string;
 use config::VALIDATION_SCHEMAS;
 use generate::{generate_schema_file, generate_url_file};
 
-
-
 /// A validation schema entry that will be embedded in the `csaf-rs` binary
 pub struct ValidationSchemaConfig {
     /// Base name for the generated constant and static
@@ -44,12 +42,17 @@ pub fn generate_validation_schemas(target_folder: &str) -> Result<(), BuildError
 
         // Validate that the file exists and contains valid JSON
         let content = read_file_to_string(&Path::new(target_folder).join(relative_asset_path))?;
-        let _: serde_json::Value = serde_json::from_str(&content).map_err(|e| {
-            BuildError::SchemaPatch(format!("Invalid JSON in asset {relative_asset_path}: {e}"))
-        })?;
+        let _: serde_json::Value = serde_json::from_str(&content)
+            .map_err(|e| BuildError::SchemaPatch(format!("Invalid JSON in asset {relative_asset_path}: {e}")))?;
 
-        url_entries.push(SchemaUrlEntry { name: schema.var_name, source_url: schema.source_url });
-        schema_entries.push(SchemaEntry { name: schema.var_name, asset_path: relative_asset_path });
+        url_entries.push(SchemaUrlEntry {
+            name: schema.var_name,
+            source_url: schema.source_url,
+        });
+        schema_entries.push(SchemaEntry {
+            name: schema.var_name,
+            asset_path: relative_asset_path,
+        });
     }
 
     generate_url_file(&url_entries, target_folder)?;

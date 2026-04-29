@@ -45,11 +45,8 @@ fn main() -> Result<(), BuildError> {
     let args = Args::parse();
 
     // If no specific generation is requested, run all
-    let run_all = !args.schema
-        && !args.test_schema
-        && !args.test_definitions
-        && !args.language_tags
-        && !args.validation_schemas;
+    let run_all =
+        !args.schema && !args.test_schema && !args.test_definitions && !args.language_tags && !args.validation_schemas;
 
     if run_all || args.schema {
         for schema in &get_schemas() {

@@ -3,4 +3,3 @@ pub fn validate_ssvc_lib_json() {
     serde_json::from_str::<serde_json::Value>(ssvc::assets::SELECTION_LIST_SCHEMA)
         .expect("ssvc::assets::SELECTION_LIST_SCHEMA is not valid JSON");
 }
-

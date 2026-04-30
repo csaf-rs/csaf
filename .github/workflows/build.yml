@@ -35,9 +35,9 @@ jobs:
           fetch-tags: true
       - name: Check assets are up-to-date
         run: |
-          ./update_assets.sh
+          ./scripts/update/update_assets.sh
           if ! git diff --quiet; then
-            echo "::error::Assets are out of date. Please run ./update_assets.sh locally and commit the changes."
+            echo "::error::Assets are out of date. Please run ./scripts/update/update_assets.sh locally and commit the changes."
             git diff --stat
             exit 1
           fi

@@ -1,5 +1,5 @@
 use crate::build_errors::BuildError;
-use crate::utils::codegen_snippets::{GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_rustfmt};
+use crate::utils::codegen_snippets::{add_generated_code_header, add_ignore_clippy, add_ignore_rustfmt};
 use crate::utils::read_write_fs::write_generated_file;
 use typify::{TypeSpace, TypeSpaceSettings};
 
@@ -21,9 +21,7 @@ pub fn generate_from_schema(
 
     add_ignore_rustfmt(&mut file);
     add_ignore_clippy(&mut file);
-    // Parse the GENERATED_CODE_HEADER as a doc attribute
-    let doc_attr = syn::parse_quote! { #![doc = #GENERATED_CODE_HEADER] };
-    file.attrs.insert(0, doc_attr);
+    add_generated_code_header(&mut file);
 
     // Unparse the modified syn::File into Rust source code
     let content = prettyplease::unparse(&file);

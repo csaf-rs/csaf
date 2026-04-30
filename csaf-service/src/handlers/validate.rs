@@ -23,7 +23,7 @@ type CsafDoc20 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_0::schema::Com
 type CsafDoc21 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>;
 
 #[derive(Debug, Deserialize)]
-pub struct ValidateQuery {
+pub(crate) struct ValidateQuery {
     pub preset: Option<String>,
     pub tests: Option<String>,
 }
@@ -34,7 +34,7 @@ pub struct ValidateQuery {
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[schema(as = ValidationResult)]
-pub struct ValidationResultSchema {
+pub(crate) struct ValidationResultSchema {
     pub success: bool,
     pub version: String,
     pub test_results: Vec<TestResultSchema>,
@@ -47,7 +47,7 @@ pub struct ValidationResultSchema {
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[schema(as = TestResult)]
-pub struct TestResultSchema {
+pub(crate) struct TestResultSchema {
     pub test_id: String,
     pub status: TestResultStatusSchema,
 }
@@ -56,7 +56,7 @@ pub struct TestResultSchema {
 #[serde(rename_all = "camelCase")]
 #[schema(as = TestResultStatus)]
 #[allow(dead_code)]
-pub enum TestResultStatusSchema {
+pub(crate) enum TestResultStatusSchema {
     Success,
     Failure {
         errors: Vec<ValidationErrorSchema>,
@@ -70,7 +70,7 @@ pub enum TestResultStatusSchema {
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[schema(as = ValidationError)]
-pub struct ValidationErrorSchema {
+pub(crate) struct ValidationErrorSchema {
     pub message: String,
     pub instance_path: String,
 }
@@ -91,7 +91,7 @@ pub struct ValidationErrorSchema {
     ),
     tag = "validation"
 )]
-pub async fn validate(
+pub(crate) async fn validate(
     Path(path_version): Path<String>,
     Query(query): Query<ValidateQuery>,
     Json(body): Json<serde_json::Value>,
@@ -116,7 +116,7 @@ pub async fn validate(
     ),
     tag = "validation"
 )]
-pub async fn validate_file(
+pub(crate) async fn validate_file(
     Path(path_version): Path<String>,
     Query(query): Query<ValidateQuery>,
     body: Bytes,

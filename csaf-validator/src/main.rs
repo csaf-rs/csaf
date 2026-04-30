@@ -94,7 +94,7 @@ where
             let presets = T::get_presets();
             let matched_preset = presets
                 .iter()
-                .find(|p| p.to_string().to_ascii_lowercase() == test_or_preset.to_ascii_lowercase());
+                .find(|p| p.to_string().eq_ignore_ascii_case(test_or_preset));
             match matched_preset {
                 Some(preset) => T::tests_in_preset(*preset),
                 None => vec![test_or_preset.as_str()],

@@ -410,9 +410,12 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "csaf-rs",
+ "http",
+ "http-body-util",
  "serde",
  "serde_json",
  "tokio",
+ "tower",
  "tower-http",
  "tracing",
  "tracing-subscriber",

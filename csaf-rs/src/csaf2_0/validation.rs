@@ -44,7 +44,8 @@ fn to_test_result(
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
 pub enum Preset {
     Basic,
     Extended,

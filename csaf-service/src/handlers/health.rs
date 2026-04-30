@@ -9,6 +9,6 @@ use axum::{Json, response::IntoResponse};
     ),
     tag = "health"
 )]
-pub async fn health() -> impl IntoResponse {
+pub(crate) async fn health() -> impl IntoResponse {
     Json(serde_json::json!({"status": "ok"}))
 }

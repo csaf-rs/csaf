@@ -6,39 +6,59 @@ use serde_json::Value;
 use std::sync::LazyLock;
 pub static CSAF_2_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/csaf_2.0_json_schema.json"))
-        .expect("embedded JSON schema assets/csaf_2.0_json_schema.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/csaf_2.0_json_schema.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static CSAF_2_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/csaf_2.1_json_schema.json"))
-        .expect("embedded JSON schema assets/csaf_2.1_json_schema.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/csaf_2.1_json_schema.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static CVSS_V2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/cvss-v2.0.json"))
-        .expect("embedded JSON schema assets/cvss-v2.0.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/cvss-v2.0.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static CVSS_V3_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/cvss-v3.0.json"))
-        .expect("embedded JSON schema assets/cvss-v3.0.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/cvss-v3.0.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static CVSS_V3_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/cvss-v3.1.json"))
-        .expect("embedded JSON schema assets/cvss-v3.1.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/cvss-v3.1.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static CVSS_V4_0_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/cvss-v4.0.2.json"))
-        .expect("embedded JSON schema assets/cvss-v4.0.2.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/cvss-v4.0.2.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static SSVC_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    serde_json::from_str(include_str!(
-        "../../../assets/decision_point_selection_list_json_schema.json"
-    ))
-    .expect("embedded JSON schema assets/decision_point_selection_list_json_schema.json was validated at build-time")
+    serde_json::from_str(
+            include_str!(
+                "../../../assets/decision_point_selection_list_json_schema.json"
+            ),
+        )
+        .expect(
+            "The embedded JSON schema assets/decision_point_selection_list_json_schema.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static EXTENSION_METASCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/extension-metaschema.json"))
-        .expect("embedded JSON schema assets/extension-metaschema.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/extension-metaschema.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });
 pub static EXTENSION_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!("../../../assets/extension-content.json"))
-        .expect("embedded JSON schema assets/extension-content.json was validated at build-time")
+        .expect(
+            "The embedded JSON schema assets/extension-content.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+        )
 });

@@ -3,5 +3,5 @@ use std::sync::LazyLock;
 
 pub static SSVC_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
     let schema_str = ssvc::assets::SELECTION_LIST_SCHEMA;
-    serde_json::from_str(schema_str).unwrap()
+    serde_json::from_str(schema_str).expect("The referenced JSON schema ssvc::assets::SELECTION_LIST_SCHEMA should be valid JSON. This is validated at build-time. (This looks like a dev error)")
 });

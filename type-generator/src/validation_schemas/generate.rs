@@ -9,7 +9,7 @@ use crate::utils::read_write_fs::write_generated_file;
 
 use super::{SchemaEntry, SchemaUrlEntry};
 
-/// Generate `validation_schema_urls.rs` with a file-level `#![allow(dead_code)]`
+/// Generate `validation_schema_urls/generated.rs` with a file-level `#![allow(dead_code)]`
 pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Result<(), BuildError> {
     // Generate code snippets
     let items: TokenStream = entries
@@ -34,7 +34,7 @@ pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Res
     )
 }
 
-/// Generate `validation_schemas.rs` (lazy statics)
+/// Generate `validation_schemas/generated.rs` (lazy statics)
 pub fn generate_schema_file(entries: &[SchemaEntry], target_folder: &str) -> Result<(), BuildError> {
     const OUTPUT_PATH: &str = "src/validations/utils/validation_schemas/generated.rs";
 

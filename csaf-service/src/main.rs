@@ -71,6 +71,8 @@ async fn main() {
         .route(routes::PRESET_TESTS, get(get_preset_tests))
         .route(routes::VALIDATE, post(validate))
         .route(routes::VALIDATE_FILE, post(validate_file))
+        .route(routes::VALIDATE_AUTO, post(validate_auto))
+        .route(routes::VALIDATE_FILE_AUTO, post(validate_file_auto))
         .route(routes::HEALTH, get(health))
         .merge(SwaggerUi::new("/swagger-ui").url("/api/v1/openapi.json", ApiDoc::openapi()))
         .layer(cors_layer)

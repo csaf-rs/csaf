@@ -97,6 +97,14 @@ pub(crate) async fn validate(
     run_validation(&path_version, &query, &body)
 }
 
+/// Validate a CSAF document with automatic version detection.
+pub(crate) async fn validate_auto(
+    Query(query): Query<ValidateQuery>,
+    Json(body): Json<serde_json::Value>,
+) -> impl IntoResponse {
+    run_validation("auto", &query, &body)
+}
+
 /// Validate a CSAF document uploaded as a binary file.
 #[utoipa::path(
     post,
@@ -128,6 +136,20 @@ pub(crate) async fn validate_file(
         },
     };
     run_validation(&path_version, &query, &parsed)
+}
+
+/// Validate a CSAF file upload with automatic version detection.
+pub(crate) async fn validate_file_auto(Query(query): Query<ValidateQuery>, body: Bytes) -> impl IntoResponse {
+    let parsed: serde_json::Value = match serde_json::from_slice(&body) {
+        Ok(v) => v,
+        Err(e) => {
+            return Err(error_response(
+                StatusCode::BAD_REQUEST,
+                format!("Invalid JSON in uploaded file: {e}"),
+            ));
+        },
+    };
+    run_validation("auto", &query, &parsed)
 }
 
 /// Common validation logic shared by `validate` and `validate_file`.

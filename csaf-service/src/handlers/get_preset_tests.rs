@@ -1,8 +1,8 @@
 use axum::Json;
 use axum::{extract::Path, http::StatusCode, response::IntoResponse};
+use csaf::csaf_traits::CsafVersion;
 use csaf::csaf2_0::validation::Preset as Preset2_0;
 use csaf::csaf2_1::validation::Preset as Preset2_1;
-use csaf::csaf_traits::CsafVersion;
 use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf2_0;
 use csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf2_1;
 use csaf::validation::Validatable;
@@ -49,7 +49,7 @@ pub(crate) async fn get_preset_tests(Path((version, preset)): Path<(String, Stri
                 preset,
                 version,
             }))
-        }
+        },
     }
 }
 
@@ -59,41 +59,24 @@ pub(crate) fn tests_for_preset(version: &CsafVersion, preset: &str) -> Vec<Strin
         CsafVersion::X20 => {
             let p = Preset2_0::try_from(preset).expect("preset already validated");
             Csaf2_0::tests_in_preset(p).into_iter().map(String::from).collect()
-        }
+        },
         CsafVersion::X21 => {
             let p = Preset2_1::try_from(preset).expect("preset already validated");
             Csaf2_1::tests_in_preset(p).into_iter().map(String::from).collect()
-        }
+        },
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use axum::{Router, body::Body, routing::get};
-    use http::Request;
-    use http_body_util::BodyExt;
-    use tower::ServiceExt;
+    use crate::test_helpers::get_json;
+    use crate::routes;
 
-    fn test_app(route: &str) -> Router {
-        Router::new().route(route, get(get_preset_tests))
-    }
-
-    const ROUTE: &str = "/api/v1/csaf/{version}/presets/{preset}/tests";
     fn build_uri(version: &str, preset: &str) -> String {
-        ROUTE.replace("{version}", version).replace("{preset}", preset)
-    }
-
-    async fn get_json(uri: &str) -> (StatusCode, serde_json::Value) {
-        let app = test_app(ROUTE);
-        let response = app
-            .oneshot(Request::builder().uri(uri).body(Body::empty()).unwrap())
-            .await
-            .unwrap();
-        let status = response.status();
-        let body = response.into_body().collect().await.unwrap().to_bytes();
-        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        (status, json)
+        routes::PRESET_TESTS
+            .replace("{version}", version)
+            .replace("{preset}", preset)
     }
 
     #[tokio::test]

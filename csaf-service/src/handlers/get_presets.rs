@@ -47,35 +47,16 @@ pub(crate) fn presets_for_version(version: &CsafVersion) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use axum::{Router, body::Body, routing::get};
-    use http::Request;
-    use http_body_util::BodyExt;
-    use tower::ServiceExt;
+    use crate::test_helpers::get_json;
+    use crate::routes;
 
-    fn test_app(route: &str) -> Router {
-        Router::new().route(route, get(get_presets))
-    }
-
-    const GET_PRESET_ROUTE: &str = "/api/v1/csaf/{version}/presets";
     fn build_uri(version: &str) -> String {
-        GET_PRESET_ROUTE.replace("{version}", version)
-    }
-
-    async fn get_json(uri: &str) -> (StatusCode, serde_json::Value) {
-        let app = test_app(GET_PRESET_ROUTE);
-        let response = app
-            .oneshot(Request::builder().uri(uri).body(Body::empty()).unwrap())
-            .await
-            .unwrap();
-        let status = response.status();
-        let body = response.into_body().collect().await.unwrap().to_bytes();
-        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        (status, json)
+        routes::PRESETS.replace("{version}", version)
     }
 
     #[tokio::test]
     async fn returns_presets_for_csaf_2_0() {
-        let (status, json) = get_json(build_uri("2.0").as_str()).await;
+        let (status, json) = get_json(&build_uri("2.0")).await;
 
         assert_eq!(status, StatusCode::OK);
         assert_eq!(json["version"], "2.0");
@@ -86,7 +67,7 @@ mod tests {
 
     #[tokio::test]
     async fn returns_presets_for_csaf_2_1() {
-        let (status, json) = get_json(build_uri("2.1").as_str()).await;
+        let (status, json) = get_json(&build_uri("2.1")).await;
 
         assert_eq!(status, StatusCode::OK);
         assert_eq!(json["version"], "2.1");
@@ -112,7 +93,7 @@ mod tests {
 
     #[tokio::test]
     async fn returns_400_for_invalid_version() {
-        let (status, json) = get_json(build_uri("3.0").as_str()).await;
+        let (status, json) = get_json(&build_uri("3.0")).await;
 
         assert_eq!(status, StatusCode::BAD_REQUEST);
         assert!(json["error"].as_str().unwrap().contains("3.0"));
@@ -120,7 +101,7 @@ mod tests {
 
     #[tokio::test]
     async fn returns_400_for_non_numeric_version() {
-        let (status, json) = get_json(build_uri("abc").as_str()).await;
+        let (status, json) = get_json(&build_uri("abc")).await;
 
         assert_eq!(status, StatusCode::BAD_REQUEST);
         assert!(json["error"].is_string());

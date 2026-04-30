@@ -1,5 +1,8 @@
 mod handlers;
 mod models;
+mod routes;
+#[cfg(test)]
+mod test_helpers;
 
 use axum::Router;
 use axum::routing::{get, post};
@@ -51,11 +54,11 @@ async fn main() {
     let addr = format!("0.0.0.0:{port}");
 
     let app = Router::new()
-        .route("/api/v1/csaf/{version}/presets", get(get_presets))
-        .route("/api/v1/csaf/{version}/presets/{preset}/tests", get(get_preset_tests))
-        .route("/api/v1/csaf/{version}/validate", post(validate))
-        .route("/api/v1/csaf/{version}/validate/file", post(validate_file))
-        .route("/api/v1/health", get(health))
+        .route(routes::PRESETS, get(get_presets))
+        .route(routes::PRESET_TESTS, get(get_preset_tests))
+        .route(routes::VALIDATE, post(validate))
+        .route(routes::VALIDATE_FILE, post(validate_file))
+        .route(routes::HEALTH, get(health))
         .merge(SwaggerUi::new("/swagger-ui").url("/api/v1/openapi.json", ApiDoc::openapi()))
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http());

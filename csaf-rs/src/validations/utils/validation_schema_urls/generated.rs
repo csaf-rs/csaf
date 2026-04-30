@@ -10,7 +10,6 @@ pub const CVSS_V2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v2.0.json"
 pub const CVSS_V3_0_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.0.json";
 pub const CVSS_V3_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.1.json";
 pub const CVSS_V4_0_2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.2.json";
-pub const SSVC_2_SCHEMA_URL: &str = "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json";
 pub const EXTENSION_METASCHEMA_URL: &str =
     "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json";
 pub const EXTENSION_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json";

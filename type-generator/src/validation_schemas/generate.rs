@@ -28,7 +28,7 @@ pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Res
 
     write_generated_file(
         target_folder,
-        "src/validations/utils/validation_schema_urls.rs",
+        "src/validations/utils/validation_schema_urls/generated.rs",
         &prettyplease::unparse(&file),
         "generated validation schema URLs",
     )
@@ -36,7 +36,7 @@ pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Res
 
 /// Generate `validation_schemas.rs` (lazy statics)
 pub fn generate_schema_file(entries: &[SchemaEntry], target_folder: &str) -> Result<(), BuildError> {
-    const OUTPUT_PATH: &str = "src/validations/utils/validation_schemas.rs";
+    const OUTPUT_PATH: &str = "src/validations/utils/validation_schemas/generated.rs";
 
     // Compute how many '../'s are needed to get from the output file
     // directory back to the target_folder root, from which we can go to the asset path

@@ -96,4 +96,3 @@ fn format_with_rustfmt(path: &Path) -> Result<(), BuildError> {
 
     Ok(())
 }
-

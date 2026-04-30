@@ -18,3 +18,12 @@ By default, the service uses a restrictive CORS policy. For local development yo
 ```bash
 CSAF_SERVICE_PERMISSIVE_CORS=true cargo run -p csaf-service --release
 ```
+
+## Request Body Limit
+
+The maximum request body size defaults to 150 MB (the CSAF document size limit). You can lower it via:
+```bash
+CSAF_SERVICE_BODY_LIMIT=52428800 cargo run -p csaf-service --release  # 50 MB
+```
+
+Values exceeding 150 MB are clamped to the maximum.

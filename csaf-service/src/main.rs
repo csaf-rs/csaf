@@ -5,6 +5,7 @@ mod routes;
 mod test_helpers;
 
 use axum::Router;
+use axum::extract::DefaultBodyLimit;
 use axum::routing::{get, post};
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
@@ -21,6 +22,16 @@ fn permissive_cors_enabled() -> bool {
     std::env::var("CSAF_SERVICE_PERMISSIVE_CORS")
         .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
         .unwrap_or(false)
+}
+
+const MAX_BODY_SIZE: usize = 150 * 1024 * 1024; // 150 MB
+
+fn body_limit() -> usize {
+    std::env::var("CSAF_SERVICE_BODY_LIMIT")
+        .ok()
+        .and_then(|v| v.parse::<usize>().ok())
+        .unwrap_or(MAX_BODY_SIZE)
+        .min(MAX_BODY_SIZE)
 }
 
 #[derive(OpenApi)]
@@ -75,6 +86,7 @@ async fn main() {
         .route(routes::VALIDATE_FILE_AUTO, post(validate_file_auto))
         .route(routes::HEALTH, get(health))
         .merge(SwaggerUi::new("/swagger-ui").url("/api/v1/openapi.json", ApiDoc::openapi()))
+        .layer(DefaultBodyLimit::max(body_limit()))
         .layer(cors_layer)
         .layer(TraceLayer::new_for_http());
 

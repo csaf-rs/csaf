@@ -33,6 +33,21 @@ jobs:
           submodules: 'true'
           fetch-depth: 0
           fetch-tags: true
+      - name: Extract versions
+        id: get-versions
+        run: |
+          MSRV=$(cargo metadata --no-deps --format-version=1 --locked | jq -r '.packages[0].rust_version')
+          echo "msrv-version=$MSRV" >> $GITHUB_OUTPUT
+          STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
+          echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
+          GIT_VERSION=$(git describe --tags)
+          echo "git-version=$GIT_VERSION" >> $GITHUB_OUTPUT
+          if [[ ${{ github.event_name }} == "pull_request" ]]; then
+            TARGETREF=--ref=${{ github.head_ref }}
+          else
+            TARGETREF=--defaultRef=${{ github.ref_name }}
+          fi
+          echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
       - name: Use cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -50,31 +65,19 @@ jobs:
           rustup component add rustfmt
           cargo fmt --all -- --check -l
       - name: Run type-generator
-        run: cargo run -p type-generator
+        run: cargo run --locked -p type-generator
       - name: Check for uncommitted changes in generated files
         run: |
-          if ! git diff --exit-code csaf-rs/src/; then
+          CHANGES=$(git status --porcelain -- csaf-rs/src/)
+          if [ -n "$CHANGES" ]; then
             echo ""
-            echo "::error::Generated schema files are out of date!"
-            echo "The files in csaf-rs/src/schema/ do not match the output of the type-generator."
+            echo "$CHANGES"
+            echo ""
+            echo "::error::Generated files are out of date or untracked!"
+            echo "The files in csaf-rs/src/ do not match the output of the type-generator."
             echo "Please run 'cargo run -p type-generator' and commit the updated files."
             exit 1
           fi
-      - name: Extract versions
-        id: get-versions
-        run: |
-          MSRV=$(cargo metadata --no-deps --format-version=1 --locked | jq -r '.packages[0].rust_version')
-          echo "msrv-version=$MSRV" >> $GITHUB_OUTPUT
-          STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
-          echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
-          GIT_VERSION=$(git describe --tags)
-          echo "git-version=$GIT_VERSION" >> $GITHUB_OUTPUT
-          if [[ ${{ github.event_name }} == "pull_request" ]]; then
-            TARGETREF=--ref=${{ github.head_ref }}
-          else
-            TARGETREF=--defaultRef=${{ github.ref_name }}
-          fi
-          echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
       - name: Compute build targets
         id: get-targets # this is a bit hacky but it allows us to have different targets for PRs and for main/tag builds without having to duplicate the entire matrix strategy
         run: |

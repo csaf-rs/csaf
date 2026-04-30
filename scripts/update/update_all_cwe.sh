@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+# Always run from the repository root so paths are deterministic
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "Error: not inside a git repository." >&2
+  exit 1
+}
+cd "$REPO_ROOT"
+
 versions=(
   v1.0
   v1.0.1
@@ -61,5 +68,5 @@ versions=(
 )
 
 for version in "${versions[@]}"; do
-  ./update_cwe.sh "$version"
+  scripts/update/update_cwe.sh "$version"
 done

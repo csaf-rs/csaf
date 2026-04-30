@@ -1,4 +1,5 @@
 pub mod test_schema;
+pub(crate) mod utils;
 
 pub mod test_6_1_01;
 pub mod test_6_1_02;

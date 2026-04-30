@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+# Always run from the repository root so paths are deterministic
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "Error: not inside a git repository." >&2
+  exit 1
+}
+cd "$REPO_ROOT"
 
 rsync_url() {
     if [ $# -ne 2 ]; then

@@ -29,11 +29,11 @@ jobs:
           git config user.email "asset-sync[bot]@users.noreply.github.com"
 
       - name: Run update_assets.sh
-        run: ./update_assets.sh
+        run: ./scripts/update/update_assets.sh
 
       - name: Regenerate types from schema
         working-directory: type-generator
-        run: cargo run --locked -- --schema --test-schema
+        run: cargo run --locked -- --schema --test-schema --validation-schemas
 
       - name: Run cargo check (for .rs file re-generation)
         run: cargo check --locked

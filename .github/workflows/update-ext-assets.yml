@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Update external assets
-        run: ./update_ext_assets.sh
+        run: ./scripts/update/update_ext_assets.sh
 
       - name: Regenerate language tags from subtag registry
         working-directory: type-generator

@@ -1,28 +1,9 @@
-use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use crate::csaf2_1::ssvc_dp::DecisionPoint;
 use chrono::NaiveDate;
 use rust_embed::RustEmbed;
-use serde_json::Value;
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 use std::ops::Deref;
 use std::sync::LazyLock;
-
-pub fn resolve_product_groups<'a, I>(doc: &impl CsafTrait, product_groups: I) -> Option<BTreeSet<String>>
-where
-    I: IntoIterator<Item = &'a String>,
-{
-    let product_groups: Vec<&String> = product_groups.into_iter().collect();
-
-    doc.get_product_tree().map(|product_tree| {
-        product_tree
-            .get_product_groups()
-            .iter()
-            .filter(|x| product_groups.iter().any(|g| *g == x.get_group_id()))
-            .flat_map(|x| x.get_product_ids())
-            .map(|p| p.to_string())
-            .collect()
-    })
-}
 
 #[derive(RustEmbed)]
 #[folder = "assets/ssvc_decision_points/"]
@@ -152,59 +133,4 @@ pub static SCANCODE_LICENSEDB_LICENSES: LazyLock<HashSet<String>> = LazyLock::ne
                 .collect::<Vec<String>>()
         })
         .collect()
-});
-
-pub const CSAF_2_0_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.0/csaf_json_schema.json";
-pub static CSAF_2_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/csaf_2.0_json_schema.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const CSAF_2_1_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json";
-pub static CSAF_2_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/csaf_2.1_json_schema.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const CVSS_V2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v2.0.json";
-pub static CVSS_V2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/cvss-v2.0.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const CVSS_V3_0_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.0.json";
-pub static CVSS_V3_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/cvss-v3.0.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const CVSS_V3_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.1.json";
-pub static CVSS_V3_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/cvss-v3.1.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const CVSS_V4_0_2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.2.json";
-pub static CVSS_V4_0_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/cvss-v4.0.2.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const SSVC_2_SCHEMA_URL: &str = "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json";
-pub static SSVC_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/decision_point_selection_list_json_schema.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const EXTENSION_METASCHEMA_URL: &str =
-    "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json";
-pub static EXTENSION_METASCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/extension-metaschema.json");
-    serde_json::from_str(schema_str).unwrap()
-});
-
-pub const EXTENSION_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json";
-pub static EXTENSION_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    let schema_str = include_str!("../assets/extension-content.json");
-    serde_json::from_str(schema_str).unwrap()
 });

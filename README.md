@@ -86,7 +86,7 @@ Or without root permissions, but you have to tell the linker where to find the a
 go run github.com/csaf-rs/csaf/go/cmd/download-libs   # one-time, writes to ~/.cache/csaf-ffi/
 CGO_LDFLAGS="-L$HOME/.cache/csaf-ffi/lib/$(go env GOOS)_$(go env GOARCH)" go build ./...
 ```
-Alternativly you can put the `CGO_LDFLAGS` export in your shell profile.
+Alternatively you can put the `CGO_LDFLAGS` export in your shell profile.
 
 Then add it to your project with
 ```bash

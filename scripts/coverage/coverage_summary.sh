@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Converts cargo-llvm-cov JSON output (stdin) into a Markdown summary table.
-# Usage: cargo llvm-cov --json --summary-only ... | ./scripts/coverage_summary.sh
+# Usage: cargo llvm-cov --json --summary-only ... | ./scripts/coverage/coverage_summary.sh
 
 set -euo pipefail
 

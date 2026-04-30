@@ -29,7 +29,7 @@ jobs:
           git config user.email "asset-sync[bot]@users.noreply.github.com"
 
       - name: Run update_assets.sh
-        run: ./update_assets.sh
+        run: ./scripts/update/update_assets.sh
 
       - name: Regenerate types from schema
         working-directory: type-generator

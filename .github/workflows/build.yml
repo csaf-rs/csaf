@@ -42,25 +42,10 @@ jobs:
             echo "$CHANGES"
             exit 1
           fi
-      - name: Extract versions
-        id: get-versions
-        run: |
-          MSRV=$(cargo metadata --no-deps --format-version=1 --locked | jq -r '.packages[0].rust_version')
-          echo "msrv-version=$MSRV" >> $GITHUB_OUTPUT
-          STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
-          echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
-          GIT_VERSION=$(git describe --tags)
-          echo "git-version=$GIT_VERSION" >> $GITHUB_OUTPUT
-          if [[ ${{ github.event_name }} == "pull_request" ]]; then
-            TARGETREF=--ref=${{ github.head_ref }}
-          else
-            TARGETREF=--defaultRef=${{ github.ref_name }}
-          fi
-          echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
       - name: Use cache
         uses: Swatinem/rust-cache@v2
         with:
-          key: prepare-${{ steps.get-versions.outputs.git-version }}
+          key: prepare
       - name: Check JSON syntax
         run: ./scripts/json/check_json_syntax.sh --quiet
       - name: Check JSON formatting
@@ -87,6 +72,21 @@ jobs:
             echo "Please run 'cargo run --locked -p type-generator' and commit the updated files."
             exit 1
           fi
+      - name: Extract versions
+        id: get-versions
+        run: |
+          MSRV=$(cargo metadata --no-deps --format-version=1 --locked | jq -r '.packages[0].rust_version')
+          echo "msrv-version=$MSRV" >> $GITHUB_OUTPUT
+          STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
+          echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
+          GIT_VERSION=$(git describe --tags)
+          echo "git-version=$GIT_VERSION" >> $GITHUB_OUTPUT
+          if [[ ${{ github.event_name }} == "pull_request" ]]; then
+            TARGETREF=--ref=${{ github.head_ref }}
+          else
+            TARGETREF=--defaultRef=${{ github.ref_name }}
+          fi
+          echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
       - name: Compute build targets
         id: get-targets # this is a bit hacky but it allows us to have different targets for PRs and for main/tag builds without having to duplicate the entire matrix strategy
         run: |

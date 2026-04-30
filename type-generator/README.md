@@ -33,6 +33,11 @@ Only create language subtag registry types from the IANA registry
 cargo run -- --language-tags
 ```
 
+Only create validation schemas for the different JSON schemas used in the library.
+```
+cargo run -- --validation-schemas
+```
+
 Combine flags to run multiple specific generations
 ```
 cargo run -- --schema --test-schema
@@ -41,11 +46,12 @@ cargo run -- --schema --test-schema
 By default, the target folder is set to `../csaf-rs`, and the generator creates files in the specific subfolders used in this library, but you can override it by passing the `--target-folder` option.
 
 | Type | Default target folder|  
-| --- | --- |  
+|  | --- |  
 | CSAF-Schema | `csaf-rs/src/schema/<VERSION>/schema.rs` |  
 | CSAF-Testcases-Schema | `csaf-rs/src/schema/<VERSION>/testcases_schema.rs` |  
 | CSAF-Testcases | `csaf-rs/src/<VERSION>/testcases.generated.rs` |  
-| Language-Subtags | `csaf-rs/src/csaf/types/language/language_subtags.generated.rs` |
+| Language-Subtags | `csaf-rs/src/csaf/types/language/language_subtags.generated.rs` |  
+| Validation-Schemas | `csaf-rs/src/validations/utils/validation_schemas.rs` `csaf-rs/src/validations/utils/validation_schema_urls.rs`  |
 
 You can always see the available options by running `cargo run -- --help`.
 

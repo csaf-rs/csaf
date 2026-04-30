@@ -53,11 +53,11 @@ pub(crate) async fn get_preset_tests(Path((version, preset)): Path<(String, Stri
 pub(crate) fn tests_for_preset(version: &CsafVersion, preset: &str) -> Vec<String> {
     match version {
         CsafVersion::X20 => {
-            let p = Preset2_0::try_from(preset).expect("preset already validated");
+            let p = Preset2_0::from(preset);
             Csaf2_0::tests_in_preset(p).into_iter().map(String::from).collect()
         },
         CsafVersion::X21 => {
-            let p = Preset2_1::try_from(preset).expect("preset already validated");
+            let p = Preset2_1::from(preset);
             Csaf2_1::tests_in_preset(p).into_iter().map(String::from).collect()
         },
     }

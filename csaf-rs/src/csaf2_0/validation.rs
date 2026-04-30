@@ -44,31 +44,33 @@ fn to_test_result(
     }
 }
 
-#[derive(Copy, Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq)]
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum Preset {
     Basic,
     Extended,
     Full,
+    #[serde(untagged)]
+    Custom(String),
 }
+
 impl Display for Preset {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Preset::Basic => write!(f, "basic"),
             Preset::Extended => write!(f, "extended"),
             Preset::Full => write!(f, "full"),
+            Preset::Custom(name) => write!(f, "{name}"),
         }
     }
 }
-impl TryFrom<&str> for Preset {
-    type Error = String;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
+impl From<&str> for Preset {
+    fn from(value: &str) -> Self {
         match value {
-            "basic" => Ok(Preset::Basic),
-            "extended" => Ok(Preset::Extended),
-            "full" => Ok(Preset::Full),
-            _ => Err(format!("Unknown preset: {value}")),
+            "basic" => Preset::Basic,
+            "extended" => Preset::Extended,
+            "full" => Preset::Full,
+            other => Preset::Custom(other.to_string()),
         }
     }
 }
@@ -90,6 +92,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 informative_tests(),
             ]
             .concat(),
+            Preset::Custom(_) => panic!("Custom preset"),
         }
     }
 

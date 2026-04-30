@@ -43,7 +43,7 @@ fn to_test_result(
     }
 }
 
-#[derive(Copy, Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
 pub enum Preset {
     Mandatory,
@@ -57,6 +57,8 @@ pub enum Preset {
     ConsistentRevisionHistory,
     ConsistentDateTimes,
     Ssvc,
+    #[serde(untagged)]
+    Custom(String),
 }
 
 impl Display for Preset {
@@ -73,26 +75,25 @@ impl Display for Preset {
             Preset::ConsistentRevisionHistory => write!(f, "consistent-revision-history"),
             Preset::ConsistentDateTimes => write!(f, "consistent-date-times"),
             Preset::Ssvc => write!(f, "ssvc"),
+            Preset::Custom(name) => write!(f, "{name}"),
         }
     }
 }
-impl TryFrom<&str> for Preset {
-    type Error = String;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
+impl From<&str> for Preset {
+    fn from(value: &str) -> Self {
         match value {
-            "mandatory" => Ok(Preset::Mandatory),
-            "recommended" => Ok(Preset::Recommended),
-            "informative" => Ok(Preset::Informative),
-            "schema" => Ok(Preset::Schema),
-            "basic" => Ok(Preset::Basic),
-            "extended" => Ok(Preset::Extended),
-            "full" => Ok(Preset::Full),
-            "external-request-free" => Ok(Preset::ExternalRequestFree),
-            "consistent-revision-history" => Ok(Preset::ConsistentRevisionHistory),
-            "consistent-date-times" => Ok(Preset::ConsistentDateTimes),
-            "ssvc" => Ok(Preset::Ssvc),
-            _ => Err(format!("Unknown preset: {value}")),
+            "mandatory" => Preset::Mandatory,
+            "recommended" => Preset::Recommended,
+            "informative" => Preset::Informative,
+            "schema" => Preset::Schema,
+            "basic" => Preset::Basic,
+            "extended" => Preset::Extended,
+            "full" => Preset::Full,
+            "external-request-free" => Preset::ExternalRequestFree,
+            "consistent-revision-history" => Preset::ConsistentRevisionHistory,
+            "consistent-date-times" => Preset::ConsistentDateTimes,
+            "ssvc" => Preset::Ssvc,
+            other => Preset::Custom(other.to_string()),
         }
     }
 }
@@ -149,6 +150,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ],
+            Preset::Custom(_) => panic!("Custom preset"),
         }
     }
 

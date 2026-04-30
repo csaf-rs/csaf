@@ -85,7 +85,7 @@ pub trait Validate {
 ///
 /// It can then be used to validate documents with [validate_by_preset] or [validate_by_tests].
 pub trait Validatable {
-    type PresetType: Display + Copy;
+    type PresetType: Display + Clone;
     /// Return the available presets
     fn get_presets() -> Vec<Self::PresetType>;
 

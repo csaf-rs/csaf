@@ -165,6 +165,9 @@ jobs:
       - name: Run tests
         run: cargo test --locked --target=${{ matrix.target.arch }} --verbose
         if: ${{ matrix.target.skip-test != true }}
+      - name: Build with --no-default-features
+        run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose
+        if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         uses: actions/upload-artifact@v4
         with:

@@ -84,7 +84,7 @@ jobs:
             echo ""
             echo "::error::Generated files are out of date or untracked!"
             echo "The files in csaf-rs/src/ do not match the output of the type-generator."
-            echo "Please run 'cargo run -p type-generator' and commit the updated files."
+            echo "Please run 'cargo run --locked -p type-generator' and commit the updated files."
             exit 1
           fi
       - name: Compute build targets

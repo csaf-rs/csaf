@@ -86,12 +86,17 @@ pub fn read_file_to_string(path: &Path) -> Result<String, BuildError> {
     })
 }
 
-/// Formats a Rust source file in place by invoking `rustfmt`.
+/// Formats a Rust source file in place by invoking `rustfmt` for edition 2024 rust.
 fn format_with_rustfmt(path: &Path) -> Result<(), BuildError> {
-    let output = Command::new("rustfmt").arg(path).output()?;
+    let output = Command::new("rustfmt")
+        .arg("--edition")
+        .arg("2024")
+        .arg(path)
+        .output()?;
 
     if !output.status.success() {
-        Err(std::io::Error::other("rustfmt failed"))?;
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        Err(std::io::Error::other(format!("rustfmt failed: {stderr}")))?;
     }
 
     Ok(())

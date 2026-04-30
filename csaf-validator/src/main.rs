@@ -96,7 +96,7 @@ where
                 .iter()
                 .find(|p| p.to_string().eq_ignore_ascii_case(test_or_preset));
             match matched_preset {
-                Some(preset) => T::tests_in_preset(preset.clone()),
+                Some(preset) => T::tests_in_preset(preset.clone()).unwrap_or_default(),
                 None => vec![test_or_preset.as_str()],
             }
         })

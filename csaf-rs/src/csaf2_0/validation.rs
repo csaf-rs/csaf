@@ -81,18 +81,18 @@ impl Validatable for CommonSecurityAdvisoryFramework {
         vec![Preset::Basic, Preset::Extended, Preset::Full]
     }
 
-    fn tests_in_preset(preset: Self::PresetType) -> Vec<&'static str> {
+    fn tests_in_preset(preset: Self::PresetType) -> Result<Vec<&'static str>, String> {
         match preset {
-            Preset::Basic => [vec!["schema"], mandatory_tests()].concat(),
-            Preset::Extended => [vec!["schema"], mandatory_tests(), recommended_tests()].concat(),
-            Preset::Full => [
+            Preset::Basic => Ok([vec!["schema"], mandatory_tests()].concat()),
+            Preset::Extended => Ok([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            Preset::Full => Ok([
                 vec!["schema"],
                 mandatory_tests(),
                 recommended_tests(),
                 informative_tests(),
             ]
-            .concat(),
-            Preset::Custom(_) => panic!("Custom preset"),
+            .concat()),
+            Preset::Custom(name) => Err(format!("Unknown preset: {name}")),
         }
     }
 

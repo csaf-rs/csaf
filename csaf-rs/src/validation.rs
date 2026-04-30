@@ -90,7 +90,7 @@ pub trait Validatable {
     fn get_presets() -> Vec<Self::PresetType>;
 
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: Self::PresetType) -> Vec<&'static str>;
+    fn tests_in_preset(preset: Self::PresetType) -> Result<Vec<&'static str>, String>;
 
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
@@ -147,10 +147,14 @@ pub fn validate_by_tests(target: &impl Validatable, version: &str, test_ids: &[&
 }
 
 /// Validate document with a preset and return detailed results.
-pub fn validate_by_preset<V: Validatable>(target: &V, version: &str, preset: V::PresetType) -> ValidationResult {
+pub fn validate_by_preset<V: Validatable>(
+    target: &V,
+    version: &str,
+    preset: V::PresetType,
+) -> Result<ValidationResult, String> {
     // Retrieve the test IDs for the given preset
-    let test_ids: Vec<&str> = V::tests_in_preset(preset);
+    let test_ids: Vec<&str> = V::tests_in_preset(preset)?;
 
     // Forward them to validate_by_tests
-    validate_by_tests(target, version, &test_ids)
+    Ok(validate_by_tests(target, version, &test_ids))
 }

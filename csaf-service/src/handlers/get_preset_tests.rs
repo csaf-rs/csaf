@@ -42,23 +42,30 @@ pub(crate) async fn get_preset_tests(Path((version, preset)): Path<(String, Stri
             format!("Preset '{preset}' not found for version {valid_version}"),
         ));
     }
+    let tests = tests_for_preset(&valid_version, &preset)?;
     Ok(Json(PresetTestsResponse {
-        tests: tests_for_preset(&valid_version, &preset),
+        tests,
         preset,
         version: valid_version.to_string(),
     }))
 }
 
 /// Returns the test IDs belonging to a preset for a given CSAF version.
-pub(crate) fn tests_for_preset(version: &CsafVersion, preset: &str) -> Vec<String> {
+fn tests_for_preset(version: &CsafVersion, preset: &str) -> Result<Vec<String>, (StatusCode, Json<ErrorResponse>)> {
     match version {
         CsafVersion::X20 => {
             let p = Preset2_0::from(preset);
-            Csaf2_0::tests_in_preset(p).into_iter().map(String::from).collect()
+            Csaf2_0::tests_in_preset(p).map_or_else(
+                |e| Err(error_response(StatusCode::BAD_REQUEST, e)), // this covers the 'Custom' case as we return an error if the preset name is not recognized
+                |tests| Ok(tests.into_iter().map(String::from).collect()),
+            )
         },
         CsafVersion::X21 => {
             let p = Preset2_1::from(preset);
-            Csaf2_1::tests_in_preset(p).into_iter().map(String::from).collect()
+            Csaf2_1::tests_in_preset(p).map_or_else(
+                |e| Err(error_response(StatusCode::BAD_REQUEST, e)), // this covers the 'Custom' case as we return an error if the preset name is not recognized
+                |tests| Ok(tests.into_iter().map(String::from).collect()),
+            )
         },
     }
 }
@@ -85,6 +92,7 @@ mod tests {
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
         let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset2_0::Basic)
+            .unwrap()
             .into_iter()
             .map(String::from)
             .collect();
@@ -100,6 +108,7 @@ mod tests {
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
         let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset2_0::Extended)
+            .unwrap()
             .into_iter()
             .map(String::from)
             .collect();
@@ -114,6 +123,7 @@ mod tests {
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
         let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset2_0::Full)
+            .unwrap()
             .into_iter()
             .map(String::from)
             .collect();
@@ -130,6 +140,7 @@ mod tests {
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
         let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset2_1::Mandatory)
+            .unwrap()
             .into_iter()
             .map(String::from)
             .collect();
@@ -144,6 +155,7 @@ mod tests {
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
         let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset2_1::Full)
+            .unwrap()
             .into_iter()
             .map(String::from)
             .collect();
@@ -158,6 +170,7 @@ mod tests {
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
         let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset2_1::ExternalRequestFree)
+            .unwrap()
             .into_iter()
             .map(String::from)
             .collect();

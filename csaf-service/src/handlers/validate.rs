@@ -192,8 +192,10 @@ fn resolve_test_ids<'a>(
     let preset = query.preset.as_deref().unwrap_or("basic");
 
     let tests = match version {
-        CsafVersion::X20 => CsafDoc20::tests_in_preset(Preset2_0::from(preset)),
-        CsafVersion::X21 => CsafDoc21::tests_in_preset(Preset2_1::from(preset)),
+        CsafVersion::X20 => CsafDoc20::tests_in_preset(Preset2_0::from(preset))
+            .map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?,
+        CsafVersion::X21 => CsafDoc21::tests_in_preset(Preset2_1::from(preset))
+            .map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?,
     };
 
     Ok(tests)
@@ -282,11 +284,12 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn returns_200_with_empty_results_for_unknown_preset() {
+    async fn returns_400_for_invalid_preset() {
         let uri = format!("{}?preset=nonexistent", validate_uri("2.0"));
-        let (status, _json) = post_json(&uri, valid_csaf_2_0()).await;
+        let (status, json) = post_json(&uri, valid_csaf_2_0()).await;
 
-        assert_eq!(status, StatusCode::OK);
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(json["error"].as_str().unwrap().contains("nonexistent"));
     }
 
     #[tokio::test]

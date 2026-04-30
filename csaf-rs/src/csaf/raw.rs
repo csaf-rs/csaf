@@ -65,7 +65,7 @@ where
     }
 
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: Self::PresetType) -> Vec<&'static str> {
+    fn tests_in_preset(preset: Self::PresetType) -> Result<Vec<&'static str>, String> {
         T::Parsed::tests_in_preset(preset)
     }
 

@@ -116,22 +116,22 @@ impl Validatable for CommonSecurityAdvisoryFramework {
         ]
     }
 
-    fn tests_in_preset(preset: Self::PresetType) -> Vec<&'static str> {
+    fn tests_in_preset(preset: Self::PresetType) -> Result<Vec<&'static str>, String> {
         match preset {
-            Preset::Mandatory => mandatory_tests(),
-            Preset::Recommended => recommended_tests(),
-            Preset::Informative => informative_tests(),
-            Preset::Schema => vec!["schema"],
-            Preset::Basic => [vec!["schema"], mandatory_tests()].concat(),
-            Preset::Extended => [vec!["schema"], mandatory_tests(), recommended_tests()].concat(),
-            Preset::Full => [
+            Preset::Mandatory => Ok(mandatory_tests()),
+            Preset::Recommended => Ok(recommended_tests()),
+            Preset::Informative => Ok(informative_tests()),
+            Preset::Schema => Ok(vec!["schema"]),
+            Preset::Basic => Ok([vec!["schema"], mandatory_tests()].concat()),
+            Preset::Extended => Ok([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            Preset::Full => Ok([
                 vec!["schema"],
                 mandatory_tests(),
                 recommended_tests(),
                 informative_tests(),
             ]
-            .concat(),
-            Preset::ExternalRequestFree => [
+            .concat()),
+            Preset::ExternalRequestFree => Ok([
                 vec!["schema"],
                 mandatory_tests(),
                 recommended_tests(),
@@ -140,17 +140,17 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             .concat()
             .into_iter()
             .filter(|id| *id != "6.3.6" && *id != "6.3.7")
-            .collect(),
-            Preset::ConsistentRevisionHistory => vec![
+            .collect()),
+            Preset::ConsistentRevisionHistory => Ok(vec![
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
                 "6.2.33",
-            ],
-            Preset::ConsistentDateTimes => vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"],
-            Preset::Ssvc => vec![
+            ]),
+            Preset::ConsistentDateTimes => Ok(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            Preset::Ssvc => Ok(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
-            ],
-            Preset::Custom(_) => panic!("Custom preset"),
+            ]),
+            Preset::Custom(name) => Err(format!("Unknown preset: {name}")),
         }
     }
 

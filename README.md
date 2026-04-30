@@ -23,7 +23,7 @@ git submodule init
 git submodule update --remote
 
 # make sure that local assets are in sync with git submodules
-./update_assets.sh
+./scripts/update/update_assets.sh
 
 # run the tests
 cargo test

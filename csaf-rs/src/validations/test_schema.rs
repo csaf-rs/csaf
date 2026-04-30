@@ -5,12 +5,17 @@ use serde_json::Value;
 
 use crate::{
     csaf::raw::RawDocument,
-    helpers::{
-        CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA, CVSS_V3_0_SCHEMA_URL,
-        CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA, CVSS_V4_0_2_SCHEMA_URL, EXTENSION_METASCHEMA,
-        EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA, SSVC_2_SCHEMA_URL,
-    },
     validation::ValidationError,
+    validations::utils::{
+        validation_schema_urls::{
+            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA_URL,
+            EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA_URL,
+        },
+        validation_schemas::{
+            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_2_SCHEMA,
+            EXTENSION_METASCHEMA, EXTENSION_SCHEMA, SSVC_2_SCHEMA,
+        },
+    },
 };
 
 fn use_draft_schema(mut schema_value: Value) -> Value {

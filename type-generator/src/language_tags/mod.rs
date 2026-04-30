@@ -9,7 +9,7 @@ mod tests;
 
 use crate::build_errors::BuildError;
 use crate::utils::codegen_snippets::{
-    GENERATED_CODE_HEADER, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt,
+    add_generated_code_header, add_ignore_clippy, add_ignore_dead_code, add_ignore_rustfmt,
 };
 use crate::utils::read_write_fs::{read_file_to_string, write_generated_file};
 use generate::generate_kind_section;
@@ -86,7 +86,6 @@ pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
         .collect();
 
     let tokens = quote! {
-        #![doc = #GENERATED_CODE_HEADER]
 
         /// Looks up a subtag in a sorted `&[(&str, bool)]` array by key.
         /// Returns the matching `(tag, is_private_use)` tuple if found.
@@ -102,6 +101,7 @@ pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
 
     let mut file: syn::File = syn::parse2(tokens)?;
     // add headers
+    add_generated_code_header(&mut file);
     add_ignore_rustfmt(&mut file);
     add_ignore_clippy(&mut file);
     // TODO: This should be removed in the future, i.e. we should only generate needed code.

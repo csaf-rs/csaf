@@ -46,7 +46,7 @@ cargo run -- --schema --test-schema
 By default, the target folder is set to `../csaf-rs`, and the generator creates files in the specific subfolders used in this library, but you can override it by passing the `--target-folder` option.
 
 | Type | Default target folder|  
-|  | --- |  
+| --- | --- |  
 | CSAF-Schema | `csaf-rs/src/schema/<VERSION>/schema.rs` |  
 | CSAF-Testcases-Schema | `csaf-rs/src/schema/<VERSION>/testcases_schema.rs` |  
 | CSAF-Testcases | `csaf-rs/src/<VERSION>/testcases.generated.rs` |  

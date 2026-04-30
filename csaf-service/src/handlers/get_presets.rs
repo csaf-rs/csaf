@@ -1,4 +1,4 @@
-use axum::{Json, extract::Path, http::StatusCode, response::IntoResponse};
+use axum::{Json, extract::Path, http::StatusCode};
 use csaf::csaf_traits::CsafVersion;
 use csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf2_1;
 use csaf::{schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf2_0, validation::Validatable};
@@ -26,14 +26,15 @@ pub(crate) struct PresetsResponse {
     ),
     tag = "presets"
 )]
-pub(crate) async fn get_presets(Path(version): Path<String>) -> impl IntoResponse {
-    match CsafVersion::try_from(version.clone()) {
-        Err(err) => Err(error_response(StatusCode::BAD_REQUEST, err)),
-        Ok(valid_version) => Ok(Json(PresetsResponse {
-            version,
-            presets: presets_for_version(&valid_version),
-        })),
-    }
+pub(crate) async fn get_presets(
+    Path(version): Path<String>,
+) -> Result<Json<PresetsResponse>, (StatusCode, Json<ErrorResponse>)> {
+    let valid_version =
+        CsafVersion::try_from(version.clone()).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
+    Ok(Json(PresetsResponse {
+        version,
+        presets: presets_for_version(&valid_version),
+    }))
 }
 
 /// Returns the list of known preset names for a CSAF version.

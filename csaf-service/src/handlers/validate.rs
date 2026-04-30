@@ -1,5 +1,3 @@
-use std::vec;
-
 use axum::{
     Json,
     body::Bytes,
@@ -7,14 +5,14 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
-use csaf::csaf2_0::validation::Preset as Preset2_0;
 use csaf::csaf2_1::validation::Preset as Preset2_1;
 use csaf::{
     csaf::loader::detect_version_from_json,
-    csaf2_0::loader::load_document_from_str as load_2_0,
-    csaf2_1::loader::load_document_from_str as load_2_1,
+    csaf2_0::loader::load_document_from_value as load_2_0,
+    csaf2_1::loader::load_document_from_value as load_2_1,
     validation::{Validatable, validate_by_tests},
 };
+use csaf::{csaf_traits::CsafVersion, csaf2_0::validation::Preset as Preset2_0};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -96,8 +94,7 @@ pub(crate) async fn validate(
     Query(query): Query<ValidateQuery>,
     Json(body): Json<serde_json::Value>,
 ) -> impl IntoResponse {
-    let json_str = serde_json::to_string(&body).unwrap();
-    run_validation(&path_version, &query, &json_str, &body)
+    run_validation(&path_version, &query, &body)
 }
 
 /// Validate a CSAF document uploaded as a binary file.
@@ -121,17 +118,7 @@ pub(crate) async fn validate_file(
     Query(query): Query<ValidateQuery>,
     body: Bytes,
 ) -> impl IntoResponse {
-    let json_str = match std::str::from_utf8(&body) {
-        Ok(s) => s,
-        Err(e) => {
-            return Err(error_response(
-                StatusCode::BAD_REQUEST,
-                format!("Invalid UTF-8 in uploaded file: {e}"),
-            ));
-        },
-    };
-
-    let parsed: serde_json::Value = match serde_json::from_str(json_str) {
+    let parsed: serde_json::Value = match serde_json::from_slice(&body) {
         Ok(v) => v,
         Err(e) => {
             return Err(error_response(
@@ -140,47 +127,36 @@ pub(crate) async fn validate_file(
             ));
         },
     };
-
-    run_validation(&path_version, &query, json_str, &parsed)
+    run_validation(&path_version, &query, &parsed)
 }
 
 /// Common validation logic shared by `validate` and `validate_file`.
 fn run_validation(
     path_version: &str,
     query: &ValidateQuery,
-    json_str: &str,
-    parsed: &serde_json::Value,
+    json_value: &serde_json::Value,
 ) -> Result<Json<csaf::validation::ValidationResult>, (StatusCode, Json<ErrorResponse>)> {
-    let version = resolve_version(path_version, parsed).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
+    let version = resolve_version(path_version, json_value)?;
+    let test_ids = resolve_test_ids(&version, query)?;
 
-    let test_ids = resolve_test_ids(&version, query).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
-
-    let test_id_refs: Vec<&str> = test_ids.iter().map(|s| s.as_str()).collect();
-
-    let result = match version.as_str() {
-        "2.0" => {
-            let doc = load_2_0(json_str).map_err(|e| {
+    let result = match version {
+        CsafVersion::X20 => {
+            let doc = load_2_0(json_value.clone()).map_err(|e| {
                 error_response(
                     StatusCode::BAD_REQUEST,
                     format!("Failed to load CSAF 2.0 document: {e}"),
                 )
             })?;
-            validate_by_tests(&doc, &version, &test_id_refs)
+            validate_by_tests(&doc, version.as_str(), &test_ids)
         },
-        "2.1" => {
-            let doc = load_2_1(json_str).map_err(|e| {
+        CsafVersion::X21 => {
+            let doc = load_2_1(json_value.clone()).map_err(|e| {
                 error_response(
                     StatusCode::BAD_REQUEST,
                     format!("Failed to load CSAF 2.1 document: {e}"),
                 )
             })?;
-            validate_by_tests(&doc, &version, &test_id_refs)
-        },
-        _ => {
-            return Err(error_response(
-                StatusCode::BAD_REQUEST,
-                format!("Unsupported CSAF version: {version}"),
-            ));
+            validate_by_tests(&doc, version.as_str(), &test_ids)
         },
     };
 
@@ -188,31 +164,43 @@ fn run_validation(
 }
 
 /// Resolve the effective CSAF version from the path parameter and optional JSON body.
-fn resolve_version(path_version: &str, body: &serde_json::Value) -> Result<String, String> {
-    match path_version {
-        "auto" => detect_version_from_json(body).map_err(|e| format!("Failed to auto-detect CSAF version: {e}")),
-        "2.0" | "2.1" => Ok(path_version.to_string()),
-        other => Err(format!("Invalid CSAF version: {other}. Supported: 2.0, 2.1, auto")),
-    }
+fn resolve_version(
+    path_version: &str,
+    body: &serde_json::Value,
+) -> Result<CsafVersion, (StatusCode, Json<ErrorResponse>)> {
+    let parsed_version = if path_version.eq_ignore_ascii_case("auto") {
+        detect_version_from_json(body).map_err(|e| error_response(StatusCode::BAD_REQUEST, e.to_string()))?
+    } else {
+        path_version.to_string()
+    };
+    let valid_version =
+        CsafVersion::try_from(parsed_version).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
+    Ok(valid_version)
 }
 
 /// Resolve test IDs from query parameters.
-fn resolve_test_ids(version: &str, query: &ValidateQuery) -> Result<Vec<String>, String> {
-    // If explicit test IDs are provided, use them
+fn resolve_test_ids<'a>(
+    version: &CsafVersion,
+    query: &'a ValidateQuery,
+) -> Result<Vec<&'a str>, (StatusCode, Json<ErrorResponse>)> {
+    // If explicit test IDs are provided, use them and ignore preset
     if let Some(tests_str) = &query.tests {
-        return Ok(tests_str.split(',').map(|s| s.trim().to_string()).collect());
+        return Ok(tests_str.split(',').map(|s| s.trim()).collect());
     }
 
     // Otherwise use the preset
     let preset = query.preset.as_deref().unwrap_or("basic");
 
     let tests = match version {
-        "2.0" => CsafDoc20::tests_in_preset(Preset2_0::try_from(preset)?),
-        "2.1" => CsafDoc21::tests_in_preset(Preset2_1::try_from(preset)?),
-        _ => vec![],
+        CsafVersion::X20 => CsafDoc20::tests_in_preset(
+            Preset2_0::try_from(preset).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?,
+        ),
+        CsafVersion::X21 => CsafDoc21::tests_in_preset(
+            Preset2_1::try_from(preset).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?,
+        ),
     };
 
-    Ok(tests.into_iter().map(|s| s.to_string()).collect::<Vec<String>>())
+    Ok(tests)
 }
 
 #[cfg(test)]

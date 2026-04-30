@@ -34,23 +34,19 @@ pub(crate) struct PresetTestsResponse {
     tag = "presets"
 )]
 pub(crate) async fn get_preset_tests(Path((version, preset)): Path<(String, String)>) -> impl IntoResponse {
-    match CsafVersion::try_from(version.clone()) {
-        Err(err) => Err(error_response(StatusCode::BAD_REQUEST, err)),
-        Ok(valid_version) => {
-            let presets = presets_for_version(&valid_version);
-            if !presets.contains(&preset) {
-                return Err(error_response(
-                    StatusCode::BAD_REQUEST,
-                    format!("Preset '{preset}' not found for version {version}"),
-                ));
-            }
-            Ok(Json(PresetTestsResponse {
-                tests: tests_for_preset(&valid_version, &preset),
-                preset,
-                version,
-            }))
-        },
+    let valid_version = CsafVersion::try_from(version).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?;
+    let presets = presets_for_version(&valid_version);
+    if !presets.contains(&preset) {
+        return Err(error_response(
+            StatusCode::BAD_REQUEST,
+            format!("Preset '{preset}' not found for version {valid_version}"),
+        ));
     }
+    Ok(Json(PresetTestsResponse {
+        tests: tests_for_preset(&valid_version, &preset),
+        preset,
+        version: valid_version.to_string(),
+    }))
 }
 
 /// Returns the test IDs belonging to a preset for a given CSAF version.

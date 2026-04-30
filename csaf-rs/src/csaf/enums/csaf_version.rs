@@ -11,6 +11,30 @@ pub enum CsafVersion {
     X21,
 }
 
+impl CsafVersion {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            CsafVersion::X20 => "2.0",
+            CsafVersion::X21 => "2.1",
+        }
+    }
+}
+
+impl AsRef<str> for CsafVersion {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for CsafVersion {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CsafVersion::X20 => write!(f, "2.0"),
+            CsafVersion::X21 => write!(f, "2.1"),
+        }
+    }
+}
+
 impl TryFrom<String> for CsafVersion {
     type Error = String;
 

@@ -1,5 +1,5 @@
 [workspace]
-members = ["csaf-validator", "csaf-rs", "type-generator", "csaf-converter"]
+members = ["csaf-validator", "csaf-rs", "type-generator", "csaf-converter", "csaf-service"]
 resolver = "2"
 
 [workspace.lints.clippy]

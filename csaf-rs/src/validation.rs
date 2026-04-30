@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use TestResultStatus::*;
 use serde::{Deserialize, Serialize};
 use tsify::Tsify;
@@ -66,6 +68,7 @@ pub struct ValidationResult {
 }
 
 pub trait Validate {
+    type PresetType;
     /// Validates this object according to
     fn validate_by_test(&self, test_id: &str) -> TestResult;
 
@@ -73,7 +76,7 @@ pub trait Validate {
     fn validate_by_tests(&self, version: &str, test_ids: &[&str]) -> ValidationResult;
 
     /// Validates this object according to a validation preset and returns detailed results
-    fn validate_by_preset(&self, version: &str, preset: &str) -> ValidationResult;
+    fn validate_by_preset(&self, version: &str, preset: Self::PresetType) -> ValidationResult;
 }
 
 /// Represents something which is validatable according to the CSAF standard.
@@ -82,8 +85,12 @@ pub trait Validate {
 ///
 /// It can then be used to validate documents with [validate_by_preset] or [validate_by_tests].
 pub trait Validatable {
+    type PresetType: Display + Clone;
+    /// Return the available presets
+    fn get_presets() -> Vec<Self::PresetType>;
+
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>>;
+    fn tests_in_preset(preset: Self::PresetType) -> Result<Vec<&'static str>, String>;
 
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
@@ -140,10 +147,14 @@ pub fn validate_by_tests(target: &impl Validatable, version: &str, test_ids: &[&
 }
 
 /// Validate document with a preset and return detailed results.
-pub fn validate_by_preset<V: Validatable>(target: &V, version: &str, preset: &str) -> ValidationResult {
+pub fn validate_by_preset<V: Validatable>(
+    target: &V,
+    version: &str,
+    preset: V::PresetType,
+) -> Result<ValidationResult, String> {
     // Retrieve the test IDs for the given preset
-    let test_ids: Vec<&str> = V::tests_in_preset(preset).unwrap_or(vec![]);
+    let test_ids: Vec<&str> = V::tests_in_preset(preset)?;
 
     // Forward them to validate_by_tests
-    validate_by_tests(target, version, &test_ids)
+    Ok(validate_by_tests(target, version, &test_ids))
 }

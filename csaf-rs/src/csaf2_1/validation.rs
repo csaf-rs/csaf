@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
@@ -41,46 +43,114 @@ fn to_test_result(
     }
 }
 
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "kebab-case")]
+pub enum Preset {
+    Mandatory,
+    Recommended,
+    Informative,
+    Schema,
+    Basic,
+    Extended,
+    Full,
+    ExternalRequestFree,
+    ConsistentRevisionHistory,
+    ConsistentDateTimes,
+    Ssvc,
+    #[serde(untagged)]
+    Custom(String),
+}
+
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Preset::Mandatory => write!(f, "mandatory"),
+            Preset::Recommended => write!(f, "recommended"),
+            Preset::Informative => write!(f, "informative"),
+            Preset::Schema => write!(f, "schema"),
+            Preset::Basic => write!(f, "basic"),
+            Preset::Extended => write!(f, "extended"),
+            Preset::Full => write!(f, "full"),
+            Preset::ExternalRequestFree => write!(f, "external-request-free"),
+            Preset::ConsistentRevisionHistory => write!(f, "consistent-revision-history"),
+            Preset::ConsistentDateTimes => write!(f, "consistent-date-times"),
+            Preset::Ssvc => write!(f, "ssvc"),
+            Preset::Custom(name) => write!(f, "{name}"),
+        }
+    }
+}
+impl From<&str> for Preset {
+    fn from(value: &str) -> Self {
+        match value {
+            "mandatory" => Preset::Mandatory,
+            "recommended" => Preset::Recommended,
+            "informative" => Preset::Informative,
+            "schema" => Preset::Schema,
+            "basic" => Preset::Basic,
+            "extended" => Preset::Extended,
+            "full" => Preset::Full,
+            "external-request-free" => Preset::ExternalRequestFree,
+            "consistent-revision-history" => Preset::ConsistentRevisionHistory,
+            "consistent-date-times" => Preset::ConsistentDateTimes,
+            "ssvc" => Preset::Ssvc,
+            other => Preset::Custom(other.to_string()),
+        }
+    }
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
+    type PresetType = Preset;
+    fn get_presets() -> Vec<Self::PresetType> {
+        vec![
+            Preset::Mandatory,
+            Preset::Recommended,
+            Preset::Informative,
+            Preset::Schema,
+            Preset::Basic,
+            Preset::Extended,
+            Preset::Full,
+            Preset::ExternalRequestFree,
+            Preset::ConsistentRevisionHistory,
+            Preset::ConsistentDateTimes,
+            Preset::Ssvc,
+        ]
+    }
+
+    fn tests_in_preset(preset: Self::PresetType) -> Result<Vec<&'static str>, String> {
         match preset {
-            "mandatory" => Some(mandatory_tests()),
-            "recommended" => Some(recommended_tests()),
-            "informative" => Some(informative_tests()),
-            "schema" => Some(vec!["schema"]),
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            "external-request-free" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat()
-                .into_iter()
-                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
-                .collect(),
-            ),
-            "consistent-revision-history" => Some(vec![
+            Preset::Mandatory => Ok(mandatory_tests()),
+            Preset::Recommended => Ok(recommended_tests()),
+            Preset::Informative => Ok(informative_tests()),
+            Preset::Schema => Ok(vec!["schema"]),
+            Preset::Basic => Ok([vec!["schema"], mandatory_tests()].concat()),
+            Preset::Extended => Ok([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            Preset::Full => Ok([
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()),
+            Preset::ExternalRequestFree => Ok([
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()
+            .into_iter()
+            .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+            .collect()),
+            Preset::ConsistentRevisionHistory => Ok(vec![
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
                 "6.2.33",
             ]),
-            "consistent-date-times" => Some(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
-            "ssvc" => Some(vec![
+            Preset::ConsistentDateTimes => Ok(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            Preset::Ssvc => Ok(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
-            _ => None,
+            Preset::Custom(name) => Err(format!("Unknown preset: {name}")),
         }
     }
 

@@ -59,8 +59,13 @@ where
     T: HasParsed + RawValidatable,
     T::Parsed: Validatable,
 {
+    type PresetType = <T::Parsed as Validatable>::PresetType;
+    fn get_presets() -> Vec<Self::PresetType> {
+        <T::Parsed as Validatable>::get_presets()
+    }
+
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
+    fn tests_in_preset(preset: Self::PresetType) -> Result<Vec<&'static str>, String> {
         T::Parsed::tests_in_preset(preset)
     }
 

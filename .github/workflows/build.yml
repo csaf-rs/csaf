@@ -75,8 +75,6 @@ jobs:
           cargo fmt --all -- --check -l
       - name: Run type-generator
         run: cargo run --locked -p type-generator
-      - name: Format generated files
-        run: cargo fmt --all
       - name: Check for uncommitted changes in generated files
         run: |
           CHANGES=$(git status --porcelain -- csaf-rs/src/)

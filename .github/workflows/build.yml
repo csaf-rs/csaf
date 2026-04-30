@@ -33,6 +33,14 @@ jobs:
           submodules: 'true'
           fetch-depth: 0
           fetch-tags: true
+      - name: Check assets are up-to-date
+        run: |
+          ./update_assets.sh
+          if ! git diff --quiet; then
+            echo "::error::Assets are out of date. Please run ./update_assets.sh locally and commit the changes."
+            git diff --stat
+            exit 1
+          fi
       - name: Extract versions
         id: get-versions
         run: |
@@ -143,8 +151,6 @@ jobs:
       - name: Install cargo-auditable
         if: steps.rust-cache.outputs.cache-hit != 'true'
         run: cargo install cargo-auditable --locked
-      - name: Update assets
-        run: ./scripts/update/update_assets.sh
       - name: Clippy check
         if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
         run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} -- -D warnings
@@ -334,8 +340,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - name: Update assets
-        run: ./scripts/update/update_assets.sh
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
       - name: Update rustup
@@ -389,8 +393,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - name: Update assets
-        run: ./scripts/update/update_assets.sh
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

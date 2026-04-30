@@ -214,3 +214,147 @@ fn resolve_test_ids(version: &str, query: &ValidateQuery) -> Result<Vec<String>,
 
     Ok(tests.into_iter().map(|s| s.to_string()).collect::<Vec<String>>())
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::routes;
+    use crate::test_helpers::{post_bytes, post_json};
+    use axum::http::StatusCode;
+
+    fn validate_uri(version: &str) -> String {
+        routes::VALIDATE.replace("{version}", version)
+    }
+
+    fn validate_file_uri(version: &str) -> String {
+        routes::VALIDATE_FILE.replace("{version}", version)
+    }
+
+    fn valid_csaf_2_0() -> serde_json::Value {
+        let bytes = include_bytes!(
+            "../../../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
+        );
+        serde_json::from_slice(bytes).unwrap()
+    }
+
+    fn valid_csaf_2_1() -> serde_json::Value {
+        let bytes = include_bytes!(
+            "../../../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-01-11.json"
+        );
+        serde_json::from_slice(bytes).unwrap()
+    }
+
+    #[tokio::test]
+    async fn validates_valid_csaf_2_0_document() {
+        let (status, json) = post_json(&validate_uri("2.0"), valid_csaf_2_0()).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], true);
+        assert_eq!(json["version"], "2.0");
+    }
+
+    #[tokio::test]
+    async fn validates_valid_csaf_2_1_document() {
+        let (status, json) = post_json(&validate_uri("2.1"), valid_csaf_2_1()).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], true);
+        assert_eq!(json["version"], "2.1");
+    }
+
+    #[tokio::test]
+    async fn validates_with_auto_version_detection() {
+        let (status, json) = post_json(&validate_uri("auto"), valid_csaf_2_0()).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], true);
+        assert_eq!(json["version"], "2.0");
+    }
+
+    #[tokio::test]
+    async fn validates_with_preset_query_param() {
+        let uri = format!("{}?preset=basic", validate_uri("2.0"));
+        let (status, json) = post_json(&uri, valid_csaf_2_0()).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], true);
+    }
+
+    #[tokio::test]
+    async fn validates_with_explicit_test_ids() {
+        let uri = format!("{}?tests=6.1.1", validate_uri("2.0"));
+        let (status, json) = post_json(&uri, valid_csaf_2_0()).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], true);
+        assert_eq!(json["testResults"].as_array().unwrap().len(), 1);
+    }
+
+    #[tokio::test]
+    async fn returns_400_for_invalid_version() {
+        let (status, json) = post_json(&validate_uri("3.0"), valid_csaf_2_0()).await;
+
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(json["error"].as_str().unwrap().contains("3.0"));
+    }
+
+    #[tokio::test]
+    async fn returns_400_for_invalid_preset() {
+        let uri = format!("{}?preset=nonexistent", validate_uri("2.0"));
+        let (status, json) = post_json(&uri, valid_csaf_2_0()).await;
+
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(json["error"].as_str().unwrap().contains("nonexistent"));
+    }
+
+    #[tokio::test]
+    async fn returns_400_for_invalid_json_body() {
+        // A JSON string is valid JSON but not a valid CSAF document —
+        // the endpoint still attempts to load it and reports a load failure
+        let uri = format!("{}?tests=schema", validate_uri("2.0"));
+        let (status, json) = post_json(&uri, serde_json::json!("not an object")).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], false);
+    }
+
+    #[tokio::test]
+    async fn validate_file_with_valid_document() {
+        let bytes = include_bytes!(
+            "../../../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
+        );
+        let (status, json) = post_bytes(&validate_file_uri("2.0"), bytes.to_vec()).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], true);
+    }
+
+    #[tokio::test]
+    async fn validate_file_returns_400_for_invalid_utf8() {
+        let (status, json) = post_bytes(&validate_file_uri("2.0"), vec![0xFF, 0xFE]).await;
+
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(json["error"].as_str().unwrap().contains("UTF-8"));
+    }
+
+    #[tokio::test]
+    async fn validate_file_returns_400_for_invalid_json() {
+        let (status, json) = post_bytes(&validate_file_uri("2.0"), b"not json".to_vec()).await;
+
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(json["error"].as_str().unwrap().contains("JSON"));
+    }
+
+    #[tokio::test]
+    async fn reports_validation_failures_for_invalid_document() {
+        let mut doc = valid_csaf_2_0();
+        // Remove required field to trigger validation failure
+        doc.as_object_mut().unwrap().remove("document");
+
+        let uri = format!("{}?tests=schema", validate_uri("2.0"));
+        let (status, json) = post_json(&uri, doc).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["success"], false);
+        assert!(json["numErrors"].as_u64().unwrap() > 0);
+    }
+}

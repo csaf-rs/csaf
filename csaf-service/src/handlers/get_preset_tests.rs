@@ -70,8 +70,8 @@ pub(crate) fn tests_for_preset(version: &CsafVersion, preset: &str) -> Vec<Strin
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_helpers::get_json;
     use crate::routes;
+    use crate::test_helpers::get_json;
 
     fn build_uri(version: &str, preset: &str) -> String {
         routes::PRESET_TESTS

@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 use crate::build_errors::BuildError;
 
@@ -66,6 +67,10 @@ pub fn write_generated_file(
         ))
     })?;
 
+    if relative_path.ends_with(".rs") {
+        format_with_rustfmt(&out_path)?;
+    }
+
     Ok(())
 }
 
@@ -80,3 +85,15 @@ pub fn read_file_to_string(path: &Path) -> Result<String, BuildError> {
         ))
     })
 }
+
+/// Formats a Rust source file in place by invoking `rustfmt`.
+fn format_with_rustfmt(path: &Path) -> Result<(), BuildError> {
+    let output = Command::new("rustfmt").arg(path).output()?;
+
+    if !output.status.success() {
+        Err(std::io::Error::other("rustfmt failed"))?;
+    }
+
+    Ok(())
+}
+

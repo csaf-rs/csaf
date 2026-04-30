@@ -14,21 +14,6 @@ These assets are described within this `README.md`.
 See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
 They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
-### SSVC Resources
-
-- `ssvc_decision_points/**`
-- `decision_point_json_schema.json`
-
-See https://github.com/CERTCC/SSVC/tree/main/data/json/decision_points for information regarding these files and
-https://github.com/CERTCC/SSVC/blob/main/data/LICENSE for information about licenses.
-They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
-
-- `decision_point_value_selection_list_json_schema.json`
-
-See https://github.com/CERTCC/SSVC/blob/main/data/schema/v2/SelectionList_2_0_0.schema.json for this schema file and
-https://github.com/CERTCC/SSVC/blob/main/data/LICENSE for information about licenses.
-This is a 1:1 copy from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
-
 ## External Assets
 
 - `scancode-licensedb.json`

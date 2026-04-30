@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 use crate::build_errors::BuildError;
 
@@ -66,6 +67,10 @@ pub fn write_generated_file(
         ))
     })?;
 
+    if relative_path.ends_with(".rs") {
+        format_with_rustfmt(&out_path)?;
+    }
+
     Ok(())
 }
 
@@ -79,4 +84,20 @@ pub fn read_file_to_string(path: &Path) -> Result<String, BuildError> {
             format!("Failed to read file at {}: {e}", resolved.display()),
         ))
     })
+}
+
+/// Formats a Rust source file in place by invoking `rustfmt` with the Rust 2024 edition.
+fn format_with_rustfmt(path: &Path) -> Result<(), BuildError> {
+    let output = Command::new("rustfmt")
+        .arg("--edition")
+        .arg("2024")
+        .arg(path)
+        .output()?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        Err(std::io::Error::other(format!("rustfmt failed: {stderr}")))?;
+    }
+
+    Ok(())
 }

@@ -47,7 +47,7 @@ uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 
 [build-dependencies]
 ssvc = "0.1.0"
-serde_json = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
 
 [dev-dependencies]
 rstest = "0.26.1"

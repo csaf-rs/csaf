@@ -54,7 +54,7 @@ pub fn generate_schema_file(entries: &[SchemaEntry], target_folder: &str) -> Res
             let ident = format_ident!("{}", entry.name);
             let asset_path = entry.asset_path;
             let include_path = format!("{prefix}{asset_path}");
-            let expect_msg = format!("embedded JSON schema {asset_path} was validated at build-time");
+            let expect_msg = format!("The embedded JSON schema {asset_path} should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)");
             quote! {
                 pub static #ident: LazyLock<Value> = LazyLock::new(|| {
                     serde_json::from_str(include_str!(#include_path))

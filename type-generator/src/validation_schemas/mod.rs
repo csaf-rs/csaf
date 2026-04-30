@@ -42,8 +42,7 @@ pub fn generate_validation_schemas(target_folder: &str) -> Result<(), BuildError
 
         // Validate that the file exists and contains valid JSON
         let content = read_file_to_string(&Path::new(target_folder).join(relative_asset_path))?;
-        let _: serde_json::Value = serde_json::from_str(&content)
-            .map_err(|e| BuildError::SchemaPatch(format!("Invalid JSON in asset {relative_asset_path}: {e}")))?;
+        let _: serde_json::Value = serde_json::from_str(&content)?;
 
         url_entries.push(SchemaUrlEntry {
             name: schema.var_name,

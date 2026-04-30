@@ -17,6 +17,12 @@ use crate::handlers::health::*;
 use crate::handlers::validate::*;
 use crate::models::ErrorResponse;
 
+fn permissive_cors_enabled() -> bool {
+    std::env::var("CSAF_SERVICE_PERMISSIVE_CORS")
+        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+        .unwrap_or(false)
+}
+
 #[derive(OpenApi)]
 #[openapi(
     paths(
@@ -53,6 +59,13 @@ async fn main() {
     let port = std::env::var("CSAF_SERVICE_PORT").unwrap_or_else(|_| "3000".to_string());
     let addr = format!("0.0.0.0:{port}");
 
+    let cors_layer = if permissive_cors_enabled() {
+        tracing::warn!("Permissive CORS is enabled — do not use in production");
+        CorsLayer::permissive()
+    } else {
+        CorsLayer::new()
+    };
+
     let app = Router::new()
         .route(routes::PRESETS, get(get_presets))
         .route(routes::PRESET_TESTS, get(get_preset_tests))
@@ -60,7 +73,7 @@ async fn main() {
         .route(routes::VALIDATE_FILE, post(validate_file))
         .route(routes::HEALTH, get(health))
         .merge(SwaggerUi::new("/swagger-ui").url("/api/v1/openapi.json", ApiDoc::openapi()))
-        .layer(CorsLayer::permissive())
+        .layer(cors_layer)
         .layer(TraceLayer::new_for_http());
 
     tracing::info!("Starting CSAF Validation API on {addr}");

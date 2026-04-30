@@ -7,7 +7,14 @@ Run
 cargo run -p csaf-service --release
 ```
 
-You can define the port be setting an environment variable `CSAF_SERVICE_PORT`, which will be `3000` by default.
+You can define the port by setting an environment variable `CSAF_SERVICE_PORT`, which will be `3000` by default.
 ```bash
 CSAF_SERVICE_PORT=5000 cargo run -p csaf-service --release
+```
+
+### CORS
+
+By default, the service uses a restrictive CORS policy. For local development you can opt in to permissive CORS by setting:
+```bash
+CSAF_SERVICE_PERMISSIVE_CORS=true cargo run -p csaf-service --release
 ```

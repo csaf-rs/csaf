@@ -1,14 +1,20 @@
 use std::str::FromStr;
 
-use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, ProductStatusAndPath, ProductStatusGroup, ProductStatusGroupMap, VulnerabilityTrait};
-use crate::cvss::{is_zero_score, deserialize_cvss};
+use crate::csaf_traits::{
+    ContentTrait, CsafTrait, MetricTrait, ProductStatusAndPath, ProductStatusGroup, ProductStatusGroupMap,
+    VulnerabilityTrait,
+};
+use crate::cvss::{deserialize_cvss, is_zero_score};
 use crate::validation::ValidationError;
 use cvss_rs::Cvss;
 use cvss_rs::v2_0::{CvssV2, TargetDistribution};
 use cvss_rs::v3::{CvssV3, Impact};
 
-
-fn create_cvss_for_fixed_products_error(product_id: &str, statuses: &[ProductStatusAndPath], path: &str) -> ValidationError {
+fn create_cvss_for_fixed_products_error(
+    product_id: &str,
+    statuses: &[ProductStatusAndPath],
+    path: &str,
+) -> ValidationError {
     let status_list: Vec<String> = statuses.iter().map(|s| s.status.to_string()).collect();
     ValidationError {
         message: format!(
@@ -26,10 +32,10 @@ fn cvss_v2_has_env_score_zero(cvss_v2: CvssV2) -> bool {
         |cvss_v2: &CvssV2| -> bool { matches!(cvss_v2.target_distribution, Some(TargetDistribution::None)) };
 
     // check env score provided in json
-    if let Some(env_score) = cvss_v2.environmental_score {
-        if is_zero_score(env_score) {
-            return true;
-        }
+    if let Some(env_score) = cvss_v2.environmental_score
+        && is_zero_score(env_score)
+    {
+        return true;
     }
 
     // check if json contains prop that would set env score to zero
@@ -59,10 +65,10 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> bool {
     };
 
     // check env score provided in json
-    if let Some(env_score) = cvss_v3.environmental_score {
-        if is_zero_score(env_score) {
-            return true;
-        }
+    if let Some(env_score) = cvss_v3.environmental_score
+        && is_zero_score(env_score)
+    {
+        return true;
     }
 
     // check if json contains prop that would set env score to zero
@@ -168,20 +174,26 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_19, test_6_2_19_cvss
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf_traits::ProductStatus;
+    use crate::csaf2_0::testcases::TESTS_2_0;
 
     #[test]
     fn test_test_6_2_19() {
         // Test data only contains two paths, so we can share the error messages
         let err_fixed = Err(vec![create_cvss_for_fixed_products_error(
             "CSAFPID-9080700",
-            &[ProductStatusAndPath { status: ProductStatus::Fixed, index: 0 }],
+            &[ProductStatusAndPath {
+                status: ProductStatus::Fixed,
+                index: 0,
+            }],
             "/vulnerabilities/0/scores/0/products/0",
         )]);
         let err_first_fixed = Err(vec![create_cvss_for_fixed_products_error(
             "CSAFPID-9080700",
-            &[ProductStatusAndPath { status: ProductStatus::FirstFixed, index: 0 }],
+            &[ProductStatusAndPath {
+                status: ProductStatus::FirstFixed,
+                index: 0,
+            }],
             "/vulnerabilities/0/scores/0/products/0",
         )]);
 

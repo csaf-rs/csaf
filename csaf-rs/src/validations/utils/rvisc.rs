@@ -31,7 +31,7 @@ static REGEX_CACHE: LazyLock<HashMap<&'static str, Regex>> = LazyLock::new(|| {
 /// Returns `(system_name, text_pattern)` if found
 pub fn lookup(system_name: &str) -> Option<(&'static str, &'static str)> {
     REGISTRY_ENTRIES
-        .binary_search_by_key(&system_name, |(sn, _)| sn)
+        .binary_search_by(|&(sn, _)| sn.cmp(system_name))
         .ok()
         .map(|idx| REGISTRY_ENTRIES[idx])
 }

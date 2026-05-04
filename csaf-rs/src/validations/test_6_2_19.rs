@@ -18,7 +18,7 @@ fn create_cvss_for_fixed_products_error(
     let status_list: Vec<String> = statuses.iter().map(|s| s.status.to_string()).collect();
     ValidationError {
         message: format!(
-            "Product '{}' is listed as fixed (status: {}) but has a CVSS score without an environmental score of 0",
+            "Product '{}' is listed as fixed (status: '{}') has a CVSS environmental score that is not 0.0",
             product_id,
             status_list.join(", ")
         ),
@@ -85,7 +85,8 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> bool {
 }
 
 /// Returns true if all CVSS scores in this content have environmental score of 0.
-fn content_has_env_score_zero(content: &impl ContentTrait) -> bool {
+/// If both v2 and v3 are present, both must have an environmental score of 0.
+fn content_has_all_cvss_env_score_zero(content: &impl ContentTrait) -> bool {
     // check if cvss_v2 prop is set
     if let Some(cvss_v2) = content.get_cvss_v2() {
         // deserialize cvss, we only care about result, not errors
@@ -93,12 +94,16 @@ fn content_has_env_score_zero(content: &impl ContentTrait) -> bool {
             // TODO: Nondeterminable #409, could not deserialize
             return false;
         };
-        return match deserialized {
+        let v2_is_zero = match deserialized {
             Cvss::V2(v2) => cvss_v2_has_env_score_zero(v2),
             // TODO: Nondeterminable #409 - deserialized into wrong version
             _ => false,
         };
+        if !v2_is_zero {
+            return false;
+        }
     }
+
     // check if the cvss_v3 prop is set
     if let Some(cvss_v3) = content.get_cvss_v3() {
         // deserialize cvss, we only care about result, not errors
@@ -106,14 +111,18 @@ fn content_has_env_score_zero(content: &impl ContentTrait) -> bool {
             // TODO: Nondeterminable #409, could not deserialize
             return false;
         };
-        return match deserialized {
+        let v3_is_zero = match deserialized {
             Cvss::V3_0(v3) | Cvss::V3_1(v3) => cvss_v3_has_env_score_zero(v3),
             // TODO: Nondeterminable #409 - deserialized into wrong version
             _ => false,
         };
+        if !v3_is_zero {
+            return false;
+        }
     }
-    // There are no CVSS scores
-    false
+
+    // true if there are no CVSS scores, or all present CVSS scores have env score of zero
+    true
 }
 
 /// 6.2.19 CVSS for Fixed Products
@@ -126,21 +135,16 @@ pub fn test_6_2_19_cvss_for_fixed_products(doc: &impl CsafTrait) -> Result<(), V
     let mut errors: Option<Vec<ValidationError>> = None;
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         // collect fixed product IDs using the aggregation map
-        let fixed_products = match vuln.get_product_status() {
-            Some(product_status) => {
-                let status_map = ProductStatusGroupMap::from(product_status);
-                match status_map.get(&ProductStatusGroup::Fixed) {
-                    Some(products) => products.clone(),
-                    None => continue,
-                }
-            },
+        let status_map = match vuln.get_product_status() {
+            Some(product_status) => ProductStatusGroupMap::from(product_status),
+            // there are no product statuses
             None => continue,
         };
-
-        // if there are no fixed products, we can skip early
-        if fixed_products.is_empty() {
-            continue;
-        }
+        let fixed_products = match status_map.get(&ProductStatusGroup::Fixed) {
+            Some(products) => products,
+            // there are no products with status group fixed
+            None => continue,
+        };
 
         // check each metric/score
         if let Some(metrics) = vuln.get_metrics() {
@@ -151,7 +155,7 @@ pub fn test_6_2_19_cvss_for_fixed_products(doc: &impl CsafTrait) -> Result<(), V
                     // if the metric/score is relevant to a product
                     if let Some(statuses) = fixed_products.get(product_id.as_str()) {
                         // and the product does not have an env score of zero, generate an error
-                        if !content_has_env_score_zero(content) {
+                        if !content_has_all_cvss_env_score_zero(content) {
                             errors
                                 .get_or_insert_default()
                                 .push(create_cvss_for_fixed_products_error(

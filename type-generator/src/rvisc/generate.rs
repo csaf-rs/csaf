@@ -2,9 +2,9 @@ use crate::rvisc::JsonRegistryEntry;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-/// Generates a static lookup array and lookup functions from rvisc entries
+/// Generates a static lookup array from rvisc entries
 pub(crate) fn generate(entries: &[JsonRegistryEntry]) -> TokenStream {
-    // Sort entries by system_name for binary search
+    // Sort entries by system_name for deterministic output
     let mut sorted_entries = entries.to_vec();
     sorted_entries.sort_by(|a, b| a.system_name.cmp(&b.system_name));
 

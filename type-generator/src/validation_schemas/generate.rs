@@ -17,7 +17,7 @@ pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Res
         .map(|entry| {
             let ident = format_ident!("{}_URL", entry.name);
             let url = entry.source_url;
-            quote! { pub const #ident: &str = #url; }
+            quote! { pub(crate) const #ident: &str = #url; }
         })
         .collect();
 
@@ -56,7 +56,7 @@ pub fn generate_schema_file(entries: &[SchemaEntry], target_folder: &str) -> Res
             let include_path = format!("{prefix}{asset_path}");
             let expect_msg = format!("The embedded JSON schema {asset_path} should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)");
             quote! {
-                pub static #ident: LazyLock<Value> = LazyLock::new(|| {
+                pub(crate) static #ident: LazyLock<Value> = LazyLock::new(|| {
                     serde_json::from_str(include_str!(#include_path))
                         .expect(#expect_msg)
                 });

@@ -43,6 +43,11 @@ Only create the RVISC types from the RVISC registry file
 cargo run -- --rvisc
 ```
 
+Only create the language specific translation lookup from the translations file
+```
+cargo run -- --translations
+```
+
 Combine flags to run multiple specific generations
 ```
 cargo run -- --schema --test-schema
@@ -58,6 +63,7 @@ By default, the target folder is set to `../csaf-rs`, and the generator creates 
 | Language-Subtags      | `csaf-rs/src/csaf/types/language/language_subtags.generated.rs`                                                                     |  
 | Validation-Schemas    | `csaf-rs/src/validations/utils/validation_schemas/generated.rs` `csaf-rs/src/validations/utils/validation_schema_urls/generated.rs` |
 | RVISC                 | `csaf-rs/src/validations/utils/rvisc/generated.rs`                                                                                  |      
+| Translations          | `csaf-rs/src/validations/utils/language_specific_translations/generated.rs`                                                         |      
 
 You can always see the available options by running `cargo run -- --help`.
 

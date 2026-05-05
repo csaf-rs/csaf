@@ -28,4 +28,6 @@ rsync -c csaf/csaf_2.1/json_schema/csaf.json type-generator/assets/csaf_2.1_json
 rsync -c csaf/csaf_2.0/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.0_testcases_json_schema.json
 rsync -c csaf/csaf_2.1/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.1_testcases_json_schema.json
 
+rsync -c csaf/csaf_2.1/language_specific_translation/translations.json type-generator/assets/language_specific_translations/translations.json
+
 rsync -c csaf/registry/id/registry.json type-generator/assets/rvisc/registry.json

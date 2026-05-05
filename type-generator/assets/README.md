@@ -2,11 +2,16 @@
 
 This folder contains assets used by the type-generator to produce generated Rust code for `csaf-rs`.
 
-## git-based Assets
+## CSAF Assets
+
+See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
+They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
 ### CSAF RVISC
 
 - `rvisc/registry.json`
+
+These files are used to generate the RVISC registry types in `csaf-rs` via `cargo run -- --rvisc`.
 
 ### CSAF Schemas
 
@@ -14,9 +19,6 @@ This folder contains assets used by the type-generator to produce generated Rust
 - `csaf_2.1_json_schema.json`
 - `csaf_2.0_testcases_json_schema.json`
 - `csaf_2.1_testcases_json_schema.json`
-
-See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
-They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
 These files are used to generate the schema and test schema types in `csaf-rs`
 via `cargo run -- --schema` and `cargo run -- --test-schema`.

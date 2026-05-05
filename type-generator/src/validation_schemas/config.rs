@@ -33,11 +33,6 @@ pub const VALIDATION_SCHEMAS: &[ValidationSchemaConfig] = &[
         relative_asset_path: "assets/cvss-v4.0.2.json",
     },
     ValidationSchemaConfig {
-        var_name: "SSVC_2_SCHEMA",
-        source_url: "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json",
-        relative_asset_path: "assets/decision_point_selection_list_json_schema.json",
-    },
-    ValidationSchemaConfig {
         var_name: "EXTENSION_METASCHEMA",
         source_url: "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json",
         relative_asset_path: "assets/extension-metaschema.json",

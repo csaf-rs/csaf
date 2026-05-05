@@ -9,7 +9,7 @@ use crate::utils::read_write_fs::write_generated_file;
 
 use super::{SchemaEntry, SchemaUrlEntry};
 
-/// Generate `validation_schema_urls.rs` with a file-level `#![allow(dead_code)]`
+/// Generate `validation_schema_urls/generated.rs` with a file-level `#![allow(dead_code)]`
 pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Result<(), BuildError> {
     // Generate code snippets
     let items: TokenStream = entries
@@ -17,7 +17,7 @@ pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Res
         .map(|entry| {
             let ident = format_ident!("{}_URL", entry.name);
             let url = entry.source_url;
-            quote! { pub const #ident: &str = #url; }
+            quote! { pub(crate) const #ident: &str = #url; }
         })
         .collect();
 
@@ -28,15 +28,15 @@ pub fn generate_url_file(entries: &[SchemaUrlEntry], target_folder: &str) -> Res
 
     write_generated_file(
         target_folder,
-        "src/validations/utils/validation_schema_urls.rs",
+        "src/validations/utils/validation_schema_urls/generated.rs",
         &prettyplease::unparse(&file),
         "generated validation schema URLs",
     )
 }
 
-/// Generate `validation_schemas.rs` (lazy statics)
+/// Generate `validation_schemas/generated.rs` (lazy statics)
 pub fn generate_schema_file(entries: &[SchemaEntry], target_folder: &str) -> Result<(), BuildError> {
-    const OUTPUT_PATH: &str = "src/validations/utils/validation_schemas.rs";
+    const OUTPUT_PATH: &str = "src/validations/utils/validation_schemas/generated.rs";
 
     // Compute how many '../'s are needed to get from the output file
     // directory back to the target_folder root, from which we can go to the asset path
@@ -56,7 +56,7 @@ pub fn generate_schema_file(entries: &[SchemaEntry], target_folder: &str) -> Res
             let include_path = format!("{prefix}{asset_path}");
             let expect_msg = format!("The embedded JSON schema {asset_path} should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)");
             quote! {
-                pub static #ident: LazyLock<Value> = LazyLock::new(|| {
+                pub(crate) static #ident: LazyLock<Value> = LazyLock::new(|| {
                     serde_json::from_str(include_str!(#include_path))
                         .expect(#expect_msg)
                 });

@@ -15,8 +15,8 @@ pub(crate) fn parse_registry(registry_path: &str) -> Result<JsonRegistry, BuildE
     for entry in &registry.entries {
         Regex::new(&entry.text_pattern).map_err(|e| {
             BuildError::Json(serde_json::Error::custom(format!(
-                "Invalid regex in RVISC entry '{}': {e}",
-                entry.text_pattern
+                "Invalid regex in RVISC entry '{}' (pattern '{}'): {e}",
+                entry.system_name, entry.text_pattern
             )))
         })?;
     }

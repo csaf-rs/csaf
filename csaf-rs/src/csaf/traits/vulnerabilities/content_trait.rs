@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
-use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_0::schema::Score;
 use crate::schema::csaf2_1::schema::{Content, Epss, QualitativeSeverityRating};
 use serde::de::Error as SerdeError;
 use serde_json::{Map, Value};
+use ssvc::selection_list::SelectionList;
 
 /// Helper function to extract the version string from a CVSS JSON object.
 /// TODO: This will be replaced after the CVSS implementation (probably?)

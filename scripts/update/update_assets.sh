@@ -17,9 +17,6 @@ cd "$REPO_ROOT"
 rsync -c csaf/csaf_2.0/json_schema/csaf_json_schema.json csaf-rs/assets/csaf_2.0_json_schema.json
 rsync -c csaf/csaf_2.1/json_schema/csaf.json csaf-rs/assets/csaf_2.1_json_schema.json
 rsync -c csaf/csaf_2.1/json_schema/extension-content.json csaf-rs/assets/extension-content.json
-rsync -c ssvc/data/schema/v2/DecisionPoint_2_0_0.schema.json csaf-rs/assets/decision_point_json_schema.json
-rsync -c ssvc/data/schema/v2/SelectionList_2_0_0.schema.json csaf-rs/assets/decision_point_selection_list_json_schema.json
-rsync -cr --delete ssvc/data/json/decision_points/ csaf-rs/assets/ssvc_decision_points/
 
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0.json csaf-rs/assets/cvss-v2.0.json
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.0.json csaf-rs/assets/cvss-v3.0.json

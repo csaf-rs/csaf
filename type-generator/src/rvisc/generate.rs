@@ -16,7 +16,7 @@ pub(crate) fn generate(entries: &[JsonRegistryEntry]) -> TokenStream {
 
     quote! {
         /// Lookup array of `(system_name, text_pattern)`
-        static REGISTRY_ENTRIES: &[(&str, &str)] = &[
+        pub(super) static REGISTRY_ENTRIES: &[(&str, &str)] = &[
             #(#array_entries),*
         ];
     }

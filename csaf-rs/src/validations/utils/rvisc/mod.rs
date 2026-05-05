@@ -1,9 +1,9 @@
 mod generated;
 use generated::REGISTRY_ENTRIES;
 
+use regress::Regex;
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use regress::Regex;
 
 static REGISTRY_HASHMAP: LazyLock<HashMap<&'static str, Regex>> = LazyLock::new(|| {
     REGISTRY_ENTRIES

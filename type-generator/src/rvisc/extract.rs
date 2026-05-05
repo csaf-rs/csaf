@@ -1,4 +1,4 @@
-use regex::Regex;
+use regress::Regex;
 use serde::de::Error;
 use std::path::Path;
 

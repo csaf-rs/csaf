@@ -2,6 +2,7 @@ mod build_errors;
 mod language_tags;
 mod schema;
 mod testcases;
+mod translation;
 mod utils;
 mod validation_schemas;
 
@@ -10,6 +11,7 @@ use crate::language_tags::generate_language_tags;
 use crate::schema::build_schema;
 use crate::schema::config::{get_schemas, get_testcases_schemas};
 use crate::testcases::{generate_testcases, get_testcase_configs};
+use crate::translation::generate_translations;
 use crate::validation_schemas::generate_validation_schemas;
 use clap::Parser;
 
@@ -36,6 +38,10 @@ struct Args {
     #[arg(long, default_value_t = false)]
     validation_schemas: bool,
 
+    /// Generate translations
+    #[arg(long, default_value_t = false)]
+    translations: bool,
+
     /// Target folder for generated code, ../csaf-rs by default
     #[arg(long, default_value = "../csaf-rs")]
     target_folder: String,
@@ -45,8 +51,12 @@ fn main() -> Result<(), BuildError> {
     let args = Args::parse();
 
     // If no specific generation is requested, run all
-    let run_all =
-        !args.schema && !args.test_schema && !args.test_definitions && !args.language_tags && !args.validation_schemas;
+    let run_all = !args.schema
+        && !args.test_schema
+        && !args.test_definitions
+        && !args.language_tags
+        && !args.validation_schemas
+        && !args.translations;
 
     if run_all || args.schema {
         for schema in &get_schemas() {
@@ -72,6 +82,10 @@ fn main() -> Result<(), BuildError> {
 
     if run_all || args.validation_schemas {
         generate_validation_schemas(&args.target_folder)?;
+    }
+
+    if run_all || args.translations {
+        generate_translations(&args.target_folder)?;
     }
 
     Ok(())

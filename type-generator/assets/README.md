@@ -4,6 +4,10 @@ This folder contains assets used by the type-generator to produce generated Rust
 
 ## git-based Assets
 
+### Language Specific Translations
+
+- `language_specific_translations/translations.json`
+
 ### CSAF Schemas
 
 - `csaf_2.0_json_schema.json`

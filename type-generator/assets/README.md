@@ -13,9 +13,11 @@ They are 1:1 copies from the respective repository (i.e., git submodule), cloned
 
 These files are used to generate the RVISC registry types in `csaf-rs` via `cargo run -- --rvisc`.
 
-### Language Specific Translations
+### CSAF Language Specific Translations
 
 - `language_specific_translations/translations.json`
+
+These files are used to generate the language specific translation types in `csaf-rs` via `cargo run -- --translations`.
 
 ### CSAF Schemas
 

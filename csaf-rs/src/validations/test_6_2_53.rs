@@ -23,7 +23,7 @@ pub fn test_6_2_53_matching_text_for_registered_id_system(doc: &impl CsafTrait) 
                 let system_name = id.get_system_name();
                 if let Some(regex) = rvisc::lookup_regex(system_name) {
                     let text = id.get_text();
-                    if !regex.is_match(text) {
+                    if regex.find(text).is_none() {
                         errors
                             .get_or_insert_default()
                             .push(create_matching_text_error(system_name, text, v_i, i_i));

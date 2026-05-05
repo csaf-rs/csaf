@@ -39,7 +39,7 @@ pub fn generate_registry(target_folder: &str) -> Result<(), BuildError> {
 
     write_generated_file(
         target_folder,
-        "src/validations/utils/rvisc.rs",
+        "src/validations/utils/rvisc/generated.rs",
         &code,
         "generated RVISC lookup",
     )?;

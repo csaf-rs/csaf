@@ -6,7 +6,7 @@ This folder contains assets used by the type-generator to produce generated Rust
 
 ### CSAF RVISC
 
-- `registry.json`
+- `rvisc/registry.json`
 
 ### CSAF Schemas
 

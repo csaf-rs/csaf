@@ -1,8 +1,11 @@
 use TestResultStatus::*;
 use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "wasm")]
 use tsify::Tsify;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationError {
     pub message: String,
@@ -21,7 +24,8 @@ pub trait IntoValidationError {
 }
 
 /// Result of executing a single test
-#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[serde(rename_all = "camelCase")]
 pub struct TestResult {
     /// The test ID that was executed
@@ -31,7 +35,8 @@ pub struct TestResult {
     pub status: TestResultStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Tsify)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[serde(rename_all = "camelCase")]
 pub enum TestResultStatus {
     Success,
@@ -45,9 +50,10 @@ pub enum TestResultStatus {
 }
 
 /// Result of a CSAF validation
-#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 #[serde(rename_all = "camelCase")]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ValidationResult {
     /// Whether the validation was successful (no errors)
     pub success: bool,

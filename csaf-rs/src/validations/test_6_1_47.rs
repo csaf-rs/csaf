@@ -72,7 +72,7 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
                                                 ),
                                             );
                                         }
-                                        // target ID is valid, continue to next
+                                        // target ID matched document ID
                                         continue;
                                     }
 

@@ -251,6 +251,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.50.3" => None, // Some(ValidatorForTest6_2_50_3.validate(self)),
                 "6.2.51" => None,   // Some(ValidatorForTest6_2_51.validate(self)),
                 "6.2.52" => Some(ValidatorForTest6_2_52.validate(self)),
+                "6.2.53" => Some(ValidatorForTest6_2_53.validate(self)),
                 _ => None,
             },
         );
@@ -281,6 +282,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.16" => None, // Some(ValidatorForTests6_3_16.validate(self)),
                 "6.3.17" => None, // Some(ValidatorForTests6_3_17.validate(self)),
                 "6.3.18" => Some(ValidatorForTest6_3_18.validate(self)),
+                "6.3.19" => None, // Some(ValidatorForTests6_3_19.validate(self)),
+                "6.3.20" => Some(ValidatorForTest6_3_20.validate(self)),
                 _ => None,
             },
         )

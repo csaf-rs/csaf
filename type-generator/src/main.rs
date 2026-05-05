@@ -1,5 +1,6 @@
 mod build_errors;
 mod language_tags;
+mod rvisc;
 mod schema;
 mod testcases;
 mod translation;
@@ -8,6 +9,7 @@ mod validation_schemas;
 
 use crate::build_errors::BuildError;
 use crate::language_tags::generate_language_tags;
+use crate::rvisc::generate_registry;
 use crate::schema::build_schema;
 use crate::schema::config::{get_schemas, get_testcases_schemas};
 use crate::testcases::{generate_testcases, get_testcase_configs};
@@ -38,6 +40,10 @@ struct Args {
     #[arg(long, default_value_t = false)]
     validation_schemas: bool,
 
+    /// Generate rvisc lookup
+    #[arg(long, default_value_t = false)]
+    rvisc: bool,
+
     /// Generate translations
     #[arg(long, default_value_t = false)]
     translations: bool,
@@ -56,7 +62,8 @@ fn main() -> Result<(), BuildError> {
         && !args.test_definitions
         && !args.language_tags
         && !args.validation_schemas
-        && !args.translations;
+        && !args.translations
+        && !args.rvisc;
 
     if run_all || args.schema {
         for schema in &get_schemas() {
@@ -86,6 +93,10 @@ fn main() -> Result<(), BuildError> {
 
     if run_all || args.translations {
         generate_translations(&args.target_folder)?;
+    }
+
+    if run_all || args.rvisc {
+        generate_registry(&args.target_folder)?;
     }
 
     Ok(())

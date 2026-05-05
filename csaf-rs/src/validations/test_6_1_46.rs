@@ -9,20 +9,23 @@ fn create_invalid_ssvc_error(error_message: &str, vulnerability_index: usize, me
 }
 
 pub fn test_6_1_46_invalid_ssvc(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // /vulnerabilities[]/metrics[]/content/ssvc_v2
+    let mut errors: Option<Vec<ValidationError>> = None;
     for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
-                if m.get_content().has_ssvc() {
-                    m.get_content()
-                        .get_ssvc()
-                        .map_err(|e| vec![create_invalid_ssvc_error(&e.to_string(), i_v, i_m)])?;
+                let content = m.get_content();
+                if content.has_ssvc()
+                    && let Err(e) = content.get_ssvc()
+                {
+                    errors
+                        .get_or_insert_default()
+                        .push(create_invalid_ssvc_error(&e.to_string(), i_v, i_m));
                 }
             }
         }
     }
 
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_46, test_6_1_46_invalid_ssvc);
@@ -34,7 +37,11 @@ mod tests {
 
     #[test]
     fn test_test_6_1_46() {
-        // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
+        // Case 01: selections object is missing
+        // Case 02: key in selections object is missing
+        // Case 11: minimal valid ssvc
+        // Case 12: valid ssvc
+
         TESTS_2_1.test_6_1_46.expect(
             Err(vec![create_invalid_ssvc_error("missing field `selections`", 0, 0)]),
             Err(vec![create_invalid_ssvc_error("missing field `key`", 0, 0)]),

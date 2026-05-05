@@ -19,11 +19,11 @@ static REGISTRY_HASHMAP: LazyLock<HashMap<&'static str, Regex>> = LazyLock::new(
 });
 
 /// Looks up a rvisc entry by `system_name` and returns its pattern as a compiled `Regex`.
-pub fn lookup_regex(system_name: &str) -> Option<&'static Regex> {
+pub(crate) fn lookup_regex(system_name: &str) -> Option<&'static Regex> {
     REGISTRY_HASHMAP.get(system_name)
 }
 
 /// Checks if the given `system_name` is a known rvisc entry
-pub fn is_registered_id_system(system_name: &str) -> bool {
+pub(crate) fn is_registered_id_system(system_name: &str) -> bool {
     REGISTRY_HASHMAP.contains_key(system_name)
 }

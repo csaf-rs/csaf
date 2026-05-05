@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, VulnerabilityTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 /// 6.1.27.5 Vulnerability Notes
 ///
@@ -22,7 +22,7 @@ pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Ve
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_notes().is_none() {
             errors
-                .get_or_insert_with(Vec::new)
+                .get_or_insert_default()
                 .push(test_6_1_27_05_err_generator(&doc_category, &v_i));
         }
     }

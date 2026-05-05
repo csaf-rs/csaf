@@ -24,9 +24,12 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     let mut rev_history = doc.get_document().get_tracking().get_revision_history_tuples();
     rev_history.inplace_sort_by_date_then_number();
     // We can safely unwrap here because empty revision histories would not parse schema validation
-    let newest_rev_history_item_date = rev_history.last().unwrap();
+    let newest_rev_history_item_date = match rev_history.last() {
+        None => return Ok(()), // TODO #409 return a precondition failed here,
+        Some(x) => x,
+    };
     let Valid(current_release_date) = current_release_date else {
-        panic!();
+        return Ok(()); // TODO #409 return a precondition failed here
     };
     if current_release_date.get_as_utc() < newest_rev_history_item_date.date {
         return Err(vec![create_older_current_release_date_error(

@@ -26,26 +26,25 @@
   "product_tree": {
     "branches": [
       {
-        "category": "vendor",
-        "name": "Example Company",
         "branches": [
           {
-            "category": "product_name",
-            "name": "Product A",
             "branches": [
               {
                 "category": "product_version",
                 "name": "overall otter",
                 "product": {
-                  "product_id": "CSAFPID-9080700",
-                  "name": "Example Company Product A overall otter"
+                  "name": "Example Company Product A overall otter",
+                  "product_id": "CSAFPID-9080700"
                 }
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product A"
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Example Company"
       }
     ]
   }
 }
-

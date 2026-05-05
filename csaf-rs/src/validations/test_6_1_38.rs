@@ -5,7 +5,7 @@ use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::ValidationError;
 
 static NON_PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Document must be public (TLD CLEAR) when using max UUID as sharing group ID.".to_string(),
+    message: "Document must be public (TLP:CLEAR) when using max UUID as sharing group ID.".to_string(),
     instance_path: "/document/distribution/sharing_group/tlp/label".to_string(),
 });
 
@@ -61,7 +61,7 @@ mod tests {
             // Case 03: Max UUID with TLP:AMBER
             err.clone(),
             // Case 04: Max UUID with TLP:GREEN
-            err.clone(),
+            err,
             // Case 11: Regular UUID with TLP:RED
             Ok(()),
             // Case 12: Regular UUID with TLP:AMBER+STRICT, no name

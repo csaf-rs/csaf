@@ -27,7 +27,7 @@ pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Resu
                 && V_AS_VERSION_INDICATOR_REGEX.is_match(branch.get_name())
             {
                 errors
-                    .get_or_insert_with(Vec::new)
+                    .get_or_insert_default()
                     .push(create_v_version_indicator_error(branch.get_name(), path));
             }
         });

@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 /// 6.1.27.7 VEX Product Status
 ///
@@ -26,7 +26,7 @@ pub fn test_6_1_27_07_vex_product_status(doc: &impl CsafTrait) -> Result<(), Vec
                 || product_status.get_under_investigation().is_some())
         {
             errors
-                .get_or_insert_with(Vec::new)
+                .get_or_insert_default()
                 .push(test_6_1_27_07_err_generator(&doc_category, &v_i));
         }
     }

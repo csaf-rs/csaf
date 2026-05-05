@@ -1,6 +1,6 @@
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 
 pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let document = doc.get_document();
@@ -55,7 +55,7 @@ mod tests {
         let case_01_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/lang")]);
         let case_s01_source_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/source_lang")]);
         let case_s02_both_langs_invalid = Err(vec![
-            ez_error.clone().into_validation_error("/document/lang"),
+            ez_error.into_validation_error("/document/lang"),
             zzz_error.into_validation_error("/document/source_lang"),
         ]);
 

@@ -18,10 +18,10 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
     let mut product_metrics: ProductMap = HashMap::new();
     for (metric_index, metric) in metrics.unwrap().iter().enumerate() {
         let content = metric.get_content();
-        let present_metric_types = content.get_vulnerability_metric_types();
+        let present_metric_types = content.get_cvss_metric_types();
 
         for product_id in metric.get_products() {
-            for metric_type in present_metric_types.iter() {
+            for metric_type in &present_metric_types {
                 product_metrics
                     // First map: product id =>
                     .entry(product_id.to_owned())
@@ -40,18 +40,21 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
     Some(product_metrics)
 }
 
-/// Test 6.1.7: Check for multiple identical metric types per vulnerability.
+/// Test 6.1.7 Multiple Scores with Same Version per Product
+///
+/// For each item in `/vulnerabilities` it MUST be tested that the same Product ID
+/// is not a member of more than one CVSS vector with the same version and same source.
 pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         let product_metrics = gather_product_metrics(vulnerability, vulnerability_index);
         if let Some(product_metrics) = product_metrics {
-            for (p, metrics_map) in product_metrics.iter() {
-                for (m, metrics_map_2) in metrics_map.iter() {
-                    for (s, paths) in metrics_map_2.iter() {
+            for (p, metrics_map) in &product_metrics {
+                for (m, metrics_map_2) in metrics_map {
+                    for (s, paths) in metrics_map_2 {
                         if paths.len() > 1 {
                             for path in paths {
-                                errors.get_or_insert_with(Vec::new).push(create_validation_error(
+                                errors.get_or_insert_default().push(create_validation_error(
                                     m,
                                     p,
                                     path.to_owned(),

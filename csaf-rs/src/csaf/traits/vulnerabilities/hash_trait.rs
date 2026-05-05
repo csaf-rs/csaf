@@ -14,14 +14,18 @@ pub trait HashTrait {
     /// returns the file hashes
     fn get_file_hashes(&self) -> &Vec<Self::FileHashType>;
 
-    /// Returns true if only hashes with the specified algorithm are present
+    /// Returns true if only hashes with the specified algorithm are present.
+    /// The hash algorithms in the document are normalized.
+    /// The `algorithm` parameter is **NOT** normalized, as this is so far being run for known
+    /// algorithms, which are normalized by definition.
+    ///
+    /// TODO: This might change based on https://github.com/oasis-tcs/csaf/issues/1264
     fn contains_only_hash_algorithm(&self, algorithm: CsafHashAlgorithm) -> bool {
-        for hash in self.get_file_hashes() {
-            if hash.get_algorithm() != algorithm {
-                return false;
-            }
+        let file_hashes = self.get_file_hashes();
+        if file_hashes.is_empty() {
+            return false;
         }
-        true
+        file_hashes.iter().all(|h| h.get_algorithm().normalize() == algorithm)
     }
 }
 
@@ -46,5 +50,76 @@ impl HashTrait for CryptographicHashes21 {
 
     fn get_file_hashes(&self) -> &Vec<Self::FileHashType> {
         self.file_hashes.as_ref()
+    }
+}
+
+#[cfg(test)]
+mod tests_contains_only_hash_algorithm {
+    use super::*;
+    use CsafHashAlgorithm::*;
+    use rstest::rstest;
+
+    /// Mock implementing `FileHashTrait`
+    struct MockFileHash(CsafHashAlgorithm);
+
+    impl FileHashTrait for MockFileHash {
+        fn get_hash(&self) -> &String {
+            unimplemented!()
+        }
+        fn get_algorithm(&self) -> CsafHashAlgorithm {
+            self.0.clone()
+        }
+    }
+
+    /// Mock implementing `HashTrait`
+    struct MockCryptographicHashes {
+        file_hashes: Vec<MockFileHash>,
+    }
+
+    impl MockCryptographicHashes {
+        fn new(algos: &[CsafHashAlgorithm]) -> Self {
+            Self {
+                file_hashes: algos.iter().map(|a| MockFileHash(a.clone())).collect(),
+            }
+        }
+    }
+
+    impl HashTrait for MockCryptographicHashes {
+        type FileHashType = MockFileHash;
+
+        fn get_filename(&self) -> &String {
+            unimplemented!()
+        }
+
+        fn get_file_hashes(&self) -> &Vec<MockFileHash> {
+            &self.file_hashes
+        }
+    }
+
+    #[rstest]
+    // single element
+    #[case(&[Md5], Md5)]
+    #[case(&[Sha1], Sha1)]
+    // multiple identical
+    #[case(&[Md5, Md5], Md5)]
+    #[case(&[Sha1, Sha1, Sha1], Sha1)]
+    fn returns_true(#[case] algos: &[CsafHashAlgorithm], #[case] expected: CsafHashAlgorithm) {
+        let mock = MockCryptographicHashes::new(algos);
+        assert!(mock.contains_only_hash_algorithm(expected));
+    }
+
+    #[rstest]
+    // empty
+    #[case(&[], Md5)]
+    // single element
+    #[case(&[Md5], Sha1)]
+    // mixed algorithms
+    #[case(&[Md5, Sha256], Md5)]
+    #[case(&[Md5, Sha1, Sha256], Sha1)]
+    // algorithm not used at all
+    #[case(&[Md5, Sha256], Sha1)]
+    fn returns_false(#[case] algos: &[CsafHashAlgorithm], #[case] expected: CsafHashAlgorithm) {
+        let mock = MockCryptographicHashes::new(algos);
+        assert!(!mock.contains_only_hash_algorithm(expected));
     }
 }

@@ -68,9 +68,9 @@ mod tests {
             // Case 02: NIL UUID without name
             nil_uuid_err.clone(),
             // Case 03: Max UUID with wrong name
-            max_uuid_err.clone(),
+            max_uuid_err,
             // Case 04: Nil UUID with wrong name
-            nil_uuid_err.clone(),
+            nil_uuid_err,
             // Case 11: Max UUID with correct name "Public"
             Ok(()),
             // Case 12: Nil UUID with correct name "No sharing allowed"

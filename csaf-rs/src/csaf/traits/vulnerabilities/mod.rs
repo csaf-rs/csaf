@@ -1,4 +1,5 @@
 pub mod content_trait;
+pub mod epss_trait;
 pub mod file_hash_trait;
 pub mod first_known_exploit_date_trait;
 pub mod flag_trait;

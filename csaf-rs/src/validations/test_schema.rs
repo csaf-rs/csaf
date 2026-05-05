@@ -5,12 +5,17 @@ use serde_json::Value;
 
 use crate::{
     csaf::raw::RawDocument,
-    helpers::{
-        CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA, CVSS_V3_0_SCHEMA_URL,
-        CVSS_V3_1_SCHEMA, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA, CVSS_V4_0_2_SCHEMA_URL, EXTENSION_METASCHEMA,
-        EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA, SSVC_2_SCHEMA_URL,
-    },
     validation::ValidationError,
+    validations::utils::{
+        validation_schema_urls::{
+            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA_URL,
+            EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA_URL,
+        },
+        validation_schemas::{
+            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_2_SCHEMA,
+            EXTENSION_METASCHEMA, EXTENSION_SCHEMA, SSVC_2_SCHEMA,
+        },
+    },
 };
 
 fn use_draft_schema(mut schema_value: Value) -> Value {
@@ -56,7 +61,7 @@ static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
 
 fn create_schema_error(err: String, path: &str) -> ValidationError {
     ValidationError {
-        message: err.to_string(),
+        message: err,
         instance_path: match path.len() {
             0 => "/".to_string(),
             _ => path.to_string(),
@@ -142,11 +147,11 @@ mod tests {
         )]);
 
         // checks for CSAF 2.0
-        check_file!(2, 0, "s01", &VALIDATOR_2_0, min_properties.clone());
-        check_file!(2, 0, "s02", &VALIDATOR_2_0, pattern.clone());
-        check_file!(2, 0, "s03", &VALIDATOR_2_0, min_items.clone());
-        check_file!(2, 0, "s04", &VALIDATOR_2_0, min_length.clone());
-        check_file!(2, 0, "s05", &VALIDATOR_2_0, non_unique.clone());
+        check_file!(2, 0, "s01", &VALIDATOR_2_0, min_properties);
+        check_file!(2, 0, "s02", &VALIDATOR_2_0, pattern);
+        check_file!(2, 0, "s03", &VALIDATOR_2_0, min_items);
+        check_file!(2, 0, "s04", &VALIDATOR_2_0, min_length);
+        check_file!(2, 0, "s05", &VALIDATOR_2_0, non_unique);
 
         // checks for CSAF 2.1
         check_file!(2, 1, "s01", &VALIDATOR_2_1, min_properties);

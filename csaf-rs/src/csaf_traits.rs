@@ -1,5 +1,9 @@
+pub use crate::csaf::aggregation::product_status::ProductStatusAndPath;
+pub use crate::csaf::aggregation::product_status::product_groups_by_id_map::ProductGroupsByIdMap;
+pub use crate::csaf::aggregation::product_status::product_status_group_map::ProductStatusGroupMap;
 pub use crate::csaf::enums::category_of_the_branch::CategoryOfTheBranch;
 pub use crate::csaf::enums::csaf_version::CsafVersion;
+pub use crate::csaf::enums::product_status::ProductStatus;
 pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
 pub use crate::csaf::traits::csaf_trait::CsafTrait;
 pub use crate::csaf::traits::document::distribution_trait::DistributionTrait;
@@ -21,7 +25,9 @@ pub use crate::csaf::traits::shared::note_trait::NoteTrait;
 pub use crate::csaf::traits::util::generic_with::{
     WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
+pub use crate::csaf::traits::util::resolve_product_groups::resolve_product_groups;
 pub use crate::csaf::traits::vulnerabilities::content_trait::ContentTrait;
+pub use crate::csaf::traits::vulnerabilities::epss_trait::EpssTrait;
 pub use crate::csaf::traits::vulnerabilities::file_hash_trait::FileHashTrait;
 pub use crate::csaf::traits::vulnerabilities::first_known_exploit_date_trait::FirstKnownExploitationDatesTrait;
 pub use crate::csaf::traits::vulnerabilities::flag_trait::FlagTrait;

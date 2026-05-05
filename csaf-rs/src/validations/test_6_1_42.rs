@@ -1,7 +1,7 @@
+use crate::csaf::types::purl::csaf_purl::CsafPurl::{Invalid, Valid};
 use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
-use packageurl::PackageUrl;
-use std::str::FromStr;
+use std::collections::HashMap;
 
 fn create_purl_consistency_error(path: &str, index: usize) -> ValidationError {
     ValidationError {
@@ -25,31 +25,44 @@ pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<Vali
                     return;
                 }
 
-                let mut base: Option<String> = None;
+                let mut bases_map: Option<HashMap<String, Vec<usize>>> = None;
 
-                for (i, purl_str) in purls.iter().enumerate() {
-                    // Parse the PURL
-                    let mut purl = match PackageUrl::from_str(purl_str) {
-                        Ok(p) => p,
-                        Err(_) => {
-                            // ToDo create percondition failed warning
+                for (i, purl) in purls.into_iter().enumerate() {
+                    // check purl validation result
+                    match purl {
+                        Valid(p) => {
+                            bases_map
+                                // create hashmap if it does not exist
+                                .get_or_insert_default()
+                                // create entry for base if it does not exist
+                                .entry(p.base_without_qualifiers().to_owned())
+                                // create vec if it does not exist
+                                .or_default()
+                                // push path index into vec
+                                .push(i);
+                        },
+                        Invalid(_) => {
+                            // ToDo #409 create precondition failed warning
                             continue;
                         },
                     };
+                }
 
-                    // Strip qualifiers
-                    let current_value = purl.clear_qualifiers().to_string();
+                // if there were any valid purls
+                if let Some(bases) = bases_map {
+                    // Collect values and sort by length descending
+                    let mut sorted_values: Vec<Vec<usize>> = bases.into_values().collect();
+                    // Sort by group size descending, then by first index ascending for determinism
+                    sorted_values.sort_by(|a, b| b.len().cmp(&a.len()).then_with(|| a[0].cmp(&b[0])));
 
-                    if let Some(ref base_value) = base {
-                        // Must always match
-                        if current_value != *base_value {
+                    // If there is more than one group, the PURLs differ in more than qualifiers.
+                    // Skip the first (largest) group and report errors for all indices in the remaining groups.
+                    for group in sorted_values.iter().skip(1) {
+                        for &i in group {
                             errors
-                                .get_or_insert_with(Vec::new)
+                                .get_or_insert_default()
                                 .push(create_purl_consistency_error(path, i));
                         }
-                    } else {
-                        // The first PURL becomes the base for comparison
-                        base = Some(current_value);
                     }
                 }
             }
@@ -76,6 +89,10 @@ mod tests {
             Err(vec![create_purl_consistency_error(
                 "/product_tree/branches/0/branches/0/branches/0/product",
                 2,
+            )]),
+            Err(vec![create_purl_consistency_error(
+                "/product_tree/full_product_names/0",
+                1,
             )]),
             Ok(()),
             Ok(()),

@@ -23,7 +23,7 @@ git submodule init
 git submodule update --remote
 
 # make sure that local assets are in sync with git submodules
-./update_assets.sh
+./scripts/update/update_assets.sh
 
 # run the tests
 cargo test
@@ -160,7 +160,7 @@ csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
 | 6.1.52 | :o:                |                    |
 | 6.1.53 | :o:                | :white_check_mark: |
 | 6.1.54 | :o:                | :white_check_mark: |
-| 6.1.55 | :o:                |                    |
+| 6.1.55 | :o:                | :white_check_mark: |
 | 6.1.56 | :o:                | :white_check_mark: |
 | 6.1.57 | :o:                | :white_check_mark: |
 | 6.1.58 | :o:                | :white_check_mark: |

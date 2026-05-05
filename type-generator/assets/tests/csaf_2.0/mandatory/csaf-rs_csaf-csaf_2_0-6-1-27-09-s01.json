@@ -2,7 +2,7 @@
   "document": {
     "category": "csaf_vex",
     "csaf_version": "2.0",
-   "publisher": {
+    "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
@@ -26,16 +26,16 @@
   "product_tree": {
     "full_product_names": [
       {
-        "product_id": "CSAFPID-9080700",
-        "name": "Product A"
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
       },
       {
-        "product_id": "CSAFPID-9080701",
-        "name": "Product B"
+        "name": "Product B",
+        "product_id": "CSAFPID-9080701"
       },
       {
-        "product_id": "CSAFPID-9080702",
-        "name": "Product C"
+        "name": "Product C",
+        "product_id": "CSAFPID-9080702"
       }
     ]
   },
@@ -47,7 +47,7 @@
           "label": "vulnerable_code_not_present",
           "product_ids": [
             "CSAFPID-9080700",
-             "CSAFPID-9080701"
+            "CSAFPID-9080701"
           ]
         }
       ],

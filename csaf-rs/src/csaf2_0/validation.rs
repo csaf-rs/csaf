@@ -128,8 +128,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.5" => Some(ValidatorForTest6_2_5.validate(self)),
                 "6.2.6" => Some(ValidatorForTest6_2_6.validate(self)),
                 "6.2.7" => Some(ValidatorForTest6_2_7.validate(self)),
-                "6.2.8" => None, // Some(ValidatorForTest6_2_8.validate(self)),
-                "6.2.9" => None, // Some(ValidatorForTest6_2_9.validate(self)),
+                "6.2.8" => Some(ValidatorForTest6_2_8.validate(self)),
+                "6.2.9" => Some(ValidatorForTest6_2_9.validate(self)),
                 "6.2.10" => Some(ValidatorForTest6_2_10.validate(self)),
                 "6.2.11" => Some(ValidatorForTest6_2_11.validate(self)),
                 "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
@@ -140,7 +140,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                         status: TestResultStatus::Skipped,
                     };
                 },
-                "6.2.14" => None, // Some(ValidatorForTest6_2_14.validate(self)),
+                "6.2.14" => Some(ValidatorForTest6_2_14.validate(self)),
                 "6.2.15" => Some(ValidatorForTest6_2_15.validate(self)),
                 "6.2.16" => Some(ValidatorForTest6_2_16.validate(self)),
                 "6.2.17" => Some(ValidatorForTest6_2_17.validate(self)),
@@ -166,7 +166,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             match test_id {
                 // informative tests
                 "6.3.1" => Some(ValidatorForTest6_3_1.validate(self)),
-                "6.3.2" => None, // Some(ValidatorForTest6_3_2.validate(self)),
+                "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
                 "6.3.3" => Some(ValidatorForTest6_3_3.validate(self)),
                 "6.3.4" => Some(ValidatorForTest6_3_4.validate(self)),
                 "6.3.5" => Some(ValidatorForTest6_3_5.validate(self)),

@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
-use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_0::schema::Score;
 use crate::schema::csaf2_1::schema::{Content, Epss, QualitativeSeverityRating};
 use serde::de::Error as SerdeError;
 use serde_json::{Map, Value};
+use ssvc::selection_list::SelectionList;
 
 /// Helper function to extract the version string from a CVSS JSON object.
 /// TODO: This will be replaced after the CVSS implementation (probably?)
@@ -13,11 +13,9 @@ fn get_cvss_version(cvss: &Map<String, Value>) -> Option<String> {
 
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
-    fn get_vulnerability_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
+    /// Returns all CVSS metric types present.
+    fn get_cvss_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
         let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
-        if self.has_ssvc() {
-            types.push(CsafVulnerabilityMetric::SsvcV1);
-        }
         if let Some(version) = self.get_cvss_v2().and_then(get_cvss_version) {
             types.push(CsafVulnerabilityMetric::CvssV2(version));
         }
@@ -27,8 +25,20 @@ pub trait ContentTrait {
         if let Some(version) = self.get_cvss_v4().and_then(get_cvss_version) {
             types.push(CsafVulnerabilityMetric::CvssV4(version));
         }
+        types
+    }
+
+    /// Returns all metric types present.
+    fn get_vulnerability_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
+        let mut types: Vec<CsafVulnerabilityMetric> = self.get_cvss_metric_types();
+        if self.has_ssvc() {
+            types.push(CsafVulnerabilityMetric::SsvcV1);
+        }
         if self.has_epss() {
             types.push(CsafVulnerabilityMetric::Epss);
+        }
+        if self.has_qualitative_severity() {
+            types.push(CsafVulnerabilityMetric::QualitativeSeverityRating);
         }
         types
     }
@@ -62,6 +72,11 @@ pub trait ContentTrait {
     /// Returns whether this content contains a CVSS 4.0 metric.
     fn has_cvss_v4(&self) -> bool {
         self.get_cvss_v4().is_some()
+    }
+
+    /// Returns whether this content contains any CVSS metric (v2, v3, or v4).
+    fn has_any_cvss(&self) -> bool {
+        self.has_cvss_v2() || self.has_cvss_v3() || self.has_cvss_v4()
     }
 
     /// Returns a reference to the contained EPSS metric if it exists.

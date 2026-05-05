@@ -1,5 +1,7 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf_traits::{CsafTrait, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds};
+use crate::csaf_traits::{
+    CsafTrait, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds, resolve_product_groups,
+};
 use crate::schema::csaf2_0::schema::{
     CategoryOfTheRemediation as CategoryOfTheRemediation20, Remediation as Remediation20,
 };
@@ -34,11 +36,11 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + With
             None
         } else {
             let mut product_set: BTreeSet<String> = match self.get_product_ids() {
-                Some(product_ids) => product_ids.map(|id| (*id).to_owned()).collect(),
+                Some(product_ids) => product_ids.cloned().collect(),
                 None => BTreeSet::new(),
             };
             if let Some(product_groups) = self.get_group_ids()
-                && let Some(product_ids) = crate::helpers::resolve_product_groups(doc, product_groups)
+                && let Some(product_ids) = resolve_product_groups(doc, product_groups)
             {
                 product_set.extend(product_ids.iter().map(|id| id.to_owned()));
             }

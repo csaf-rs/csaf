@@ -1,12 +1,12 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf_traits::resolve_product_groups;
 use crate::csaf_traits::{
     CsafTrait, DocumentTrait, ProductStatusTrait, ThreatTrait, VulnerabilityTrait, WithOptionalGroupIds,
     WithOptionalProductIds,
 };
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
-use crate::helpers::resolve_product_groups;
 use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 use std::collections::{HashMap, HashSet};
 
 /// 6.1.27.9 Impact Statement
@@ -48,49 +48,41 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
             vulnerability
                 .get_flags_group_references()
                 .iter()
-                .map(|(group_id, _)| group_id.to_owned())
-                .collect::<Vec<String>>(),
+                .map(|(group_id, _)| group_id.to_owned()),
         );
         found_product_ids.extend(
             vulnerability
                 .get_flags_product_references()
                 .iter()
-                .map(|(product_id, _)| product_id.to_owned())
-                .collect::<Vec<String>>(),
+                .map(|(product_id, _)| product_id.to_owned()),
         );
 
         // gather from threats with category impact
-        for threat in vulnerability.get_threats().iter() {
+        for threat in vulnerability.get_threats() {
             if threat.get_category() == CategoryOfTheThreat::Impact {
                 if let Some(group_ids) = threat.get_group_ids() {
-                    found_group_ids.extend(group_ids.map(|group_id| group_id.to_owned()).collect::<Vec<String>>());
+                    found_group_ids.extend(group_ids.map(|group_id| group_id.to_owned()));
                 }
                 if let Some(product_ids) = threat.get_product_ids() {
-                    found_product_ids.extend(
-                        product_ids
-                            .map(|product_id| product_id.to_owned())
-                            .collect::<Vec<String>>(),
-                    );
+                    found_product_ids.extend(product_ids.map(|product_id| product_id.to_owned()));
                 }
             }
         }
 
         // merge the resolved product ids from group ids into the directly found product ids
-        if let Some(resolved_product_ids) =
-            resolve_product_groups(doc, &found_group_ids.into_iter().collect::<Vec<_>>())
-        {
+        if let Some(resolved_product_ids) = resolve_product_groups(doc, &found_group_ids) {
             found_product_ids.extend(resolved_product_ids.iter().map(|product_id| product_id.to_owned()));
         }
 
         // remove all found product ids from known_not_affected_product_or_group_ids
-        for product_id in found_product_ids.iter() {
+        for product_id in &found_product_ids {
             known_not_affected_product_or_group_ids.remove(product_id);
         }
 
         // generate errors for all remaining known_not_affected product or group ids
-        for known_not_affected_group_id in known_not_affected_product_or_group_ids.iter() {
-            errors.get_or_insert_with(Vec::new).push(test_6_1_27_09_err_generator(
-                known_not_affected_group_id.0.to_string(),
+        for known_not_affected_group_id in &known_not_affected_product_or_group_ids {
+            errors.get_or_insert_default().push(test_6_1_27_09_err_generator(
+                known_not_affected_group_id.0.clone(),
                 v_i,
                 *known_not_affected_group_id.1,
             ));

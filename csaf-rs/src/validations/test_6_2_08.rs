@@ -16,7 +16,7 @@ pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<
                 for (h_i, hash) in helper.get_hashes().iter().enumerate() {
                     if hash.contains_only_hash_algorithm(CsafHashAlgorithm::Md5) {
                         errors
-                            .get_or_insert_with(Vec::new)
+                            .get_or_insert_default()
                             .push(create_md5_only_hash_error(path, h_i));
                     }
                 }
@@ -49,10 +49,19 @@ mod tests {
             0,
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0
+        // Case 01: one md5 hash
+        // Case 02: two md5 hashes
+        // Case S01: (CSAF 2.0 only) two md5 hashes one with non-default casing
+        // Case S11: two file hashes, one with md5
+
+        TESTS_2_0.test_6_2_8.expect(
+            case_01_and_02.clone(),
+            case_01_and_02.clone(),
+            case_01_and_02.clone(),
+            Ok(()),
+        );
+        TESTS_2_1
             .test_6_2_8
-            .expect(case_01_and_02.clone(), case_01_and_02.clone());
-        TESTS_2_1.test_6_2_8.expect(case_01_and_02.clone(), case_01_and_02);
+            .expect(case_01_and_02.clone(), case_01_and_02, Ok(()));
     }
 }

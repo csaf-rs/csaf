@@ -10,9 +10,12 @@ pub type ProductCsafVulnerabilityMetricMap = HashMap<CsafVulnerabilityMetric, Pr
 /// Maps a source (None for CSAF 2.0 or if None is provided) to a list of JSON paths.
 pub type ProductCsafVulnerabilityMetricSourceMap = HashMap<Option<String>, Vec<String>>;
 
-/// Gather all cvss metric entries for a vulnerability into a nested map keyed by
+/// Gather all CVSS metric entries for a vulnerability into a nested map keyed by
 /// product id → metric type → source → JSON paths.
-/// More details can be found in [ProductMetricMap], [ProductCsafVulnerabilityMetricMap] and [ProductCsafVulnerabilityMetricSourceMap]
+///
+/// More details can be found in [`ProductMetricMap`], [`ProductCsafVulnerabilityMetricMap`] and [`ProductCsafVulnerabilityMetricSourceMap`].
+///
+/// Returns `Some(ProductMetricMap)` if the vulnerability contained any CVSS scores, `None` if not.
 pub fn aggregate_product_cvss_metrics(
     vulnerability: &impl VulnerabilityTrait,
     vulnerability_index: usize,
@@ -20,14 +23,15 @@ pub fn aggregate_product_cvss_metrics(
     // return None if there are no metrics
     let metrics = vulnerability.get_metrics()?;
 
-    let mut product_metrics: ProductMetricMap = HashMap::new();
+    let mut product_metrics: Option<ProductMetricMap> = None;
     for (metric_index, metric) in metrics.iter().enumerate() {
         let content = metric.get_content();
         let metric_json_path = content.get_content_json_path(vulnerability_index, metric_index);
-        let present_metric_types = content.get_cvss_metric_types();
+        let present_cvss_metric_types = content.get_cvss_metric_types();
         for product_id in metric.get_products() {
-            for metric_type in &present_metric_types {
+            for metric_type in &present_cvss_metric_types {
                 product_metrics
+                    .get_or_insert_default()
                     .entry(product_id.to_owned())
                     .or_default()
                     .entry(metric_type.to_owned())
@@ -38,5 +42,5 @@ pub fn aggregate_product_cvss_metrics(
             }
         }
     }
-    Some(product_metrics)
+    product_metrics
 }

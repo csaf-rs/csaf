@@ -151,8 +151,8 @@ impl PartialEq for CsafVersionNumber {
             (CsafVersionNumber::IntVer(a), CsafVersionNumber::IntVer(b)) => a == b,
             (CsafVersionNumber::SemVer(a), CsafVersionNumber::SemVer(b)) => a == b,
             // Integer and Semver are always unequal
-            (CsafVersionNumber::IntVer(_), CsafVersionNumber::SemVer(_)) => false,
-            (CsafVersionNumber::SemVer(_), CsafVersionNumber::IntVer(_)) => false,
+            (CsafVersionNumber::IntVer(_), CsafVersionNumber::SemVer(_))
+            | (CsafVersionNumber::SemVer(_), CsafVersionNumber::IntVer(_)) => false,
         }
     }
 }

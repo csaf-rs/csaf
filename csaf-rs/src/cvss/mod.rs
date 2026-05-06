@@ -306,12 +306,12 @@ pub fn create_field_missing_in_object_error<T: std::fmt::Display>(
 /// TODO: This is really hacky and should be cleanly implemented in cvss-rs.
 /// Alternative to this, we can add a shared IsUndefined Trait to all metrics, but I considered that
 /// overly bloated.
-pub fn is_not_defined(val: &impl std::fmt::Debug) -> bool {
+fn is_not_defined(val: &impl std::fmt::Debug) -> bool {
     format!("{val:?}") == "NotDefined"
 }
 
-/// Returns true if a score is 0.0
-pub fn is_zero_score(actual: f64) -> bool {
+/// Returns true if a score is 0.0 after rounding to one decimal place (rounds via integer scaling)
+pub(crate) fn is_zero_score(actual: f64) -> bool {
     (actual * 10.0).round() as i8 == 0
 }
 

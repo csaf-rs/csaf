@@ -33,7 +33,7 @@ jobs:
 
       - name: Regenerate types from schema
         working-directory: type-generator
-        run: cargo run --locked -- --schema --test-schema --validation-schemas --rvisc
+        run: cargo run --locked -- --schema --test-schema --validation-schemas --rvisc --translations
 
       - name: Run cargo check (for .rs file re-generation)
         run: cargo check --locked

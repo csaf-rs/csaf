@@ -51,7 +51,7 @@ while IFS= read -r file; do
   else
     ((++WELL_FORMATTED))
   fi
-done < <(find . \( -name 'target' -o -path './.git' -o -path './csaf' -o -path './ssvc' -o -path './csaf-rs/assets' -o -path './.vscode' -o -path './scripts' \) -prune -o -name '*.json' -not -name '*testcases_json_schema.json' -not -name '*json_schema.json' -print)
+done < <(find . \( -name 'target' -o -path './.git' -o -path './csaf' -o -path './ssvc' -o -path './csaf-rs/assets' -o -path './.vscode' -o -path './scripts' -o -path './type-generator/assets/rvisc' -o -path './type-generator/assets/language_specific_translations' \) -prune -o -name '*.json' -not -name '*testcases_json_schema.json' -not -name '*json_schema.json' -print)
 
 echo ""
 if [ "$FIX" -eq 1 ]; then

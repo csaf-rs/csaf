@@ -43,7 +43,7 @@ Only create the RVISC types from the RVISC registry file
 cargo run -- --rvisc
 ```
 
-Only create the language specific translation lookup from the translations file
+Only create the per-term language specific translation lookups from the translations file
 ```
 cargo run -- --translations
 ```

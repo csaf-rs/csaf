@@ -17,7 +17,8 @@ These files are used to generate the RVISC registry types in `csaf-rs` via `carg
 
 - `language_specific_translations/translations.json`
 
-These files are used to generate the language specific translation types in `csaf-rs` via `cargo run -- --translations`.
+These files are used to generate the per-term language specific translation lookups
+(`csaf-rs/src/validations/utils/language_specific_translations/generated.rs`) via `cargo run -- --translations`.
 
 ### CSAF Schemas
 

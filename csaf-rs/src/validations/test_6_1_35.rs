@@ -58,12 +58,12 @@ fn format_contradiction_categories<'a>(
         .join(", ")
 }
 
-pub fn check_exclusive_categories_contradiction(
+fn check_exclusive_categories_contradiction(
     map: &ProductIdRemediationCategoriesMap,
     vuln_index: usize,
     errors: &mut Option<Vec<ValidationError>>,
 ) {
-    for (product_id, category_map) in map.iter() {
+    for (product_id, category_map) in map {
         for ex_state in EX_STATES {
             if let Some(remediation_indices) = category_map.get(ex_state)
                 && category_map.len() > 1
@@ -79,19 +79,19 @@ pub fn check_exclusive_categories_contradiction(
                             contradiction_categories.clone(),
                             vuln_index,
                             *remediation_index,
-                        ))
+                        ));
                 }
             }
         }
     }
 }
 
-pub fn check_mutually_exclusive_category_contradiction(
+fn check_mutually_exclusive_category_contradiction(
     map: &ProductIdRemediationCategoriesMap,
     vuln_index: usize,
     errors: &mut Option<Vec<ValidationError>>,
 ) {
-    for (product_id, category_map) in map.iter() {
+    for (product_id, category_map) in map {
         let mut_ex = category_map
             .iter()
             .filter(|entry| MUT_EX_STATES.contains(entry.0))
@@ -110,7 +110,7 @@ pub fn check_mutually_exclusive_category_contradiction(
                             contradiction_categories.clone(),
                             vuln_index,
                             *remediation_index,
-                        ))
+                        ));
                 }
             }
         }
@@ -123,12 +123,15 @@ pub fn check_mutually_exclusive_category_contradiction(
 /// is not member of contradicting remediation categories.
 /// This takes indirect relations through product groups into account.
 pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    // TODO #409 early return + no data
+    let vulnerabilities = doc.get_vulnerabilities();
+    if vulnerabilities.is_empty() {
+        return Ok(()); // TODO #409 this will be noData after refactor
+    }
     let mut errors: Option<Vec<ValidationError>> = None;
-    for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
-        let product_id_remedation_map = ProductIdRemediationCategoriesMap::aggregate(doc, v);
-        check_exclusive_categories_contradiction(&product_id_remedation_map, v_i, &mut errors);
-        check_mutually_exclusive_category_contradiction(&product_id_remedation_map, v_i, &mut errors);
+    for (v_i, v) in vulnerabilities.iter().enumerate() {
+        let product_id_remediation_map = ProductIdRemediationCategoriesMap::aggregate(doc, v);
+        check_exclusive_categories_contradiction(&product_id_remediation_map, v_i, &mut errors);
+        check_mutually_exclusive_category_contradiction(&product_id_remediation_map, v_i, &mut errors);
     }
     errors.map_or(Ok(()), Err)
 }

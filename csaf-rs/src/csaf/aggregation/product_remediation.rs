@@ -17,8 +17,8 @@ impl ProductIdRemediationCategoriesMap {
             };
 
             // fill the map
-            for product_id in product_ids {
-                map.entry(product_id.clone())
+            for product_id in product_ids.into_iter() {
+                map.entry(product_id)
                     .or_default()
                     .entry(remediation.get_category())
                     .or_default()
@@ -29,10 +29,11 @@ impl ProductIdRemediationCategoriesMap {
     }
 }
 
-impl std::ops::Deref for ProductIdRemediationCategoriesMap {
-    type Target = BTreeMap<String, BTreeMap<CategoryOfTheRemediation, Vec<usize>>>;
+impl<'a> IntoIterator for &'a ProductIdRemediationCategoriesMap {
+    type Item = (&'a String, &'a BTreeMap<CategoryOfTheRemediation, Vec<usize>>);
+    type IntoIter = std::collections::btree_map::Iter<'a, String, BTreeMap<CategoryOfTheRemediation, Vec<usize>>>;
 
-    fn deref(&self) -> &Self::Target {
-        &self.0
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
     }
 }

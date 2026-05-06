@@ -33,7 +33,7 @@ impl Display for ExclusivityKind {
 
 fn generate_category_contradiction_error(
     product_id: &str,
-    kind: ExclusivityKind,
+    exclusivity_kind: ExclusivityKind,
     exclusive_category: CategoryOfTheRemediation,
     contradiction_categories: String,
     vulnerability_index: usize,
@@ -41,7 +41,7 @@ fn generate_category_contradiction_error(
 ) -> ValidationError {
     ValidationError {
         message: format!(
-            "Product {product_id} has {kind} remediation category '{exclusive_category}', but also {contradiction_categories}",
+            "Product {product_id} has {exclusivity_kind} remediation category '{exclusive_category}', but also '{contradiction_categories}'",
         ),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/remediations/{remediation_index}"),
     }

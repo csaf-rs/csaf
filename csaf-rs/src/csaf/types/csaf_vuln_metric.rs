@@ -30,9 +30,7 @@ impl Display for CsafVulnerabilityMetric {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             CsafVulnerabilityMetric::SsvcV1 => write!(f, "SSVC-v1"),
-            CsafVulnerabilityMetric::CvssV2(version) => write!(f, "CVSS-v{}", *version),
-            CsafVulnerabilityMetric::CvssV3(version) => write!(f, "CVSS-v{}", *version),
-            CsafVulnerabilityMetric::CvssV4(version) => write!(f, "CVSS-v{}", *version),
+            CsafVulnerabilityMetric::CvssV2(version) | CsafVulnerabilityMetric::CvssV3(version) | CsafVulnerabilityMetric::CvssV4(version) => write!(f, "CVSS-v{}", *version),
             CsafVulnerabilityMetric::Epss => write!(f, "EPSS"),
             CsafVulnerabilityMetric::QualitativeSeverityRating => write!(f, "Qualitative Severity Rating"),
         }

@@ -1,3 +1,5 @@
+#![allow(clippy::match_same_arms)]
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;

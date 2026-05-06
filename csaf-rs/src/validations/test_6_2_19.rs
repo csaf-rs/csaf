@@ -18,7 +18,7 @@ fn create_cvss_for_fixed_products_error(
     let status_list: Vec<String> = statuses.iter().map(|s| s.status.to_string()).collect();
     ValidationError {
         message: format!(
-            "Product '{}' is listed as fixed (status: '{}') has a CVSS environmental score that is not 0.0",
+            "Product '{}' is listed as fixed (status(es): '{}') but has a CVSS environmental score that is not 0.0",
             product_id,
             status_list.join(", ")
         ),

@@ -84,8 +84,8 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
             for (i_m, metric) in metrics.iter().enumerate() {
-                if metric.get_content().has_ssvc() {
-                    match metric.get_content().get_ssvc() {
+                if metric.get_content().has_ssvc_v2() {
+                    match metric.get_content().get_ssvc_v2() {
                         Ok(ssvc) => {
                             if ssvc.timestamp.fixed_offset() > newest_revision_date {
                                 return Err(vec![create_ssvc_timestamp_too_late_error(

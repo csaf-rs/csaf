@@ -1,25 +1,65 @@
+use std::sync::LazyLock;
+
+use jsonschema::Validator;
+
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
+use crate::validations::utils::validation_schemas::SSVC_2_SCHEMA;
 
-fn create_invalid_ssvc_error(error_message: &str, vulnerability_index: usize, metric_index: usize) -> ValidationError {
+static SSVC_VALIDATOR: LazyLock<Validator> = LazyLock::new(|| jsonschema::draft202012::new(&SSVC_2_SCHEMA).unwrap());
+
+fn create_invalid_ssvc_error(
+    error_message: &str,
+    error_path: &str,
+    vulnerability_index: usize,
+    metric_index: usize,
+) -> ValidationError {
+    let path_info = if error_path.is_empty() {
+        String::new()
+    } else {
+        format!(" at {error_path}")
+    };
     ValidationError {
-        message: format!("Invalid SSVC object: {error_message}"),
+        message: format!("Invalid SSVC object{path_info}: {error_message}"),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/metrics/{metric_index}/content/ssvc_v2"),
     }
 }
 
+/// 6.1.46 Invalid SSVC
+///
+/// It MUST be tested that the given SSVC object is valid according to the referenced schema.
 pub fn test_6_1_46_invalid_ssvc(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
+    // look for ssvc_v2 metrics in all vulnerabilities and metrics
     for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
                 let content = m.get_content();
-                if content.has_ssvc()
-                    && let Err(e) = content.get_ssvc()
-                {
-                    errors
-                        .get_or_insert_default()
-                        .push(create_invalid_ssvc_error(&e.to_string(), i_v, i_m));
+                // if there is a ssvc_v2 metric
+                if let Some(ssvc) = content.get_ssvc_v2_raw() {
+                    // This should always be Ok(), as we are passing a serde_json map to serde_json::to_value
+                    // This might change if the type of ssvc changes (exp. due to lenient parsing)
+                    let value = match serde_json::to_value(ssvc) {
+                        Ok(v) => v,
+                        Err(e) => {
+                            errors.get_or_insert_default().push(create_invalid_ssvc_error(
+                                &e.to_string(),
+                                "",
+                                i_v,
+                                i_m,
+                            ));
+                            continue;
+                        },
+                    };
+                    // schema validation
+                    for error in SSVC_VALIDATOR.iter_errors(&value) {
+                        errors.get_or_insert_default().push(create_invalid_ssvc_error(
+                            &error.to_string(),
+                            error.instance_path().as_str(),
+                            i_v,
+                            i_m,
+                        ));
+                    }
                 }
             }
         }
@@ -43,8 +83,16 @@ mod tests {
         // Case 12: valid ssvc
 
         TESTS_2_1.test_6_1_46.expect(
-            Err(vec![create_invalid_ssvc_error("missing field `selections`", 0, 0)]),
-            Err(vec![create_invalid_ssvc_error("missing field `key`", 0, 0)]),
+            Err(vec![create_invalid_ssvc_error(
+                "\"selections\" is a required property",
+                "",
+                0,
+                0,
+            )]),
+            Err(vec![
+                create_invalid_ssvc_error("\"key\" is a required property", "/selections/0", 0, 0),
+                create_invalid_ssvc_error("\"key\" is a required property", "/selections/0/values/0", 0, 0),
+            ]),
             Ok(()),
             Ok(()),
         );

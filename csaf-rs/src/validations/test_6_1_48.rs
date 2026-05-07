@@ -26,8 +26,8 @@ fn test_6_1_48_ssvc_decision_points_internal(
     for (i_v, v) in vulnerabilities.iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
-                if m.get_content().has_ssvc() {
-                    match m.get_content().get_ssvc() {
+                if m.get_content().has_ssvc_v2() {
+                    match m.get_content().get_ssvc_v2() {
                         Ok(ssvc) => {
                             if let Err(ssvc_errors) = validation_fn(&ssvc) {
                                 let validation_errors: Vec<ValidationError> = ssvc_errors

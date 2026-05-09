@@ -1,4 +1,4 @@
-File-Date: 2026-04-21
+File-Date: 2026-05-05
 %%
 Type: language
 Subtag: aa
@@ -387,6 +387,7 @@ Added: 2005-10-16
 %%
 Type: language
 Subtag: ia
+Description: Interlingua (IALA)
 Description: Interlingua (International Auxiliary Language
   Association)
 Added: 2005-10-16
@@ -9315,7 +9316,7 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: den
-Description: Slave (Athapascan)
+Description: Slavey
 Added: 2005-10-16
 Scope: macrolanguage
 %%
@@ -15274,6 +15275,7 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: isu
+Description: Isu
 Description: Isu (Menchum Division)
 Added: 2009-07-29
 %%
@@ -17375,7 +17377,7 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: kjo
-Description: Harijan Kinnauri
+Description: Kinnauri Pahari
 Added: 2009-07-29
 %%
 Type: language
@@ -18812,6 +18814,8 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: kut
+Description: Ktunaxa
+Description: Ksanka
 Description: Kutenai
 Added: 2005-10-16
 %%
@@ -21705,6 +21709,7 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: mdc
+Description: Soq
 Description: Male (Papua New Guinea)
 Added: 2009-07-29
 %%
@@ -21810,6 +21815,7 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: mdy
+Description: Male
 Description: Male (Ethiopia)
 Added: 2009-07-29
 %%
@@ -23142,6 +23148,7 @@ Added: 2009-07-29
 Type: language
 Subtag: moh
 Description: Mohawk
+Description: Kanien'kéha
 Added: 2005-10-16
 %%
 Type: language
@@ -26275,6 +26282,7 @@ Added: 2010-03-11
 Type: language
 Subtag: nok
 Description: Nooksack
+Description: Lhéchelesem
 Added: 2009-07-29
 %%
 Type: language
@@ -33138,6 +33146,7 @@ Added: 2005-10-16
 %%
 Type: language
 Subtag: srs
+Description: Tsuut'ina
 Description: Sarsi
 Added: 2009-07-29
 %%
@@ -33882,6 +33891,7 @@ Added: 2017-02-23
 %%
 Type: language
 Subtag: szv
+Description: Isubu
 Description: Isu (Fako Division)
 Added: 2009-07-29
 %%
@@ -36247,6 +36257,13 @@ Description: Te'un
 Added: 2009-07-29
 %%
 Type: language
+Subtag: tvg
+Description: Tugunese
+Description: Batavian Portuguese Creole
+Description: Mardijker Creole
+Added: 2026-05-05
+%%
+Type: language
 Subtag: tvi
 Description: Tulai
 Added: 2023-03-17
@@ -37796,6 +37813,7 @@ Added: 2009-07-29
 %%
 Type: language
 Subtag: wab
+Description: Yote
 Description: Wab
 Added: 2009-07-29
 %%
@@ -41182,6 +41200,7 @@ Added: 2012-08-12
 %%
 Type: language
 Subtag: yko
+Description: Iyasa
 Description: Yasa
 Added: 2009-07-29
 %%
@@ -42194,6 +42213,11 @@ Type: language
 Subtag: zhi
 Description: Zhire
 Added: 2009-07-29
+%%
+Type: language
+Subtag: zhk
+Description: Kurdish Sign Language
+Added: 2026-05-05
 %%
 Type: language
 Subtag: zhn
@@ -44845,6 +44869,13 @@ Added: 2009-07-29
 Preferred-Value: yue
 Prefix: zh
 Macrolanguage: zh
+%%
+Type: extlang
+Subtag: zhk
+Description: Kurdish Sign Language
+Added: 2026-05-05
+Preferred-Value: zhk
+Prefix: sgn
 %%
 Type: extlang
 Subtag: zib

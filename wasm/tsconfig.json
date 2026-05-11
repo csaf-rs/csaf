@@ -3,13 +3,20 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ESNext", "DOM"],
-    "types": ["node"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "types": [
+      "node"
+    ],
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
     "isolatedModules": true,
     "useDefineForClassFields": true
   },
-  "include": ["*.ts"]
+  "include": [
+    "*.ts"
+  ]
 }

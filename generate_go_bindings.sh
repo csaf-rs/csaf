@@ -17,7 +17,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 if [[ "${1:-}" != "--skip-build" ]]; then
   echo "Building csaf-ffi (native release)..."
-  cargo build -p csaf-ffi --release
+  cargo build -p csaf-ffi --release --locked
 fi
 
 echo "Generating Go bindings..."

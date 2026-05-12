@@ -486,10 +486,10 @@ jobs:
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
-      - name: Publish to NPM
-        working-directory: ./wasm
-        run: |
-          npm publish --provenance
+      #- name: Publish to NPM
+      #  working-directory: ./wasm
+      #  run: |
+      #    npm publish --provenance
 
   publish-go:
     runs-on: ubuntu-latest
@@ -515,17 +515,17 @@ jobs:
         working-directory: ./go
         run: |
           CGO_LDFLAGS="-L$(pwd)/csaf_ffi/lib/linux_amd64" go build ./...
-      - name: Push Go module tag
-        run: |
-          GO_TAG="go/${{ github.ref_name }}"
-          if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null 2>&1; then
-            git tag "$GO_TAG"
-            git push origin "$GO_TAG"
-          else
-            echo "Tag $GO_TAG already exists, skipping."
-          fi
-      - name: Publish to Go module proxy
-        run: GOPROXY=proxy.golang.org go list -m "github.com/csaf-rs/csaf/go@${{ github.ref_name }}"
+      # - name: Push Go module tag
+      #   run: |
+      #     GO_TAG="go/${{ github.ref_name }}"
+      #     if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null 2>&1; then
+      #       git tag "$GO_TAG"
+      #       git push origin "$GO_TAG"
+      #     else
+      #       echo "Tag $GO_TAG already exists, skipping."
+      #     fi
+      #- name: Publish to Go module proxy
+      #  run: GOPROXY=proxy.golang.org go list -m "github.com/csaf-rs/csaf/go@${{ github.ref_name }}"
 
   create-release:
     runs-on: ubuntu-latest

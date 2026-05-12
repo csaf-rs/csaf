@@ -13,7 +13,7 @@ npm install @csaf-rs/csaf-rs
 
 Reference the main validation function in your typescript files and run the validation against a string
 ```ts
-import { CsafFfi } from "@csaf-rs/csaf-wasm";
+import { CsafFfi } from "@csaf-rs/csaf-rs";
 
 const file_content = readFileSync(filePath, "utf-8");
 const result = CsafFfi.validateCsaf(jsonStr, "basic");

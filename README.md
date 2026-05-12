@@ -108,22 +108,6 @@ The easiest way to validate a document is to use the generic `ValidateCsaf` func
 result, err := csaf_ffi.ValidateCsaf(string(data), preset)
 ```
 
-### WASM
-
-Install this library via npm
-```bash
-npm install @csaf-rs/csaf-rs
-```
-
-Reference the main validation function in your typescript files and run the validation against a string
-```ts
-import { CsafFfi } from "@csaf-rs/csaf-wasm";
-
-const file_content = readFileSync(filePath, "utf-8");
-const result = CsafFfi.validateCsaf(jsonStr, "basic");
-```
-
-
 ## Build
 
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run

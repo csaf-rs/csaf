@@ -221,6 +221,8 @@ jobs:
     needs:
       - prepare
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -251,15 +253,38 @@ jobs:
 
       - name: Coverage summary
         run: |
-          echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          ./scripts/coverage/coverage_summary.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>Per-file coverage</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          ./scripts/coverage/coverage_per_file.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          SUMMARY=$(./scripts/coverage/coverage_summary.sh < /tmp/coverage.json)
+          PER_FILE=$(./scripts/coverage/coverage_per_file.sh < /tmp/coverage.json)
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # PR comment: condensed view with link to full summary
+          {
+            echo "### Test Coverage Report"
+            echo ""
+            echo "$SUMMARY"
+            echo ""
+            echo "[View full per-file coverage]($RUN_URL)"
+          } > /tmp/coverage_comment.md
+
+          # Build summary: full report
+          {
+            cat /tmp/coverage_comment.md
+            echo ""
+            echo "<details><summary>Per-file coverage</summary>"
+            echo ""
+            echo "$PER_FILE"
+            echo ""
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: Post coverage comment
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: /tmp/coverage_comment.md
+          comment-created-condition: all
+          edit-mode: replace
 
       - name: Cleanup coverage
         if: always()

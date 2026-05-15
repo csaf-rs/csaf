@@ -213,7 +213,6 @@ jobs:
   coverage:
     needs:
       - prepare
-      - build-platforms
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

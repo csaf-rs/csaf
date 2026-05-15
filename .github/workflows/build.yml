@@ -441,9 +441,9 @@ jobs:
             # Strip _sbom.cdx.json suffix to get "<name>_<arch>"
             raw=${filename%_sbom.cdx.json}
 
-            # Split into name (everything up to last _) and arch (last field)
-            arch=${raw##*_}
-            name=${raw%_*}
+            # Split name and arch: name uses hyphens, arch starts after first underscore
+            name=${raw%%_*}
+            arch=${raw#*_}
 
             artifactName="pkg:generic/${name}@${PURL_VERSION}?arch=${arch}"
 

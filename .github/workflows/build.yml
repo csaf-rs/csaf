@@ -180,13 +180,13 @@ jobs:
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
         if: ${{ matrix.target.skip-test != true }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: libcsaf_ffi-${{ matrix.target.arch }}-${{ matrix.version }}-${{ needs.prepare.outputs.git-version }}
           path: |
@@ -225,7 +225,7 @@ jobs:
       - build-platforms
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: "true"
 
@@ -286,7 +286,7 @@ jobs:
         working-directory: ./wasm
         run: npm publish --dry-run
       - name: Archive UniFFI WASM bindings
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -332,7 +332,7 @@ jobs:
             --git https://github.com/NordSecurity/uniffi-bindgen-go \
             --tag v0.7.0+v0.31.0 --locked
       - name: Download libcsaf_ffi
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.stable-version }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.target-arch }}/release/
@@ -353,7 +353,7 @@ jobs:
         run: |
           GOOS=$(go env GOOS) GOARCH=${{ matrix.target.go-arch }} CGO_ENABLED=1 go test -v ./csaf_ffi/
       - name: Archive Go static library
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}
           path: go/csaf_ffi/lib/
@@ -404,7 +404,7 @@ jobs:
 
       - name: Cache devguard-scanner
         id: cache-scanner
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/go/bin/devguard-scanner
           key: devguard-scanner-${{ runner.os }}
@@ -414,7 +414,7 @@ jobs:
           go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
 
       - name: Download all CDX artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: "*_sbom.cdx.json"
           path: sboms/
@@ -475,7 +475,7 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
       - name: Download WASM bindings
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -500,7 +500,7 @@ jobs:
         with:
           go-version: "stable"
       - name: Download Go library for verification
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: go-csaf-ffi-lib-Linux-X64
           path: go/csaf_ffi/lib/
@@ -531,19 +531,19 @@ jobs:
       - publish-go
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: csaf-validator
           pattern: csaf-validator-*-${{ needs.prepare.outputs.stable-version }}-*
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: csaf-ffi-wasm
           pattern: csaf-ffi-wasm-*
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: go-csaf-ffi-lib
           pattern: go-csaf-ffi-lib-*
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: sboms
           pattern: "*_sbom.*"

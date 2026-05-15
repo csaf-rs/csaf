@@ -80,6 +80,11 @@ jobs:
           STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
           echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
           GIT_VERSION=$(git describe --tags)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            GIT_VERSION="pr-${{ github.event.pull_request.number }}"
+          elif [[ "${{ github.ref_type }}" != "tag" ]]; then
+            GIT_VERSION="latest"
+          fi
           echo "git-version=$GIT_VERSION" >> $GITHUB_OUTPUT
       - name: Compute build targets
         id: get-targets # this is a bit hacky but it allows us to have different targets for PRs and for main/tag builds without having to duplicate the entire matrix strategy

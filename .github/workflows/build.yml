@@ -231,7 +231,14 @@ jobs:
         if: steps.rust-cache.outputs.cache-hit != 'true'
         run: rustup update stable --no-self-update
 
+      - name: Cache cargo-llvm-cov
+        id: llvm-cov-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/cargo-llvm-cov
+          key: cargo-llvm-cov-${{ runner.os }}-${{ runner.arch }}
       - name: Install cargo-llvm-cov
+        if: steps.llvm-cov-cache.outputs.cache-hit != 'true'
         run: cargo install cargo-llvm-cov --locked
 
       - name: Generate coverage
@@ -256,7 +263,6 @@ jobs:
   wasm-bindings:
     needs:
       - prepare
-      - build-platforms
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -270,7 +276,14 @@ jobs:
         run: rustup update stable --no-self-update
       - name: Prepare target
         run: rustup target add wasm32-unknown-unknown
+      - name: Cache uniffi-bindgen-js
+        id: uniffi-js-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/uniffi-bindgen-js
+          key: uniffi-bindgen-js-0.2.1-${{ runner.os }}-${{ runner.arch }}
       - name: Install uniffi-bindgen-js
+        if: steps.uniffi-js-cache.outputs.cache-hit != 'true'
         run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
       - name: Build UniFFI WASM bindings
         run: bash generate_wasm_bindings.sh

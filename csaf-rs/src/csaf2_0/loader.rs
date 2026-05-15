@@ -14,6 +14,16 @@ pub fn load_document_from_str(json_str: &str) -> std::io::Result<RawDocument<Com
     Ok(doc)
 }
 
+/// Load a CSAF document from an already-parsed [`serde_json::Value`].
+///
+/// Use this when the JSON has already been parsed (e.g. to extract the
+/// `document.csaf_version` field) to avoid parsing the same string twice.
+pub fn load_document_from_value(
+    value: serde_json::Value,
+) -> Result<RawDocument<CommonSecurityAdvisoryFramework>, serde_json::Error> {
+    Ok(RawDocument::new(serde_json::from_value(value)?))
+}
+
 #[cfg(test)]
 mod tests {
     use crate::schema::csaf2_0::schema::{

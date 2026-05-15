@@ -426,18 +426,34 @@ jobs:
 
       - name: Process CDX files
         run: |
+          # Determine version segment for PURL
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            PURL_VERSION="${{ github.ref_name }}"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            PURL_VERSION="pr-${{ github.event.pull_request.number }}"
+          else
+            PURL_VERSION="latest"
+          fi
+
           for cdx_file in $(find sboms -type f -name "*.cdx.json"); do
             echo "Processing: $cdx_file"
 
             filename=$(basename "$cdx_file")
-            # Strip _sbom.cdx.json suffix to get the artifact name
-            artifactName=${filename%_sbom.cdx.json}
+            # Strip _sbom.cdx.json suffix to get the raw artifact name
+            raw=${filename%_sbom.cdx.json}
+
+            # Extract components: csaf-validator_<arch>_<rust-version>_<git-version>
+            # or csaf-ffi-wasm_<git-version>
+            name=$(echo "$raw" | cut -d'_' -f1)
+            arch=$(echo "$raw" | cut -d'_' -f2)
+            rust_version=$(echo "$raw" | cut -d'_' -f3)
+
+            artifactName="pkg:generic/${name}@${PURL_VERSION}?arch=${arch}&rust=${rust_version}"
 
             echo "Artifact: $artifactName"
 
             tagOpt=""
-
-            if [[ ${{ github.ref_type }} == 'tag' ]]; then
+            if [[ "${{ github.ref_type }}" == "tag" ]]; then
               tagOpt="--isTag=true"
             fi
 

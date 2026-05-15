@@ -131,7 +131,7 @@ jobs:
   build-matrix:
     needs: prepare
     permissions:
-      contents: write
+      contents: read
     strategy:
       matrix:
         version:

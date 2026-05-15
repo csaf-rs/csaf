@@ -99,7 +99,8 @@ jobs:
             {"arch": "x86_64-pc-windows-msvc",    "runs-on": "windows-latest",  "ext": ".exe"}
           ]')
           PR_TARGETS=$(jq -cn '[
-            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"}
+            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"},
+            {"arch": "x86_64-apple-darwin",       "runs-on": "macos-latest"}
           ]')
           if [[ ${{ github.event_name }} == "pull_request" ]]; then
             echo "targets=$PR_TARGETS" >> $GITHUB_OUTPUT
@@ -116,7 +117,8 @@ jobs:
             {"target-arch": "x86_64-apple-darwin",       "runs-on": "macos-latest",     "lib-ext": ".dylib"}
           ]')
           PR_GO_TARGETS=$(jq -cn '[
-            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so"}
+            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so"},
+            {"target-arch": "x86_64-apple-darwin",       "runs-on": "macos-26-intel",     "lib-ext": ".dylib"}
           ]')
           if [[ ${{ github.event_name }} == "pull_request" ]]; then
             echo "go-targets=$PR_GO_TARGETS" >> $GITHUB_OUTPUT

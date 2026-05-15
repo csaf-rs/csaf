@@ -186,14 +186,14 @@ jobs:
         with:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: cyclonedx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_${{ matrix.version }}_${{ needs.prepare.outputs.git-version }}_sbom.cdx.json
+          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.cdx.json
       - name: Generate SPDX SBOM
         if: matrix.version == needs.prepare.outputs.stable-version
         uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: spdx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_${{ matrix.version }}_${{ needs.prepare.outputs.git-version }}_sbom.spdx.json
+          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.spdx.json
 
   build-platforms:
     needs: build-matrix
@@ -293,13 +293,13 @@ jobs:
         with:
           file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           format: cyclonedx-json
-          artifact-name: csaf-ffi-wasm_${{ needs.prepare.outputs.git-version }}_sbom.cdx.json
+          artifact-name: csaf-ffi-wasm_wasm32_sbom.cdx.json
       - name: Generate SPDX SBOM
         uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           format: spdx-json
-          artifact-name: csaf-ffi-wasm_${{ needs.prepare.outputs.git-version }}_sbom.spdx.json
+          artifact-name: csaf-ffi-wasm_wasm32_sbom.spdx.json
 
   go-bindings:
     needs:
@@ -432,16 +432,14 @@ jobs:
             echo "Processing: $cdx_file"
 
             filename=$(basename "$cdx_file")
-            # Strip _sbom.cdx.json suffix to get the raw artifact name
+            # Strip _sbom.cdx.json suffix to get "<name>_<arch>"
             raw=${filename%_sbom.cdx.json}
 
-            # Extract components: csaf-validator_<arch>_<rust-version>_<git-version>
-            # or csaf-ffi-wasm_<git-version>
-            name=$(echo "$raw" | cut -d'_' -f1)
-            arch=$(echo "$raw" | cut -d'_' -f2)
-            rust_version=$(echo "$raw" | cut -d'_' -f3)
+            # Split into name (everything up to last _) and arch (last field)
+            arch=${raw##*_}
+            name=${raw%_*}
 
-            artifactName="pkg:generic/${name}@${PURL_VERSION}?arch=${arch}&rust=${rust_version}"
+            artifactName="pkg:generic/${name}@${PURL_VERSION}?arch=${arch}"
 
             echo "Artifact: $artifactName"
 

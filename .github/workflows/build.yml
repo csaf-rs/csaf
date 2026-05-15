@@ -147,7 +147,7 @@ jobs:
           rustup target add ${{ matrix.target.arch }}
       - name: Cache cargo-auditable
         id: auditable-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/bin/cargo-auditable
           key: cargo-auditable-${{ runner.os }}-${{ runner.arch }}
@@ -165,15 +165,16 @@ jobs:
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
+        if: matrix.version == needs.prepare.outputs.stable-version
         uses: actions/upload-artifact@v7
         with:
-          name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-${{ needs.prepare.outputs.git-version }}
+          name: csaf-validator-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
-        if: ${{ matrix.target.skip-test != true }}
+        if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
         uses: actions/upload-artifact@v7
         with:
-          name: libcsaf_ffi-${{ matrix.target.arch }}-${{ matrix.version }}-${{ needs.prepare.outputs.git-version }}
+          name: libcsaf_ffi-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: |
             target/${{ matrix.target.arch }}/release/libcsaf_ffi.a
             target/${{ matrix.target.arch }}/release/libcsaf_ffi.so
@@ -332,7 +333,7 @@ jobs:
       - name: Download libcsaf_ffi
         uses: actions/download-artifact@v8
         with:
-          name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.stable-version }}-${{ needs.prepare.outputs.git-version }}
+          name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.target-arch }}/release/
       - name: Generate Go bindings
         run: |
@@ -353,7 +354,7 @@ jobs:
       - name: Archive Go static library
         uses: actions/upload-artifact@v7
         with:
-          name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}
+          name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
 
   devguard-secret-scanning: # uses gitleaks
@@ -501,6 +502,7 @@ jobs:
     permissions:
       contents: write
     needs:
+      - prepare
       - go-bindings
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
@@ -514,7 +516,7 @@ jobs:
       - name: Download Go library for verification
         uses: actions/download-artifact@v8
         with:
-          name: go-csaf-ffi-lib-Linux-X64
+          name: go-csaf-ffi-lib-Linux-X64-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
       - name: Verify Go module builds
         working-directory: ./go
@@ -546,7 +548,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: csaf-validator
-          pattern: csaf-validator-*-${{ needs.prepare.outputs.stable-version }}-*
+          pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
       - uses: actions/download-artifact@v8
         with:
           path: csaf-ffi-wasm

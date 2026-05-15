@@ -2,5 +2,5 @@
 
 package csaf_ffi
 
-// #cgo LDFLAGS: -lcsaf_ffi -lm
+// #cgo LDFLAGS: -L${SRCDIR}/lib/linux_arm64 -lcsaf_ffi -lm
 import "C"

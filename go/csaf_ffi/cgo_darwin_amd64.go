@@ -2,5 +2,5 @@
 
 package csaf_ffi
 
-// #cgo LDFLAGS: -lcsaf_ffi -framework Security -framework CoreFoundation
+// #cgo LDFLAGS: -L${SRCDIR}/lib/darwin_amd64 -lcsaf_ffi -framework Security -framework CoreFoundation
 import "C"

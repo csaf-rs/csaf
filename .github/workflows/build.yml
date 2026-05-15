@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
           fetch-depth: 0
           fetch-tags: true
       - name: Check assets are up-to-date
@@ -110,13 +110,14 @@ jobs:
         id: get-go-targets
         run: |
           FULL_GO_TARGETS=$(jq -cn '[
-            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so"},
-            {"target-arch": "aarch64-unknown-linux-gnu", "runs-on": "ubuntu-24.04-arm", "lib-ext": ".so"},
-            {"target-arch": "aarch64-apple-darwin",      "runs-on": "macos-latest",     "lib-ext": ".dylib"},
-            {"target-arch": "x86_64-apple-darwin",       "runs-on": "macos-latest",     "lib-ext": ".dylib"}
+            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so", "go-arch": "amd64"},
+            {"target-arch": "aarch64-unknown-linux-gnu", "runs-on": "ubuntu-24.04-arm", "lib-ext": ".so", "go-arch": "arm64"},
+            {"target-arch": "aarch64-apple-darwin",      "runs-on": "macos-latest",     "lib-ext": ".dylib", "go-arch": "arm64"},
+            {"target-arch": "x86_64-apple-darwin",       "runs-on": "macos-latest",     "lib-ext": ".dylib", "go-arch": "amd64"}
           ]')
           PR_GO_TARGETS=$(jq -cn '[
-            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so"}
+            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so", "go-arch": "amd64"},
+            {"target-arch": "x86_64-apple-darwin",       "runs-on": "macos-latest",     "lib-ext": ".dylib", "go-arch": "amd64"}
           ]')
           if [[ ${{ github.event_name }} == "pull_request" ]]; then
             echo "go-targets=$PR_GO_TARGETS" >> $GITHUB_OUTPUT
@@ -134,7 +135,7 @@ jobs:
       contents: write
     strategy:
       matrix:
-        version: 
+        version:
           - ${{ needs.prepare.outputs.msrv-version }}
           - ${{ needs.prepare.outputs.stable-version }}
         target: ${{ fromJson(needs.prepare.outputs.targets) }}
@@ -142,7 +143,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
       - name: Use cache
         id: rust-cache
         uses: Swatinem/rust-cache@v2
@@ -162,7 +163,7 @@ jobs:
       - name: Install clippy
         run: |
           # this is necesary because clippy ignores the target flag
-          rustup component add clippy 
+          rustup component add clippy
           rustup component add --toolchain ${{ matrix.version }}-${{ matrix.target.arch }} clippy
       - name: Install cargo-auditable
         if: steps.rust-cache.outputs.cache-hit != 'true'
@@ -208,7 +209,6 @@ jobs:
           format: spdx-json
           artifact-name: csaf-validator_${{ matrix.target.arch }}_${{ matrix.version }}_${{ needs.prepare.outputs.git-version }}_sbom.spdx.json
 
-
   build-platforms:
     needs: build-matrix
     runs-on: ubuntu-latest
@@ -226,7 +226,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - name: Use cache
         id: rust-cache
@@ -260,7 +260,6 @@ jobs:
         if: always()
         run: rm -f /tmp/coverage.json
 
-
   wasm-bindings:
     needs:
       - prepare
@@ -269,7 +268,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
       - name: Use cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -314,13 +313,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
       - name: Use cache
         id: rust-cache
         uses: Swatinem/rust-cache@v2
         with:
           key: go-bindings-${{ matrix.target.target-arch }}
-      - name: Update rustup  
+      - name: Update rustup
         if: steps.rust-cache.outputs.cache-hit != 'true'
         run: rustup update stable --no-self-update
 
@@ -328,7 +327,7 @@ jobs:
         if: steps.rust-cache.outputs.cache-hit != 'true'
         uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version: "stable"
       - name: Install uniffi-bindgen-go
         if: steps.rust-cache.outputs.cache-hit != 'true'
         run: |
@@ -349,7 +348,7 @@ jobs:
       - name: Copy static library for CGo
         run: |
           GOOS=$(go env GOOS)
-          GOARCH=$(go env GOARCH)
+          GOARCH=${{ matrix.target.go-arch }}
           LIB_DIR="go/csaf_ffi/lib/${GOOS}_${GOARCH}"
           mkdir -p "$LIB_DIR"
           cp target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a "$LIB_DIR/"
@@ -357,17 +356,18 @@ jobs:
         working-directory: go
         run: |
           GOOS=$(go env GOOS)
-          GOARCH=$(go env GOARCH)
-          CGO_LDFLAGS="-L$(pwd)/csaf_ffi/lib/${GOOS}_${GOARCH}" go test -v ./csaf_ffi/
+          GOARCH=${{ matrix.target.go-arch }}
+          CGO_ENABLED=1
+          go test -v ./csaf_ffi/
       - name: Archive Go static library
         uses: actions/upload-artifact@v4
         with:
-          name: go-csaf-ffi-lib-${{ runner.os }}-${{ runner.arch }}
+          name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}
           path: go/csaf_ffi/lib/
 
   devguard-secret-scanning: # uses gitleaks
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
-    needs: 
+    needs:
       - prepare
       - build-platforms
     runs-on: ubuntu-latest
@@ -378,7 +378,7 @@ jobs:
           args: devguard-scanner secret-scanning --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}"  ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-sast: #uses semgrep
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
-    needs: 
+    needs:
       - prepare
       - build-platforms
     runs-on: ubuntu-latest
@@ -388,7 +388,7 @@ jobs:
         with:
           args: devguard-scanner sast --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-iac: # uses checkov
-    needs: 
+    needs:
       - prepare
       - build-platforms
     runs-on: ubuntu-latest
@@ -400,7 +400,7 @@ jobs:
           args: devguard-scanner iac --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }} --isTag=${{ github.ref_type == 'tag' }}
   process-sboms:
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
-    needs: 
+    needs:
       - prepare
       - build-platforms
       - wasm-bindings
@@ -408,7 +408,7 @@ jobs:
     steps:
       - name: Add Go bin to PATH
         run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
- 
+
       - name: Cache devguard-scanner
         id: cache-scanner
         uses: actions/cache@v4
@@ -419,18 +419,18 @@ jobs:
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
           go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
-      
+
       - name: Download all CDX artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: '*_sbom.cdx.json'
+          pattern: "*_sbom.cdx.json"
           path: sboms/
-      
+
       - name: Process CDX files
         run: |
           for cdx_file in $(find sboms -type f -name "*.cdx.json"); do
             echo "Processing: $cdx_file"
-            
+
             filename=$(basename "$cdx_file")
             # Strip _sbom.cdx.json suffix to get the artifact name
             artifactName=${filename%_sbom.cdx.json}
@@ -442,21 +442,21 @@ jobs:
             if [[ ${{ github.ref_type }} == 'tag' ]]; then
               tagOpt="--isTag=true"
             fi
-            
+
             devguard-scanner sbom "$cdx_file" --assetName="${{ vars.DEVGUARD_ASSET }}" --token="${{ secrets.DEVGUARD_TOKEN }}" --artifactName="$artifactName" ${{ needs.prepare.outputs.target-ref }} $tagOpt  2>&1
           done
 
   publish-crates:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write    
+      id-token: write
     needs:
       - build-platforms
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
       - name: Update rustup
@@ -470,7 +470,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write    
+      id-token: write
     needs:
       - prepare
       - wasm-bindings
@@ -479,8 +479,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
       - name: Download WASM bindings
         uses: actions/download-artifact@v4
         with:
@@ -505,7 +505,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version: "stable"
       - name: Download Go library for verification
         uses: actions/download-artifact@v4
         with:
@@ -553,7 +553,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: sboms
-          pattern: '*_sbom.*'
+          pattern: "*_sbom.*"
       - name: Zip Artifacts
         run: |
           ls csaf-validator | xargs -I {} zip {}.zip -rj csaf-validator/{}

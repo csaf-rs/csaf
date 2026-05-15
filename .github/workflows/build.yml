@@ -356,10 +356,7 @@ jobs:
       - name: Run Go tests
         working-directory: go
         run: |
-          GOOS=$(go env GOOS)
-          GOARCH=${{ matrix.target.go-arch }}
-          CGO_ENABLED=1
-          go test -v ./csaf_ffi/
+          GOOS=$(go env GOOS) GOARCH=${{ matrix.target.go-arch }} CGO_ENABLED=1 go test -v ./csaf_ffi/
       - name: Archive Go static library
         uses: actions/upload-artifact@v4
         with:

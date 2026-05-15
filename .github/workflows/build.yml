@@ -144,31 +144,25 @@ jobs:
         with:
           submodules: "true"
       - name: Use cache
-        id: rust-cache
         uses: Swatinem/rust-cache@v2
         with:
-          key: build-${{matrix.version}}-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
-      - name: Update rustup
-        if: steps.rust-cache.outputs.cache-hit != 'true'
-        run: rustup update stable --no-self-update
-      - name: Set Rust version
-        if: steps.rust-cache.outputs.cache-hit != 'true'
+          key: build-${{ matrix.version }}-${{ matrix.target.arch }}
+      - name: Install Rust toolchain
         run: |
-          rustup override set ${{ matrix.version }}
+          rustup toolchain install ${{ matrix.version }} --profile minimal --component clippy
           rustup default ${{ matrix.version }}
-      - name: Prepare target
-        if: steps.rust-cache.outputs.cache-hit != 'true'
-        run: rustup target add ${{ matrix.target.arch }}
-      - name: Install clippy
-        run: |
-          # this is necesary because clippy ignores the target flag
-          rustup component add clippy
-          rustup component add --toolchain ${{ matrix.version }}-${{ matrix.target.arch }} clippy
+          rustup target add ${{ matrix.target.arch }}
+      - name: Cache cargo-auditable
+        id: auditable-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-auditable
+          key: cargo-auditable-${{ runner.os }}-${{ runner.arch }}
       - name: Install cargo-auditable
-        if: steps.rust-cache.outputs.cache-hit != 'true'
+        if: steps.auditable-cache.outputs.cache-hit != 'true'
         run: cargo install cargo-auditable --locked
       - name: Clippy check
-        run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} -- -D warnings
+        run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} --release -- -D warnings
       - name: Build
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
       - name: Run tests

@@ -329,8 +329,14 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "stable"
+      - name: Cache uniffi-bindgen-go
+        id: uniffi-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/uniffi-bindgen-go
+          key: uniffi-bindgen-go-v0.7.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install uniffi-bindgen-go
-        if: steps.rust-cache.outputs.cache-hit != 'true'
+        if: steps.uniffi-cache.outputs.cache-hit != 'true'
         run: |
           cargo install uniffi-bindgen-go \
             --git https://github.com/NordSecurity/uniffi-bindgen-go \

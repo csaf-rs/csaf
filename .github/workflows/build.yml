@@ -166,7 +166,7 @@ jobs:
       - name: Build
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
       - name: Run tests
-        run: cargo test --locked --target=${{ matrix.target.arch }} --verbose
+        run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose
         if: ${{ matrix.target.skip-test != true }}
       - name: Build with --no-default-features
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose

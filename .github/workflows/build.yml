@@ -26,6 +26,7 @@ jobs:
       stable-version: ${{ steps.get-versions.outputs.stable-version }}
       git-version: ${{ steps.get-versions.outputs.git-version }}
       targets: ${{ steps.get-targets.outputs.targets }}
+      target-ref: ${{ steps.get-versions.outputs.targetref }}
       go-targets: ${{ steps.get-go-targets.outputs.go-targets }}
     steps:
       - uses: actions/checkout@v6
@@ -86,6 +87,12 @@ jobs:
             GIT_VERSION="latest"
           fi
           echo "git-version=$GIT_VERSION" >> $GITHUB_OUTPUT
+          if [[ ${{ github.event_name }} == "pull_request" ]]; then
+            TARGETREF=--ref=${{ github.head_ref }}
+          else
+            TARGETREF=--defaultRef=${{ github.ref_name }}
+          fi
+          echo "targetref=$TARGETREF" >> $GITHUB_OUTPUT
       - name: Compute build targets
         id: get-targets # this is a bit hacky but it allows us to have different targets for PRs and for main/tag builds without having to duplicate the entire matrix strategy
         run: |

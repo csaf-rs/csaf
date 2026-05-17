@@ -213,3 +213,81 @@ pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationR
     let doc = load_document_from_str_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
     Ok(validate_by_preset(&doc, "2.1", &preset).into())
 }
+
+/// Validate a CSAF document from a JSON string and return the result as JSON.
+///
+/// Same as [`validate_csaf`] but returns the [`ValidationResult`] serialized
+/// as a JSON string instead of a typed UniFFI record.  Prefer this in WASM
+/// contexts: `JSON.parse(result)` is much faster than the UniFFI binary
+/// deserializer for the result type.
+///
+/// # Arguments
+///
+/// * `json_str` - The CSAF document as a JSON string.
+/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+#[uniffi::export]
+pub fn validate_csaf_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
+    let json_value: serde_json::Value =
+        serde_json::from_str(&json_str).map_err(|e| CsafError::InvalidJson { message: e.to_string() })?;
+
+    let version = json_value
+        .get("document")
+        .and_then(|doc| doc.get("csaf_version"))
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| CsafError::MissingVersion {
+            message: "document.csaf_version field not found".into(),
+        })?
+        .to_string();
+
+    let result = match version.as_str() {
+        "2.0" => {
+            let doc =
+                load_document_from_str_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+            validate_by_preset(&doc, "2.0", &preset)
+        },
+        "2.1" => {
+            let doc =
+                load_document_from_str_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+            validate_by_preset(&doc, "2.1", &preset)
+        },
+        other => {
+            return Err(CsafError::UnsupportedVersion {
+                version: other.to_string(),
+            });
+        },
+    };
+
+    serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })
+}
+
+/// Validate a CSAF 2.0 document and return the result as JSON.
+///
+/// Same as [`validate_csaf_2_0`] but returns the [`ValidationResult`]
+/// serialized as a JSON string.  Prefer in WASM contexts.
+///
+/// # Arguments
+///
+/// * `json_str` - The CSAF 2.0 document as a JSON string.
+/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+#[uniffi::export]
+pub fn validate_csaf_2_0_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
+    let doc = load_document_from_str_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+    let result = validate_by_preset(&doc, "2.0", &preset);
+    serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })
+}
+
+/// Validate a CSAF 2.1 document and return the result as JSON.
+///
+/// Same as [`validate_csaf_2_1`] but returns the [`ValidationResult`]
+/// serialized as a JSON string.  Prefer in WASM contexts.
+///
+/// # Arguments
+///
+/// * `json_str` - The CSAF 2.1 document as a JSON string.
+/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+#[uniffi::export]
+pub fn validate_csaf_2_1_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
+    let doc = load_document_from_str_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+    let result = validate_by_preset(&doc, "2.1", &preset);
+    serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })
+}

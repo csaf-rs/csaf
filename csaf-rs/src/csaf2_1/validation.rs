@@ -1,3 +1,9 @@
+// This "wires up" the test implementations for CSAF 2.1.
+// As we are still in development, some not yet implemented tests
+// are already listed to avoid merge conflicts. This can be
+// removed once all tests are implemented.
+#![allow(clippy::match_same_arms)]
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;

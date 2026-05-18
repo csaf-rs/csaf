@@ -36,8 +36,7 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
     match doc.get_document().get_lang() {
         Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
         Some(CsafLanguage::Valid(valid_lang)) if valid_lang.is_default() || !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
-        Some(_) => {}, // this is english
-        None => {},    // no language set
+        Some(_) | None => {}, // this is english or no language set
     }
 
     let mut has_external_reference_with_correct_summary = false;

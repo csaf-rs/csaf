@@ -4,7 +4,9 @@
 //! enabling Go, WASM, and other language bindings via Mozilla UniFFI.
 
 use csaf::csaf2_0::loader::load_document_from_str as load_document_from_str_2_0;
+use csaf::csaf2_0::loader::load_document_from_value as load_document_from_value_2_0;
 use csaf::csaf2_1::loader::load_document_from_str as load_document_from_str_2_1;
+use csaf::csaf2_1::loader::load_document_from_value as load_document_from_value_2_1;
 use csaf::validation::validate_by_preset;
 
 pub mod document;
@@ -169,13 +171,13 @@ pub fn validate_csaf(json_str: String, preset: String) -> Result<ValidationResul
 
     let result = match version.as_str() {
         "2.0" => {
-            let doc =
-                load_document_from_str_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+            let doc = load_document_from_value_2_0(json_value)
+                .map_err(|e| CsafError::LoadError { message: e.to_string() })?;
             validate_by_preset(&doc, "2.0", &preset)
         },
         "2.1" => {
-            let doc =
-                load_document_from_str_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+            let doc = load_document_from_value_2_1(json_value)
+                .map_err(|e| CsafError::LoadError { message: e.to_string() })?;
             validate_by_preset(&doc, "2.1", &preset)
         },
         other => {

@@ -38,11 +38,11 @@
     ],
     "product_paths": [
       {
+        "beginning_product_reference": "CSAFPID-9080701",
         "full_product_name": {
           "name": "Product B",
           "product_id": "CSAFPID-9080701"
         },
-        "beginning_product_reference": "CSAFPID-9080701",
         "subpaths": [
           {
             "category": "installed_on",

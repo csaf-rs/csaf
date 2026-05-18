@@ -55,7 +55,7 @@ pub fn test_6_2_21_same_timestamps_in_revision_history(doc: &impl CsafTrait) -> 
     // filter out all date times that appeared more than once, generate an error for each
     for (_, entries) in datetime_path_lookup.iter().filter(|(_, entries)| entries.len() > 1) {
         let indices: Vec<usize> = entries.iter().map(|(idx, _)| *idx).collect();
-        for (index, original_datetime) in entries.iter() {
+        for (index, original_datetime) in entries {
             errors
                 .get_or_insert_default()
                 .push(create_same_timestamp_error(*index, original_datetime, &indices));

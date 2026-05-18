@@ -35,7 +35,9 @@
         "name": "Product A",
         "product_id": "CSAFPID-9080700",
         "product_identification_helper": {
-          "purls": ["pkg:ma%3Fen/somepackage"]
+          "purls": [
+            "pkg:ma%3Fen/somepackage"
+          ]
         }
       }
     ]

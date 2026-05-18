@@ -13,12 +13,12 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
     let mut errors: Option<Vec<ValidationError>> = Option::None;
     if let Some(tree) = doc.get_product_tree() {
         let mut known_groups = HashSet::<String>::new();
-        for g in tree.get_product_groups().iter() {
+        for g in tree.get_product_groups() {
             known_groups.insert(g.get_group_id().to_owned());
         }
 
         let product_group_references = doc.get_all_group_references();
-        for (ref_id, ref_path) in product_group_references.iter() {
+        for (ref_id, ref_path) in &product_group_references {
             if !known_groups.contains(ref_id) {
                 errors.get_or_insert_default().push(generate_err_msg(ref_id, ref_path));
             }
@@ -70,9 +70,9 @@ mod tests {
         ]);
 
         TESTS_2_0.test_6_1_4.expect(
-            case_threats.clone(),      // threats
-            case_flags.clone(),        // flags
-            case_remediations.clone(), // remediations
+            case_threats.clone(), // threats
+            case_flags,           // flags
+            case_remediations,    // remediations
             Ok(()),
             Ok(()),
         );

@@ -3,12 +3,12 @@
     "category": "csaf_base",
     "csaf_version": "2.0",
     "lang": "EZ",
-    "source_lang": "ZZZ",
     "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
+    "source_lang": "ZZZ",
     "title": "Mandatory test: Language (failing supplementary example 2 - both lang and source_lang invalid)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
@@ -26,4 +26,3 @@
     }
   }
 }
-

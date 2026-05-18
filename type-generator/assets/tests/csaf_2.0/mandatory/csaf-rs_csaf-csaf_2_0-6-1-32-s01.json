@@ -51,11 +51,6 @@
   "vulnerabilities": [
     {
       "cve": "CVE-2017-0145",
-      "product_status": {
-        "known_not_affected": [
-          "CSAFPID-9080702"
-        ]
-      },
       "flags": [
         {
           "label": "component_not_present"
@@ -66,43 +61,41 @@
             "CSAFPID-9080702"
           ]
         }
-      ]
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "CSAFPID-9080702"
+        ]
+      }
     },
     {
       "cve": "CVE-2017-0146",
+      "flags": [
+        {
+          "group_ids": [
+            "CSAFGID-0001"
+          ],
+          "label": "component_not_present"
+        },
+        {
+          "label": "vulnerable_code_not_present"
+        }
+      ],
       "product_status": {
         "known_not_affected": [
           "CSAFPID-9080700",
           "CSAFPID-9080701"
         ]
-      },
-      "flags": [
-        {
-          "label": "component_not_present",
-          "group_ids": [
-            "CSAFGID-0001"
-          ]
-        },
-        {
-          "label": "vulnerable_code_not_present"
-        }
-      ]
+      }
     },
     {
       "cve": "CVE-2017-0147",
-      "product_status": {
-        "known_not_affected": [
-          "CSAFPID-9080700",
-          "CSAFPID-9080701",
-          "CSAFPID-9080702"
-        ]
-      },
       "flags": [
         {
-          "label": "component_not_present",
           "group_ids": [
             "CSAFGID-0001"
           ],
+          "label": "component_not_present",
           "product_ids": [
             "CSAFPID-9080702"
           ]
@@ -110,7 +103,14 @@
         {
           "label": "vulnerable_code_not_present"
         }
-      ]
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "CSAFPID-9080700",
+          "CSAFPID-9080701",
+          "CSAFPID-9080702"
+        ]
+      }
     }
   ]
 }

@@ -67,7 +67,14 @@ macro_rules! define_csaf_test {
                 let validator = V::default();
                 validator.validate(doc)
             }
+        }
 
+        #[cfg(test)]
+        impl<
+            V: crate::test_validation::TestValidator<
+                    crate::csaf::raw::RawDocument<$doc_type>,
+                > + Default,
+        > $struct_name<V> {
             /// Run the test with expected results for each test case.
             ///
             /// The method automatically loads test documents from the file system and runs

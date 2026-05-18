@@ -63,7 +63,7 @@ mod tests {
             // Case 01: TLP:CLEAR with regular UUID, status final
             err.clone(),
             // Case 02: TLP:CLEAR with Nil UUID, status final
-            err.clone(),
+            err,
             // Case 11: TLP:CLEAR with Max UUID, status final
             Ok(()),
             // Case 12: TLP:CLEAR with Nil UUID, status draft

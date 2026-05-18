@@ -1,8 +1,8 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentReferenceTrait, DocumentTrait};
-use crate::document_category_test_helper::DocumentCategoryTestConfig;
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
+use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) -> ValidationError {
     ValidationError {
@@ -34,7 +34,7 @@ pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Ve
     // check if there is a document reference with category 'external'
     let mut found_external_reference = false;
     if let Some(references) = doc.get_document().get_references() {
-        for reference in references.iter() {
+        for reference in references {
             if CategoryOfReference::External == *reference.get_category() {
                 found_external_reference = true;
                 break;

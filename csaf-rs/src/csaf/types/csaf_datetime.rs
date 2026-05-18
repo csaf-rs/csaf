@@ -1,4 +1,4 @@
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 use chrono::{DateTime, FixedOffset, ParseError, Utc};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::hash::Hash;
@@ -89,8 +89,10 @@ impl CsafDateTimeParseError {
     pub fn get_raw_string(&self) -> &str {
         &self.raw_string
     }
+}
 
-    pub fn into_validation_error(self, instance_path: &str) -> ValidationError {
+impl IntoValidationError for CsafDateTimeParseError {
+    fn into_validation_error(self, instance_path: &str) -> ValidationError {
         ValidationError {
             message: self.to_string(),
             instance_path: instance_path.to_string(),

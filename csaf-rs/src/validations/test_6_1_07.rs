@@ -21,7 +21,7 @@ fn gather_product_metrics(vulnerability: &impl VulnerabilityTrait, vulnerability
         let present_metric_types = content.get_cvss_metric_types();
 
         for product_id in metric.get_products() {
-            for metric_type in present_metric_types.iter() {
+            for metric_type in &present_metric_types {
                 product_metrics
                     // First map: product id =>
                     .entry(product_id.to_owned())
@@ -49,9 +49,9 @@ pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Res
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         let product_metrics = gather_product_metrics(vulnerability, vulnerability_index);
         if let Some(product_metrics) = product_metrics {
-            for (p, metrics_map) in product_metrics.iter() {
-                for (m, metrics_map_2) in metrics_map.iter() {
-                    for (s, paths) in metrics_map_2.iter() {
+            for (p, metrics_map) in &product_metrics {
+                for (m, metrics_map_2) in metrics_map {
+                    for (s, paths) in metrics_map_2 {
                         if paths.len() > 1 {
                             for path in paths {
                                 errors.get_or_insert_default().push(create_validation_error(

@@ -23,10 +23,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Update external assets
-        run: ./update_ext_assets.sh
+        run: ./scripts/update/update_ext_assets.sh
+
+      - name: Regenerate language tags from subtag registry
+        working-directory: type-generator
+        run: cargo run --locked -- --language-tags
 
       - name: Run cargo check (for .rs file re-generation)
-        run: cargo check
+        run: cargo check --locked
 
       - name: Create PR
         uses: peter-evans/create-pull-request@v7

@@ -61,7 +61,7 @@ mod tests {
             // Case 03: Max UUID with TLP:AMBER
             err.clone(),
             // Case 04: Max UUID with TLP:GREEN
-            err.clone(),
+            err,
             // Case 11: Regular UUID with TLP:RED
             Ok(()),
             // Case 12: Regular UUID with TLP:AMBER+STRICT, no name

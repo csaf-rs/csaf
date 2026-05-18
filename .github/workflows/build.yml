@@ -25,20 +25,54 @@ jobs:
       msrv-version: ${{ steps.get-versions.outputs.msrv-version }}
       stable-version: ${{ steps.get-versions.outputs.stable-version }}
       git-version: ${{ steps.get-versions.outputs.git-version }}
-      target-ref: ${{ steps.get-versions.outputs.targetref }}
       targets: ${{ steps.get-targets.outputs.targets }}
+      target-ref: ${{ steps.get-versions.outputs.targetref }}
+      go-targets: ${{ steps.get-go-targets.outputs.go-targets }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
           fetch-depth: 0
           fetch-tags: true
+      - name: Check assets are up-to-date
+        run: |
+          ./scripts/update/update_assets.sh
+          CHANGES=$(git status --porcelain)
+          if [ -n "$CHANGES" ]; then
+            echo "::error::Assets are out of date. Please run ./scripts/update/update_assets.sh locally and commit the changes."
+            echo "$CHANGES"
+            exit 1
+          fi
+      - name: Use cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: prepare
+      - name: Check JSON syntax
+        run: ./scripts/json/check_json_syntax.sh --quiet
+      - name: Check JSON formatting
+        run: ./scripts/json/check_json_formatting.sh --quiet
+      - name: Check JSON sorting
+        run: ./scripts/json/check_json_sorting.sh --quiet
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Format check
         run: |
           rustup component add rustfmt
           cargo fmt --all -- --check -l
+      - name: Run type-generator
+        run: cargo run --locked -p type-generator
+      - name: Check for uncommitted changes in generated files
+        run: |
+          CHANGES=$(git status --porcelain -- csaf-rs/src/)
+          if [ -n "$CHANGES" ]; then
+            echo ""
+            echo "$CHANGES"
+            echo ""
+            echo "::error::Generated files are out of date or untracked!"
+            echo "The files in csaf-rs/src/ do not match the output of the type-generator."
+            echo "Please run 'cargo run --locked -p type-generator' and commit the updated files."
+            exit 1
+          fi
       - name: Extract versions
         id: get-versions
         run: |
@@ -47,6 +81,11 @@ jobs:
           STABLE_VERSION=$(rustc +stable --version | awk '{print $2}')
           echo "stable-version=$STABLE_VERSION" >> $GITHUB_OUTPUT
           GIT_VERSION=$(git describe --tags)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            GIT_VERSION="pr-${{ github.event.pull_request.number }}"
+          elif [[ "${{ github.ref_type }}" != "tag" ]]; then
+            GIT_VERSION="latest"
+          fi
           echo "git-version=$GIT_VERSION" >> $GITHUB_OUTPUT
           if [[ ${{ github.event_name }} == "pull_request" ]]; then
             TARGETREF=--ref=${{ github.head_ref }}
@@ -62,17 +101,32 @@ jobs:
             {"arch": "aarch64-unknown-linux-gnu", "runs-on": "ubuntu-24.04-arm"},
             {"arch": "aarch64-apple-darwin",      "runs-on": "macos-latest"},
             {"arch": "x86_64-apple-darwin",       "runs-on": "macos-latest"},
-            {"arch": "x86_64-pc-windows-msvc",    "runs-on": "windows-latest",  "ext": ".exe"},
-            {"arch": "wasm32-wasip2",             "runs-on": "ubuntu-latest",    "skip-test": true, "ext": ".wasm"}
+            {"arch": "x86_64-pc-windows-msvc",    "runs-on": "windows-latest",  "ext": ".exe"}
           ]')
           PR_TARGETS=$(jq -cn '[
-            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"},
-            {"arch": "wasm32-wasip2",             "runs-on": "ubuntu-latest",    "skip-test": true, "ext": ".wasm"}
+            {"arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest"}
           ]')
           if [[ ${{ github.event_name }} == "pull_request" ]]; then
             echo "targets=$PR_TARGETS" >> $GITHUB_OUTPUT
           else
             echo "targets=$FULL_TARGETS" >> $GITHUB_OUTPUT
+          fi
+      - name: Compute Go build targets
+        id: get-go-targets
+        run: |
+          FULL_GO_TARGETS=$(jq -cn '[
+            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so", "go-arch": "amd64"},
+            {"target-arch": "aarch64-unknown-linux-gnu", "runs-on": "ubuntu-24.04-arm", "lib-ext": ".so", "go-arch": "arm64"},
+            {"target-arch": "aarch64-apple-darwin",      "runs-on": "macos-latest",     "lib-ext": ".dylib", "go-arch": "arm64"},
+            {"target-arch": "x86_64-apple-darwin",       "runs-on": "macos-latest",     "lib-ext": ".dylib", "go-arch": "amd64"}
+          ]')
+          PR_GO_TARGETS=$(jq -cn '[
+            {"target-arch": "x86_64-unknown-linux-gnu",  "runs-on": "ubuntu-latest",    "lib-ext": ".so", "go-arch": "amd64"}
+          ]')
+          if [[ ${{ github.event_name }} == "pull_request" ]]; then
+            echo "go-targets=$PR_GO_TARGETS" >> $GITHUB_OUTPUT
+          else
+            echo "go-targets=$FULL_GO_TARGETS" >> $GITHUB_OUTPUT
           fi
       - name: Publish dry-run
         if: github.ref_type != 'tag'
@@ -82,76 +136,77 @@ jobs:
   build-matrix:
     needs: prepare
     permissions:
-      contents: write
+      contents: read
     strategy:
       matrix:
-        version: 
+        version:
           - ${{ needs.prepare.outputs.msrv-version }}
           - ${{ needs.prepare.outputs.stable-version }}
         target: ${{ fromJson(needs.prepare.outputs.targets) }}
     runs-on: ${{ matrix.target.runs-on }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          submodules: 'true'
+          submodules: "true"
       - name: Use cache
-        id: rust-cache
         uses: Swatinem/rust-cache@v2
         with:
-          key: build-${{matrix.version}}-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
-      - name: Update rustup
-        if: steps.rust-cache.outputs.cache-hit != 'true'
-        run: rustup update stable --no-self-update
-      - name: Set Rust version
-        if: steps.rust-cache.outputs.cache-hit != 'true'
+          key: build-${{ matrix.version }}-${{ matrix.target.arch }}
+      - name: Install Rust toolchain
         run: |
-          rustup override set ${{ matrix.version }}
+          rustup toolchain install ${{ matrix.version }} --profile minimal --component clippy
           rustup default ${{ matrix.version }}
-      - name: Prepare target
-        if: steps.rust-cache.outputs.cache-hit != 'true'
-        run: rustup target add ${{ matrix.target.arch }}
-      - name: Install clippy
-        if: ${{ matrix.target.arch != 'wasm32-wasip2' && steps.rust-cache.outputs.cache-hit != 'true' }}
-        run: |
-          # this is necesary because clippy ignores the target flag
-          rustup component add clippy 
-          rustup component add --toolchain ${{ matrix.version }}-${{ matrix.target.arch }} clippy
+          rustup target add ${{ matrix.target.arch }}
+      - name: Cache cargo-auditable
+        id: auditable-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/cargo-auditable
+          key: cargo-auditable-${{ runner.os }}-${{ runner.arch }}
       - name: Install cargo-auditable
-        if: steps.rust-cache.outputs.cache-hit != 'true'
+        if: steps.auditable-cache.outputs.cache-hit != 'true'
         run: cargo install cargo-auditable --locked
-      - name: Update assets
-        run: ./update_assets.sh
       - name: Clippy check
-        if: ${{ matrix.target.arch != 'wasm32-wasip2' }}
-        run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} -- -D warnings
+        run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} --release -- -D warnings
       - name: Build
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
-      - name: Build WASM bindings
-        if: ${{ matrix.target.arch == 'wasm32-wasip2' }}
-        run: |
-            cargo install wasm-pack --locked
-            wasm-pack build csaf-rs --scope csaf-rs
       - name: Run tests
-        run: cargo test --locked --target=${{ matrix.target.arch }} --verbose
+        run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose
+        if: ${{ matrix.target.skip-test != true }}
+      - name: Build with --no-default-features
+        run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
-        uses: actions/upload-artifact@v4
+        if: matrix.version == needs.prepare.outputs.stable-version
+        uses: actions/upload-artifact@v7
         with:
-          name: csaf-validator-${{ matrix.target.arch }}-${{ matrix.version }}-${{ needs.prepare.outputs.git-version }}
+          name: csaf-validator-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+      - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
+        if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
+        uses: actions/upload-artifact@v7
+        with:
+          name: libcsaf_ffi-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
+          path: |
+            target/${{ matrix.target.arch }}/release/libcsaf_ffi.a
+            target/${{ matrix.target.arch }}/release/libcsaf_ffi.so
+            target/${{ matrix.target.arch }}/release/libcsaf_ffi.dylib
+            target/${{ matrix.target.arch }}/release/csaf_ffi.dll
+          if-no-files-found: ignore
       - name: Generate CycloneDX SBOM
+        if: matrix.version == needs.prepare.outputs.stable-version
         uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: cyclonedx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_${{ matrix.version }}_${{ needs.prepare.outputs.git-version }}_sbom.cdx.json
+          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.cdx.json
       - name: Generate SPDX SBOM
+        if: matrix.version == needs.prepare.outputs.stable-version
         uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: spdx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_${{ matrix.version }}_${{ needs.prepare.outputs.git-version }}_sbom.spdx.json
-
+          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.spdx.json
 
   build-platforms:
     needs: build-matrix
@@ -161,10 +216,162 @@ jobs:
       - name: Check build status
         if: needs.build-matrix.result != 'success'
         run: exit 1
-   
+
+  coverage:
+    needs:
+      - prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: "true"
+
+      - name: Use cache
+        id: rust-cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: coverage
+
+      - name: Update rustup
+        if: steps.rust-cache.outputs.cache-hit != 'true'
+        run: rustup update stable --no-self-update
+
+      - name: Cache cargo-llvm-cov
+        id: llvm-cov-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/cargo-llvm-cov
+          key: cargo-llvm-cov-${{ runner.os }}-${{ runner.arch }}
+      - name: Install cargo-llvm-cov
+        if: steps.llvm-cov-cache.outputs.cache-hit != 'true'
+        run: cargo install cargo-llvm-cov --locked
+
+      - name: Generate coverage
+        run: cargo llvm-cov --locked --workspace --json > /tmp/coverage.json
+
+      - name: Coverage summary
+        run: |
+          echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          ./scripts/coverage/coverage_summary.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>Per-file coverage</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          ./scripts/coverage/coverage_per_file.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+      - name: Cleanup coverage
+        if: always()
+        run: rm -f /tmp/coverage.json
+
+  wasm-bindings:
+    needs:
+      - prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: "true"
+      - name: Use cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: wasm-bindings
+      - name: Update rustup
+        run: rustup update stable --no-self-update
+      - name: Prepare target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Cache uniffi-bindgen-js
+        id: uniffi-js-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/uniffi-bindgen-js
+          key: uniffi-bindgen-js-0.2.1-${{ runner.os }}-${{ runner.arch }}
+      - name: Install uniffi-bindgen-js
+        if: steps.uniffi-js-cache.outputs.cache-hit != 'true'
+        run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
+      - name: Build UniFFI WASM bindings
+        run: bash generate_wasm_bindings.sh
+      - name: NPM publish dry-run
+        working-directory: ./wasm
+        run: npm publish --dry-run
+      - name: Archive UniFFI WASM bindings
+        uses: actions/upload-artifact@v7
+        with:
+          name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
+          path: wasm/
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0.24.0
+        with:
+          file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
+          format: cyclonedx-json
+          artifact-name: csaf-ffi-wasm_wasm32_sbom.cdx.json
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0.24.0
+        with:
+          file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
+          format: spdx-json
+          artifact-name: csaf-ffi-wasm_wasm32_sbom.spdx.json
+
+  go-bindings:
+    needs:
+      - prepare
+      - build-platforms
+    strategy:
+      matrix:
+        target: ${{ fromJson(needs.prepare.outputs.go-targets) }}
+    runs-on: ${{ matrix.target.runs-on }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: "true"
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "stable"
+          cache: false
+      - name: Cache uniffi-bindgen-go
+        id: uniffi-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/uniffi-bindgen-go
+          key: uniffi-bindgen-go-v0.7.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install uniffi-bindgen-go
+        if: steps.uniffi-cache.outputs.cache-hit != 'true'
+        run: |
+          cargo install uniffi-bindgen-go \
+            --git https://github.com/NordSecurity/uniffi-bindgen-go \
+            --tag v0.7.0+v0.31.0 --locked
+      - name: Download libcsaf_ffi
+        uses: actions/download-artifact@v8
+        with:
+          name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.git-version }}
+          path: target/${{ matrix.target.target-arch }}/release/
+      - name: Generate Go bindings
+        run: |
+          uniffi-bindgen-go \
+            --library target/${{ matrix.target.target-arch }}/release/libcsaf_ffi${{ matrix.target.lib-ext }} \
+            --out-dir go/
+      - name: Copy static library for CGo
+        run: |
+          GOOS=$(go env GOOS)
+          GOARCH=${{ matrix.target.go-arch }}
+          LIB_DIR="go/csaf_ffi/lib/${GOOS}_${GOARCH}"
+          mkdir -p "$LIB_DIR"
+          cp target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a "$LIB_DIR/"
+      - name: Run Go tests
+        working-directory: go
+        run: |
+          GOOS=$(go env GOOS) GOARCH=${{ matrix.target.go-arch }} CGO_ENABLED=1 go test -v ./csaf_ffi/
+      - name: Archive Go static library
+        uses: actions/upload-artifact@v7
+        with:
+          name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}-${{ needs.prepare.outputs.git-version }}
+          path: go/csaf_ffi/lib/
+
   devguard-secret-scanning: # uses gitleaks
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
-    needs: 
+    needs:
       - prepare
       - build-platforms
     runs-on: ubuntu-latest
@@ -175,7 +382,7 @@ jobs:
           args: devguard-scanner secret-scanning --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}"  ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-sast: #uses semgrep
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
-    needs: 
+    needs:
       - prepare
       - build-platforms
     runs-on: ubuntu-latest
@@ -185,7 +392,7 @@ jobs:
         with:
           args: devguard-scanner sast --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-iac: # uses checkov
-    needs: 
+    needs:
       - prepare
       - build-platforms
     runs-on: ubuntu-latest
@@ -197,17 +404,18 @@ jobs:
           args: devguard-scanner iac --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }} --isTag=${{ github.ref_type == 'tag' }}
   process-sboms:
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
-    needs: 
+    needs:
       - prepare
       - build-platforms
+      - wasm-bindings
     runs-on: ubuntu-latest
     steps:
       - name: Add Go bin to PATH
         run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
- 
+
       - name: Cache devguard-scanner
         id: cache-scanner
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/go/bin/devguard-scanner
           key: devguard-scanner-${{ runner.os }}
@@ -215,61 +423,58 @@ jobs:
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
           go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
-      
+
       - name: Download all CDX artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
-          pattern: '*sbom.cdx.json'
+          pattern: "*_sbom.cdx.json"
           path: sboms/
-      
+
       - name: Process CDX files
         run: |
+          # Determine version segment for PURL
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            PURL_VERSION="${{ github.ref_name }}"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            PURL_VERSION="pr-${{ github.event.pull_request.number }}"
+          else
+            PURL_VERSION="latest"
+          fi
+
           for cdx_file in $(find sboms -type f -name "*.cdx.json"); do
             echo "Processing: $cdx_file"
-            
-            # Extract just the filename
-            filename=$(basename "$cdx_file")
-            
-            # Remove prefix and suffix to extract arch and version
-            temp=${filename#csaf-validator_}
-            temp=${temp%_sbom.cdx.json}
-            
-            # Split by last dash to separate arch and version
-            if [[ $temp =~ ^(.+)_([0-9]+\.[0-9]+\.[0-9]+)_(v.+)$ ]]; then
-              arch="${BASH_REMATCH[1]}"
-              target="${BASH_REMATCH[2]}"
-              version="${BASH_REMATCH[3]}"
-            fi
 
-            echo "Architecture: $arch"
-            echo "Target: $target"
-            echo "Version: $version"
+            filename=$(basename "$cdx_file")
+            # Strip _sbom.cdx.json suffix to get "<name>_<arch>"
+            raw=${filename%_sbom.cdx.json}
+
+            # Split name and arch: name uses hyphens, arch starts after first underscore
+            name=${raw%%_*}
+            arch=${raw#*_}
+
+            artifactName="pkg:generic/${name}@${PURL_VERSION}?arch=${arch}"
+
+            echo "Artifact: $artifactName"
 
             tagOpt=""
-
-            if [[ ${{ github.ref_type }} == 'tag' ]]; then
+            if [[ "${{ github.ref_type }}" == "tag" ]]; then
               tagOpt="--isTag=true"
             fi
 
-            artifactName="csaf-validator_$arch_$target_$version"
-            
             devguard-scanner sbom "$cdx_file" --assetName="${{ vars.DEVGUARD_ASSET }}" --token="${{ secrets.DEVGUARD_TOKEN }}" --artifactName="$artifactName" ${{ needs.prepare.outputs.target-ref }} $tagOpt  2>&1
           done
 
   publish-crates:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      id-token: write    
+      id-token: write
     needs:
       - build-platforms
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          submodules: 'true'
-      - name: Update assets
-        run: ./update_assets.sh
+          submodules: "true"
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
       - name: Update rustup
@@ -278,63 +483,121 @@ jobs:
         run: cargo publish --locked --verbose
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
-      - name: Determine Version
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    needs:
+      - prepare
+      - wasm-bindings
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - name: Download WASM bindings
+        uses: actions/download-artifact@v8
+        with:
+          name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
+          path: wasm/
+      #- name: Publish to NPM
+      #  working-directory: ./wasm
+      #  run: |
+      #    npm publish --provenance
+
+  publish-go:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - prepare
+      - go-bindings
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-tags: true
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "stable"
+          cache: false
+      - name: Download Go library for verification
+        uses: actions/download-artifact@v8
+        with:
+          name: go-csaf-ffi-lib-Linux-X64-${{ needs.prepare.outputs.git-version }}
+          path: go/csaf_ffi/lib/
+      - name: Verify Go module builds
+        working-directory: ./go
         run: |
-          # determine version from tag
-          export VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
-          if [[ $VERSION != v* ]]
-          then
-            export VERSION=""
-            echo "Building version-less (main or feature branch)"
-          else
-            echo "Building as ${VERSION}"
-          fi
-          # store version in GitHub environment file
-          echo "version=$VERSION" >> $GITHUB_ENV
-      - uses: actions/download-artifact@v4
+          CGO_LDFLAGS="-L$(pwd)/csaf_ffi/lib/linux_amd64" go build ./...
+      # - name: Push Go module tag
+      #   run: |
+      #     GO_TAG="go/${{ github.ref_name }}"
+      #     if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null 2>&1; then
+      #       git tag "$GO_TAG"
+      #       git push origin "$GO_TAG"
+      #     else
+      #       echo "Tag $GO_TAG already exists, skipping."
+      #     fi
+      #- name: Publish to Go module proxy
+      #  run: GOPROXY=proxy.golang.org go list -m "github.com/csaf-rs/csaf/go@${{ github.ref_name }}"
+
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - prepare
+      - publish-crates
+      - publish-npm
+      - publish-go
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
+    steps:
+      - uses: actions/download-artifact@v8
         with:
           path: csaf-validator
-          pattern: csaf-validator-*
+          pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
+      - uses: actions/download-artifact@v8
+        with:
+          path: csaf-ffi-wasm
+          pattern: csaf-ffi-wasm-*
+      - uses: actions/download-artifact@v8
+        with:
+          path: go-csaf-ffi-lib
+          pattern: go-csaf-ffi-lib-*
+      - uses: actions/download-artifact@v8
+        with:
+          path: sboms
+          pattern: "*_sbom.*"
       - name: Zip Artifacts
         run: |
           ls csaf-validator | xargs -I {} zip {}.zip -rj csaf-validator/{}
           ls csaf-validator-*.zip
+          for dir in csaf-ffi-wasm/*/; do
+            name=$(basename "$dir")
+            zip "${name}.zip" -rj "$dir"
+          done
+          ls csaf-ffi-wasm-*.zip 2>/dev/null || true
+          for dir in go-csaf-ffi-lib/*/; do
+            name=$(basename "$dir")
+            zip "${name}.zip" -rj "$dir"
+          done
+          ls go-csaf-ffi-lib-*.zip 2>/dev/null || true
       - name: Create Release
-        id: create_release
         uses: softprops/action-gh-release@v3
         with:
-          name: ${{ env.version }}
+          name: ${{ github.ref_name }}
           generate_release_notes: false
           draft: false
           prerelease: false
           fail_on_unmatched_files: true
           files: |
             csaf-validator-*.zip
-
-  publish-npm:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write    
-    needs:
-      - build-platforms
-    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-      - name: Update assets
-        run: ./update_assets.sh
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Build WASM bindings
-        run: |
-          cargo install wasm-pack --locked
-          wasm-pack build csaf-rs --scope csaf-rs    
-      - name: Publish to NPM
-        working-directory: ./csaf-rs/pkg
-        run: |
-          npm publish --provenance
+            csaf-ffi-wasm-*.zip
+            go-csaf-ffi-lib-*.zip
+            sboms/**/*.json

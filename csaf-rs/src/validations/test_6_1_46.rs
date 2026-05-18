@@ -21,7 +21,9 @@ fn create_invalid_ssvc_error(
     };
     ValidationError {
         message: format!("Invalid SSVC object{path_info}: {error_message}"),
-        instance_path: format!("/vulnerabilities/{vulnerability_index}/metrics/{metric_index}/content/ssvc_v2{error_path}"),
+        instance_path: format!(
+            "/vulnerabilities/{vulnerability_index}/metrics/{metric_index}/content/ssvc_v2{error_path}"
+        ),
     }
 }
 

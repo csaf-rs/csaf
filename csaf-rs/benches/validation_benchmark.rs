@@ -84,9 +84,6 @@ fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {
     let all_test_ids: Vec<&str> = [mandatory_tests_2_0(), recommended_tests_2_0(), informative_tests_2_0()].concat();
 
     let mut group = c.benchmark_group("csaf_2_0_tests");
-    group.sample_size(50);
-    group.warm_up_time(Duration::from_secs(2));
-    group.measurement_time(Duration::from_secs(5));
 
     for test_id in &all_test_ids {
         group.bench_function(*test_id, |b| {
@@ -123,9 +120,6 @@ fn bench_individual_tests_csaf_2_1(c: &mut Criterion) {
     let all_test_ids: Vec<&str> = [mandatory_tests_2_1(), recommended_tests_2_1(), informative_tests_2_1()].concat();
 
     let mut group = c.benchmark_group("csaf_2_1_tests");
-    group.sample_size(50);
-    group.warm_up_time(Duration::from_secs(2));
-    group.measurement_time(Duration::from_secs(5));
 
     for test_id in &all_test_ids {
         group.bench_function(*test_id, |b| {
@@ -151,9 +145,6 @@ fn bench_full_validation(c: &mut Criterion) {
     let contents_2_1 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_1));
 
     let mut group = c.benchmark_group("full_validation");
-    group.sample_size(50);
-    group.warm_up_time(Duration::from_secs(2));
-    group.measurement_time(Duration::from_secs(5));
 
     if !contents_2_0.is_empty() {
         let documents_2_0: Vec<_> = contents_2_0
@@ -202,9 +193,6 @@ fn bench_parse_only(c: &mut Criterion) {
     }
 
     let mut group = c.benchmark_group("parse_only");
-    group.sample_size(50);
-    group.warm_up_time(Duration::from_secs(2));
-    group.measurement_time(Duration::from_secs(5));
 
     group.bench_function("csaf_2_0", |b| {
         b.iter(|| {
@@ -217,11 +205,16 @@ fn bench_parse_only(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(
-    benches,
-    bench_individual_tests_csaf_2_0,
-    bench_individual_tests_csaf_2_1,
-    bench_full_validation,
-    bench_parse_only,
-);
+fn configured_criterion() -> Criterion {
+    Criterion::default()
+        .warm_up_time(Duration::from_secs(2))
+        .measurement_time(Duration::from_secs(5))
+        .sample_size(50)
+}
+
+criterion_group! {
+   name = benches;
+   config = configured_criterion();
+   targets = bench_individual_tests_csaf_2_0, bench_individual_tests_csaf_2_1, bench_full_validation, bench_parse_only
+}
 criterion_main!(benches);

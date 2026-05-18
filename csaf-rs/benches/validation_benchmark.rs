@@ -5,8 +5,15 @@ use std::time::Duration;
 use criterion::{Criterion, criterion_group, criterion_main};
 
 use csaf::csaf2_0::loader::load_document_from_str as load_document_2_0;
-use csaf::csaf2_0::testcases::{informative_tests, mandatory_tests, recommended_tests};
+use csaf::csaf2_0::testcases::{
+    informative_tests as informative_tests_2_0, mandatory_tests as mandatory_tests_2_0,
+    recommended_tests as recommended_tests_2_0,
+};
 use csaf::csaf2_1::loader::load_document_from_str as load_document_2_1;
+use csaf::csaf2_1::testcases::{
+    informative_tests as informative_tests_2_1, mandatory_tests as mandatory_tests_2_1,
+    recommended_tests as recommended_tests_2_1,
+};
 use csaf::validation::{validate_by_preset, validate_by_test};
 
 /// Collect all JSON test fixture files from a directory recursively.
@@ -74,10 +81,10 @@ fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {
         .filter_map(|(_name, content)| load_document_2_0(content).ok())
         .collect();
 
-    let all_test_ids: Vec<&str> = [mandatory_tests(), recommended_tests(), informative_tests()].concat();
+    let all_test_ids: Vec<&str> = [mandatory_tests_2_0(), recommended_tests_2_0(), informative_tests_2_0()].concat();
 
     let mut group = c.benchmark_group("csaf_2_0_tests");
-    group.sample_size(10);
+    group.sample_size(50);
     group.warm_up_time(Duration::from_secs(2));
     group.measurement_time(Duration::from_secs(5));
 
@@ -113,10 +120,10 @@ fn bench_individual_tests_csaf_2_1(c: &mut Criterion) {
         .collect();
 
     // CSAF 2.1 uses the same test ID scheme
-    let all_test_ids: Vec<&str> = [mandatory_tests(), recommended_tests(), informative_tests()].concat();
+    let all_test_ids: Vec<&str> = [mandatory_tests_2_1(), recommended_tests_2_1(), informative_tests_2_1()].concat();
 
     let mut group = c.benchmark_group("csaf_2_1_tests");
-    group.sample_size(10);
+    group.sample_size(50);
     group.warm_up_time(Duration::from_secs(2));
     group.measurement_time(Duration::from_secs(5));
 
@@ -144,9 +151,9 @@ fn bench_full_validation(c: &mut Criterion) {
     let contents_2_1 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_1));
 
     let mut group = c.benchmark_group("full_validation");
-    group.sample_size(10);
-    group.warm_up_time(Duration::from_secs(3));
-    group.measurement_time(Duration::from_secs(10));
+    group.sample_size(50);
+    group.warm_up_time(Duration::from_secs(2));
+    group.measurement_time(Duration::from_secs(5));
 
     if !contents_2_0.is_empty() {
         let documents_2_0: Vec<_> = contents_2_0
@@ -195,7 +202,7 @@ fn bench_parse_only(c: &mut Criterion) {
     }
 
     let mut group = c.benchmark_group("parse_only");
-    group.sample_size(10);
+    group.sample_size(50);
     group.warm_up_time(Duration::from_secs(2));
     group.measurement_time(Duration::from_secs(5));
 

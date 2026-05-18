@@ -16,5 +16,3 @@ pub mod test_validation;
 pub mod validation;
 pub mod validation_result;
 pub mod validations;
-#[cfg(feature = "wasm")]
-pub mod wasm;

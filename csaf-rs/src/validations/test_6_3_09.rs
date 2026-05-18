@@ -56,11 +56,14 @@ pub fn test_6_3_9_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     // for every path to a leaf node
     for (path, indices) in leaf_paths {
         // filter to only the categories relevant to this rule, preserving order
-        let relevant: Vec<&CategoryOfTheBranch> = path
+        let mut relevant: Vec<&CategoryOfTheBranch> = path
             .iter()
             .map(|b| b.get_category())
             .filter(|c| REQUIRED_CATEGORIES_ORDER.contains(c))
             .collect();
+        // then deduplicate so that consecutive occurrences of the same relevant category
+        // (e.g. vendor, vendor, product_name, product_version) do not trigger a false positive
+        relevant.dedup();
 
         // Check whether the filtered list matches the required sequence exactly
         if !relevant.iter().eq(REQUIRED_CATEGORIES_ORDER.iter()) {
@@ -207,11 +210,28 @@ mod tests {
             ),
         ]);
 
+        let case_s01_stacked_wrong_order = Err(vec![create_branch_categories_error(
+            &[
+                &CategoryOfTheBranch::Vendor,
+                &CategoryOfTheBranch::ProductName,
+                &CategoryOfTheBranch::Vendor,
+                &CategoryOfTheBranch::ProductVersion,
+            ],
+            &[
+                &CategoryOfTheBranch::Vendor,
+                &CategoryOfTheBranch::ProductName,
+                &CategoryOfTheBranch::Vendor,
+                &CategoryOfTheBranch::ProductVersion,
+            ],
+            "/product_tree/branches/0/branches/0/branches/0/branches/0/product".to_string(),
+        )]);
+
         // Case 11: Minimal passing example (vendor -> name -> version)
         // Case 12: vendor -> family -> name -> split to 2x version
         // Case 13: vendor -> family -> split to 2x name -> version
         // Case 14: vendor -> split to 2x name -> version
         // Case 15: Deep tree, split after 2x after name
+        // Case S11: Stacked categories vendor x2, product_name x2, product_version x2
 
         TESTS_2_0.test_6_3_9.expect(
             case_01_missing_product_version.clone(),
@@ -220,6 +240,8 @@ mod tests {
             case_04_wrong_order.clone(),
             case_05_wrong_order_deep_tree.clone(),
             case_06_missing_vendor_name_version.clone(),
+            case_s01_stacked_wrong_order.clone(),
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),
@@ -234,6 +256,8 @@ mod tests {
             case_04_wrong_order,
             case_05_wrong_order_deep_tree,
             case_06_missing_vendor_name_version,
+            case_s01_stacked_wrong_order,
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),

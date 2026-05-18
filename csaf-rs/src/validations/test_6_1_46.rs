@@ -37,22 +37,10 @@ pub fn test_6_1_46_invalid_ssvc(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                 let content = m.get_content();
                 // if there is a ssvc_v2 metric
                 if let Some(ssvc) = content.get_ssvc_v2_raw() {
-                    // This should always be Ok(), as we are passing a serde_json map to serde_json::to_value
-                    // This might change if the type of ssvc changes (e.g. due to lenient parsing)
-                    let value = match serde_json::to_value(ssvc) {
-                        Ok(v) => v,
-                        Err(e) => {
-                            errors.get_or_insert_default().push(create_invalid_ssvc_error(
-                                &e.to_string(),
-                                "",
-                                i_v,
-                                i_m,
-                            ));
-                            continue;
-                        },
-                    };
                     // schema validation
-                    for error in SSVC_VALIDATOR.iter_errors(&value) {
+                    // depending on how we implement lenient parsing, this might need to be
+                    // prefaced with json format check
+                    for error in SSVC_VALIDATOR.iter_errors(&serde_json::Value::Object(ssvc.clone())) {
                         errors.get_or_insert_default().push(create_invalid_ssvc_error(
                             &error.to_string(),
                             error.instance_path().as_str(),

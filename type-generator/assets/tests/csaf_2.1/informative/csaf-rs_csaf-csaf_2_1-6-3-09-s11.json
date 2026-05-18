@@ -13,10 +13,10 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Informative test: Branch Categories (valid supplementary example 2 - stacked categories, right order)",
+    "title": "Informative test: Branch Categories (valid supplementary example 1 - stacked categories, right order)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-09-S02",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-09-S11",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {

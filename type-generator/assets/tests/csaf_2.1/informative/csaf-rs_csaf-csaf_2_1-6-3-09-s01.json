@@ -13,7 +13,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Informative test: Branch Categories (failing supplementary example 1 - stacked categories, wrong order",
+    "title": "Informative test: Branch Categories (failing supplementary example 1 - stacked categories, wrong order)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-09-S01",

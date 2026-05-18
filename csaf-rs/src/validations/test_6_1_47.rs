@@ -48,9 +48,10 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
     for (i_v, v) in vulnerabilities.iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
-                if m.get_content().has_ssvc() {
+                let content = m.get_content();
+                if content.has_ssvc_v2() {
                     // try to parse ssvc_v2 content as SSVC
-                    match m.get_content().get_ssvc() {
+                    match content.get_ssvc_v2() {
                         // parsing succeeded
                         Ok(ssvc) => {
                             // get the SSVC target_ids if they exist

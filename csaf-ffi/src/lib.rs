@@ -150,7 +150,7 @@ impl From<csaf::validation::ValidationResult> for ValidationResult {
 /// # Arguments
 ///
 /// * `json_str` - The CSAF document as a JSON string.
-/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+/// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 ///
 /// # Returns
 ///
@@ -195,7 +195,7 @@ pub fn validate_csaf(json_str: String, preset: String) -> Result<ValidationResul
 /// # Arguments
 ///
 /// * `json_str` - The CSAF 2.0 document as a JSON string.
-/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+/// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
 pub fn validate_csaf_2_0(json_str: String, preset: String) -> Result<ValidationResult, CsafError> {
     let doc = load_document_from_str_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
@@ -207,7 +207,7 @@ pub fn validate_csaf_2_0(json_str: String, preset: String) -> Result<ValidationR
 /// # Arguments
 ///
 /// * `json_str` - The CSAF 2.1 document as a JSON string.
-/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+/// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
 pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationResult, CsafError> {
     let doc = load_document_from_str_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
@@ -224,7 +224,7 @@ pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationR
 /// # Arguments
 ///
 /// * `json_str` - The CSAF document as a JSON string.
-/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+/// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
 pub fn validate_csaf_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
     let json_value: serde_json::Value =
@@ -268,7 +268,7 @@ pub fn validate_csaf_as_json(json_str: String, preset: String) -> Result<String,
 /// # Arguments
 ///
 /// * `json_str` - The CSAF 2.0 document as a JSON string.
-/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+/// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
 pub fn validate_csaf_2_0_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
     let doc = load_document_from_str_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
@@ -284,7 +284,7 @@ pub fn validate_csaf_2_0_as_json(json_str: String, preset: String) -> Result<Str
 /// # Arguments
 ///
 /// * `json_str` - The CSAF 2.1 document as a JSON string.
-/// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+/// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
 pub fn validate_csaf_2_1_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
     let doc = load_document_from_str_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;

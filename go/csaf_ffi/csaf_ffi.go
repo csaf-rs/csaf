@@ -373,7 +373,7 @@ func uniffiCheckChecksums() {
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_csaf_ffi_checksum_func_validate_csaf()
 		})
-		if checksum != 6588 {
+		if checksum != 52424 {
 			// If this happens try cleaning and rebuilding your project
 			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf: UniFFI API checksum mismatch")
 		}
@@ -382,18 +382,45 @@ func uniffiCheckChecksums() {
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_csaf_ffi_checksum_func_validate_csaf_2_0()
 		})
-		if checksum != 6842 {
+		if checksum != 4645 {
 			// If this happens try cleaning and rebuilding your project
 			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf_2_0: UniFFI API checksum mismatch")
 		}
 	}
 	{
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_csaf_ffi_checksum_func_validate_csaf_2_0_to_json_string()
+		})
+		if checksum != 27025 {
+			// If this happens try cleaning and rebuilding your project
+			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf_2_0_to_json_string: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_csaf_ffi_checksum_func_validate_csaf_2_1()
 		})
-		if checksum != 22579 {
+		if checksum != 19507 {
 			// If this happens try cleaning and rebuilding your project
 			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf_2_1: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_csaf_ffi_checksum_func_validate_csaf_2_1_to_json_string()
+		})
+		if checksum != 56379 {
+			// If this happens try cleaning and rebuilding your project
+			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf_2_1_to_json_string: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_csaf_ffi_checksum_func_validate_csaf_to_json_string()
+		})
+		if checksum != 22896 {
+			// If this happens try cleaning and rebuilding your project
+			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf_to_json_string: UniFFI API checksum mismatch")
 		}
 	}
 	{
@@ -1978,7 +2005,7 @@ func (FfiDestroyerSequenceValidationError) Destroy(sequence []ValidationError) {
 // # Arguments
 //
 // * `json_str` - The CSAF document as a JSON string.
-// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 //
 // # Returns
 //
@@ -2002,7 +2029,7 @@ func ValidateCsaf(jsonStr string, preset string) (ValidationResult, error) {
 // # Arguments
 //
 // * `json_str` - The CSAF 2.0 document as a JSON string.
-// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 func ValidateCsaf20(jsonStr string, preset string) (ValidationResult, error) {
 	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
 		return GoRustBuffer{
@@ -2017,12 +2044,35 @@ func ValidateCsaf20(jsonStr string, preset string) (ValidationResult, error) {
 	}
 }
 
+// Validate a CSAF 2.0 document and return the result as JSON.
+//
+// Same as [`validate_csaf_2_0`] but returns the [`ValidationResult`]
+// serialized as a JSON string.  Prefer in WASM contexts.
+//
+// # Arguments
+//
+// * `json_str` - The CSAF 2.0 document as a JSON string.
+// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
+func ValidateCsaf20ToJsonString(jsonStr string, preset string) (string, error) {
+	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
+		return GoRustBuffer{
+			inner: C.uniffi_csaf_ffi_fn_func_validate_csaf_2_0_to_json_string(FfiConverterStringINSTANCE.Lower(jsonStr), FfiConverterStringINSTANCE.Lower(preset), _uniffiStatus),
+		}
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue string
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterStringINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
 // Validate a CSAF 2.1 document from a JSON string.
 //
 // # Arguments
 //
 // * `json_str` - The CSAF 2.1 document as a JSON string.
-// * `preset`   - The validation preset: `"basic"`, `"extended"`, or `"full"`.
+// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 func ValidateCsaf21(jsonStr string, preset string) (ValidationResult, error) {
 	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
 		return GoRustBuffer{
@@ -2034,5 +2084,53 @@ func ValidateCsaf21(jsonStr string, preset string) (ValidationResult, error) {
 		return _uniffiDefaultValue, _uniffiErr
 	} else {
 		return FfiConverterValidationResultINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+// Validate a CSAF 2.1 document and return the result as JSON.
+//
+// Same as [`validate_csaf_2_1`] but returns the [`ValidationResult`]
+// serialized as a JSON string.  Prefer in WASM contexts.
+//
+// # Arguments
+//
+// * `json_str` - The CSAF 2.1 document as a JSON string.
+// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
+func ValidateCsaf21ToJsonString(jsonStr string, preset string) (string, error) {
+	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
+		return GoRustBuffer{
+			inner: C.uniffi_csaf_ffi_fn_func_validate_csaf_2_1_to_json_string(FfiConverterStringINSTANCE.Lower(jsonStr), FfiConverterStringINSTANCE.Lower(preset), _uniffiStatus),
+		}
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue string
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterStringINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+// Validate a CSAF document from a JSON string and return the result as JSON.
+//
+// Same as [`validate_csaf`] but returns the [`ValidationResult`] serialized
+// as a JSON string instead of a typed UniFFI record.  Prefer this in WASM
+// contexts: `JSON.parse(result)` is much faster than the UniFFI binary
+// deserializer for the result type.
+//
+// # Arguments
+//
+// * `json_str` - The CSAF document as a JSON string.
+// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
+func ValidateCsafToJsonString(jsonStr string, preset string) (string, error) {
+	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
+		return GoRustBuffer{
+			inner: C.uniffi_csaf_ffi_fn_func_validate_csaf_to_json_string(FfiConverterStringINSTANCE.Lower(jsonStr), FfiConverterStringINSTANCE.Lower(preset), _uniffiStatus),
+		}
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue string
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterStringINSTANCE.Lift(_uniffiRV), nil
 	}
 }

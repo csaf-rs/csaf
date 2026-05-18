@@ -435,9 +435,24 @@ RustBuffer uniffi_csaf_ffi_fn_func_validate_csaf(RustBuffer json_str, RustBuffer
 RustBuffer uniffi_csaf_ffi_fn_func_validate_csaf_2_0(RustBuffer json_str, RustBuffer preset, RustCallStatus *out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_2_0_TO_JSON_STRING
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_2_0_TO_JSON_STRING
+RustBuffer uniffi_csaf_ffi_fn_func_validate_csaf_2_0_to_json_string(RustBuffer json_str, RustBuffer preset, RustCallStatus *out_status
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_2_1
 #define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_2_1
 RustBuffer uniffi_csaf_ffi_fn_func_validate_csaf_2_1(RustBuffer json_str, RustBuffer preset, RustCallStatus *out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_2_1_TO_JSON_STRING
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_2_1_TO_JSON_STRING
+RustBuffer uniffi_csaf_ffi_fn_func_validate_csaf_2_1_to_json_string(RustBuffer json_str, RustBuffer preset, RustCallStatus *out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_TO_JSON_STRING
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF_TO_JSON_STRING
+RustBuffer uniffi_csaf_ffi_fn_func_validate_csaf_to_json_string(RustBuffer json_str, RustBuffer preset, RustCallStatus *out_status
 );
 #endif
 #ifndef UNIFFI_FFIDEF_FFI_CSAF_FFI_RUSTBUFFER_ALLOC
@@ -712,9 +727,27 @@ uint16_t uniffi_csaf_ffi_checksum_func_validate_csaf_2_0(void
     
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_2_0_TO_JSON_STRING
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_2_0_TO_JSON_STRING
+uint16_t uniffi_csaf_ffi_checksum_func_validate_csaf_2_0_to_json_string(void
+    
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_2_1
 #define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_2_1
 uint16_t uniffi_csaf_ffi_checksum_func_validate_csaf_2_1(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_2_1_TO_JSON_STRING
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_2_1_TO_JSON_STRING
+uint16_t uniffi_csaf_ffi_checksum_func_validate_csaf_2_1_to_json_string(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_TO_JSON_STRING
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF_TO_JSON_STRING
+uint16_t uniffi_csaf_ffi_checksum_func_validate_csaf_to_json_string(void
     
 );
 #endif

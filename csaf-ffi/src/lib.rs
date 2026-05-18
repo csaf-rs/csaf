@@ -226,7 +226,7 @@ pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationR
 /// * `json_str` - The CSAF document as a JSON string.
 /// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
-pub fn validate_csaf_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
+pub fn validate_csaf_to_json_string(json_str: String, preset: String) -> Result<String, CsafError> {
     let json_value: serde_json::Value =
         serde_json::from_str(&json_str).map_err(|e| CsafError::InvalidJson { message: e.to_string() })?;
 
@@ -270,7 +270,7 @@ pub fn validate_csaf_as_json(json_str: String, preset: String) -> Result<String,
 /// * `json_str` - The CSAF 2.0 document as a JSON string.
 /// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
-pub fn validate_csaf_2_0_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
+pub fn validate_csaf_2_0_to_json_string(json_str: String, preset: String) -> Result<String, CsafError> {
     let doc = load_document_from_str_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
     let result = validate_by_preset(&doc, "2.0", &preset);
     serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })
@@ -286,7 +286,7 @@ pub fn validate_csaf_2_0_as_json(json_str: String, preset: String) -> Result<Str
 /// * `json_str` - The CSAF 2.1 document as a JSON string.
 /// * `preset`   - The validation preset: e.g. `"basic"`, `"extended"`, or `"full"`.
 #[uniffi::export]
-pub fn validate_csaf_2_1_as_json(json_str: String, preset: String) -> Result<String, CsafError> {
+pub fn validate_csaf_2_1_to_json_string(json_str: String, preset: String) -> Result<String, CsafError> {
     let doc = load_document_from_str_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
     let result = validate_by_preset(&doc, "2.1", &preset);
     serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })

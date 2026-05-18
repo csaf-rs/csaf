@@ -385,7 +385,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-ffi"
-version = "0.3.1"
+version = "0.4.1"
 dependencies = [
  "csaf-rs",
  "serde_json",

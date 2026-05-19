@@ -1,5 +1,7 @@
 use crate::build_errors::BuildError;
-use crate::utils::codegen_snippets::{add_generated_code_header, add_ignore_clippy, add_ignore_rustdoc, add_ignore_rustfmt};
+use crate::utils::codegen_snippets::{
+    add_generated_code_header, add_ignore_clippy, add_ignore_rustdoc, add_ignore_rustfmt,
+};
 use crate::utils::read_write_fs::write_generated_file;
 use typify::{TypeSpace, TypeSpaceSettings};
 

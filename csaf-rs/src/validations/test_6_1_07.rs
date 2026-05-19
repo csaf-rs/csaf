@@ -1,7 +1,50 @@
-use crate::csaf::aggregation::product_cvss_metrics::aggregate_product_cvss_metrics;
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
-use crate::csaf_traits::CsafTrait;
+use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
+use std::collections::HashMap;
+
+/// Maps product ids to a per-metric-type, per-source list of JSON paths.
+type ProductMetricMap = HashMap<String, ProductCsafVulnerabilityMetricMap>;
+/// Maps a metric type (e.g., CVSS v3.1) to a per-source list of JSON paths.
+type ProductCsafVulnerabilityMetricMap = HashMap<CsafVulnerabilityMetric, ProductCsafVulnerabilityMetricSourceMap>;
+/// Maps a source (None for CSAF 2.0 or if None is provided) to a list of JSON paths.
+type ProductCsafVulnerabilityMetricSourceMap = HashMap<Option<String>, Vec<String>>;
+
+/// Gather all CVSS metric entries for a vulnerability into a nested map keyed by
+/// product id → metric type → source → JSON paths.
+///
+/// More details can be found in [`ProductMetricMap`], [`ProductCsafVulnerabilityMetricMap`] and [`ProductCsafVulnerabilityMetricSourceMap`].
+///
+/// Returns `Some(ProductMetricMap)` if the vulnerability contained any CVSS scores, `None` if not.
+fn aggregate_product_cvss_metrics(
+    vulnerability: &impl VulnerabilityTrait,
+    vulnerability_index: usize,
+) -> Option<ProductMetricMap> {
+    // return None if there are no metrics
+    let metrics = vulnerability.get_metrics()?;
+
+    let mut product_metrics: Option<ProductMetricMap> = None;
+    for (metric_index, metric) in metrics.iter().enumerate() {
+        let content = metric.get_content();
+        let metric_json_path = content.get_content_json_path(vulnerability_index, metric_index);
+        let present_cvss_metric_types = content.get_cvss_metric_types();
+        let source = metric.get_source().cloned();
+        for product_id in metric.get_products() {
+            for metric_type in &present_cvss_metric_types {
+                product_metrics
+                    .get_or_insert_default()
+                    .entry(product_id.to_owned())
+                    .or_default()
+                    .entry(metric_type.to_owned())
+                    .or_default()
+                    .entry(source.clone())
+                    .or_default()
+                    .push(metric_json_path.clone());
+            }
+        }
+    }
+    product_metrics
+}
 
 /// Test 6.1.7 Multiple Scores with Same Version per Product
 ///
@@ -245,6 +288,7 @@ mod tests {
         // Case 16: 1 vuln, CVSS v2, v3.1, v4, same product
         // Case 17: 1 vuln, CVSS v2, v3.0, v4, same product
         // Case 18: like 05, but valid
+
         TESTS_2_0
             .test_6_1_7
             .expect(case_01_duplicate_cvss_v3_1_csaf_20, Ok(()), Ok(()));

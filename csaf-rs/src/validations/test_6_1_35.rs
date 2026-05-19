@@ -1,21 +1,8 @@
-use crate::csaf::aggregation::product_remediation::ProductIdRemediationCategoriesMap;
-use crate::csaf_traits::CsafTrait;
+use crate::csaf_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::ValidationError;
+use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
-
-/// Totally exclusive categories that cannot be combined with any other category
-static EX_STATES: &[CategoryOfTheRemediation] = &[
-    CategoryOfTheRemediation::NoneAvailable,
-    CategoryOfTheRemediation::OptionalPatch,
-];
-
-/// Mutually exclusive states that cannot apply at the same time
-static MUT_EX_STATES: &[CategoryOfTheRemediation] = &[
-    CategoryOfTheRemediation::NoFixPlanned,
-    CategoryOfTheRemediation::FixPlanned,
-    CategoryOfTheRemediation::VendorFix,
-];
 
 enum ExclusivityKind {
     Exclusive,
@@ -47,73 +34,133 @@ fn generate_category_contradiction_error(
     }
 }
 
-fn format_contradiction_categories<'a>(
-    categories: impl Iterator<Item = &'a CategoryOfTheRemediation>,
-    exclude: &CategoryOfTheRemediation,
-) -> String {
-    categories
-        .filter(|cat| *cat != exclude)
-        .map(|cat| cat.to_string())
-        .collect::<Vec<String>>()
-        .join(", ")
-}
+/// Aggregation mapping:
+/// resolved remediation product IDs -> remediation category -> vector of remediation indices of occurrences
+/// Also provides utility functions to check for exclusive / mutually exclusive category contradictions
+struct ProductIdRemediationCategoriesMap(BTreeMap<String, BTreeMap<CategoryOfTheRemediation, Vec<usize>>>);
 
-fn check_exclusive_categories_contradiction(
-    map: &ProductIdRemediationCategoriesMap,
-    vuln_index: usize,
-    errors: &mut Option<Vec<ValidationError>>,
-) {
-    for (product_id, category_map) in map {
-        for ex_state in EX_STATES {
-            if let Some(remediation_indices) = category_map.get(ex_state)
-                && category_map.len() > 1
-            {
-                let contradiction_categories = format_contradiction_categories(category_map.keys(), ex_state);
-                for remediation_index in remediation_indices {
-                    errors
-                        .get_or_insert_default()
-                        .push(generate_category_contradiction_error(
-                            product_id,
-                            ExclusivityKind::Exclusive,
-                            *ex_state,
-                            contradiction_categories.clone(),
-                            vuln_index,
-                            *remediation_index,
-                        ));
+impl ProductIdRemediationCategoriesMap {
+    /// Totally exclusive categories that cannot be combined with any other category
+    const EX_STATES: &[CategoryOfTheRemediation] = &[
+        CategoryOfTheRemediation::NoneAvailable,
+        CategoryOfTheRemediation::OptionalPatch,
+    ];
+
+    /// Mutually exclusive states that cannot apply at the same time
+    const MUT_EX_STATES: &[CategoryOfTheRemediation] = &[
+        CategoryOfTheRemediation::NoFixPlanned,
+        CategoryOfTheRemediation::FixPlanned,
+        CategoryOfTheRemediation::VendorFix,
+    ];
+
+    pub fn aggregate(doc: &impl CsafTrait, vulnerability: &impl VulnerabilityTrait) -> Self {
+        let mut map: BTreeMap<String, BTreeMap<CategoryOfTheRemediation, Vec<usize>>> = BTreeMap::new();
+        for (remediation_index, remediation) in vulnerability.get_remediations().iter().enumerate() {
+            // get the associated product ids, if there are none, continue
+            let product_ids = match remediation.get_all_product_ids(doc) {
+                Some(ids) => ids,
+                None => continue,
+            };
+
+            // fill the map
+            for product_id in product_ids.into_iter() {
+                map.entry(product_id)
+                    .or_default()
+                    .entry(remediation.get_category())
+                    .or_default()
+                    .push(remediation_index);
+            }
+        }
+        Self(map)
+    }
+
+    fn format_contradiction_categories<'a>(
+        categories: impl Iterator<Item = &'a CategoryOfTheRemediation>,
+        exclude: &CategoryOfTheRemediation,
+    ) -> String {
+        categories
+            .filter(|cat| *cat != exclude)
+            .map(|cat| cat.to_string())
+            .collect::<Vec<String>>()
+            .join(", ")
+    }
+
+    /// Checks a [ProductIdRemediationCategoriesMap] for contradicting exclusive categories.
+    ///
+    /// For each exclusive category, if there are any other categories, for each remediation with
+    /// this category an error is added to `errors`.
+    fn check_exclusive_categories_contradiction(&self, vuln_index: usize, errors: &mut Option<Vec<ValidationError>>) {
+        // for each product and the associated categories map
+        for (product_id, category_map) in &self.0 {
+            // check if the map contains an exclusive category and any other category
+            for ex_state in Self::EX_STATES {
+                if let Some(remediation_indices) = category_map.get(ex_state)
+                    && category_map.len() > 1
+                {
+                    // report error for all offending categories
+                    let contradiction_categories = Self::format_contradiction_categories(category_map.keys(), ex_state);
+                    // for each remediation with that category
+                    for remediation_index in remediation_indices {
+                        errors
+                            .get_or_insert_default()
+                            .push(generate_category_contradiction_error(
+                                product_id,
+                                ExclusivityKind::Exclusive,
+                                *ex_state,
+                                contradiction_categories.clone(),
+                                vuln_index,
+                                *remediation_index,
+                            ));
+                    }
                 }
             }
         }
     }
-}
 
-fn check_mutually_exclusive_category_contradiction(
-    map: &ProductIdRemediationCategoriesMap,
-    vuln_index: usize,
-    errors: &mut Option<Vec<ValidationError>>,
-) {
-    for (product_id, category_map) in map {
-        let mut_ex = category_map
-            .iter()
-            .filter(|entry| MUT_EX_STATES.contains(entry.0))
-            .collect::<Vec<_>>();
-        if mut_ex.len() > 1 {
-            for (mut_ex_category, remediation_indices) in &mut_ex {
-                let contradiction_categories =
-                    format_contradiction_categories(mut_ex.iter().map(|(cat, _)| *cat), mut_ex_category);
-                for remediation_index in *remediation_indices {
-                    errors
-                        .get_or_insert_default()
-                        .push(generate_category_contradiction_error(
-                            product_id,
-                            ExclusivityKind::MutuallyExclusive,
-                            **mut_ex_category,
-                            contradiction_categories.clone(),
-                            vuln_index,
-                            *remediation_index,
-                        ));
+    /// Checks a [ProductIdRemediationCategoriesMap] for contradicting mutually exclusive categories.
+    ///
+    /// For each mutually exclusive category, if there are any other mutually exclusive categories,
+    /// for each remediation with this category an error is added to `errors`.
+    fn check_mutually_exclusive_category_contradiction(
+        &self,
+        vuln_index: usize,
+        errors: &mut Option<Vec<ValidationError>>,
+    ) {
+        // for each product and the associated categories map
+        for (product_id, category_map) in &self.0 {
+            // extract the mutually exclusive categories
+            let mut_ex = category_map
+                .iter()
+                .filter(|entry| Self::MUT_EX_STATES.contains(entry.0))
+                .collect::<Vec<_>>();
+            // if there is more than one mutually exclusive category, there is a contradiction
+            if mut_ex.len() > 1 {
+                // generate an error for each of the contradicting categories
+                for (mut_ex_category, remediation_indices) in &mut_ex {
+                    let contradiction_categories =
+                        Self::format_contradiction_categories(mut_ex.iter().map(|(cat, _)| *cat), mut_ex_category);
+                    // for each remediation with that category
+                    for remediation_index in *remediation_indices {
+                        errors
+                            .get_or_insert_default()
+                            .push(generate_category_contradiction_error(
+                                product_id,
+                                ExclusivityKind::MutuallyExclusive,
+                                **mut_ex_category,
+                                contradiction_categories.clone(),
+                                vuln_index,
+                                *remediation_index,
+                            ));
+                    }
                 }
             }
         }
+    }
+
+    /// Calls [`Self::check_mutually_exclusive_category_contradiction`] and [`Self::check_exclusive_categories_contradiction].
+    pub fn check_category_contradiction(&self, vuln_index: usize, errors: &mut Option<Vec<ValidationError>>) {
+        self.check_exclusive_categories_contradiction(vuln_index, errors);
+        self.check_mutually_exclusive_category_contradiction(vuln_index, errors);
     }
 }
 
@@ -122,6 +169,8 @@ fn check_mutually_exclusive_category_contradiction(
 /// For each item in /vulnerabilities[]/remediations it MUST be tested that a product
 /// is not member of contradicting remediation categories.
 /// This takes indirect relations through product groups into account.
+///
+/// For more details on how the checks work, see [`ProductIdRemediationCategoriesMap].
 pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
     if vulnerabilities.is_empty() {
@@ -129,9 +178,7 @@ pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<()
     }
     let mut errors: Option<Vec<ValidationError>> = None;
     for (v_i, v) in vulnerabilities.iter().enumerate() {
-        let product_id_remediation_map = ProductIdRemediationCategoriesMap::aggregate(doc, v);
-        check_exclusive_categories_contradiction(&product_id_remediation_map, v_i, &mut errors);
-        check_mutually_exclusive_category_contradiction(&product_id_remediation_map, v_i, &mut errors);
+        ProductIdRemediationCategoriesMap::aggregate(doc, v).check_category_contradiction(v_i, &mut errors);
     }
     errors.map_or(Ok(()), Err)
 }

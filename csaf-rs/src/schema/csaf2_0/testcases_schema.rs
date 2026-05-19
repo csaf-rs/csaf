@@ -5,6 +5,7 @@
  */
 #![allow(clippy::all)]
 #![cfg_attr(any(), rustfmt::skip)]
+#![allow(rustdoc::all)]
 /// Error types.
 pub mod error {
     /// Error from a `TryFrom` or `FromStr` implementation.

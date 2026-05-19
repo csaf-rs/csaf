@@ -218,7 +218,7 @@ This creates TypeScript + WASM output in `wasm/`.
 ### Mandatory Tests
 
 | Test specification | 2.0 | 2.1 (experimental) |
-| --- | --- | --- |
+| --- | --- | -- |
 | 6.1.1 | ✅ | ✅ |
 | 6.1.2 | ✅ | ✅ |
 | 6.1.3 | ✅ | ✅ |
@@ -271,7 +271,7 @@ This creates TypeScript + WASM output in `wasm/`.
 | 6.1.32 | ✅ | ✅ |
 | 6.1.33 | ✅ |   |
 | 6.1.34 | ⭕ | ✅ |
-| 6.1.35 | ⭕ |   |
+| 6.1.35 | ⭕ | ✅ |
 | 6.1.36 | ⭕ |   |
 | 6.1.37 | ⭕ |   |
 | 6.1.38 | ⭕ | ✅ |

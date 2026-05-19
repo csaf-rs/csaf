@@ -3,6 +3,7 @@ mod language_tags;
 mod rvisc;
 mod schema;
 mod testcases;
+mod translation;
 mod utils;
 mod validation_schemas;
 
@@ -12,6 +13,7 @@ use crate::rvisc::generate_registry;
 use crate::schema::build_schema;
 use crate::schema::config::{get_schemas, get_testcases_schemas};
 use crate::testcases::{generate_testcases, get_testcase_configs};
+use crate::translation::generate_translations;
 use crate::validation_schemas::generate_validation_schemas;
 use clap::Parser;
 
@@ -42,6 +44,10 @@ struct Args {
     #[arg(long, default_value_t = false)]
     rvisc: bool,
 
+    /// Generate translations
+    #[arg(long, default_value_t = false)]
+    translations: bool,
+
     /// Target folder for generated code, ../csaf-rs by default
     #[arg(long, default_value = "../csaf-rs")]
     target_folder: String,
@@ -56,6 +62,7 @@ fn main() -> Result<(), BuildError> {
         && !args.test_definitions
         && !args.language_tags
         && !args.validation_schemas
+        && !args.translations
         && !args.rvisc;
 
     if run_all || args.schema {
@@ -82,6 +89,10 @@ fn main() -> Result<(), BuildError> {
 
     if run_all || args.validation_schemas {
         generate_validation_schemas(&args.target_folder)?;
+    }
+
+    if run_all || args.translations {
+        generate_translations(&args.target_folder)?;
     }
 
     if run_all || args.rvisc {

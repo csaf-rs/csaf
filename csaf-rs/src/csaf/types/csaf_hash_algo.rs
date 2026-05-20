@@ -73,7 +73,7 @@ impl CsafHashAlgorithm {
 
     /// Normalize a hash algorithm for matching purposes.
     ///
-    /// TODO: Update this once https://github.com/oasis-tcs/csaf/issues/1264 has been answered.
+    /// TODO: Update this once <https://github.com/oasis-tcs/csaf/issues/1264> has been answered.
     /// For now, we are only lowercasing the potentially cased HashAlgorithm::Other variants from
     /// CSAF 2.0. Further normalization could include trimming, removing hyphens, etc.
     pub fn normalize(&self) -> CsafHashAlgorithm {

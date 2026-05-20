@@ -156,12 +156,11 @@ fn bench_full_validation(c: &mut Criterion) {
             .filter_map(|(_name, content)| load_document_2_0(content).ok())
             .collect();
 
-        let test_ids_2_0: Vec<&str> =
-            [mandatory_tests_2_0(), recommended_tests_2_0(), informative_tests_2_0()]
-                .concat()
-                .into_iter()
-                .filter(|id| !SKIPPED_TESTS.contains(id))
-                .collect();
+        let test_ids_2_0: Vec<&str> = [mandatory_tests_2_0(), recommended_tests_2_0(), informative_tests_2_0()]
+            .concat()
+            .into_iter()
+            .filter(|id| !SKIPPED_TESTS.contains(id))
+            .collect();
 
         group.bench_function("csaf_2_0_full_preset", |b| {
             b.iter(|| {
@@ -180,12 +179,11 @@ fn bench_full_validation(c: &mut Criterion) {
             .filter_map(|(_name, content)| load_document_2_1(content).ok())
             .collect();
 
-        let test_ids_2_1: Vec<&str> =
-            [mandatory_tests_2_1(), recommended_tests_2_1(), informative_tests_2_1()]
-                .concat()
-                .into_iter()
-                .filter(|id| !SKIPPED_TESTS.contains(id))
-                .collect();
+        let test_ids_2_1: Vec<&str> = [mandatory_tests_2_1(), recommended_tests_2_1(), informative_tests_2_1()]
+            .concat()
+            .into_iter()
+            .filter(|id| !SKIPPED_TESTS.contains(id))
+            .collect();
 
         group.bench_function("csaf_2_1_full_preset", |b| {
             b.iter(|| {

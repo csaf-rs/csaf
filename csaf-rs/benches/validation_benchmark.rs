@@ -15,7 +15,7 @@ use csaf::csaf2_1::testcases::{
     informative_tests as informative_tests_2_1, mandatory_tests as mandatory_tests_2_1,
     recommended_tests as recommended_tests_2_1,
 };
-use csaf::validation::{validate_by_preset, validate_by_test};
+use csaf::validation::{validate_by_test, validate_by_tests};
 
 /// Collect all JSON test fixture files from a directory recursively.
 fn collect_fixture_files(dir: &str) -> Vec<PathBuf> {
@@ -156,11 +156,18 @@ fn bench_full_validation(c: &mut Criterion) {
             .filter_map(|(_name, content)| load_document_2_0(content).ok())
             .collect();
 
+        let test_ids_2_0: Vec<&str> =
+            [mandatory_tests_2_0(), recommended_tests_2_0(), informative_tests_2_0()]
+                .concat()
+                .into_iter()
+                .filter(|id| !SKIPPED_TESTS.contains(id))
+                .collect();
+
         group.bench_function("csaf_2_0_full_preset", |b| {
             b.iter(|| {
                 for doc in &documents_2_0 {
                     let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                        black_box(validate_by_preset(doc, "2.0", "full"));
+                        black_box(validate_by_tests(doc, "2.0", &test_ids_2_0));
                     }));
                 }
             });
@@ -173,11 +180,18 @@ fn bench_full_validation(c: &mut Criterion) {
             .filter_map(|(_name, content)| load_document_2_1(content).ok())
             .collect();
 
+        let test_ids_2_1: Vec<&str> =
+            [mandatory_tests_2_1(), recommended_tests_2_1(), informative_tests_2_1()]
+                .concat()
+                .into_iter()
+                .filter(|id| !SKIPPED_TESTS.contains(id))
+                .collect();
+
         group.bench_function("csaf_2_1_full_preset", |b| {
             b.iter(|| {
                 for doc in &documents_2_1 {
                     let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                        black_box(validate_by_preset(doc, "2.1", "full"));
+                        black_box(validate_by_tests(doc, "2.1", &test_ids_2_1));
                     }));
                 }
             });

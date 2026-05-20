@@ -1,4 +1,5 @@
 use std::fs;
+use std::hint::black_box;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -90,7 +91,7 @@ fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {
             b.iter(|| {
                 for doc in &documents {
                     let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                        validate_by_test(doc, test_id);
+                        black_box(validate_by_test(doc, test_id));
                     }));
                 }
             });
@@ -126,7 +127,7 @@ fn bench_individual_tests_csaf_2_1(c: &mut Criterion) {
             b.iter(|| {
                 for doc in &documents {
                     let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                        validate_by_test(doc, test_id);
+                        black_box(validate_by_test(doc, test_id));
                     }));
                 }
             });
@@ -156,7 +157,7 @@ fn bench_full_validation(c: &mut Criterion) {
             b.iter(|| {
                 for doc in &documents_2_0 {
                     let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                        validate_by_preset(doc, "2.0", "full");
+                        black_box(validate_by_preset(doc, "2.0", "full"));
                     }));
                 }
             });
@@ -173,7 +174,7 @@ fn bench_full_validation(c: &mut Criterion) {
             b.iter(|| {
                 for doc in &documents_2_1 {
                     let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                        validate_by_preset(doc, "2.1", "full");
+                        black_box(validate_by_preset(doc, "2.1", "full"));
                     }));
                 }
             });
@@ -197,7 +198,7 @@ fn bench_parse_only(c: &mut Criterion) {
     group.bench_function("csaf_2_0", |b| {
         b.iter(|| {
             for (_name, content) in &contents {
-                let _ = load_document_2_0(content);
+                let _ = black_box(load_document_2_0(content));
             }
         });
     });

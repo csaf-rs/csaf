@@ -223,9 +223,9 @@ fn bench_parse_only(c: &mut Criterion) {
 
 fn configured_criterion() -> Criterion {
     Criterion::default()
-        .warm_up_time(Duration::from_secs(2))
-        .measurement_time(Duration::from_secs(5))
-        .sample_size(50)
+        .warm_up_time(Duration::from_secs(1))
+        .measurement_time(Duration::from_secs(1))
+        .sample_size(10)
 }
 
 criterion_group! {

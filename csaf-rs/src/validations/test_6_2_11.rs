@@ -17,7 +17,7 @@ pub fn test_6_2_11_missing_canonical_url(doc: &impl CsafTrait) -> Result<(), Vec
     // Check if any reference meets the criteria
     if let Some(references) = doc.get_document().get_references() {
         for reference in references {
-            if CategoryOfReference::Self_ == *reference.get_category()
+            if CategoryOfReference::Self_ == reference.get_category()
                 && reference.get_url().starts_with("https://")
                 && reference.get_url().ends_with(&expected_filename)
             {

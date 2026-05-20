@@ -16,7 +16,7 @@ pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Resul
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
-            if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange {
+            if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
                 errors
                     .get_or_insert_default()
                     .push(create_product_version_range_error(path));

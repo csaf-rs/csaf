@@ -46,7 +46,7 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
     if let Some(references) = doc.get_document().get_references() {
         for (r_i, reference) in references.iter().enumerate() {
             if reference.get_summary().starts_with("Superseding Document") {
-                if *reference.get_category() != CategoryOfReference::External {
+                if reference.get_category() != CategoryOfReference::External {
                     errors
                         .get_or_insert_default()
                         .push(create_incorrect_category_error(r_i));

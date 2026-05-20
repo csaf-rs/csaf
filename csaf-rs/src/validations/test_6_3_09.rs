@@ -1,7 +1,7 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait, build_leaf_instance_path};
 use crate::validation::ValidationError;
 
-fn format_category_path(categories: &[&CategoryOfTheBranch]) -> String {
+fn format_category_path(categories: &[CategoryOfTheBranch]) -> String {
     categories
         .iter()
         .map(|c| c.to_string())
@@ -10,8 +10,8 @@ fn format_category_path(categories: &[&CategoryOfTheBranch]) -> String {
 }
 
 fn create_branch_categories_error(
-    full_path: &[&CategoryOfTheBranch],
-    relevant_categories: &[&CategoryOfTheBranch],
+    full_path: &[CategoryOfTheBranch],
+    relevant_categories: &[CategoryOfTheBranch],
     instance_path: String,
 ) -> ValidationError {
     let full_display = format_category_path(full_path);
@@ -29,10 +29,10 @@ fn create_branch_categories_error(
 }
 
 /// Required category sequence for branch paths.
-const REQUIRED_CATEGORIES_ORDER: [&CategoryOfTheBranch; 3] = [
-    &CategoryOfTheBranch::Vendor,
-    &CategoryOfTheBranch::ProductName,
-    &CategoryOfTheBranch::ProductVersion,
+const REQUIRED_CATEGORIES_ORDER: [CategoryOfTheBranch; 3] = [
+    CategoryOfTheBranch::Vendor,
+    CategoryOfTheBranch::ProductName,
+    CategoryOfTheBranch::ProductVersion,
 ];
 
 /// 6.3.9 Branch Categories
@@ -56,7 +56,7 @@ pub fn test_6_3_9_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     // for every path to a leaf node
     for (path, indices) in leaf_paths {
         // filter to only the categories relevant to this rule, preserving order
-        let mut relevant: Vec<&CategoryOfTheBranch> = path
+        let mut relevant: Vec<CategoryOfTheBranch> = path
             .iter()
             .map(|b| b.get_category())
             .filter(|c| REQUIRED_CATEGORIES_ORDER.contains(c))
@@ -68,7 +68,7 @@ pub fn test_6_3_9_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<Vali
         // Check whether the filtered list matches the required sequence exactly
         if !relevant.iter().eq(REQUIRED_CATEGORIES_ORDER.iter()) {
             // collect all categories only when needed for the error message
-            let all_categories: Vec<&CategoryOfTheBranch> = path.iter().map(|b| b.get_category()).collect();
+            let all_categories: Vec<CategoryOfTheBranch> = path.iter().map(|b| b.get_category()).collect();
             errors.get_or_insert_default().push(create_branch_categories_error(
                 &all_categories,
                 &relevant,
@@ -92,31 +92,31 @@ mod tests {
     fn test_test_6_3_9() {
         let case_01_missing_product_version = Err(vec![create_branch_categories_error(
             &[
-                &CategoryOfTheBranch::Vendor,
-                &CategoryOfTheBranch::ProductName,
-                &CategoryOfTheBranch::PatchLevel,
+                CategoryOfTheBranch::Vendor,
+                CategoryOfTheBranch::ProductName,
+                CategoryOfTheBranch::PatchLevel,
             ],
-            &[&CategoryOfTheBranch::Vendor, &CategoryOfTheBranch::ProductName],
+            &[CategoryOfTheBranch::Vendor, CategoryOfTheBranch::ProductName],
             "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
         )]);
 
         let case_02_missing_vendor = Err(vec![
             create_branch_categories_error(
                 &[
-                    &CategoryOfTheBranch::ProductFamily,
-                    &CategoryOfTheBranch::ProductName,
-                    &CategoryOfTheBranch::ProductVersion,
+                    CategoryOfTheBranch::ProductFamily,
+                    CategoryOfTheBranch::ProductName,
+                    CategoryOfTheBranch::ProductVersion,
                 ],
-                &[&CategoryOfTheBranch::ProductName, &CategoryOfTheBranch::ProductVersion],
+                &[CategoryOfTheBranch::ProductName, CategoryOfTheBranch::ProductVersion],
                 "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
             ),
             create_branch_categories_error(
                 &[
-                    &CategoryOfTheBranch::ProductFamily,
-                    &CategoryOfTheBranch::ProductName,
-                    &CategoryOfTheBranch::ProductVersion,
+                    CategoryOfTheBranch::ProductFamily,
+                    CategoryOfTheBranch::ProductName,
+                    CategoryOfTheBranch::ProductVersion,
                 ],
-                &[&CategoryOfTheBranch::ProductName, &CategoryOfTheBranch::ProductVersion],
+                &[CategoryOfTheBranch::ProductName, CategoryOfTheBranch::ProductVersion],
                 "/product_tree/branches/0/branches/0/branches/1/product".to_string(),
             ),
         ]);
@@ -124,28 +124,28 @@ mod tests {
         let case_03_missing_vendor_wrong_order = Err(vec![
             create_branch_categories_error(
                 &[
-                    &CategoryOfTheBranch::ProductFamily,
-                    &CategoryOfTheBranch::ProductVersion,
-                    &CategoryOfTheBranch::ProductName,
+                    CategoryOfTheBranch::ProductFamily,
+                    CategoryOfTheBranch::ProductVersion,
+                    CategoryOfTheBranch::ProductName,
                 ],
-                &[&CategoryOfTheBranch::ProductVersion, &CategoryOfTheBranch::ProductName],
+                &[CategoryOfTheBranch::ProductVersion, CategoryOfTheBranch::ProductName],
                 "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
             ),
             create_branch_categories_error(
                 &[
-                    &CategoryOfTheBranch::ProductFamily,
-                    &CategoryOfTheBranch::ProductVersion,
-                    &CategoryOfTheBranch::ProductName,
+                    CategoryOfTheBranch::ProductFamily,
+                    CategoryOfTheBranch::ProductVersion,
+                    CategoryOfTheBranch::ProductName,
                 ],
-                &[&CategoryOfTheBranch::ProductVersion, &CategoryOfTheBranch::ProductName],
+                &[CategoryOfTheBranch::ProductVersion, CategoryOfTheBranch::ProductName],
                 "/product_tree/branches/0/branches/0/branches/1/product".to_string(),
             ),
         ]);
 
-        let case_04_categories: &[&CategoryOfTheBranch] = &[
-            &CategoryOfTheBranch::Vendor,
-            &CategoryOfTheBranch::ProductVersion,
-            &CategoryOfTheBranch::ProductName,
+        let case_04_categories: &[CategoryOfTheBranch] = &[
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch::ProductName,
         ];
         let case_04_wrong_order = Err(vec![
             create_branch_categories_error(
@@ -160,20 +160,20 @@ mod tests {
             ),
         ]);
 
-        let case_05_full: &[&CategoryOfTheBranch] = &[
-            &CategoryOfTheBranch::HostName,
-            &CategoryOfTheBranch::Vendor,
-            &CategoryOfTheBranch::ProductVersion,
-            &CategoryOfTheBranch::Language,
-            &CategoryOfTheBranch::ProductName,
-            &CategoryOfTheBranch::Architecture,
-            &CategoryOfTheBranch::ServicePack,
-            &CategoryOfTheBranch::PatchLevel,
+        let case_05_full: &[CategoryOfTheBranch] = &[
+            CategoryOfTheBranch::HostName,
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch::Language,
+            CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch::Architecture,
+            CategoryOfTheBranch::ServicePack,
+            CategoryOfTheBranch::PatchLevel,
         ];
         let case_05_relevant = &[
-            &CategoryOfTheBranch::Vendor,
-            &CategoryOfTheBranch::ProductVersion,
-            &CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch::ProductName,
         ];
         let case_05_wrong_order_deep_tree = Err(vec![
             create_branch_categories_error(
@@ -191,19 +191,19 @@ mod tests {
         let case_06_missing_vendor_name_version = Err(vec![
             create_branch_categories_error(
                 &[
-                    &CategoryOfTheBranch::HostName,
-                    &CategoryOfTheBranch::Architecture,
-                    &CategoryOfTheBranch::Language,
+                    CategoryOfTheBranch::HostName,
+                    CategoryOfTheBranch::Architecture,
+                    CategoryOfTheBranch::Language,
                 ],
                 &[],
                 "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
             ),
             create_branch_categories_error(
                 &[
-                    &CategoryOfTheBranch::HostName,
-                    &CategoryOfTheBranch::Architecture,
-                    &CategoryOfTheBranch::ServicePack,
-                    &CategoryOfTheBranch::PatchLevel,
+                    CategoryOfTheBranch::HostName,
+                    CategoryOfTheBranch::Architecture,
+                    CategoryOfTheBranch::ServicePack,
+                    CategoryOfTheBranch::PatchLevel,
                 ],
                 &[],
                 "/product_tree/branches/0/branches/1/branches/0/branches/0/product".to_string(),
@@ -212,16 +212,16 @@ mod tests {
 
         let case_s01_stacked_wrong_order = Err(vec![create_branch_categories_error(
             &[
-                &CategoryOfTheBranch::Vendor,
-                &CategoryOfTheBranch::ProductName,
-                &CategoryOfTheBranch::Vendor,
-                &CategoryOfTheBranch::ProductVersion,
+                CategoryOfTheBranch::Vendor,
+                CategoryOfTheBranch::ProductName,
+                CategoryOfTheBranch::Vendor,
+                CategoryOfTheBranch::ProductVersion,
             ],
             &[
-                &CategoryOfTheBranch::Vendor,
-                &CategoryOfTheBranch::ProductName,
-                &CategoryOfTheBranch::Vendor,
-                &CategoryOfTheBranch::ProductVersion,
+                CategoryOfTheBranch::Vendor,
+                CategoryOfTheBranch::ProductName,
+                CategoryOfTheBranch::Vendor,
+                CategoryOfTheBranch::ProductVersion,
             ],
             "/product_tree/branches/0/branches/0/branches/0/branches/0/product".to_string(),
         )]);

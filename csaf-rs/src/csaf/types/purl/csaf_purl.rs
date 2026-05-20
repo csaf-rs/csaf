@@ -54,7 +54,7 @@ mod test_purl_regex_parsing {
 
     /// Helper function for the CSAF 2.0 / CSAF 2.1 matrix test. We don't care about the values,
     /// just if the from_str passed / failed.
-    fn parse_purl_regex(input: &str, version: &CsafVersion) -> Result<(), ()> {
+    fn parse_purl_regex(input: &str, version: CsafVersion) -> Result<(), ()> {
         match version {
             CsafVersion::X20 => PackageUrlRepresentation20::from_str(input).map(drop).map_err(drop),
             CsafVersion::X21 => PackageUrlRepresentation21::from_str(input).map(drop).map_err(drop),
@@ -75,7 +75,7 @@ mod test_purl_regex_parsing {
         #[case] input: &str,
         #[values(CsafVersion::X20, CsafVersion::X21)] version: CsafVersion,
     ) {
-        assert!(parse_purl_regex(input, &version).is_err());
+        assert!(parse_purl_regex(input, version).is_err());
     }
 
     #[rstest]
@@ -86,8 +86,8 @@ mod test_purl_regex_parsing {
     /// TODO: Same as above, these are schema validation tests implemented here due to lack of schema
     /// validation testing "capability" so far.
     fn test_valid_20_invalid_21_purl_regex(#[case] input: &str) {
-        assert!(parse_purl_regex(input, &CsafVersion::X20).is_ok());
-        assert!(parse_purl_regex(input, &CsafVersion::X21).is_err());
+        assert!(parse_purl_regex(input, CsafVersion::X20).is_ok());
+        assert!(parse_purl_regex(input, CsafVersion::X21).is_err());
     }
 }
 
@@ -104,7 +104,7 @@ mod test_purl_full_pipeline {
     use super::*;
 
     /// Helper function for the CSAF 2.0 / 2.1 matrix test.
-    fn to_csaf_purl(purl_str: &str, version: &CsafVersion) -> CsafPurl {
+    fn to_csaf_purl(purl_str: &str, version: CsafVersion) -> CsafPurl {
         match version {
             CsafVersion::X20 => {
                 let repr = PackageUrlRepresentation20::from_str(purl_str)
@@ -140,7 +140,7 @@ mod test_purl_full_pipeline {
         #[case] expected_error: PurlParseErrorKind,
         #[values(CsafVersion::X20, CsafVersion::X21)] version: CsafVersion,
     ) {
-        let csaf_purl = to_csaf_purl(purl_str, &version);
+        let csaf_purl = to_csaf_purl(purl_str, version);
 
         let expected = PurlParseError::new_for_test(purl_str, expected_error).into_validation_error("");
 
@@ -168,7 +168,7 @@ mod test_purl_full_pipeline {
     #[case::deb_without_namespace("pkg:deb/curl@8.13.0-5~bpo12+1?arch=i386")]
     /// Test the happy path with some additional valid purls from the test data.
     fn test_valid_purl(#[case] input: &str, #[values(CsafVersion::X20, CsafVersion::X21)] version: CsafVersion) {
-        let csaf_purl = to_csaf_purl(input, &version);
+        let csaf_purl = to_csaf_purl(input, version);
         match csaf_purl {
             CsafPurl::Valid(_) => {},
             CsafPurl::Invalid(err) => panic!(

@@ -21,7 +21,7 @@ pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> R
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
-            if branch.get_category() == &CategoryOfTheBranch::ProductVersionRange
+            if branch.get_category() == CategoryOfTheBranch::ProductVersionRange
                 && !VERS_REGEX.is_match(branch.get_name())
             {
                 errors

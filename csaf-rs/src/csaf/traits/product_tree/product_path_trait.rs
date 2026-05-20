@@ -1,15 +1,14 @@
 use crate::csaf_traits::ProductTrait;
 use crate::schema::csaf2_0::schema::Relationship;
 use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath};
-use std::ops::Deref;
 
 /// Trait representing an abstract relationship or product path in a product tree.
 pub trait ProductPathTrait<FPN: ProductTrait> {
     /// Retrieves the product reference identifier.
-    fn get_beginning_product_reference(&self) -> &String;
+    fn get_beginning_product_reference(&self) -> &str;
 
     /// Retrieves the identifier of the related product.
-    fn get_subpath_product_references(&self) -> Vec<&String>;
+    fn get_subpath_product_references(&self) -> Vec<&str>;
 
     /// Retrieves the full product name associated with the relationship.
     fn get_full_product_name(&self) -> &FPN;
@@ -29,12 +28,12 @@ pub trait ProductPathTrait<FPN: ProductTrait> {
 }
 
 impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Relationship {
-    fn get_beginning_product_reference(&self) -> &String {
-        self.product_reference.deref()
+    fn get_beginning_product_reference(&self) -> &str {
+        &self.product_reference
     }
 
-    fn get_subpath_product_references(&self) -> Vec<&String> {
-        vec![self.relates_to_product_reference.deref()]
+    fn get_subpath_product_references(&self) -> Vec<&str> {
+        vec![&self.relates_to_product_reference]
     }
 
     fn get_full_product_name(&self) -> &crate::schema::csaf2_0::schema::FullProductNameT {
@@ -55,14 +54,14 @@ impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Rela
 }
 
 impl ProductPathTrait<FullProductNameT> for ProductPath {
-    fn get_beginning_product_reference(&self) -> &String {
+    fn get_beginning_product_reference(&self) -> &str {
         &self.beginning_product_reference
     }
 
-    fn get_subpath_product_references(&self) -> Vec<&String> {
+    fn get_subpath_product_references(&self) -> Vec<&str> {
         self.subpaths
             .iter()
-            .map(|subpath| subpath.next_product_reference.deref())
+            .map(|subpath| subpath.next_product_reference.as_str())
             .collect()
     }
 

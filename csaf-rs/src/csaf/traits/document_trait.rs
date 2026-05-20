@@ -68,7 +68,7 @@ pub trait DocumentTrait {
     /// Returns the references of this document
     fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
 
-    fn get_csaf_version(&self) -> &CsafVersion;
+    fn get_csaf_version(&self) -> CsafVersion;
 
     /// Returns the title of this document
     fn get_title(&self) -> &str;
@@ -125,9 +125,9 @@ impl DocumentTrait for DocumentLevelMetaData20 {
         self.references.as_deref()
     }
 
-    fn get_csaf_version(&self) -> &CsafVersion {
-        match self.csaf_version {
-            CsafVersion20::X20 => &CsafVersion::X20,
+    fn get_csaf_version(&self) -> CsafVersion {
+        match &self.csaf_version {
+            CsafVersion20::X20 => CsafVersion::X20,
         }
     }
 
@@ -181,9 +181,9 @@ impl DocumentTrait for DocumentLevelMetaData21 {
         self.references.as_deref()
     }
 
-    fn get_csaf_version(&self) -> &CsafVersion {
-        match self.csaf_version {
-            CsafVersion21::X21 => &CsafVersion::X21,
+    fn get_csaf_version(&self) -> CsafVersion {
+        match &self.csaf_version {
+            CsafVersion21::X21 => CsafVersion::X21,
         }
     }
 

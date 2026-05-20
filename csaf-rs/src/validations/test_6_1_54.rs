@@ -55,7 +55,9 @@ fn parse_license_as_allowed_in_csaf(license: &LicenseExpression) -> Result<Expre
 /// 6.1.54 License Expression
 ///
 /// It MUST be tested that the license expression is valid.
-/// To implement this test, it it deemed sufficient to check for the ABNF defined in annex B of [SPDX301] and the restriction on the DocumentRef part given in 3.2.2.7.
+/// To implement this test, it is deemed sufficient to check for the ABNF defined
+/// in annex B of [SPDX](https://spdx.github.io/spdx-spec/) and the restriction
+/// on the DocumentRef part given in 3.2.2.7.
 pub fn test_6_1_54_invalid_license_expression(
     doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
 ) -> Result<(), Vec<ValidationError>> {

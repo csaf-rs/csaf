@@ -19,6 +19,11 @@ pub fn add_ignore_dead_code(file: &mut syn::File) {
     file.attrs.insert(0, doc_attr);
 }
 
+pub fn add_ignore_rustdoc(file: &mut syn::File) {
+    let doc_attr = syn::parse_quote! { #![allow(rustdoc::all)] };
+    file.attrs.insert(0, doc_attr);
+}
+
 pub fn add_generated_code_header(file: &mut syn::File) {
     let doc_attr: syn::Attribute = syn::parse_quote! { #![doc = #GENERATED_CODE_HEADER] };
     file.attrs.insert(0, doc_attr);

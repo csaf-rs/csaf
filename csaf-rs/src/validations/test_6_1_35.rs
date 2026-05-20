@@ -170,7 +170,7 @@ impl ProductIdRemediationCategoriesMap {
 /// is not member of contradicting remediation categories.
 /// This takes indirect relations through product groups into account.
 ///
-/// For more details on how the checks work, see [`ProductIdRemediationCategoriesMap].
+/// For more details on how the checks work, see `ProductIdRemediationCategoriesMap`.
 pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
     if vulnerabilities.is_empty() {

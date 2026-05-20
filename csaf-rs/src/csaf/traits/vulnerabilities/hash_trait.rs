@@ -19,7 +19,7 @@ pub trait HashTrait {
     /// The `algorithm` parameter is **NOT** normalized, as this is so far being run for known
     /// algorithms, which are normalized by definition.
     ///
-    /// TODO: This might change based on https://github.com/oasis-tcs/csaf/issues/1264
+    /// TODO: This might change based on <https://github.com/oasis-tcs/csaf/issues/1264>
     fn contains_only_hash_algorithm(&self, algorithm: CsafHashAlgorithm) -> bool {
         let file_hashes = self.get_file_hashes();
         if file_hashes.is_empty() {

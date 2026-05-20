@@ -65,6 +65,9 @@ fn load_fixture_contents(files: &[PathBuf]) -> Vec<(String, String)> {
         .collect()
 }
 
+/// Tests to skip in individual benchmarks (e.g., too slow or not yet implemented).
+const SKIPPED_TESTS: &[&str] = &["6.1.14"];
+
 /// Benchmark each individual CSAF 2.0 test function across all fixtures.
 fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {
     let fixtures_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
@@ -86,7 +89,7 @@ fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("csaf_2_0_tests");
 
-    for test_id in &all_test_ids {
+    for test_id in all_test_ids.iter().filter(|id| !SKIPPED_TESTS.contains(id)) {
         group.bench_function(*test_id, |b| {
             b.iter(|| {
                 for doc in &documents {
@@ -122,7 +125,7 @@ fn bench_individual_tests_csaf_2_1(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("csaf_2_1_tests");
 
-    for test_id in &all_test_ids {
+    for test_id in all_test_ids.iter().filter(|id| !SKIPPED_TESTS.contains(id)) {
         group.bench_function(*test_id, |b| {
             b.iter(|| {
                 for doc in &documents {

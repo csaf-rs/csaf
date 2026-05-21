@@ -14,6 +14,7 @@ use utoipa_swagger_ui::SwaggerUi;
 use crate::errors::ErrorResponse;
 use crate::handlers::get_preset_tests::*;
 use crate::handlers::get_presets::*;
+use crate::handlers::get_tests::*;
 use crate::handlers::health::*;
 use crate::handlers::validate::*;
 
@@ -38,6 +39,7 @@ fn body_limit() -> usize {
     paths(
         handlers::get_presets::get_presets,
         handlers::get_preset_tests::get_preset_tests,
+        handlers::get_tests::get_tests,
         handlers::validate::validate,
         handlers::validate::validate_file,
         handlers::health::health,
@@ -45,6 +47,7 @@ fn body_limit() -> usize {
     components(schemas(
         PresetsResponse,
         PresetTestsResponse,
+        TestsResponse,
         ErrorResponse,
     )),
     tags(
@@ -66,7 +69,7 @@ async fn main() {
         .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
         .init();
 
-    let port = std::env::var("CSAF_SERVICE_PORT").unwrap_or_else(|_| "3000".to_string());
+    let port = std::env::var("CSAF_SERVICE_PORT").unwrap_or_else(|_| "8082".to_string());
     let host = std::env::var("CSAF_SERVICE_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
     let addr = format!("{host}:{port}");
 
@@ -79,6 +82,7 @@ async fn main() {
 
     let app = Router::new()
         .route(routes::PRESETS, get(get_presets))
+        .route(routes::TESTS, get(get_tests))
         .route(routes::PRESET_TESTS, get(get_preset_tests))
         .route(routes::VALIDATE, post(validate))
         .route(routes::VALIDATE_FILE, post(validate_file))

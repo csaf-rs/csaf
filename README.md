@@ -231,10 +231,10 @@ This creates TypeScript + WASM output in `wasm/`.
 You can also run the service via Docker. To build and run the container, use the following commands:
 ```bash
 docker build -t csaf-service .
-docker run -p 3000:3000 csaf-service
+docker run -p 8082:8082 csaf-service
 ```
 
-You can then access the service at `http://localhost:3000` and navigate to `/swagger-ui` for the API documentation.
+You can then access the service at `http://localhost:8082` and navigate to `/swagger-ui` for the API documentation.
 For further configuration options, please refer to the [csaf-service README](csaf-service/README.md).
 
 

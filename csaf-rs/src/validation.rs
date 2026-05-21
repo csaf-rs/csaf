@@ -127,6 +127,10 @@ pub trait Validatable {
     /// Returns the test IDs belonging to a preset
     fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError>;
 
+    /// Return the available test IDs with their associated preset
+    /// This can be used to list all available tests and their presets for a given version.
+    fn get_tests() -> Vec<(&'static str, &'static str)>;
+
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
 }

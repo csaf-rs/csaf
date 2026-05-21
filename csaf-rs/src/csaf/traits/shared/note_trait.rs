@@ -47,7 +47,7 @@ impl NoteTrait for Note20 {
     }
 
     fn get_text(&self) -> &str {
-        self.text.as_str()
+        &self.text
     }
 }
 
@@ -78,6 +78,6 @@ impl NoteTrait for Note21 {
     }
 
     fn get_text(&self) -> &str {
-        self.text.as_str()
+        &self.text
     }
 }

@@ -12,7 +12,7 @@ impl AggregateSeverityTrait for AggregateSeverity20 {
     }
 
     fn get_text(&self) -> &str {
-        self.text.as_str()
+        &self.text
     }
 }
 
@@ -21,6 +21,6 @@ impl AggregateSeverityTrait for AggregateSeverity21 {
         self.namespace.as_deref()
     }
     fn get_text(&self) -> &str {
-        self.text.as_str()
+        &self.text
     }
 }

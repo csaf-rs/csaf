@@ -39,7 +39,7 @@ impl ThreatTrait for Threat20 {
     }
 
     fn get_details(&self) -> &str {
-        self.details.as_str()
+        &self.details
     }
 }
 
@@ -67,6 +67,6 @@ impl ThreatTrait for Threat21 {
     }
 
     fn get_details(&self) -> &str {
-        self.details.as_str()
+        &self.details
     }
 }

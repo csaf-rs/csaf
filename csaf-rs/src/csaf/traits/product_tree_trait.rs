@@ -393,7 +393,7 @@ impl BranchTrait<FullProductNameT20> for Branch20 {
     }
 
     fn get_name(&self) -> &str {
-        self.name.as_str()
+        &self.name
     }
 
     fn get_product(&self) -> Option<&FullProductNameT20> {
@@ -424,7 +424,7 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
     }
 
     fn get_name(&self) -> &str {
-        self.name.as_str()
+        &self.name
     }
 
     fn get_product(&self) -> Option<&FullProductNameT21> {

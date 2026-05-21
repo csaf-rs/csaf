@@ -92,7 +92,7 @@ impl RemediationTrait for Remediation20 {
         }
     }
     fn get_details(&self) -> &str {
-        self.details.as_str()
+        &self.details
     }
 
     fn get_entitlements(&self) -> Vec<&str> {
@@ -130,7 +130,7 @@ impl RemediationTrait for Remediation21 {
     }
 
     fn get_details(&self) -> &str {
-        self.details.as_str()
+        &self.details
     }
 
     fn get_entitlements(&self) -> Vec<&str> {

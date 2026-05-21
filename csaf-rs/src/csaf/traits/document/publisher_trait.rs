@@ -27,11 +27,11 @@ impl PublisherTrait for Publisher20 {
     }
 
     fn get_name(&self) -> &str {
-        self.name.as_str()
+        &self.name
     }
 
     fn get_namespace(&self) -> &str {
-        self.namespace.as_str()
+        &self.namespace
     }
 
     fn get_contact_details(&self) -> Option<&str> {
@@ -49,11 +49,11 @@ impl PublisherTrait for Publisher21 {
     }
 
     fn get_name(&self) -> &str {
-        self.name.as_str()
+        &self.name
     }
 
     fn get_namespace(&self) -> &str {
-        self.namespace.as_str()
+        &self.namespace
     }
 
     fn get_contact_details(&self) -> Option<&str> {

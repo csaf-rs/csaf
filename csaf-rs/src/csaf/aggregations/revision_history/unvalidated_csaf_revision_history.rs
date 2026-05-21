@@ -36,6 +36,10 @@ impl UnvalidatedCsafRevisionHistory {
         self.0.len()
     }
 
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
     pub(crate) fn get(&self, index: usize) -> Option<&CsafRevisionHistoryItem> {
         self.0.get(index)
     }

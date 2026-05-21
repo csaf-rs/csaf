@@ -1,5 +1,5 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 use std::mem::discriminant;
 
@@ -47,8 +47,11 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     let mut errors: Option<Vec<ValidationError>> = None;
     let mut previous_version: Option<CsafVersionNumber> = None;
 
-    for (i_v, current_version) in tracking.get_revision_history().iter().enumerate() {
-        let current_number = current_version.get_number().clone();
+    let mut rev_history_tuples = tracking.aggregate_revision_history();
+    rev_history_tuples.inplace_sort_by_date_then_number();
+
+    for current_version in rev_history_tuples.iter() {
+        let current_number = current_version.number.clone();
         let current_type = discriminant(&current_number);
 
         if let Some(previous_number) = previous_version
@@ -59,7 +62,7 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
                 .push(create_mixed_versioning_within_history_error(
                     &previous_number,
                     &current_number,
-                    &i_v,
+                    &current_version.path_index,
                 ));
         }
         previous_version = Some(current_number);

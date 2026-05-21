@@ -77,6 +77,7 @@ pub(crate) struct ValidationErrorSchema {
 #[utoipa::path(
     post,
     path = "/api/v1/csaf/{version}/validate",
+    description = "If neither preset nor explicit tests are specified, the schema test will be run by default to verify that the document is valid JSON and conforms to the basic schema structure.",
     params(
         ("version" = String, Path, description = "CSAF version (2.0, 2.1, or auto)"),
         ("preset" = Option<String>, Query, description = "Validation preset"),
@@ -102,6 +103,7 @@ pub(crate) async fn validate(
 #[utoipa::path(
     post,
     path = "/api/v1/csaf/{version}/validate/file",
+    description = "If neither preset nor explicit tests are specified, the schema test will be run by default to verify that the document is valid JSON and conforms to the basic schema structure.",
     params(
         ("version" = String, Path, description = "CSAF version (2.0, 2.1, or auto)"),
         ("preset" = Option<String>, Query, description = "Validation preset"),
@@ -219,6 +221,10 @@ fn resolve_test_ids<'a>(
 
     tests.sort();
     tests.dedup();
+
+    if tests.len() == 0 {
+        tests.push("schema");
+    }
 
     Ok(tests)
 }

@@ -9,5 +9,6 @@ pub mod metric_trait;
 pub mod product_ident_helper_trait;
 pub mod product_status_trait;
 pub mod remediation_trait;
+pub mod restart_required_trait;
 pub mod threat_trait;
 pub mod vulnerability_id_trait;

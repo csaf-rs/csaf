@@ -1,5 +1,5 @@
+pub mod aggregate_severity_trait;
 pub mod distribution_trait;
-pub mod document_references_trait;
 pub mod generator_trait;
 pub mod publisher_trait;
 pub mod revision_trait;

@@ -4,6 +4,10 @@ use crate::schema::csaf2_1::schema::{CategoryOfPublisher as CategoryOfPublisher2
 /// Trait representing publisher information
 pub trait PublisherTrait {
     fn get_category(&self) -> CategoryOfPublisher21;
+    fn get_issuing_authority(&self) -> Option<&str>;
+    fn get_name(&self) -> &str;
+    fn get_namespace(&self) -> &str;
+    fn get_contact_details(&self) -> Option<&str>;
 }
 
 impl PublisherTrait for Publisher20 {
@@ -17,10 +21,42 @@ impl PublisherTrait for Publisher20 {
             CategoryOfPublisher20::User => CategoryOfPublisher21::User,
         }
     }
+
+    fn get_issuing_authority(&self) -> Option<&str> {
+        self.issuing_authority.as_deref().map(String::as_str)
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    fn get_namespace(&self) -> &str {
+        self.namespace.as_str()
+    }
+
+    fn get_contact_details(&self) -> Option<&str> {
+        self.contact_details.as_deref().map(String::as_str)
+    }
 }
 
 impl PublisherTrait for Publisher21 {
     fn get_category(&self) -> CategoryOfPublisher21 {
         self.category
+    }
+
+    fn get_issuing_authority(&self) -> Option<&str> {
+        self.issuing_authority.as_deref().map(String::as_str)
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    fn get_namespace(&self) -> &str {
+        self.namespace.as_str()
+    }
+
+    fn get_contact_details(&self) -> Option<&str> {
+        self.contact_details.as_deref().map(String::as_str)
     }
 }

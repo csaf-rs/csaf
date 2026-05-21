@@ -2,7 +2,7 @@ use crate::schema::csaf2_0::schema::{CategoryOfReference as CategoryOfReference2
 use crate::schema::csaf2_1::schema::{CategoryOfReference as CategoryOfReference21, Reference as Reference21};
 
 /// Trait representing document references
-pub trait DocumentReferenceTrait {
+pub trait ReferenceTrait {
     /// Returns the category of the document reference as enum
     fn get_category(&self) -> CategoryOfReference21;
     /// Returns the summary of the document reference
@@ -11,7 +11,7 @@ pub trait DocumentReferenceTrait {
     fn get_url(&self) -> &str;
 }
 
-impl DocumentReferenceTrait for Reference20 {
+impl ReferenceTrait for Reference20 {
     fn get_category(&self) -> CategoryOfReference21 {
         match &self.category {
             CategoryOfReference20::External => CategoryOfReference21::External,
@@ -28,7 +28,7 @@ impl DocumentReferenceTrait for Reference20 {
     }
 }
 
-impl DocumentReferenceTrait for Reference21 {
+impl ReferenceTrait for Reference21 {
     fn get_category(&self) -> CategoryOfReference21 {
         self.category
     }

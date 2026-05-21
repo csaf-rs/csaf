@@ -6,6 +6,10 @@ use std::ops::Deref;
 pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory21;
     fn get_title(&self) -> Option<&str>;
+
+    fn get_audience(&self) -> Option<&str>;
+
+    fn get_text(&self) -> &str;
 }
 
 // CSAF 2.0 implementation
@@ -37,6 +41,14 @@ impl NoteTrait for Note20 {
     fn get_title(&self) -> Option<&str> {
         self.title.as_deref().map(String::as_str)
     }
+
+    fn get_audience(&self) -> Option<&str> {
+        self.audience.as_deref().map(String::as_str)
+    }
+
+    fn get_text(&self) -> &str {
+        self.text.as_str()
+    }
 }
 
 // CSAF 2.1 implementation
@@ -59,5 +71,13 @@ impl NoteTrait for Note21 {
 
     fn get_title(&self) -> Option<&str> {
         self.title.as_deref().map(String::as_str)
+    }
+
+    fn get_audience(&self) -> Option<&str> {
+        self.audience.as_deref().map(String::as_str)
+    }
+
+    fn get_text(&self) -> &str {
+        self.text.as_str()
     }
 }

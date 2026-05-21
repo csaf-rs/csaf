@@ -8,6 +8,7 @@ use std::ops::Deref;
 pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate + WithOptionalProductIds {
     /// Returns the party associated with this vulnerability involvement
     fn get_party(&self) -> PartyCategory21;
+    fn get_summary(&self) -> Option<&str>;
 }
 
 impl InvolvementTrait for Involvement20 {
@@ -19,6 +20,10 @@ impl InvolvementTrait for Involvement20 {
             PartyCategory20::User => PartyCategory21::User,
             PartyCategory20::Vendor => PartyCategory21::Vendor,
         }
+    }
+
+    fn get_summary(&self) -> Option<&str> {
+        self.summary.as_deref().map(String::as_str)
     }
 }
 
@@ -43,6 +48,10 @@ impl WithOptionalProductIds for Involvement20 {
 impl InvolvementTrait for Involvement21 {
     fn get_party(&self) -> PartyCategory21 {
         self.party
+    }
+
+    fn get_summary(&self) -> Option<&str> {
+        self.summary.as_deref().map(String::as_str)
     }
 }
 

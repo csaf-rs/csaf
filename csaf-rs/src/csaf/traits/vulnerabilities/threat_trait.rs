@@ -8,6 +8,7 @@ use std::ops::Deref;
 pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the category of the threat
     fn get_category(&self) -> CategoryOfTheThreat21;
+    fn get_details(&self) -> &str;
 }
 
 impl WithOptionalGroupIds for Threat20 {
@@ -36,6 +37,10 @@ impl ThreatTrait for Threat20 {
             CategoryOfTheThreat20::TargetSet => CategoryOfTheThreat21::TargetSet,
         }
     }
+
+    fn get_details(&self) -> &str {
+        self.details.as_str()
+    }
 }
 
 impl WithOptionalGroupIds for Threat21 {
@@ -59,5 +64,9 @@ impl WithOptionalDate for Threat21 {
 impl ThreatTrait for Threat21 {
     fn get_category(&self) -> CategoryOfTheThreat21 {
         self.category
+    }
+
+    fn get_details(&self) -> &str {
+        self.details.as_str()
     }
 }

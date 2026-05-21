@@ -32,7 +32,7 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
         return Ok(()); // TODO #409 return a precondition failed here
     };
     let Valid(newest_rev_history_item_date) = &newest_rev_history_item_date.date else {
-        panic!();
+        return Ok(()); // TODO #409 return a precondition failed here
     };
     if current_release_date.get_as_utc() < newest_rev_history_item_date.get_as_utc() {
         return Err(vec![create_older_current_release_date_error(

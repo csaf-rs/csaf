@@ -66,7 +66,7 @@ impl Ord for CsafDateTime {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (&self, &other) {
             (CsafDateTime::Valid(a), CsafDateTime::Valid(b)) => a.cmp(b),
-            // Invalid values are not ordered, but we need to return something, so we return Equal
+            // Invalid cannot be ordered; comparing them is treated as a developer error and panics.
             _ => {
                 panic!("Cannot compare CsafDateTime values if either or both are invalid. This looks like a dev error.")
             },

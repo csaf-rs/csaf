@@ -89,7 +89,7 @@ pub fn test_6_1_31_version_range_in_product_version_branch_name(
     let mut errors: Option<Vec<ValidationError>> = None;
 
     product_tree.visit_all_branches(&mut |branch, path| {
-        if branch.get_category() == &CategoryOfTheBranch::ProductVersion {
+        if branch.get_category() == CategoryOfTheBranch::ProductVersion {
             // if there are any forbidden substrings found, create an error
             if let Some(forbidden_substrings) = check_branch_name_for_forbidden_substrings(branch.get_name()) {
                 errors

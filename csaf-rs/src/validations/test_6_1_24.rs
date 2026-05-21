@@ -2,7 +2,7 @@ use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
 use crate::schema::csaf2_1::schema::PartyCategory;
-use crate::validation::ValidationError;
+use crate::validation::{IntoValidationError, ValidationError};
 use std::collections::HashMap;
 
 fn generate_duplicate_involvement_error(

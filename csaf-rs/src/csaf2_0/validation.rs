@@ -166,14 +166,14 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             match test_id {
                 // informative tests
                 "6.3.1" => Some(ValidatorForTest6_3_1.validate(self)),
-                "6.3.2" => None, // Some(ValidatorForTest6_3_2.validate(self)),
+                "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
                 "6.3.3" => Some(ValidatorForTest6_3_3.validate(self)),
                 "6.3.4" => Some(ValidatorForTest6_3_4.validate(self)),
                 "6.3.5" => Some(ValidatorForTest6_3_5.validate(self)),
                 "6.3.6" => None, // Some(ValidatorForTest6_3_6.validate(self)),
                 "6.3.7" => None, // Some(ValidatorForTest6_3_7.validate(self)),
                 "6.3.8" => None, // Some(ValidatorForTest6_3_8.validate(self)),
-                "6.3.9" => None, // Some(ValidatorForTest6_3_9.validate(self)),
+                "6.3.9" => Some(ValidatorForTest6_3_9.validate(self)),
                 "6.3.10" => Some(ValidatorForTest6_3_10.validate(self)),
                 "6.3.11" => Some(ValidatorForTest6_3_11.validate(self)),
                 // invalid tests

@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use jsonschema::Validator;
 use serde_json::{Map, Value};
 
@@ -7,14 +9,18 @@ use crate::{
     validation::ValidationError,
 };
 
+static CVSS20_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v2.0.json")));
+static CVSS30_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v3.0.json")));
+static CVSS31_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v3.1.json")));
+static CVSS40_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| create_draft_validator(include_str!("../../assets/cvss-v4.0.2.json")));
+
 /// 6.1.8 Invalid CVSS
 /// Invalid CVSS object according to scheme
 pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let cvss20_validator = create_validator(include_str!("../../assets/cvss-v2.0.json"));
-    let cvss30_validator = create_validator(include_str!("../../assets/cvss-v3.0.json"));
-    let cvss31_validator = create_validator(include_str!("../../assets/cvss-v3.1.json"));
-    let cvss40_validator = create_draft_validator(include_str!("../../assets/cvss-v4.0.2.json"));
-
     let mut errors: Vec<ValidationError> = Vec::new();
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
@@ -25,7 +31,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                 if let Some(cvss2) = content.get_cvss_v2() {
                     evaluate_cvss(
                         cvss2,
-                        &cvss20_validator,
+                        &CVSS20_VALIDATOR,
                         &instance_prefix,
                         CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                         &mut errors,
@@ -36,16 +42,16 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
                     if let Some(version) = cvss3.get("version").and_then(|v| v.as_str()) {
                         let metric_type = CsafVulnerabilityMetric::CvssV3(version.to_string());
                         if version == "3.0" {
-                            evaluate_cvss(cvss3, &cvss30_validator, &instance_prefix, metric_type, &mut errors);
+                            evaluate_cvss(cvss3, &CVSS30_VALIDATOR, &instance_prefix, metric_type, &mut errors);
                         } else if version == "3.1" {
-                            evaluate_cvss(cvss3, &cvss31_validator, &instance_prefix, metric_type, &mut errors);
+                            evaluate_cvss(cvss3, &CVSS31_VALIDATOR, &instance_prefix, metric_type, &mut errors);
                         }
                     }
                 }
                 if let Some(cvss4) = content.get_cvss_v4() {
                     evaluate_cvss(
                         cvss4,
-                        &cvss40_validator,
+                        &CVSS40_VALIDATOR,
                         &instance_prefix,
                         CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                         &mut errors,

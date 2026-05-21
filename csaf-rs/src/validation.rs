@@ -1,8 +1,9 @@
+use std::fmt::Display;
+
 use TestResultStatus::*;
 use serde::{Deserialize, Serialize};
-use tsify::Tsify;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationError {
     pub message: String,
@@ -15,8 +16,13 @@ impl std::fmt::Display for ValidationError {
     }
 }
 
+/// Trait for types that can be converted into a [`ValidationError`] by providing an instance path.
+pub trait IntoValidationError {
+    fn into_validation_error(self, instance_path: &str) -> ValidationError;
+}
+
 /// Result of executing a single test
-#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TestResult {
     /// The test ID that was executed
@@ -26,7 +32,7 @@ pub struct TestResult {
     pub status: TestResultStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Tsify)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub enum TestResultStatus {
     Success,
@@ -39,10 +45,30 @@ pub enum TestResultStatus {
     Skipped,
 }
 
+impl Display for TestResultStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Success => write!(f, "Success"),
+            Failure {
+                errors,
+                warnings,
+                infos,
+            } => write!(
+                f,
+                "Failure with {} error(s), {} warning(s) and {} info(s)",
+                errors.len(),
+                warnings.len(),
+                infos.len()
+            ),
+            NotFound => write!(f, "Test not found"),
+            Skipped => write!(f, "Test skipped"),
+        }
+    }
+}
+
 /// Result of a CSAF validation
-#[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ValidationResult {
     /// Whether the validation was successful (no errors)
     pub success: bool,

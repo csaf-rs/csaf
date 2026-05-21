@@ -31,17 +31,17 @@
   },
   "vulnerabilities": [
     {
-      "title": "A vulnerability item with a CVE",
-      "cve": "CVE-2021-12345"
+      "cve": "CVE-2021-12345",
+      "title": "A vulnerability item with a CVE"
     },
     {
-      "title": "A vulnerability item with an id",
       "ids": [
         {
           "system_name": "GitHub Issue",
           "text": "oasis-tcs/csaf#210"
         }
-      ]
+      ],
+      "title": "A vulnerability item with an id"
     }
   ]
 }

@@ -77,9 +77,9 @@ impl From<&String> for CsafLanguage {
         // Validate primary language subtag
         if !is_valid_language_subtag(parsed_lang_tag.primary_language()) {
             return CsafLanguage::Invalid(
-                input_lang_tag.to_string(),
+                input_lang_tag.clone(),
                 CsafLanguageError::InvalidPrimaryLanguageSubtag(
-                    input_lang_tag.to_string(),
+                    input_lang_tag.clone(),
                     parsed_lang_tag.primary_language().to_string(),
                 ),
             );
@@ -90,8 +90,8 @@ impl From<&String> for CsafLanguage {
             && !is_valid_script_subtag(script)
         {
             return CsafLanguage::Invalid(
-                input_lang_tag.to_string(),
-                CsafLanguageError::InvalidScriptSubtag(input_lang_tag.to_string(), script.to_string()),
+                input_lang_tag.clone(),
+                CsafLanguageError::InvalidScriptSubtag(input_lang_tag.clone(), script.to_string()),
             );
         }
 
@@ -100,8 +100,8 @@ impl From<&String> for CsafLanguage {
             && !is_valid_region_subtag(region)
         {
             return CsafLanguage::Invalid(
-                input_lang_tag.to_string(),
-                CsafLanguageError::InvalidRegionSubtag(input_lang_tag.to_string(), region.to_string()),
+                input_lang_tag.clone(),
+                CsafLanguageError::InvalidRegionSubtag(input_lang_tag.clone(), region.to_string()),
             );
         }
 

@@ -32,20 +32,20 @@
   "product_tree": {
     "full_product_names": [
       {
-        "product_id": "CSAFPID-9080700",
-        "name": "Product A"
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
       },
       {
-        "product_id": "CSAFPID-9080701",
-        "name": "Product B"
+        "name": "Product B",
+        "product_id": "CSAFPID-9080701"
       },
       {
-        "product_id": "CSAFPID-9080702",
-        "name": "Product C"
+        "name": "Product C",
+        "product_id": "CSAFPID-9080702"
       }
     ]
   },
- "vulnerabilities": [
+  "vulnerabilities": [
     {
       "cve": "CVE-2017-0145",
       "flags": [
@@ -53,7 +53,7 @@
           "label": "vulnerable_code_not_present",
           "product_ids": [
             "CSAFPID-9080700",
-             "CSAFPID-9080701"
+            "CSAFPID-9080701"
           ]
         }
       ],

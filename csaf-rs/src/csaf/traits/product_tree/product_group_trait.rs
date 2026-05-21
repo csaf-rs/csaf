@@ -8,15 +8,15 @@ use std::ops::Deref;
 /// its IDs and associated product IDs.
 pub trait ProductGroupTrait {
     /// Returns the unique identifier of the product group.
-    fn get_group_id(&self) -> &String;
+    fn get_group_id(&self) -> &str;
 
     /// Retrieves a vector of product IDs contained within the product group.
     fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_;
 }
 
 impl ProductGroupTrait for ProductGroup20 {
-    fn get_group_id(&self) -> &String {
-        self.group_id.deref()
+    fn get_group_id(&self) -> &str {
+        &self.group_id
     }
 
     fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_ {
@@ -25,8 +25,8 @@ impl ProductGroupTrait for ProductGroup20 {
 }
 
 impl ProductGroupTrait for ProductGroup21 {
-    fn get_group_id(&self) -> &String {
-        self.group_id.deref()
+    fn get_group_id(&self) -> &str {
+        &self.group_id
     }
 
     fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_ {

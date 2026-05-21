@@ -4,7 +4,7 @@ use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait};
 ///
 /// Works with any type implementing CsafTrait
 pub fn is_csaf_2_0<Doc: CsafTrait>(doc: &Doc) -> bool {
-    doc.get_document().get_csaf_version() == &CsafVersion::X20
+    doc.get_document().get_csaf_version() == CsafVersion::X20
 }
 
 #[cfg(test)]

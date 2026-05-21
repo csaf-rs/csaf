@@ -1,0 +1,107 @@
+use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
+use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::validation::ValidationError;
+use std::collections::{HashMap, HashSet};
+
+fn create_cvss_v2_only_error(instance_path: String) -> ValidationError {
+    ValidationError {
+        message: "Vulnerability uses CVSS v2 as the only scoring system".to_string(),
+        instance_path,
+    }
+}
+
+/// 6.3.1 Use of CVSS v2 as the only Scoring System
+///
+/// For each vulnerability, tests if in the scores / metrics, CVSS v2 is not the only scoring system used.
+pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+    let mut errors: Option<Vec<ValidationError>> = None;
+
+    // for each vuln
+    for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
+        // generate a map of each product to the set of vulnerability metrics used for it
+        let mut product_metrics_map: HashMap<String, HashSet<CsafVulnerabilityMetric>> =
+            HashMap::<String, HashSet<CsafVulnerabilityMetric>>::new();
+        // generate a map of each product to the paths where it was encountered
+        let mut product_path_map: HashMap<String, HashSet<String>> = HashMap::<String, HashSet<String>>::new();
+        // for each metric and each product in it
+        if let Some(metrics) = vuln.get_metrics() {
+            for (m_i, metric) in metrics.iter().enumerate() {
+                let content = metric.get_content();
+                for product in metric.get_products() {
+                    // add all vulnerability metrics of this metric to the product -> vulnerability metrics map
+                    for vulnerability_metric in content.get_vulnerability_metric_types() {
+                        product_metrics_map
+                            .entry(product.clone())
+                            .or_default()
+                            .insert(vulnerability_metric);
+                    }
+                    // add the path of this metric to the product -> paths map
+                    product_path_map
+                        .entry(product.clone())
+                        .or_default()
+                        .insert(content.get_content_json_path(v_i, m_i));
+                }
+            }
+        }
+        // for each product that has only CVSS v2 as vulnerability metric,
+        for (product, metrics_set) in &product_metrics_map {
+            if metrics_set.len() == 1 && matches!(metrics_set.iter().next(), Some(CsafVulnerabilityMetric::CvssV2(_))) {
+                // create an error for each path it was encountered at
+                if let Some(paths) = product_path_map.get(product) {
+                    for path in paths {
+                        errors
+                            .get_or_insert_default()
+                            .push(create_cvss_v2_only_error(path.clone()));
+                    }
+                }
+            }
+        }
+    }
+
+    errors.map_or(Ok(()), Err)
+}
+
+crate::test_validation::impl_validator!(ValidatorForTest6_3_1, test_6_3_1_use_of_cvss_v2_as_only_scoring_system);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+
+    #[test]
+    fn test_test_6_3_1() {
+        // CSAF 2.0 has 4 test cases and CSAF 2.1 has 8 test cases
+        TESTS_2_0.test_6_3_1.expect(
+            Err(vec![create_cvss_v2_only_error(
+                "/vulnerabilities/0/scores/0".to_string(),
+            )]),
+            Err(vec![
+                create_cvss_v2_only_error("/vulnerabilities/0/scores/0".to_string()),
+                create_cvss_v2_only_error("/vulnerabilities/2/scores/0".to_string()),
+            ]),
+            Ok(()),
+            Ok(()),
+        );
+        TESTS_2_1.test_6_3_1.expect(
+            Err(vec![create_cvss_v2_only_error(
+                "/vulnerabilities/0/metrics/0/content".to_string(),
+            )]),
+            Err(vec![
+                create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
+                create_cvss_v2_only_error("/vulnerabilities/2/metrics/0/content".to_string()),
+            ]),
+            Err(vec![
+                create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
+                create_cvss_v2_only_error("/vulnerabilities/3/metrics/0/content".to_string()),
+            ]),
+            Err(vec![create_cvss_v2_only_error(
+                "/vulnerabilities/2/metrics/0/content".to_string(),
+            )]),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
+    }
+}

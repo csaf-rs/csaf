@@ -34,30 +34,29 @@
       {
         "branches": [
           {
-              "branches": [
-                {
-                  "branches": [
-                    {
-                      "category": "product_version",
-                      "name": "8.5.0",
-                      "product": {
-                        "name": "Open Source curl 8.5.0",
-                        "product_id": "CSAFPID-908070601"
-                      }
+            "branches": [
+              {
+                "branches": [
+                  {
+                    "category": "product_version",
+                    "name": "8.5.0",
+                    "product": {
+                      "name": "Open Source curl 8.5.0",
+                      "product_id": "CSAFPID-908070601"
                     }
-                  ],
-                  "category": "product_name",
-                  "name": "curl"
-                }
-              ],
-              "category": "product_family",
-              "name": "Open Source"
-            }
-          ],
+                  }
+                ],
+                "category": "product_name",
+                "name": "curl"
+              }
+            ],
+            "category": "product_family",
+            "name": "Open Source"
+          }
+        ],
         "category": "vendor",
         "name": "curl"
       }
     ]
   }
 }
-

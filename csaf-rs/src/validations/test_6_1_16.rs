@@ -21,11 +21,11 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
         let doc_version = tracking.get_version();
         // As there are additional criteria to the equality check, we cant just use the Eq impl
         match (&latest_number, &doc_version) {
-            (CsafVersionNumber::IntVer(last_number), CsafVersionNumber::IntVer(doc_version)) => {
+            (CsafVersionNumber::IntVer(last_number), CsafVersionNumber::IntVer(doc_version))
+                if doc_version == last_number =>
+            {
                 // For integer version numbers, the eq compares the u64 ints
-                if doc_version == last_number {
-                    return Ok(());
-                }
+                return Ok(());
             },
             (CsafVersionNumber::SemVer(last_number), CsafVersionNumber::SemVer(doc_version)) => {
                 // Manually compare the semver instances according to test requirements

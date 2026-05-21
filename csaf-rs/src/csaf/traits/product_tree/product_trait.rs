@@ -5,7 +5,6 @@ use crate::schema::csaf2_0::schema::{
 use crate::schema::csaf2_1::schema::{
     FullProductNameT as FullProductNameT21, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct21,
 };
-use std::ops::Deref;
 
 /// Trait representing an abstract full product name in a CSAF document.
 pub trait ProductTrait {
@@ -13,7 +12,7 @@ pub trait ProductTrait {
     type ProductIdentificationHelperType: ProductIdentificationHelperTrait;
 
     /// Returns the product ID from the full product name.
-    fn get_product_id(&self) -> &String;
+    fn get_product_id(&self) -> &str;
 
     /// Returns the textual description of the product
     fn get_name(&self) -> &str;
@@ -25,12 +24,12 @@ pub trait ProductTrait {
 impl ProductTrait for FullProductNameT20 {
     type ProductIdentificationHelperType = HelperToIdentifyTheProduct20;
 
-    fn get_product_id(&self) -> &String {
-        self.product_id.deref()
+    fn get_product_id(&self) -> &str {
+        &self.product_id
     }
 
     fn get_name(&self) -> &str {
-        self.name.deref()
+        &self.name
     }
 
     fn get_product_identification_helper(&self) -> Option<&Self::ProductIdentificationHelperType> {
@@ -41,12 +40,12 @@ impl ProductTrait for FullProductNameT20 {
 impl ProductTrait for FullProductNameT21 {
     type ProductIdentificationHelperType = HelperToIdentifyTheProduct21;
 
-    fn get_product_id(&self) -> &String {
-        self.product_id.deref()
+    fn get_product_id(&self) -> &str {
+        &self.product_id
     }
 
     fn get_name(&self) -> &str {
-        self.name.deref()
+        &self.name
     }
 
     fn get_product_identification_helper(&self) -> Option<&Self::ProductIdentificationHelperType> {

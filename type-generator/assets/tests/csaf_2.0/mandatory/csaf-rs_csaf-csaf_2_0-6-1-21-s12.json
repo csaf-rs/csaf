@@ -1,0 +1,36 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "OASIS CSAF TC",
+      "namespace": "https://csaf.io"
+    },
+    "title": "Mandatory test: Missing Item in Revision History (supplementary example 12: intver interim starting with 1)",
+    "tracking": {
+      "current_release_date": "2026-03-09T13:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-21-S12",
+      "initial_release_date": "2026-03-09T11:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2026-03-09T11:00:00.000Z",
+          "number": "1",
+          "summary": "1"
+        },
+        {
+          "date": "2026-03-09T12:00:00.000Z",
+          "number": "2",
+          "summary": "2"
+        },
+        {
+          "date": "2026-03-09T13:00:00.000Z",
+          "number": "3",
+          "summary": "3"
+        }
+      ],
+      "status": "interim",
+      "version": "3"
+    }
+  }
+}

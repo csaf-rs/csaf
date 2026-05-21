@@ -37,7 +37,7 @@ pub fn test_6_2_48_misuse_at_vendor_name(doc: &impl CsafTrait) -> Result<(), Vec
     let mut errors: Option<Vec<ValidationError>> = None;
 
     product_tree.visit_all_branches(&mut |branch, path| {
-        if branch.get_category() == &CategoryOfTheBranch::Vendor && is_open_source(branch.get_name()) {
+        if branch.get_category() == CategoryOfTheBranch::Vendor && is_open_source(branch.get_name()) {
             errors
                 .get_or_insert_default()
                 .push(create_misuse_at_vendor_name_error(branch.get_name(), path));

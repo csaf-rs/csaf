@@ -1,3 +1,5 @@
 **/target
 .idea
 *.iml
+**/node_modules
+go/csaf_ffi/lib/

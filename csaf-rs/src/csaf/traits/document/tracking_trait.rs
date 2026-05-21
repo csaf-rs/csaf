@@ -11,7 +11,6 @@ use crate::schema::csaf2_1::schema::{
     Tracking as Tracking21,
 };
 use chrono::{DateTime, Utc};
-use std::ops::Deref;
 
 /// Type alias for a vector of revision history items
 pub type RevisionHistory = Vec<RevisionHistoryItem>;
@@ -81,7 +80,7 @@ pub trait TrackingTrait {
     fn get_status(&self) -> DocumentStatus21;
 
     /// Returns the tracking ID of this document
-    fn get_id(&self) -> &String;
+    fn get_id(&self) -> &str;
 
     fn get_version(&self) -> CsafVersionNumber;
 }
@@ -114,8 +113,8 @@ impl TrackingTrait for Tracking20 {
         }
     }
 
-    fn get_id(&self) -> &String {
-        self.id.deref()
+    fn get_id(&self) -> &str {
+        &self.id
     }
 
     fn get_version(&self) -> CsafVersionNumber {
@@ -147,8 +146,8 @@ impl TrackingTrait for Tracking21 {
         self.status
     }
 
-    fn get_id(&self) -> &String {
-        self.id.deref()
+    fn get_id(&self) -> &str {
+        &self.id
     }
 
     fn get_version(&self) -> CsafVersionNumber {

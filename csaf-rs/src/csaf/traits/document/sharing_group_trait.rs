@@ -13,7 +13,7 @@ pub trait SharingGroupTrait {
     fn get_id(&self) -> &Uuid;
 
     /// Returns the optional name of the sharing group
-    fn get_name(&self) -> Option<&String>;
+    fn get_name(&self) -> Option<&str>;
 
     /// Utility function to check if the sharing group name is "Public"
     fn is_name_public(&self) -> bool {
@@ -31,7 +31,7 @@ impl SharingGroupTrait for NotPresentInCsaf20 {
         self.into_any()
     }
 
-    fn get_name(&self) -> Option<&String> {
+    fn get_name(&self) -> Option<&str> {
         self.into_any()
     }
 }
@@ -41,7 +41,7 @@ impl SharingGroupTrait for SharingGroup21 {
         &self.id
     }
 
-    fn get_name(&self) -> Option<&String> {
-        self.name.as_deref()
+    fn get_name(&self) -> Option<&str> {
+        self.name.as_deref().map(String::as_str)
     }
 }

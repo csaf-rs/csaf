@@ -42,7 +42,7 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
                 // For each algo found multiple times, generate error message for all indices with the algo
                 for (normalized_algo, file_hash_is) in &algorithms {
                     if file_hash_is.len() > 1 {
-                        for (original_algo, file_hash_i) in file_hash_is.iter() {
+                        for (original_algo, file_hash_i) in file_hash_is {
                             errors.get_or_insert_default().push(test_6_1_25_err_generator(
                                 normalized_algo,
                                 original_algo.as_ref(),

@@ -5,7 +5,7 @@ use std::ops::Deref;
 
 pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory21;
-    fn get_title(&self) -> Option<&String>;
+    fn get_title(&self) -> Option<&str>;
 }
 
 // CSAF 2.0 implementation
@@ -23,7 +23,7 @@ impl WithOptionalProductIds for Note20 {
 
 impl NoteTrait for Note20 {
     fn get_category(&self) -> NoteCategory21 {
-        match self.category {
+        match &self.category {
             NoteCategory20::Summary => NoteCategory21::Summary,
             NoteCategory20::Details => NoteCategory21::Details,
             NoteCategory20::Other => NoteCategory21::Other,
@@ -34,8 +34,8 @@ impl NoteTrait for Note20 {
         }
     }
 
-    fn get_title(&self) -> Option<&String> {
-        self.title.as_deref()
+    fn get_title(&self) -> Option<&str> {
+        self.title.as_deref().map(String::as_str)
     }
 }
 
@@ -57,7 +57,7 @@ impl NoteTrait for Note21 {
         self.category
     }
 
-    fn get_title(&self) -> Option<&String> {
-        self.title.as_deref()
+    fn get_title(&self) -> Option<&str> {
+        self.title.as_deref().map(String::as_str)
     }
 }

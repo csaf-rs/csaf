@@ -23,7 +23,7 @@ pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Resu
 
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
         product_tree.visit_all_branches(&mut |branch, path| {
-            if branch.get_category() == &CategoryOfTheBranch::ProductVersion
+            if branch.get_category() == CategoryOfTheBranch::ProductVersion
                 && V_AS_VERSION_INDICATOR_REGEX.is_match(branch.get_name())
             {
                 errors

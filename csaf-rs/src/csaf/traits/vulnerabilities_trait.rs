@@ -118,7 +118,7 @@ pub trait VulnerabilityTrait {
     fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>>;
 
     /// Returns the CVE associated with the vulnerability.
-    fn get_cve(&self) -> Option<&String>;
+    fn get_cve(&self) -> Option<&str>;
 
     /// Returns the CWE associated with the vulnerability.
     fn get_cwe(&self) -> Option<Vec<Cwe>>;
@@ -198,8 +198,8 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.involvements.as_ref()
     }
 
-    fn get_cve(&self) -> Option<&String> {
-        self.cve.as_deref()
+    fn get_cve(&self) -> Option<&str> {
+        self.cve.as_deref().map(String::as_str)
     }
 
     fn get_cwe(&self) -> Option<Vec<Cwe>> {
@@ -266,8 +266,8 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.involvements.as_ref()
     }
 
-    fn get_cve(&self) -> Option<&String> {
-        self.cve.as_deref()
+    fn get_cve(&self) -> Option<&str> {
+        self.cve.as_deref().map(String::as_str)
     }
 
     fn get_cwe(&self) -> Option<Vec<Cwe>> {

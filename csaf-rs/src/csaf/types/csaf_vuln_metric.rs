@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter};
 /// Types of vulnerability metrics known until CSAF 2.1
 #[derive(Hash, Eq, PartialEq, Clone)]
 pub enum CsafVulnerabilityMetric {
-    SsvcV1,
+    SsvcV2,
     CvssV2(String),
     CvssV3(String),
     CvssV4(String),
@@ -15,7 +15,7 @@ impl CsafVulnerabilityMetric {
     /// Returns the property name for the metric, which is used in the JSON representation.
     pub fn get_metric_prop_name(&self) -> &'static str {
         match self {
-            CsafVulnerabilityMetric::SsvcV1 => "ssvc_v1",
+            CsafVulnerabilityMetric::SsvcV2 => "ssvc_v2",
             CsafVulnerabilityMetric::CvssV2(_) => "cvss_v2",
             CsafVulnerabilityMetric::CvssV3(_) => "cvss_v3",
             CsafVulnerabilityMetric::CvssV4(_) => "cvss_v4",
@@ -29,7 +29,7 @@ impl CsafVulnerabilityMetric {
 impl Display for CsafVulnerabilityMetric {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            CsafVulnerabilityMetric::SsvcV1 => write!(f, "SSVC-v1"),
+            CsafVulnerabilityMetric::SsvcV2 => write!(f, "SSVC-v2"),
             CsafVulnerabilityMetric::CvssV2(version) => write!(f, "CVSS-v{}", *version),
             CsafVulnerabilityMetric::CvssV3(version) => write!(f, "CVSS-v{}", *version),
             CsafVulnerabilityMetric::CvssV4(version) => write!(f, "CVSS-v{}", *version),

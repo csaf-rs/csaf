@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
-use crate::csaf2_1::ssvc_dp_selection_list::SelectionList;
 use crate::schema::csaf2_0::schema::Score;
 use crate::schema::csaf2_1::schema::{Content, Epss, QualitativeSeverityRating};
 use serde::de::Error as SerdeError;
 use serde_json::{Map, Value};
+use ssvc::selection_list::SelectionList;
 
 /// Helper function to extract the version string from a CVSS JSON object.
 /// TODO: This will be replaced after the CVSS implementation (probably?)
@@ -31,8 +31,8 @@ pub trait ContentTrait {
     /// Returns all metric types present.
     fn get_vulnerability_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
         let mut types: Vec<CsafVulnerabilityMetric> = self.get_cvss_metric_types();
-        if self.has_ssvc() {
-            types.push(CsafVulnerabilityMetric::SsvcV1);
+        if self.has_ssvc_v2() {
+            types.push(CsafVulnerabilityMetric::SsvcV2);
         }
         if self.has_epss() {
             types.push(CsafVulnerabilityMetric::Epss);
@@ -44,11 +44,14 @@ pub trait ContentTrait {
     }
 
     /// Returns whether this content contains a non-empty SSVC metric.
-    fn has_ssvc(&self) -> bool;
+    fn has_ssvc_v2(&self) -> bool;
 
     /// Returns a parsed instance of the contained SSVC metric, or a `serde_json::Error`,
     /// encapsulated as a `Result`.
-    fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error>;
+    fn get_ssvc_v2(&self) -> Result<SelectionList, serde_json::Error>;
+
+    /// Returns a JSON representation of the contained SSVC v2 metric, if any.
+    fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>>;
 
     /// Returns a JSON representation of the contained CVSS 2.0 metric, if any.
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>>;
@@ -72,6 +75,11 @@ pub trait ContentTrait {
     /// Returns whether this content contains a CVSS 4.0 metric.
     fn has_cvss_v4(&self) -> bool {
         self.get_cvss_v4().is_some()
+    }
+
+    /// Returns whether this content contains any CVSS metric (v2, v3, or v4).
+    fn has_any_cvss(&self) -> bool {
+        self.has_cvss_v2() || self.has_cvss_v3() || self.has_cvss_v4()
     }
 
     /// Returns a reference to the contained EPSS metric if it exists.
@@ -117,12 +125,16 @@ pub trait ContentTrait {
 }
 
 impl ContentTrait for Score {
-    fn has_ssvc(&self) -> bool {
+    fn has_ssvc_v2(&self) -> bool {
         false
     }
 
-    fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error> {
+    fn get_ssvc_v2(&self) -> Result<SelectionList, serde_json::Error> {
         Err(SerdeError::custom("SSVC metrics are not implemented in CSAF 2.0"))
+    }
+
+    fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>> {
+        None
     }
 
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
@@ -159,12 +171,20 @@ impl ContentTrait for Score {
 }
 
 impl ContentTrait for Content {
-    fn has_ssvc(&self) -> bool {
+    fn has_ssvc_v2(&self) -> bool {
         !self.ssvc_v2.is_empty()
     }
 
-    fn get_ssvc(&self) -> Result<SelectionList, serde_json::Error> {
+    fn get_ssvc_v2(&self) -> Result<SelectionList, serde_json::Error> {
         serde_json::from_value::<SelectionList>(Value::Object(self.ssvc_v2.clone()))
+    }
+
+    fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>> {
+        if self.ssvc_v2.is_empty() {
+            None
+        } else {
+            Some(&self.ssvc_v2)
+        }
     }
 
     fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {

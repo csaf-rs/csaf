@@ -13,7 +13,7 @@ pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<
 #[inline]
 fn validate_document_category(
     doc_category: &CsafDocumentCategory,
-    doc_version: &CsafVersion,
+    doc_version: CsafVersion,
 ) -> Result<(), Vec<ValidationError>> {
     // skip test for known profiles and categories
     if doc_category.is_known_profile(doc_version) {
@@ -44,7 +44,7 @@ fn validate_document_category(
 
 fn test_6_1_26_err_generator_starts_with_csaf(
     doc_category: &CsafDocumentCategory,
-    version: &CsafVersion,
+    version: CsafVersion,
 ) -> ValidationError {
     ValidationError {
         message: format!(
@@ -86,11 +86,11 @@ mod tests {
         // CSAF 2.0 specific test cases
         let case_02_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
             &CsafDocumentCategory::from("csaf_BASE"),
-            &CsafVersion::X20,
+            CsafVersion::X20,
         )]);
         let case_03_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
             &CsafDocumentCategory::from("Csaf_VeX"),
-            &CsafVersion::X20,
+            CsafVersion::X20,
         )]);
         let case_04_csaf20 = Err(vec![test_6_1_26_err_generator_too_similar(
             &CsafDocumentCategory::from("csafsecurityadvisory"),
@@ -120,26 +120,26 @@ mod tests {
         )]);
         let case_07_csaf21 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
             &CsafDocumentCategory::from("CsaF_VeX"),
-            &CsafVersion::X21,
+            CsafVersion::X21,
         )]);
         let case_08_csaf21 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
             &CsafDocumentCategory::from("csaf_BASE"),
-            &CsafVersion::X21,
+            CsafVersion::X21,
         )]);
 
         // Supplementary test cases
         // CSAF 2.1 categories that should fail on CSAF 2.0
         let deprecated_sec_advisory_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
             &CsafDocumentCategory::from("csaf_deprecated_security_advisory"),
-            &CsafVersion::X20,
+            CsafVersion::X20,
         )]);
         let withdrawn_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
             &CsafDocumentCategory::from("csaf_withdrawn"),
-            &CsafVersion::X20,
+            CsafVersion::X20,
         )]);
         let superseded_csaf20 = Err(vec![test_6_1_26_err_generator_starts_with_csaf(
             &CsafDocumentCategory::from("csaf_superseded"),
-            &CsafVersion::X20,
+            CsafVersion::X20,
         )]);
 
         TESTS_2_0.test_6_1_26.expect(
@@ -173,15 +173,15 @@ mod tests {
     #[test]
     fn test_validate_document_category_v21() {
         let version = CsafVersion::X21;
-        assert!(validate_document_category(&CsafDocumentCategory::from("Csaf_a"), &version).is_err());
-        assert!(validate_document_category(&CsafDocumentCategory::from("csafvex"), &version).is_err());
-        assert!(validate_document_category(&CsafDocumentCategory::from("Informational Advisory"), &version).is_err());
-        assert!(validate_document_category(&CsafDocumentCategory::from("Security      Advisory"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("Csaf_a"), version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("csafvex"), version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("Informational Advisory"), version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("Security      Advisory"), version).is_err());
         assert!(
-            validate_document_category(&CsafDocumentCategory::from("security-incident-response"), &version).is_err()
+            validate_document_category(&CsafDocumentCategory::from("security-incident-response"), version).is_err()
         );
-        assert!(validate_document_category(&CsafDocumentCategory::from("Superseded"), &version).is_err());
-        assert!(validate_document_category(&CsafDocumentCategory::from("V_eX"), &version).is_err());
-        assert!(validate_document_category(&CsafDocumentCategory::from("veX"), &version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("Superseded"), version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("V_eX"), version).is_err());
+        assert!(validate_document_category(&CsafDocumentCategory::from("veX"), version).is_err());
     }
 }

@@ -70,7 +70,7 @@ async fn main() {
         .init();
 
     let port = std::env::var("CSAF_SERVICE_PORT").unwrap_or_else(|_| "8082".to_string());
-    let host = std::env::var("CSAF_SERVICE_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let host = std::env::var("CSAF_SERVICE_HOST").unwrap_or_else(|_| "localhost".to_string());
     let addr = format!("{host}:{port}");
 
     let cors_layer = if permissive_cors_enabled() {

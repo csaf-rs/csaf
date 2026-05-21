@@ -46,6 +46,11 @@ serde_json = { version = "1", features = ["preserve_order"] }
 
 [dev-dependencies]
 rstest = "0.26.1"
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "validation_benchmark"
+harness = false
 
 [package.metadata.docs.rs]
 rustc-args = ["--cfg", "docsrs"]

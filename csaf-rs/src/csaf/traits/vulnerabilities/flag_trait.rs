@@ -1,8 +1,6 @@
-use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_0::schema::{Flag as Flag20, LabelOfTheFlag as LabelOfTheFlag20};
 use crate::schema::csaf2_1::schema::{Flag as Flag21, LabelOfTheFlag as LabelOfTheFlag21};
-use std::ops::Deref;
 
 /// Trait for accessing vulnerability flags information
 pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
@@ -10,17 +8,13 @@ pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptiona
     fn get_label(&self) -> LabelOfTheFlag21;
 }
 
-impl WithOptionalGroupIds for Flag20 {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
-    }
-}
+crate::csaf::traits::impl_with_optional_group_ids!(Flag20);
+crate::csaf::traits::impl_with_optional_product_ids!(Flag20);
+crate::csaf::traits::impl_with_optional_date!(Flag20);
 
-impl WithOptionalProductIds for Flag20 {
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-}
+crate::csaf::traits::impl_with_optional_group_ids!(Flag21);
+crate::csaf::traits::impl_with_optional_product_ids!(Flag21);
+crate::csaf::traits::impl_with_optional_date!(Flag21);
 
 impl FlagTrait for Flag20 {
     fn get_label(&self) -> LabelOfTheFlag21 {
@@ -36,32 +30,8 @@ impl FlagTrait for Flag20 {
     }
 }
 
-impl WithOptionalDate for Flag20 {
-    fn get_date(&self) -> Option<CsafDateTime> {
-        self.date.as_ref().map(CsafDateTime::from)
-    }
-}
-
-impl WithOptionalGroupIds for Flag21 {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
-    }
-}
-
-impl WithOptionalProductIds for Flag21 {
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-}
-
 impl FlagTrait for Flag21 {
     fn get_label(&self) -> LabelOfTheFlag21 {
         self.label
-    }
-}
-
-impl WithOptionalDate for Flag21 {
-    fn get_date(&self) -> Option<CsafDateTime> {
-        self.date.as_ref().map(CsafDateTime::from)
     }
 }

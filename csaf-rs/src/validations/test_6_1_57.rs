@@ -3,7 +3,7 @@ use crate::validation::ValidationError;
 use std::collections::HashMap;
 
 fn create_stacked_categories_error(
-    stacked_categories: &[(&CategoryOfTheBranch, &u64)],
+    stacked_categories: &[(CategoryOfTheBranch, &u64)],
     instance_path: String,
 ) -> ValidationError {
     // singular / plural of category
@@ -41,9 +41,9 @@ pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(),
     // for every path
     for (path, indices) in leaf_paths {
         // generate a hashmap of category occurrences
-        let mut categories_in_path_map: HashMap<&CategoryOfTheBranch, u64> = HashMap::new();
+        let mut categories_in_path_map: HashMap<CategoryOfTheBranch, u64> = HashMap::new();
         for branch in &path {
-            if branch.get_category() == &CategoryOfTheBranch::ProductFamily {
+            if branch.get_category() == CategoryOfTheBranch::ProductFamily {
                 continue;
             }
             categories_in_path_map
@@ -53,7 +53,7 @@ pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(),
         }
 
         // filter hashmap to only categories that occur more than once
-        let mut stacked_categories: Vec<(&CategoryOfTheBranch, &u64)> = categories_in_path_map
+        let mut stacked_categories: Vec<(CategoryOfTheBranch, &u64)> = categories_in_path_map
             .iter()
             .filter(|(_, count)| **count > 1)
             .map(|(cat, count)| (*cat, count))
@@ -84,49 +84,49 @@ mod tests {
     #[test]
     fn test_6_1_57() {
         let case_01_simple = Err(vec![create_stacked_categories_error(
-            &[(&CategoryOfTheBranch::Vendor, &2)],
+            &[(CategoryOfTheBranch::Vendor, &2)],
             "/product_tree/branches/0/branches/0/branches/0/branches/0/product".to_string(),
         )]);
 
         let case_02_depth = Err(vec![
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::ProductName, &2)],
+                &[(CategoryOfTheBranch::ProductName, &2)],
                 "/product_tree/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/product".to_string()
             ),
         ]);
 
         let case_03_breadth = Err(vec![
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::Architecture, &3)],
+                &[(CategoryOfTheBranch::Architecture, &3)],
                 "/product_tree/branches/0/branches/0/branches/1/branches/0/branches/0/branches/0/branches/0/product"
                     .to_string(),
             ),
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::Architecture, &3)],
+                &[(CategoryOfTheBranch::Architecture, &3)],
                 "/product_tree/branches/0/branches/0/branches/1/branches/0/branches/0/branches/0/branches/1/product"
                     .to_string(),
             ),
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::Architecture, &3)],
+                &[(CategoryOfTheBranch::Architecture, &3)],
                 "/product_tree/branches/0/branches/0/branches/1/branches/0/branches/0/branches/1/branches/0/product"
                     .to_string(),
             ),
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::Architecture, &3)],
+                &[(CategoryOfTheBranch::Architecture, &3)],
                 "/product_tree/branches/0/branches/0/branches/1/branches/0/branches/1/branches/0/branches/0/product"
                     .to_string(),
             ),
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::Architecture, &3)],
+                &[(CategoryOfTheBranch::Architecture, &3)],
                 "/product_tree/branches/0/branches/0/branches/1/branches/0/branches/1/branches/1/branches/0/product"
                     .to_string(),
             ),
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::Architecture, &3)],
+                &[(CategoryOfTheBranch::Architecture, &3)],
                 "/product_tree/branches/0/branches/0/branches/1/branches/1/branches/0/branches/0/product".to_string(),
             ),
             create_stacked_categories_error(
-                &[(&CategoryOfTheBranch::Architecture, &3)],
+                &[(CategoryOfTheBranch::Architecture, &3)],
                 "/product_tree/branches/0/branches/0/branches/1/branches/1/branches/1/branches/0/product".to_string(),
             ),
         ]);

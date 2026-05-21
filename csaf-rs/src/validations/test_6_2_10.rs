@@ -12,7 +12,7 @@ use std::sync::LazyLock;
 /// Ok(()). (later wasSkipped TODO)
 pub fn test_6_2_10_missing_tlp_label(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // In CSAF 2.1 this field is mandatory and validated via the schema, so we skip this test
-    if doc.get_document().get_csaf_version() == &CsafVersion::X21 {
+    if doc.get_document().get_csaf_version() == CsafVersion::X21 {
         return Ok(()); // TODO #409 wasSkipped
     }
     // We just need to consider get_distribution_20 / get_tlp_20 here. If either is missing, return an error

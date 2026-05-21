@@ -4,40 +4,40 @@ use crate::schema::csaf2_1::schema::{CategoryOfReference as CategoryOfReference2
 /// Trait representing document references
 pub trait DocumentReferenceTrait {
     /// Returns the category of the document reference as enum
-    fn get_category(&self) -> &CategoryOfReference21;
+    fn get_category(&self) -> CategoryOfReference21;
     /// Returns the summary of the document reference
-    fn get_summary(&self) -> &String;
+    fn get_summary(&self) -> &str;
     /// Returns the URL of the document reference
-    fn get_url(&self) -> &String;
+    fn get_url(&self) -> &str;
 }
 
 impl DocumentReferenceTrait for Reference20 {
-    fn get_category(&self) -> &CategoryOfReference21 {
+    fn get_category(&self) -> CategoryOfReference21 {
         match &self.category {
-            CategoryOfReference20::External => &CategoryOfReference21::External,
-            CategoryOfReference20::Self_ => &CategoryOfReference21::Self_,
+            CategoryOfReference20::External => CategoryOfReference21::External,
+            CategoryOfReference20::Self_ => CategoryOfReference21::Self_,
         }
     }
 
-    fn get_summary(&self) -> &String {
+    fn get_summary(&self) -> &str {
         &self.summary
     }
 
-    fn get_url(&self) -> &String {
+    fn get_url(&self) -> &str {
         &self.url
     }
 }
 
 impl DocumentReferenceTrait for Reference21 {
-    fn get_category(&self) -> &CategoryOfReference21 {
-        &self.category
+    fn get_category(&self) -> CategoryOfReference21 {
+        self.category
     }
 
-    fn get_summary(&self) -> &String {
+    fn get_summary(&self) -> &str {
         &self.summary
     }
 
-    fn get_url(&self) -> &String {
+    fn get_url(&self) -> &str {
         &self.url
     }
 }

@@ -218,7 +218,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// Returns an optional reference to the child branches of this branch.
     fn get_branches(&self) -> Option<&Vec<Self>>;
 
-    fn get_category(&self) -> &CategoryOfTheBranch;
+    fn get_category(&self) -> CategoryOfTheBranch;
 
     fn get_name(&self) -> &str;
 
@@ -375,20 +375,20 @@ impl BranchTrait<FullProductNameT20> for Branch20 {
         self.branches.as_deref()
     }
 
-    fn get_category(&self) -> &CategoryOfTheBranch {
-        match self.category {
-            CategoryOfTheBranch20::Architecture => &CategoryOfTheBranch::Architecture,
-            CategoryOfTheBranch20::HostName => &CategoryOfTheBranch::HostName,
-            CategoryOfTheBranch20::Language => &CategoryOfTheBranch::Language,
-            CategoryOfTheBranch20::Legacy => &CategoryOfTheBranch::Legacy,
-            CategoryOfTheBranch20::PatchLevel => &CategoryOfTheBranch::PatchLevel,
-            CategoryOfTheBranch20::ProductFamily => &CategoryOfTheBranch::ProductFamily,
-            CategoryOfTheBranch20::ProductName => &CategoryOfTheBranch::ProductName,
-            CategoryOfTheBranch20::ProductVersion => &CategoryOfTheBranch::ProductVersion,
-            CategoryOfTheBranch20::ProductVersionRange => &CategoryOfTheBranch::ProductVersionRange,
-            CategoryOfTheBranch20::ServicePack => &CategoryOfTheBranch::ServicePack,
-            CategoryOfTheBranch20::Specification => &CategoryOfTheBranch::Specification,
-            CategoryOfTheBranch20::Vendor => &CategoryOfTheBranch::Vendor,
+    fn get_category(&self) -> CategoryOfTheBranch {
+        match &self.category {
+            CategoryOfTheBranch20::Architecture => CategoryOfTheBranch::Architecture,
+            CategoryOfTheBranch20::HostName => CategoryOfTheBranch::HostName,
+            CategoryOfTheBranch20::Language => CategoryOfTheBranch::Language,
+            CategoryOfTheBranch20::Legacy => CategoryOfTheBranch::Legacy,
+            CategoryOfTheBranch20::PatchLevel => CategoryOfTheBranch::PatchLevel,
+            CategoryOfTheBranch20::ProductFamily => CategoryOfTheBranch::ProductFamily,
+            CategoryOfTheBranch20::ProductName => CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch20::ProductVersion => CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch20::ProductVersionRange => CategoryOfTheBranch::ProductVersionRange,
+            CategoryOfTheBranch20::ServicePack => CategoryOfTheBranch::ServicePack,
+            CategoryOfTheBranch20::Specification => CategoryOfTheBranch::Specification,
+            CategoryOfTheBranch20::Vendor => CategoryOfTheBranch::Vendor,
         }
     }
 
@@ -406,20 +406,20 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
         self.branches.as_deref()
     }
 
-    fn get_category(&self) -> &CategoryOfTheBranch {
-        match self.category {
-            CategoryOfTheBranch21::Architecture => &CategoryOfTheBranch::Architecture,
-            CategoryOfTheBranch21::HostName => &CategoryOfTheBranch::HostName,
-            CategoryOfTheBranch21::Language => &CategoryOfTheBranch::Language,
-            CategoryOfTheBranch21::PatchLevel => &CategoryOfTheBranch::PatchLevel,
-            CategoryOfTheBranch21::ProductFamily => &CategoryOfTheBranch::ProductFamily,
-            CategoryOfTheBranch21::ProductName => &CategoryOfTheBranch::ProductName,
-            CategoryOfTheBranch21::ProductVersion => &CategoryOfTheBranch::ProductVersion,
-            CategoryOfTheBranch21::ProductVersionRange => &CategoryOfTheBranch::ProductVersionRange,
-            CategoryOfTheBranch21::ServicePack => &CategoryOfTheBranch::ServicePack,
-            CategoryOfTheBranch21::Specification => &CategoryOfTheBranch::Specification,
-            CategoryOfTheBranch21::Vendor => &CategoryOfTheBranch::Vendor,
-            CategoryOfTheBranch21::Platform => &CategoryOfTheBranch::Platform,
+    fn get_category(&self) -> CategoryOfTheBranch {
+        match &self.category {
+            CategoryOfTheBranch21::Architecture => CategoryOfTheBranch::Architecture,
+            CategoryOfTheBranch21::HostName => CategoryOfTheBranch::HostName,
+            CategoryOfTheBranch21::Language => CategoryOfTheBranch::Language,
+            CategoryOfTheBranch21::PatchLevel => CategoryOfTheBranch::PatchLevel,
+            CategoryOfTheBranch21::ProductFamily => CategoryOfTheBranch::ProductFamily,
+            CategoryOfTheBranch21::ProductName => CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch21::ProductVersion => CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch21::ProductVersionRange => CategoryOfTheBranch::ProductVersionRange,
+            CategoryOfTheBranch21::ServicePack => CategoryOfTheBranch::ServicePack,
+            CategoryOfTheBranch21::Specification => CategoryOfTheBranch::Specification,
+            CategoryOfTheBranch21::Vendor => CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch21::Platform => CategoryOfTheBranch::Platform,
         }
     }
 

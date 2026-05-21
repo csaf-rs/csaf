@@ -54,7 +54,7 @@ impl DocumentCategoryTestConfig {
     /// The check includes both shared categories and version-specific categories.
     pub fn matches_category_with_csaf_version(
         &self,
-        csaf_version: &CsafVersion,
+        csaf_version: CsafVersion,
         document_category: &CsafDocumentCategory,
     ) -> bool {
         // First check shared categories
@@ -113,37 +113,31 @@ mod tests {
         // Shared applies to both
         assert!(
             TEST_CONFIG
-                .matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafSecurityAdvisory)
+                .matches_category_with_csaf_version(CsafVersion::X20, &CsafDocumentCategory::CsafSecurityAdvisory)
         );
         assert!(
             TEST_CONFIG
-                .matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafSecurityAdvisory)
+                .matches_category_with_csaf_version(CsafVersion::X21, &CsafDocumentCategory::CsafSecurityAdvisory)
         );
 
         // CSAF 2.0-specific applies only to 2.0
-        assert!(TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafVex));
-        assert!(!TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafVex));
+        assert!(TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X20, &CsafDocumentCategory::CsafVex));
+        assert!(!TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X21, &CsafDocumentCategory::CsafVex));
 
         // CSAF 2.1-specific applies only to 2.1
         assert!(
-            !TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafWithdrawn)
+            !TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X20, &CsafDocumentCategory::CsafWithdrawn)
         );
-        assert!(
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn)
-        );
+        assert!(TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn));
 
         // Other categories do not apply
         assert!(
-            !TEST_CONFIG.matches_category_with_csaf_version(
-                &CsafVersion::X20,
-                &CsafDocumentCategory::CsafInformationalAdvisory
-            )
+            !TEST_CONFIG
+                .matches_category_with_csaf_version(CsafVersion::X20, &CsafDocumentCategory::CsafInformationalAdvisory)
         );
         assert!(
-            !TEST_CONFIG.matches_category_with_csaf_version(
-                &CsafVersion::X21,
-                &CsafDocumentCategory::CsafInformationalAdvisory
-            )
+            !TEST_CONFIG
+                .matches_category_with_csaf_version(CsafVersion::X21, &CsafDocumentCategory::CsafInformationalAdvisory)
         );
     }
 
@@ -181,7 +175,7 @@ mod tests {
             DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X20, &CsafDocumentCategory::CsafVex);
+            TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X20, &CsafDocumentCategory::CsafVex);
         });
         assert!(result.is_err());
     }
@@ -192,7 +186,7 @@ mod tests {
             DocumentCategoryTestConfig::new().csaf20(&[CsafDocumentCategory::CsafVex]);
 
         let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category_with_csaf_version(&CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn);
+            TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn);
         });
         assert!(result.is_err());
     }

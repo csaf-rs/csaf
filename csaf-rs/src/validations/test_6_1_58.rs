@@ -29,10 +29,10 @@ pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
         // check if it contains one of the relevant categories
         let contains_product_version = path
             .iter()
-            .any(|b| b.get_category() == &CategoryOfTheBranch::ProductVersion);
+            .any(|b| b.get_category() == CategoryOfTheBranch::ProductVersion);
         let contains_product_version_range = path
             .iter()
-            .any(|b| b.get_category() == &CategoryOfTheBranch::ProductVersionRange);
+            .any(|b| b.get_category() == CategoryOfTheBranch::ProductVersionRange);
 
         // if it contains both, add an error
         if contains_product_version && contains_product_version_range {

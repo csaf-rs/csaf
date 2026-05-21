@@ -26,7 +26,7 @@ pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         let cve = vulnerability.get_cve();
         if let Some(cve) = cve {
-            let path = cve_paths.entry(cve.clone()).or_default();
+            let path = cve_paths.entry(cve.to_owned()).or_default();
             path.push(i_r);
         }
     }

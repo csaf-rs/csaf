@@ -90,7 +90,7 @@ impl CsafDocumentCategory {
     }
 
     /// Checks if the document category is a known profile for the given CSAF version
-    pub fn is_known_profile(&self, version: &CsafVersion) -> bool {
+    pub fn is_known_profile(&self, version: CsafVersion) -> bool {
         match version {
             CsafVersion::X20 => Self::CSAF_20_KNOWN_PROFILES.contains(self),
             CsafVersion::X21 => Self::CSAF_21_KNOWN_PROFILES.contains(self),
@@ -98,7 +98,7 @@ impl CsafDocumentCategory {
     }
 
     /// Returns a `, ` concatenated string of known profiles for the given CSAF version
-    pub fn known_profile_concat(version: &CsafVersion) -> String {
+    pub fn known_profile_concat(version: CsafVersion) -> String {
         let profiles: &[CsafDocumentCategory] = match version {
             CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
             CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,
@@ -111,7 +111,7 @@ impl CsafDocumentCategory {
     }
 
     /// Returns a vector of tuples containing normalized known profile strings and their original enum values
-    pub fn known_profiles_normalized(version: &CsafVersion) -> Vec<(String, CsafDocumentCategory)> {
+    pub fn known_profiles_normalized(version: CsafVersion) -> Vec<(String, CsafDocumentCategory)> {
         let profiles: &[CsafDocumentCategory] = match version {
             CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
             CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,

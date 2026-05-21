@@ -10,7 +10,7 @@ pub trait RevisionTrait: WithDate {
     fn get_number(&self) -> CsafVersionNumber;
 
     /// Returns the summary of changes in this revision
-    fn get_summary(&self) -> &String;
+    fn get_summary(&self) -> &str;
 }
 
 impl RevisionTrait for Revision20 {
@@ -18,7 +18,7 @@ impl RevisionTrait for Revision20 {
         CsafVersionNumber::from(&self.number)
     }
 
-    fn get_summary(&self) -> &String {
+    fn get_summary(&self) -> &str {
         &self.summary
     }
 }
@@ -28,7 +28,7 @@ impl RevisionTrait for Revision21 {
         CsafVersionNumber::from(&self.number)
     }
 
-    fn get_summary(&self) -> &String {
+    fn get_summary(&self) -> &str {
         &self.summary
     }
 }

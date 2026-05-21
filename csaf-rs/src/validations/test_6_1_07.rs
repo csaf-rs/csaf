@@ -28,7 +28,7 @@ fn aggregate_product_cvss_metrics(
         let content = metric.get_content();
         let metric_json_path = content.get_content_json_path(vulnerability_index, metric_index);
         let present_cvss_metric_types = content.get_cvss_metric_types();
-        let source = metric.get_source().cloned();
+        let source = metric.get_source().map(|s| s.to_owned());
         for product_id in metric.get_products() {
             for metric_type in &present_cvss_metric_types {
                 product_metrics

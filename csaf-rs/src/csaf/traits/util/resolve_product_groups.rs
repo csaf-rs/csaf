@@ -23,7 +23,7 @@ where
     let product_tree = doc.get_product_tree()?;
 
     // collect requested group IDs into a hashset for O(1) lookup
-    let product_groups: HashSet<&String> = product_groups.into_iter().collect();
+    let product_groups: HashSet<&str> = product_groups.into_iter().map(|s| s.as_str()).collect();
 
     let product_ids: BTreeSet<String> = product_tree
         .get_product_groups()

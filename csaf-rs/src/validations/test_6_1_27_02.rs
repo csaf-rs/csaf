@@ -35,7 +35,7 @@ pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Ve
     let mut found_external_reference = false;
     if let Some(references) = doc.get_document().get_references() {
         for reference in references {
-            if CategoryOfReference::External == *reference.get_category() {
+            if CategoryOfReference::External == reference.get_category() {
                 found_external_reference = true;
                 break;
             };

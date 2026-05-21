@@ -16,7 +16,7 @@ pub fn test_6_2_22_document_tracking_id_in_title(doc: &impl CsafTrait) -> Result
     let title = document.get_title();
     let tracking_id = document.get_tracking().get_id();
 
-    if title.contains(tracking_id.as_str()) {
+    if title.contains(tracking_id) {
         return Err(vec![create_tracking_id_in_title_error(title, tracking_id)]);
     }
 

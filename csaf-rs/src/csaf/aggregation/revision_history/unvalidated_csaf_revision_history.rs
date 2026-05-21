@@ -10,7 +10,7 @@ use std::fmt::Debug;
 /// This wrapper adds no validation of the revision history items (i.e. validity of CsafDateTime)
 /// and no validation of the correct version number typing of the revision history as a whole.
 #[derive(Clone, Debug)]
-pub struct UnvalidatedCsafRevisionHistory(pub Vec<CsafRevisionHistoryItem>);
+pub struct UnvalidatedCsafRevisionHistory(Vec<CsafRevisionHistoryItem>);
 
 // TODO: These sorting steps will be moved to the ValidatedCsafRevisionHistory after the refactor
 // is done. For now, we need them here to pass our test coverage.

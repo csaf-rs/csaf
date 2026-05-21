@@ -1,0 +1,53 @@
+name: benchmark
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: benchmark-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: "true"
+
+      - name: Use cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: benchmark
+
+      - name: Update rustup
+        run: rustup update stable --no-self-update
+
+      - name: Run benchmarks
+        run: cargo bench --bench validation_benchmark -- --output-format bencher | tee output.txt
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: CSAF Validation Benchmark
+          tool: "cargo"
+          output-file-path: output.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          alert-threshold: "150%"
+          comment-on-alert: true
+          summary-always: true
+          comment-always: ${{ github.event_name == 'pull_request' }}
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: dev/bench

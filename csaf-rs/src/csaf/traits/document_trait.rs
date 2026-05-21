@@ -5,7 +5,7 @@ use crate::csaf::traits::util::extract_references::{
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, ReferenceTrait, NoteTrait, PublisherTrait,
+    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, NoteTrait, PublisherTrait, ReferenceTrait,
     TrackingTrait,
 };
 use crate::schema::csaf2_0::schema::{

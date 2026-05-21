@@ -5,8 +5,8 @@ use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, Cwe, ReferenceTrait, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait,
-    MetricTrait, NoteTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
+    AcknowledgmentTrait, Cwe, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait, MetricTrait, NoteTrait,
+    ReferenceTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
 };
 use crate::schema::csaf2_0::schema::{
     Acknowledgment as Acknowledgment20, Flag as Flag20, Id as Id20, Involvement as Involvement20, Note as Note20,

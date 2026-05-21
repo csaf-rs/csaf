@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, ReferenceTrait, DocumentTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
 use regex::Regex;

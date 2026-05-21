@@ -10,6 +10,7 @@ use tower::ServiceExt;
 
 use crate::handlers::get_preset_tests::get_preset_tests;
 use crate::handlers::get_presets::get_presets;
+use crate::handlers::get_tests::get_tests;
 use crate::handlers::health::health;
 use crate::handlers::validate::{validate, validate_file};
 use crate::routes;
@@ -18,6 +19,7 @@ use crate::routes;
 pub fn app() -> Router {
     Router::new()
         .route(routes::PRESETS, get(get_presets))
+        .route(routes::TESTS, get(get_tests))
         .route(routes::PRESET_TESTS, get(get_preset_tests))
         .route(routes::VALIDATE, post(validate))
         .route(routes::VALIDATE_FILE, post(validate_file))

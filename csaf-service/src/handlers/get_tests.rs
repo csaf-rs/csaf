@@ -2,7 +2,7 @@ use axum::{Json, extract::Path, http::StatusCode};
 use csaf::csaf_traits::CsafVersion;
 use csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf2_1;
 use csaf::{schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf2_0, validation::Validatable};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 use crate::errors::*;
@@ -12,7 +12,7 @@ pub(crate) struct TestsResponse {
     pub version: String,
     pub tests: Vec<TestInPreset>,
 }
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize, ToSchema, PartialEq)]
 pub(crate) struct TestInPreset {
     pub id: String,
     pub preset: String,
@@ -63,49 +63,55 @@ pub(crate) fn tests_for_version(version: &CsafVersion) -> Vec<TestInPreset> {
 
 #[cfg(test)]
 mod tests {
+    use csaf::csaf2_0::testcases::informative_tests as informative_tests_2_0;
+    use csaf::csaf2_0::testcases::mandatory_tests as mandatory_tests_2_0;
+    use csaf::csaf2_0::testcases::recommended_tests as recommended_tests_2_0;
+    use csaf::csaf2_1::testcases::informative_tests as informative_tests_2_1;
+    use csaf::csaf2_1::testcases::mandatory_tests as mandatory_tests_2_1;
+    use csaf::csaf2_1::testcases::recommended_tests as recommended_tests_2_1;
+
     use super::*;
     use crate::routes;
     use crate::test_helpers::get_json;
 
     fn build_uri(version: &str) -> String {
-        routes::PRESETS.replace("{version}", version)
+        routes::TESTS.replace("{version}", version)
     }
 
     #[tokio::test]
-    async fn returns_presets_for_csaf_2_0() {
+    async fn returns_tests_for_csaf_2_0() {
         let (status, json) = get_json(&build_uri("2.0")).await;
 
         assert_eq!(status, StatusCode::OK);
         assert_eq!(json["version"], "2.0");
 
-        let presets: Vec<String> = serde_json::from_value(json["presets"].clone()).unwrap();
-        assert_eq!(presets, vec!["basic", "extended", "full"]);
+        let tests: Vec<TestInPreset> = serde_json::from_value(json["tests"].clone()).unwrap();
+        assert_eq!(
+            tests.len(),
+            mandatory_tests_2_0().len() + recommended_tests_2_0().len() + informative_tests_2_0().len() + 1
+        );
+        assert!(tests.contains(&TestInPreset {
+            id: "schema".to_string(),
+            preset: "basic".to_string()
+        }));
     }
 
     #[tokio::test]
-    async fn returns_presets_for_csaf_2_1() {
+    async fn returns_tests_for_csaf_2_1() {
         let (status, json) = get_json(&build_uri("2.1")).await;
 
         assert_eq!(status, StatusCode::OK);
         assert_eq!(json["version"], "2.1");
 
-        let presets: Vec<String> = serde_json::from_value(json["presets"].clone()).unwrap();
+        let tests: Vec<TestInPreset> = serde_json::from_value(json["tests"].clone()).unwrap();
         assert_eq!(
-            presets,
-            vec![
-                "mandatory",
-                "recommended",
-                "informative",
-                "schema",
-                "basic",
-                "extended",
-                "full",
-                "external-request-free",
-                "consistent-revision-history",
-                "consistent-date-times",
-                "ssvc",
-            ]
+            tests.len(),
+            mandatory_tests_2_1().len() + recommended_tests_2_1().len() + informative_tests_2_1().len() + 1
         );
+        assert!(tests.contains(&TestInPreset {
+            id: "schema".to_string(),
+            preset: "basic".to_string()
+        }));
     }
 
     #[tokio::test]

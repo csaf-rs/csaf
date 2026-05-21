@@ -233,6 +233,7 @@ You can also run the service via Docker. To build and run the container, use the
 docker build -t csaf-service .
 docker run -p 8082:8082 csaf-service
 ```
+> Note: This is intended for development and testing purposes only, as the container is not hardened for production use.
 
 You can then access the service at `http://localhost:8082` and navigate to `/swagger-ui` for the API documentation.
 For further configuration options, please refer to the [csaf-service README](csaf-service/README.md).

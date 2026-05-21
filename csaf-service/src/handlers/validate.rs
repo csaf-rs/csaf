@@ -222,7 +222,7 @@ fn resolve_test_ids<'a>(
     tests.sort();
     tests.dedup();
 
-    if tests.len() == 0 {
+    if tests.is_empty() {
         tests.push("schema");
     }
 

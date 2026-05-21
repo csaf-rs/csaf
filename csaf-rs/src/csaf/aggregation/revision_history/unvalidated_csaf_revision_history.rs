@@ -1,7 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::RevisionTrait;
-use std::fmt::Debug;
 
 /// Newtype wrapper around a `Vec<CsafRevisionHistoryItem>`
 ///
@@ -20,8 +19,11 @@ impl UnvalidatedCsafRevisionHistory {
     /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
     /// should be unique anyways, as long the second order key (revision history numbers) are unique
     pub(crate) fn inplace_sort_by_date_then_number(&mut self) {
-        self.0
-            .sort_unstable_by_key(|item| (item.date.clone(), item.number.clone()));
+        self.0.sort_unstable_by(|a, b| {
+            a.date
+                .cmp(&b.date)
+                .then_with(|| a.number.cmp(&b.number))
+        });
     }
 
     /// Sorts the revision history items by number

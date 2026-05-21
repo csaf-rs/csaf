@@ -19,11 +19,8 @@ impl UnvalidatedCsafRevisionHistory {
     /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
     /// should be unique anyways, as long the second order key (revision history numbers) are unique
     pub(crate) fn inplace_sort_by_date_then_number(&mut self) {
-        self.0.sort_unstable_by(|a, b| {
-            a.date
-                .cmp(&b.date)
-                .then_with(|| a.number.cmp(&b.number))
-        });
+        self.0
+            .sort_unstable_by(|a, b| a.date.cmp(&b.date).then_with(|| a.number.cmp(&b.number)));
     }
 
     /// Sorts the revision history items by number

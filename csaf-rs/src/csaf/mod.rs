@@ -5,7 +5,4 @@ pub mod loader;
 pub(crate) mod macros;
 pub mod raw;
 pub mod types;
-
-pub mod aggregations;
-
 pub mod traits;

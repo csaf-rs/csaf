@@ -103,6 +103,16 @@ impl Validatable for CommonSecurityAdvisoryFramework {
         }
     }
 
+    fn get_tests() -> Vec<(&'static str, &'static str)> {
+        vec!["schema"]
+            .into_iter()
+            .chain(mandatory_tests())
+            .map(|id| (id, "basic"))
+            .chain(recommended_tests().into_iter().map(|id| (id, "extended")))
+            .chain(informative_tests().into_iter().map(|id| (id, "full")))
+            .collect()
+    }
+
     fn run_test(&self, test_id: &str) -> TestResult {
         let mandatory_result = to_test_result(
             test_id,

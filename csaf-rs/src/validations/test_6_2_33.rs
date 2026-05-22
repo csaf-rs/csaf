@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 use chrono::Utc;
 
@@ -31,12 +31,15 @@ fn create_disclosure_date_newer_than_revision_error(
 /// execution into consideration.
 pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Get sorted revision history and find the newest entry
-    let mut revision_history = doc.get_document().get_tracking().get_revision_history_tuples();
+    let mut revision_history = doc.get_document().get_tracking().aggregate_revision_history();
     revision_history.inplace_sort_by_date_then_number();
 
     let newest_revision_date = match revision_history.last() {
-        Some(rev) => &rev.valid_date,
-        None => return Ok(()), // TODO this should be a #409 precondition failed
+        Some(rev) => match &rev.date {
+            CsafDateTime::Valid(date) => date,
+            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
+        },
+        None => return Ok(()), // TODO this should be a #409 precondition failed #409
     };
 
     let now = Utc::now();

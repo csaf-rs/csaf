@@ -1,5 +1,5 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 use std::mem::discriminant;
 
@@ -42,16 +42,19 @@ fn get_version_type_name(v: &CsafVersionNumber) -> &'static str {
 /// `/document/tracking/version` and `document/tracking/revision_history[]/number` need to use
 /// the same versioning scheme (either integer versioning or semantic versioning) across the document.
 pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+    let tracking = doc.get_document().get_tracking();
     // make sure revision history is consistent in itself
-    let mut tuples = doc.get_document().get_tracking().get_revision_history_tuples();
-    tuples.inplace_sort_by_date_then_number();
     let mut errors: Option<Vec<ValidationError>> = None;
-    let mut previous_version: Option<(CsafVersionNumber, usize)> = None;
-    for (i_v, current_version) in tuples.iter().enumerate() {
+    let mut previous_version: Option<CsafVersionNumber> = None;
+
+    let mut rev_history_tuples = tracking.aggregate_revision_history();
+    rev_history_tuples.inplace_sort_by_date_then_number();
+
+    for current_version in rev_history_tuples.iter() {
         let current_number = current_version.number.clone();
         let current_type = discriminant(&current_number);
 
-        if let Some((previous_number, _)) = previous_version
+        if let Some(previous_number) = previous_version
             && discriminant(&previous_number) != current_type
         {
             errors
@@ -62,13 +65,13 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
                     &current_version.path_index,
                 ));
         }
-        previous_version = Some((current_number, i_v));
+        previous_version = Some(current_number);
     }
 
     // now make sure revision history matches document versioning
     let doc_version = doc.get_document().get_tracking().get_version();
 
-    if let Some((last_history_revision_number, _)) = previous_version
+    if let Some(last_history_revision_number) = previous_version
         && discriminant(&last_history_revision_number) != discriminant(&doc_version)
     {
         errors.get_or_insert_default().push(create_mixed_versioning_error(

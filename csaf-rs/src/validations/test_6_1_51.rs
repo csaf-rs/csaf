@@ -1,8 +1,7 @@
 use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, RevisionHistorySortable, TrackingTrait,
-    VulnerabilityTrait,
+    ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
@@ -34,12 +33,16 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
     skip_if_document_status_is_not!(status, Final, Interim);
 
     // Get sorted revision history and find the newest entry
-    let mut revision_history = tracking.get_revision_history_tuples();
+    let mut revision_history = tracking.aggregate_revision_history();
     revision_history.inplace_sort_by_date_then_number();
 
-    let newest_revision = match revision_history.last() {
-        Some(rev) => rev,
-        None => return Ok(()), // TODO this should be a #409 precondition failed
+    // This checks if the revision history isn't empty
+    let newest_revision_date = match revision_history.last() {
+        Some(rev) => match &rev.date {
+            CsafDateTime::Valid(date) => date,
+            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
+        },
+        None => return Ok(()), // TODO this should be a #409 precondition failed #409
     };
 
     // Check each vulnerability's EPSS timestamp
@@ -52,12 +55,12 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
                     match epss.get_timestamp() {
                         CsafDateTime::Valid(valid_timestamp) => {
                             // TODO fix this after #503
-                            if valid_timestamp > newest_revision.valid_date {
+                            if &valid_timestamp > newest_revision_date {
                                 let content_json_path = content.get_content_json_path(i_v, i_m);
                                 errors.get_or_insert_default().push(create_epss_timestamp_too_new_error(
                                     &status,
                                     &valid_timestamp,
-                                    &newest_revision.valid_date,
+                                    newest_revision_date,
                                     &content_json_path,
                                 ));
                             }

@@ -1,5 +1,5 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
 
@@ -11,7 +11,7 @@ use crate::validation::ValidationError;
 pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let tracking = doc.get_document().get_tracking();
 
-    let mut revision_history = tracking.get_revision_history_tuples();
+    let mut revision_history = tracking.aggregate_revision_history();
     revision_history.inplace_sort_by_date_then_number();
 
     // TODO: Technically, this should never be None, as Revision History has minItems: 1 (#409)

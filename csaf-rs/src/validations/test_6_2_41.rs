@@ -1,8 +1,7 @@
 use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, RevisionHistorySortable, TrackingTrait,
-    VulnerabilityTrait,
+    ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::validation::ValidationError;
 use chrono::TimeDelta;
@@ -32,14 +31,16 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Va
     skip_if_document_status_is_not!(tracking.get_status(), Final, Interim);
 
     // Get sorted revision history and find the newest entry
-    let mut revision_history = tracking.get_revision_history_tuples();
+    let mut revision_history = tracking.aggregate_revision_history();
     revision_history.inplace_sort_by_date_then_number();
 
-    let newest_revision = match revision_history.last() {
-        Some(rev) => rev,
-        None => return Ok(()), // TODO this should be a #409 precondition failed
+    let newest_revision_date = match revision_history.last() {
+        Some(rev) => match &rev.date {
+            CsafDateTime::Valid(date) => date,
+            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
+        },
+        None => return Ok(()), // TODO this should be a #409 precondition failed #409
     };
-
     let vulnerabilities = doc.get_vulnerabilities();
     if vulnerabilities.is_empty() {
         return Ok(());
@@ -77,11 +78,11 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Va
             // if there was an epss metric
             if let Some((newest_epss_timestamp, path_metric_idx)) = newest_epss {
                 // if it is 15 days older than the newest revision date, add an error
-                let diff = newest_revision.valid_date.get_as_utc() - newest_epss_timestamp.get_as_utc();
+                let diff = newest_revision_date.get_as_utc() - newest_epss_timestamp.get_as_utc();
                 if diff > fifteen_days {
                     errors.get_or_insert_default().push(create_old_epss_timestamp_error(
                         &newest_epss_timestamp,
-                        &newest_revision.valid_date,
+                        newest_revision_date,
                         &metrics[path_metric_idx]
                             .get_content()
                             .get_content_json_path(i_v, path_metric_idx),

@@ -21,6 +21,11 @@ pub enum CsafVersionNumber {
     SemVer(SemVerVersion),
 }
 
+pub const INTEGER_VER_ZERO: CsafVersionNumber = CsafVersionNumber::IntVer(IntVerVersion::new(0));
+pub const INTEGER_VER_ONE: CsafVersionNumber = CsafVersionNumber::IntVer(IntVerVersion::new(1));
+pub const SEMANTIC_VER_ZERO: CsafVersionNumber = CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(0, 0, 0)));
+pub const SEMANTIC_VER_ONE: CsafVersionNumber = CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(1, 0, 0)));
+
 impl CsafVersionNumber {
     /// Parses a version string into a `CsafVersionNumber`, trying integer versioning and semantic versioning.
     ///
@@ -200,6 +205,7 @@ impl PartialOrd for VersionNumber {
 // Transform a raw version string into a CsafVersionNumber.  As the schema validation is the same
 // for CSAF 2.0 and 2.1, we can just push the raw string through either before parsing it into a CsafVersionNumber.
 // This is only used for testing and not available on the public API
+#[cfg(test)]
 impl From<&str> for CsafVersionNumber {
     fn from(s: &str) -> Self {
         use std::str::FromStr;

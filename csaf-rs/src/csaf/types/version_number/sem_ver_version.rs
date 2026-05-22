@@ -57,7 +57,7 @@ impl Display for SemVerVersion {
 impl SemVerVersion {
     /// Creates a new `SemVerVersion` from a `semver::Version`.
     /// Only available within the version_number module.
-    pub(super) fn new(value: Version) -> Self {
+    pub(super) const fn new(value: Version) -> Self {
         SemVerVersion(value)
     }
 }

@@ -21,8 +21,8 @@ impl InvolvementTrait for Involvement20 {
 }
 
 crate::csaf::traits::impl_with_optional_date!(Involvement20);
-crate::csaf::traits::impl_without_group_ids!(Involvement20);
-crate::csaf::traits::impl_without_product_ids!(Involvement20);
+crate::csaf::traits::impl_optional_ids!(Involvement20, WithOptionalGroupIds, ReturnsEmpty);
+crate::csaf::traits::impl_optional_ids!(Involvement20, WithOptionalProductIds, ReturnsEmpty);
 
 impl InvolvementTrait for Involvement21 {
     fn get_party(&self) -> PartyCategory21 {
@@ -31,5 +31,5 @@ impl InvolvementTrait for Involvement21 {
 }
 
 crate::csaf::traits::impl_with_optional_date!(Involvement21);
-crate::csaf::traits::impl_with_optional_group_ids!(Involvement21);
-crate::csaf::traits::impl_with_optional_product_ids!(Involvement21);
+crate::csaf::traits::impl_optional_ids!(Involvement21, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Involvement21, WithOptionalProductIds, ReturnsValues);

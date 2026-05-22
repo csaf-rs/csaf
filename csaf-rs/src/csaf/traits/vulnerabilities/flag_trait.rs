@@ -8,12 +8,12 @@ pub trait FlagTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptiona
     fn get_label(&self) -> LabelOfTheFlag21;
 }
 
-crate::csaf::traits::impl_with_optional_group_ids!(Flag20);
-crate::csaf::traits::impl_with_optional_product_ids!(Flag20);
+crate::csaf::traits::impl_optional_ids!(Flag20, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Flag20, WithOptionalProductIds, ReturnsValues);
 crate::csaf::traits::impl_with_optional_date!(Flag20);
 
-crate::csaf::traits::impl_with_optional_group_ids!(Flag21);
-crate::csaf::traits::impl_with_optional_product_ids!(Flag21);
+crate::csaf::traits::impl_optional_ids!(Flag21, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Flag21, WithOptionalProductIds, ReturnsValues);
 crate::csaf::traits::impl_with_optional_date!(Flag21);
 
 impl FlagTrait for Flag20 {

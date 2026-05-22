@@ -5,66 +5,55 @@ pub trait WithOptionalGroupIds {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }
 
-/// Implements `WithOptionalGroupIds` by delegating to `self.group_ids`.
-macro_rules! impl_with_optional_group_ids {
-    ($type:ty) => {
-        impl $crate::csaf_traits::WithOptionalGroupIds for $type {
-            fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-                self.group_ids
-                    .as_ref()
-                    .map(|g| g.iter().map(|x| ::std::ops::Deref::deref(x)))
-            }
-        }
-    };
-}
-
-pub(crate) use impl_with_optional_group_ids;
-
-/// Implements `WithOptionalGroupIds` as always returning `None`.
-macro_rules! impl_without_group_ids {
-    ($type:ty) => {
-        impl $crate::csaf_traits::WithOptionalGroupIds for $type {
-            fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-                None::<std::iter::Empty<&String>>
-            }
-        }
-    };
-}
-
-pub(crate) use impl_without_group_ids;
-
 pub trait WithOptionalProductIds {
     /// Returns the product IDs associated with this entity
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
 }
 
-/// Implements `WithOptionalProductIds` by delegating to `self.product_ids`.
-macro_rules! impl_with_optional_product_ids {
-    ($type:ty) => {
+/// Implements `WithOptionalGroupIds` or `WithOptionalProductIds` for a type.
+///
+/// If `ReturnsValues` is specified, the implementation expects `group_ids` or `product_ids`
+/// to be an `Option<Vec<String>>` field in the struct.
+///
+/// # Usage
+/// - `impl_optional_ids!(MyType, WithOptionalGroupIds, ReturnsValues)` — delegates to `self.group_ids`
+/// - `impl_optional_ids!(MyType, WithOptionalGroupIds, ReturnsEmpty)` — always returns `None`
+/// - `impl_optional_ids!(MyType, WithOptionalProductIds, ReturnsValues)` — delegates to `self.product_ids`
+/// - `impl_optional_ids!(MyType, WithOptionalProductIds, ReturnsEmpty)` — always returns `None`
+macro_rules! impl_optional_ids {
+    ($type:ty, WithOptionalGroupIds, ReturnsValues) => {
+        impl $crate::csaf_traits::WithOptionalGroupIds for $type {
+            fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+                self.group_ids
+                    .as_ref()
+                    .map(|items| items.iter().map(|x| ::std::ops::Deref::deref(x)))
+            }
+        }
+    };
+    ($type:ty, WithOptionalGroupIds, ReturnsEmpty) => {
+        impl $crate::csaf_traits::WithOptionalGroupIds for $type {
+            fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+                None::<::std::iter::Empty<&::std::string::String>>
+            }
+        }
+    };
+    ($type:ty, WithOptionalProductIds, ReturnsValues) => {
         impl $crate::csaf_traits::WithOptionalProductIds for $type {
             fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
                 self.product_ids
                     .as_ref()
-                    .map(|p| p.iter().map(|x| ::std::ops::Deref::deref(x)))
+                    .map(|items| items.iter().map(|x| ::std::ops::Deref::deref(x)))
             }
         }
     };
-}
-
-pub(crate) use impl_with_optional_product_ids;
-
-/// Implements `WithOptionalProductIds` as always returning `None`.
-macro_rules! impl_without_product_ids {
-    ($type:ty) => {
+    ($type:ty, WithOptionalProductIds, ReturnsEmpty) => {
         impl $crate::csaf_traits::WithOptionalProductIds for $type {
             fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-                None::<std::iter::Empty<&String>>
+                None::<::std::iter::Empty<&::std::string::String>>
             }
         }
     };
 }
-
-pub(crate) use impl_without_product_ids;
 
 pub trait WithDate {
     /// Returns the date associated with this entity
@@ -81,8 +70,6 @@ macro_rules! impl_with_date {
         }
     };
 }
-
-pub(crate) use impl_with_date;
 
 pub trait WithOptionalDate {
     /// Returns the date associated with this entity
@@ -102,4 +89,6 @@ macro_rules! impl_with_optional_date {
     };
 }
 
+pub(crate) use impl_optional_ids;
+pub(crate) use impl_with_date;
 pub(crate) use impl_with_optional_date;

@@ -8,8 +8,8 @@ pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
 }
 
 // CSAF 2.0 implementation
-crate::csaf::traits::impl_without_group_ids!(Note20);
-crate::csaf::traits::impl_without_product_ids!(Note20);
+crate::csaf::traits::impl_optional_ids!(Note20, WithOptionalGroupIds, ReturnsEmpty);
+crate::csaf::traits::impl_optional_ids!(Note20, WithOptionalProductIds, ReturnsEmpty);
 
 impl NoteTrait for Note20 {
     fn get_category(&self) -> NoteCategory21 {
@@ -30,8 +30,8 @@ impl NoteTrait for Note20 {
 }
 
 // CSAF 2.1 implementation
-crate::csaf::traits::impl_with_optional_group_ids!(Note21);
-crate::csaf::traits::impl_with_optional_product_ids!(Note21);
+crate::csaf::traits::impl_optional_ids!(Note21, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Note21, WithOptionalProductIds, ReturnsValues);
 
 impl NoteTrait for Note21 {
     fn get_category(&self) -> NoteCategory21 {

@@ -47,12 +47,12 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + With
     }
 }
 
-crate::csaf::traits::impl_with_optional_group_ids!(Remediation20);
-crate::csaf::traits::impl_with_optional_product_ids!(Remediation20);
+crate::csaf::traits::impl_optional_ids!(Remediation20, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Remediation20, WithOptionalProductIds, ReturnsValues);
 crate::csaf::traits::impl_with_optional_date!(Remediation20);
 
-crate::csaf::traits::impl_with_optional_group_ids!(Remediation21);
-crate::csaf::traits::impl_with_optional_product_ids!(Remediation21);
+crate::csaf::traits::impl_optional_ids!(Remediation21, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Remediation21, WithOptionalProductIds, ReturnsValues);
 crate::csaf::traits::impl_with_optional_date!(Remediation21);
 
 impl RemediationTrait for Remediation20 {

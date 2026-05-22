@@ -8,12 +8,12 @@ pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptio
     fn get_category(&self) -> CategoryOfTheThreat21;
 }
 
-crate::csaf::traits::impl_with_optional_group_ids!(Threat20);
-crate::csaf::traits::impl_with_optional_product_ids!(Threat20);
+crate::csaf::traits::impl_optional_ids!(Threat20, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Threat20, WithOptionalProductIds, ReturnsValues);
 crate::csaf::traits::impl_with_optional_date!(Threat20);
 
-crate::csaf::traits::impl_with_optional_group_ids!(Threat21);
-crate::csaf::traits::impl_with_optional_product_ids!(Threat21);
+crate::csaf::traits::impl_optional_ids!(Threat21, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Threat21, WithOptionalProductIds, ReturnsValues);
 crate::csaf::traits::impl_with_optional_date!(Threat21);
 
 impl ThreatTrait for Threat20 {

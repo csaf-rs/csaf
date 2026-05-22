@@ -1,5 +1,5 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionHistorySortable, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
 /// 6.1.21 Missing Item in Revision History
@@ -12,7 +12,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     let mut errors: Option<Vec<ValidationError>> = None;
 
     // Generate and sort the revision history tuples by date first and by number second
-    let mut rev_history_tuples = doc.get_document().get_tracking().get_revision_history_tuples();
+    let mut rev_history_tuples = doc.get_document().get_tracking().aggregate_revision_history();
     rev_history_tuples.inplace_sort_by_date_then_number();
 
     if rev_history_tuples.is_empty() {

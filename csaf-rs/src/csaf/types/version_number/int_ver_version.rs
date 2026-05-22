@@ -20,7 +20,7 @@ impl Display for IntVerVersion {
 impl IntVerVersion {
     /// Creates a new `IntVerVersion` from a `u64`.
     /// Only available within the version_number module.
-    pub(super) fn new(value: u64) -> Self {
+    pub(super) const fn new(value: u64) -> Self {
         IntVerVersion(value)
     }
 }

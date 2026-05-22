@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf_traits::ContentTrait;
 use crate::schema::csaf2_0::schema::Score as Score20;
 use crate::schema::csaf2_1::schema::{Content as Content21, Metric as Metric21};
@@ -44,7 +45,5 @@ impl MetricTrait for Metric21 {
         &self.content
     }
 
-    fn get_source(&self) -> Option<&str> {
-        self.source.as_deref()
-    }
+    impl_optional_str_field_getter!(get_source, source);
 }

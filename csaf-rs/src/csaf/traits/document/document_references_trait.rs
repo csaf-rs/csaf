@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::schema::csaf2_0::schema::{CategoryOfReference as CategoryOfReference20, Reference as Reference20};
 use crate::schema::csaf2_1::schema::{CategoryOfReference as CategoryOfReference21, Reference as Reference21};
 
@@ -19,13 +20,8 @@ impl DocumentReferenceTrait for Reference20 {
         }
     }
 
-    fn get_summary(&self) -> &str {
-        &self.summary
-    }
-
-    fn get_url(&self) -> &str {
-        &self.url
-    }
+    impl_str_field_getter!(get_summary, summary);
+    impl_str_field_getter!(get_url, url);
 }
 
 impl DocumentReferenceTrait for Reference21 {
@@ -33,11 +29,6 @@ impl DocumentReferenceTrait for Reference21 {
         self.category
     }
 
-    fn get_summary(&self) -> &str {
-        &self.summary
-    }
-
-    fn get_url(&self) -> &str {
-        &self.url
-    }
+    impl_str_field_getter!(get_summary, summary);
+    impl_str_field_getter!(get_url, url);
 }

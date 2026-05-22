@@ -1,6 +1,7 @@
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
@@ -198,9 +199,7 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.involvements.as_ref()
     }
 
-    fn get_cve(&self) -> Option<&str> {
-        self.cve.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_cve, cve);
 
     fn get_cwe(&self) -> Option<Vec<Cwe>> {
         self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
@@ -266,9 +265,7 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.involvements.as_ref()
     }
 
-    fn get_cve(&self) -> Option<&str> {
-        self.cve.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_cve, cve);
 
     fn get_cwe(&self) -> Option<Vec<Cwe>> {
         self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())

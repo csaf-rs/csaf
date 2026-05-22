@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf_traits::{WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_0::schema::{Note as Note20, NoteCategory as NoteCategory20};
 use crate::schema::csaf2_1::schema::{Note as Note21, NoteCategory as NoteCategory21};
@@ -24,9 +25,7 @@ impl NoteTrait for Note20 {
         }
     }
 
-    fn get_title(&self) -> Option<&str> {
-        self.title.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_title, title);
 }
 
 // CSAF 2.1 implementation
@@ -38,7 +37,5 @@ impl NoteTrait for Note21 {
         self.category
     }
 
-    fn get_title(&self) -> Option<&str> {
-        self.title.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_title, title);
 }

@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::ProductIdentificationHelperTrait;
 use crate::schema::csaf2_0::schema::{
     FullProductNameT as FullProductNameT20, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct20,
@@ -24,13 +25,8 @@ pub trait ProductTrait {
 impl ProductTrait for FullProductNameT20 {
     type ProductIdentificationHelperType = HelperToIdentifyTheProduct20;
 
-    fn get_product_id(&self) -> &str {
-        &self.product_id
-    }
-
-    fn get_name(&self) -> &str {
-        &self.name
-    }
+    impl_str_field_getter!(get_product_id, product_id);
+    impl_str_field_getter!(get_name, name);
 
     fn get_product_identification_helper(&self) -> Option<&Self::ProductIdentificationHelperType> {
         self.product_identification_helper.as_ref()
@@ -40,13 +36,8 @@ impl ProductTrait for FullProductNameT20 {
 impl ProductTrait for FullProductNameT21 {
     type ProductIdentificationHelperType = HelperToIdentifyTheProduct21;
 
-    fn get_product_id(&self) -> &str {
-        &self.product_id
-    }
-
-    fn get_name(&self) -> &str {
-        &self.name
-    }
+    impl_str_field_getter!(get_product_id, product_id);
+    impl_str_field_getter!(get_name, name);
 
     fn get_product_identification_helper(&self) -> Option<&Self::ProductIdentificationHelperType> {
         self.product_identification_helper.as_ref()

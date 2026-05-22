@@ -8,6 +8,4 @@ pub mod util;
 pub mod vulnerabilities;
 pub mod vulnerabilities_trait;
 
-pub(crate) use util::{
-    impl_optional_ids, impl_with_date, impl_with_optional_date,
-};
+pub(crate) use util::{impl_optional_ids, impl_with_date, impl_with_optional_date};

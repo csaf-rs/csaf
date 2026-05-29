@@ -1,6 +1,6 @@
+use crate::csaf::traits::util::impl_macros::{impl_optional_str_field_getter, impl_str_field_getter};
 use crate::schema::csaf2_0::schema::AggregateSeverity as AggregateSeverity20;
 use crate::schema::csaf2_1::schema::AggregateSeverity as AggregateSeverity21;
-use crate::csaf::traits::util::impl_macros::{impl_optional_str_field_getter, impl_str_field_getter};
 
 pub trait AggregateSeverityTrait {
     fn get_namespace(&self) -> Option<&str>;

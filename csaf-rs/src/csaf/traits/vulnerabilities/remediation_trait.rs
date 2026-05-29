@@ -1,6 +1,6 @@
-use crate::csaf_traits::{
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::traits::vulnerabilities::restart_required_trait::RestartRequiredTrait;
-use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf_traits::{
     CsafTrait, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds, resolve_product_groups,
 };
 use crate::schema::csaf2_0::schema::{
@@ -86,9 +86,8 @@ impl RemediationTrait for Remediation20 {
             CategoryOfTheRemediation20::NoneAvailable => CategoryOfTheRemediation21::NoneAvailable,
         }
     }
-    fn get_details(&self) -> &str {
-        &self.details
-    }
+
+    impl_str_field_getter!(get_details, details);
 
     fn get_entitlements(&self) -> Vec<&str> {
         self.entitlements.iter().map(|x| x.as_str()).collect()
@@ -106,9 +105,7 @@ impl RemediationTrait for Remediation21 {
         self.category
     }
 
-    fn get_details(&self) -> &str {
-        &self.details
-    }
+    impl_str_field_getter!(get_details, details);
 
     fn get_entitlements(&self) -> Vec<&str> {
         self.entitlements.iter().map(|x| x.as_str()).collect()

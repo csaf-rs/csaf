@@ -8,6 +8,7 @@ pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
 pub use crate::csaf::traits::csaf_trait::CsafTrait;
 pub use crate::csaf::traits::document::aggregate_severity_trait::AggregateSeverityTrait;
 pub use crate::csaf::traits::document::distribution_trait::DistributionTrait;
+pub use crate::csaf::traits::document::engine_trait::EngineTrait;
 pub use crate::csaf::traits::document::generator_trait::GeneratorTrait;
 pub use crate::csaf::traits::document::publisher_trait::PublisherTrait;
 pub use crate::csaf::traits::document::revision_trait::RevisionTrait;

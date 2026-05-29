@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::schema::csaf2_0::schema::{
     CategoryOfRestart, RestartRequiredByRemediation as RestartRequiredByRemediation20,
 };
@@ -24,9 +25,7 @@ impl RestartRequiredTrait for RestartRequiredByRemediation20 {
         }
     }
 
-    fn get_details(&self) -> Option<&str> {
-        self.details.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_details, details);
 }
 
 impl RestartRequiredTrait for RestartRequiredByRemediation21 {
@@ -34,7 +33,5 @@ impl RestartRequiredTrait for RestartRequiredByRemediation21 {
         self.category
     }
 
-    fn get_details(&self) -> Option<&str> {
-        self.details.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_details, details);
 }

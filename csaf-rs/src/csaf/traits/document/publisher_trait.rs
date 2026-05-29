@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_str_field_getter};
 use crate::schema::csaf2_0::schema::{CategoryOfPublisher as CategoryOfPublisher20, Publisher as Publisher20};
 use crate::schema::csaf2_1::schema::{CategoryOfPublisher as CategoryOfPublisher21, Publisher as Publisher21};
 
@@ -22,21 +23,10 @@ impl PublisherTrait for Publisher20 {
         }
     }
 
-    fn get_issuing_authority(&self) -> Option<&str> {
-        self.issuing_authority.as_deref().map(String::as_str)
-    }
-
-    fn get_name(&self) -> &str {
-        &self.name
-    }
-
-    fn get_namespace(&self) -> &str {
-        &self.namespace
-    }
-
-    fn get_contact_details(&self) -> Option<&str> {
-        self.contact_details.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_issuing_authority, issuing_authority);
+    impl_str_field_getter!(get_name, name);
+    impl_str_field_getter!(get_namespace, namespace);
+    impl_optional_str_field_getter!(get_contact_details, contact_details);
 }
 
 impl PublisherTrait for Publisher21 {
@@ -44,19 +34,8 @@ impl PublisherTrait for Publisher21 {
         self.category
     }
 
-    fn get_issuing_authority(&self) -> Option<&str> {
-        self.issuing_authority.as_deref().map(String::as_str)
-    }
-
-    fn get_name(&self) -> &str {
-        &self.name
-    }
-
-    fn get_namespace(&self) -> &str {
-        &self.namespace
-    }
-
-    fn get_contact_details(&self) -> Option<&str> {
-        self.contact_details.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_issuing_authority, issuing_authority);
+    impl_str_field_getter!(get_name, name);
+    impl_str_field_getter!(get_namespace, namespace);
+    impl_optional_str_field_getter!(get_contact_details, contact_details);
 }

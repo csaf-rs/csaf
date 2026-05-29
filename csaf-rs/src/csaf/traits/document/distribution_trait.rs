@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_macros::impl_optional_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf_traits::{SharingGroupTrait, TlpTrait};
 use crate::schema::csaf2_0::schema::{
@@ -33,9 +34,7 @@ impl DistributionTrait for RulesForSharingDocument20 {
     type SharingGroupType = NotPresentInCsaf20;
     type TlpType = TrafficLightProtocolTlp20;
 
-    fn get_text(&self) -> Option<&str> {
-        self.text.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_text, text);
 
     fn get_sharing_group(&self) -> Option<&Self::SharingGroupType> {
         None
@@ -62,9 +61,7 @@ impl DistributionTrait for RulesForDocumentSharing21 {
     type SharingGroupType = SharingGroup21;
     type TlpType = TrafficLightProtocolTlp21;
 
-    fn get_text(&self) -> Option<&str> {
-        self.text.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_text, text);
 
     fn get_sharing_group(&self) -> Option<&Self::SharingGroupType> {
         self.sharing_group.as_ref()

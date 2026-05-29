@@ -1,5 +1,6 @@
 use crate::schema::csaf2_0::schema::AggregateSeverity as AggregateSeverity20;
 use crate::schema::csaf2_1::schema::AggregateSeverity as AggregateSeverity21;
+use crate::csaf::traits::util::impl_macros::{impl_optional_str_field_getter, impl_str_field_getter};
 
 pub trait AggregateSeverityTrait {
     fn get_namespace(&self) -> Option<&str>;
@@ -7,20 +8,11 @@ pub trait AggregateSeverityTrait {
 }
 
 impl AggregateSeverityTrait for AggregateSeverity20 {
-    fn get_namespace(&self) -> Option<&str> {
-        self.namespace.as_deref()
-    }
-
-    fn get_text(&self) -> &str {
-        &self.text
-    }
+    impl_optional_str_field_getter!(get_namespace, namespace);
+    impl_str_field_getter!(get_text, text);
 }
 
 impl AggregateSeverityTrait for AggregateSeverity21 {
-    fn get_namespace(&self) -> Option<&str> {
-        self.namespace.as_deref()
-    }
-    fn get_text(&self) -> &str {
-        &self.text
-    }
+    impl_optional_str_field_getter!(get_namespace, namespace);
+    impl_str_field_getter!(get_text, text);
 }

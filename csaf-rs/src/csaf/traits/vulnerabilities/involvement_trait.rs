@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf_traits::{WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_0::schema::{Involvement as Involvement20, PartyCategory as PartyCategory20};
 use crate::schema::csaf2_1::schema::{Involvement as Involvement21, PartyCategory as PartyCategory21};
@@ -20,9 +21,7 @@ impl InvolvementTrait for Involvement20 {
         }
     }
 
-    fn get_summary(&self) -> Option<&str> {
-        self.summary.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_summary, summary);
 }
 
 crate::csaf::traits::impl_with_optional_date!(Involvement20);
@@ -34,9 +33,7 @@ impl InvolvementTrait for Involvement21 {
         self.party
     }
 
-    fn get_summary(&self) -> Option<&str> {
-        self.summary.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_summary, summary);
 }
 
 crate::csaf::traits::impl_with_optional_date!(Involvement21);

@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::{WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_0::schema::{CategoryOfTheThreat as CategoryOfTheThreat20, Threat as Threat20};
 use crate::schema::csaf2_1::schema::{CategoryOfTheThreat as CategoryOfTheThreat21, Threat as Threat21};
@@ -26,9 +27,7 @@ impl ThreatTrait for Threat20 {
         }
     }
 
-    fn get_details(&self) -> &str {
-        &self.details
-    }
+    impl_str_field_getter!(get_details, details);
 }
 
 impl ThreatTrait for Threat21 {
@@ -36,7 +35,5 @@ impl ThreatTrait for Threat21 {
         self.category
     }
 
-    fn get_details(&self) -> &str {
-        &self.details
-    }
+    impl_str_field_getter!(get_details, details);
 }

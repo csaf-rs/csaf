@@ -2,6 +2,7 @@ use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
 use crate::csaf::traits::util::impl_optional_str_field_getter;
+
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
@@ -197,9 +198,7 @@ impl VulnerabilityTrait for Vulnerability20 {
         &self.threats
     }
 
-    fn get_title(&self) -> Option<&str> {
-        self.title.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_title, title);
 
     fn get_disclosure_date(&self) -> Option<CsafDateTime> {
         self.release_date.as_ref().map(CsafDateTime::from)
@@ -278,9 +277,7 @@ impl VulnerabilityTrait for Vulnerability21 {
         &self.threats
     }
 
-    fn get_title(&self) -> Option<&str> {
-        self.title.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_title, title);
 
     fn get_disclosure_date(&self) -> Option<CsafDateTime> {
         self.disclosure_date.as_ref().map(CsafDateTime::from)

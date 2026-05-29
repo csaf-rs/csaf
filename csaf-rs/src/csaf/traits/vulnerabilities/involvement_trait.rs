@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf_traits::{WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_0::schema::{Involvement as Involvement20, PartyCategory as PartyCategory20};
 use crate::schema::csaf2_1::schema::{Involvement as Involvement21, PartyCategory as PartyCategory21};
@@ -6,6 +7,7 @@ use crate::schema::csaf2_1::schema::{Involvement as Involvement21, PartyCategory
 pub trait InvolvementTrait: WithOptionalGroupIds + WithOptionalDate + WithOptionalProductIds {
     /// Returns the party associated with this vulnerability involvement
     fn get_party(&self) -> PartyCategory21;
+    fn get_summary(&self) -> Option<&str>;
 }
 
 impl InvolvementTrait for Involvement20 {
@@ -18,6 +20,8 @@ impl InvolvementTrait for Involvement20 {
             PartyCategory20::Vendor => PartyCategory21::Vendor,
         }
     }
+
+    impl_optional_str_field_getter!(get_summary, summary);
 }
 
 crate::csaf::traits::impl_with_optional_date!(Involvement20);
@@ -28,6 +32,8 @@ impl InvolvementTrait for Involvement21 {
     fn get_party(&self) -> PartyCategory21 {
         self.party
     }
+
+    impl_optional_str_field_getter!(get_summary, summary);
 }
 
 crate::csaf::traits::impl_with_optional_date!(Involvement21);

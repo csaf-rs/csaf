@@ -5,21 +5,26 @@ use crate::csaf::traits::util::extract_references::{
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
-use crate::csaf_traits::{DistributionTrait, DocumentReferenceTrait, NoteTrait, PublisherTrait, TrackingTrait};
+use crate::csaf_traits::{
+    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, NoteTrait, PublisherTrait, ReferenceTrait,
+    TrackingTrait,
+};
 use crate::schema::csaf2_0::schema::{
-    CsafVersion as CsafVersion20, DocumentLevelMetaData as DocumentLevelMetaData20, Note as Note20,
-    Publisher as Publisher20, Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20,
-    Tracking as Tracking20,
+    Acknowledgment as Acknowledgment20, AggregateSeverity as AggregateSeverity20, CsafVersion as CsafVersion20,
+    DocumentLevelMetaData as DocumentLevelMetaData20, Note as Note20, Publisher as Publisher20,
+    Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20, Tracking as Tracking20,
 };
 use crate::schema::csaf2_1::schema::{
-    CsafVersion as CsafVersion21, DocumentLevelMetaData as DocumentLevelMetaData21, Note as Note21,
-    Publisher as Publisher21, Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21,
-    Tracking as Tracking21,
+    Acknowledgment as Acknowledgment21, AggregateSeverity as AggregateSeverity21, CsafVersion as CsafVersion21,
+    DocumentLevelMetaData as DocumentLevelMetaData21, Note as Note21, Publisher as Publisher21,
+    Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
 };
 use crate::validation::ValidationError;
 
-/// Trait representing document meta-level information
 pub trait DocumentTrait {
+    type AcknowledgmentType: AcknowledgmentTrait;
+
+    type AggregateSeverityType: AggregateSeverityTrait;
     /// Type representing document tracking information
     type TrackingType: TrackingTrait;
 
@@ -32,7 +37,11 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
-    type DocumentReferenceType: DocumentReferenceTrait;
+    type DocumentReferenceType: ReferenceTrait;
+
+    fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
+
+    fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType>;
 
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
@@ -76,11 +85,21 @@ pub trait DocumentTrait {
 }
 
 impl DocumentTrait for DocumentLevelMetaData20 {
+    type AcknowledgmentType = Acknowledgment20;
+    type AggregateSeverityType = AggregateSeverity20;
     type TrackingType = Tracking20;
     type DistributionType = RulesForSharingDocument20;
     type NoteType = Note20;
     type PublisherType = Publisher20;
     type DocumentReferenceType = Reference20;
+
+    fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
+        self.acknowledgments.as_deref()
+    }
+
+    fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType> {
+        self.aggregate_severity.as_ref()
+    }
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -136,11 +155,21 @@ impl DocumentTrait for DocumentLevelMetaData20 {
 }
 
 impl DocumentTrait for DocumentLevelMetaData21 {
+    type AcknowledgmentType = Acknowledgment21;
+    type AggregateSeverityType = AggregateSeverity21;
     type TrackingType = Tracking21;
     type DistributionType = RulesForDocumentSharing21;
     type NoteType = Note21;
     type PublisherType = Publisher21;
     type DocumentReferenceType = Reference21;
+
+    fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
+        self.acknowledgments.as_deref()
+    }
+
+    fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType> {
+        self.aggregate_severity.as_ref()
+    }
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking

@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::WithDate;
 use crate::schema::csaf2_0::schema::Revision as Revision20;
@@ -17,9 +18,7 @@ impl RevisionTrait for Revision20 {
         CsafVersionNumber::from(&self.number)
     }
 
-    fn get_summary(&self) -> &str {
-        &self.summary
-    }
+    impl_str_field_getter!(get_summary, summary);
 }
 
 impl RevisionTrait for Revision21 {
@@ -27,9 +26,7 @@ impl RevisionTrait for Revision21 {
         CsafVersionNumber::from(&self.number)
     }
 
-    fn get_summary(&self) -> &str {
-        &self.summary
-    }
+    impl_str_field_getter!(get_summary, summary);
 }
 
 crate::csaf::traits::impl_with_date!(Revision20);

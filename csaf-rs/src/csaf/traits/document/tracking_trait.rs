@@ -1,4 +1,5 @@
 use crate::csaf::aggregation::revision_history::UnvalidatedCsafRevisionHistory;
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{GeneratorTrait, RevisionTrait};
@@ -113,9 +114,7 @@ impl TrackingTrait for Tracking20 {
         }
     }
 
-    fn get_id(&self) -> &str {
-        &self.id
-    }
+    impl_str_field_getter!(get_id, id);
 
     fn get_version(&self) -> CsafVersionNumber {
         CsafVersionNumber::from(&self.version)
@@ -146,9 +145,7 @@ impl TrackingTrait for Tracking21 {
         self.status
     }
 
-    fn get_id(&self) -> &str {
-        &self.id
-    }
+    impl_str_field_getter!(get_id, id);
 
     fn get_version(&self) -> CsafVersionNumber {
         CsafVersionNumber::from(&self.version)

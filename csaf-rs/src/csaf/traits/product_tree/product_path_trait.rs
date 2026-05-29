@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::ProductTrait;
 use crate::schema::csaf2_0::schema::Relationship;
 use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath};
@@ -28,9 +29,7 @@ pub trait ProductPathTrait<FPN: ProductTrait> {
 }
 
 impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Relationship {
-    fn get_beginning_product_reference(&self) -> &str {
-        &self.product_reference
-    }
+    impl_str_field_getter!(get_beginning_product_reference, product_reference);
 
     fn get_subpath_product_references(&self) -> Vec<&str> {
         vec![&self.relates_to_product_reference]
@@ -54,9 +53,7 @@ impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Rela
 }
 
 impl ProductPathTrait<FullProductNameT> for ProductPath {
-    fn get_beginning_product_reference(&self) -> &str {
-        &self.beginning_product_reference
-    }
+    impl_str_field_getter!(get_beginning_product_reference, beginning_product_reference);
 
     fn get_subpath_product_references(&self) -> Vec<&str> {
         self.subpaths

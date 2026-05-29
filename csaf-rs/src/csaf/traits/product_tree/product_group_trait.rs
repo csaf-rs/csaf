@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::schema::csaf2_0::schema::ProductGroup as ProductGroup20;
 use crate::schema::csaf2_1::schema::ProductGroup as ProductGroup21;
 use std::ops::Deref;
@@ -15,9 +16,7 @@ pub trait ProductGroupTrait {
 }
 
 impl ProductGroupTrait for ProductGroup20 {
-    fn get_group_id(&self) -> &str {
-        &self.group_id
-    }
+    impl_str_field_getter!(get_group_id, group_id);
 
     fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_ {
         self.product_ids.iter().map(|id| id.deref())
@@ -25,9 +24,7 @@ impl ProductGroupTrait for ProductGroup20 {
 }
 
 impl ProductGroupTrait for ProductGroup21 {
-    fn get_group_id(&self) -> &str {
-        &self.group_id
-    }
+    impl_str_field_getter!(get_group_id, group_id);
 
     fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_ {
         self.product_ids.iter().map(|id| id.deref())

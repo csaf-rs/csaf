@@ -1,6 +1,6 @@
+use crate::csaf_traits::{
 use crate::csaf::traits::vulnerabilities::restart_required_trait::RestartRequiredTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf_traits::{
     CsafTrait, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds, resolve_product_groups,
 };
 use crate::schema::csaf2_0::schema::{
@@ -12,7 +12,6 @@ use crate::schema::csaf2_1::schema::{
     RestartRequiredByRemediation as RestartRequiredByRemediation21,
 };
 use std::collections::BTreeSet;
-use std::ops::Deref;
 
 /// Trait representing an abstract remediation in a CSAF document.
 ///
@@ -57,17 +56,13 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + With
     fn get_restart_required(&self) -> Option<&Self::RestartRequiredType>;
 }
 
-impl WithOptionalGroupIds for Remediation20 {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
-    }
-}
+crate::csaf::traits::impl_optional_ids!(Remediation20, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Remediation20, WithOptionalProductIds, ReturnsValues);
+crate::csaf::traits::impl_with_optional_date!(Remediation20);
 
-impl WithOptionalProductIds for Remediation20 {
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-}
+crate::csaf::traits::impl_optional_ids!(Remediation21, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Remediation21, WithOptionalProductIds, ReturnsValues);
+crate::csaf::traits::impl_with_optional_date!(Remediation21);
 
 impl RemediationTrait for Remediation20 {
     type RestartRequiredType = RestartRequiredByRemediation20;
@@ -104,24 +99,6 @@ impl RemediationTrait for Remediation20 {
     }
 }
 
-impl WithOptionalDate for Remediation20 {
-    fn get_date(&self) -> Option<CsafDateTime> {
-        self.date.as_ref().map(CsafDateTime::from)
-    }
-}
-
-impl WithOptionalGroupIds for Remediation21 {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.group_ids.as_ref().map(|g| (*g).iter().map(|x| x.deref()))
-    }
-}
-
-impl WithOptionalProductIds for Remediation21 {
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-}
-
 impl RemediationTrait for Remediation21 {
     type RestartRequiredType = RestartRequiredByRemediation21;
 
@@ -139,11 +116,5 @@ impl RemediationTrait for Remediation21 {
 
     fn get_restart_required(&self) -> Option<&Self::RestartRequiredType> {
         self.restart_required.as_ref()
-    }
-}
-
-impl WithOptionalDate for Remediation21 {
-    fn get_date(&self) -> Option<CsafDateTime> {
-        self.date.as_ref().map(CsafDateTime::from)
     }
 }

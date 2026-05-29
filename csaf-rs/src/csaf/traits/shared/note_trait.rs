@@ -1,7 +1,7 @@
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf_traits::{WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_0::schema::{Note as Note20, NoteCategory as NoteCategory20};
 use crate::schema::csaf2_1::schema::{Note as Note21, NoteCategory as NoteCategory21};
-use std::ops::Deref;
 
 pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
     fn get_category(&self) -> NoteCategory21;
@@ -13,17 +13,8 @@ pub trait NoteTrait: WithOptionalGroupIds + WithOptionalProductIds {
 }
 
 // CSAF 2.0 implementation
-impl WithOptionalGroupIds for Note20 {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        None::<std::iter::Empty<&String>>
-    }
-}
-
-impl WithOptionalProductIds for Note20 {
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        None::<std::iter::Empty<&String>>
-    }
-}
+crate::csaf::traits::impl_optional_ids!(Note20, WithOptionalGroupIds, ReturnsEmpty);
+crate::csaf::traits::impl_optional_ids!(Note20, WithOptionalProductIds, ReturnsEmpty);
 
 impl NoteTrait for Note20 {
     fn get_category(&self) -> NoteCategory21 {
@@ -38,9 +29,7 @@ impl NoteTrait for Note20 {
         }
     }
 
-    fn get_title(&self) -> Option<&str> {
-        self.title.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_title, title);
 
     fn get_audience(&self) -> Option<&str> {
         self.audience.as_deref().map(String::as_str)
@@ -52,26 +41,15 @@ impl NoteTrait for Note20 {
 }
 
 // CSAF 2.1 implementation
-impl WithOptionalGroupIds for Note21 {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.group_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-}
-
-impl WithOptionalProductIds for Note21 {
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        self.product_ids.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-    }
-}
+crate::csaf::traits::impl_optional_ids!(Note21, WithOptionalGroupIds, ReturnsValues);
+crate::csaf::traits::impl_optional_ids!(Note21, WithOptionalProductIds, ReturnsValues);
 
 impl NoteTrait for Note21 {
     fn get_category(&self) -> NoteCategory21 {
         self.category
     }
 
-    fn get_title(&self) -> Option<&str> {
-        self.title.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_title, title);
 
     fn get_audience(&self) -> Option<&str> {
         self.audience.as_deref().map(String::as_str)

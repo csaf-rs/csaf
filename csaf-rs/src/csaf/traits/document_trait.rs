@@ -2,6 +2,7 @@ use crate::csaf::enums::csaf_version::CsafVersion;
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{
@@ -150,9 +151,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
         }
     }
 
-    fn get_title(&self) -> &str {
-        &self.title
-    }
+    impl_str_field_getter!(get_title, title);
 }
 
 impl DocumentTrait for DocumentLevelMetaData21 {
@@ -216,7 +215,5 @@ impl DocumentTrait for DocumentLevelMetaData21 {
         }
     }
 
-    fn get_title(&self) -> &str {
-        &self.title
-    }
+    impl_str_field_getter!(get_title, title);
 }

@@ -1,9 +1,8 @@
 use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
-use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
+use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
-    CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, RevisionHistorySortable, TrackingTrait,
-    VulnerabilityTrait, WithDate,
+    CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
@@ -55,12 +54,15 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
     skip_if_document_status_is_not!(status, Final, Interim);
 
     // Get sorted revision history and find the newest entry
-    let mut revision_history = tracking.get_revision_history_tuples();
+    let mut revision_history = tracking.aggregate_revision_history();
     revision_history.inplace_sort_by_date_then_number();
 
-    let newest_revision = match revision_history.last() {
-        Some(rev) => rev,
-        None => return Ok(()), // TODO this should be a #409 precondition failed
+    let newest_revision_date = match revision_history.last() {
+        Some(rev) => match &rev.date {
+            CsafDateTime::Valid(date) => date,
+            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
+        },
+        None => return Ok(()), // TODO this should be a #409 precondition failed #409
     };
 
     // Check each vulnerability's first known exploitation dates
@@ -69,12 +71,12 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(first_known_exploitation_dates) = vulnerability.get_first_known_exploitation_dates() {
             for (f_i, first_known_exploitation_date) in first_known_exploitation_dates.iter().enumerate() {
-                if let Valid(date) = first_known_exploitation_date.get_date() {
-                    if date > newest_revision.valid_date {
+                if let Valid(valid_first_known_explot_date) = first_known_exploitation_date.get_date() {
+                    if &valid_first_known_explot_date > newest_revision_date {
                         errors.get_or_insert_default().push(create_date_too_new_error(
                             &status,
-                            &date,
-                            &newest_revision.valid_date,
+                            &valid_first_known_explot_date,
+                            newest_revision_date,
                             v_i,
                             f_i,
                             DateProperty::Date,
@@ -84,12 +86,12 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
                     // TODO: This will be a NonDeterminable (#409) later
                 }
 
-                if let Valid(exploitation_date) = first_known_exploitation_date.get_exploitation_date() {
-                    if exploitation_date > newest_revision.valid_date {
+                if let Valid(valid_exploitation_date) = first_known_exploitation_date.get_exploitation_date() {
+                    if &valid_exploitation_date > newest_revision_date {
                         errors.get_or_insert_default().push(create_date_too_new_error(
                             &status,
-                            &exploitation_date,
-                            &newest_revision.valid_date,
+                            &valid_exploitation_date,
+                            newest_revision_date,
                             v_i,
                             f_i,
                             DateProperty::ExploitationDate,

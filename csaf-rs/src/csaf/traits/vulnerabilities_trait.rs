@@ -1,6 +1,7 @@
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
@@ -90,7 +91,7 @@ pub trait VulnerabilityTrait {
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>>;
 
     /// Return the path in the JSON document where the metrics are located, used for error reporting
-    fn get_metrics_path(&self) -> String;
+    fn get_metrics_path(&self) -> &str;
 
     /// Utility function to get all product IDs referenced in metrics along with their JSON paths
     fn get_metrics_product_references(&self) -> Vec<(String, String)> {
@@ -188,8 +189,8 @@ impl VulnerabilityTrait for Vulnerability20 {
         Some(&self.scores)
     }
 
-    fn get_metrics_path(&self) -> String {
-        "scores".to_string()
+    fn get_metrics_path(&self) -> &str {
+        "scores"
     }
 
     fn get_threats(&self) -> &Vec<Self::ThreatType> {
@@ -216,9 +217,7 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.involvements.as_ref()
     }
 
-    fn get_cve(&self) -> Option<&str> {
-        self.cve.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_cve, cve);
 
     fn get_cwe(&self) -> Option<Vec<Cwe>> {
         self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
@@ -271,8 +270,8 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.metrics.as_ref()
     }
 
-    fn get_metrics_path(&self) -> String {
-        "metrics".to_string()
+    fn get_metrics_path(&self) -> &str {
+        "metrics"
     }
 
     fn get_threats(&self) -> &Vec<Self::ThreatType> {
@@ -299,9 +298,7 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.involvements.as_ref()
     }
 
-    fn get_cve(&self) -> Option<&str> {
-        self.cve.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_cve, cve);
 
     fn get_cwe(&self) -> Option<Vec<Cwe>> {
         self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())

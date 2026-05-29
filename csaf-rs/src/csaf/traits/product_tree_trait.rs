@@ -1,4 +1,5 @@
 use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
+use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
 use crate::schema::csaf2_0::schema::{
     Branch as Branch20, CategoryOfTheBranch as CategoryOfTheBranch20, FullProductNameT as FullProductNameT20,
@@ -392,9 +393,7 @@ impl BranchTrait<FullProductNameT20> for Branch20 {
         }
     }
 
-    fn get_name(&self) -> &str {
-        &self.name
-    }
+    impl_str_field_getter!(get_name, name);
 
     fn get_product(&self) -> Option<&FullProductNameT20> {
         self.product.as_ref()
@@ -423,9 +422,7 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
         }
     }
 
-    fn get_name(&self) -> &str {
-        &self.name
-    }
+    impl_str_field_getter!(get_name, name);
 
     fn get_product(&self) -> Option<&FullProductNameT21> {
         self.product.as_ref()

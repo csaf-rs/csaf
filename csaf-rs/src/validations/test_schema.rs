@@ -8,11 +8,11 @@ use crate::{
     validation::ValidationError,
     validations::utils::{
         validation_schema_urls::{
-            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA_URL,
+            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_SCHEMA_URL,
             EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA_URL,
         },
         validation_schemas::{
-            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_2_SCHEMA,
+            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_SCHEMA,
             EXTENSION_METASCHEMA, EXTENSION_SCHEMA, SSVC_2_SCHEMA,
         },
     },
@@ -51,8 +51,8 @@ static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
         .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))
         .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))
         .with_resource(
-            CVSS_V4_0_2_SCHEMA_URL,
-            Resource::from_contents(use_draft_schema(CVSS_V4_0_2_SCHEMA.clone())),
+            CVSS_V4_0_SCHEMA_URL,
+            Resource::from_contents(use_draft_schema(CVSS_V4_0_SCHEMA.clone())),
         )
         .with_resource(SSVC_2_SCHEMA_URL, Resource::from_contents(SSVC_2_SCHEMA.clone()))
         .build(&use_draft_schema(CSAF_2_1_SCHEMA.clone()))

@@ -2,7 +2,6 @@ use crate::csaf::enums::product_status::ProductStatus;
 use crate::csaf::traits::util::impl_optional_str_iter_field_getter;
 use crate::schema::csaf2_1::schema::ProductStatus as ProductStatus2_1;
 
-
 /// Trait representing an abstract product status in a CSAF document.
 pub trait ProductStatusTrait {
     /// Returns a reference to the list of first affected product IDs.

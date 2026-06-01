@@ -36,8 +36,6 @@ macro_rules! impl_str_iter_field_getter {
     };
 }
 
-
-
 pub(crate) use impl_optional_str_field_getter;
 pub(crate) use impl_optional_str_iter_field_getter;
 pub(crate) use impl_str_field_getter;

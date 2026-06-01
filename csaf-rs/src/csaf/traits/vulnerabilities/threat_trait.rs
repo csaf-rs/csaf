@@ -1,10 +1,6 @@
 use crate::csaf_traits::{WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds};
-use crate::schema::csaf2_0::schema::{
-    CategoryOfTheThreat as CategoryOfTheThreat20, Threat as Threat20,
-};
-use crate::schema::csaf2_1::schema::{
-    CategoryOfTheThreat as CategoryOfTheThreat21, Threat as Threat21,
-};
+use crate::schema::csaf2_0::schema::{CategoryOfTheThreat as CategoryOfTheThreat20, Threat as Threat20};
+use crate::schema::csaf2_1::schema::{CategoryOfTheThreat as CategoryOfTheThreat21, Threat as Threat21};
 
 /// Trait representing an abstract threat in a CSAF document.
 pub trait ThreatTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {

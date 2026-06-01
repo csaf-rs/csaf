@@ -15,26 +15,16 @@ use std::collections::BTreeSet;
 /// category and the affected products or groups.
 pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + WithOptionalDate {
     /// Returns the category of the remediation.
-    ///
-    /// Categories are defined by the CSAF schema.
     fn get_category(&self) -> CategoryOfTheRemediation21;
 
     /// Computes a set of all product IDs affected by this remediation, either
     /// directly or through product groups.
-    ///
-    /// # Arguments
-    ///
-    /// * `doc` - A reference to the CSAF document to resolve product groups.
-    ///
-    /// # Returns
-    ///
-    /// A `BTreeSet<String>` containing all product IDs, or `None` if none exist.
     fn get_all_product_ids(&self, doc: &impl CsafTrait) -> Option<BTreeSet<String>> {
         if self.get_product_ids().is_none() && self.get_group_ids().is_none() {
             None
         } else {
             let mut product_set: BTreeSet<String> = match self.get_product_ids() {
-                Some(product_ids) => product_ids.cloned().collect(),
+                Some(product_ids) => product_ids.map(|id| id.to_owned()).collect(),
                 None => BTreeSet::new(),
             };
             if let Some(product_groups) = self.get_group_ids()
@@ -56,16 +46,6 @@ crate::csaf::traits::impl_optional_ids!(Remediation21, WithOptionalProductIds, R
 crate::csaf::traits::impl_with_optional_date!(Remediation21);
 
 impl RemediationTrait for Remediation20 {
-    /// Normalizes the remediation categories from CSAF 2.0 to those of CSAF 2.1.
-    ///
-    /// # Explanation
-    /// In CSAF 2.1, the list of remediation categories was expanded, making it a superset of those
-    /// in CSAF 2.0. This function ensures that the remediation category from a CSAF 2.0 remediation
-    /// object is converted into the corresponding category defined in CSAF 2.1.
-    ///
-    /// # Returns
-    /// A CSAF 2.1 `CategoryOfTheRemediation` that corresponds to the remediation category of the
-    /// current object.
     fn get_category(&self) -> CategoryOfTheRemediation21 {
         match self.category {
             CategoryOfTheRemediation20::Workaround => CategoryOfTheRemediation21::Workaround,

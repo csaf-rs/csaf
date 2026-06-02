@@ -1,44 +1,35 @@
 use crate::csaf::enums::product_status::ProductStatus;
+use crate::csaf::traits::util::impl_optional_str_iter_field_getter;
 use crate::schema::csaf2_1::schema::ProductStatus as ProductStatus2_1;
-use std::ops::Deref;
-
-/// Helper macro to implement a getter that returns an optional iterator over product IDs.
-macro_rules! impl_product_status_getter {
-    ($method:ident, $field:ident) => {
-        fn $method(&self) -> Option<impl Iterator<Item = &String> + '_> {
-            self.$field.as_ref().map(|p| (*p).iter().map(|x| x.deref()))
-        }
-    };
-}
 
 /// Trait representing an abstract product status in a CSAF document.
 pub trait ProductStatusTrait {
     /// Returns a reference to the list of first affected product IDs.
-    fn get_first_affected(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_first_affected(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns a reference to the list of first fixed product IDs.
-    fn get_first_fixed(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_first_fixed(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns a reference to the list of fixed product IDs.
-    fn get_fixed(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_fixed(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns a reference to the list of known affected product IDs.
-    fn get_known_affected(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_known_affected(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns a reference to the list of known not-affected product IDs.
-    fn get_known_not_affected(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_known_not_affected(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns a reference to the list of last affected product IDs.
-    fn get_last_affected(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_last_affected(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns a reference to the list of recommended product IDs.
-    fn get_recommended(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_recommended(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns a reference to the list of product IDs currently under investigation.
-    fn get_under_investigation(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_under_investigation(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Return a reference to the list of product IDs with unknown status.
-    fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_unknown(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns all product IDs grouped by their [`ProductStatus`]. The original index is
     /// implicit in the `Vec<String>` index.
@@ -66,15 +57,15 @@ pub trait ProductStatusTrait {
     }
 
     /// Helper method to add product references with a given label to the result vector.
-    fn extract_product_references<'a>(
+    fn extract_product_references(
         &self,
         ids: &mut Vec<(String, String)>,
-        products: Option<impl Iterator<Item = &'a String> + 'a>,
+        products: Option<impl Iterator<Item = impl AsRef<str>>>,
         label: &str,
     ) {
         if let Some(iter) = products {
             for (x_i, x) in iter.enumerate() {
-                ids.push((x.clone(), format!("product_status/{label}/{x_i}")));
+                ids.push((x.as_ref().to_owned(), format!("product_status/{label}/{x_i}")));
             }
         }
     }
@@ -95,29 +86,29 @@ pub trait ProductStatusTrait {
 }
 
 impl ProductStatusTrait for crate::schema::csaf2_0::schema::ProductStatus {
-    impl_product_status_getter!(get_first_affected, first_affected);
-    impl_product_status_getter!(get_first_fixed, first_fixed);
-    impl_product_status_getter!(get_fixed, fixed);
-    impl_product_status_getter!(get_known_affected, known_affected);
-    impl_product_status_getter!(get_known_not_affected, known_not_affected);
-    impl_product_status_getter!(get_last_affected, last_affected);
-    impl_product_status_getter!(get_recommended, recommended);
-    impl_product_status_getter!(get_under_investigation, under_investigation);
+    impl_optional_str_iter_field_getter!(get_first_affected, first_affected);
+    impl_optional_str_iter_field_getter!(get_first_fixed, first_fixed);
+    impl_optional_str_iter_field_getter!(get_fixed, fixed);
+    impl_optional_str_iter_field_getter!(get_known_affected, known_affected);
+    impl_optional_str_iter_field_getter!(get_known_not_affected, known_not_affected);
+    impl_optional_str_iter_field_getter!(get_last_affected, last_affected);
+    impl_optional_str_iter_field_getter!(get_recommended, recommended);
+    impl_optional_str_iter_field_getter!(get_under_investigation, under_investigation);
 
     /// Not specified for CSAF 2.0, so `None`
-    fn get_unknown(&self) -> Option<impl Iterator<Item = &String> + '_> {
-        None::<std::iter::Empty<&String>>
+    fn get_unknown(&self) -> Option<impl Iterator<Item = &str> + '_> {
+        None::<std::iter::Empty<&str>>
     }
 }
 
 impl ProductStatusTrait for ProductStatus2_1 {
-    impl_product_status_getter!(get_first_affected, first_affected);
-    impl_product_status_getter!(get_first_fixed, first_fixed);
-    impl_product_status_getter!(get_fixed, fixed);
-    impl_product_status_getter!(get_known_affected, known_affected);
-    impl_product_status_getter!(get_known_not_affected, known_not_affected);
-    impl_product_status_getter!(get_last_affected, last_affected);
-    impl_product_status_getter!(get_recommended, recommended);
-    impl_product_status_getter!(get_under_investigation, under_investigation);
-    impl_product_status_getter!(get_unknown, unknown);
+    impl_optional_str_iter_field_getter!(get_first_affected, first_affected);
+    impl_optional_str_iter_field_getter!(get_first_fixed, first_fixed);
+    impl_optional_str_iter_field_getter!(get_fixed, fixed);
+    impl_optional_str_iter_field_getter!(get_known_affected, known_affected);
+    impl_optional_str_iter_field_getter!(get_known_not_affected, known_not_affected);
+    impl_optional_str_iter_field_getter!(get_last_affected, last_affected);
+    impl_optional_str_iter_field_getter!(get_recommended, recommended);
+    impl_optional_str_iter_field_getter!(get_under_investigation, under_investigation);
+    impl_optional_str_iter_field_getter!(get_unknown, unknown);
 }

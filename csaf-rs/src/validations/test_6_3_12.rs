@@ -46,7 +46,7 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<Valid
                 if content.has_any_cvss() {
                     // collect products covered by this CVSS metric
                     for product_id in metric.get_products() {
-                        products_covered_by_cvss.insert(product_id.clone());
+                        products_covered_by_cvss.insert(product_id.to_owned());
                     }
 
                     // check that cvss_v4 is present

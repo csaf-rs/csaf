@@ -38,6 +38,10 @@ struct Args {
     /// Create a test result JSON for the given test ID as primary result, with other test failed results as secondary results
     #[arg(long, value_name = "TEST_ID")]
     create_test_result: Option<String>,
+
+    /// Check validation results against a test result JSON file (mutually exclusive with --create-test-result)
+    #[arg(long, value_name = "RESULT_FILE", conflicts_with = "create_test_result")]
+    check_test_result: Option<String>,
 }
 
 fn main() -> Result<(), anyhow::Error> {
@@ -50,6 +54,10 @@ fn main() -> Result<(), anyhow::Error> {
 
     if args.create_test_result.is_some() && args.path.len() != 1 {
         bail!("--create-test-result requires exactly one input file");
+    }
+
+    if args.check_test_result.is_some() && args.path.len() != 1 {
+        bail!("--check-test-result requires exactly one input file");
     }
 
     if args
@@ -74,6 +82,31 @@ fn main() -> Result<(), anyhow::Error> {
 
 /// Try to validate a file as a CSAF document based on the specified version.
 fn validate_file(path: &str, args: &Args) -> Result<ValidationResult> {
+    // Load expected test result file if --check-test-result is set
+    let expected: Option<TestResultForASingleCsafTestFile> = if let Some(result_path) = &args.check_test_result {
+        let content = std::fs::read_to_string(result_path)
+            .map_err(|e| anyhow::anyhow!("Failed to read test result file '{result_path}': {e}"))?;
+        Some(
+            serde_json::from_str(&content)
+                .map_err(|e| anyhow::anyhow!("Failed to parse test result file '{result_path}': {e}"))?,
+        )
+    } else {
+        None
+    };
+
+    // Determine primary test ID and secondary test IDs from flags or loaded expected result
+    let primary_test_id = args
+        .create_test_result
+        .as_ref()
+        .or(expected.as_ref().map(|exp| exp.primary_result.id.deref()));
+
+    // Collect all secondary test IDs from the expected result file so they are also executed
+    let secondary_test_ids: Vec<String> = expected
+        .as_ref()
+        .and_then(|exp| exp.secondary_results.as_ref())
+        .map(|results| results.iter().map(|r| r.id.deref().clone()).collect())
+        .unwrap_or_default();
+
     if args.create_test_result.is_none() {
         let file_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Cyan.into()));
         println!("Validating file: {file_color}{path}{file_color:#}");
@@ -82,20 +115,34 @@ fn validate_file(path: &str, args: &Args) -> Result<ValidationResult> {
         "auto" => detect_version(path)?,
         other => other.to_string(),
     };
-    let result = match version.as_str() {
+
+    let tests: Vec<_> = args
+        .test
+        .iter()
+        .map(|s| s.as_str())
+        .chain(primary_test_id.iter().map(|s| s.as_str()))
+        .chain(secondary_test_ids.iter().map(|s| s.as_str()))
+        .collect();
+
+    let mut result = match version.as_str() {
         "2.0" => {
             let document = load_document_2_0(path)?;
-            validate_document(document, "2.0", args)
+            validate_document(document, "2.0", args, &tests)
         },
         "2.1" => {
             let document = load_document_2_1(path)?;
-            validate_document(document, "2.1", args)
+            validate_document(document, "2.1", args, &tests)
         },
         _ => bail!(format!("Invalid CSAF version: {version}")),
     };
     if let Some(primary_id) = &args.create_test_result {
-        let testresult_json = build_testresult_json(&result, primary_id)?;
-        println!("{}", serde_json::to_string_pretty(&testresult_json)?);
+        let test_result = build_testresult_json(&result, primary_id)?;
+        println!("{}", serde_json::to_string_pretty(&test_result)?);
+    }
+    if let Some(exp) = &expected {
+        let primary_id = exp.primary_result.id.deref().as_str();
+        let comparison_ok = compare_with_expected(&result, exp, primary_id);
+        result.success = comparison_ok;
     }
     Ok(result)
 }
@@ -103,27 +150,28 @@ fn validate_file(path: &str, args: &Args) -> Result<ValidationResult> {
 /// Validate a CSAF document of the specified version with the provided arguments.
 ///
 /// This prints the results of the tests on stdout.
-fn validate_document<T>(document: T, version: &str, args: &Args) -> ValidationResult
+fn validate_document<T>(document: T, version: &str, args: &Args, tests: &[&str]) -> ValidationResult
 where
     T: Validatable,
 {
-    let mut test_ids: Vec<&str> = args
-        .test
+    let mut test_ids: Vec<&str> = tests
         .iter()
         .flat_map(|test_or_preset| match T::tests_in_preset(test_or_preset) {
             Some(test_ids) => test_ids,
-            None => vec![test_or_preset.as_str()],
+            None => vec![*test_or_preset],
         })
         .collect();
-    if let Some(primary_id) = &args.create_test_result
-        && !test_ids.contains(&primary_id.as_str())
-    {
-        test_ids.push(primary_id.as_str());
-    }
+
+    test_ids.sort_by(|a, b| {
+        a.split('.')
+            .map(|p| format!("{p:>2}"))
+            .cmp(b.split(".").map(|p| format!("{p:>2}")))
+    });
+    test_ids.dedup();
 
     let result = validate_by_tests(&document, version, &test_ids);
 
-    if args.create_test_result.is_none() {
+    if args.create_test_result.is_none() && args.check_test_result.is_none() {
         print_validation_result(&result, args.verbose);
     }
     result
@@ -277,12 +325,11 @@ fn build_testresult_json(result: &ValidationResult, primary_test_id: &str) -> Re
         .test_results
         .iter()
         .find(|r| r.test_id == primary_test_id)
-        .ok_or_else(|| anyhow::anyhow!("Test '{}' not found in validation results", primary_test_id))?;
+        .ok_or_else(|| anyhow::anyhow!("Test '{primary_test_id}' not found in validation results"))?;
 
     let primary_result = testresult_create_result(primary_test).ok_or_else(|| {
         anyhow::anyhow!(
-            "Cannot create result for test '{}': test ID does not match the required pattern, or test was not found/skipped",
-            primary_test_id
+            "Cannot create result for test '{primary_test_id}': test ID does not match the required pattern, or test was not found/skipped"
         )
     })?;
 
@@ -305,4 +352,177 @@ fn build_testresult_json(result: &ValidationResult, primary_test_id: &str) -> Re
             Some(secondary_results)
         },
     })
+}
+
+/// Get the error, warning, and info slices for a specific test ID from a [`ValidationResult`].
+fn get_test_messages<'a>(
+    result: &'a ValidationResult,
+    test_id: &str,
+) -> (&'a [ValidationError], &'a [ValidationError], &'a [ValidationError]) {
+    result
+        .test_results
+        .iter()
+        .find(|r| r.test_id == test_id)
+        .and_then(|r| match &r.status {
+            Failure {
+                errors,
+                warnings,
+                infos,
+            } => Some((errors.as_slice(), warnings.as_slice(), infos.as_slice())),
+            _ => None,
+        })
+        .unwrap_or((&[], &[], &[]))
+}
+
+/// Compare a [`ValidationResult`] against an expected [`TestResultForASingleCsafTestFile`].
+///
+/// Prints discovered issues and returns `true` if no comparison errors were found.
+///
+/// Primary result comparison (by JSON pointer / `instance_path`):
+/// - Error present in validation but missing from expected -> printed as an error
+/// - Error present in expected but missing from validation -> printed as an error
+/// - Both sides have the same path but different messages -> printed as a warning
+///
+/// Secondary result comparison (one-way, never causes failure):
+/// - Each expected error/warning/info that is absent from the validation -> printed as a warning
+/// - Both sides have the same path but different messages -> printed as an info
+fn compare_with_expected(
+    result: &ValidationResult,
+    expected: &TestResultForASingleCsafTestFile,
+    primary_test_id: &str,
+) -> bool {
+    let mut has_errors = false;
+
+    let error_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Red.into()));
+    let warning_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Yellow.into()));
+    let info_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Blue.into()));
+
+    // --- Primary result ---
+    let (val_errors, val_warnings, val_infos) = get_test_messages(result, primary_test_id);
+
+    let check_primary_messages = |val_msgs: &[ValidationError],
+                                  exp_msgs: &[ValidationMessageT],
+                                  kind: &str,
+                                  has_errors: &mut bool| {
+        // Unexpected messages in validation
+        for msg in val_msgs {
+            match exp_msgs.iter().find(|e| e.instance_path == msg.instance_path) {
+                None => {
+                    println!(
+                        "{error_color}❌ [Primary/{kind}] Unexpected {kind} at '{}': {}{error_color:#}",
+                        msg.instance_path, msg.message
+                    );
+                    *has_errors = true;
+                },
+                Some(exp) if exp.message.as_str() != msg.message.as_str() => {
+                    println!(
+                        "{warning_color}⚠️  [Primary/{kind}] Message mismatch at '{}': expected '{}', got '{}'{warning_color:#}",
+                        msg.instance_path,
+                        exp.message.as_str(),
+                        msg.message
+                    );
+                },
+                _ => {},
+            }
+        }
+        // Missing messages (in expected but absent from validation)
+        for exp in exp_msgs {
+            if val_msgs.iter().all(|m| m.instance_path != exp.instance_path) {
+                println!(
+                    "{error_color}❌ [Primary/{kind}] Expected {kind} not found at '{}': {}{error_color:#}",
+                    exp.instance_path,
+                    exp.message.as_str()
+                );
+                *has_errors = true;
+            }
+        }
+    };
+
+    let empty: &[ValidationMessageT] = &[];
+    check_primary_messages(
+        val_errors,
+        expected
+            .primary_result
+            .errors
+            .as_ref()
+            .map(|v| v.as_slice())
+            .unwrap_or(empty),
+        "error",
+        &mut has_errors,
+    );
+    check_primary_messages(
+        val_warnings,
+        expected
+            .primary_result
+            .warnings
+            .as_ref()
+            .map(|v| v.as_slice())
+            .unwrap_or(empty),
+        "warning",
+        &mut has_errors,
+    );
+    check_primary_messages(
+        val_infos,
+        expected
+            .primary_result
+            .infos
+            .as_ref()
+            .map(|v| v.as_slice())
+            .unwrap_or(empty),
+        "info",
+        &mut has_errors,
+    );
+
+    // --- Secondary results (one-way: expected entries must be present in validation) ---
+    for secondary in expected.secondary_results.iter().flatten() {
+        let test_id: &str = secondary.id.deref().as_str();
+        let (val_errors, val_warnings, val_infos) = get_test_messages(result, test_id);
+
+        let check_secondary_messages = |val_msgs: &[ValidationError], exp_msgs: &[ValidationMessageT], kind: &str| {
+            for exp in exp_msgs {
+                match val_msgs.iter().find(|m| m.instance_path == exp.instance_path) {
+                    None => {
+                        println!(
+                            "{warning_color}⚠️  [Secondary {test_id}/{kind}] Expected {kind} not found at '{}': {}{warning_color:#}",
+                            exp.instance_path,
+                            exp.message.as_str()
+                        );
+                    },
+                    Some(found) if found.message.as_str() != exp.message.as_str() => {
+                        println!(
+                            "{info_color}💡 [Secondary {test_id}/{kind}] Message mismatch at '{}': expected '{}', got '{}'{info_color:#}",
+                            exp.instance_path,
+                            exp.message.as_str(),
+                            found.message
+                        );
+                    },
+                    _ => {},
+                }
+            }
+        };
+
+        check_secondary_messages(
+            val_errors,
+            secondary.errors.as_ref().map(|v| v.as_slice()).unwrap_or(empty),
+            "error",
+        );
+        check_secondary_messages(
+            val_warnings,
+            secondary.warnings.as_ref().map(|v| v.as_slice()).unwrap_or(empty),
+            "warning",
+        );
+        check_secondary_messages(
+            val_infos,
+            secondary.infos.as_ref().map(|v| v.as_slice()).unwrap_or(empty),
+            "info",
+        );
+    }
+
+    if has_errors {
+        println!("{error_color}❌ Test result comparison failed!{error_color:#}");
+    } else {
+        println!("✅ Test result comparison passed!");
+    }
+
+    !has_errors
 }

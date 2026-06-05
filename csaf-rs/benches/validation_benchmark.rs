@@ -5,12 +5,12 @@ use std::time::Duration;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 
-use csaf::csaf2_0::loader::load_document_from_str as load_document_2_0;
+use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_0::testcases::{
     informative_tests as informative_tests_2_0, mandatory_tests as mandatory_tests_2_0,
     recommended_tests as recommended_tests_2_0,
 };
-use csaf::csaf2_1::loader::load_document_from_str as load_document_2_1;
+use csaf::csaf2_1::loader::load_document as load_document_2_1;
 use csaf::csaf2_1::testcases::{
     informative_tests as informative_tests_2_1, mandatory_tests as mandatory_tests_2_1,
     recommended_tests as recommended_tests_2_1,

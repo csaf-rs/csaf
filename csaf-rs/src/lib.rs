@@ -6,6 +6,7 @@ pub mod csaf2_1;
 pub mod csaf_traits;
 pub(crate) mod cvss;
 pub mod helpers;
+pub mod json;
 pub(crate) mod macros;
 pub mod schema;
 #[cfg(test)]

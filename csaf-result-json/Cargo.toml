@@ -1,0 +1,19 @@
+[package]
+name = "csaf-result-json"
+description = "A tool for generating and checking CSAF validation result files"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88.0"
+publish = false
+
+[dependencies]
+anstream = "0.6.7"
+anstyle = "1.0.8"
+anyhow = "1.0.93"
+clap = { version = "4.5.23", features = ["derive"] }
+csaf-rs = { path = "../csaf-rs", version = "0.4.1" }
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+
+[lints]
+workspace = true

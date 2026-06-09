@@ -500,6 +500,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "csaf-result-json"
+version = "0.1.0"
+dependencies = [
+ "anstream 0.6.21",
+ "anstyle",
+ "anyhow",
+ "clap",
+ "csaf-rs",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "csaf-rs"
 version = "0.4.1"
 dependencies = [

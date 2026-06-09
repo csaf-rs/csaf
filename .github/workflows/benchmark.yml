@@ -46,7 +46,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           alert-threshold: "150%"
-          comment-on-alert: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          comment-on-alert: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
           summary-always: true
           comment-always: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
           gh-pages-branch: gh-pages

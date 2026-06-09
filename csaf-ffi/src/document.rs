@@ -5,8 +5,8 @@
 use std::sync::{Arc, Mutex};
 
 use csaf::csaf::raw::{HasParsed, RawDocument};
-use csaf::csaf2_0::loader::load_document_from_str as load_2_0;
-use csaf::csaf2_1::loader::load_document_from_str as load_2_1;
+use csaf::csaf2_0::loader::load_document as load_2_0;
+use csaf::csaf2_1::loader::load_document as load_2_1;
 use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
 use csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
 use csaf::validation::{validate_by_preset, validate_by_test, validate_by_tests};

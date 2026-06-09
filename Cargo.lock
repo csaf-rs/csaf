@@ -518,6 +518,7 @@ dependencies = [
  "serde_json",
  "spdx",
  "ssvc",
+ "tempfile",
  "uuid",
 ]
 

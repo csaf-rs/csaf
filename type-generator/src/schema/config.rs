@@ -31,11 +31,6 @@ pub fn get_testcases_schemas() -> Vec<SchemaConfig> {
             output: "csaf2_1/testcases_schema.rs",
             patch: None,
         },
-        SchemaConfig {
-            input: "assets/testresult_json_schema.json",
-            output: "csaf2_1/testresult_schema.rs",
-            patch: None,
-        },
     ]
 }
 

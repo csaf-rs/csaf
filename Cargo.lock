@@ -530,7 +530,6 @@ dependencies = [
  "anyhow",
  "clap",
  "csaf-rs",
- "serde_json",
 ]
 
 [[package]]

@@ -89,6 +89,17 @@ enum Commands {
         #[arg()]
         path: String,
     },
+
+    /// Compare two test result JSON files against each other
+    Compare {
+        /// Path to the actual test result JSON file (e.g. created via the `create` subcommand)
+        #[arg()]
+        actual_file: String,
+
+        /// Path to the expected test result JSON file
+        #[arg()]
+        expected_file: String,
+    },
 }
 
 fn main() -> Result<(), anyhow::Error> {
@@ -122,7 +133,7 @@ fn main() -> Result<(), anyhow::Error> {
             Ok(())
         },
         Commands::Check { result_file, path } => {
-            // Load expected test result file if --check-test-result is set
+            // Load expected test result file
             let expected = serde_json::from_str::<ResultJson>(
                 &std::fs::read_to_string(&result_file)
                     .map_err(|e| anyhow::anyhow!("Failed to read test result file '{result_file}': {e}"))?,
@@ -153,7 +164,24 @@ fn main() -> Result<(), anyhow::Error> {
                 _ => bail!(format!("Invalid CSAF version: {version}")),
             };
 
-            compare_with_expected(&result, &expected, &expected.primary_result.id);
+            let actual = build_testresult_json(&result, expected.primary_result.id.as_str())?;
+            compare_result_jsons(&actual, &expected);
+            Ok(())
+        },
+        Commands::Compare { actual_file, expected_file } => {
+            let actual = serde_json::from_str::<ResultJson>(
+                &std::fs::read_to_string(&actual_file)
+                    .map_err(|e| anyhow::anyhow!("Failed to read actual result file '{actual_file}': {e}"))?,
+            )
+            .map_err(|e| anyhow::anyhow!("Failed to parse actual result file '{actual_file}': {e}"))?;
+
+            let expected = serde_json::from_str::<ResultJson>(
+                &std::fs::read_to_string(&expected_file)
+                    .map_err(|e| anyhow::anyhow!("Failed to read expected result file '{expected_file}': {e}"))?,
+            )
+            .map_err(|e| anyhow::anyhow!("Failed to parse expected result file '{expected_file}': {e}"))?;
+
+            compare_result_jsons(&actual, &expected);
             Ok(())
         },
     }
@@ -260,54 +288,34 @@ fn testresult_create_validationmessages(errors: &[ValidationError]) -> Option<Ve
     if messages.is_empty() { None } else { Some(messages) }
 }
 
-/// Get the error, warning, and info slices for a specific test ID from a [`ValidationResult`].
-fn get_test_messages<'a>(
-    result: &'a ValidationResult,
-    test_id: &str,
-) -> (&'a [ValidationError], &'a [ValidationError], &'a [ValidationError]) {
-    result
-        .test_results
-        .iter()
-        .find(|r| r.test_id == test_id)
-        .and_then(|r| match &r.status {
-            Failure {
-                errors,
-                warnings,
-                infos,
-            } => Some((errors.as_slice(), warnings.as_slice(), infos.as_slice())),
-            _ => None,
-        })
-        .unwrap_or((&[], &[], &[]))
-}
-
-/// Compare a [`ValidationResult`] against an expected [`ResultJson`].
+/// Compare two [`ResultJson`] objects against each other.
 ///
 /// Prints discovered issues and returns `true` if no comparison errors were found.
 ///
 /// Primary result comparison (by JSON pointer / `instance_path`):
-/// - Error present in validation but missing from expected -> printed as an error
-/// - Error present in expected but missing from validation -> printed as an error
+/// - Error present in actual but missing from expected -> printed as an error
+/// - Error present in expected but missing from actual -> printed as an error
 /// - Both sides have the same path but different messages -> printed as a warning
 ///
 /// Secondary result comparison (one-way, never causes failure):
-/// - Each expected error/warning/info that is absent from the validation -> printed as a warning
+/// - Each expected error/warning/info that is absent from actual -> printed as a warning
 /// - Both sides have the same path but different messages -> printed as an info
-fn compare_with_expected(result: &ValidationResult, expected: &ResultJson, primary_test_id: &str) -> bool {
+fn compare_result_jsons(actual: &ResultJson, expected: &ResultJson) -> bool {
     let mut has_errors = false;
 
     let error_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Red.into()));
     let warning_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Yellow.into()));
     let info_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Blue.into()));
 
-    // --- Primary result ---
-    let (val_errors, val_warnings, val_infos) = get_test_messages(result, primary_test_id);
+    let empty: &[ValidationMessageT] = &[];
 
-    let check_primary_messages = |val_msgs: &[ValidationError],
+    // --- Primary result ---
+    let check_primary_messages = |actual_msgs: &[ValidationMessageT],
                                   exp_msgs: &[ValidationMessageT],
                                   kind: &str,
                                   has_errors: &mut bool| {
-        // Unexpected messages in validation
-        for msg in val_msgs {
+        // Unexpected messages in actual
+        for msg in actual_msgs {
             match exp_msgs.iter().find(|e| e.instance_path == msg.instance_path) {
                 None => {
                     println!(
@@ -316,71 +324,72 @@ fn compare_with_expected(result: &ValidationResult, expected: &ResultJson, prima
                     );
                     *has_errors = true;
                 },
-                Some(exp) if exp.message.as_str() != msg.message.as_str() => {
+                Some(exp) if exp.message != msg.message => {
                     println!(
                         "{warning_color}⚠️  [Primary/{kind}] Message mismatch at '{}': expected '{}', got '{}'{warning_color:#}",
-                        msg.instance_path,
-                        exp.message.as_str(),
-                        msg.message
+                        msg.instance_path, exp.message, msg.message
                     );
                 },
                 _ => {},
             }
         }
-        // Missing messages (in expected but absent from validation)
+        // Missing messages (in expected but absent from actual)
         for exp in exp_msgs {
-            if val_msgs.iter().all(|m| m.instance_path != exp.instance_path) {
+            if actual_msgs.iter().all(|m| m.instance_path != exp.instance_path) {
                 println!(
                     "{error_color}❌ [Primary/{kind}] Expected {kind} not found at '{}': {}{error_color:#}",
-                    exp.instance_path,
-                    exp.message.as_str()
+                    exp.instance_path, exp.message
                 );
                 *has_errors = true;
             }
         }
     };
 
-    let empty: &[ValidationMessageT] = &[];
     check_primary_messages(
-        val_errors,
+        actual.primary_result.errors.as_deref().unwrap_or(empty),
         expected.primary_result.errors.as_deref().unwrap_or(empty),
         "error",
         &mut has_errors,
     );
     check_primary_messages(
-        val_warnings,
+        actual.primary_result.warnings.as_deref().unwrap_or(empty),
         expected.primary_result.warnings.as_deref().unwrap_or(empty),
         "warning",
         &mut has_errors,
     );
     check_primary_messages(
-        val_infos,
+        actual.primary_result.infos.as_deref().unwrap_or(empty),
         expected.primary_result.infos.as_deref().unwrap_or(empty),
         "info",
         &mut has_errors,
     );
 
-    // --- Secondary results (one-way: expected entries must be present in validation) ---
-    for secondary in expected.secondary_results.iter().flatten() {
-        let test_id: &str = secondary.id.as_str();
-        let (val_errors, val_warnings, val_infos) = get_test_messages(result, test_id);
+    // --- Secondary results (one-way: expected entries must be present in actual) ---
+    for secondary_exp in expected.secondary_results.iter().flatten() {
+        let test_id: &str = secondary_exp.id.as_str();
+        let actual_secondary = actual.secondary_results.iter().flatten().find(|r| r.id == test_id);
+        let (actual_errors, actual_warnings, actual_infos) = match actual_secondary {
+            Some(r) => (
+                r.errors.as_deref().unwrap_or(empty),
+                r.warnings.as_deref().unwrap_or(empty),
+                r.infos.as_deref().unwrap_or(empty),
+            ),
+            None => (empty, empty, empty),
+        };
 
-        let check_secondary_messages = |val_msgs: &[ValidationError], exp_msgs: &[ValidationMessageT], kind: &str| {
+        let check_secondary_messages = |actual_msgs: &[ValidationMessageT], exp_msgs: &[ValidationMessageT], kind: &str| {
             for exp in exp_msgs {
-                match val_msgs.iter().find(|m| m.instance_path == exp.instance_path) {
+                match actual_msgs.iter().find(|m| m.instance_path == exp.instance_path) {
                     None => {
                         println!(
                             "{warning_color}⚠️  [Secondary {test_id}/{kind}] Expected {kind} not found at '{}': {}{warning_color:#}",
-                            exp.instance_path,
-                            exp.message.as_str()
+                            exp.instance_path, exp.message
                         );
                     },
-                    Some(found) if found.message.as_str() != exp.message.as_str() => {
+                    Some(found) if found.message != exp.message => {
                         println!(
                             "{info_color}💡 [Secondary {test_id}/{kind}] Message mismatch at '{}': expected '{}', got '{}'{info_color:#}",
-                            exp.instance_path,
-                            exp.message.as_str(),
-                            found.message
+                            exp.instance_path, exp.message, found.message
                         );
                     },
                     _ => {},
@@ -388,9 +397,9 @@ fn compare_with_expected(result: &ValidationResult, expected: &ResultJson, prima
             }
         };
 
-        check_secondary_messages(val_errors, secondary.errors.as_deref().unwrap_or(empty), "error");
-        check_secondary_messages(val_warnings, secondary.warnings.as_deref().unwrap_or(empty), "warning");
-        check_secondary_messages(val_infos, secondary.infos.as_deref().unwrap_or(empty), "info");
+        check_secondary_messages(actual_errors, secondary_exp.errors.as_deref().unwrap_or(empty), "error");
+        check_secondary_messages(actual_warnings, secondary_exp.warnings.as_deref().unwrap_or(empty), "warning");
+        check_secondary_messages(actual_infos, secondary_exp.infos.as_deref().unwrap_or(empty), "info");
     }
 
     if has_errors {

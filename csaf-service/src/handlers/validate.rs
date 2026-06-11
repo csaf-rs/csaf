@@ -7,13 +7,13 @@ use axum::{
 };
 use csaf::csaf_traits::CsafVersion;
 use csaf::{
-    csaf::loader::detect_version_from_json,
-    csaf2_0::loader::load_document_from_value as load_2_0,
-    csaf2_1::loader::load_document_from_value as load_2_1,
+    csaf::loader::detect_version,
+    csaf2_0::loader::load_document as load_2_0,
+    csaf2_1::loader::load_document as load_2_1,
     validation::{Validatable, validate_by_tests},
 };
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use utoipa::{PartialSchema, ToSchema};
 
 use crate::errors::{ErrorResponse, error_response};
 type CsafDoc20 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>;
@@ -173,7 +173,7 @@ fn resolve_version(
     body: &serde_json::Value,
 ) -> Result<CsafVersion, (StatusCode, Json<ErrorResponse>)> {
     let parsed_version = if path_version.eq_ignore_ascii_case("auto") {
-        detect_version_from_json(body).map_err(|e| error_response(StatusCode::BAD_REQUEST, e.to_string()))?
+        detect_version(body.to_owned()).map_err(|e| error_response(StatusCode::BAD_REQUEST, e.to_string()))?
     } else {
         path_version.to_string()
     };

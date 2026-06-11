@@ -16,6 +16,7 @@ use crate::handlers::get_preset_tests::*;
 use crate::handlers::get_presets::*;
 use crate::handlers::get_tests::*;
 use crate::handlers::health::*;
+use crate::handlers::legacy::*;
 use crate::handlers::validate::*;
 
 fn permissive_cors_enabled() -> bool {
@@ -43,17 +44,25 @@ fn body_limit() -> usize {
         handlers::validate::validate,
         handlers::validate::validate_file,
         handlers::health::health,
+        handlers::legacy::get_tests_legacy,
+        handlers::legacy::validate_legacy,
     ),
     components(schemas(
         PresetsResponse,
         PresetTestsResponse,
         TestsResponse,
         ErrorResponse,
+        //LegacyTestInPreset,
+        //LegacyValidateBody,
+        TestOrPreset,
+        //LegacyValidateResponse,
+        //LegacyTestResult,
+        //LegacyFinding
     )),
     tags(
-        (name = "presets", description = "CSAF preset listing and details"),
+        (name = "meta", description = "CSAF preset and test listing and details"),
         (name = "validation", description = "CSAF document validation"),
-        (name = "health", description = "Service health checks")
+        (name = "health", description = "Service health checks"),
     ),
     info(
         title = "CSAF Validation API",
@@ -79,6 +88,8 @@ async fn main() {
     } else {
         CorsLayer::new()
     };
+    // ToDo: Allow configuring CORS more granularly (e.g. allowed origins) via environment variables
+    // See https://docs.rs/tower-http/latest/tower_http/cors/struct.CorsLayer.html for details
 
     let app = Router::new()
         .route(routes::PRESETS, get(get_presets))
@@ -87,13 +98,15 @@ async fn main() {
         .route(routes::VALIDATE, post(validate))
         .route(routes::VALIDATE_FILE, post(validate_file))
         .route(routes::HEALTH, get(health))
-        .merge(SwaggerUi::new("/swagger-ui").url("/api/v1/openapi.json", ApiDoc::openapi()))
+        .route(routes::TESTS_LEGACY, get(get_tests_legacy))
+        .route(routes::VALIDATE_LEGACY, post(validate_legacy))
+        .merge(SwaggerUi::new("/openapi").url("/api/openapi.json", ApiDoc::openapi()))
         .layer(DefaultBodyLimit::max(body_limit()))
         .layer(cors_layer)
         .layer(TraceLayer::new_for_http());
 
     tracing::info!("Starting CSAF Validation API on {addr}");
-    tracing::info!("Swagger UI available at http://{addr}/swagger-ui/");
+    tracing::info!("Swagger UI available at http://{addr}/openapi/");
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();

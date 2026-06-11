@@ -29,7 +29,7 @@ pub(crate) struct PresetTestsResponse {
         (status = 200, description = "List of test IDs in the preset", body = PresetTestsResponse),
         (status = 404, description = "Invalid version or preset", body = ErrorResponse)
     ),
-    tag = "presets"
+    tag = "meta"
 )]
 pub(crate) async fn get_preset_tests(Path((version, preset)): Path<(String, String)>) -> impl IntoResponse {
     let valid_version = CsafVersion::try_from(version).map_err(|e| error_response(StatusCode::NOT_FOUND, e))?;
@@ -67,8 +67,8 @@ mod tests {
     use super::*;
     use crate::routes;
     use crate::test_helpers::get_json;
-    use csaf::csaf2_0::validation::Preset as Preset2_0;
-    use csaf::csaf2_1::validation::Preset as Preset2_1;
+    use csaf::csaf2_0::validation::Preset as Preset_2_0;
+    use csaf::csaf2_1::validation::Preset as Preset_2_1;
 
     fn build_uri(version: &str, preset: &str) -> String {
         routes::PRESET_TESTS
@@ -78,30 +78,30 @@ mod tests {
 
     #[tokio::test]
     async fn returns_tests_for_csaf_2_0_basic() {
-        let (status, json) = get_json(&build_uri("2.0", "basic")).await;
+        let (status, json) = get_json(&build_uri("2.0", Preset_2_0::Basic.as_str())).await;
 
         assert_eq!(status, StatusCode::OK);
         assert_eq!(json["version"], "2.0");
-        assert_eq!(json["preset"], "basic");
+        assert_eq!(json["preset"], Preset_2_0::Basic.to_string());
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
-        let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset2_0::Basic.as_str())
+        let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset_2_0::Basic.as_str())
             .unwrap()
             .into_iter()
             .map(String::from)
             .collect();
         assert_eq!(tests, expected);
-        assert!(tests.contains(&"schema".to_string()));
+        assert!(tests.contains(&Preset_2_0::Schema.to_string()));
     }
 
     #[tokio::test]
     async fn returns_tests_for_csaf_2_0_extended() {
-        let (status, json) = get_json(&build_uri("2.0", "extended")).await;
+        let (status, json) = get_json(&build_uri("2.0", Preset_2_0::Extended.as_str())).await;
 
         assert_eq!(status, StatusCode::OK);
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
-        let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset2_0::Extended.as_str())
+        let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset_2_0::Extended.as_str())
             .unwrap()
             .into_iter()
             .map(String::from)
@@ -111,12 +111,12 @@ mod tests {
 
     #[tokio::test]
     async fn returns_tests_for_csaf_2_0_full() {
-        let (status, json) = get_json(&build_uri("2.0", "full")).await;
+        let (status, json) = get_json(&build_uri("2.0", Preset_2_0::Full.as_str())).await;
 
         assert_eq!(status, StatusCode::OK);
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
-        let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset2_0::Full.as_str())
+        let expected: Vec<String> = Csaf2_0::tests_in_preset(Preset_2_0::Full.as_str())
             .unwrap()
             .into_iter()
             .map(String::from)
@@ -126,14 +126,14 @@ mod tests {
 
     #[tokio::test]
     async fn returns_tests_for_csaf_2_1_mandatory() {
-        let (status, json) = get_json(&build_uri("2.1", "mandatory")).await;
+        let (status, json) = get_json(&build_uri("2.1", Preset_2_1::Mandatory.as_str())).await;
 
         assert_eq!(status, StatusCode::OK);
         assert_eq!(json["version"], "2.1");
-        assert_eq!(json["preset"], "mandatory");
+        assert_eq!(json["preset"], Preset_2_1::Mandatory.to_string());
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
-        let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset2_1::Mandatory.as_str())
+        let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset_2_1::Mandatory.as_str())
             .unwrap()
             .into_iter()
             .map(String::from)
@@ -143,12 +143,12 @@ mod tests {
 
     #[tokio::test]
     async fn returns_tests_for_csaf_2_1_full() {
-        let (status, json) = get_json(&build_uri("2.1", "full")).await;
+        let (status, json) = get_json(&build_uri("2.1", Preset_2_1::Full.as_str())).await;
 
         assert_eq!(status, StatusCode::OK);
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
-        let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset2_1::Full.as_str())
+        let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset_2_1::Full.as_str())
             .unwrap()
             .into_iter()
             .map(String::from)
@@ -158,12 +158,12 @@ mod tests {
 
     #[tokio::test]
     async fn returns_tests_for_csaf_2_1_external_request_free() {
-        let (status, json) = get_json(&build_uri("2.1", "external-request-free")).await;
+        let (status, json) = get_json(&build_uri("2.1", Preset_2_1::ExternalRequestFree.as_str())).await;
 
         assert_eq!(status, StatusCode::OK);
 
         let tests: Vec<String> = serde_json::from_value(json["tests"].clone()).unwrap();
-        let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset2_1::ExternalRequestFree.as_str())
+        let expected: Vec<String> = Csaf2_1::tests_in_preset(Preset_2_1::ExternalRequestFree.as_str())
             .unwrap()
             .into_iter()
             .map(String::from)
@@ -173,8 +173,7 @@ mod tests {
 
     #[tokio::test]
     async fn returns_404_for_invalid_version() {
-        let (status, json) = get_json(&build_uri("3.0", "basic")).await;
-
+        let (status, json) = get_json(&build_uri("3.0", Preset_2_0::Basic.as_str())).await;
         assert_eq!(status, StatusCode::NOT_FOUND);
         assert!(json["error"].as_str().unwrap().contains("3.0"));
     }
@@ -185,14 +184,5 @@ mod tests {
 
         assert_eq!(status, StatusCode::NOT_FOUND);
         assert!(json["error"].as_str().unwrap().contains("nonexistent"));
-    }
-
-    #[tokio::test]
-    async fn returns_404_for_preset_not_in_version() {
-        // "mandatory" is a 2.1 preset, not available in 2.0
-        let (status, json) = get_json(&build_uri("2.0", "mandatory")).await;
-
-        assert_eq!(status, StatusCode::NOT_FOUND);
-        assert!(json["error"].as_str().unwrap().contains("mandatory"));
     }
 }

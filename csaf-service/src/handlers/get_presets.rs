@@ -24,7 +24,7 @@ pub(crate) struct PresetsResponse {
         (status = 200, description = "List of available presets", body = PresetsResponse),
         (status = 404, description = "Invalid version", body = ErrorResponse)
     ),
-    tag = "presets"
+    tag = "meta"
 )]
 pub(crate) async fn get_presets(
     Path(version): Path<String>,
@@ -46,6 +46,9 @@ pub(crate) fn presets_for_version(version: &CsafVersion) -> Vec<String> {
 
 #[cfg(test)]
 mod tests {
+    use csaf::csaf2_0::validation::Preset as Preset_2_0;
+    use csaf::csaf2_1::validation::Preset as Preset_2_1;
+
     use super::*;
     use crate::routes;
     use crate::test_helpers::get_json;
@@ -62,7 +65,18 @@ mod tests {
         assert_eq!(json["version"], "2.0");
 
         let presets: Vec<String> = serde_json::from_value(json["presets"].clone()).unwrap();
-        assert_eq!(presets, vec!["basic", "extended", "full"]);
+        assert_eq!(
+            presets,
+            vec![
+                Preset_2_0::Schema.to_string(),
+                Preset_2_0::Mandatory.to_string(),
+                Preset_2_0::Optional.to_string(),
+                Preset_2_0::Informative.to_string(),
+                Preset_2_0::Basic.to_string(),
+                Preset_2_0::Extended.to_string(),
+                Preset_2_0::Full.to_string()
+            ]
+        );
     }
 
     #[tokio::test]
@@ -76,17 +90,17 @@ mod tests {
         assert_eq!(
             presets,
             vec![
-                "mandatory",
-                "recommended",
-                "informative",
-                "schema",
-                "basic",
-                "extended",
-                "full",
-                "external-request-free",
-                "consistent-revision-history",
-                "consistent-date-times",
-                "ssvc",
+                Preset_2_1::Schema.to_string(),
+                Preset_2_1::Mandatory.to_string(),
+                Preset_2_1::Recommended.to_string(),
+                Preset_2_1::Informative.to_string(),
+                Preset_2_1::Basic.to_string(),
+                Preset_2_1::Extended.to_string(),
+                Preset_2_1::Full.to_string(),
+                Preset_2_1::ExternalRequestFree.to_string(),
+                Preset_2_1::ConsistentRevisionHistory.to_string(),
+                Preset_2_1::ConsistentDateTimes.to_string(),
+                Preset_2_1::Ssvc.to_string(),
             ]
         );
     }

@@ -12,6 +12,7 @@ use crate::handlers::get_preset_tests::get_preset_tests;
 use crate::handlers::get_presets::get_presets;
 use crate::handlers::get_tests::get_tests;
 use crate::handlers::health::health;
+use crate::handlers::legacy::{get_tests_legacy, validate_legacy};
 use crate::handlers::validate::{validate, validate_file};
 use crate::routes;
 
@@ -24,6 +25,8 @@ pub fn app() -> Router {
         .route(routes::VALIDATE, post(validate))
         .route(routes::VALIDATE_FILE, post(validate_file))
         .route(routes::HEALTH, get(health))
+        .route(routes::TESTS_LEGACY, get(get_tests_legacy))
+        .route(routes::VALIDATE_LEGACY, post(validate_legacy))
 }
 
 /// Sends a GET request to the given URI and returns the status and parsed JSON.

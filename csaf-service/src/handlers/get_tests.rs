@@ -14,7 +14,7 @@ pub(crate) struct TestsResponse {
 }
 #[derive(Debug, Serialize, Deserialize, ToSchema, PartialEq)]
 pub(crate) struct TestInPreset {
-    pub id: String,
+    pub name: String,
     pub preset: String,
 }
 
@@ -29,7 +29,7 @@ pub(crate) struct TestInPreset {
         (status = 200, description = "List of available tests", body = TestsResponse),
         (status = 404, description = "Invalid version", body = ErrorResponse)
     ),
-    tag = "presets"
+    tag = "meta"
 )]
 pub(crate) async fn get_tests(
     Path(version): Path<String>,
@@ -47,14 +47,14 @@ pub(crate) fn tests_for_version(version: &CsafVersion) -> Vec<TestInPreset> {
         CsafVersion::X20 => Csaf2_0::get_tests()
             .iter()
             .map(|f| TestInPreset {
-                id: f.0.to_string(),
+                name: f.0.to_string(),
                 preset: f.1.to_string(),
             })
             .collect(),
         CsafVersion::X21 => Csaf2_1::get_tests()
             .iter()
             .map(|f| TestInPreset {
-                id: f.0.to_string(),
+                name: f.0.to_string(),
                 preset: f.1.to_string(),
             })
             .collect(),
@@ -66,9 +66,11 @@ mod tests {
     use csaf::csaf2_0::testcases::informative_tests as informative_tests_2_0;
     use csaf::csaf2_0::testcases::mandatory_tests as mandatory_tests_2_0;
     use csaf::csaf2_0::testcases::recommended_tests as recommended_tests_2_0;
+    use csaf::csaf2_0::validation::Preset as Preset_2_0;
     use csaf::csaf2_1::testcases::informative_tests as informative_tests_2_1;
     use csaf::csaf2_1::testcases::mandatory_tests as mandatory_tests_2_1;
     use csaf::csaf2_1::testcases::recommended_tests as recommended_tests_2_1;
+    use csaf::csaf2_1::validation::Preset as Preset_2_1;
 
     use super::*;
     use crate::routes;
@@ -91,8 +93,8 @@ mod tests {
             mandatory_tests_2_0().len() + recommended_tests_2_0().len() + informative_tests_2_0().len() + 1
         );
         assert!(tests.contains(&TestInPreset {
-            id: "schema".to_string(),
-            preset: "basic".to_string()
+            name: Preset_2_0::Schema.to_string(),
+            preset: Preset_2_0::Schema.to_string()
         }));
     }
 
@@ -109,8 +111,8 @@ mod tests {
             mandatory_tests_2_1().len() + recommended_tests_2_1().len() + informative_tests_2_1().len() + 1
         );
         assert!(tests.contains(&TestInPreset {
-            id: "schema".to_string(),
-            preset: "basic".to_string()
+            name: Preset_2_1::Schema.to_string(),
+            preset: Preset_2_1::Schema.to_string()
         }));
     }
 

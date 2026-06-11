@@ -57,9 +57,8 @@ pub(crate) async fn validate(
     Query(query): Query<ValidateQuery>,
     body: Bytes,
 ) -> impl IntoResponse {
-    let json_value: serde_json::Value = serde_json::from_slice(&body).map_err(|e| {
-        error_response(StatusCode::BAD_REQUEST, format!("Invalid JSON: {e}"))
-    })?;
+    let json_value: serde_json::Value = serde_json::from_slice(&body)
+        .map_err(|e| error_response(StatusCode::BAD_REQUEST, format!("Invalid JSON: {e}")))?;
     run_validation(&path_version, &query, &json_value)
 }
 

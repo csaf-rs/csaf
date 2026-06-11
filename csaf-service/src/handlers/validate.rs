@@ -26,17 +26,26 @@ pub(crate) struct ValidateQuery {
 }
 
 /// Validate a CSAF document.
+///
+/// Accepts either `application/json` (parsed CSAF document) or
+/// `application/octet-stream` (raw file upload) via the Content-Type header.
 #[utoipa::path(
     post,
     path = "/api/v1/csaf/{version}/validate",
-    description = "If neither preset nor explicit tests are specified, the schema test will be run by default to verify that the document is valid JSON and conforms to the basic schema structure.",
+    description = "Validate a CSAF document. Send the document as JSON (Content-Type: application/json) or as a raw file upload (Content-Type: application/octet-stream). If neither preset nor explicit tests are specified, the schema test will be run by default.",
     params(
         ("version" = String, Path, description = "CSAF version (2.0, 2.1, or auto)"),
         ("preset" = Option<String>, Query, description = "Validation preset"),
         ("tests" = Option<String>, Query, description = "Comma-separated test IDs (additional to preset)"),
         ("exclude_tests" = Option<String>, Query, description = "Comma-separated test IDs (excluded from preset or explicit list)"),
     ),
-    request_body(content = serde_json::Value, description = "CSAF JSON document", content_type = "application/json"),
+    request_body(
+        description = "CSAF JSON document",
+        content(
+            (serde_json::Value = "application/json"),
+            (String = "application/octet-stream"),
+        )
+    ),
     responses(
         (status = 200, description = "Validation result", body = csaf::validation::ValidationResult),
         (status = 400, description = "Invalid request", body = ErrorResponse)
@@ -46,44 +55,12 @@ pub(crate) struct ValidateQuery {
 pub(crate) async fn validate(
     Path(path_version): Path<String>,
     Query(query): Query<ValidateQuery>,
-    Json(body): Json<serde_json::Value>,
-) -> impl IntoResponse {
-    run_validation(&path_version, &query, &body)
-}
-
-/// Validate a CSAF document uploaded as a binary file.
-#[utoipa::path(
-    post,
-    path = "/api/v1/csaf/{version}/validate/file",
-    description = "If neither preset nor explicit tests are specified, the schema test will be run by default to verify that the document is valid JSON and conforms to the basic schema structure.",
-    params(
-        ("version" = String, Path, description = "CSAF version (2.0, 2.1, or auto)"),
-        ("preset" = Option<String>, Query, description = "Validation preset"),
-        ("tests" = Option<String>, Query, description = "Comma-separated test IDs (additional to preset)"),
-        ("exclude_tests" = Option<String>, Query, description = "Comma-separated test IDs (excluded from preset or explicit list)"),
-    ),
-    request_body(content = String, description = "CSAF JSON file", content_type = "application/octet-stream"),
-    responses(
-        (status = 200, description = "Validation result", body = csaf::validation::ValidationResult),
-        (status = 400, description = "Invalid request", body = ErrorResponse)
-    ),
-    tag = "validation"
-)]
-pub(crate) async fn validate_file(
-    Path(path_version): Path<String>,
-    Query(query): Query<ValidateQuery>,
     body: Bytes,
 ) -> impl IntoResponse {
-    let parsed: serde_json::Value = match serde_json::from_slice(&body) {
-        Ok(v) => v,
-        Err(e) => {
-            return Err(error_response(
-                StatusCode::BAD_REQUEST,
-                format!("Invalid JSON in uploaded file: {e}"),
-            ));
-        },
-    };
-    run_validation(&path_version, &query, &parsed)
+    let json_value: serde_json::Value = serde_json::from_slice(&body).map_err(|e| {
+        error_response(StatusCode::BAD_REQUEST, format!("Invalid JSON: {e}"))
+    })?;
+    run_validation(&path_version, &query, &json_value)
 }
 
 /// Common validation logic shared by `validate` and `validate_file`.
@@ -192,10 +169,6 @@ mod tests {
         routes::VALIDATE.replace("{version}", version)
     }
 
-    fn validate_file_uri(version: &str) -> String {
-        routes::VALIDATE_FILE.replace("{version}", version)
-    }
-
     fn valid_csaf_2_0() -> serde_json::Value {
         let bytes = include_bytes!(
             "../../../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
@@ -292,8 +265,6 @@ mod tests {
 
     #[tokio::test]
     async fn returns_400_for_invalid_json_body() {
-        // A JSON string is valid JSON but not a valid CSAF document —
-        // the endpoint still attempts to load it and reports a load failure
         let uri = format!("{}?tests=schema", validate_uri("2.0"));
         let (status, json) = post_json(&uri, serde_json::json!("not an object")).await;
 
@@ -302,27 +273,27 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn validate_file_with_valid_document() {
+    async fn validates_file_upload_with_valid_document() {
         let bytes = include_bytes!(
             "../../../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
         );
-        let (status, json) = post_bytes(&validate_file_uri("2.0"), bytes.to_vec()).await;
+        let (status, json) = post_bytes(&validate_uri("2.0"), bytes.to_vec()).await;
 
         assert_eq!(status, StatusCode::OK);
         assert_eq!(json["success"], true);
     }
 
     #[tokio::test]
-    async fn validate_file_returns_400_for_invalid_utf8() {
-        let (status, json) = post_bytes(&validate_file_uri("2.0"), vec![0xFF, 0xFE]).await;
+    async fn returns_400_for_invalid_utf8_upload() {
+        let (status, json) = post_bytes(&validate_uri("2.0"), vec![0xFF, 0xFE]).await;
 
         assert_eq!(status, StatusCode::BAD_REQUEST);
         assert!(json["error"].as_str().unwrap().contains("JSON"));
     }
 
     #[tokio::test]
-    async fn validate_file_returns_400_for_invalid_json() {
-        let (status, json) = post_bytes(&validate_file_uri("2.0"), b"not json".to_vec()).await;
+    async fn returns_400_for_invalid_json_upload() {
+        let (status, json) = post_bytes(&validate_uri("2.0"), b"not json".to_vec()).await;
 
         assert_eq!(status, StatusCode::BAD_REQUEST);
         assert!(json["error"].as_str().unwrap().contains("JSON"));

@@ -42,7 +42,6 @@ fn body_limit() -> usize {
         handlers::get_preset_tests::get_preset_tests,
         handlers::get_tests::get_tests,
         handlers::validate::validate,
-        handlers::validate::validate_file,
         handlers::health::health,
         handlers::legacy::get_tests_legacy,
         handlers::legacy::validate_legacy,
@@ -96,7 +95,6 @@ async fn main() {
         .route(routes::TESTS, get(get_tests))
         .route(routes::PRESET_TESTS, get(get_preset_tests))
         .route(routes::VALIDATE, post(validate))
-        .route(routes::VALIDATE_FILE, post(validate_file))
         .route(routes::HEALTH, get(health))
         .route(routes::TESTS_LEGACY, get(get_tests_legacy))
         .route(routes::VALIDATE_LEGACY, post(validate_legacy))

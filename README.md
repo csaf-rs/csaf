@@ -186,7 +186,7 @@ cd go
 CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/webapi/
 ```
 
-The server listens on port `8080` by default. Set the `PORT` environment variable
+The server listens on port `8082` by default. Set the `PORT` environment variable
 to use a different port:
 
 ```bash
@@ -197,18 +197,24 @@ PORT=9090 go run -buildvcs=false ./cmd/webapi/
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/api/validate/json` | Validate a CSAF document sent as a raw JSON body |
-| `POST` | `/api/validate/upload` | Validate a CSAF document sent as a multipart file upload (field: `file`) |
+| `GET` | `/api/v1/tests` | Retrieve available tests with their primary preset |
+| `POST` | `/api/v1/validate` | Validate a CSAF document sent as a raw JSON body |
 
-Both endpoints accept the optional query parameter `?preset=basic` (default),
-`?preset=extended`, or `?preset=full`.
+- `GET /api/v1/tests` accepts the optional query parameter `?version=2.0` (default) or `?version=2.1`.
+- `POST /api/v1/validate` accepts a JSON body with `tests` and a CSAF `document` metadata object.
 
 *Example:*
 
 ```bash
-curl -X POST http://localhost:8080/api/validate/json?preset=basic \
+curl -X POST http://localhost:8082/api/v1/validate \
   -H 'Content-Type: application/json' \
-  --data-binary @my-csaf.json
+  --data-binary '{
+    "tests": [{ "type": "preset", "name": "basic" }],
+    "document": {
+      "category": "csaf_base",
+      "csaf_version": "2.0"
+    }
+  }'
 ```
 
 #### WASM

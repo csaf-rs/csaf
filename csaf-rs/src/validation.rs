@@ -144,8 +144,13 @@ pub trait Validatable {
 /// This function will check, whether the test_id exists in the Validatable's
 /// tests. If it does, it will execute the test function and return the result.
 /// If not, it will return a TestResult indicating that the test was not found.
-pub fn validate_by_test(target: &impl Validatable, test_id: &str) -> TestResult {
-    // Try to execute the test specified by the test_id
+pub fn validate_by_test<V: Validatable>(target: &V, test_id: &str) -> TestResult {
+    if !V::get_tests().iter().any(|(id, _)| *id == test_id) {
+        return TestResult {
+            test_id: test_id.to_string(),
+            status: TestResultStatus::NotFound,
+        };
+    }
     target.run_test(test_id)
 }
 

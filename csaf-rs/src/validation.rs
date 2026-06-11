@@ -22,6 +22,7 @@ pub enum CsafError {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationError {
     pub message: String,
@@ -41,6 +42,7 @@ pub trait IntoValidationError {
 
 /// Result of executing a single test
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct TestResult {
     /// The test ID that was executed
@@ -51,6 +53,7 @@ pub struct TestResult {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub enum TestResultStatus {
     Success,
@@ -86,6 +89,7 @@ impl Display for TestResultStatus {
 
 /// Result of a CSAF validation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationResult {
     /// Whether the validation was successful (no errors)

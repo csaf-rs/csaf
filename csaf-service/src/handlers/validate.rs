@@ -12,8 +12,7 @@ use csaf::{
     csaf2_1::loader::load_document as load_2_1,
     validation::{Validatable, validate_by_tests},
 };
-use serde::{Deserialize, Serialize};
-use utoipa::{PartialSchema, ToSchema};
+use serde::Deserialize;
 
 use crate::errors::{ErrorResponse, error_response};
 type CsafDoc20 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>;
@@ -24,53 +23,6 @@ pub(crate) struct ValidateQuery {
     pub preset: Option<String>,
     pub tests: Option<String>,
     pub exclude_tests: Option<String>,
-}
-
-// OpenAPI schema types mirroring csaf::validation types.
-// These exist because the upstream types don't derive utoipa::ToSchema.
-
-#[derive(Debug, Serialize, ToSchema)]
-#[serde(rename_all = "camelCase")]
-#[schema(as = ValidationResult)]
-pub(crate) struct ValidationResultSchema {
-    pub success: bool,
-    pub version: String,
-    pub test_results: Vec<TestResultSchema>,
-    pub num_errors: usize,
-    pub num_warnings: usize,
-    pub num_infos: usize,
-    pub num_not_found: usize,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-#[serde(rename_all = "camelCase")]
-#[schema(as = TestResult)]
-pub(crate) struct TestResultSchema {
-    pub test_id: String,
-    pub status: TestResultStatusSchema,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-#[serde(rename_all = "camelCase")]
-#[schema(as = TestResultStatus)]
-#[allow(dead_code)]
-pub(crate) enum TestResultStatusSchema {
-    Success,
-    Failure {
-        errors: Vec<ValidationErrorSchema>,
-        warnings: Vec<ValidationErrorSchema>,
-        infos: Vec<ValidationErrorSchema>,
-    },
-    NotFound,
-    Skipped,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-#[serde(rename_all = "camelCase")]
-#[schema(as = ValidationError)]
-pub(crate) struct ValidationErrorSchema {
-    pub message: String,
-    pub instance_path: String,
 }
 
 /// Validate a CSAF document.
@@ -86,7 +38,7 @@ pub(crate) struct ValidationErrorSchema {
     ),
     request_body(content = serde_json::Value, description = "CSAF JSON document", content_type = "application/json"),
     responses(
-        (status = 200, description = "Validation result", body = ValidationResultSchema),
+        (status = 200, description = "Validation result", body = csaf::validation::ValidationResult),
         (status = 400, description = "Invalid request", body = ErrorResponse)
     ),
     tag = "validation"
@@ -112,7 +64,7 @@ pub(crate) async fn validate(
     ),
     request_body(content = String, description = "CSAF JSON file", content_type = "application/octet-stream"),
     responses(
-        (status = 200, description = "Validation result", body = ValidationResultSchema),
+        (status = 200, description = "Validation result", body = csaf::validation::ValidationResult),
         (status = 400, description = "Invalid request", body = ErrorResponse)
     ),
     tag = "validation"

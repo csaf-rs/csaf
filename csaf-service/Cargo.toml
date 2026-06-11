@@ -10,7 +10,7 @@ name = "csaf-service"
 path = "src/main.rs"
 
 [dependencies]
-csaf = { path = "../csaf-rs", package = "csaf-rs", version = "0.4.1" }
+csaf = { path = "../csaf-rs", package = "csaf-rs", version = "0.4.1", features = ["utoipa"] }
 axum = { version = "0.8", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }

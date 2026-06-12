@@ -1,6 +1,6 @@
 {
   "name": "@csaf-rs/csaf-rs",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "type": "module",
   "description": "CSAF validation via WASM (UniFFI-generated bindings)",
   "main": "csaf_ffi.ts",

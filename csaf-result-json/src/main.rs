@@ -2,6 +2,8 @@ mod compare;
 mod convert;
 mod result;
 
+use std::path::Path;
+
 use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use compare::compare_result_jsons;
@@ -76,18 +78,20 @@ fn main() -> Result<(), anyhow::Error> {
         } => {
             tests.push(test_id.as_str());
 
+            let file_path = Path::new(&path);
+
             let version = match args.csaf_version.as_str() {
-                "auto" => detect_version(path.as_str())?,
+                "auto" => detect_version(file_path)?,
                 other => other.to_string(),
             };
 
             let result = match version.as_str() {
                 "2.0" => {
-                    let document = load_document_2_0(path.as_str())?;
+                    let document = load_document_2_0(file_path)?;
                     validate_document(document, "2.0", &tests)
                 },
                 "2.1" => {
-                    let document = load_document_2_1(path.as_str())?;
+                    let document = load_document_2_1(file_path)?;
                     validate_document(document, "2.1", &tests)
                 },
                 _ => bail!(format!("Invalid CSAF version: {version}")),
@@ -121,18 +125,20 @@ fn main() -> Result<(), anyhow::Error> {
                 }
             }
 
+            let file_path = Path::new(&path);
+
             let version = match args.csaf_version.as_str() {
-                "auto" => detect_version(path.as_str())?,
+                "auto" => detect_version(file_path)?,
                 other => other.to_string(),
             };
 
             let result = match version.as_str() {
                 "2.0" => {
-                    let document = load_document_2_0(path.as_str())?;
+                    let document = load_document_2_0(file_path)?;
                     validate_document(document, "2.0", &tests)
                 },
                 "2.1" => {
-                    let document = load_document_2_1(path.as_str())?;
+                    let document = load_document_2_1(file_path)?;
                     validate_document(document, "2.1", &tests)
                 },
                 _ => bail!(format!("Invalid CSAF version: {version}")),

@@ -2,7 +2,7 @@ use std::cell::OnceCell;
 
 use serde::de::DeserializeOwned;
 
-use crate::validation::{TestResult, TestResultStatus, Validatable, ValidationError};
+use crate::validation::{CsafError, TestResult, TestResultStatus, Validatable, ValidationError};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawDocument<T> {
@@ -59,8 +59,12 @@ where
     T: HasParsed + RawValidatable,
     T::Parsed: Validatable,
 {
+    fn get_presets() -> Vec<&'static str> {
+        <T::Parsed as Validatable>::get_presets()
+    }
+
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
+    fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
         T::Parsed::tests_in_preset(preset)
     }
 

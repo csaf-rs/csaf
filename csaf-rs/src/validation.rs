@@ -3,6 +3,24 @@ use std::fmt::Display;
 use TestResultStatus::*;
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, serde::Serialize, serde::Deserialize, thiserror::Error)]
+pub enum CsafError {
+    #[error("Invalid JSON: {message}")]
+    InvalidJson { message: String },
+
+    #[error("Missing CSAF version: {message}")]
+    MissingVersion { message: String },
+
+    #[error("Unsupported CSAF version: {version}")]
+    UnsupportedVersion { version: String },
+
+    #[error("Invalid preset: {preset}")]
+    InvalidPreset { preset: String },
+
+    #[error("Error loading document: {message}")]
+    LoadError { message: String },
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationError {
@@ -91,10 +109,10 @@ pub trait Validate {
     fn validate_by_test(&self, test_id: &str) -> TestResult;
 
     /// Validates this object according to specific test IDs and returns detailed results
-    fn validate_by_tests(&self, version: &str, test_ids: &[&str]) -> ValidationResult;
+    fn validate_by_tests(&self, version: &str, test_ids: &[&str]) -> Result<ValidationResult, CsafError>;
 
     /// Validates this object according to a validation preset and returns detailed results
-    fn validate_by_preset(&self, version: &str, preset: &str) -> ValidationResult;
+    fn validate_by_preset(&self, version: &str, preset: &str) -> Result<ValidationResult, CsafError>;
 }
 
 /// Represents something which is validatable according to the CSAF standard.
@@ -103,8 +121,11 @@ pub trait Validate {
 ///
 /// It can then be used to validate documents with [validate_by_preset] or [validate_by_tests].
 pub trait Validatable {
+    /// Return the available presets
+    fn get_presets() -> Vec<&'static str>;
+
     /// Returns the test IDs belonging to a preset
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>>;
+    fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError>;
 
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
@@ -161,10 +182,10 @@ pub fn validate_by_tests(target: &impl Validatable, version: &str, test_ids: &[&
 }
 
 /// Validate document with a preset and return detailed results.
-pub fn validate_by_preset<V: Validatable>(target: &V, version: &str, preset: &str) -> ValidationResult {
-    // Retrieve the test IDs for the given preset
-    let test_ids: Vec<&str> = V::tests_in_preset(preset).unwrap_or(vec![]);
-
-    // Forward them to validate_by_tests
-    validate_by_tests(target, version, &test_ids)
+pub fn validate_by_preset<V: Validatable>(
+    target: &V,
+    version: &str,
+    preset: &str,
+) -> Result<ValidationResult, CsafError> {
+    V::tests_in_preset(preset).map(|test_ids| validate_by_tests(target, version, &test_ids))
 }

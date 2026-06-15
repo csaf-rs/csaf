@@ -104,7 +104,7 @@ impl CsafDocument {
                 validate_by_preset(parsed, &self.version_string, &preset)
             },
         };
-        Ok(result.into())
+        result.map_or_else(|e| Err(CsafError::from(e)), |r| Ok(r.into()))
     }
 
     /// Run a single validation test by ID.

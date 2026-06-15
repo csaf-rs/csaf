@@ -29,6 +29,21 @@ pub enum CsafError {
 
     #[error("Document load error: {message}")]
     LoadError { message: String },
+
+    #[error("Invalid validation preset: {message}")]
+    InvalidPreset { message: String },
+}
+
+impl From<csaf::validation::CsafError> for CsafError {
+    fn from(r: csaf::validation::CsafError) -> Self {
+        match r {
+            csaf::validation::CsafError::InvalidJson { message } => Self::InvalidJson { message },
+            csaf::validation::CsafError::InvalidPreset { preset } => Self::InvalidPreset { message: preset },
+            csaf::validation::CsafError::UnsupportedVersion { version } => Self::UnsupportedVersion { version },
+            csaf::validation::CsafError::LoadError { message } => Self::LoadError { message },
+            csaf::validation::CsafError::MissingVersion { message } => Self::MissingVersion { message },
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -183,7 +198,7 @@ pub fn validate_csaf(json_str: String, preset: String) -> Result<ValidationResul
         },
     };
 
-    Ok(result.into())
+    result.map_or_else(|e| Err(CsafError::from(e)), |f| Ok(ValidationResult::from(f)))
 }
 
 /// Validate a CSAF 2.0 document from a JSON string.
@@ -195,7 +210,7 @@ pub fn validate_csaf(json_str: String, preset: String) -> Result<ValidationResul
 #[uniffi::export]
 pub fn validate_csaf_2_0(json_str: String, preset: String) -> Result<ValidationResult, CsafError> {
     let doc = load_document_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
-    Ok(validate_by_preset(&doc, "2.0", &preset).into())
+    validate_by_preset(&doc, "2.0", &preset).map_or_else(|e| Err(CsafError::from(e)), |f| Ok(ValidationResult::from(f)))
 }
 
 /// Validate a CSAF 2.1 document from a JSON string.
@@ -207,7 +222,7 @@ pub fn validate_csaf_2_0(json_str: String, preset: String) -> Result<ValidationR
 #[uniffi::export]
 pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationResult, CsafError> {
     let doc = load_document_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
-    Ok(validate_by_preset(&doc, "2.1", &preset).into())
+    validate_by_preset(&doc, "2.1", &preset).map_or_else(|e| Err(CsafError::from(e)), |f| Ok(ValidationResult::from(f)))
 }
 
 /// Validate a CSAF document from a JSON string and return the result as JSON.

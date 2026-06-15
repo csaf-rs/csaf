@@ -36,6 +36,7 @@ jsonschema = { version = "0.45.0", default-features = false }
 spdx = "0.13.4"
 oxilangtag = "0.1.5"
 ssvc = "0.1.0"
+thiserror = { version = "2" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }

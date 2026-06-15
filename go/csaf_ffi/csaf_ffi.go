@@ -371,6 +371,24 @@ func uniffiCheckChecksums() {
 	}
 	{
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_csaf_ffi_checksum_func_get_tests()
+		})
+		if checksum != 26988 {
+			// If this happens try cleaning and rebuilding your project
+			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_get_tests: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_csaf_ffi_checksum_func_get_tests_in_preset()
+		})
+		if checksum != 22002 {
+			// If this happens try cleaning and rebuilding your project
+			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_get_tests_in_preset: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_csaf_ffi_checksum_func_validate_csaf()
 		})
 		if checksum != 52424 {
@@ -984,6 +1002,51 @@ func (_ FfiDestroyerProductReference) Destroy(value ProductReference) {
 	value.Destroy()
 }
 
+// A validation test and the primary preset it belongs to.
+type TestInPreset struct {
+	Name   string
+	Preset string
+}
+
+func (r *TestInPreset) Destroy() {
+	FfiDestroyerString{}.Destroy(r.Name)
+	FfiDestroyerString{}.Destroy(r.Preset)
+}
+
+type FfiConverterTestInPreset struct{}
+
+var FfiConverterTestInPresetINSTANCE = FfiConverterTestInPreset{}
+
+func (c FfiConverterTestInPreset) Lift(rb RustBufferI) TestInPreset {
+	return LiftFromRustBuffer[TestInPreset](c, rb)
+}
+
+func (c FfiConverterTestInPreset) Read(reader io.Reader) TestInPreset {
+	return TestInPreset{
+		FfiConverterStringINSTANCE.Read(reader),
+		FfiConverterStringINSTANCE.Read(reader),
+	}
+}
+
+func (c FfiConverterTestInPreset) Lower(value TestInPreset) C.RustBuffer {
+	return LowerIntoRustBuffer[TestInPreset](c, value)
+}
+
+func (c FfiConverterTestInPreset) LowerExternal(value TestInPreset) ExternalCRustBuffer {
+	return RustBufferFromC(LowerIntoRustBuffer[TestInPreset](c, value))
+}
+
+func (c FfiConverterTestInPreset) Write(writer io.Writer, value TestInPreset) {
+	FfiConverterStringINSTANCE.Write(writer, value.Name)
+	FfiConverterStringINSTANCE.Write(writer, value.Preset)
+}
+
+type FfiDestroyerTestInPreset struct{}
+
+func (_ FfiDestroyerTestInPreset) Destroy(value TestInPreset) {
+	value.Destroy()
+}
+
 // Result of a single validation test.
 type TestResult struct {
 	TestId string
@@ -1247,6 +1310,7 @@ var ErrCsafErrorInvalidJson = fmt.Errorf("CsafErrorInvalidJson")
 var ErrCsafErrorMissingVersion = fmt.Errorf("CsafErrorMissingVersion")
 var ErrCsafErrorUnsupportedVersion = fmt.Errorf("CsafErrorUnsupportedVersion")
 var ErrCsafErrorLoadError = fmt.Errorf("CsafErrorLoadError")
+var ErrCsafErrorInvalidPreset = fmt.Errorf("CsafErrorInvalidPreset")
 
 // Variant structs
 type CsafErrorInvalidJson struct {
@@ -1361,6 +1425,34 @@ func (self CsafErrorLoadError) Is(target error) bool {
 	return target == ErrCsafErrorLoadError
 }
 
+type CsafErrorInvalidPreset struct {
+	Message string
+}
+
+func NewCsafErrorInvalidPreset(
+	message string,
+) *CsafError {
+	return &CsafError{err: &CsafErrorInvalidPreset{
+		Message: message}}
+}
+
+func (e CsafErrorInvalidPreset) destroy() {
+	FfiDestroyerString{}.Destroy(e.Message)
+}
+
+func (err CsafErrorInvalidPreset) Error() string {
+	return fmt.Sprint("InvalidPreset",
+		": ",
+
+		"Message=",
+		err.Message,
+	)
+}
+
+func (self CsafErrorInvalidPreset) Is(target error) bool {
+	return target == ErrCsafErrorInvalidPreset
+}
+
 type FfiConverterCsafError struct{}
 
 var FfiConverterCsafErrorINSTANCE = FfiConverterCsafError{}
@@ -1397,6 +1489,10 @@ func (c FfiConverterCsafError) Read(reader io.Reader) *CsafError {
 		return &CsafError{&CsafErrorLoadError{
 			Message: FfiConverterStringINSTANCE.Read(reader),
 		}}
+	case 5:
+		return &CsafError{&CsafErrorInvalidPreset{
+			Message: FfiConverterStringINSTANCE.Read(reader),
+		}}
 	default:
 		panic(fmt.Sprintf("Unknown error code %d in FfiConverterCsafError.Read()", errorID))
 	}
@@ -1416,6 +1512,9 @@ func (c FfiConverterCsafError) Write(writer io.Writer, value *CsafError) {
 	case *CsafErrorLoadError:
 		writeInt32(writer, 4)
 		FfiConverterStringINSTANCE.Write(writer, variantValue.Message)
+	case *CsafErrorInvalidPreset:
+		writeInt32(writer, 5)
+		FfiConverterStringINSTANCE.Write(writer, variantValue.Message)
 	default:
 		_ = variantValue
 		panic(fmt.Sprintf("invalid error value `%v` in FfiConverterCsafError.Write", value))
@@ -1433,6 +1532,8 @@ func (_ FfiDestroyerCsafError) Destroy(value *CsafError) {
 	case CsafErrorUnsupportedVersion:
 		variantValue.destroy()
 	case CsafErrorLoadError:
+		variantValue.destroy()
+	case CsafErrorInvalidPreset:
 		variantValue.destroy()
 	default:
 		_ = variantValue
@@ -1903,6 +2004,53 @@ func (FfiDestroyerSequenceString) Destroy(sequence []string) {
 	}
 }
 
+type FfiConverterSequenceTestInPreset struct{}
+
+var FfiConverterSequenceTestInPresetINSTANCE = FfiConverterSequenceTestInPreset{}
+
+func (c FfiConverterSequenceTestInPreset) Lift(rb RustBufferI) []TestInPreset {
+	return LiftFromRustBuffer[[]TestInPreset](c, rb)
+}
+
+func (c FfiConverterSequenceTestInPreset) Read(reader io.Reader) []TestInPreset {
+	length := readInt32(reader)
+	if length == 0 {
+		return nil
+	}
+	result := make([]TestInPreset, 0, length)
+	for i := int32(0); i < length; i++ {
+		result = append(result, FfiConverterTestInPresetINSTANCE.Read(reader))
+	}
+	return result
+}
+
+func (c FfiConverterSequenceTestInPreset) Lower(value []TestInPreset) C.RustBuffer {
+	return LowerIntoRustBuffer[[]TestInPreset](c, value)
+}
+
+func (c FfiConverterSequenceTestInPreset) LowerExternal(value []TestInPreset) ExternalCRustBuffer {
+	return RustBufferFromC(LowerIntoRustBuffer[[]TestInPreset](c, value))
+}
+
+func (c FfiConverterSequenceTestInPreset) Write(writer io.Writer, value []TestInPreset) {
+	if len(value) > math.MaxInt32 {
+		panic("[]TestInPreset is too large to fit into Int32")
+	}
+
+	writeInt32(writer, int32(len(value)))
+	for _, item := range value {
+		FfiConverterTestInPresetINSTANCE.Write(writer, item)
+	}
+}
+
+type FfiDestroyerSequenceTestInPreset struct{}
+
+func (FfiDestroyerSequenceTestInPreset) Destroy(sequence []TestInPreset) {
+	for _, value := range sequence {
+		FfiDestroyerTestInPreset{}.Destroy(value)
+	}
+}
+
 type FfiConverterSequenceTestResult struct{}
 
 var FfiConverterSequenceTestResultINSTANCE = FfiConverterSequenceTestResult{}
@@ -1994,6 +2142,38 @@ type FfiDestroyerSequenceValidationError struct{}
 func (FfiDestroyerSequenceValidationError) Destroy(sequence []ValidationError) {
 	for _, value := range sequence {
 		FfiDestroyerValidationError{}.Destroy(value)
+	}
+}
+
+// Retrieve all available validation tests for a CSAF version.
+//
+// For each test, returns the test number and the primary preset it belongs to.
+func GetTests(version string) ([]TestInPreset, error) {
+	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
+		return GoRustBuffer{
+			inner: C.uniffi_csaf_ffi_fn_func_get_tests(FfiConverterStringINSTANCE.Lower(version), _uniffiStatus),
+		}
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue []TestInPreset
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterSequenceTestInPresetINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+// Retrieve the test IDs belonging to a preset for a CSAF version.
+func GetTestsInPreset(version string, preset string) ([]string, error) {
+	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
+		return GoRustBuffer{
+			inner: C.uniffi_csaf_ffi_fn_func_get_tests_in_preset(FfiConverterStringINSTANCE.Lower(version), FfiConverterStringINSTANCE.Lower(preset), _uniffiStatus),
+		}
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue []string
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterSequenceStringINSTANCE.Lift(_uniffiRV), nil
 	}
 }
 

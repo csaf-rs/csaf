@@ -2,7 +2,7 @@
 name = "csaf-ffi"
 description = "UniFFI bindings for the csaf-rs CSAF validation library"
 license = "Apache-2.0"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2021"
 rust-version = "1.88.0"
 publish = false

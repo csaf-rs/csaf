@@ -108,6 +108,20 @@ The easiest way to validate a document is to use the generic `ValidateCsaf` func
 result, err := csaf_ffi.ValidateCsaf(string(data), preset)
 ```
 
+## Versioning
+
+To bump the version across all crates and `wasm/package.json` at once, use the provided script. It requires [`cargo-edit`](https://crates.io/crates/cargo-edit) and `npm`.
+
+```bash
+# Install cargo-edit (one-time)
+cargo install cargo-edit
+
+./bump_version.sh patch        # x.y.z -> x.y.z+1
+./bump_version.sh minor        # x.y.z -> x.y+1.0
+./bump_version.sh major        # x.y.z -> x+1.0.0
+./bump_version.sh set 1.2.3    # explicit version
+```
+
 ## Build
 
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run

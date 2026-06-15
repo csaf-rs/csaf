@@ -8,6 +8,20 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 }
 cd "$REPO_ROOT"
 
+# --- Prerequisite check ----------------------------------------------------
+
+if ! command -v cargo-set-version &>/dev/null && ! cargo set-version --version &>/dev/null 2>&1; then
+  echo "Error: cargo-edit is not installed. Run: cargo install cargo-edit" >&2
+  exit 1
+fi
+
+if ! command -v npm &>/dev/null; then
+  echo "Error: npm is not installed." >&2
+  exit 1
+fi
+
+# --- Usage -----------------------------------------------------------------
+
 usage() {
   cat >&2 <<EOF
 Usage: $(basename "$0") <command>
@@ -18,12 +32,7 @@ Commands:
   patch             Bump the patch version (x.y.z -> x.y.z+1)
   set <version>     Set an explicit version (e.g. 1.2.3)
 
-The following files are updated:
-  Cargo.toml            (workspace.package.version)
-  csaf-validator/Cargo.toml  (path dependency on csaf-rs)
-  csaf-converter/Cargo.toml  (path dependency on csaf-rs)
-  csaf-result-json/Cargo.toml  (path dependency on csaf-rs)
-  wasm/package.json
+Tools required: cargo-edit (cargo install cargo-edit), npm
 EOF
   exit 1
 }
@@ -47,42 +56,23 @@ case "$COMMAND" in
   *) usage ;;
 esac
 
-# --- Read current version from workspace Cargo.toml ------------------------
-
-CURRENT_VERSION=$(grep -m1 '^version\s*=' Cargo.toml | sed 's/.*"\(.*\)".*/\1/')
-if [[ -z "$CURRENT_VERSION" ]]; then
-  echo "Error: could not read current version from Cargo.toml." >&2
-  exit 1
-fi
-
-IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-
-# --- Compute new version ---------------------------------------------------
+# --- Update Cargo versions -------------------------------------------------
 
 case "$COMMAND" in
-  major) NEW_VERSION="$((MAJOR + 1)).0.0" ;;
-  minor) NEW_VERSION="${MAJOR}.$((MINOR + 1)).0" ;;
-  patch) NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
-  set)   ;; # already set above
+  major|minor|patch)
+    cargo set-version --bump "$COMMAND"
+    ;;
+  set)
+    cargo set-version "$NEW_VERSION"
+    ;;
 esac
 
-echo "Bumping version: $CURRENT_VERSION -> $NEW_VERSION"
+# --- Resolve the new version -----------------------------------------------
 
-# --- Update files ----------------------------------------------------------
+NEW_VERSION=$(grep -m1 '^version\s*=' Cargo.toml | sed 's/.*"\(.*\)".*/\1/')
 
-# workspace Cargo.toml: [workspace.package] version field
-# workspace Cargo.toml: the [workspace.package] version field (first occurrence)
-sed -i.bak "s/^version = \"[^\"]*\"/version = \"${NEW_VERSION}\"/" Cargo.toml
+# --- Update wasm/package.json ----------------------------------------------
 
-# path dependencies on csaf-rs in csaf-validator and csaf-converter
-for toml in csaf-validator/Cargo.toml csaf-converter/Cargo.toml csaf-result-json/Cargo.toml; do
-  sed -i.bak 's|\(path = "\.\./csaf-rs", version = "\)[^"]*"|\1'"${NEW_VERSION}"'"|' "$toml"
-done
-
-# wasm/package.json
-sed -i.bak 's/"version": "[^"]*"/"version": "'"${NEW_VERSION}"'"/' wasm/package.json
-
-# Remove sed backup files
-find . -maxdepth 3 -name "*.bak" -delete
+npm version --no-git-tag-version --prefix wasm "$NEW_VERSION"
 
 echo "Done. Version is now $NEW_VERSION."

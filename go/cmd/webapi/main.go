@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/csaf-rs/csaf/go/csaf_ffi"
 )
@@ -105,12 +106,25 @@ func csafDocumentJSON(document json.RawMessage) ([]byte, error) {
 	return json.Marshal(map[string]json.RawMessage{"document": document})
 }
 
+// fromPotentialLegacyName converts a legacy test name such as "mandatory_6_1_10"
+// to the canonical dot-separated form "6.1.10". Names that are already canonical
+// (e.g. "6.1.10", "schema") are returned unchanged.
+func fromPotentialLegacyName(name string) string {
+	legacyPrefixes := []string{"mandatoryTest_", "optionalTest_", "recommendedTest_", "informativeTest_"}
+	for _, prefix := range legacyPrefixes {
+		if strings.HasPrefix(name, prefix) {
+			return strings.ReplaceAll(strings.TrimPrefix(name, prefix), "_", ".")
+		}
+	}
+	return name
+}
+
 func resolveTestIDs(version string, entries []testOrPreset) ([]string, error) {
 	testIDs := []string{}
 	for _, entry := range entries {
 		switch entry.Type {
 		case "test":
-			testIDs = append(testIDs, entry.Name)
+			testIDs = append(testIDs, fromPotentialLegacyName(entry.Name))
 		case "preset":
 			presetTests, err := csaf_ffi.GetTestsInPreset(version, entry.Name)
 			if err != nil {

@@ -9,6 +9,7 @@ This is work-in-progress.
 - `csaf-validator` contains a command line tool to validate CSAF documents.
 - `csaf-rs` contains the actual validator library which currently publishes a crate to [crates.io](https://crates.io/crates/csaf-rs).
 - `csaf-ffi` contains [UniFFI](https://github.com/mozilla/uniffi-rs) bindings that expose `csaf-rs` to other languages (Go, WASM/TypeScript, and more).
+- `csaf-service` contains a web API that exposes the validation functionality of `csaf-rs` via HTTP endpoints.
 - `go/` contains generated Go bindings and integration tests.
 - `wasm/` contains generated WASM/TypeScript bindings and integration tests.
 
@@ -223,6 +224,19 @@ cargo install uniffi-bindgen-js --version 0.2.1
 ```
 
 This creates TypeScript + WASM output in `wasm/`. 
+
+
+## Docker
+
+You can also run the service via Docker. To build and run the container, use the following commands:
+```bash
+docker build -t csaf-service .
+docker run -p 3000:3000 csaf-service
+```
+
+You can then access the service at `http://localhost:3000` and navigate to `/swagger-ui` for the API documentation.
+For further configuration options, please refer to the [csaf-service README](csaf-service/README.md).
+
 
 ## Implementation status in regards to the Standard
 

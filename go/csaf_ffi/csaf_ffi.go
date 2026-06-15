@@ -1247,6 +1247,7 @@ var ErrCsafErrorInvalidJson = fmt.Errorf("CsafErrorInvalidJson")
 var ErrCsafErrorMissingVersion = fmt.Errorf("CsafErrorMissingVersion")
 var ErrCsafErrorUnsupportedVersion = fmt.Errorf("CsafErrorUnsupportedVersion")
 var ErrCsafErrorLoadError = fmt.Errorf("CsafErrorLoadError")
+var ErrCsafErrorInvalidPreset = fmt.Errorf("CsafErrorInvalidPreset")
 
 // Variant structs
 type CsafErrorInvalidJson struct {
@@ -1361,6 +1362,34 @@ func (self CsafErrorLoadError) Is(target error) bool {
 	return target == ErrCsafErrorLoadError
 }
 
+type CsafErrorInvalidPreset struct {
+	Message string
+}
+
+func NewCsafErrorInvalidPreset(
+	message string,
+) *CsafError {
+	return &CsafError{err: &CsafErrorInvalidPreset{
+		Message: message}}
+}
+
+func (e CsafErrorInvalidPreset) destroy() {
+	FfiDestroyerString{}.Destroy(e.Message)
+}
+
+func (err CsafErrorInvalidPreset) Error() string {
+	return fmt.Sprint("InvalidPreset",
+		": ",
+
+		"Message=",
+		err.Message,
+	)
+}
+
+func (self CsafErrorInvalidPreset) Is(target error) bool {
+	return target == ErrCsafErrorInvalidPreset
+}
+
 type FfiConverterCsafError struct{}
 
 var FfiConverterCsafErrorINSTANCE = FfiConverterCsafError{}
@@ -1397,6 +1426,10 @@ func (c FfiConverterCsafError) Read(reader io.Reader) *CsafError {
 		return &CsafError{&CsafErrorLoadError{
 			Message: FfiConverterStringINSTANCE.Read(reader),
 		}}
+	case 5:
+		return &CsafError{&CsafErrorInvalidPreset{
+			Message: FfiConverterStringINSTANCE.Read(reader),
+		}}
 	default:
 		panic(fmt.Sprintf("Unknown error code %d in FfiConverterCsafError.Read()", errorID))
 	}
@@ -1416,6 +1449,9 @@ func (c FfiConverterCsafError) Write(writer io.Writer, value *CsafError) {
 	case *CsafErrorLoadError:
 		writeInt32(writer, 4)
 		FfiConverterStringINSTANCE.Write(writer, variantValue.Message)
+	case *CsafErrorInvalidPreset:
+		writeInt32(writer, 5)
+		FfiConverterStringINSTANCE.Write(writer, variantValue.Message)
 	default:
 		_ = variantValue
 		panic(fmt.Sprintf("invalid error value `%v` in FfiConverterCsafError.Write", value))
@@ -1433,6 +1469,8 @@ func (_ FfiDestroyerCsafError) Destroy(value *CsafError) {
 	case CsafErrorUnsupportedVersion:
 		variantValue.destroy()
 	case CsafErrorLoadError:
+		variantValue.destroy()
+	case CsafErrorInvalidPreset:
 		variantValue.destroy()
 	default:
 		_ = variantValue

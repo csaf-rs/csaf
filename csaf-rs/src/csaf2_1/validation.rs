@@ -1,8 +1,10 @@
+use std::fmt::Display;
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validation::{CsafError, TestResult, TestResultStatus, Validatable};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
 enum Severity {
     Error,
@@ -41,46 +43,120 @@ fn to_test_result(
     }
 }
 
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "kebab-case")]
+pub enum Preset {
+    Mandatory,
+    Recommended,
+    Informative,
+    Schema,
+    Basic,
+    Extended,
+    Full,
+    ExternalRequestFree,
+    ConsistentRevisionHistory,
+    ConsistentDateTimes,
+    Ssvc,
+}
+
+impl Preset {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Preset::Mandatory => "mandatory",
+            Preset::Recommended => "recommended",
+            Preset::Informative => "informative",
+            Preset::Schema => "schema",
+            Preset::Basic => "basic",
+            Preset::Extended => "extended",
+            Preset::Full => "full",
+            Preset::ExternalRequestFree => "external-request-free",
+            Preset::ConsistentRevisionHistory => "consistent-revision-history",
+            Preset::ConsistentDateTimes => "consistent-date-times",
+            Preset::Ssvc => "ssvc",
+        }
+    }
+}
+
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+impl TryFrom<&str> for Preset {
+    type Error = CsafError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "mandatory" => Ok(Preset::Mandatory),
+            "recommended" => Ok(Preset::Recommended),
+            "informative" => Ok(Preset::Informative),
+            "schema" => Ok(Preset::Schema),
+            "basic" => Ok(Preset::Basic),
+            "extended" => Ok(Preset::Extended),
+            "full" => Ok(Preset::Full),
+            "external-request-free" => Ok(Preset::ExternalRequestFree),
+            "consistent-revision-history" => Ok(Preset::ConsistentRevisionHistory),
+            "consistent-date-times" => Ok(Preset::ConsistentDateTimes),
+            "ssvc" => Ok(Preset::Ssvc),
+            _ => Err(CsafError::InvalidPreset {
+                preset: value.to_string(),
+            }),
+        }
+    }
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
-        match preset {
-            "mandatory" => Some(mandatory_tests()),
-            "recommended" => Some(recommended_tests()),
-            "informative" => Some(informative_tests()),
-            "schema" => Some(vec!["schema"]),
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            "external-request-free" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat()
-                .into_iter()
-                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
-                .collect(),
-            ),
-            "consistent-revision-history" => Some(vec![
+    fn get_presets() -> Vec<&'static str> {
+        vec![
+            Preset::Mandatory.as_str(),
+            Preset::Recommended.as_str(),
+            Preset::Informative.as_str(),
+            Preset::Schema.as_str(),
+            Preset::Basic.as_str(),
+            Preset::Extended.as_str(),
+            Preset::Full.as_str(),
+            Preset::ExternalRequestFree.as_str(),
+            Preset::ConsistentRevisionHistory.as_str(),
+            Preset::ConsistentDateTimes.as_str(),
+            Preset::Ssvc.as_str(),
+        ]
+    }
+
+    fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
+        match Preset::try_from(preset) {
+            Ok(Preset::Mandatory) => Ok(mandatory_tests()),
+            Ok(Preset::Recommended) => Ok(recommended_tests()),
+            Ok(Preset::Informative) => Ok(informative_tests()),
+            Ok(Preset::Schema) => Ok(vec!["schema"]),
+            Ok(Preset::Basic) => Ok([vec!["schema"], mandatory_tests()].concat()),
+            Ok(Preset::Extended) => Ok([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            Ok(Preset::Full) => Ok([
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()),
+            Ok(Preset::ExternalRequestFree) => Ok([
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()
+            .into_iter()
+            .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+            .collect()),
+            Ok(Preset::ConsistentRevisionHistory) => Ok(vec![
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
                 "6.2.33",
             ]),
-            "consistent-date-times" => Some(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
-            "ssvc" => Some(vec![
+            Ok(Preset::ConsistentDateTimes) => Ok(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            Ok(Preset::Ssvc) => Ok(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
-            _ => None,
+            Err(e) => Err(e),
         }
     }
 

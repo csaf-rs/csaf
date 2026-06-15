@@ -1,8 +1,10 @@
+use std::fmt::Display;
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validation::{CsafError, TestResult, TestResultStatus, Validatable};
 use crate::validations::test_schema::validate_schema_csaf_2_0;
 
 enum Severity {
@@ -42,21 +44,62 @@ fn to_test_result(
     }
 }
 
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum Preset {
+    Basic,
+    Extended,
+    Full,
+}
+
+impl Preset {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Preset::Basic => "basic",
+            Preset::Extended => "extended",
+            Preset::Full => "full",
+        }
+    }
+}
+
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl TryFrom<&str> for Preset {
+    type Error = CsafError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "basic" => Ok(Preset::Basic),
+            "extended" => Ok(Preset::Extended),
+            "full" => Ok(Preset::Full),
+            other => Err(CsafError::InvalidPreset {
+                preset: other.to_string(),
+            }),
+        }
+    }
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
-        match preset {
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            _ => None,
+    fn get_presets() -> Vec<&'static str> {
+        vec![Preset::Basic.as_str(), Preset::Extended.as_str(), Preset::Full.as_str()]
+    }
+
+    fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
+        match Preset::try_from(preset) {
+            Ok(Preset::Basic) => Ok([vec!["schema"], mandatory_tests()].concat()),
+            Ok(Preset::Extended) => Ok([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
+            Ok(Preset::Full) => Ok([
+                vec!["schema"],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()),
+            Err(err) => Err(err),
         }
     }
 

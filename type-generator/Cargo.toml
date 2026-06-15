@@ -1,10 +1,14 @@
 [package]
 name = "type-generator"
 description = "A generator for Rust types from CSAF JSON Schema definitions"
-license = "Apache-2.0"
-edition = "2024"
-rust-version = "1.88.0"
 publish = false
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+readme.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 
 [lints]
 workspace = true

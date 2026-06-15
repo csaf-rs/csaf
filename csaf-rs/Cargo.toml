@@ -1,13 +1,13 @@
 [package]
 name = "csaf-rs"
 description = "A parser for the CSAF standard written in Rust"
-license = "Apache-2.0"
-repository = "https://github.com/csaf-rs/csaf"
-keywords = ["csaf"]
-readme = "../README.md"
-version = "0.4.2"
-edition = "2024"
-rust-version = "1.88.0"
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+readme.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 build = "build/main.rs"
 
 [lints]

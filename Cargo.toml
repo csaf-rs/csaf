@@ -2,6 +2,15 @@
 members = ["csaf-validator", "csaf-rs", "type-generator", "csaf-converter", "csaf-ffi", "csaf-result-json"]
 resolver = "2"
 
+[workspace.package]
+version = "0.4.2"
+edition = "2024"
+rust-version = "1.88.0"
+license = "Apache-2.0"
+repository = "https://github.com/csaf-rs/csaf"
+keywords = ["csaf"]
+readme = "../README.md"
+
 [workspace.lints.clippy]
 needless_collect = "deny"
 exit = "deny"
@@ -9,4 +18,3 @@ implicit_clone = "deny"
 redundant_clone = "deny"
 zero_sized_map_values = "deny"
 explicit_iter_loop = "deny"
-

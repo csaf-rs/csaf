@@ -1,4 +1,5 @@
-use axum::{Json, extract::Query, http::StatusCode};
+use axum::extract::Query;
+use axum::{Json, http::StatusCode};
 use csaf::csaf_traits::CsafVersion;
 use csaf::validation::{TestResultStatus, Validatable, ValidationResult, validate_by_tests};
 use csaf::{
@@ -8,7 +9,6 @@ use csaf::{
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-use crate::errors::*;
 use crate::handlers::get_tests::{TestInPreset, tests_for_version};
 
 type CsafDoc20 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>;
@@ -17,6 +17,31 @@ type CsafDoc21 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_1::schema::Com
 #[derive(Debug, Deserialize)]
 pub(crate) struct LegacyTestsQuery {
     pub version: Option<String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct LegacyErrorResponse {
+    pub error: String,
+    #[serde(rename = "statusCode")]
+    pub status_code: u16,
+    pub message: Option<String>,
+    pub code: String,
+}
+
+pub(crate) fn error_response(
+    status: StatusCode,
+    code: impl Into<String>,
+    message: impl Into<String>,
+) -> (StatusCode, Json<LegacyErrorResponse>) {
+    (
+        status,
+        Json(LegacyErrorResponse {
+            status_code: status.as_u16(),
+            error: status.to_string(),
+            message: Some(message.into()),
+            code: code.into(),
+        }),
+    )
 }
 
 /// Retrieve all tests.
@@ -29,15 +54,15 @@ pub(crate) struct LegacyTestsQuery {
     ),
     responses(
         (status = 200, description = "List of available tests", body = Vec<TestInPreset>),
-        (status = 404, description = "Invalid version", body = ErrorResponse),
+        (status = 404, description = "Invalid version", body = LegacyErrorResponse),
     ),
     tag = "meta"
 )]
 pub(crate) async fn get_tests_legacy(
     Query(query): Query<LegacyTestsQuery>,
-) -> Result<Json<Vec<TestInPreset>>, (StatusCode, Json<ErrorResponse>)> {
+) -> Result<Json<Vec<TestInPreset>>, (StatusCode, Json<LegacyErrorResponse>)> {
     let version = CsafVersion::try_from(query.version.clone().unwrap_or_else(|| "2.0".to_string()))
-        .map_err(|e| error_response(StatusCode::NOT_FOUND, e))?;
+        .map_err(|e| error_response(StatusCode::NOT_FOUND, "INVALID_VERSION", e))?;
     Ok(Json(tests_for_version(&version)))
 }
 
@@ -135,6 +160,24 @@ fn to_legacy_response(result: ValidationResult) -> LegacyValidateResponse {
     }
 }
 
+/// Converts a legacy test name such as `"mandatory_6_1_10"` to the canonical
+/// dot-separated form `"6.1.10"`. Already-canonical names like `"6.1.10"` or
+/// `"schema"` are returned unchanged.
+fn from_potential_legacy_name(name: &str) -> String {
+    const PREFIXES: &[&str] = &[
+        "mandatoryTest_",
+        "optionalTest_",
+        "recommendedTest_",
+        "informativeTest_",
+    ];
+    for prefix in PREFIXES {
+        if let Some(rest) = name.strip_prefix(prefix) {
+            return rest.replace('_', ".");
+        }
+    }
+    name.to_string()
+}
+
 /// Validate a CSAF document.
 #[utoipa::path(
     post,
@@ -183,31 +226,31 @@ fn to_legacy_response(result: ValidationResult) -> LegacyValidateResponse {
                 ))
             )
         ),
-        (status = 400, description = "Invalid request", body = ErrorResponse)
+        (status = 400, description = "Invalid request", body = LegacyErrorResponse)
     ),
     tag = "validation"
 )]
 pub(crate) async fn validate_legacy(
     Json(body): Json<LegacyValidateBody>,
-) -> Result<Json<LegacyValidateResponse>, (StatusCode, Json<ErrorResponse>)> {
+) -> Result<Json<LegacyValidateResponse>, (StatusCode, Json<LegacyErrorResponse>)> {
     let json_value = body.document;
 
     let version = {
-        let detected =
-            detect_version(json_value.clone()).map_err(|e| error_response(StatusCode::BAD_REQUEST, e.to_string()))?;
-        CsafVersion::try_from(detected).map_err(|e| error_response(StatusCode::BAD_REQUEST, e))?
+        let detected = detect_version(json_value.clone())
+            .map_err(|e| error_response(StatusCode::BAD_REQUEST, "PARSE_ERROR", e.to_string()))?;
+        CsafVersion::try_from(detected).map_err(|e| error_response(StatusCode::BAD_REQUEST, "INVALID_VERSION", e))?
     };
 
     let mut test_ids: Vec<String> = Vec::new();
     for entry in &body.tests {
         match entry {
-            TestOrPreset::Test { name } => test_ids.push(name.clone()),
+            TestOrPreset::Test { name } => test_ids.push(from_potential_legacy_name(name)),
             TestOrPreset::Preset { name } => {
                 let preset_tests = match version {
                     CsafVersion::X20 => CsafDoc20::tests_in_preset(name)
-                        .map_err(|e| error_response(StatusCode::BAD_REQUEST, e.to_string()))?,
+                        .map_err(|e| error_response(StatusCode::BAD_REQUEST, "CSAF_ERROR", e.to_string()))?,
                     CsafVersion::X21 => CsafDoc21::tests_in_preset(name)
-                        .map_err(|e| error_response(StatusCode::BAD_REQUEST, e.to_string()))?,
+                        .map_err(|e| error_response(StatusCode::BAD_REQUEST, "CSAF_ERROR", e.to_string()))?,
                 };
                 test_ids.extend(preset_tests.iter().map(|s| s.to_string()));
             },
@@ -228,6 +271,7 @@ pub(crate) async fn validate_legacy(
             let doc = load_2_0(json_value).map_err(|e| {
                 error_response(
                     StatusCode::BAD_REQUEST,
+                    "PARSE_ERROR",
                     format!("Failed to load CSAF 2.0 document: {e}"),
                 )
             })?;
@@ -237,6 +281,7 @@ pub(crate) async fn validate_legacy(
             let doc = load_2_1(json_value).map_err(|e| {
                 error_response(
                     StatusCode::BAD_REQUEST,
+                    "PARSE_ERROR",
                     format!("Failed to load CSAF 2.1 document: {e}"),
                 )
             })?;
@@ -244,6 +289,13 @@ pub(crate) async fn validate_legacy(
         },
     };
 
+    if result.num_not_found > 0 {
+        return Err(error_response(
+            StatusCode::BAD_REQUEST,
+            "TEST_NOT_FOUND",
+            format!("One or more tests not found: {test_ids:?}"),
+        ));
+    }
     Ok(Json(to_legacy_response(result)))
 }
 
@@ -253,6 +305,17 @@ mod tests {
     use crate::routes;
     use crate::test_helpers::post_json;
     use axum::http::StatusCode;
+
+    #[test]
+    fn test_from_potential_legacy_name() {
+        assert_eq!(from_potential_legacy_name("mandatory_6_1_10"), "6.1.10");
+        assert_eq!(from_potential_legacy_name("mandatory_6_1_1"), "6.1.1");
+        assert_eq!(from_potential_legacy_name("optional_6_2_3"), "6.2.3");
+        assert_eq!(from_potential_legacy_name("recommended_6_2_3"), "6.2.3");
+        assert_eq!(from_potential_legacy_name("informative_6_3_1"), "6.3.1");
+        assert_eq!(from_potential_legacy_name("6.1.10"), "6.1.10");
+        assert_eq!(from_potential_legacy_name("schema"), "schema");
+    }
 
     fn valid_csaf_2_0() -> serde_json::Value {
         let bytes = include_bytes!(

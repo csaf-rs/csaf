@@ -3,10 +3,10 @@
 //! This crate provides a foreign-function interface (FFI) layer on top of `csaf-rs`,
 //! enabling Go, WASM, and other language bindings via Mozilla UniFFI.
 
+use csaf::csaf_traits::CsafVersion;
 use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf::csaf_traits::CsafVersion;
-use csaf::validation::{validate_by_preset, Validatable};
+use csaf::validation::{Validatable, validate_by_preset};
 
 pub mod document;
 pub mod types;

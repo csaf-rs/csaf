@@ -77,7 +77,7 @@ fn main() -> Result<(), anyhow::Error> {
             csaf_document: path,
         } => {
             tests.push(test_id.as_str());
-            println!("Running tests: {:?}", tests);
+            println!("Running tests: {tests:?}");
 
             let file_path = Path::new(&path);
 

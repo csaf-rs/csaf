@@ -10,7 +10,7 @@ use csaf::validation::{
     TestResultStatus::{Failure, NotFound, Skipped, Success},
     Validatable, ValidationResult, validate_by_tests,
 };
-use std::ops::Deref;
+use std::path::Path;
 
 /// A validator for CSAF documents
 #[derive(Parser, Debug)]
@@ -43,7 +43,7 @@ fn main() -> Result<(), anyhow::Error> {
     if args
         .path
         .iter()
-        .map(|file| validate_file(file.deref(), &args))
+        .map(|file| validate_file(Path::new(&file), &args))
         .filter(|result| match result {
             Ok(result) => !result.success,
             Err(err) => {
@@ -60,9 +60,9 @@ fn main() -> Result<(), anyhow::Error> {
 }
 
 /// Try to validate a file as a CSAF document based on the specified version.
-fn validate_file(path: &str, args: &Args) -> Result<ValidationResult> {
+fn validate_file(path: &Path, args: &Args) -> Result<ValidationResult> {
     let file_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Cyan.into()));
-    println!("Validating file: {file_color}{path}{file_color:#}");
+    println!("Validating file: {file_color}{}{file_color:#}", path.display());
     let version = match args.csaf_version.as_str() {
         "auto" => detect_version(path)?,
         other => other.to_string(),

@@ -77,7 +77,6 @@ fn main() -> Result<(), anyhow::Error> {
             csaf_document: path,
         } => {
             tests.push(test_id.as_str());
-            println!("Running tests: {tests:?}");
 
             let file_path = Path::new(&path);
 
@@ -85,7 +84,6 @@ fn main() -> Result<(), anyhow::Error> {
                 "auto" => detect_version(file_path)?,
                 other => other.to_string(),
             };
-            println!("Detected CSAF version: {version}");
 
             let result = match version.as_str() {
                 "2.0" => {

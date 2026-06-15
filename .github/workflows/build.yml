@@ -204,6 +204,7 @@ jobs:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: cyclonedx-json
           artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.cdx.json
+          upload-release-assets: false
       - name: Generate SPDX SBOM
         if: matrix.version == needs.prepare.outputs.stable-version
         uses: anchore/sbom-action@v0.24.0
@@ -211,6 +212,7 @@ jobs:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: spdx-json
           artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.spdx.json
+          upload-release-assets: false
 
   build-platforms:
     needs: build-matrix
@@ -310,12 +312,14 @@ jobs:
           file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           format: cyclonedx-json
           artifact-name: csaf-ffi-wasm_wasm32_sbom.cdx.json
+          upload-release-assets: false
       - name: Generate SPDX SBOM
         uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           format: spdx-json
           artifact-name: csaf-ffi-wasm_wasm32_sbom.spdx.json
+          upload-release-assets: false
 
   go-bindings:
     needs:
@@ -508,10 +512,10 @@ jobs:
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
-      #- name: Publish to NPM
-      #  working-directory: ./wasm
-      #  run: |
-      #    npm publish --provenance
+      - name: Publish to NPM
+        working-directory: ./wasm
+        run: |
+          npm publish --provenance
 
   publish-go:
     runs-on: ubuntu-latest
@@ -539,17 +543,17 @@ jobs:
         working-directory: ./go
         run: |
           CGO_LDFLAGS="-L$(pwd)/csaf_ffi/lib/linux_amd64" go build ./...
-      # - name: Push Go module tag
-      #   run: |
-      #     GO_TAG="go/${{ github.ref_name }}"
-      #     if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null 2>&1; then
-      #       git tag "$GO_TAG"
-      #       git push origin "$GO_TAG"
-      #     else
-      #       echo "Tag $GO_TAG already exists, skipping."
-      #     fi
-      #- name: Publish to Go module proxy
-      #  run: GOPROXY=proxy.golang.org go list -m "github.com/csaf-rs/csaf/go@${{ github.ref_name }}"
+      - name: Push Go module tag
+        run: |
+          GO_TAG="go/${{ github.ref_name }}"
+          if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null 2>&1; then
+            git tag "$GO_TAG"
+            git push origin "$GO_TAG"
+          else
+            echo "Tag $GO_TAG already exists, skipping."
+          fi
+      - name: Publish to Go module proxy
+        run: GOPROXY=proxy.golang.org go list -m "github.com/csaf-rs/csaf/go@${{ github.ref_name }}"
 
   create-release:
     runs-on: ubuntu-latest

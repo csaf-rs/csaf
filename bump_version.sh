@@ -22,6 +22,7 @@ The following files are updated:
   Cargo.toml            (workspace.package.version)
   csaf-validator/Cargo.toml  (path dependency on csaf-rs)
   csaf-converter/Cargo.toml  (path dependency on csaf-rs)
+  csaf-result-json/Cargo.toml  (path dependency on csaf-rs)
   wasm/package.json
 EOF
   exit 1
@@ -74,7 +75,7 @@ echo "Bumping version: $CURRENT_VERSION -> $NEW_VERSION"
 sed -i.bak "s/^version = \"[^\"]*\"/version = \"${NEW_VERSION}\"/" Cargo.toml
 
 # path dependencies on csaf-rs in csaf-validator and csaf-converter
-for toml in csaf-validator/Cargo.toml csaf-converter/Cargo.toml; do
+for toml in csaf-validator/Cargo.toml csaf-converter/Cargo.toml csaf-result-json/Cargo.toml; do
   sed -i.bak 's|\(path = "\.\./csaf-rs", version = "\)[^"]*"|\1'"${NEW_VERSION}"'"|' "$toml"
 done
 

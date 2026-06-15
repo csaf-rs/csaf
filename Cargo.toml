@@ -9,7 +9,7 @@ rust-version = "1.88.0"
 license = "Apache-2.0"
 repository = "https://github.com/csaf-rs/csaf"
 keywords = ["csaf"]
-readme = "../README.md"
+readme = "README.md"
 
 [workspace.lints.clippy]
 needless_collect = "deny"

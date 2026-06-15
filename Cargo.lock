@@ -482,7 +482,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-converter"
-version = "0.4.2"
+version = "0.5.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -491,7 +491,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-ffi"
-version = "0.4.2"
+version = "0.5.0"
 dependencies = [
  "csaf-rs",
  "serde_json",
@@ -514,7 +514,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-rs"
-version = "0.4.2"
+version = "0.5.0"
 dependencies = [
  "chrono",
  "criterion",
@@ -537,7 +537,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-validator"
-version = "0.4.2"
+version = "0.5.0"
 dependencies = [
  "anstream 0.6.21",
  "anstyle",

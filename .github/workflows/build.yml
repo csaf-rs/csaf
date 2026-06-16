@@ -537,7 +537,7 @@ jobs:
       - name: Download Go library for verification
         uses: actions/download-artifact@v8
         with:
-          name: go-csaf-ffi-lib-Linux-X64-${{ needs.prepare.outputs.git-version }}
+          name: go-csaf-ffi-lib-Linux-amd64-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
       - name: Verify Go module builds
         working-directory: ./go

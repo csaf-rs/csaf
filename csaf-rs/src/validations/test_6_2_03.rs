@@ -20,7 +20,7 @@ fn create_missing_metric_error(
 
 fn check_product_status_group_for_missing_metrics<'a>(
     errors: &mut Option<Vec<ValidationError>>,
-    status_group_product_ids: impl Iterator<Item = &'a String>,
+    status_group_product_ids: impl Iterator<Item = &'a str>,
     remediation_product_ids: &HashSet<String>,
     vulnerability_index: usize,
     status_group_name: &str,
@@ -62,7 +62,7 @@ pub fn test_6_2_03_missing_metric(doc: &impl CsafTrait) -> Result<(), Vec<Valida
             if let Some(metrics) = vuln.get_metrics() {
                 for metric in metrics {
                     for product_id in metric.get_products() {
-                        metric_product_ids.insert(product_id.clone());
+                        metric_product_ids.insert(product_id.to_owned());
                     }
                 }
             }

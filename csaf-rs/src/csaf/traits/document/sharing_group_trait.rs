@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::schema::csaf2_1::schema::SharingGroup as SharingGroup21;
 use uuid::Uuid;
@@ -41,7 +42,5 @@ impl SharingGroupTrait for SharingGroup21 {
         &self.id
     }
 
-    fn get_name(&self) -> Option<&str> {
-        self.name.as_deref().map(String::as_str)
-    }
+    impl_optional_str_field_getter!(get_name, name);
 }

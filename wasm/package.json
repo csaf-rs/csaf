@@ -1,10 +1,14 @@
 {
   "name": "@csaf-rs/csaf-rs",
-  "version": "0.4.1",
+  "version": "0.5.1",
   "type": "module",
   "description": "CSAF validation via WASM (UniFFI-generated bindings)",
   "main": "csaf_ffi.ts",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/csaf-rs/csaf"
+  },
   "scripts": {},
   "devDependencies": {
     "@types/node": "^25.6.2",

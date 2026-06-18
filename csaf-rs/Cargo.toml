@@ -1,13 +1,13 @@
 [package]
 name = "csaf-rs"
 description = "A parser for the CSAF standard written in Rust"
-license = "Apache-2.0"
-repository = "https://github.com/csaf-rs/csaf"
-keywords = ["csaf"]
-readme = "../README.md"
-version = "0.4.1"
-edition = "2024"
-rust-version = "1.88.0"
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+readme.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 build = "build/main.rs"
 
 [lints]
@@ -25,7 +25,7 @@ converter = []
 cvss-rs = "0.3.0"
 regress = "0.11"
 serde = { version = "1", features = ["derive"] }
-serde_json = {  version = "1",  features = ["preserve_order"]}
+serde_json = { version = "1", features = ["preserve_order"] }
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
 rust-embed = { version = "8", features = ["include-exclude"] }
@@ -47,6 +47,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 [dev-dependencies]
 rstest = "0.26.1"
 criterion = { version = "0.5", features = ["html_reports"] }
+tempfile = "3"
 
 [[bench]]
 name = "validation_benchmark"

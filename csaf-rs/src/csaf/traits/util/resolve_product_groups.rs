@@ -15,15 +15,15 @@ use std::collections::{BTreeSet, HashSet};
 ///
 /// * `doc` - A CSAF document implementing [`CsafTrait`], used to access the product tree
 /// * `product_groups` - An iterator of product group ID strings to resolve
-pub fn resolve_product_groups<'a, I>(doc: &impl CsafTrait, product_groups: I) -> Option<BTreeSet<String>>
-where
-    I: IntoIterator<Item = &'a String>,
-{
+pub fn resolve_product_groups(
+    doc: &impl CsafTrait,
+    product_groups: impl IntoIterator<Item = impl AsRef<str>>,
+) -> Option<BTreeSet<String>> {
     // early return if there isn't a product tree
     let product_tree = doc.get_product_tree()?;
 
     // collect requested group IDs into a hashset for O(1) lookup
-    let product_groups: HashSet<&str> = product_groups.into_iter().map(|s| s.as_str()).collect();
+    let product_groups: HashSet<String> = product_groups.into_iter().map(|s| s.as_ref().to_owned()).collect();
 
     let product_ids: BTreeSet<String> = product_tree
         .get_product_groups()
@@ -32,7 +32,7 @@ where
         .filter(|x| product_groups.contains(x.get_group_id()))
         // resolve the group into its product ids
         .flat_map(|x| x.get_product_ids())
-        .cloned()
+        .map(|id| id.to_owned())
         .collect();
 
     if product_ids.is_empty() {

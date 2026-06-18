@@ -181,7 +181,11 @@ mod tests {
             ),
         ]);
 
-        TESTS_2_0.test_6_1_3.expect(csaf_20_case_01_self_ref_via_relates_to_product_ref, csaf_20_case_s01_self_ref_via_product_ref, csaf_20_case_s02_cycle);
+        TESTS_2_0.test_6_1_3.expect(
+            csaf_20_case_01_self_ref_via_relates_to_product_ref,
+            csaf_20_case_s01_self_ref_via_product_ref,
+            csaf_20_case_s02_cycle,
+        );
 
         let csaf_21_case_01_self_ref_via_product_path_next_ref = Err(vec![generate_self_reference_relates_to_error(
             CsafVersion::X21,

@@ -18,33 +18,20 @@ fn create_older_initial_release_date_error(
 ///
 pub fn test_6_2_05_older_init_release_than_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let initial_release_date = doc.get_document().get_tracking().get_initial_release_date();
-    let rev_history = doc.get_document().get_tracking().aggregate_revision_history();
+    let mut rev_history = doc.get_document().get_tracking().aggregate_revision_history();
+    rev_history.inplace_sort_by_date_then_number();
 
-    // Find the true oldest revision by iterating and finding the minimum UTC timestamp
-    let mut earliest_rev_item = None;
-    for item in rev_history.iter() {
-        if let Valid(item_date) = &item.date {
-            match earliest_rev_item {
-                None => earliest_rev_item = Some((item, item_date.get_as_utc())),
-                Some((_, current_min_utc)) => {
-                    if item_date.get_as_utc() < current_min_utc {
-                        earliest_rev_item = Some((item, item_date.get_as_utc()));
-                    }
-                },
-            }
-        }
-    }
-
-    // If there are no valid tracking revisions, we cannot perform this comparison
-    let Some((earliest_item, _)) = earliest_rev_item else {
-        return Ok(()); // TODO #409 return a precondition failed here
+    // Get the oldest item after sorting ascending
+    let earliest_rev_item = match rev_history.first() {
+        None => return Ok(()), // TODO #409 return a precondition failed here
+        Some(x) => x,
     };
 
     let Valid(initial_date_val) = initial_release_date else {
         return Ok(()); // TODO #409 return a precondition failed here
     };
 
-    let Valid(earliest_rev_date_val) = &earliest_item.date else {
+    let Valid(earliest_rev_date_val) = &earliest_rev_item.date else {
         return Ok(()); // TODO #409 return a precondition failed here
     };
 

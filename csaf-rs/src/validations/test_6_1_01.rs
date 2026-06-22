@@ -136,6 +136,13 @@ mod tests {
                 ),
             ]),
             Err(vec![
+                generate_err_msg("CSAFPID-9080710", "/vulnerabilities/0/ids/0/product_ids/0"),
+                generate_err_msg("CSAFPID-9080711", "/vulnerabilities/0/ids/0/product_ids/1"),
+                generate_err_msg("CSAFPID-9080712", "/vulnerabilities/0/ids/1/product_ids/0"),
+                generate_err_msg("CSAFPID-9080714", "/vulnerabilities/0/ids/1/product_ids/2"),
+                generate_err_msg("CSAFPID-9080715", "/vulnerabilities/0/ids/2/product_ids/0"),
+            ]),
+            Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/document/notes/0/product_ids/0"),
                 generate_err_msg(
                     "CSAFPID-9080703",
@@ -171,6 +178,7 @@ mod tests {
                     "/vulnerabilities/0/first_known_exploitation_dates/0/product_ids/0",
                 ),
             ]),
+            Ok(()),
             Ok(()),
             Ok(()),
         );

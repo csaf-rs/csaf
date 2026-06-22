@@ -141,6 +141,7 @@ pub trait VulnerabilityTrait {
             (get_involvements_group_references,                     get_involvements_product_references,                     get_involvements,                     "involvements"),
             (get_notes_group_references,                            get_notes_product_references,                            get_notes,                            "notes"),
             (get_first_known_exploitation_dates_group_references,   get_first_known_exploitation_dates_product_references,   get_first_known_exploitation_dates,   "first_known_exploitation_dates"),
+            (get_ids_group_references,                              get_ids_product_references,                              get_ids,                              "ids"),
         ],
         custom_group_extraction: [],
         custom_product_extraction: [

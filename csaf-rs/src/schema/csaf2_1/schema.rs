@@ -2186,6 +2186,12 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "text"
 ///              ],
 ///              "properties": {
+///                "group_ids": {
+///                  "$ref": "#/$defs/product_groups_t"
+///                },
+///                "product_ids": {
+///                  "$ref": "#/$defs/products_t"
+///                },
 ///                "system_name": {
 ///                  "title": "System name",
 ///                  "description": "Indicates the name of the vulnerability tracking or numbering system.",
@@ -5324,6 +5330,12 @@ impl HelperToIdentifyTheProduct {
 ///    "text"
 ///  ],
 ///  "properties": {
+///    "group_ids": {
+///      "$ref": "#/$defs/product_groups_t"
+///    },
+///    "product_ids": {
+///      "$ref": "#/$defs/products_t"
+///    },
 ///    "system_name": {
 ///      "title": "System name",
 ///      "description": "Indicates the name of the vulnerability tracking or numbering system.",
@@ -5354,6 +5366,10 @@ impl HelperToIdentifyTheProduct {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Id {
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub group_ids: ::std::option::Option<ProductGroupsT>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub product_ids: ::std::option::Option<ProductsT>,
     ///Indicates the name of the vulnerability tracking or numbering system.
     pub system_name: SystemName,
     ///Is unique label or tracking ID for the vulnerability (if such information exists).
@@ -10771,6 +10787,12 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "text"
 ///        ],
 ///        "properties": {
+///          "group_ids": {
+///            "$ref": "#/$defs/product_groups_t"
+///          },
+///          "product_ids": {
+///            "$ref": "#/$defs/products_t"
+///          },
 ///          "system_name": {
 ///            "title": "System name",
 ///            "description": "Indicates the name of the vulnerability tracking or numbering system.",
@@ -13206,18 +13228,52 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Id {
+        group_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductGroupsT>,
+            ::std::string::String,
+        >,
+        product_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductsT>,
+            ::std::string::String,
+        >,
         system_name: ::std::result::Result<super::SystemName, ::std::string::String>,
         text: ::std::result::Result<super::Text, ::std::string::String>,
     }
     impl ::std::default::Default for Id {
         fn default() -> Self {
             Self {
+                group_ids: Ok(Default::default()),
+                product_ids: Ok(Default::default()),
                 system_name: Err("no value supplied for system_name".to_string()),
                 text: Err("no value supplied for text".to_string()),
             }
         }
     }
     impl Id {
+        pub fn group_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductGroupsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.group_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {e}")
+                });
+            self
+        }
+        pub fn product_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.product_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {e}")
+                });
+            self
+        }
         pub fn system_name<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<super::SystemName>,
@@ -13247,6 +13303,8 @@ pub mod builder {
             value: Id,
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
+                group_ids: value.group_ids?,
+                product_ids: value.product_ids?,
                 system_name: value.system_name?,
                 text: value.text?,
             })
@@ -13255,6 +13313,8 @@ pub mod builder {
     impl ::std::convert::From<super::Id> for Id {
         fn from(value: super::Id) -> Self {
             Self {
+                group_ids: Ok(value.group_ids),
+                product_ids: Ok(value.product_ids),
                 system_name: Ok(value.system_name),
                 text: Ok(value.text),
             }

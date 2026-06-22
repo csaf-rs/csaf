@@ -25,7 +25,7 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     rev_history.inplace_sort_by_date_then_number();
     // We can safely unwrap here because empty revision histories would not parse schema validation
     let newest_rev_history_item_date = match rev_history.last() {
-        None => return Ok(()), // TODO #409 return a precondition failed here,
+        None => return Ok(()), // TODO #409 return a precond    ition failed here,
         Some(x) => x,
     };
     let Valid(current_release_date) = current_release_date else {

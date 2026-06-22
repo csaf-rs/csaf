@@ -37,16 +37,12 @@ impl Default for JsonPointerCollector {
 impl Extractor for JsonPointerCollector {
     fn keyed_primitive(&mut self, name: &str, _primitive: &serde_json::Value) {
         let pointer = self.get_json_pointer();
-        self.pointers
-            .get_or_insert_default()
-            .push(format!("{}/{name}", pointer));
+        self.pointers.get_or_insert_default().push(format!("{pointer}/{name}"));
     }
 
     fn enter_keyed_object(&mut self, name: &str) -> bool {
         let pointer = self.get_json_pointer();
-        self.pointers
-            .get_or_insert_default()
-            .push(format!("{}/{name}", pointer));
+        self.pointers.get_or_insert_default().push(format!("{pointer}/{name}"));
         self.path.push(name.to_string());
         true
     }
@@ -58,11 +54,11 @@ impl Extractor for JsonPointerCollector {
 
 impl CanExtract<Vec<String>> for JsonPointerCollector {
     fn extract(&mut self) -> Vec<String> {
-        self.pointers.take().unwrap_or(vec![])
+        self.pointers.take().unwrap_or_default()
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, PartialEq)]
 struct XAndY {
     x: Option<String>,
     y: Option<bool>,
@@ -73,7 +69,7 @@ fn test_walk_json() {
     let mut my_number = AtPath::new("x", ExtractPrimitive::new_number("y"));
     let mut names = Convert::new(
         AtPath::new_path(&["y", "z"], CollectArray::new(ExtractPrimitive::new_string("x"))),
-        |x| x.unwrap_or(vec![]),
+        |x| x.unwrap_or_default(),
     );
     let mut pointers_and_json = Combine::new_pair(
         AtPath::new("x", JsonPointerCollector::new()),
@@ -83,7 +79,7 @@ fn test_walk_json() {
     let mut x_and_y = Combine::new(
         AtPath::new_path(&["y", "z", "2"], ExtractPrimitive::new_string("x")),
         AtPath::new_path(&["y", "z", "0"], ExtractPrimitive::new_bool("y")),
-        |x, y| XAndY { x: x, y: y },
+        |x, y| XAndY { x, y },
     );
 
     let document = json!({
@@ -107,20 +103,52 @@ fn test_walk_json() {
         &mut [&mut my_number, &mut names, &mut pointers_and_json, &mut x_and_y],
     );
 
-    println!("number {:?}", my_number.extract());
-    println!("names {:?}", names.extract());
-    println!("combined {:?}", pointers_and_json.extract());
-    println!("x and y: {:?}", x_and_y.extract());
+    assert_eq!(my_number.extract(), serde_json::Number::from_i128(1));
+    assert_eq!(
+        names.extract(),
+        vec![
+            Some("Hallo".to_string()),
+            None,
+            Some("Welt".to_string()),
+            Some("aa".to_string())
+        ]
+    );
+    assert_eq!(
+        pointers_and_json.extract(),
+        (
+            vec![
+                "/y".to_string(),
+                "/z".to_string(),
+                "/z/0".to_string(),
+                "/z/1".to_string(),
+                "/z/2".to_string(),
+                "/z/3".to_string(),
+                "/z/3/0".to_string(),
+                "/z/4".to_string()
+            ],
+            Some(json!({
+                "y": 1,
+                "z": ["a", 1, null, [null], {}]
+            }))
+        )
+    );
+    assert_eq!(
+        x_and_y.extract(),
+        XAndY {
+            x: Some("Welt".to_string()),
+            y: Some(true),
+        }
+    );
 }
 
 #[test]
 fn test_walk_stream() {
-    let mut get_my_number = AtPath::new("x", ExtractPrimitive::new_number("y"));
-    let mut collect_names = Convert::new(
+    let mut my_number = AtPath::new("x", ExtractPrimitive::new_number("y"));
+    let mut names = Convert::new(
         AtPath::new_path(&["y", "z"], CollectArray::new(ExtractPrimitive::new_string("x"))),
-        |x| x.unwrap_or(vec![]),
+        |x| x.unwrap_or_default(),
     );
-    let mut combined = Combine::new_pair(
+    let mut pointers_and_json = Combine::new_pair(
         AtPath::new("x", JsonPointerCollector::new()),
         AtPath::new("x", ExtractJsonValue::new()),
     );
@@ -128,7 +156,7 @@ fn test_walk_stream() {
     let mut x_and_y = Combine::new(
         AtPath::new_path(&["y", "z", "2"], ExtractPrimitive::new_string("x")),
         AtPath::new_path(&["y", "z", "0"], ExtractPrimitive::new_bool("y")),
-        |x, y| XAndY { x: x, y: y },
+        |x, y| XAndY { x, y },
     );
 
     let document = br#"
@@ -151,12 +179,44 @@ fn test_walk_stream() {
 
     let parse_result = visit_stream(
         &document[..],
-        &mut [&mut get_my_number, &mut collect_names, &mut combined, &mut x_and_y],
+        &mut [&mut my_number, &mut names, &mut pointers_and_json, &mut x_and_y],
     );
 
-    println!("number {:?}", get_my_number.extract());
-    println!("names {:?}", collect_names.extract());
-    println!("combined {:?}", combined.extract());
-    println!("x and y: {:?}", x_and_y.extract());
-    println!("parse result {parse_result:?}");
+    assert_eq!(my_number.extract(), serde_json::Number::from_i128(1));
+    assert_eq!(
+        names.extract(),
+        vec![
+            Some("Hallo".to_string()),
+            None,
+            Some("Welt".to_string()),
+            Some("aa".to_string())
+        ]
+    );
+    assert_eq!(
+        pointers_and_json.extract(),
+        (
+            vec![
+                "/y".to_string(),
+                "/z".to_string(),
+                "/z/0".to_string(),
+                "/z/1".to_string(),
+                "/z/2".to_string(),
+                "/z/3".to_string(),
+                "/z/3/0".to_string(),
+                "/z/4".to_string()
+            ],
+            Some(json!({
+                "y": 1,
+                "z": ["a", 1, null, [null], {}]
+            }))
+        )
+    );
+    assert_eq!(
+        x_and_y.extract(),
+        XAndY {
+            x: Some("Welt".to_string()),
+            y: Some(true),
+        }
+    );
+    assert!(parse_result.is_ok());
 }

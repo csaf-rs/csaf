@@ -30,16 +30,15 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
                 // itself marks the weakness as deprecated (name starts with
                 // "DEPRECATED:"). If not, fall back to checking the CWE name
                 // found in the CSV assets for the specified CWE version.
-                let mut is_deprecated = cwe_item.name.starts_with("DEPRECATED:");
+                let mut is_deprecated = cwe_item.name.starts_with("DEPRECATED");
 
                 if !is_deprecated {
                     // We can also just run this part, and only look into the cwe file
                     if let Some((_date, map)) = CWE_ENTRIES.get(version)
                         && let Some(name) = map.get(&cwe_item.id)
-                            && name.starts_with("DEPRECATED:") {
-                                is_deprecated = true;
-
-
+                        && name.starts_with("DEPRECATED")
+                    {
+                        is_deprecated = true;
                     }
                 }
 

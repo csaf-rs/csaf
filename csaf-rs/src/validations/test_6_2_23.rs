@@ -34,12 +34,12 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
 
                 if !is_deprecated {
                     // We can also just run this part, and only look into the cwe file
-                    if let Some((_date, map)) = CWE_ENTRIES.get(version) {
-                        if let Some(name) = map.get(&cwe_item.id) {
-                            if name.starts_with("DEPRECATED:") {
+                    if let Some((_date, map)) = CWE_ENTRIES.get(version)
+                        && let Some(name) = map.get(&cwe_item.id)
+                            && name.starts_with("DEPRECATED:") {
                                 is_deprecated = true;
-                            }
-                        }
+
+
                     }
                 }
 

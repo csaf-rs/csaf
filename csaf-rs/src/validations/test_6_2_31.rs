@@ -1,5 +1,5 @@
-use crate::csaf_traits::{CsafTrait, ProductTreeTrait, ProductTrait, ProductPathTrait};
 use crate::csaf::traits::vulnerabilities::product_ident_helper_trait::ProductIdentificationHelperTrait;
+use crate::csaf_traits::{CsafTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 
 fn generate_hardware_software_mix_error(product_id: &str) -> ValidationError {
@@ -49,18 +49,10 @@ pub fn test_6_2_31_hardware_and_software(doc: &impl CsafTrait) -> Result<(), Vec
         }
     });
 
-    if errors.is_empty() {
-        Ok(())
-    } else {
-        Err(errors)
-    }
+    if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_2_31,
-    test_6_2_31_hardware_and_software
-);
+crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_31, test_6_2_31_hardware_and_software);
 
 #[cfg(test)]
 mod tests {
@@ -69,9 +61,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_31() {
-        let case_01_failing_example_1 = Err(vec![
-            generate_hardware_software_mix_error("CSAFPID-908070601"),
-        ]);
+        let case_01_failing_example_1 = Err(vec![generate_hardware_software_mix_error("CSAFPID-908070601")]);
 
         let case_11_valid_example_1 = Ok(());
         let case_12_valid_example_2 = Ok(());

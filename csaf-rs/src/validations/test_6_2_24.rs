@@ -1,0 +1,129 @@
+use chrono::NaiveDate;
+
+use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
+use crate::helpers::CWE_ENTRIES;
+use crate::validation::ValidationError;
+
+fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, path: &str) -> ValidationError {
+    ValidationError {
+        message: format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest})."),
+        instance_path: format!("{path}/version"),
+    }
+}
+
+fn get_latest_cwe_version_for_date(date: &CsafDateTime) -> Option<&'static String> {
+    // If the date is invalid, we cannot determine the latest CWE version — skip.
+    if !date.is_valid() {
+        return None;
+    }
+
+    // Convert to a date (UTC) and compare against the release dates stored in the CWE assets.
+    let doc_date: NaiveDate = match date {
+        CsafDateTime::Valid(v) => v.get_as_utc().date_naive(),
+        _ => return None,
+    };
+
+    let mut latest: Option<(&'static String, &NaiveDate)> = None;
+
+    for (version, (release_date, _)) in CWE_ENTRIES.iter() {
+        if *release_date <= doc_date {
+            if latest.is_none() || *release_date > *latest.unwrap().1 {
+                latest = Some((version, release_date));
+            }
+        }
+    }
+
+    latest.map(|(version, _)| version)
+}
+
+/// 6.2.24 Usage of Non-Latest CWE Version
+///
+/// For each item in the CWE array it MUST be tested that the latest CWE version
+/// available at the time of the last revision was used. The test SHALL fail if
+/// a later CWE version was available (i.e. the CWE item does not reference the
+/// most recent CWE version as of the document's current_release_date).
+pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+    let vulnerabilities = doc.get_vulnerabilities();
+    let mut errors: Vec<ValidationError> = Vec::new();
+
+    let tracking = doc.get_document().get_tracking();
+    let current_release_date = tracking.get_current_release_date();
+
+    // Determine the latest CWE version available at document current_release_date.
+    let latest_version = get_latest_cwe_version_for_date(&current_release_date);
+
+    for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
+        if let Some(cwes) = vulnerability.get_cwe() {
+            for (i_cwe, cwe_item) in cwes.iter().enumerate() {
+                // Require the CWE item to include a version. If missing, the parser
+                // should have rejected the document; skip checking here.
+                let Some(version) = cwe_item.version.as_deref() else {
+                    continue;
+                };
+
+                // If we cannot determine the latest CWE version for the document,
+                // skip the check (no external CWE data available).
+                let Some(latest) = latest_version else {
+                    continue;
+                };
+
+                if version != latest {
+                    errors.push(create_non_latest_cwe_error(
+                        &cwe_item.id,
+                        version,
+                        latest,
+                        format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
+                    ));
+                }
+            }
+        }
+    }
+
+    if errors.is_empty() { Ok(()) } else { Err(errors) }
+}
+
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_2_24,
+    test_6_2_24_usage_of_non_latest_cwe_version
+);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+
+    #[test]
+    fn test_test_6_2_24() {
+        let case_01 = Err(vec![create_non_latest_cwe_error(
+            "CWE-256",
+            "4.12",
+            "4.13",
+            "/vulnerabilities/0/cwes/0",
+        )]);
+
+        let case_02 = Err(vec![create_non_latest_cwe_error(
+            "CWE-143",
+            "4.15",
+            "4.13",
+            "/vulnerabilities/0/cwes/0",
+        )]);
+
+        let case_03 = Err(vec![
+            create_non_latest_cwe_error("CWE-262", "1.8.1", "4.13", "/vulnerabilities/0/cwes/0"),
+            create_non_latest_cwe_error("CWE-287", "1.0", "4.13", "/vulnerabilities/0/cwes/2"),
+        ]);
+
+        let case_04 = Err(vec![
+            create_non_latest_cwe_error("CWE-158", "1.3", "4.13", "/vulnerabilities/0/cwes/0"),
+            create_non_latest_cwe_error("CWE-138", "2.1", "4.13", "/vulnerabilities/0/cwes/1"),
+            create_non_latest_cwe_error("CWE-318", "4.14", "4.13", "/vulnerabilities/1/cwes/0"),
+            create_non_latest_cwe_error("CWE-61", "4.15", "4.13", "/vulnerabilities/2/cwes/0"),
+        ]);
+
+        TESTS_2_1
+            .test_6_2_24
+            .expect(case_01, case_02, case_03, case_04, Ok(()), Ok(()), Ok(()), Ok(()));
+    }
+}

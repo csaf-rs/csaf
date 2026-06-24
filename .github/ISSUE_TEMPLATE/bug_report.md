@@ -26,9 +26,8 @@ If applicable, add screenshots to help explain your problem.
 **Environment (please complete the following information):**
  - OS: [e.g. iOS]
  - CPU-Architecture: [e.g. amd64, aarch64]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+ - Version [e.g. 0.4.1, 22.0.0]
 
 
 **Additional context**
-Add any other context about the problem here, i.e. a sample CSAF file.
+Add any other context about the problem here, i.e. a sample CSAF file, browser if you use WASM.

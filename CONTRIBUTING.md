@@ -110,7 +110,7 @@ Maintainers will confirm whether the feature fits the project scope before any i
 
 - **Auto-generated files must not be manually edited.** If your change requires regenerating schema types or test harnesses, run the appropriate generator and include the generated output in the same PR:
   ```bash
-  cd type-generator && cargo run -- --include-test-schema --create-test-definitions
+  cargo run -p type-generator
   ```
 
 - Commits authored by AI are not allowed (see [AI usage](#ai-usage).).
@@ -142,10 +142,10 @@ cargo fmt --all --check -- -l
 cargo clippy --all-targets -- -D warnings
 
 # Run all tests
-cargo test --verbose
+cargo test
 
 # Regenerate schema types (after schema changes)
-cd type-generator && cargo run -- --include-test-schema --create-test-definitions
+cargo run -p type-generator
 
 ```
 
@@ -182,10 +182,11 @@ Use the [Conventional Commits](https://www.conventionalcommits.org/) format:
 ```
 
 **Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`
+**Scopes:** should be cargo projects, but are optional, i.e. `csaf-rs`, `csaf-converter`, `csaf-ffi`, `csaf-result-json`, `csaf-validator`
 
 **Examples:**
 ```
-feat(validations): add test 6.1.27 for product version range checks
+feat(csaf-ffi): add GO bindings
 fix(csaf-rs): correct instance_path for nested product group references
 docs: update development setup in CONTRIBUTING.md
 chore: regenerate schema types after CSAF 2.1 schema update

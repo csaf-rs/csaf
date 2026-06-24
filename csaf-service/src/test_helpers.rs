@@ -8,24 +8,16 @@ use http::Request;
 use http_body_util::BodyExt;
 use tower::ServiceExt;
 
-use crate::handlers::get_preset_tests::get_preset_tests;
-use crate::handlers::get_presets::get_presets;
-use crate::handlers::get_tests::get_tests;
 use crate::handlers::health::health;
-use crate::handlers::legacy::{get_tests_legacy, validate_legacy};
-use crate::handlers::validate::validate;
+use crate::handlers::v1::{get_tests::get_tests, validate::validate};
 use crate::routes;
 
 /// Creates a router with all endpoints registered for testing.
 pub fn app() -> Router {
     Router::new()
-        .route(routes::PRESETS, get(get_presets))
-        .route(routes::TESTS, get(get_tests))
-        .route(routes::PRESET_TESTS, get(get_preset_tests))
-        .route(routes::VALIDATE, post(validate))
         .route(routes::HEALTH, get(health))
-        .route(routes::TESTS_LEGACY, get(get_tests_legacy))
-        .route(routes::VALIDATE_LEGACY, post(validate_legacy))
+        .route(routes::V1_TESTS, get(get_tests))
+        .route(routes::V1_VALIDATE, post(validate))
 }
 
 /// Sends a GET request to the given URI and returns the status and parsed JSON.

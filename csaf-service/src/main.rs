@@ -38,18 +38,18 @@ fn body_limit() -> usize {
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        handlers::get_presets::get_presets,
-        handlers::get_preset_tests::get_preset_tests,
-        handlers::get_tests::get_tests,
-        handlers::validate::validate,
+        //handlers::get_presets::get_presets,
+        //handlers::get_preset_tests::get_preset_tests,
+        //handlers::get_tests::get_tests,
+        //handlers::validate::validate,
         handlers::health::health,
         handlers::legacy::get_tests_legacy,
         handlers::legacy::validate_legacy,
     ),
     components(schemas(
-        PresetsResponse,
-        PresetTestsResponse,
-        TestsResponse,
+        //PresetsResponse,
+        //PresetTestsResponse,
+        //TestsResponse,
         ErrorResponse,
         //LegacyTestInPreset,
         //LegacyValidateBody,
@@ -91,10 +91,10 @@ async fn main() {
     // See https://docs.rs/tower-http/latest/tower_http/cors/struct.CorsLayer.html for details
 
     let app = Router::new()
-        .route(routes::PRESETS, get(get_presets))
-        .route(routes::TESTS, get(get_tests))
-        .route(routes::PRESET_TESTS, get(get_preset_tests))
-        .route(routes::VALIDATE, post(validate))
+        //.route(routes::PRESETS, get(get_presets))
+        //.route(routes::TESTS, get(get_tests))
+        //.route(routes::PRESET_TESTS, get(get_preset_tests))
+        //.route(routes::VALIDATE, post(validate))
         .route(routes::HEALTH, get(health))
         .route(routes::TESTS_LEGACY, get(get_tests_legacy))
         .route(routes::VALIDATE_LEGACY, post(validate_legacy))

@@ -1,4 +1,3 @@
-use axum::extract::Query;
 use axum::{Json, http::StatusCode};
 use csaf::csaf_traits::CsafVersion;
 use csaf::validation::{TestResultStatus, Validatable, ValidationResult, validate_by_tests};
@@ -9,62 +8,10 @@ use csaf::{
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-use crate::handlers::get_tests::{TestInPreset, tests_for_version};
+use crate::handlers::v1::errors::{ErrorResponse, error_response};
 
 type CsafDoc20 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>;
 type CsafDoc21 = csaf::csaf::raw::RawDocument<csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>;
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct LegacyTestsQuery {
-    pub version: Option<String>,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct LegacyErrorResponse {
-    pub error: String,
-    #[serde(rename = "statusCode")]
-    pub status_code: u16,
-    pub message: Option<String>,
-    pub code: String,
-}
-
-pub(crate) fn error_response(
-    status: StatusCode,
-    code: impl Into<String>,
-    message: impl Into<String>,
-) -> (StatusCode, Json<LegacyErrorResponse>) {
-    (
-        status,
-        Json(LegacyErrorResponse {
-            status_code: status.as_u16(),
-            error: status.to_string(),
-            message: Some(message.into()),
-            code: code.into(),
-        }),
-    )
-}
-
-/// Retrieve all tests.
-#[utoipa::path(
-    get,
-    path = "/api/v1/tests",
-    description = "Retrieve all tests for the requested CSAF version (2.0 by default). For each test, return the test number as well as the primary preset it belongs to.",
-    params(
-        ("version" = Option<String>, Query, description = "CSAF version (2.0 or 2.1). Defaults to 2.0."),
-    ),
-    responses(
-        (status = 200, description = "List of available tests", body = Vec<TestInPreset>),
-        (status = 404, description = "Invalid version", body = LegacyErrorResponse),
-    ),
-    tag = "meta"
-)]
-pub(crate) async fn get_tests_legacy(
-    Query(query): Query<LegacyTestsQuery>,
-) -> Result<Json<Vec<TestInPreset>>, (StatusCode, Json<LegacyErrorResponse>)> {
-    let version = CsafVersion::try_from(query.version.clone().unwrap_or_else(|| "2.0".to_string()))
-        .map_err(|e| error_response(StatusCode::NOT_FOUND, "INVALID_VERSION", e))?;
-    Ok(Json(tests_for_version(&version)))
-}
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 #[serde(tag = "type")]
@@ -76,7 +23,7 @@ pub(crate) enum TestOrPreset {
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub(crate) struct LegacyValidateBody {
+pub(crate) struct ValidateBody {
     pub tests: Vec<TestOrPreset>,
     pub document: serde_json::Value,
 }
@@ -84,35 +31,37 @@ pub(crate) struct LegacyValidateBody {
 /// Legacy validation response matching the secvisogram csaf-validator-service format.
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct LegacyValidateResponse {
+pub(crate) struct ValidateResponse {
     pub is_valid: bool,
-    pub tests: Vec<LegacyTestResult>,
+    pub tests: Vec<TestResult>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct LegacyTestResult {
+pub(crate) struct TestResult {
     pub name: String,
     pub is_valid: bool,
-    pub errors: Vec<LegacyFinding>,
-    pub warnings: Vec<LegacyFinding>,
-    pub infos: Vec<LegacyFinding>,
+    pub errors: Vec<Finding>,
+    pub warnings: Vec<Finding>,
+    pub infos: Vec<Finding>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct LegacyFinding {
+pub(crate) struct Finding {
     pub instance_path: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
 }
 
-fn to_legacy_response(result: ValidationResult) -> LegacyValidateResponse {
-    let tests: Vec<LegacyTestResult> = result
+fn to_legacy_response(result: ValidationResult) -> ValidateResponse {
+    let tests: Vec<TestResult> = result
         .test_results
         .into_iter()
         .map(|tr| {
-            let (is_valid, errors, warnings, infos) = match tr.status {
+            // ignore the is_valid flag from the TestResultStatus and instead compute it from the errors vector,
+            // since the legacy response format uses isValid = true if there are no errors, even if there are warnings or infos.
+            let (_, errors, warnings, infos) = match tr.status {
                 TestResultStatus::Success | TestResultStatus::Skipped => (true, vec![], vec![], vec![]),
                 TestResultStatus::NotFound => (false, vec![], vec![], vec![]),
                 TestResultStatus::Failure {
@@ -122,21 +71,21 @@ fn to_legacy_response(result: ValidationResult) -> LegacyValidateResponse {
                 } => {
                     let errors = errs
                         .into_iter()
-                        .map(|e| LegacyFinding {
+                        .map(|e| Finding {
                             instance_path: e.instance_path,
                             message: Some(e.message),
                         })
                         .collect();
                     let warnings = warns
                         .into_iter()
-                        .map(|w| LegacyFinding {
+                        .map(|w| Finding {
                             instance_path: w.instance_path,
                             message: Some(w.message),
                         })
                         .collect();
                     let infos = info_items
                         .into_iter()
-                        .map(|i| LegacyFinding {
+                        .map(|i| Finding {
                             instance_path: i.instance_path,
                             message: Some(i.message),
                         })
@@ -144,9 +93,9 @@ fn to_legacy_response(result: ValidationResult) -> LegacyValidateResponse {
                     (false, errors, warnings, infos)
                 },
             };
-            LegacyTestResult {
+            TestResult {
                 name: tr.test_id,
-                is_valid,
+                is_valid: errors.is_empty(),
                 errors,
                 warnings,
                 infos,
@@ -154,8 +103,8 @@ fn to_legacy_response(result: ValidationResult) -> LegacyValidateResponse {
         })
         .collect();
 
-    LegacyValidateResponse {
-        is_valid: result.success,
+    ValidateResponse {
+        is_valid: tests.iter().all(|t| t.is_valid),
         tests,
     }
 }
@@ -196,7 +145,7 @@ fn from_potential_legacy_name(name: &str) -> String {
     - full (extended & informative)<br/>
     ",
     request_body(
-        content = LegacyValidateBody,
+        content = ValidateBody,
         description = "Validation request with document and tests/presets",
         examples(
             ("Validate with a single test" = (
@@ -214,7 +163,7 @@ fn from_potential_legacy_name(name: &str) -> String {
         )
     ),
     responses(
-        (status = 200, description = "Validation result", body = LegacyValidateResponse,
+        (status = 200, description = "Validation result", body = ValidateResponse,
             examples(
                 ("Valid document" = (
                     summary = "All tests passed",
@@ -226,13 +175,13 @@ fn from_potential_legacy_name(name: &str) -> String {
                 ))
             )
         ),
-        (status = 400, description = "Invalid request", body = LegacyErrorResponse)
+        (status = 400, description = "Invalid request", body = ErrorResponse)
     ),
     tag = "validation"
 )]
-pub(crate) async fn validate_legacy(
-    Json(body): Json<LegacyValidateBody>,
-) -> Result<Json<LegacyValidateResponse>, (StatusCode, Json<LegacyErrorResponse>)> {
+pub(crate) async fn validate(
+    Json(body): Json<ValidateBody>,
+) -> Result<Json<ValidateResponse>, (StatusCode, Json<ErrorResponse>)> {
     let json_value = body.document;
 
     let version = {
@@ -319,78 +268,9 @@ mod tests {
 
     fn valid_csaf_2_0() -> serde_json::Value {
         let bytes = include_bytes!(
-            "../../../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
+            "../../../../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
         );
         serde_json::from_slice(bytes).unwrap()
-    }
-
-    #[tokio::test]
-    async fn validate_legacy_with_test() {
-        let body = serde_json::json!({
-            "tests": [{"type": "test", "name": "schema"}],
-            "document": valid_csaf_2_0()
-        });
-        let (status, json) = post_json(routes::VALIDATE_LEGACY, body).await;
-
-        assert_eq!(status, StatusCode::OK);
-        assert_eq!(json["isValid"], true);
-        assert!(!json["tests"].as_array().unwrap().is_empty());
-    }
-
-    #[tokio::test]
-    async fn validate_legacy_accepts_document_metadata_directly() {
-        let body = serde_json::json!({
-            "tests": [{"type": "test", "name": "schema"}],
-            "document": valid_csaf_2_0()
-        });
-        let (status, json) = post_json(routes::VALIDATE_LEGACY, body).await;
-
-        assert_eq!(status, StatusCode::OK);
-        assert_eq!(json["isValid"], true);
-    }
-
-    #[tokio::test]
-    async fn validate_legacy_with_preset() {
-        let body = serde_json::json!({
-            "tests": [{"type": "preset", "name": "basic"}],
-            "document": valid_csaf_2_0()
-        });
-        let (status, json) = post_json(routes::VALIDATE_LEGACY, body).await;
-
-        assert_eq!(status, StatusCode::OK);
-        assert_eq!(json["isValid"], true);
-    }
-
-    #[tokio::test]
-    async fn validate_legacy_response_structure() {
-        let body = serde_json::json!({
-            "tests": [{"type": "test", "name": "schema"}],
-            "document": valid_csaf_2_0()
-        });
-        let (status, json) = post_json(routes::VALIDATE_LEGACY, body).await;
-
-        assert_eq!(status, StatusCode::OK);
-        // Check legacy response shape
-        assert!(json["isValid"].is_boolean());
-        let tests = json["tests"].as_array().unwrap();
-        let test_result = &tests[0];
-        assert!(test_result["name"].is_string());
-        assert!(test_result["isValid"].is_boolean());
-        assert!(test_result["errors"].is_array());
-        assert!(test_result["warnings"].is_array());
-        assert!(test_result["infos"].is_array());
-    }
-
-    #[tokio::test]
-    async fn validate_legacy_invalid_document() {
-        let body = serde_json::json!({
-            "tests": [{"type": "test", "name": "schema"}],
-            "document": "not an object"
-        });
-        let (status, json) = post_json(routes::VALIDATE_LEGACY, body).await;
-
-        assert_eq!(status, StatusCode::BAD_REQUEST);
-        assert!(!json["error"].as_str().unwrap().is_empty());
     }
 
     #[test]
@@ -419,5 +299,74 @@ mod tests {
         let json = serde_json::json!({"type": "preset", "name": "basic"});
         let parsed: TestOrPreset = serde_json::from_value(json).unwrap();
         assert!(matches!(parsed, TestOrPreset::Preset { name } if name == "basic"));
+    }
+
+    #[tokio::test]
+    async fn validate_legacy_with_test() {
+        let body = serde_json::json!({
+            "tests": [{"type": "test", "name": "schema"}],
+            "document": valid_csaf_2_0()
+        });
+        let (status, json) = post_json(routes::V1_VALIDATE, body).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["isValid"], true);
+        assert!(!json["tests"].as_array().unwrap().is_empty());
+    }
+
+    #[tokio::test]
+    async fn validate_legacy_accepts_document_metadata_directly() {
+        let body = serde_json::json!({
+            "tests": [{"type": "test", "name": "schema"}],
+            "document": valid_csaf_2_0()
+        });
+        let (status, json) = post_json(routes::V1_VALIDATE, body).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["isValid"], true);
+    }
+
+    #[tokio::test]
+    async fn validate_legacy_with_preset() {
+        let body = serde_json::json!({
+            "tests": [{"type": "preset", "name": "basic"}],
+            "document": valid_csaf_2_0()
+        });
+        let (status, json) = post_json(routes::V1_VALIDATE, body).await;
+
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(json["isValid"], true);
+    }
+
+    #[tokio::test]
+    async fn validate_legacy_response_structure() {
+        let body = serde_json::json!({
+            "tests": [{"type": "test", "name": "schema"}],
+            "document": valid_csaf_2_0()
+        });
+        let (status, json) = post_json(routes::V1_VALIDATE, body).await;
+
+        assert_eq!(status, StatusCode::OK);
+        // Check legacy response shape
+        assert!(json["isValid"].is_boolean());
+        let tests = json["tests"].as_array().unwrap();
+        let test_result = &tests[0];
+        assert!(test_result["name"].is_string());
+        assert!(test_result["isValid"].is_boolean());
+        assert!(test_result["errors"].is_array());
+        assert!(test_result["warnings"].is_array());
+        assert!(test_result["infos"].is_array());
+    }
+
+    #[tokio::test]
+    async fn validate_legacy_invalid_document() {
+        let body = serde_json::json!({
+            "tests": [{"type": "test", "name": "schema"}],
+            "document": "not an object"
+        });
+        let (status, json) = post_json(routes::V1_VALIDATE, body).await;
+
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(!json["error"].as_str().unwrap().is_empty());
     }
 }

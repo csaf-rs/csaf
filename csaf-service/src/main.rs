@@ -1,4 +1,3 @@
-mod errors;
 mod handlers;
 mod routes;
 mod test_helpers;
@@ -11,13 +10,10 @@ use tower_http::trace::TraceLayer;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
-use crate::errors::ErrorResponse;
-use crate::handlers::get_preset_tests::*;
-use crate::handlers::get_presets::*;
-use crate::handlers::get_tests::*;
 use crate::handlers::health::*;
-use crate::handlers::legacy::*;
-use crate::handlers::validate::*;
+use crate::handlers::v1::errors::*;
+use crate::handlers::v1::get_tests::*;
+use crate::handlers::v1::validate::*;
 
 fn permissive_cors_enabled() -> bool {
     std::env::var("CSAF_SERVICE_PERMISSIVE_CORS")
@@ -38,25 +34,18 @@ fn body_limit() -> usize {
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        //handlers::get_presets::get_presets,
-        //handlers::get_preset_tests::get_preset_tests,
-        //handlers::get_tests::get_tests,
-        //handlers::validate::validate,
         handlers::health::health,
-        handlers::legacy::get_tests_legacy,
-        handlers::legacy::validate_legacy,
+        handlers::v1::get_tests::get_tests,
+        handlers::v1::validate::validate,
     ),
     components(schemas(
-        //PresetsResponse,
-        //PresetTestsResponse,
-        //TestsResponse,
         ErrorResponse,
-        //LegacyTestInPreset,
-        //LegacyValidateBody,
+        TestInPreset,
+        ValidateBody,
         TestOrPreset,
-        //LegacyValidateResponse,
-        //LegacyTestResult,
-        //LegacyFinding
+        ValidateResponse,
+        TestResult,
+        Finding
     )),
     tags(
         (name = "meta", description = "CSAF preset and test listing and details"),
@@ -65,7 +54,7 @@ fn body_limit() -> usize {
     ),
     info(
         title = "CSAF Validation API",
-        version = "0.4.1",
+        version = "0.5.1",
         description = "REST API for validating CSAF (Common Security Advisory Framework) documents against the OASIS CSAF standard. Uses csaf-rs under the hood."
     )
 )]
@@ -91,13 +80,9 @@ async fn main() {
     // See https://docs.rs/tower-http/latest/tower_http/cors/struct.CorsLayer.html for details
 
     let app = Router::new()
-        //.route(routes::PRESETS, get(get_presets))
-        //.route(routes::TESTS, get(get_tests))
-        //.route(routes::PRESET_TESTS, get(get_preset_tests))
-        //.route(routes::VALIDATE, post(validate))
         .route(routes::HEALTH, get(health))
-        .route(routes::TESTS_LEGACY, get(get_tests_legacy))
-        .route(routes::VALIDATE_LEGACY, post(validate_legacy))
+        .route(routes::V1_TESTS, get(get_tests))
+        .route(routes::V1_VALIDATE, post(validate))
         .merge(SwaggerUi::new("/openapi").url("/api/openapi.json", ApiDoc::openapi()))
         .layer(DefaultBodyLimit::max(body_limit()))
         .layer(cors_layer)

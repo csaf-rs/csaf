@@ -4,13 +4,17 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.88.0"
 publish = false
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+readme.workspace = true
 
 [[bin]]
 name = "csaf-service"
 path = "src/main.rs"
 
 [dependencies]
-csaf = { path = "../csaf-rs", package = "csaf-rs", version = "0.4.1", features = ["utoipa"] }
+csaf = { path = "../csaf-rs", package = "csaf-rs", version = "0.5.1", features = ["utoipa"] }
 axum = { version = "0.8", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }

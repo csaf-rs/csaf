@@ -50,22 +50,3 @@ pub async fn post_json(uri: &str, body: serde_json::Value) -> (StatusCode, serde
     let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
     (status, json)
 }
-
-/// Sends a POST request with raw bytes and returns the status and parsed JSON.
-pub async fn post_bytes(uri: &str, bytes: Vec<u8>) -> (StatusCode, serde_json::Value) {
-    let response = app()
-        .oneshot(
-            Request::builder()
-                .method("POST")
-                .uri(uri)
-                .header("content-type", "application/octet-stream")
-                .body(Body::from(bytes))
-                .unwrap(),
-        )
-        .await
-        .unwrap();
-    let status = response.status();
-    let body = response.into_body().collect().await.unwrap().to_bytes();
-    let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-    (status, json)
-}

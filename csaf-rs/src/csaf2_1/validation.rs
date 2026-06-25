@@ -1,8 +1,10 @@
+use std::fmt::Display;
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validation::{CsafError, TestResult, TestResultStatus, Validatable};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
 enum Severity {
     Error,
@@ -41,47 +43,153 @@ fn to_test_result(
     }
 }
 
+const PRESET_NAME_SCHEMA: &str = "schema";
+const PRESET_NAME_MANDATORY: &str = "mandatory";
+const PRESET_NAME_RECOMMENDED: &str = "recommended";
+const PRESET_NAME_INFORMATIVE: &str = "informative";
+const PRESET_NAME_BASIC: &str = "basic";
+const PRESET_NAME_EXTENDED: &str = "extended";
+const PRESET_NAME_FULL: &str = "full";
+const PRESET_NAME_EXTERNAL_REQUEST_FREE: &str = "external-request-free";
+const PRESET_NAME_CONSISTENT_REVISION_HISTORY: &str = "consistent-revision-history";
+const PRESET_NAME_CONSISTENT_DATETIMES: &str = "consistent-date-times";
+const PRESET_NAME_SSVC: &str = "ssvc";
+
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "kebab-case")]
+pub enum Preset {
+    Schema,
+    Mandatory,
+    Recommended,
+    Informative,
+    Basic,
+    Extended,
+    Full,
+    ExternalRequestFree,
+    ConsistentRevisionHistory,
+    ConsistentDateTimes,
+    Ssvc,
+}
+
+impl Preset {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Preset::Schema => PRESET_NAME_SCHEMA,
+            Preset::Mandatory => PRESET_NAME_MANDATORY,
+            Preset::Recommended => PRESET_NAME_RECOMMENDED,
+            Preset::Informative => PRESET_NAME_INFORMATIVE,
+            Preset::Basic => PRESET_NAME_BASIC,
+            Preset::Extended => PRESET_NAME_EXTENDED,
+            Preset::Full => PRESET_NAME_FULL,
+            Preset::ExternalRequestFree => PRESET_NAME_EXTERNAL_REQUEST_FREE,
+            Preset::ConsistentRevisionHistory => PRESET_NAME_CONSISTENT_REVISION_HISTORY,
+            Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATETIMES,
+            Preset::Ssvc => PRESET_NAME_SSVC,
+        }
+    }
+}
+
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+impl TryFrom<&str> for Preset {
+    type Error = CsafError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            PRESET_NAME_MANDATORY => Ok(Preset::Mandatory),
+            PRESET_NAME_RECOMMENDED => Ok(Preset::Recommended),
+            PRESET_NAME_INFORMATIVE => Ok(Preset::Informative),
+            PRESET_NAME_SCHEMA => Ok(Preset::Schema),
+            PRESET_NAME_BASIC => Ok(Preset::Basic),
+            PRESET_NAME_EXTENDED => Ok(Preset::Extended),
+            PRESET_NAME_FULL => Ok(Preset::Full),
+            PRESET_NAME_EXTERNAL_REQUEST_FREE => Ok(Preset::ExternalRequestFree),
+            PRESET_NAME_CONSISTENT_REVISION_HISTORY => Ok(Preset::ConsistentRevisionHistory),
+            PRESET_NAME_CONSISTENT_DATETIMES => Ok(Preset::ConsistentDateTimes),
+            PRESET_NAME_SSVC => Ok(Preset::Ssvc),
+            _ => Err(CsafError::InvalidPreset {
+                preset: value.to_string(),
+            }),
+        }
+    }
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
-        match preset {
-            "mandatory" => Some(mandatory_tests()),
-            "recommended" => Some(recommended_tests()),
-            "informative" => Some(informative_tests()),
-            "schema" => Some(vec!["schema"]),
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            "external-request-free" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat()
-                .into_iter()
-                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
-                .collect(),
-            ),
-            "consistent-revision-history" => Some(vec![
+    fn get_presets() -> Vec<&'static str> {
+        vec![
+            Preset::Schema.as_str(),
+            Preset::Mandatory.as_str(),
+            Preset::Recommended.as_str(),
+            Preset::Informative.as_str(),
+            Preset::Basic.as_str(),
+            Preset::Extended.as_str(),
+            Preset::Full.as_str(),
+            Preset::ExternalRequestFree.as_str(),
+            Preset::ConsistentRevisionHistory.as_str(),
+            Preset::ConsistentDateTimes.as_str(),
+            Preset::Ssvc.as_str(),
+        ]
+    }
+
+    fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
+        match Preset::try_from(preset) {
+            Ok(Preset::Schema) => Ok(vec![Preset::Schema.as_str()]),
+            Ok(Preset::Mandatory) => Ok(mandatory_tests()),
+            Ok(Preset::Recommended) => Ok(recommended_tests()),
+            Ok(Preset::Informative) => Ok(informative_tests()),
+            Ok(Preset::Basic) => Ok([vec![Preset::Schema.as_str()], mandatory_tests()].concat()),
+            Ok(Preset::Extended) => {
+                Ok([vec![Preset::Schema.as_str()], mandatory_tests(), recommended_tests()].concat())
+            },
+            Ok(Preset::Full) => Ok([
+                vec![Preset::Schema.as_str()],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()),
+            Ok(Preset::ExternalRequestFree) => Ok([
+                vec![Preset::Schema.as_str()],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()
+            .into_iter()
+            .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+            .collect()),
+            Ok(Preset::ConsistentRevisionHistory) => Ok(vec![
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
                 "6.2.33",
             ]),
-            "consistent-date-times" => Some(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
-            "ssvc" => Some(vec![
+            Ok(Preset::ConsistentDateTimes) => Ok(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            Ok(Preset::Ssvc) => Ok(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
-            _ => None,
+            Err(e) => Err(e),
         }
+    }
+
+    fn get_tests() -> Vec<(&'static str, &'static str)> {
+        vec![Preset::Schema.as_str()]
+            .into_iter()
+            .map(|id| (id, Preset::Schema.as_str()))
+            .chain(mandatory_tests().into_iter().map(|id| (id, Preset::Mandatory.as_str())))
+            .chain(
+                recommended_tests()
+                    .into_iter()
+                    .map(|id| (id, Preset::Recommended.as_str())),
+            )
+            .chain(
+                informative_tests()
+                    .into_iter()
+                    .map(|id| (id, Preset::Informative.as_str())),
+            )
+            .collect()
     }
 
     fn run_test(&self, test_id: &str) -> TestResult {
@@ -292,7 +400,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
-        if test_id == "schema" {
+        if test_id == Preset::Schema.as_str() {
             return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_1(self)));
         }
 

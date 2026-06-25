@@ -3,9 +3,10 @@
 //! This crate provides a foreign-function interface (FFI) layer on top of `csaf-rs`,
 //! enabling Go, WASM, and other language bindings via Mozilla UniFFI.
 
+use csaf::csaf_traits::CsafVersion;
 use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf::validation::validate_by_preset;
+use csaf::validation::{Validatable, validate_by_preset};
 
 pub mod document;
 pub mod types;
@@ -29,6 +30,21 @@ pub enum CsafError {
 
     #[error("Document load error: {message}")]
     LoadError { message: String },
+
+    #[error("Invalid validation preset: {message}")]
+    InvalidPreset { message: String },
+}
+
+impl From<csaf::validation::CsafError> for CsafError {
+    fn from(r: csaf::validation::CsafError) -> Self {
+        match r {
+            csaf::validation::CsafError::InvalidJson { message } => Self::InvalidJson { message },
+            csaf::validation::CsafError::InvalidPreset { preset } => Self::InvalidPreset { message: preset },
+            csaf::validation::CsafError::UnsupportedVersion { version } => Self::UnsupportedVersion { version },
+            csaf::validation::CsafError::LoadError { message } => Self::LoadError { message },
+            csaf::validation::CsafError::MissingVersion { message } => Self::MissingVersion { message },
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -79,6 +95,13 @@ pub struct ValidationResult {
     pub num_infos: u64,
     /// Total number of tests not found.
     pub num_not_found: u64,
+}
+
+/// A validation test and the primary preset it belongs to.
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct TestInPreset {
+    pub name: String,
+    pub preset: String,
 }
 
 // ---------------------------------------------------------------------------
@@ -183,7 +206,7 @@ pub fn validate_csaf(json_str: String, preset: String) -> Result<ValidationResul
         },
     };
 
-    Ok(result.into())
+    result.map_or_else(|e| Err(CsafError::from(e)), |f| Ok(ValidationResult::from(f)))
 }
 
 /// Validate a CSAF 2.0 document from a JSON string.
@@ -195,7 +218,7 @@ pub fn validate_csaf(json_str: String, preset: String) -> Result<ValidationResul
 #[uniffi::export]
 pub fn validate_csaf_2_0(json_str: String, preset: String) -> Result<ValidationResult, CsafError> {
     let doc = load_document_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
-    Ok(validate_by_preset(&doc, "2.0", &preset).into())
+    validate_by_preset(&doc, "2.0", &preset).map_or_else(|e| Err(CsafError::from(e)), |f| Ok(ValidationResult::from(f)))
 }
 
 /// Validate a CSAF 2.1 document from a JSON string.
@@ -207,7 +230,53 @@ pub fn validate_csaf_2_0(json_str: String, preset: String) -> Result<ValidationR
 #[uniffi::export]
 pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationResult, CsafError> {
     let doc = load_document_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
-    Ok(validate_by_preset(&doc, "2.1", &preset).into())
+    validate_by_preset(&doc, "2.1", &preset).map_or_else(|e| Err(CsafError::from(e)), |f| Ok(ValidationResult::from(f)))
+}
+
+/// Retrieve all available validation tests for a CSAF version.
+///
+/// For each test, returns the test number and the primary preset it belongs to.
+#[uniffi::export]
+pub fn get_tests(version: String) -> Result<Vec<TestInPreset>, CsafError> {
+    match CsafVersion::try_from(version.clone()) {
+        Ok(CsafVersion::X20) => Ok(
+            csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::get_tests()
+                .iter()
+                .map(|(name, preset)| TestInPreset {
+                    name: (*name).to_string(),
+                    preset: (*preset).to_string(),
+                })
+                .collect(),
+        ),
+        Ok(CsafVersion::X21) => Ok(
+            csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::get_tests()
+                .iter()
+                .map(|(name, preset)| TestInPreset {
+                    name: (*name).to_string(),
+                    preset: (*preset).to_string(),
+                })
+                .collect(),
+        ),
+        Err(_) => Err(CsafError::UnsupportedVersion { version }),
+    }
+}
+
+/// Retrieve the test IDs belonging to a preset for a CSAF version.
+#[uniffi::export]
+pub fn get_tests_in_preset(version: String, preset: String) -> Result<Vec<String>, CsafError> {
+    match CsafVersion::try_from(version.clone()) {
+        Ok(CsafVersion::X20) => {
+            csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::tests_in_preset(&preset)
+                .map(|tests| tests.into_iter().map(String::from).collect())
+                .map_err(CsafError::from)
+        },
+        Ok(CsafVersion::X21) => {
+            csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::tests_in_preset(&preset)
+                .map(|tests| tests.into_iter().map(String::from).collect())
+                .map_err(CsafError::from)
+        },
+        Err(_) => Err(CsafError::UnsupportedVersion { version }),
+    }
 }
 
 /// Validate a CSAF document from a JSON string and return the result as JSON.

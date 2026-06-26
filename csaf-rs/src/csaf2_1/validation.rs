@@ -227,11 +227,11 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.31" => None, // Some(ValidatorForTest6_2_31.validate(self)),
                 "6.2.32" => None, // Some(ValidatorForTest6_2_32.validate(self)),
                 "6.2.33" => Some(ValidatorForTest6_2_33.validate(self)),
-                "6.2.34" => None, // Some(ValidatorForTest6_2_34.validate(self)),
-                "6.2.35" => None, // Some(ValidatorForTest6_2_35.validate(self)),
-                "6.2.36" => None, // Some(ValidatorForTest6_2_36.validate(self)),
-                "6.2.37" => None, // Some(ValidatorForTest6_2_37.validate(self)),
-                "6.2.38" => Some(ValidatorForTest6_2_38.validate(self)),
+                "6.2.34" => None,   // Some(ValidatorForTest6_2_34.validate(self)),
+                "6.2.35" => None,   // Some(ValidatorForTest6_2_35.validate(self)),
+                "6.2.36" => None,   // Some(ValidatorForTest6_2_36.validate(self)),
+                "6.2.37" => None,   // Some(ValidatorForTest6_2_37.validate(self)),
+                "6.2.38" => None,   // see below in RawValidatable
                 "6.2.39.1" => None, // Some(ValidatorForTest6_2_39_1.validate(self)),
                 "6.2.39.2" => None, // Some(ValidatorForTest6_2_39_2.validate(self)),
                 "6.2.39.3" => None, // Some(ValidatorForTest6_2_39_3.validate(self)),
@@ -302,6 +302,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             match test_id {
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
+                "6.2.38" => Some(ValidatorForTest6_2_38.validate(self)),
                 _ => None,
             },
         )

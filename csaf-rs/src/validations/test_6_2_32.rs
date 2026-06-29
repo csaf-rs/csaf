@@ -10,7 +10,7 @@ fn generate_duplicate_helper_error(
     value: &str,
     product_id_1: &str,
     product_id_2: &str,
-    base_path: &str
+    base_path: &str,
 ) -> ValidationError {
     ValidationError {
         message: format!(
@@ -50,7 +50,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                                 &purl_str,
                                 existing_prod,
                                 &product_id,
-                                instance_path
+                                instance_path,
                             ));
                         }
                     } else {
@@ -69,7 +69,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                             &sku_str,
                             existing_prod,
                             &product_id,
-                            instance_path
+                            instance_path,
                         ));
                     }
                 } else {
@@ -88,7 +88,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                                 &sn_str,
                                 existing_prod,
                                 &product_id,
-                                instance_path
+                                instance_path,
                             ));
                         }
                     } else {
@@ -108,7 +108,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                                 &mn_str,
                                 existing_prod,
                                 &product_id,
-                                instance_path
+                                instance_path,
                             ));
                         }
                     } else {
@@ -136,7 +136,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                             &hash_str,
                             existing_prod,
                             &product_id,
-                            instance_path
+                            instance_path,
                         ));
                     }
                 } else {
@@ -169,18 +169,16 @@ mod tests {
                 "143-D-354",
                 "CSAFPID-908070601",
                 "CSAFPID-908070602",
-                "/product_tree/branches/0/branches/0/branches/1/product"
+                "/product_tree/branches/0/branches/0/branches/1/product",
             )]),
-
             // Case 02: Invalid - Model number collision across alternative branch layout
             Err(vec![generate_duplicate_helper_error(
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070601",
                 "CSAFPID-908070602",
-                "/product_tree/branches/0/branches/1/branches/0/product"
+                "/product_tree/branches/0/branches/1/branches/0/product",
             )]),
-
             // Case 03: Invalid - Model number collisions spanning flat full_product_names and relationships arrays
             Err(vec![
                 generate_duplicate_helper_error(
@@ -188,20 +186,18 @@ mod tests {
                     "143-D-354",
                     "CSAFPID-908070602",
                     "CSAFPID-908070603",
-                    "/product_tree/full_product_names/0" // Updated path
+                    "/product_tree/full_product_names/0", // Updated path
                 ),
                 generate_duplicate_helper_error(
                     "model_numbers",
                     "143-D-354",
                     "CSAFPID-908070602",
                     "CSAFPID-908070605",
-                    "/product_tree/relationships/0/full_product_name" // Updated path
+                    "/product_tree/relationships/0/full_product_name", // Updated path
                 ),
             ]),
-
             // Case 11: Valid - Unique metadata arrays per product tree item
             Ok(()),
-
             // Case 12: Valid - Shared model names but disjoint hardware signatures
             Ok(()),
         );

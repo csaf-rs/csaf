@@ -170,53 +170,6 @@ cd go
 go test -v ./csaf_ffi/
 ```
 
-As a demonstration there is a small CLI and Webserver example included.
-
-##### Cli
-
-```bash
-cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/example/ <PATH_TO_CSAF_FILE>
-```
-
-##### Web server (API)
-
-```bash
-cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/webapi/
-```
-
-The server listens on port `8082` by default. Set the `PORT` environment variable
-to use a different port:
-
-```bash
-PORT=9090 go run -buildvcs=false ./cmd/webapi/
-```
-
-*Endpoints*
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/tests` | Retrieve available tests with their primary preset |
-| `POST` | `/api/v1/validate` | Validate a CSAF document sent as a raw JSON body |
-
-- `GET /api/v1/tests` accepts the optional query parameter `?version=2.0` (default) or `?version=2.1`.
-- `POST /api/v1/validate` accepts a JSON body with `tests` and a CSAF `document` metadata object.
-
-*Example:*
-
-```bash
-curl -X POST http://localhost:8082/api/v1/validate \
-  -H 'Content-Type: application/json' \
-  --data-binary '{
-    "tests": [{ "type": "preset", "name": "basic" }],
-    "document": {
-      "category": "csaf_base",
-      "csaf_version": "2.0"
-    }
-  }'
-```
-
 #### WASM
 
 The WASM bindings are generated via [uniffi-bindgen-js](https://crates.io/crates/uniffi-bindgen-js).

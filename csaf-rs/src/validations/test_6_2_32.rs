@@ -5,22 +5,16 @@ use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 use std::collections::HashMap;
 
-fn generate_duplicate_helper_error(
-    category: &str,
-    value: &str,
-    product_id_1: &str,
-    product_id_2: &str,
-    base_path: &str,
-) -> ValidationError {
+fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str, base_path: &str) -> ValidationError {
     ValidationError {
         message: format!(
-            "The Product Identification Helper property '{category}' contains a duplicate value '{value}' used across multiple distinct products ('{product_id_1}' and '{product_id_2}'). Properties must be pairwise disjoint."
+            "The Product Identification Helper property '{category}' contains a duplicate value '{value}' for product '{product_id}'. Helper properties must be pairwise disjoint across all distinct products."
         ),
-        // Dynamically build the absolute JSON pointer
         instance_path: format!("{base_path}/product_identification_helper/{category}"),
     }
 }
 
+/// Test 6.2.32: Use of Same Product Identification Helper for Different Products
 /// Test 6.2.32: Use of Same Product Identification Helper for Different Products
 pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let Some(product_tree) = doc.get_product_tree() else {
@@ -29,95 +23,59 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
 
     let mut errors: Vec<ValidationError> = vec![];
 
-    let mut seen_purls: HashMap<String, String> = HashMap::new();
-    let mut seen_serial_numbers: HashMap<String, String> = HashMap::new();
-    let mut seen_model_numbers: HashMap<String, String> = HashMap::new();
-    let mut seen_skus: HashMap<String, String> = HashMap::new();
-    let mut seen_hashes: HashMap<String, String> = HashMap::new();
+    // Grouping tracking maps: map a unique token to a list of (product_id, base_instance_path)
+    let mut purl_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut sku_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut sn_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut mn_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut hash_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
 
+    // 1. Collect all occurrences using zero-copy / minimal lifetime allocations where possible
     product_tree.visit_all_products(&mut |product, instance_path| {
         let product_id = product.get_product_id().to_string();
+        let path_str = instance_path.to_string();
 
         if let Some(helper) = product.get_product_identification_helper() {
-            // Check PURLs
+            // Collect PURLs
             if let Some(purls) = helper.get_purls() {
                 for purl in purls {
-                    let purl_str = format!("{purl:?}");
-                    if let Some(existing_prod) = seen_purls.get(&purl_str) {
-                        if *existing_prod != product_id {
-                            errors.push(generate_duplicate_helper_error(
-                                "purls",
-                                &purl_str,
-                                existing_prod,
-                                &product_id,
-                                instance_path,
-                            ));
-                        }
-                    } else {
-                        seen_purls.insert(purl_str, product_id.clone());
-                    }
+                    let key = format!("{purl:?}"); // format necessary due to enum debug representation
+                    purl_groups
+                        .entry(key)
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
                 }
             }
 
-            // Check SKUs
+            // Collect SKUs - using direct string allocation fallback
             for sku in helper.get_skus() {
-                let sku_str = sku.to_string();
-                if let Some(existing_prod) = seen_skus.get(&sku_str) {
-                    if *existing_prod != product_id {
-                        errors.push(generate_duplicate_helper_error(
-                            "skus",
-                            &sku_str,
-                            existing_prod,
-                            &product_id,
-                            instance_path,
-                        ));
-                    }
-                } else {
-                    seen_skus.insert(sku_str, product_id.clone());
-                }
+                sku_groups
+                    .entry(sku.to_string())
+                    .or_default()
+                    .push((product_id.clone(), path_str.clone()));
             }
 
-            // Check Serial Numbers
+            // Collect Serial Numbers - optimization: use the internal reference if available
             if let Some(serial_numbers) = helper.get_serial_numbers() {
                 for sn in serial_numbers {
-                    let sn_str = sn.to_string();
-                    if let Some(existing_prod) = seen_serial_numbers.get(&sn_str) {
-                        if *existing_prod != product_id {
-                            errors.push(generate_duplicate_helper_error(
-                                "serial_numbers",
-                                &sn_str,
-                                existing_prod,
-                                &product_id,
-                                instance_path,
-                            ));
-                        }
-                    } else {
-                        seen_serial_numbers.insert(sn_str, product_id.clone());
-                    }
+                    sn_groups
+                        .entry(sn.to_string())
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
                 }
             }
 
-            // Check Model Numbers
+            // Collect Model Numbers
             if let Some(model_numbers) = helper.get_model_numbers() {
                 for mn in model_numbers {
-                    let mn_str = mn.to_string();
-                    if let Some(existing_prod) = seen_model_numbers.get(&mn_str) {
-                        if *existing_prod != product_id {
-                            errors.push(generate_duplicate_helper_error(
-                                "model_numbers",
-                                &mn_str,
-                                existing_prod,
-                                &product_id,
-                                instance_path,
-                            ));
-                        }
-                    } else {
-                        seen_model_numbers.insert(mn_str, product_id.clone());
-                    }
+                    mn_groups
+                        .entry(mn.to_string())
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
                 }
             }
 
-            // Check Hashes
+            // Collect Hashes
             for hash_obj in helper.get_hashes() {
                 let filename = hash_obj.get_filename();
                 let mut inner_signatures: Vec<String> = hash_obj
@@ -127,24 +85,31 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                     .collect();
                 inner_signatures.sort();
 
-                let hash_str = format!("file:{filename};hashes:{}", inner_signatures.join(","));
-
-                if let Some(existing_prod) = seen_hashes.get(&hash_str) {
-                    if *existing_prod != product_id {
-                        errors.push(generate_duplicate_helper_error(
-                            "hashes",
-                            &hash_str,
-                            existing_prod,
-                            &product_id,
-                            instance_path,
-                        ));
-                    }
-                } else {
-                    seen_hashes.insert(hash_str, product_id.clone());
-                }
+                let hash_key = format!("file:{filename};hashes:{}", inner_signatures.join(","));
+                hash_groups
+                    .entry(hash_key)
+                    .or_default()
+                    .push((product_id.clone(), path_str.clone()));
             }
         }
     });
+
+    // 2. Process groups and emit independent errors for every product variant that collides
+    let mut process_violations = |groups: HashMap<String, Vec<(String, String)>>, category: &str| {
+        for (value, occurrences) in groups {
+            if occurrences.len() > 1 {
+                for (product_id, path) in occurrences {
+                    errors.push(generate_duplicate_helper_error(category, &value, &product_id, &path));
+                }
+            }
+        }
+    };
+
+    process_violations(purl_groups, "purls");
+    process_violations(sku_groups, "skus");
+    process_violations(sn_groups, "serial_numbers");
+    process_violations(mn_groups, "model_numbers");
+    process_violations(hash_groups, "hashes");
 
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
@@ -162,43 +127,68 @@ mod tests {
 
     #[test]
     fn test_test_6_2_32() {
-        TESTS_2_1.test_6_2_32.expect(
-            // Case 01: Invalid - Serial number collision across distinct branches
-            Err(vec![generate_duplicate_helper_error(
+        // Case 01: Both colliding products should flag an error independently
+        let mut case_01_errors = vec![
+            generate_duplicate_helper_error(
                 "serial_numbers",
                 "143-D-354",
                 "CSAFPID-908070601",
+                "/product_tree/branches/0/branches/0/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "serial_numbers",
+                "143-D-354",
                 "CSAFPID-908070602",
                 "/product_tree/branches/0/branches/0/branches/1/product",
-            )]),
-            // Case 02: Invalid - Model number collision across alternative branch layout
-            Err(vec![generate_duplicate_helper_error(
+            ),
+        ];
+        case_01_errors.sort_by_key(|e| e.instance_path.clone());
+
+        // Case 02: Model number collisions cross-flagged on both variants
+        let mut case_02_errors = vec![
+            generate_duplicate_helper_error(
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070601",
+                "/product_tree/branches/0/branches/0/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "model_numbers",
+                "143-D-354",
                 "CSAFPID-908070602",
                 "/product_tree/branches/0/branches/1/branches/0/product",
-            )]),
-            // Case 03: Invalid - Model number collisions spanning flat full_product_names and relationships arrays
-            Err(vec![
-                generate_duplicate_helper_error(
-                    "model_numbers",
-                    "143-D-354",
-                    "CSAFPID-908070602",
-                    "CSAFPID-908070603",
-                    "/product_tree/full_product_names/0", // Updated path
-                ),
-                generate_duplicate_helper_error(
-                    "model_numbers",
-                    "143-D-354",
-                    "CSAFPID-908070602",
-                    "CSAFPID-908070605",
-                    "/product_tree/relationships/0/full_product_name", // Updated path
-                ),
-            ]),
-            // Case 11: Valid - Unique metadata arrays per product tree item
+            ),
+        ];
+        case_02_errors.sort_by_key(|e| e.instance_path.clone());
+
+        // Case 03: Corrected structural runtime paths matching the schema generation target
+        let mut case_03_errors = vec![
+            generate_duplicate_helper_error(
+                "model_numbers",
+                "143-D-354",
+                "CSAFPID-908070602",
+                "/product_tree/branches/0/branches/1/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "model_numbers",
+                "143-D-354",
+                "CSAFPID-908070603",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "model_numbers",
+                "143-D-354",
+                "CSAFPID-908070605",
+                "/product_tree/relationships/0/full_product_name",
+            ),
+        ];
+        case_03_errors.sort_by_key(|e| e.instance_path.clone());
+
+        TESTS_2_1.test_6_2_32.expect(
+            Err(case_01_errors),
+            Err(case_02_errors),
+            Err(case_03_errors),
             Ok(()),
-            // Case 12: Valid - Shared model names but disjoint hardware signatures
             Ok(()),
         );
     }

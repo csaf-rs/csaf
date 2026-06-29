@@ -1,8 +1,10 @@
+use std::fmt::Display;
+
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validation::{CsafError, TestResult, TestResultStatus, Validatable};
 use crate::validations::test_schema::validate_schema_csaf_2_0;
 
 enum Severity {
@@ -42,22 +44,131 @@ fn to_test_result(
     }
 }
 
-impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
-        match preset {
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            _ => None,
+const PRESET_NAME_SCHEMA: &str = "schema";
+const PRESET_NAME_MANDATORY: &str = "mandatory";
+const PRESET_NAME_OPTIONAL: &str = "optional";
+const PRESET_NAME_INFORMATIVE: &str = "informative";
+const PRESET_NAME_BASIC: &str = "basic";
+const PRESET_NAME_EXTENDED: &str = "extended";
+const PRESET_NAME_FULL: &str = "full";
+
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum Preset {
+    Schema,
+    Mandatory,
+    Optional,
+    Informative,
+    Basic,
+    Extended,
+    Full,
+}
+
+impl Preset {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Preset::Schema => PRESET_NAME_SCHEMA,
+            Preset::Mandatory => PRESET_NAME_MANDATORY,
+            Preset::Optional => PRESET_NAME_OPTIONAL,
+            Preset::Informative => PRESET_NAME_INFORMATIVE,
+            Preset::Basic => PRESET_NAME_BASIC,
+            Preset::Extended => PRESET_NAME_EXTENDED,
+            Preset::Full => PRESET_NAME_FULL,
         }
+    }
+}
+
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl TryFrom<&str> for Preset {
+    type Error = CsafError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            PRESET_NAME_SCHEMA => Ok(Preset::Schema),
+            PRESET_NAME_MANDATORY => Ok(Preset::Mandatory),
+            PRESET_NAME_OPTIONAL => Ok(Preset::Optional),
+            PRESET_NAME_INFORMATIVE => Ok(Preset::Informative),
+            PRESET_NAME_BASIC => Ok(Preset::Basic),
+            PRESET_NAME_EXTENDED => Ok(Preset::Extended),
+            PRESET_NAME_FULL => Ok(Preset::Full),
+            other => Err(CsafError::InvalidPreset {
+                preset: other.to_string(),
+            }),
+        }
+    }
+}
+
+impl Validatable for CommonSecurityAdvisoryFramework {
+    fn get_presets() -> Vec<&'static str> {
+        vec![
+            Preset::Schema.as_str(),
+            Preset::Mandatory.as_str(),
+            Preset::Optional.as_str(),
+            Preset::Informative.as_str(),
+            Preset::Basic.as_str(),
+            Preset::Extended.as_str(),
+            Preset::Full.as_str(),
+        ]
+    }
+
+    fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
+        match Preset::try_from(preset) {
+            Ok(Preset::Schema) => Ok(vec![Preset::Schema.as_str()]),
+            Ok(Preset::Mandatory) => Ok(mandatory_tests()),
+            Ok(Preset::Optional) => Ok(recommended_tests()),
+            Ok(Preset::Informative) => Ok(informative_tests()),
+            Ok(Preset::Basic) => Ok([vec![Preset::Schema.as_str()], mandatory_tests()].concat()),
+            Ok(Preset::Extended) => {
+                Ok([vec![Preset::Schema.as_str()], mandatory_tests(), recommended_tests()].concat())
+            },
+            Ok(Preset::Full) => Ok([
+                vec![Preset::Schema.as_str()],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()),
+            Err(err) => Err(err),
+        }
+    }
+
+    fn get_tests() -> Vec<(&'static str, &'static str)> {
+        let mut tests =
+            Vec::with_capacity(1 + MANDATORY_TESTS.len() + RECOMMENDED_TESTS.len() + INFORMATIVE_TESTS.len());
+
+        tests.push((Preset::Schema.as_str(), Preset::Schema.as_str()));
+        tests.extend(
+            MANDATORY_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Mandatory.as_str())),
+        );
+        tests.extend(
+            RECOMMENDED_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Optional.as_str())),
+        );
+        tests.extend(
+            INFORMATIVE_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Informative.as_str())),
+        );
+
+        tests
+    }
+
+    fn has_test(test_id: &str) -> bool {
+        test_id == Preset::Schema.as_str()
+            || MANDATORY_TESTS.contains(&test_id)
+            || RECOMMENDED_TESTS.contains(&test_id)
+            || INFORMATIVE_TESTS.contains(&test_id)
     }
 
     fn run_test(&self, test_id: &str) -> TestResult {
@@ -185,7 +296,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
-        if test_id == "schema" {
+        if test_id == PRESET_NAME_SCHEMA {
             return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_0(self)));
         }
 

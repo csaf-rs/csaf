@@ -90,9 +90,17 @@ where
     let test_ids: Vec<_> = args
         .test
         .iter()
-        .flat_map(|test_or_preset| match T::tests_in_preset(test_or_preset) {
-            Some(test_ids) => test_ids,
-            None => vec![test_or_preset.as_str()],
+        .flat_map(|test_or_preset| {
+            let presets = T::get_presets();
+            // Try to find a matching preset for the document version
+            let matched_preset = presets
+                .iter()
+                .find(|p| p.to_string().eq_ignore_ascii_case(test_or_preset));
+            match matched_preset {
+                Some(preset) => T::tests_in_preset(preset).unwrap_or_default(),
+                // no matching preset found, treat the argument as a test ID
+                None => vec![test_or_preset.as_str()],
+            }
         })
         .collect();
 

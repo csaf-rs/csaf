@@ -167,9 +167,11 @@ pub fn validate_by_tests(target: &impl Validatable, version: &str, test_ids: &[&
     let mut num_infos: usize = 0;
     let mut num_not_found: usize = 0;
 
-    // Loop through tests and gather all results and errors
+    // Loop through tests and gather all results and errors.
+    // Call run_test directly — test IDs here are already validated, so the
+    // has_test guard in validate_by_test would be redundant overhead.
     for test_id in test_ids {
-        let test_result = validate_by_test(target, test_id);
+        let test_result = target.run_test(test_id);
         match &test_result.status {
             Failure {
                 errors,

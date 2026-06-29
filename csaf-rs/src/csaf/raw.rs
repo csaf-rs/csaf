@@ -72,6 +72,10 @@ where
         T::Parsed::get_tests()
     }
 
+    fn has_test(test_id: &str) -> bool {
+        T::Parsed::has_test(test_id)
+    }
+
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult {
         let raw_result = self::RawValidatable::run_raw_test(self, test_id);

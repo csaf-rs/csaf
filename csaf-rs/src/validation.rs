@@ -135,6 +135,11 @@ pub trait Validatable {
     /// This can be used to list all available tests and their presets for a given version.
     fn get_tests() -> Vec<(&'static str, &'static str)>;
 
+    /// Return whether a test ID exists for this version.
+    fn has_test(test_id: &str) -> bool {
+        Self::get_tests().iter().any(|(id, _)| *id == test_id)
+    }
+
     /// Runs a test by test ID
     fn run_test(&self, test_id: &str) -> TestResult;
 }
@@ -145,7 +150,7 @@ pub trait Validatable {
 /// tests. If it does, it will execute the test function and return the result.
 /// If not, it will return a TestResult indicating that the test was not found.
 pub fn validate_by_test<V: Validatable>(target: &V, test_id: &str) -> TestResult {
-    if !V::get_tests().iter().any(|(id, _)| *id == test_id) {
+    if !V::has_test(test_id) {
         return TestResult {
             test_id: test_id.to_string(),
             status: TestResultStatus::NotFound,

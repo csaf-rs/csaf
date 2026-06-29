@@ -138,21 +138,37 @@ impl Validatable for CommonSecurityAdvisoryFramework {
     }
 
     fn get_tests() -> Vec<(&'static str, &'static str)> {
-        vec![Preset::Schema.as_str()]
-            .into_iter()
-            .map(|id| (id, Preset::Schema.as_str()))
-            .chain(mandatory_tests().into_iter().map(|id| (id, Preset::Mandatory.as_str())))
-            .chain(
-                recommended_tests()
-                    .into_iter()
-                    .map(|id| (id, Preset::Optional.as_str())),
-            )
-            .chain(
-                informative_tests()
-                    .into_iter()
-                    .map(|id| (id, Preset::Informative.as_str())),
-            )
-            .collect()
+        let mut tests =
+            Vec::with_capacity(1 + MANDATORY_TESTS.len() + RECOMMENDED_TESTS.len() + INFORMATIVE_TESTS.len());
+
+        tests.push((Preset::Schema.as_str(), Preset::Schema.as_str()));
+        tests.extend(
+            MANDATORY_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Mandatory.as_str())),
+        );
+        tests.extend(
+            RECOMMENDED_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Optional.as_str())),
+        );
+        tests.extend(
+            INFORMATIVE_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Informative.as_str())),
+        );
+
+        tests
+    }
+
+    fn has_test(test_id: &str) -> bool {
+        test_id == Preset::Schema.as_str()
+            || MANDATORY_TESTS.contains(&test_id)
+            || RECOMMENDED_TESTS.contains(&test_id)
+            || INFORMATIVE_TESTS.contains(&test_id)
     }
 
     fn run_test(&self, test_id: &str) -> TestResult {

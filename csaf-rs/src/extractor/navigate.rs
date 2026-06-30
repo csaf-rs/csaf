@@ -61,75 +61,75 @@ impl<Source: Extractor> AtPath<Source> {
 }
 
 impl<Source: Extractor> Extractor for AtPath<Source> {
-    fn keyed_primitive(&mut self, name: &str, primitive: &serde_json::Value) {
+    fn keyed_primitive(&mut self, path: &[String], name: &str, primitive: &serde_json::Value) {
         if self.should_forward() {
-            self.source.keyed_primitive(name, primitive);
+            self.source.keyed_primitive(path, name, primitive);
         }
     }
 
-    fn enter_keyed_object(&mut self, name: &str) -> bool {
+    fn enter_keyed_object(&mut self, path: &[String], name: &str) -> bool {
         if self.enter(name) && self.should_forward() {
-            self.source.enter_keyed_object(name)
+            self.source.enter_keyed_object(path, name)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_keyed_object(&mut self, name: &str) {
+    fn leave_keyed_object(&mut self, path: &[String], name: &str) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_keyed_object(name)
+            self.source.leave_keyed_object(path, name)
         }
     }
 
-    fn enter_keyed_array(&mut self, name: &str) -> bool {
+    fn enter_keyed_array(&mut self, path: &[String], name: &str) -> bool {
         if self.enter(name) && self.should_forward() {
-            self.source.enter_keyed_array(name)
+            self.source.enter_keyed_array(path, name)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_keyed_array(&mut self, name: &str) {
+    fn leave_keyed_array(&mut self, path: &[String], name: &str) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_keyed_array(name)
+            self.source.leave_keyed_array(path, name)
         }
     }
 
-    fn indexed_primitive(&mut self, index: usize, primitive: &serde_json::Value) {
+    fn indexed_primitive(&mut self, path: &[String], index: usize, primitive: &serde_json::Value) {
         if self.should_forward() {
-            self.source.indexed_primitive(index, primitive);
+            self.source.indexed_primitive(path, index, primitive);
         }
     }
 
-    fn enter_indexed_object(&mut self, index: usize) -> bool {
+    fn enter_indexed_object(&mut self, path: &[String], index: usize) -> bool {
         if self.enter(index.to_string().as_str()) && self.should_forward() {
-            self.source.enter_indexed_object(index)
+            self.source.enter_indexed_object(path, index)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_indexed_object(&mut self, index: usize) {
+    fn leave_indexed_object(&mut self, path: &[String], index: usize) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_indexed_object(index)
+            self.source.leave_indexed_object(path, index)
         }
     }
 
-    fn enter_indexed_array(&mut self, index: usize) -> bool {
+    fn enter_indexed_array(&mut self, path: &[String], index: usize) -> bool {
         if self.enter(index.to_string().as_str()) && self.should_forward() {
-            self.source.enter_indexed_array(index)
+            self.source.enter_indexed_array(path, index)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_indexed_array(&mut self, index: usize) {
+    fn leave_indexed_array(&mut self, path: &[String], index: usize) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_indexed_array(index)
+            self.source.leave_indexed_array(path, index)
         }
     }
 }

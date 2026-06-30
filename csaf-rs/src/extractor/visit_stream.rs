@@ -22,13 +22,18 @@ impl<'de, 'v, 'w> Visitor<'de> for RootObjectSeed<'v, 'w> {
         write!(f, "a JSON object")
     }
     fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<(), A::Error> {
-        visit_object(&mut map, self.visitors)
+        visit_object(&mut vec![], &mut map, self.visitors)
     }
 }
 
-fn visit_object<'de, A: MapAccess<'de>>(map: &mut A, visitors: &mut [&mut dyn Extractor]) -> Result<(), A::Error> {
+fn visit_object<'de, A: MapAccess<'de>>(
+    path: &mut Vec<String>,
+    map: &mut A,
+    visitors: &mut [&mut dyn Extractor],
+) -> Result<(), A::Error> {
     while let Some(key) = map.next_key::<String>()? {
         map.next_value_seed(KeyedValueSeed {
+            path,
             key: &key,
             visitors: &mut *visitors,
         })?;
@@ -43,10 +48,15 @@ fn drain_map<'de, A: MapAccess<'de>>(map: &mut A) -> Result<(), A::Error> {
     Ok(())
 }
 
-fn visit_array<'de, A: SeqAccess<'de>>(seq: &mut A, visitors: &mut [&mut dyn Extractor]) -> Result<(), A::Error> {
+fn visit_array<'de, A: SeqAccess<'de>>(
+    path: &mut Vec<String>,
+    seq: &mut A,
+    visitors: &mut [&mut dyn Extractor],
+) -> Result<(), A::Error> {
     let mut index = 0usize;
     loop {
         let element = seq.next_element_seed(IndexedValueSeed {
+            path,
             index,
             visitors: &mut *visitors,
         })?;
@@ -63,162 +73,196 @@ fn drain_array<'de, A: SeqAccess<'de>>(seq: &mut A) -> Result<(), A::Error> {
     Ok(())
 }
 
-fn emit_keyed(key: &str, value: &serde_json::Value, visitors: &mut [&mut dyn Extractor]) {
+fn emit_keyed(path: &[String], key: &str, value: &serde_json::Value, visitors: &mut [&mut dyn Extractor]) {
     for v in visitors.iter_mut() {
-        v.keyed_primitive(key, value);
+        v.keyed_primitive(path, key, value);
     }
 }
 
-fn emit_indexed(index: usize, value: &serde_json::Value, visitors: &mut [&mut dyn Extractor]) {
+fn emit_indexed(path: &[String], index: usize, value: &serde_json::Value, visitors: &mut [&mut dyn Extractor]) {
     for v in visitors.iter_mut() {
-        v.indexed_primitive(index, value);
+        v.indexed_primitive(path, index, value);
     }
 }
 
-struct KeyedValueSeed<'k, 'v, 'w> {
+struct KeyedValueSeed<'k, 'p, 'v, 'w> {
+    path: &'p mut Vec<String>,
     key: &'k str,
     visitors: &'v mut [&'w mut dyn Extractor],
 }
 
-impl<'de, 'k, 'v, 'w> DeserializeSeed<'de> for KeyedValueSeed<'k, 'v, 'w> {
+impl<'de, 'k, 'p, 'v, 'w> DeserializeSeed<'de> for KeyedValueSeed<'k, 'p, 'v, 'w> {
     type Value = ();
     fn deserialize<D: serde::Deserializer<'de>>(self, deserializer: D) -> Result<(), D::Error> {
         deserializer.deserialize_any(self)
     }
 }
 
-impl<'de, 'k, 'v, 'w> Visitor<'de> for KeyedValueSeed<'k, 'v, 'w> {
+impl<'de, 'k, 'p, 'v, 'w> Visitor<'de> for KeyedValueSeed<'k, 'p, 'v, 'w> {
     type Value = ();
     fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "a JSON value")
     }
     fn visit_unit<E: serde::de::Error>(self) -> Result<(), E> {
-        emit_keyed(self.key, &serde_json::Value::Null, self.visitors);
+        emit_keyed(self.path, self.key, &serde_json::Value::Null, self.visitors);
         Ok(())
     }
     fn visit_bool<E: serde::de::Error>(self, v: bool) -> Result<(), E> {
-        emit_keyed(self.key, &serde_json::Value::Bool(v), self.visitors);
+        emit_keyed(self.path, self.key, &serde_json::Value::Bool(v), self.visitors);
         Ok(())
     }
     fn visit_i64<E: serde::de::Error>(self, v: i64) -> Result<(), E> {
-        emit_keyed(self.key, &serde_json::Value::Number(v.into()), self.visitors);
+        emit_keyed(self.path, self.key, &serde_json::Value::Number(v.into()), self.visitors);
         Ok(())
     }
     fn visit_u64<E: serde::de::Error>(self, v: u64) -> Result<(), E> {
-        emit_keyed(self.key, &serde_json::Value::Number(v.into()), self.visitors);
+        emit_keyed(self.path, self.key, &serde_json::Value::Number(v.into()), self.visitors);
         Ok(())
     }
     fn visit_f64<E: serde::de::Error>(self, v: f64) -> Result<(), E> {
         // serde_json never produces NaN/Inf from valid JSON input
         let num = serde_json::Number::from_f64(v).unwrap_or_else(|| 0i64.into());
-        emit_keyed(self.key, &serde_json::Value::Number(num), self.visitors);
+        emit_keyed(self.path, self.key, &serde_json::Value::Number(num), self.visitors);
         Ok(())
     }
     fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<(), E> {
-        emit_keyed(self.key, &serde_json::Value::String(v.to_owned()), self.visitors);
+        emit_keyed(
+            self.path,
+            self.key,
+            &serde_json::Value::String(v.to_owned()),
+            self.visitors,
+        );
         Ok(())
     }
     fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<(), A::Error> {
         let mut interesting = false;
         for v in self.visitors.iter_mut() {
-            interesting |= v.enter_keyed_object(self.key);
+            interesting |= v.enter_keyed_object(self.path, self.key);
         }
         let result = if interesting {
-            visit_object(&mut map, self.visitors)
+            self.path.push(self.key.to_string());
+            let ret = visit_object(self.path, &mut map, self.visitors);
+            self.path.pop();
+            ret
         } else {
             drain_map(&mut map)
         };
         for v in self.visitors.iter_mut() {
-            v.leave_keyed_object(self.key);
+            v.leave_keyed_object(self.path, self.key);
         }
         result
     }
     fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<(), A::Error> {
         let mut interesting = false;
         for v in self.visitors.iter_mut() {
-            interesting |= v.enter_keyed_array(self.key);
+            interesting |= v.enter_keyed_array(self.path, self.key);
         }
         let result = if interesting {
-            visit_array(&mut seq, self.visitors)
+            self.path.push(self.key.to_string());
+            let ret = visit_array(self.path, &mut seq, self.visitors);
+            self.path.pop();
+            ret
         } else {
             drain_array(&mut seq)
         };
         for v in self.visitors.iter_mut() {
-            v.leave_keyed_array(self.key);
+            v.leave_keyed_array(self.path, self.key);
         }
         result
     }
 }
 
-struct IndexedValueSeed<'v, 'w> {
+struct IndexedValueSeed<'p, 'v, 'w> {
+    path: &'p mut Vec<String>,
     index: usize,
     visitors: &'v mut [&'w mut dyn Extractor],
 }
 
-impl<'de, 'v, 'w> DeserializeSeed<'de> for IndexedValueSeed<'v, 'w> {
+impl<'de, 'p, 'v, 'w> DeserializeSeed<'de> for IndexedValueSeed<'p, 'v, 'w> {
     type Value = ();
     fn deserialize<D: serde::Deserializer<'de>>(self, deserializer: D) -> Result<(), D::Error> {
         deserializer.deserialize_any(self)
     }
 }
 
-impl<'de, 'v, 'w> Visitor<'de> for IndexedValueSeed<'v, 'w> {
+impl<'de, 'p, 'v, 'w> Visitor<'de> for IndexedValueSeed<'p, 'v, 'w> {
     type Value = ();
     fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "a JSON value")
     }
     fn visit_unit<E: serde::de::Error>(self) -> Result<(), E> {
-        emit_indexed(self.index, &serde_json::Value::Null, self.visitors);
+        emit_indexed(self.path, self.index, &serde_json::Value::Null, self.visitors);
         Ok(())
     }
     fn visit_bool<E: serde::de::Error>(self, v: bool) -> Result<(), E> {
-        emit_indexed(self.index, &serde_json::Value::Bool(v), self.visitors);
+        emit_indexed(self.path, self.index, &serde_json::Value::Bool(v), self.visitors);
         Ok(())
     }
     fn visit_i64<E: serde::de::Error>(self, v: i64) -> Result<(), E> {
-        emit_indexed(self.index, &serde_json::Value::Number(v.into()), self.visitors);
+        emit_indexed(
+            self.path,
+            self.index,
+            &serde_json::Value::Number(v.into()),
+            self.visitors,
+        );
         Ok(())
     }
     fn visit_u64<E: serde::de::Error>(self, v: u64) -> Result<(), E> {
-        emit_indexed(self.index, &serde_json::Value::Number(v.into()), self.visitors);
+        emit_indexed(
+            self.path,
+            self.index,
+            &serde_json::Value::Number(v.into()),
+            self.visitors,
+        );
         Ok(())
     }
     fn visit_f64<E: serde::de::Error>(self, v: f64) -> Result<(), E> {
         let num = serde_json::Number::from_f64(v).unwrap_or_else(|| 0i64.into());
-        emit_indexed(self.index, &serde_json::Value::Number(num), self.visitors);
+        emit_indexed(self.path, self.index, &serde_json::Value::Number(num), self.visitors);
         Ok(())
     }
     fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<(), E> {
-        emit_indexed(self.index, &serde_json::Value::String(v.to_owned()), self.visitors);
+        emit_indexed(
+            self.path,
+            self.index,
+            &serde_json::Value::String(v.to_owned()),
+            self.visitors,
+        );
         Ok(())
     }
     fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<(), A::Error> {
         let mut interesting = false;
         for v in self.visitors.iter_mut() {
-            interesting |= v.enter_indexed_object(self.index);
+            interesting |= v.enter_indexed_object(self.path, self.index);
         }
         let result = if interesting {
-            visit_object(&mut map, self.visitors)
+            self.path.push(self.index.to_string());
+            let ret = visit_object(self.path, &mut map, self.visitors);
+            self.path.pop();
+            ret
         } else {
             drain_map(&mut map)
         };
         for v in self.visitors.iter_mut() {
-            v.leave_indexed_object(self.index);
+            v.leave_indexed_object(self.path, self.index);
         }
         result
     }
     fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<(), A::Error> {
         let mut interesting = false;
         for v in self.visitors.iter_mut() {
-            interesting |= v.enter_indexed_array(self.index);
+            interesting |= v.enter_indexed_array(self.path, self.index);
         }
         let result = if interesting {
-            visit_array(&mut seq, self.visitors)
+            self.path.push(self.index.to_string());
+            let ret = visit_array(self.path, &mut seq, self.visitors);
+            self.path.pop();
+            ret
         } else {
             drain_array(&mut seq)
         };
         for v in self.visitors.iter_mut() {
-            v.leave_indexed_array(self.index);
+            v.leave_indexed_array(self.path, self.index);
         }
         result
     }

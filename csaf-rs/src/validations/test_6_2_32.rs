@@ -15,7 +15,6 @@ fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str
 }
 
 /// Test 6.2.32: Use of Same Product Identification Helper for Different Products
-/// Test 6.2.32: Use of Same Product Identification Helper for Different Products
 pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
@@ -78,18 +77,16 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             // Collect Hashes
             for hash_obj in helper.get_hashes() {
                 let filename = hash_obj.get_filename();
-                let mut inner_signatures: Vec<String> = hash_obj
-                    .get_file_hashes()
-                    .iter()
-                    .map(|fh| format!("{:?}:{}", fh.get_algorithm(), fh.get_hash()))
-                    .collect();
-                inner_signatures.sort();
 
-                let hash_key = format!("file:{filename};hashes:{}", inner_signatures.join(","));
-                hash_groups
-                    .entry(hash_key)
-                    .or_default()
-                    .push((product_id.clone(), path_str.clone()));
+                // Instead of one combined string, track each inner hash independently:
+                for fh in hash_obj.get_file_hashes() {
+                    let specific_hash_key =
+                        format!("file:{filename};alg:{:?};value:{}", fh.get_algorithm(), fh.get_hash());
+                    hash_groups
+                        .entry(specific_hash_key)
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
+                }
             }
         }
     });
@@ -110,6 +107,11 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
     process_violations(sn_groups, "serial_numbers");
     process_violations(mn_groups, "model_numbers");
     process_violations(hash_groups, "hashes");
+
+    // Sort and deduplicate to ensure deterministic error returns
+    // even if multiple hashes for the same file collide simultaneously.
+    errors.sort_by(|a, b| a.instance_path.cmp(&b.instance_path).then(a.message.cmp(&b.message)));
+    errors.dedup_by(|a, b| a.instance_path == b.instance_path && a.message == b.message);
 
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }

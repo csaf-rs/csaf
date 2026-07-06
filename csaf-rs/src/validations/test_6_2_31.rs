@@ -1,4 +1,3 @@
-use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 use crate::csaf::traits::vulnerabilities::product_ident_helper_trait::ProductIdentificationHelperTrait;
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
@@ -21,18 +20,11 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
 
     let mut errors: Vec<ValidationError> = vec![];
 
-    // 1. Gather all legitimate references and inline relationship product declarations
+    // 1. Gather all legitimate string references from groups and relationship paths
     let mut valid_path_references: HashSet<String> = HashSet::new();
 
-    // Track every reference used in groups and relationship paths
     for (id, _) in product_tree.get_all_product_references() {
         valid_path_references.insert(id);
-    }
-
-    // Track every product id explicitly defined inline inside relationships
-    for rel in product_tree.get_product_paths() {
-        let inline_product = rel.get_full_product_name();
-        valid_path_references.insert(inline_product.get_product_id().to_string());
     }
 
     // 2. Iterate using the version-specific product visitor pattern
@@ -40,12 +32,11 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
         let product_id = product.get_product_id();
 
         if let Some(helper) = product.get_product_identification_helper() {
-            // Check if hardware identifiers exist using owned vector mappings
             let has_serial = helper.get_serial_numbers().map_or(false, |sn: Vec<_>| !sn.is_empty());
             let has_model = helper.get_model_numbers().map_or(false, |mn: Vec<_>| !mn.is_empty());
 
             if has_serial || has_model {
-                // If it claims hardware components but isn't anchored anywhere valid in the layout
+                // If it claims hardware components but isn't anchored by a relationship or group reference target
                 if !valid_path_references.contains(product_id) {
                     errors.push(generate_hardware_software_mix_error(product_id, instance_path));
                 }

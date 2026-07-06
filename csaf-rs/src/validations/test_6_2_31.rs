@@ -23,7 +23,7 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
     // 1. Gather all legitimate string references from groups and relationship paths
     let mut valid_path_references: HashSet<String> = HashSet::new();
 
-    for (id, _) in product_tree.get_all_product_references() {
+    for (id, _) in product_tree.get_relationships_product_references() {
         valid_path_references.insert(id);
     }
 

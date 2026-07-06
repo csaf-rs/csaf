@@ -36,7 +36,7 @@ Thank you for your interest in contributing! This document explains how to parti
 
 Before opening a new issue, please:
 
-1. **Search existing issues** (open and closed) to avoid duplicates.
+1. **Search existing issues** [open and closed](https://github.com/csaf-rs/csaf/issues?q=is%3Aissue%20(state%3Aopen%20OR%20state%3Aclosed)) to avoid duplicates.
 2. **Use the correct template** — bug reports and feature requests have separate templates on GitHub.
 
 A good bug report includes:

@@ -30,4 +30,11 @@ If applicable, add screenshots to help explain your problem.
 
 
 **Additional context**
-Add any other context about the problem here, i.e. a sample CSAF file, browser if you use WASM.
+Add any other context about the problem here, i.e. a sample CSAF file, browser if you use WASM, logs.
+
+<details>
+<summary>Logs</summary>
+```
+```
+</details>
+

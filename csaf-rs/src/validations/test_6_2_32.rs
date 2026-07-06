@@ -14,6 +14,21 @@ fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str
     }
 }
 
+// Private helper function instead of a capturing closure
+fn process_violations(
+    groups: HashMap<String, Vec<(String, String)>>,
+    category: &str,
+    errors: &mut Vec<ValidationError>,
+) {
+    for (value, occurrences) in groups {
+        if occurrences.len() > 1 {
+            for (product_id, path) in occurrences {
+                errors.push(generate_duplicate_helper_error(category, &value, &product_id, &path));
+            }
+        }
+    }
+}
+
 /// Test 6.2.32: Use of Same Product Identification Helper for Different Products
 pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let Some(product_tree) = doc.get_product_tree() else {
@@ -80,8 +95,11 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
 
                 // Instead of one combined string, track each inner hash independently:
                 for fh in hash_obj.get_file_hashes() {
-                    let specific_hash_key =
-                        format!("file:{filename};alg:{:?};value:{}", fh.get_algorithm(), fh.get_hash());
+                    // Safe string conversion without using the Debug {:?} trait token format
+                    let alg_str = format!("{}", fh.get_algorithm()).to_lowercase();
+                    let hash_val = fh.get_hash().to_lowercase();
+
+                    let specific_hash_key = format!("file:{filename};alg:{alg_str};value:{hash_val}");
                     hash_groups
                         .entry(specific_hash_key)
                         .or_default()
@@ -91,27 +109,14 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
         }
     });
 
-    // 2. Process groups and emit independent errors for every product variant that collides
-    let mut process_violations = |groups: HashMap<String, Vec<(String, String)>>, category: &str| {
-        for (value, occurrences) in groups {
-            if occurrences.len() > 1 {
-                for (product_id, path) in occurrences {
-                    errors.push(generate_duplicate_helper_error(category, &value, &product_id, &path));
-                }
-            }
-        }
-    };
+    process_violations(purl_groups, "purls", &mut errors);
+    process_violations(sku_groups, "skus", &mut errors);
+    process_violations(sn_groups, "serial_numbers", &mut errors);
+    process_violations(mn_groups, "model_numbers", &mut errors);
+    process_violations(hash_groups, "hashes", &mut errors);
 
-    process_violations(purl_groups, "purls");
-    process_violations(sku_groups, "skus");
-    process_violations(sn_groups, "serial_numbers");
-    process_violations(mn_groups, "model_numbers");
-    process_violations(hash_groups, "hashes");
-
-    // Sort and deduplicate to ensure deterministic error returns
-    // even if multiple hashes for the same file collide simultaneously.
-    errors.sort_by(|a, b| a.instance_path.cmp(&b.instance_path).then(a.message.cmp(&b.message)));
-    errors.dedup_by(|a, b| a.instance_path == b.instance_path && a.message == b.message);
+    // Simplified deduplication leveraging implemented PartialEq trait
+    errors.dedup();
 
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }

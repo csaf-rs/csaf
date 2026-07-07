@@ -72,4 +72,159 @@ mod tests {
             Ok(()),
         );
     }
+
+    #[test]
+    fn test_test_6_2_31_edge_cases() {
+        use crate::schema::csaf2_1::schema::{
+            CommonSecurityAdvisoryFramework, DocumentLevelMetaData, FullProductNameT, HelperToIdentifyTheProduct,
+            JsonSchema, ModelNumber, ProductIdT, ProductTree, SerialNumber, TextualDescriptionOfTheProduct,
+        };
+        use std::str::FromStr;
+
+        // Case 01: Product tree missing entirely (should pass cleanly without crashing)
+        let doc01 = CommonSecurityAdvisoryFramework {
+            schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+            product_tree: None,
+            document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+            vulnerabilities: vec![],
+            x_extensions: None,
+        };
+
+        // Case 02: Product attempts to implicitly self-validate without external references
+        let standalone_product = FullProductNameT {
+            product_id: "CSAFPID-SELF-VAL".parse::<ProductIdT>().unwrap(),
+            name: "Isolated Component".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+            product_identification_helper: Some(HelperToIdentifyTheProduct {
+                serial_numbers: Some(vec![
+                    SerialNumber::from_str("SN-12345").expect("Could not parse SerialNumber"),
+                ]),
+                model_numbers: Some(vec![
+                    ModelNumber::from_str("MOD-99X").expect("Could not parse ModelNumber"),
+                ]),
+                ..Default::default()
+            }),
+            x_extensions: None,
+        };
+
+        let doc02 = CommonSecurityAdvisoryFramework {
+            schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+            product_tree: Some(ProductTree {
+                full_product_names: vec![standalone_product],
+                ..Default::default()
+            }),
+            document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+            vulnerabilities: vec![],
+            x_extensions: None,
+        };
+
+        // Case 03: Pure model_numbers code branch validation coverage
+        let model_only_product = FullProductNameT {
+            product_id: "CSAFPID-MODEL-ONLY".parse::<ProductIdT>().unwrap(),
+            name: "Model Target Component"
+                .parse::<TextualDescriptionOfTheProduct>()
+                .unwrap(),
+            product_identification_helper: Some(HelperToIdentifyTheProduct {
+                model_numbers: Some(vec![
+                    ModelNumber::from_str("MOD-ABCDE").expect("Could not parse ModelNumber"),
+                ]),
+                ..Default::default()
+            }),
+            x_extensions: None,
+        };
+
+        let doc03 = CommonSecurityAdvisoryFramework {
+            schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+            product_tree: Some(ProductTree {
+                full_product_names: vec![model_only_product],
+                ..Default::default()
+            }),
+            document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+            vulnerabilities: vec![],
+            x_extensions: None,
+        };
+
+        // Case 04: Hardware and software helper fields present concurrently in one declaration block
+        let mixed_helpers_product = FullProductNameT {
+            product_id: "CSAFPID-SIMULTANEOUS".parse::<ProductIdT>().unwrap(),
+            name: "Simultaneous Component"
+                .parse::<TextualDescriptionOfTheProduct>()
+                .unwrap(),
+            product_identification_helper: Some(HelperToIdentifyTheProduct {
+                serial_numbers: Some(vec![
+                    SerialNumber::from_str("SN-99999").expect("Could not parse SerialNumber"),
+                ]),
+                model_numbers: Some(vec![
+                    ModelNumber::from_str("MOD-8888").expect("Could not parse ModelNumber"),
+                ]),
+                ..Default::default()
+            }),
+            x_extensions: None,
+        };
+
+        let doc04 = CommonSecurityAdvisoryFramework {
+            schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+            product_tree: Some(ProductTree {
+                full_product_names: vec![mixed_helpers_product],
+                ..Default::default()
+            }),
+            document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+            vulnerabilities: vec![],
+            x_extensions: None,
+        };
+
+        // Case 05: Multiple individual invalid products present concurrently to test error accumulation
+        let bad_prod_a = FullProductNameT {
+            product_id: "CSAFPID-MULTIPLE-A".parse::<ProductIdT>().unwrap(),
+            name: "Bad Item A".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+            product_identification_helper: Some(HelperToIdentifyTheProduct {
+                serial_numbers: Some(vec![
+                    SerialNumber::from_str("SN-A").expect("Could not parse SerialNumber"),
+                ]),
+                ..Default::default()
+            }),
+            x_extensions: None,
+        };
+
+        let bad_prod_b = FullProductNameT {
+            product_id: "CSAFPID-MULTIPLE-B".parse::<ProductIdT>().unwrap(),
+            name: "Bad Item B".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+            product_identification_helper: Some(HelperToIdentifyTheProduct {
+                model_numbers: Some(vec![
+                    ModelNumber::from_str("MOD-B").expect("Could not parse ModelNumber"),
+                ]),
+                ..Default::default()
+            }),
+            x_extensions: None,
+        };
+
+        let doc05 = CommonSecurityAdvisoryFramework {
+            schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+            product_tree: Some(ProductTree {
+                full_product_names: vec![bad_prod_a, bad_prod_b],
+                ..Default::default()
+            }),
+            document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+            vulnerabilities: vec![],
+            x_extensions: None,
+        };
+
+        test_6_2_31_hardware_software_mix(&doc01).expect("Case 01 failed: Missing product tree should pass cleanly");
+        test_6_2_31_hardware_software_mix(&doc02)
+            .err()
+            .expect("Case 02 failed: Product should flag an error and not self-validate");
+        test_6_2_31_hardware_software_mix(&doc03)
+            .err()
+            .expect("Case 03 failed: Pure model_numbers branch execution path should be hit and evaluated");
+        test_6_2_31_hardware_software_mix(&doc04)
+            .err()
+            .expect("Case 04 failed: Simultaneous presence of serial and model fields must be processed safely");
+        let errors_case05 = test_6_2_31_hardware_software_mix(&doc05)
+            .err()
+            .expect("Case 05 failed: Multiple validation errors should be captured");
+        assert_eq!(
+            errors_case05.len(),
+            2,
+            "Case 05 failed: Engine should iterate completely and accumulate both product violations"
+        );
+    }
 }

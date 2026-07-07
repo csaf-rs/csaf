@@ -199,4 +199,160 @@ mod tests {
             Ok(()),
         );
     }
+
+    #[test]
+    fn test_test_6_2_32_edge_cases() {
+        use crate::schema::csaf2_1::schema::{
+            AlgorithmOfTheCryptographicHash, CommonSecurityAdvisoryFramework, CryptographicHashes,
+            DocumentLevelMetaData, FileHash, Filename, FullProductNameT, HelperToIdentifyTheProduct, JsonSchema,
+            PackageUrlRepresentation, ProductIdT, ProductTree, TextualDescriptionOfTheProduct,
+            ValueOfTheCryptographicHash,
+        };
+
+        // Case 01: Hashes collision across independent full product helpers
+        let case_01_doc = {
+            let duplicate_hash = FileHash {
+                algorithm: "sha256".parse::<AlgorithmOfTheCryptographicHash>().unwrap(),
+                value: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                    .parse::<ValueOfTheCryptographicHash>()
+                    .unwrap(),
+            };
+            let prod_a = FullProductNameT {
+                product_id: "CSAFPID-HASH-FAIL-1".parse::<ProductIdT>().unwrap(),
+                name: "Product A".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+                product_identification_helper: Some(HelperToIdentifyTheProduct {
+                    hashes: vec![CryptographicHashes {
+                        filename: "test_file.bin".parse::<Filename>().unwrap(),
+                        file_hashes: vec![duplicate_hash.clone()],
+                    }],
+                    ..Default::default()
+                }),
+                x_extensions: None,
+            };
+            let prod_b = FullProductNameT {
+                product_id: "CSAFPID-HASH-FAIL-2".parse::<ProductIdT>().unwrap(),
+                name: "Product B".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+                product_identification_helper: Some(HelperToIdentifyTheProduct {
+                    hashes: vec![CryptographicHashes {
+                        filename: "test_file.bin".parse::<Filename>().unwrap(),
+                        file_hashes: vec![duplicate_hash],
+                    }],
+                    ..Default::default()
+                }),
+                x_extensions: None,
+            };
+            CommonSecurityAdvisoryFramework {
+                schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+                product_tree: Some(ProductTree {
+                    full_product_names: vec![prod_a, prod_b],
+                    ..Default::default()
+                }),
+                document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+                vulnerabilities: vec![],
+                x_extensions: None,
+            }
+        };
+
+        // Case 02: PURL metadata collisions cross-flagged on product variants
+        let case_02_doc = {
+            let duplicate_purl = "pkg:npm/csaf-validator@0.5.1"
+                .parse::<PackageUrlRepresentation>()
+                .unwrap();
+            let prod_a = FullProductNameT {
+                product_id: "CSAFPID-PURL-FAIL-1".parse::<ProductIdT>().unwrap(),
+                name: "Product A".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+                product_identification_helper: Some(HelperToIdentifyTheProduct {
+                    purls: Some(vec![duplicate_purl.clone()]),
+                    ..Default::default()
+                }),
+                x_extensions: None,
+            };
+            let prod_b = FullProductNameT {
+                product_id: "CSAFPID-PURL-FAIL-2".parse::<ProductIdT>().unwrap(),
+                name: "Product B".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+                product_identification_helper: Some(HelperToIdentifyTheProduct {
+                    purls: Some(vec![duplicate_purl]),
+                    ..Default::default()
+                }),
+                x_extensions: None,
+            };
+            CommonSecurityAdvisoryFramework {
+                schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+                product_tree: Some(ProductTree {
+                    full_product_names: vec![prod_a, prod_b],
+                    ..Default::default()
+                }),
+                document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+                vulnerabilities: vec![],
+                x_extensions: None,
+            }
+        };
+
+        // Case 03: Distinct disjoint identifiers matching clean validation target
+        let case_03_doc = {
+            let hash_a = FileHash {
+                algorithm: "sha256".parse::<AlgorithmOfTheCryptographicHash>().unwrap(),
+                value: "1111144298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                    .parse::<ValueOfTheCryptographicHash>()
+                    .unwrap(),
+            };
+            let hash_b = FileHash {
+                algorithm: "sha256".parse::<AlgorithmOfTheCryptographicHash>().unwrap(),
+                value: "2222244298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                    .parse::<ValueOfTheCryptographicHash>()
+                    .unwrap(),
+            };
+            let prod_a = FullProductNameT {
+                product_id: "CSAFPID-OK-1".parse::<ProductIdT>().unwrap(),
+                name: "Product A".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+                product_identification_helper: Some(HelperToIdentifyTheProduct {
+                    hashes: vec![CryptographicHashes {
+                        filename: "a.bin".parse::<Filename>().unwrap(),
+                        file_hashes: vec![hash_a],
+                    }],
+                    purls: Some(vec![
+                        "pkg:npm/csaf-core@1.0.0".parse::<PackageUrlRepresentation>().unwrap(),
+                    ]),
+                    ..Default::default()
+                }),
+                x_extensions: None,
+            };
+            let prod_b = FullProductNameT {
+                product_id: "CSAFPID-OK-2".parse::<ProductIdT>().unwrap(),
+                name: "Product B".parse::<TextualDescriptionOfTheProduct>().unwrap(),
+                product_identification_helper: Some(HelperToIdentifyTheProduct {
+                    hashes: vec![CryptographicHashes {
+                        filename: "b.bin".parse::<Filename>().unwrap(),
+                        file_hashes: vec![hash_b],
+                    }],
+                    purls: Some(vec![
+                        "pkg:npm/csaf-utils@2.0.0".parse::<PackageUrlRepresentation>().unwrap(),
+                    ]),
+                    ..Default::default()
+                }),
+                x_extensions: None,
+            };
+            CommonSecurityAdvisoryFramework {
+                schema: JsonSchema::HttpsDocsOasisOpenOrgCsafCsafV21SchemaCsafJson,
+                product_tree: Some(ProductTree {
+                    full_product_names: vec![prod_a, prod_b],
+                    ..Default::default()
+                }),
+                document: unsafe { std::mem::transmute([0u8; std::mem::size_of::<DocumentLevelMetaData>()]) },
+                vulnerabilities: vec![],
+                x_extensions: None,
+            }
+        };
+
+        test_6_2_32_duplicate_product_identification_helpers(&case_01_doc)
+            .err()
+            .expect("Case 01 should flag a duplicate hash validation error");
+
+        test_6_2_32_duplicate_product_identification_helpers(&case_02_doc)
+            .err()
+            .expect("Case 02 should flag a duplicate purl validation error");
+
+        test_6_2_32_duplicate_product_identification_helpers(&case_03_doc)
+            .expect("Case 03 should pass validation for pairwise disjoint helpers");
+    }
 }

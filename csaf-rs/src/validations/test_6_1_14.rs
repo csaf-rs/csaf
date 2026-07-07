@@ -12,7 +12,8 @@ fn create_revision_history_error() -> ValidationError {
 ///
 /// The revision history items, when sorted by their `/document/tracking/revision_history[]/date` field,
 /// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
-/// If the version numbers are mixed between semantic versioning and non-semantic versioning, the non-semantic versioning numbers are interpreted as semantic versioning numbers.
+/// If the version numbers are mixed between semantic versioning and non-semantic versioning,
+/// the non-semantic versioning numbers are interpreted as semantic versioning numbers.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     // Generate tuples of (revision history path index, date, number)
     let mut rev_history_tuples_sort_by_date = doc.get_document().get_tracking().aggregate_revision_history();

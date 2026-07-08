@@ -3,37 +3,158 @@
   "document": {
     "category": "csaf_security_advisory",
     "csaf_version": "2.1",
-    "distribution": { "tlp": { "label": "CLEAR" } },
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
     "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
-      "namespace": "https://github.com/csaf-rs/csaf"
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
     "title": "Comprehensive Product Identification Helper Collision Test (6.2.32)",
     "tracking": {
       "current_release_date": "2026-07-08T12:00:00.000Z",
-      "id": "CSAF-TEST-6-2-32-COLLISION-ALL",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-32-S01",
       "initial_release_date": "2026-07-08T12:00:00.000Z",
-      "revision_history": [{ "date": "2026-07-08T12:00:00.000Z", "number": "1", "summary": "Initial" }],
+      "revision_history": [
+        {
+          "date": "2026-07-08T12:00:00.000Z",
+          "number": "1",
+          "summary": "Initial"
+        }
+      ],
       "status": "final",
       "version": "1"
     }
   },
   "product_tree": {
     "full_product_names": [
-      { "product_id": "P1", "name": "P1", "product_identification_helper": { "hashes": [{ "filename": "f.bin", "file_hashes": [{ "algorithm": "sha256", "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }] }] } },
-      { "product_id": "P2", "name": "P2", "product_identification_helper": { "hashes": [{ "filename": "f.bin", "file_hashes": [{ "algorithm": "sha256", "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }] }] } },
-      { "product_id": "P3", "name": "P3", "product_identification_helper": { "purls": ["pkg:npm/csaf-validator@0.5.1"] } },
-      { "product_id": "P4", "name": "P4", "product_identification_helper": { "purls": ["pkg:npm/csaf-validator@0.5.1"] } },
-      { "product_id": "P5", "name": "P5", "product_identification_helper": { "serial_numbers": ["SN-999"] } },
-      { "product_id": "P6", "name": "P6", "product_identification_helper": { "serial_numbers": ["SN-999"] } },
-      { "product_id": "P7", "name": "P7", "product_identification_helper": { "model_numbers": ["MN-888"] } },
-      { "product_id": "P8", "name": "P8", "product_identification_helper": { "model_numbers": ["MN-888"] } },
-      { "product_id": "P9", "name": "P9", "product_identification_helper": { "skus": ["SKU-777"] } },
-      { "product_id": "P10", "name": "P10", "product_identification_helper": { "skus": ["SKU-777"] } }
+      {
+        "product_id": "P1",
+        "name": "P1",
+        "product_identification_helper": {
+          "hashes": [
+            {
+              "filename": "f.bin",
+              "file_hashes": [
+                {
+                  "algorithm": "sha256",
+                  "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "product_id": "P2",
+        "name": "P2",
+        "product_identification_helper": {
+          "hashes": [
+            {
+              "filename": "f.bin",
+              "file_hashes": [
+                {
+                  "algorithm": "sha256",
+                  "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "product_id": "P3",
+        "name": "P3",
+        "product_identification_helper": {
+          "purls": [
+            "pkg:npm/csaf-validator@0.5.1"
+          ]
+        }
+      },
+      {
+        "product_id": "P4",
+        "name": "P4",
+        "product_identification_helper": {
+          "purls": [
+            "pkg:npm/csaf-validator@0.5.1"
+          ]
+        }
+      },
+      {
+        "product_id": "P5",
+        "name": "P5",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "SN-999"
+          ]
+        }
+      },
+      {
+        "product_id": "P6",
+        "name": "P6",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "SN-999"
+          ]
+        }
+      },
+      {
+        "product_id": "P7",
+        "name": "P7",
+        "product_identification_helper": {
+          "model_numbers": [
+            "MN-888"
+          ]
+        }
+      },
+      {
+        "product_id": "P8",
+        "name": "P8",
+        "product_identification_helper": {
+          "model_numbers": [
+            "MN-888"
+          ]
+        }
+      },
+      {
+        "product_id": "P9",
+        "name": "P9",
+        "product_identification_helper": {
+          "skus": [
+            "SKU-777"
+          ]
+        }
+      },
+      {
+        "product_id": "P10",
+        "name": "P10",
+        "product_identification_helper": {
+          "skus": [
+            "SKU-777"
+          ]
+        }
+      }
     ]
   },
   "vulnerabilities": [
-    { "product_status": { "known_affected": ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10"] } }
+    {
+      "product_status": {
+        "known_affected": [
+          "P1",
+          "P2",
+          "P3",
+          "P4",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P9",
+          "P10"
+        ]
+      }
+    }
   ]
 }

@@ -213,7 +213,7 @@ mod tests {
         // Case 01: Both colliding products should flag an error independently
         // Case 02: Model number collisions cross-flagged on both variants
         // Case 03: Corrected structural runtime paths matching the schema generation target
-        // Case s01: Complex product collisions using mixed identifiers (PURLs and Hashes) in full_product_names
+        // Case s01: Integration test for comprehensive product identifier collisions (Hashes, PURLs, Serial Numbers, Model Numbers, and SKUs) in full_product_names
         // Case 04: Disjoint product identification helpers (no collisions, expects pass)
         // Case 05: Products without identification helpers (no helpers to collide, expects pass)
 

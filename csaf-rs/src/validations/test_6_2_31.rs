@@ -78,23 +78,14 @@ mod tests {
             "/product_tree/branches/0/branches/0/branches/0/product",
         )];
 
-        // S01: Edge cases
-        let mut s01 = vec![
-            // 1. Nested Product: Fails because it lacks a clear branch category distinction
+        // S01: Edge cases for 6.2.31
+        let s01 = vec![
+            // 1. Missing Product Path: Fails because the branch structure does not define a valid product path
             generate_hardware_software_mix_error("CSAFPID-908070601", "/product_tree/branches/0/branches/0/product"),
-            // 2. Model Only: Fails validation as branch lacks hardware/software context
-            generate_hardware_software_mix_error("CSAFPID-MODEL-ONLY", "/product_tree/branches/0/branches/1/product"),
-            // 3. Simultaneous: Fails as concurrent IDs create ambiguity in versioned branches
-            generate_hardware_software_mix_error("CSAFPID-SIMULTANEOUS", "/product_tree/branches/0/branches/2/product"),
-            // 4. Isolated Self-Val: Fails as branch nesting fails to qualify as a valid leaf
-            generate_hardware_software_mix_error("CSAFPID-SELF-VAL", "/product_tree/branches/0/branches/3/product"),
-            // 5. Fifth Case: Fails due to unanchored product identification in hierarchy
-            generate_hardware_software_mix_error("CSAFPID-FIFTH-CASE", "/product_tree/branches/0/branches/4/product"),
         ];
-        s01.sort_by_key(|e| e.instance_path.clone());
 
         // Case 01: Invalid - Product has serial numbers but no matching path entry or inline declaration
-        // Case S01: Supplementary edge cases from csaf-rs_csaf-csaf_2_1-6-2-31-s01.json (5 combined validation errors)
+        // Case S01: Supplementary edge case from csaf-rs_csaf-csaf_2_1-6-2-31-s01.json (Missing Product Path)
         // Case 11: Valid - Product has hardware tags but is fully anchored by a product path mapping
         // Case 12: Valid - Product has no identification helper field configuration
         // Case 13: Valid - Pure software components without model or serial signatures

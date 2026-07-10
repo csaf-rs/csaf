@@ -152,65 +152,84 @@ mod tests {
 
     #[test]
     fn test_test_6_1_03() {
+        let csaf_20_case_01_self_ref_via_relates_to_product_ref = Err(vec![generate_self_reference_relates_to_error(
+            CsafVersion::X20,
+            "/product_tree/relationships/0/relates_to_product_reference",
+        )]);
+        let csaf_20_case_s01_self_ref_via_product_ref = Err(vec![generate_self_reference_product_error(
+            CsafVersion::X20,
+            "/product_tree/relationships/0/product_reference",
+        )]);
+        let csaf_20_case_s02_cycle = Err(vec![
+            generate_cycle_error(
+                CsafVersion::X20,
+                &[
+                    "CSAFPID-9080701".to_string(),
+                    "CSAFPID-9080702".to_string(),
+                    "CSAFPID-9080701".to_string(),
+                ],
+                "/product_tree/relationships/0".to_string(),
+            ),
+            generate_cycle_error(
+                CsafVersion::X20,
+                &[
+                    "CSAFPID-9080702".to_string(),
+                    "CSAFPID-9080701".to_string(),
+                    "CSAFPID-9080702".to_string(),
+                ],
+                "/product_tree/relationships/1".to_string(),
+            ),
+        ]);
+
         TESTS_2_0.test_6_1_3.expect(
-            Err(vec![generate_self_reference_relates_to_error(
-                CsafVersion::X20,
-                "/product_tree/relationships/0/relates_to_product_reference",
-            )]),
-            Err(vec![generate_self_reference_product_error(
-                CsafVersion::X20,
-                "/product_tree/relationships/0/product_reference",
-            )]),
-            Err(vec![
-                generate_cycle_error(
-                    CsafVersion::X20,
-                    &[
-                        "CSAFPID-9080701".to_string(),
-                        "CSAFPID-9080702".to_string(),
-                        "CSAFPID-9080701".to_string(),
-                    ],
-                    "/product_tree/relationships/0".to_string(),
-                ),
-                generate_cycle_error(
-                    CsafVersion::X20,
-                    &[
-                        "CSAFPID-9080702".to_string(),
-                        "CSAFPID-9080701".to_string(),
-                        "CSAFPID-9080702".to_string(),
-                    ],
-                    "/product_tree/relationships/1".to_string(),
-                ),
-            ]),
+            csaf_20_case_01_self_ref_via_relates_to_product_ref,
+            csaf_20_case_s01_self_ref_via_product_ref,
+            csaf_20_case_s02_cycle,
         );
-        TESTS_2_1.test_6_1_3.expect(
-            Err(vec![generate_self_reference_relates_to_error(
+
+        let csaf_21_case_01_self_ref_via_product_path_next_ref = Err(vec![generate_self_reference_relates_to_error(
+            CsafVersion::X21,
+            "/product_tree/product_paths/0/subpaths/0/next_product_reference",
+        )]);
+
+        let csaf_21_case_02_cycle = Err(vec![
+            generate_cycle_error(
                 CsafVersion::X21,
-                "/product_tree/product_paths/0/subpaths/0/next_product_reference",
-            )]),
+                &[
+                    "CSAFPID-9080701".to_string(),
+                    "CSAFPID-9080702".to_string(),
+                    "CSAFPID-9080701".to_string(),
+                ],
+                "/product_tree/product_paths/0".to_string(),
+            ),
+            generate_cycle_error(
+                CsafVersion::X21,
+                &[
+                    "CSAFPID-9080702".to_string(),
+                    "CSAFPID-9080701".to_string(),
+                    "CSAFPID-9080702".to_string(),
+                ],
+                "/product_tree/product_paths/1".to_string(),
+            ),
+        ]);
+
+        let csaf_21_case_s01_self_ref_via_product_path_beginning_ref =
             Err(vec![generate_self_reference_product_error(
                 CsafVersion::X21,
                 "/product_tree/product_paths/0/beginning_product_reference",
-            )]),
-            Err(vec![
-                generate_cycle_error(
-                    CsafVersion::X21,
-                    &[
-                        "CSAFPID-9080701".to_string(),
-                        "CSAFPID-9080702".to_string(),
-                        "CSAFPID-9080701".to_string(),
-                    ],
-                    "/product_tree/product_paths/0".to_string(),
-                ),
-                generate_cycle_error(
-                    CsafVersion::X21,
-                    &[
-                        "CSAFPID-9080702".to_string(),
-                        "CSAFPID-9080701".to_string(),
-                        "CSAFPID-9080702".to_string(),
-                    ],
-                    "/product_tree/product_paths/1".to_string(),
-                ),
-            ]),
+            )]);
+
+        // Case 11: simple product path, no cycle
+        // Case 12: multiple paths, no cycle
+        // Case 13: multiple paths with different subpath categories, no cycle
+
+        TESTS_2_1.test_6_1_3.expect(
+            csaf_21_case_01_self_ref_via_product_path_next_ref,
+            csaf_21_case_02_cycle,
+            csaf_21_case_s01_self_ref_via_product_path_beginning_ref,
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 

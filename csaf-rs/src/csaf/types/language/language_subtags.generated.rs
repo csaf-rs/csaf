@@ -760,6 +760,7 @@ pub static LANGUAGE_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("bie", false),
     ("bif", false),
     ("big", false),
+    ("bih", false),
     ("bij", false),
     ("bik", false),
     ("bil", false),

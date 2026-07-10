@@ -54,9 +54,7 @@ impl From<&DocumentCategory21> for CsafDocumentCategory {
 }
 
 impl CsafDocumentCategory {
-    // --------------------------------------------------------------------------
-    // Known profiles per CSAF version and some helper functions
-    // --------------------------------------------------------------------------
+    /// Well-known CSAF 2.0 profiles
     const CSAF_20_KNOWN_PROFILES: [CsafDocumentCategory; 5] = [
         CsafDocumentCategory::CsafBase,
         CsafDocumentCategory::CsafSecurityIncidentResponse,
@@ -65,6 +63,7 @@ impl CsafDocumentCategory {
         CsafDocumentCategory::CsafVex,
     ];
 
+    /// Well-known CSAF 2.1 profiles
     const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 8] = [
         CsafDocumentCategory::CsafBase,
         CsafDocumentCategory::CsafSecurityIncidentResponse,
@@ -179,59 +178,6 @@ impl CsafDocumentCategory {
         Self::string_starts_with_csaf_underscore(&self.to_string())
     }
 
-    /// Helper function to check if a string starts with `csaf_deprecated_`. See [Self::starts_with_csaf_deprecated]
-    /// for more details.
-    #[inline]
-    fn string_starts_with_csaf_deprecated_underscore(s: &str) -> bool {
-        let lower = s.to_lowercase();
-        // Split at "csaf"
-        match lower.split_once("csaf") {
-            None => false,
-            Some((prefix, after_csaf)) => {
-                // Everything before "csaf" must be only ignored chars
-                if !Self::get_with_ignored_chars_removed(prefix).is_empty() {
-                    return false;
-                }
-                // First char after "csaf" must be an underscore variant
-                let mut chars = after_csaf.chars();
-                if !chars.next().is_some_and(|c| is_underscore_char(&c)) {
-                    return false;
-                }
-                let after_first_underscore = chars.as_str();
-                // Must continue with "deprecated" followed by another underscore variant
-                after_first_underscore
-                    .strip_prefix("deprecated")
-                    .is_some_and(|s| s.chars().next().is_some_and(|c| is_underscore_char(&c)))
-            },
-        }
-    }
-
-    /// Checks if the category string starts with `csaf_deprecated_` (case-insensitive), where the `_` can be
-    /// any of the known underscore variant characters from [is_underscore_char].
-    /// Also checks that everything before `csaf_deprecated_` consists only of whitespace, underscores and hyphens variants.
-    ///
-    /// Examples:
-    /// `csaf_deprecated_security_advisory` -> true
-    /// ` csaf_deprecated_security_advisory` -> true
-    /// `CSAF_DEPRECATED_foo` -> true
-    /// `csaf＿deprecated＿foo` -> true
-    /// `csaf_base` -> false
-    /// `csaf_vex` -> false
-    pub fn starts_with_csaf_deprecated(&self) -> bool {
-        // The only known variant starting with csaf_deprecated_ is CsafDeprecatedSecurityAdvisory
-        if matches!(self, CsafDocumentCategory::CsafDeprecatedSecurityAdvisory) {
-            return true;
-        }
-
-        // For CsafBaseOther, check the actual string with unicode-aware logic
-        if let CsafDocumentCategory::CsafBaseOther(s) = self {
-            return Self::string_starts_with_csaf_deprecated_underscore(s);
-        }
-
-        // All other known variants don't start with csaf_deprecated_
-        false
-    }
-
     /// Helper function to normalize a category string
     #[inline]
     fn string_normalize(s: &str) -> String {
@@ -302,42 +248,6 @@ mod tests {
     fn string_starts_with_csaf_underscore(#[case] input: &str, #[case] expected: bool) {
         assert_eq!(
             CsafDocumentCategory::string_starts_with_csaf_underscore(input),
-            expected,
-            "input: {input:?}"
-        );
-    }
-
-    #[rstest]
-    // basic example
-    #[case("csaf_deprecated_security_advisory", true)]
-    // known other categories
-    #[case("csaf_base", false)]
-    #[case("csaf_vex", false)]
-    #[case("csaf_security_advisory", false)]
-    #[case("csaf_informational_advisory", false)]
-    #[case("csaf_security_incident_response", false)]
-    #[case("csaf_withdrawn", false)]
-    #[case("csaf_superseded", false)]
-    // casing
-    #[case("CSAF_DEPRECATED_SOMETHING", true)]
-    #[case("Csaf_Deprecated_Something", true)]
-    // with underscore variants
-    #[case("csaf\u{FF3F}deprecated\u{FF3F}foo", true)]
-    #[case("csaf_deprecated\u{FF3F}bar", true)]
-    #[case("csaf\u{FF3F}deprecated_bar", true)]
-    // with leading underscore, hyphen, whitespace
-    #[case(" csaf_deprecated_foo", true)]
-    #[case("_csaf_deprecated_foo", true)]
-    #[case("-csaf_deprecated_foo", true)]
-    // no underscore before / after deprecated
-    #[case("csaf_deprecated", false)]
-    #[case("csafdeprecated_foo", false)]
-    // no csaf prefix
-    #[case("deprecated_something", false)]
-    #[case("some_other_category", false)]
-    fn string_starts_with_csaf_deprecated_underscore(#[case] input: &str, #[case] expected: bool) {
-        assert_eq!(
-            CsafDocumentCategory::string_starts_with_csaf_deprecated_underscore(input),
             expected,
             "input: {input:?}"
         );

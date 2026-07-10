@@ -28,9 +28,9 @@ pub const VALIDATION_SCHEMAS: &[ValidationSchemaConfig] = &[
         relative_asset_path: "assets/cvss-v3.1.json",
     },
     ValidationSchemaConfig {
-        var_name: "CVSS_V4_0_2_SCHEMA",
-        source_url: "https://www.first.org/cvss/cvss-v4.0.2.json",
-        relative_asset_path: "assets/cvss-v4.0.2.json",
+        var_name: "CVSS_V4_0_SCHEMA",
+        source_url: "https://www.first.org/cvss/cvss-v4.0.json",
+        relative_asset_path: "assets/cvss-v4.0.json",
     },
     ValidationSchemaConfig {
         var_name: "EXTENSION_METASCHEMA",

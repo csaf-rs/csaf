@@ -24,14 +24,18 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> CollectArray<Ele
         }
     }
 
-    fn enter(&mut self, is_array: bool) -> bool {
+    fn enter_array(&mut self) -> bool {
         self.depth += 1;
         if self.depth == 1 {
-            self.matched = is_array;
-            false
-        } else {
+            self.matched = true;
             true
+        } else {
+            false
         }
+    }
+
+    fn enter_object(&mut self) {
+        self.depth += 1;
     }
 
     fn leave(&mut self) {
@@ -45,7 +49,7 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> CollectArray<Ele
     }
 
     fn should_descend(&self) -> bool {
-        self.depth == 0
+        self.depth == 1
     }
 }
 
@@ -65,7 +69,8 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> Extractor for Co
     }
 
     fn enter_keyed_object(&mut self, path: &[String], name: &str) -> bool {
-        if self.enter(false) && self.matched {
+        self.enter_object();
+        if self.matched {
             self.source.enter_keyed_object(path, name)
         } else {
             self.should_descend()
@@ -80,7 +85,8 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> Extractor for Co
     }
 
     fn enter_keyed_array(&mut self, path: &[String], name: &str) -> bool {
-        if self.enter(false) && self.matched {
+        self.enter_object();
+        if self.matched {
             self.source.enter_keyed_array(path, name)
         } else {
             self.should_descend()
@@ -95,13 +101,20 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> Extractor for Co
     }
 
     fn indexed_primitive(&mut self, path: &[String], index: usize, primitive: &serde_json::Value) {
-        if self.matched {
+        if self.depth == 0 {
+            self.source
+                .init_primitive(&[path, &[index.to_string()]].concat(), primitive);
+            self.result.get_or_insert_default().push(self.source.extract())
+        } else if self.matched {
             self.source.indexed_primitive(path, index, primitive);
         }
     }
 
     fn enter_indexed_object(&mut self, path: &[String], index: usize) -> bool {
-        if self.enter(true) && self.matched {
+        if self.enter_array() {
+            self.source.init_object(&[path, &[index.to_string()]].concat());
+            true
+        } else if self.matched {
             self.source.enter_indexed_object(path, index)
         } else {
             self.should_descend()
@@ -116,7 +129,10 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> Extractor for Co
     }
 
     fn enter_indexed_array(&mut self, path: &[String], index: usize) -> bool {
-        if self.enter(true) && self.matched {
+        if self.enter_array() {
+            self.source.init_array(&[path, &[index.to_string()]].concat());
+            true
+        } else if self.matched {
             self.source.enter_indexed_array(path, index)
         } else {
             self.should_descend()
@@ -128,5 +144,97 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> Extractor for Co
         if self.matched {
             self.source.leave_indexed_array(path, index);
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use crate::extractor::{
+        extract::{ExtractJsonValue, ExtractPrimitive},
+        navigate::AtPath,
+        visit_json::visit_json_value,
+    };
+
+    use super::*;
+
+    #[test]
+    fn collect_array_of_primitives() {
+        let mut collector = CollectArray::new(AtPath::new("x", ExtractPrimitive::new_string()));
+
+        let document = json!([{"x": "a"}, {"x": "b"}]);
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(
+            result,
+            Some(vec![
+                Some(("/0/x".into(), "a".into())),
+                Some(("/1/x".into(), "b".into()))
+            ])
+        );
+    }
+
+    #[test]
+    fn collect_array_of_json() {
+        let mut collector = CollectArray::new(ExtractJsonValue::new());
+        let interesting_object = json!({
+            "p": null,
+            "o": {},
+            "a": [null, {}, []]}
+        );
+        let document = json!([interesting_object, {}, [], null]);
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(
+            result,
+            Some(vec![
+                Some(("/0".into(), interesting_object)),
+                Some(("/1".into(), json!({}))),
+                Some(("/2".into(), json!([]))),
+                Some(("/3".into(), json!(null)))
+            ])
+        );
+    }
+
+    #[test]
+    fn collect_array_of_array_of_primitive() {
+        let mut collector = CollectArray::new(CollectArray::new(ExtractPrimitive::new_number()));
+
+        let document = json!([[1], [2, 3], 4]);
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(
+            result,
+            Some(vec![
+                Some(vec![Some(("/0/0".into(), 1.into()))]),
+                Some(vec![Some(("/1/0".into(), 2.into())), Some(("/1/1".into(), 3.into()))]),
+                None
+            ])
+        );
+    }
+
+    #[test]
+    fn collect_from_object() {
+        let mut collector = CollectArray::new(ExtractPrimitive::new_string());
+
+        let document = json!({"a": "a", "b": "b"});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn collect_from_primitive() {
+        let mut collector = CollectArray::new(ExtractPrimitive::new_string());
+
+        visit_json_value(&json!("hello"), &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, None);
     }
 }

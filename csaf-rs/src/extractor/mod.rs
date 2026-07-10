@@ -8,6 +8,3 @@ pub mod navigate;
 pub mod traits;
 pub mod visit_json;
 pub mod visit_stream;
-
-#[cfg(test)]
-mod test;

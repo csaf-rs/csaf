@@ -47,3 +47,51 @@ impl<FirstType, SecondType, First: CanExtract<FirstType>, Second: CanExtract<Sec
         (self.combine)(self.first.extract(), self.second.extract())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use crate::extractor::{
+        extract::{ExtractJsonValue, ExtractPrimitive},
+        navigate::AtPath,
+        visit_json::visit_json_value,
+    };
+
+    use super::*;
+
+    #[test]
+    fn combine_pair() {
+        let mut pair = Combine::new_pair(
+            AtPath::new("x", ExtractPrimitive::new_string()),
+            AtPath::new("y", ExtractJsonValue::new()),
+        );
+
+        let document = json!({"z": false, "y": [], "x": "hello"});
+        visit_json_value(&document, &mut [&mut pair]);
+
+        let result = pair.extract();
+        assert_eq!(
+            result,
+            (
+                Some(("/x".to_string(), "hello".to_string())),
+                Some(("/y".to_string(), json!([])))
+            )
+        );
+    }
+
+    #[test]
+    fn combine_func() {
+        let mut added = Combine::new(
+            AtPath::new_path(&["x"], ExtractPrimitive::new_number()),
+            AtPath::new_path(&["y"], ExtractPrimitive::new_number()),
+            |x, y| x.unwrap().1.as_i64().unwrap() + y.unwrap().1.as_i64().unwrap(),
+        );
+
+        let document = json!({"x": 1, "y": 2, "z": "hello"});
+        visit_json_value(&document, &mut [&mut added]);
+
+        let result = added.extract();
+        assert_eq!(result, 3);
+    }
+}

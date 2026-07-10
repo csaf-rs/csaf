@@ -38,9 +38,9 @@ impl<Source: Extractor> AtPath<Source> {
             && element == name
         {
             self.matched += 1;
-            false
+            self.matched == self.path.len()
         } else {
-            true
+            false
         }
     }
 
@@ -62,13 +62,20 @@ impl<Source: Extractor> AtPath<Source> {
 
 impl<Source: Extractor> Extractor for AtPath<Source> {
     fn keyed_primitive(&mut self, path: &[String], name: &str, primitive: &serde_json::Value) {
+        if self.enter(name) {
+            self.source.init_primitive(&[path, &[name.into()]].concat(), primitive);
+        }
+        self.leave();
         if self.should_forward() {
             self.source.keyed_primitive(path, name, primitive);
         }
     }
 
     fn enter_keyed_object(&mut self, path: &[String], name: &str) -> bool {
-        if self.enter(name) && self.should_forward() {
+        if self.enter(name) {
+            self.source.init_object(&[path, &[name.into()]].concat());
+            true
+        } else if self.should_forward() {
             self.source.enter_keyed_object(path, name)
         } else {
             self.should_descend()
@@ -83,7 +90,10 @@ impl<Source: Extractor> Extractor for AtPath<Source> {
     }
 
     fn enter_keyed_array(&mut self, path: &[String], name: &str) -> bool {
-        if self.enter(name) && self.should_forward() {
+        if self.enter(name) {
+            self.source.init_array(&[path, &[name.into()]].concat());
+            true
+        } else if self.should_forward() {
             self.source.enter_keyed_array(path, name)
         } else {
             self.should_descend()
@@ -98,13 +108,21 @@ impl<Source: Extractor> Extractor for AtPath<Source> {
     }
 
     fn indexed_primitive(&mut self, path: &[String], index: usize, primitive: &serde_json::Value) {
+        if self.enter(index.to_string().as_str()) {
+            self.source
+                .init_primitive(&[path, &[index.to_string()]].concat(), primitive);
+        }
+        self.leave();
         if self.should_forward() {
             self.source.indexed_primitive(path, index, primitive);
         }
     }
 
     fn enter_indexed_object(&mut self, path: &[String], index: usize) -> bool {
-        if self.enter(index.to_string().as_str()) && self.should_forward() {
+        if self.enter(index.to_string().as_str()) {
+            self.source.init_object(&[path, &[index.to_string()]].concat());
+            true
+        } else if self.should_forward() {
             self.source.enter_indexed_object(path, index)
         } else {
             self.should_descend()
@@ -119,7 +137,10 @@ impl<Source: Extractor> Extractor for AtPath<Source> {
     }
 
     fn enter_indexed_array(&mut self, path: &[String], index: usize) -> bool {
-        if self.enter(index.to_string().as_str()) && self.should_forward() {
+        if self.enter(index.to_string().as_str()) {
+            self.source.init_array(&[path, &[index.to_string()]].concat());
+            true
+        } else if self.should_forward() {
             self.source.enter_indexed_array(path, index)
         } else {
             self.should_descend()
@@ -137,5 +158,88 @@ impl<Source: Extractor> Extractor for AtPath<Source> {
 impl<R, T: CanExtract<R> + Extractor> CanExtract<R> for AtPath<T> {
     fn extract(&mut self) -> R {
         self.source.extract()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use crate::extractor::{
+        extract::{ExtractJsonValue, ExtractPrimitive},
+        navigate::AtPath,
+        visit_json::visit_json_value,
+    };
+
+    use super::*;
+
+    #[test]
+    fn object_in_object() {
+        let interesting_object = json!({"p": null, "o": {}, "a": [null, {}, []]});
+        let mut collector = AtPath::new("x", ExtractJsonValue::new());
+
+        let document = json!({"x": interesting_object, "y": false});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x".into(), interesting_object)));
+    }
+
+    #[test]
+    fn object_in_array() {
+        let interesting_object = json!({"p": null, "o": {}, "a": [null, {}, []]});
+        let mut collector = AtPath::new("0", ExtractJsonValue::new());
+
+        let document = json!([interesting_object, false]);
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/0".into(), interesting_object)));
+    }
+
+    #[test]
+    fn array_in_object() {
+        let interesting_array = json!([null, {"x": {}}, [null, {}, [null]]]);
+        let mut collector = AtPath::new("x", ExtractJsonValue::new());
+
+        let document = json!({"x": interesting_array, "y": false});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x".into(), interesting_array)));
+    }
+
+    #[test]
+    fn array_in_array() {
+        let interesting_array = json!([null, {"x": {}}, [null, {}, [null]]]);
+        let mut collector = AtPath::new("0", ExtractJsonValue::new());
+
+        let document = json!([interesting_array, false]);
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/0".into(), interesting_array)));
+    }
+
+    #[test]
+    fn primitive_at_path() {
+        let mut collector = AtPath::new("x", ExtractPrimitive::new_string());
+
+        let document = json!({"x": "hello", "y": false});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x".into(), "hello".into())));
+    }
+
+    #[test]
+    fn deep_path() {
+        let mut collector = AtPath::new_path(&["x", "0", "x"], ExtractPrimitive::new_bool());
+
+        let document = json!({"x": [{"y": "z", "x": false}], "y": null});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x/0/x".into(), false)));
     }
 }

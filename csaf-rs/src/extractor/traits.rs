@@ -1,5 +1,14 @@
 /// An extractor that traverses a JSON structure and extracts data based on specific rules.
 pub trait Extractor {
+    /// Called when the top level type is a primitive
+    fn init_primitive(&mut self, _path: &[String], _primitive: &serde_json::Value) {}
+
+    /// Called when the top level type is an array
+    fn init_array(&mut self, _path: &[String]) {}
+
+    /// Called when the top level type is an object
+    fn init_object(&mut self, _path: &[String]) {}
+
     /// Called when a primitive value is encountered at a specific key of a JSON object.
     fn keyed_primitive(&mut self, path: &[String], name: &str, primitive: &serde_json::Value);
 
@@ -65,6 +74,16 @@ pub trait WrappedExtractor {
 }
 
 impl<Wrapper: WrappedExtractor> Extractor for Wrapper {
+    fn init_array(&mut self, path: &[String]) {
+        self.apply_inner_unit(|inner| inner.init_array(path));
+    }
+    fn init_object(&mut self, path: &[String]) {
+        self.apply_inner_unit(|inner| inner.init_object(path));
+    }
+    fn init_primitive(&mut self, path: &[String], primitive: &serde_json::Value) {
+        self.apply_inner_unit(|inner| inner.init_primitive(path, primitive));
+    }
+
     fn keyed_primitive(&mut self, path: &[String], name: &str, primitive: &serde_json::Value) {
         self.apply_inner_unit(|inner| inner.keyed_primitive(path, name, primitive))
     }

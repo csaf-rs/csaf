@@ -1,44 +1,34 @@
 use crate::extractor::traits::{CanExtract, Extractor};
 
-/// An extractor that extracts a primitive value at a specified key, and returns it as an `Option`.
+/// An extractor that extracts a primitive value at a specified object key, and returns it as an `Option`.
 pub struct ExtractPrimitive<Type> {
-    name: String,
-    depth: usize,
     result: Option<(String, Type)>,
     mapping: fn(path: &str, &serde_json::Value) -> Option<(String, Type)>,
 }
 
 impl ExtractPrimitive<String> {
-    /// Creates a new `ExtractPrimitive` extractor that will extract a string value at the
-    /// specified key.
-    pub fn new_string(name: &str) -> ExtractPrimitive<String> {
+    /// Creates a new `ExtractPrimitive` extractor that will extract a string value.
+    pub fn new_string() -> ExtractPrimitive<String> {
         ExtractPrimitive {
-            name: name.to_string(),
-            depth: 0,
             result: None,
             mapping: |p, v| v.as_str().map(|s| (p.to_string(), s.to_string())),
         }
     }
 }
+
 impl ExtractPrimitive<serde_json::Number> {
-    /// Creates a new `ExtractPrimitive` extractor that will extract a number value at the
-    /// specified key.
-    pub fn new_number(name: &str) -> ExtractPrimitive<serde_json::Number> {
+    /// Creates a new `ExtractPrimitive` extractor that will extract a number value.
+    pub fn new_number() -> ExtractPrimitive<serde_json::Number> {
         ExtractPrimitive {
-            name: name.to_string(),
-            depth: 0,
             result: None,
             mapping: |p, v| v.as_number().map(|s| (p.to_string(), s.clone())),
         }
     }
 }
 impl ExtractPrimitive<bool> {
-    /// Creates a new `ExtractPrimitive` extractor that will extract a boolean value at the
-    /// specified key.
-    pub fn new_bool(name: &str) -> ExtractPrimitive<bool> {
+    /// Creates a new `ExtractPrimitive` extractor that will extract a boolean value.
+    pub fn new_bool() -> ExtractPrimitive<bool> {
         ExtractPrimitive {
-            name: name.to_string(),
-            depth: 0,
             result: None,
             mapping: |p, v| v.as_bool().map(|b| (p.to_string(), b)),
         }
@@ -52,26 +42,23 @@ impl<T> CanExtract<Option<(String, T)>> for ExtractPrimitive<T> {
 }
 
 impl<T> Extractor for ExtractPrimitive<T> {
-    fn keyed_primitive(&mut self, path: &[String], name: &str, primitive: &serde_json::Value) {
-        if self.depth == 0 && name == self.name {
-            let full_path = [&["".to_string()], path, &[name.to_string()]].concat();
-            self.result = (self.mapping)(full_path.join("/").as_str(), primitive)
-        }
+    fn init_primitive(&mut self, path: &[String], primitive: &serde_json::Value) {
+        self.result = (self.mapping)(format!("/{}", path.join("/")).as_str(), primitive)
     }
 
+    fn keyed_primitive(&mut self, _path: &[String], _name: &str, _primitive: &serde_json::Value) {}
+
     fn enter_keyed_object(&mut self, _path: &[String], _name: &str) -> bool {
-        self.depth += 1;
         false
     }
 
-    fn leave_keyed_object(&mut self, _path: &[String], _name: &str) {
-        self.depth -= 1;
-    }
+    fn leave_keyed_object(&mut self, _path: &[String], _name: &str) {}
 }
 
 /// An extractor that extracts an object structure and returns it as a `serde_json::Value`.
 pub struct ExtractJsonValue {
     stack: Vec<serde_json::Value>,
+    path: Option<String>,
 }
 
 impl ExtractJsonValue {
@@ -79,7 +66,8 @@ impl ExtractJsonValue {
     /// return it as a `serde_json::Value`.
     pub fn new() -> Self {
         ExtractJsonValue {
-            stack: vec![serde_json::Value::Object(serde_json::Map::new())],
+            stack: vec![],
+            path: None,
         }
     }
 }
@@ -91,6 +79,21 @@ impl Default for ExtractJsonValue {
 }
 
 impl Extractor for ExtractJsonValue {
+    fn init_array(&mut self, path: &[String]) {
+        self.path = Some(format!("/{}", path.join("/")));
+        self.stack.push(serde_json::Value::Array(Vec::new()))
+    }
+
+    fn init_object(&mut self, path: &[String]) {
+        self.path = Some(format!("/{}", path.join("/")));
+        self.stack.push(serde_json::Value::Object(serde_json::Map::new()))
+    }
+
+    fn init_primitive(&mut self, path: &[String], primitive: &serde_json::Value) {
+        self.path = Some(format!("/{}", path.join("/")));
+        self.stack.push(primitive.clone())
+    }
+
     fn keyed_primitive(&mut self, _path: &[String], name: &str, primitive: &serde_json::Value) {
         let head = self.stack.pop();
         match head {
@@ -168,14 +171,101 @@ impl Extractor for ExtractJsonValue {
     }
 }
 
-impl CanExtract<Option<serde_json::Value>> for ExtractJsonValue {
-    fn extract(&mut self) -> Option<serde_json::Value> {
+impl CanExtract<Option<(String, serde_json::Value)>> for ExtractJsonValue {
+    fn extract(&mut self) -> Option<(String, serde_json::Value)> {
         if self.stack.len() == 1 {
-            let result = self.stack.pop();
-            self.stack.push(serde_json::Value::Object(serde_json::Map::new()));
-            result
+            self.path.take().zip(self.stack.pop())
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use crate::extractor::{
+        extract::{ExtractJsonValue, ExtractPrimitive},
+        navigate::AtPath,
+        visit_json::visit_json_value,
+    };
+
+    use super::*;
+
+    #[test]
+    fn primitive_at_top_level() {
+        let mut collector = ExtractPrimitive::new_string();
+
+        let document = json!("hello");
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/".into(), "hello".into())));
+    }
+
+    #[test]
+    fn primitive_at_path() {
+        let mut collector = AtPath::new("x", ExtractPrimitive::new_string());
+
+        let document = json!({"x": "hello", "y": false});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x".into(), "hello".into())));
+    }
+
+    #[test]
+    fn number_at_path() {
+        let mut collector = AtPath::new("x", ExtractPrimitive::new_number());
+
+        let document = json!({"x": 1e33, "y": false});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x".into(), serde_json::Number::from_f64(1e33).unwrap())));
+    }
+
+    #[test]
+    fn bool_at_path() {
+        let mut collector = AtPath::new("y", ExtractPrimitive::new_bool());
+
+        let document = json!({"x": 1e33, "y": false});
+        visit_json_value(&document, &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/y".into(), false)));
+    }
+
+    #[test]
+    fn json_at_top_level() {
+        let interesting_object = json!({
+            "p": null,
+            "o": {},
+            "a": [null, {}, []]}
+        );
+
+        let mut collector = ExtractJsonValue::new();
+
+        visit_json_value(&json!(interesting_object), &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/".into(), interesting_object)));
+    }
+
+    #[test]
+    fn json_at_path() {
+        let interesting_object = json!({
+            "p": null,
+            "o": {},
+            "a": [null, {}, []]}
+        );
+
+        let mut collector = AtPath::new("x", ExtractJsonValue::new());
+
+        visit_json_value(&json!({"x": interesting_object, "y": false}), &mut [&mut collector]);
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x".into(), interesting_object)));
     }
 }

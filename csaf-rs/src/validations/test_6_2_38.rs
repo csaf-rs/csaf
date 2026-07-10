@@ -16,7 +16,7 @@ fn create_usage_of_deprecated_profile_error(category: &str) -> ValidationError {
 /// To implement this test it is deemed sufficient to do a "starts with" check.
 fn create_validator_6_2_38() -> impl TwoStepValidator {
     make_validator(
-        AtPath::new("document", ExtractPrimitive::new_string("category")),
+        AtPath::new_path(&["document", "category"], ExtractPrimitive::new_string()),
         |category: Option<(String, String)>| {
             if let Some((_pointer, category)) = category
                 && category.starts_with("csaf_deprecated_")

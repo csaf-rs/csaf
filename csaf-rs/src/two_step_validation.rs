@@ -92,9 +92,7 @@ macro_rules! impl_two_step_validator {
             ) -> Result<(), Vec<crate::validation::ValidationError>> {
                 let mut validator = $validate_fn();
 
-                if let serde_json::Value::Object(data) = document.get_json() {
-                    $crate::extractor::visit_json::visit_json_value(data, &mut [validator.get_extractor()]);
-                }
+                $crate::extractor::visit_json::visit_json_value(document.get_json(), &mut [validator.get_extractor()]);
 
                 validator.perform_validation()
             }
@@ -114,9 +112,7 @@ macro_rules! impl_two_step_validator {
             ) -> Result<(), Vec<crate::validation::ValidationError>> {
                 let mut validator = $validate_fn();
 
-                if let serde_json::Value::Object(data) = document.get_json() {
-                    $crate::extractor::visit_json::visit_json_value(data, &mut [validator.get_extractor()]);
-                }
+                $crate::extractor::visit_json::visit_json_value(document.get_json(), &mut [validator.get_extractor()]);
 
                 validator.perform_validation()
             }

@@ -19,10 +19,45 @@ impl<'de, 'v, 'w> DeserializeSeed<'de> for RootObjectSeed<'v, 'w> {
 impl<'de, 'v, 'w> Visitor<'de> for RootObjectSeed<'v, 'w> {
     type Value = ();
     fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "a JSON object")
+        write!(f, "a JSON value")
+    }
+    fn visit_unit<E: serde::de::Error>(self) -> Result<(), E> {
+        emit_init(&serde_json::Value::Null, self.visitors);
+        Ok(())
+    }
+    fn visit_bool<E: serde::de::Error>(self, v: bool) -> Result<(), E> {
+        emit_init(&serde_json::Value::Bool(v), self.visitors);
+        Ok(())
+    }
+    fn visit_i64<E: serde::de::Error>(self, v: i64) -> Result<(), E> {
+        emit_init(&serde_json::Value::Number(v.into()), self.visitors);
+        Ok(())
+    }
+    fn visit_u64<E: serde::de::Error>(self, v: u64) -> Result<(), E> {
+        emit_init(&serde_json::Value::Number(v.into()), self.visitors);
+        Ok(())
+    }
+    fn visit_f64<E: serde::de::Error>(self, v: f64) -> Result<(), E> {
+        // serde_json never produces NaN/Inf from valid JSON input
+        let num = serde_json::Number::from_f64(v).unwrap_or_else(|| 0i64.into());
+        emit_init(&serde_json::Value::Number(num), self.visitors);
+        Ok(())
+    }
+    fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<(), E> {
+        emit_init(&serde_json::Value::String(v.to_owned()), self.visitors);
+        Ok(())
     }
     fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<(), A::Error> {
+        for v in self.visitors.iter_mut() {
+            v.init_object(&[]);
+        }
         visit_object(&mut vec![], &mut map, self.visitors)
+    }
+    fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
+        for v in self.visitors.iter_mut() {
+            v.init_array(&[]);
+        }
+        visit_array(&mut vec![], &mut seq, self.visitors)
     }
 }
 
@@ -71,6 +106,12 @@ fn visit_array<'de, A: SeqAccess<'de>>(
 fn drain_array<'de, A: SeqAccess<'de>>(seq: &mut A) -> Result<(), A::Error> {
     while seq.next_element::<IgnoredAny>()?.is_some() {}
     Ok(())
+}
+
+fn emit_init(value: &serde_json::Value, visitors: &mut [&mut dyn Extractor]) {
+    for v in visitors.iter_mut() {
+        v.init_primitive(&[], value);
+    }
 }
 
 fn emit_keyed(path: &[String], key: &str, value: &serde_json::Value, visitors: &mut [&mut dyn Extractor]) {
@@ -274,4 +315,95 @@ pub fn visit_stream<R: Read>(reader: R, visitors: &mut [&mut dyn Extractor]) -> 
     let seed = RootObjectSeed { visitors };
 
     DeserializeSeed::deserialize(seed, &mut de)
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use crate::extractor::{
+        extract::{ExtractJsonValue, ExtractPrimitive},
+        navigate::AtPath,
+        traits::CanExtract,
+    };
+
+    use super::*;
+
+    #[test]
+    fn json_object_at_top_level() {
+        let interesting_object = json!({"p": null, "o": {}, "a": [null, {}, []]});
+        let json = serde_json::to_string(&interesting_object).unwrap();
+
+        let mut collector = ExtractJsonValue::new();
+        let parse_result = visit_stream(json.as_bytes(), &mut [&mut collector]);
+        parse_result.expect("parsing should succeed");
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/".into(), interesting_object)));
+    }
+
+    #[test]
+    fn json_object_at_path() {
+        let interesting_object = json!({"p": null, "o": {}, "a": [null, {}, []]});
+        let json = serde_json::to_string(&json!({"x": interesting_object, "y": false})).unwrap();
+
+        let mut collector = AtPath::new("x", ExtractJsonValue::new());
+        let parse_result = visit_stream(json.as_bytes(), &mut [&mut collector]);
+        parse_result.expect("parsing should succeed");
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/x".into(), interesting_object)));
+    }
+
+    #[test]
+    fn json_array_at_top_level() {
+        let interesting_object = json!([{"p": null, "o": {}, "a": [null, {}, []]}]);
+        let json = serde_json::to_string(&interesting_object).unwrap();
+
+        let mut collector = ExtractJsonValue::new();
+        let parse_result = visit_stream(json.as_bytes(), &mut [&mut collector]);
+        parse_result.expect("parsing should succeed");
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/".into(), interesting_object)));
+    }
+
+    #[test]
+    fn json_primitive_at_top_level() {
+        let interesting_object = json!("hello");
+        let json = serde_json::to_string(&interesting_object).unwrap();
+
+        let mut collector = ExtractJsonValue::new();
+
+        let parse_result = visit_stream(json.as_bytes(), &mut [&mut collector]);
+        parse_result.expect("parsing should succeed");
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/".into(), interesting_object)));
+    }
+
+    #[test]
+    fn two_primitives() {
+        let mut x = AtPath::new("x", ExtractPrimitive::new_string());
+        let mut y = AtPath::new("y", ExtractPrimitive::new_bool());
+
+        let parse_result = visit_stream(&br#"{"x": "a", "y": true}"#[..], &mut [&mut x, &mut y]);
+        parse_result.expect("parsing should succeed");
+
+        let result = (x.extract(), y.extract());
+        assert_eq!(result, (Some(("/x".into(), "a".into())), Some(("/y".into(), true))));
+    }
+
+    #[test]
+    fn truncated_json_object_at_top_level() {
+        let interesting_object = json!({"p": "x", "a": false, "b": []});
+        let json = br#"{"p": "x", "a":false, "b": [], "c": //"#;
+
+        let mut collector = ExtractJsonValue::new();
+        let parse_result = visit_stream(&json[..], &mut [&mut collector]);
+        parse_result.expect_err("parsing should fail");
+
+        let result = collector.extract();
+        assert_eq!(result, Some(("/".into(), interesting_object)));
+    }
 }

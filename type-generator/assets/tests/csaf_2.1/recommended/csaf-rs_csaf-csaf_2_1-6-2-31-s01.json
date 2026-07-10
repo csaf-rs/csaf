@@ -20,8 +20,8 @@
       "initial_release_date": "2026-07-07T12:00:00Z",
       "revision_history": [
         {
-          "number": "1",
           "date": "2026-07-07T12:00:00Z",
+          "number": "1",
           "summary": "Initial"
         }
       ],
@@ -32,15 +32,13 @@
   "product_tree": {
     "branches": [
       {
-        "category": "vendor",
-        "name": "Example Vendor",
         "branches": [
           {
             "category": "product_name",
             "name": "Product 1",
             "product": {
-              "product_id": "CSAFPID-908070601",
               "name": "Product 1",
+              "product_id": "CSAFPID-908070601",
               "product_identification_helper": {
                 "serial_numbers": [
                   "SN-1"
@@ -48,7 +46,9 @@
               }
             }
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Example Vendor"
       }
     ]
   }

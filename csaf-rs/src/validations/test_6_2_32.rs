@@ -136,7 +136,7 @@ mod tests {
     fn test_test_6_2_32() {
         println!("DEBUG: Starting test 6.2.32");
         // Case 01
-        let mut case_01_errors = vec![
+        let case_01_errors = vec![
             generate_duplicate_helper_error(
                 "serial_numbers",
                 "143-D-354",
@@ -150,10 +150,9 @@ mod tests {
                 "/product_tree/branches/0/branches/0/branches/1/product",
             ),
         ];
-        case_01_errors.sort_by_key(|e| e.instance_path.clone());
 
         // Case 02
-        let mut case_02_errors = vec![
+        let case_02_errors = vec![
             generate_duplicate_helper_error(
                 "model_numbers",
                 "143-D-354",
@@ -167,10 +166,9 @@ mod tests {
                 "/product_tree/branches/0/branches/1/branches/0/product",
             ),
         ];
-        case_02_errors.sort_by_key(|e| e.instance_path.clone());
 
         // Case 03
-        let mut case_03_errors = vec![
+        let case_03_errors = vec![
             generate_duplicate_helper_error(
                 "model_numbers",
                 "143-D-354",
@@ -190,7 +188,6 @@ mod tests {
                 "/product_tree/relationships/0/full_product_name",
             ),
         ];
-        case_03_errors.sort_by_key(|e| e.instance_path.clone());
 
         // Case s01: Matching the validator's internal serialization
         // Use the exact debug string from the logs for the PURL

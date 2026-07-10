@@ -32,13 +32,11 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
         let product_id = product.get_product_id();
 
         if let Some(helper) = product.get_product_identification_helper() {
-            let has_serial = helper.get_serial_numbers().map_or(false, |sn: Vec<_>| !sn.is_empty());
-            let has_model = helper.get_model_numbers().map_or(false, |mn: Vec<_>| !mn.is_empty());
+            let has_serial = helper.get_serial_numbers().is_some_and(|sn: Vec<_>| !sn.is_empty());
+            let has_model = helper.get_model_numbers().is_some_and(|mn: Vec<_>| !mn.is_empty());
 
-            if has_serial || has_model {
-                if !valid_path_references.contains(product_id) {
-                    errors.push(generate_hardware_software_mix_error(product_id, instance_path));
-                }
+            if (has_serial || has_model) && !valid_path_references.contains(product_id) {
+                errors.push(generate_hardware_software_mix_error(product_id, instance_path));
             }
         }
     });

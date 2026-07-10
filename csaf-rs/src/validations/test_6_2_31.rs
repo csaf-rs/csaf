@@ -43,23 +43,6 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
         }
     });
 
-    // 3. Fall back to checking full_product_names array items
-    for (idx, product) in product_tree.get_full_product_names().iter().enumerate() {
-        let product_id = product.get_product_id();
-
-        if let Some(helper) = product.get_product_identification_helper() {
-            let has_serial = helper.get_serial_numbers().map_or(false, |sn: Vec<_>| !sn.is_empty());
-            let has_model = helper.get_model_numbers().map_or(false, |mn: Vec<_>| !mn.is_empty());
-
-            if has_serial || has_model {
-                if !valid_path_references.contains(product_id) {
-                    let instance_path = format!("/product_tree/full_product_names/{idx}");
-                    errors.push(generate_hardware_software_mix_error(product_id, &instance_path));
-                }
-            }
-        }
-    }
-
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 

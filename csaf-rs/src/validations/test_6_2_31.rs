@@ -78,7 +78,8 @@ mod tests {
             "/product_tree/branches/0/branches/0/branches/0/product",
         )];
 
-        // S01: Edge cases for 6.2.31
+        // S01: Edge case for 6.2.31
+        // Note: Contains serial_number to trigger identification requirement for branch structure.
         let s01 = vec![
             // 1. Missing Product Path: Fails because the branch structure does not define a valid product path
             generate_hardware_software_mix_error("CSAFPID-908070601", "/product_tree/branches/0/branches/0/product"),

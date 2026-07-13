@@ -3,7 +3,7 @@ use crate::extractor::traits::{CanExtract, Extractor};
 /// An extractor that extracts a primitive value at a specified object key, and returns it as an `Option`.
 pub struct ExtractPrimitive<Type> {
     result: Option<(String, Type)>,
-    mapping: fn(path: &str, &serde_json::Value) -> Option<(String, Type)>,
+    mapping: fn(json_pointer: &str, &serde_json::Value) -> Option<(String, Type)>,
 }
 
 impl ExtractPrimitive<String> {
@@ -42,23 +42,23 @@ impl<T> CanExtract<Option<(String, T)>> for ExtractPrimitive<T> {
 }
 
 impl<T> Extractor for ExtractPrimitive<T> {
-    fn init_primitive(&mut self, path: &[String], primitive: &serde_json::Value) {
-        self.result = (self.mapping)(format!("/{}", path.join("/")).as_str(), primitive)
+    fn init_primitive(&mut self, json_pointer: &str, primitive: &serde_json::Value) {
+        self.result = (self.mapping)(json_pointer, primitive)
     }
 
-    fn keyed_primitive(&mut self, _path: &[String], _name: &str, _primitive: &serde_json::Value) {}
+    fn keyed_primitive(&mut self, _json_pointer: &str, _name: &str, _primitive: &serde_json::Value) {}
 
-    fn enter_keyed_object(&mut self, _path: &[String], _name: &str) -> bool {
+    fn enter_keyed_object(&mut self, _json_pointer: &str, _name: &str) -> bool {
         false
     }
 
-    fn leave_keyed_object(&mut self, _path: &[String], _name: &str) {}
+    fn leave_keyed_object(&mut self, _json_pointer: &str, _name: &str) {}
 }
 
 /// An extractor that extracts an object structure and returns it as a `serde_json::Value`.
 pub struct ExtractJsonValue {
     stack: Vec<serde_json::Value>,
-    path: Option<String>,
+    json_pointer: Option<String>,
 }
 
 impl ExtractJsonValue {
@@ -67,7 +67,7 @@ impl ExtractJsonValue {
     pub fn new() -> Self {
         ExtractJsonValue {
             stack: vec![],
-            path: None,
+            json_pointer: None,
         }
     }
 }
@@ -79,22 +79,22 @@ impl Default for ExtractJsonValue {
 }
 
 impl Extractor for ExtractJsonValue {
-    fn init_array(&mut self, path: &[String]) {
-        self.path = Some(format!("/{}", path.join("/")));
+    fn init_array(&mut self, json_pointer: &str) {
+        self.json_pointer = Some(json_pointer.into());
         self.stack.push(serde_json::Value::Array(Vec::new()))
     }
 
-    fn init_object(&mut self, path: &[String]) {
-        self.path = Some(format!("/{}", path.join("/")));
+    fn init_object(&mut self, json_pointer: &str) {
+        self.json_pointer = Some(json_pointer.into());
         self.stack.push(serde_json::Value::Object(serde_json::Map::new()))
     }
 
-    fn init_primitive(&mut self, path: &[String], primitive: &serde_json::Value) {
-        self.path = Some(format!("/{}", path.join("/")));
+    fn init_primitive(&mut self, json_pointer: &str, primitive: &serde_json::Value) {
+        self.json_pointer = Some(json_pointer.into());
         self.stack.push(primitive.clone())
     }
 
-    fn keyed_primitive(&mut self, _path: &[String], name: &str, primitive: &serde_json::Value) {
+    fn keyed_primitive(&mut self, _json_pointer: &str, name: &str, primitive: &serde_json::Value) {
         let head = self.stack.pop();
         match head {
             Some(serde_json::Value::Object(mut values)) => {
@@ -106,12 +106,12 @@ impl Extractor for ExtractJsonValue {
         };
     }
 
-    fn enter_keyed_object(&mut self, _path: &[String], _name: &str) -> bool {
+    fn enter_keyed_object(&mut self, _json_pointer: &str, _name: &str) -> bool {
         self.stack.push(serde_json::Value::Object(serde_json::Map::new()));
         true
     }
 
-    fn leave_keyed_object(&mut self, _path: &[String], name: &str) {
+    fn leave_keyed_object(&mut self, _json_pointer: &str, name: &str) {
         let child = self.stack.pop();
         let parent = self.stack.pop();
         match (child, parent) {
@@ -124,16 +124,16 @@ impl Extractor for ExtractJsonValue {
         };
     }
 
-    fn enter_keyed_array(&mut self, _path: &[String], _name: &str) -> bool {
+    fn enter_keyed_array(&mut self, _json_pointer: &str, _name: &str) -> bool {
         self.stack.push(serde_json::Value::Array(vec![]));
         true
     }
 
-    fn leave_keyed_array(&mut self, path: &[String], name: &str) {
-        self.leave_keyed_object(path, name);
+    fn leave_keyed_array(&mut self, json_pointer: &str, name: &str) {
+        self.leave_keyed_object(json_pointer, name);
     }
 
-    fn indexed_primitive(&mut self, _path: &[String], _index: usize, primitive: &serde_json::Value) {
+    fn indexed_primitive(&mut self, _json_pointer: &str, _index: usize, primitive: &serde_json::Value) {
         let head = self.stack.pop();
         match head {
             Some(serde_json::Value::Array(mut values)) => {
@@ -145,11 +145,11 @@ impl Extractor for ExtractJsonValue {
         };
     }
 
-    fn enter_indexed_object(&mut self, path: &[String], index: usize) -> bool {
-        self.enter_keyed_object(path, index.to_string().as_str())
+    fn enter_indexed_object(&mut self, json_pointer: &str, index: usize) -> bool {
+        self.enter_keyed_object(json_pointer, index.to_string().as_str())
     }
 
-    fn leave_indexed_object(&mut self, _path: &[String], _index: usize) {
+    fn leave_indexed_object(&mut self, _json_pointer: &str, _index: usize) {
         let child = self.stack.pop();
         let parent = self.stack.pop();
         match (child, parent) {
@@ -162,19 +162,19 @@ impl Extractor for ExtractJsonValue {
         };
     }
 
-    fn enter_indexed_array(&mut self, path: &[String], index: usize) -> bool {
-        self.enter_keyed_array(path, index.to_string().as_str())
+    fn enter_indexed_array(&mut self, json_pointer: &str, index: usize) -> bool {
+        self.enter_keyed_array(json_pointer, index.to_string().as_str())
     }
 
-    fn leave_indexed_array(&mut self, path: &[String], index: usize) {
-        self.leave_indexed_object(path, index);
+    fn leave_indexed_array(&mut self, json_pointer: &str, index: usize) {
+        self.leave_indexed_object(json_pointer, index);
     }
 }
 
 impl CanExtract<Option<(String, serde_json::Value)>> for ExtractJsonValue {
     fn extract(&mut self) -> Option<(String, serde_json::Value)> {
         if self.stack.len() == 1 {
-            self.path.take().zip(self.stack.pop())
+            self.json_pointer.take().zip(self.stack.pop())
         } else {
             None
         }
@@ -201,7 +201,7 @@ mod test {
         visit_json_value(&document, &mut [&mut collector]);
 
         let result = collector.extract();
-        assert_eq!(result, Some(("/".into(), "hello".into())));
+        assert_eq!(result, Some(("".into(), "hello".into())));
     }
 
     #[test]
@@ -250,7 +250,7 @@ mod test {
         visit_json_value(&json!(interesting_object), &mut [&mut collector]);
 
         let result = collector.extract();
-        assert_eq!(result, Some(("/".into(), interesting_object)));
+        assert_eq!(result, Some(("".into(), interesting_object)));
     }
 
     #[test]

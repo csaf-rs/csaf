@@ -62,87 +62,86 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> CanExtract<Optio
 }
 
 impl<ElementType, Element: CanExtract<ElementType> + Extractor> Extractor for CollectArray<Element, ElementType> {
-    fn keyed_primitive(&mut self, path: &[String], name: &str, primitive: &serde_json::Value) {
+    fn keyed_primitive(&mut self, json_pointer: &str, name: &str, primitive: &serde_json::Value) {
         if self.matched {
-            self.source.keyed_primitive(path, name, primitive);
+            self.source.keyed_primitive(json_pointer, name, primitive);
         }
     }
 
-    fn enter_keyed_object(&mut self, path: &[String], name: &str) -> bool {
+    fn enter_keyed_object(&mut self, json_pointer: &str, name: &str) -> bool {
         self.enter_object();
         if self.matched {
-            self.source.enter_keyed_object(path, name)
+            self.source.enter_keyed_object(json_pointer, name)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_keyed_object(&mut self, path: &[String], name: &str) {
+    fn leave_keyed_object(&mut self, json_pointer: &str, name: &str) {
         self.leave();
         if self.matched {
-            self.source.leave_keyed_object(path, name);
+            self.source.leave_keyed_object(json_pointer, name);
         }
     }
 
-    fn enter_keyed_array(&mut self, path: &[String], name: &str) -> bool {
+    fn enter_keyed_array(&mut self, json_pointer: &str, name: &str) -> bool {
         self.enter_object();
         if self.matched {
-            self.source.enter_keyed_array(path, name)
+            self.source.enter_keyed_array(json_pointer, name)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_keyed_array(&mut self, path: &[String], name: &str) {
+    fn leave_keyed_array(&mut self, json_pointer: &str, name: &str) {
         self.leave();
         if self.matched {
-            self.source.leave_keyed_array(path, name);
+            self.source.leave_keyed_array(json_pointer, name);
         }
     }
 
-    fn indexed_primitive(&mut self, path: &[String], index: usize, primitive: &serde_json::Value) {
+    fn indexed_primitive(&mut self, json_pointer: &str, index: usize, primitive: &serde_json::Value) {
         if self.depth == 0 {
-            self.source
-                .init_primitive(&[path, &[index.to_string()]].concat(), primitive);
+            self.source.init_primitive(json_pointer, primitive);
             self.result.get_or_insert_default().push(self.source.extract())
         } else if self.matched {
-            self.source.indexed_primitive(path, index, primitive);
+            self.source.indexed_primitive(json_pointer, index, primitive);
         }
     }
 
-    fn enter_indexed_object(&mut self, path: &[String], index: usize) -> bool {
+    fn enter_indexed_object(&mut self, json_pointer: &str, index: usize) -> bool {
         if self.enter_array() {
-            self.source.init_object(&[path, &[index.to_string()]].concat());
+            self.source.init_object(json_pointer);
             true
         } else if self.matched {
-            self.source.enter_indexed_object(path, index)
+            self.source.enter_indexed_object(json_pointer, index)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_indexed_object(&mut self, path: &[String], index: usize) {
+    fn leave_indexed_object(&mut self, json_pointer: &str, index: usize) {
         self.leave();
         if self.matched {
-            self.source.leave_indexed_object(path, index);
+            self.source.leave_indexed_object(json_pointer, index);
         }
     }
 
-    fn enter_indexed_array(&mut self, path: &[String], index: usize) -> bool {
+    fn enter_indexed_array(&mut self, json_pointer: &str, index: usize) -> bool {
         if self.enter_array() {
-            self.source.init_array(&[path, &[index.to_string()]].concat());
+            self.source.init_array(json_pointer);
             true
         } else if self.matched {
-            self.source.enter_indexed_array(path, index)
+            self.source.enter_indexed_array(json_pointer, index)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_indexed_array(&mut self, path: &[String], index: usize) {
+    fn leave_indexed_array(&mut self, json_pointer: &str, index: usize) {
         self.leave();
         if self.matched {
-            self.source.leave_indexed_array(path, index);
+            self.source.leave_indexed_array(json_pointer, index);
         }
     }
 }

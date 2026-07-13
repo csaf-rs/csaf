@@ -20,7 +20,7 @@ impl<Source: Extractor> AtPath<Source> {
         }
     }
 
-    /// Creates a new `AtPath` extractor that will navigate to the specified path and apply the
+    /// Creates a new `AtPath` extractor that will navigate to the specified json_pointer and apply the
     /// provided `payload` extractor there.
     pub fn new_path(path: &[&str], payload: Source) -> Self {
         AtPath {
@@ -61,96 +61,95 @@ impl<Source: Extractor> AtPath<Source> {
 }
 
 impl<Source: Extractor> Extractor for AtPath<Source> {
-    fn keyed_primitive(&mut self, path: &[String], name: &str, primitive: &serde_json::Value) {
+    fn keyed_primitive(&mut self, json_pointer: &str, name: &str, primitive: &serde_json::Value) {
         if self.enter(name) {
-            self.source.init_primitive(&[path, &[name.into()]].concat(), primitive);
+            self.source.init_primitive(json_pointer, primitive);
         }
         self.leave();
         if self.should_forward() {
-            self.source.keyed_primitive(path, name, primitive);
+            self.source.keyed_primitive(json_pointer, name, primitive);
         }
     }
 
-    fn enter_keyed_object(&mut self, path: &[String], name: &str) -> bool {
+    fn enter_keyed_object(&mut self, json_pointer: &str, name: &str) -> bool {
         if self.enter(name) {
-            self.source.init_object(&[path, &[name.into()]].concat());
+            self.source.init_object(json_pointer);
             true
         } else if self.should_forward() {
-            self.source.enter_keyed_object(path, name)
+            self.source.enter_keyed_object(json_pointer, name)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_keyed_object(&mut self, path: &[String], name: &str) {
+    fn leave_keyed_object(&mut self, json_pointer: &str, name: &str) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_keyed_object(path, name)
+            self.source.leave_keyed_object(json_pointer, name)
         }
     }
 
-    fn enter_keyed_array(&mut self, path: &[String], name: &str) -> bool {
+    fn enter_keyed_array(&mut self, json_pointer: &str, name: &str) -> bool {
         if self.enter(name) {
-            self.source.init_array(&[path, &[name.into()]].concat());
+            self.source.init_array(json_pointer);
             true
         } else if self.should_forward() {
-            self.source.enter_keyed_array(path, name)
+            self.source.enter_keyed_array(json_pointer, name)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_keyed_array(&mut self, path: &[String], name: &str) {
+    fn leave_keyed_array(&mut self, json_pointer: &str, name: &str) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_keyed_array(path, name)
+            self.source.leave_keyed_array(json_pointer, name)
         }
     }
 
-    fn indexed_primitive(&mut self, path: &[String], index: usize, primitive: &serde_json::Value) {
+    fn indexed_primitive(&mut self, json_pointer: &str, index: usize, primitive: &serde_json::Value) {
         if self.enter(index.to_string().as_str()) {
-            self.source
-                .init_primitive(&[path, &[index.to_string()]].concat(), primitive);
+            self.source.init_primitive(json_pointer, primitive);
         }
         self.leave();
         if self.should_forward() {
-            self.source.indexed_primitive(path, index, primitive);
+            self.source.indexed_primitive(json_pointer, index, primitive);
         }
     }
 
-    fn enter_indexed_object(&mut self, path: &[String], index: usize) -> bool {
+    fn enter_indexed_object(&mut self, json_pointer: &str, index: usize) -> bool {
         if self.enter(index.to_string().as_str()) {
-            self.source.init_object(&[path, &[index.to_string()]].concat());
+            self.source.init_object(json_pointer);
             true
         } else if self.should_forward() {
-            self.source.enter_indexed_object(path, index)
+            self.source.enter_indexed_object(json_pointer, index)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_indexed_object(&mut self, path: &[String], index: usize) {
+    fn leave_indexed_object(&mut self, json_pointer: &str, index: usize) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_indexed_object(path, index)
+            self.source.leave_indexed_object(json_pointer, index)
         }
     }
 
-    fn enter_indexed_array(&mut self, path: &[String], index: usize) -> bool {
+    fn enter_indexed_array(&mut self, json_pointer: &str, index: usize) -> bool {
         if self.enter(index.to_string().as_str()) {
-            self.source.init_array(&[path, &[index.to_string()]].concat());
+            self.source.init_array(json_pointer);
             true
         } else if self.should_forward() {
-            self.source.enter_indexed_array(path, index)
+            self.source.enter_indexed_array(json_pointer, index)
         } else {
             self.should_descend()
         }
     }
 
-    fn leave_indexed_array(&mut self, path: &[String], index: usize) {
+    fn leave_indexed_array(&mut self, json_pointer: &str, index: usize) {
         self.leave();
         if self.should_forward() {
-            self.source.leave_indexed_array(path, index)
+            self.source.leave_indexed_array(json_pointer, index)
         }
     }
 }

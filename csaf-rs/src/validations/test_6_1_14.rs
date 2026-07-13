@@ -62,6 +62,7 @@ mod tests {
             case_error.clone(),
             case_error.clone(),
             case_error.clone(),
+            Ok(()), // case_s01
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13
@@ -86,6 +87,7 @@ mod tests {
             case_error.clone(),
             case_error.clone(),
             case_error,
+            Ok(()), // case_s01
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13

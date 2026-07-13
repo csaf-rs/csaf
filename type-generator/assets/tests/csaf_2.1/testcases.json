@@ -97,6 +97,12 @@
     {
       "id": "6.1.14",
       "group": "mandatory",
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-14-s01.json",
+          "valid": false
+        }
+      ],
       "valid": [
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-14-s11.json",

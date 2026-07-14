@@ -8,14 +8,7 @@ use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::hash::Hash;
 use std::ops::Deref;
 
-/// Enum representing the version number of a CSAF document, which can be either be integer or semantic versioning
-///
-/// This type is parsed into from VersionT, which is already schema validated with the regex:
-/// `^(0|[1-9][0-9]*)$|^((0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)$`
-///
-/// The regex consists of two parts:
-/// 1. The first part `(0|[1-9][0-9]*)$` matches integer versioning, which is either "0" or a non-zero digit followed by any number of digits (e.g., "1", "42", but not "01").
-/// 2. The second part matches semantic versioning, which consists of three dot-separated numeric identifiers (major, minor, patch), optionally followed by a prerelease tag (prefixed with '-') and build metadata (prefixed with '+').
+/// Enum representing the version number of a CSAF document, which can be either integer or semantic versioning or an invalid version string.
 #[derive(Debug, Clone)]
 pub enum CsafVersionNumber {
     IntVer(IntVerVersion),
@@ -29,27 +22,6 @@ pub const SEMANTIC_VER_ZERO: CsafVersionNumber = CsafVersionNumber::SemVer(SemVe
 pub const SEMANTIC_VER_ONE: CsafVersionNumber = CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(1, 0, 0)));
 
 impl CsafVersionNumber {
-    /// Parses a version string into a `CsafVersionNumber`, trying integer versioning and semantic versioning.
-    ///
-    /// Integer versions must be in the inclusive range `0..=u64::MAX`.
-    /// Semantic version core identifiers are parsed by `semver::Version`, which applies the same
-    /// `u64` range restriction to major, minor, and patch.
-    /// If both parses fail, this function returns `Invalid`.
-    fn parse_str(s: &str) -> CsafVersionNumber {
-        if s.chars().all(|c| c.is_ascii_digit())
-            && !(s.len() > 1 && s.starts_with('0'))
-            && let Ok(num) = s.parse::<u64>()
-        {
-            return CsafVersionNumber::IntVer(IntVerVersion::new(num));
-        }
-
-        if let Ok(semver) = Version::parse(s) {
-            return CsafVersionNumber::SemVer(SemVerVersion::new(semver));
-        }
-
-        return CsafVersionNumber::Invalid(s.to_string());
-    }
-
     /// Helper function to get the major version number, which is either the integer version or the major version of the semantic version.
     pub fn get_major(&self) -> Result<u64, CsafVersionNumberError> {
         match &self {
@@ -65,6 +37,7 @@ impl CsafVersionNumber {
     /// *"non-semantic versioning numbers are interpreted as semantic versioning numbers"*.
     /// This allows mixed-variant revision histories to be sorted and compared correctly.
     pub(crate) fn to_comparable_semver(&self) -> Result<Version, CsafVersionNumberError> {
+        // ToDo TZ we should return a CsafVersionNumber here.
         match self {
             CsafVersionNumber::IntVer(intver) => Ok(Version::new(intver.get(), 0, 0)),
             CsafVersionNumber::SemVer(semver) => Ok(semver.get_version().clone()),
@@ -128,17 +101,40 @@ impl CsafVersionNumber {
     }
 }
 
+/// Parses a version string into a `CsafVersionNumber`, trying integer versioning and semantic versioning.
+///
+/// Integer versions must be in the inclusive range `0..=u64::MAX`.
+/// Semantic version core identifiers are parsed by `semver::Version`, which applies the same
+/// `u64` range restriction to major, minor, and patch.
+/// If both parses fail, this function returns `Invalid`.
+impl From<&str> for CsafVersionNumber {
+    fn from(s: &str) -> Self {
+        if s.chars().all(|c| c.is_ascii_digit())
+            && !(s.len() > 1 && s.starts_with('0'))
+            && let Ok(num) = s.parse::<u64>()
+        {
+            return CsafVersionNumber::IntVer(IntVerVersion::new(num));
+        }
+
+        if let Ok(semver) = Version::parse(s) {
+            return CsafVersionNumber::SemVer(SemVerVersion::new(semver));
+        }
+
+        return CsafVersionNumber::Invalid(s.to_string());
+    }
+}
+
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber
 impl From<&VersionT20> for CsafVersionNumber {
     fn from(v: &VersionT20) -> Self {
-        CsafVersionNumber::parse_str(v.deref().as_str())
+        CsafVersionNumber::from(v.deref().as_str())
     }
 }
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.1 into a CsafVersionNumber
 impl From<&VersionT21> for CsafVersionNumber {
     fn from(v: &VersionT21) -> Self {
-        CsafVersionNumber::parse_str(v.deref().as_str())
+        CsafVersionNumber::from(v.deref().as_str())
     }
 }
 
@@ -195,22 +191,6 @@ impl PartialOrd for CsafVersionNumber {
         Some(self.cmp(other))
     }
 }
-
-// Transform a raw version string into a CsafVersionNumber.  As the schema validation is the same
-// for CSAF 2.0 and 2.1, we can just push the raw string through either before parsing it into a CsafVersionNumber.
-// This is only used for testing and not available on the public API
-#[cfg(test)]
-impl From<&str> for CsafVersionNumber {
-    fn from(s: &str) -> Self {
-        use std::str::FromStr;
-        CsafVersionNumber::parse_str(
-            &crate::schema::csaf2_1::schema::VersionT::from_str(s).unwrap_or_else(|err| {
-                panic!("Raw version string '{s}' failed schema validation: {err}. This looks like a dev error.")
-            }),
-        )
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -218,36 +198,36 @@ mod tests {
 
     #[test]
     fn test_parse_str_integer_version() {
-        let intver = CsafVersionNumber::parse_str("42");
+        let intver = CsafVersionNumber::from("42");
         assert!(matches!(intver, CsafVersionNumber::IntVer(_)));
         assert_eq!(intver.get_major().ok(), Some(42));
     }
 
     #[test]
     fn test_parse_str_integer_boundaries() {
-        let zero = CsafVersionNumber::parse_str("0");
+        let zero = CsafVersionNumber::from("0");
         assert!(matches!(zero, CsafVersionNumber::IntVer(_)));
         assert_eq!(zero.get_major().ok(), Some(0));
 
-        let max = CsafVersionNumber::parse_str("18446744073709551615");
+        let max = CsafVersionNumber::from("18446744073709551615");
         assert!(matches!(max, CsafVersionNumber::IntVer(_)));
         assert_eq!(max.get_major().ok(), Some(u64::MAX));
     }
 
     #[test]
     fn test_parse_str_semver_version() {
-        let semver = CsafVersionNumber::parse_str("1.0.0");
+        let semver = CsafVersionNumber::from("1.0.0");
         assert!(matches!(semver, CsafVersionNumber::SemVer(_)));
         assert_eq!(semver.get_major().ok(), Some(1));
     }
 
     #[test]
     fn test_parse_str_semver_boundaries() {
-        let zero = CsafVersionNumber::parse_str("0.0.0");
+        let zero = CsafVersionNumber::from("0.0.0");
         assert!(matches!(zero, CsafVersionNumber::SemVer(_)));
         assert_eq!(zero.to_string(), "0.0.0");
 
-        let max = CsafVersionNumber::parse_str("18446744073709551615.18446744073709551615.18446744073709551615");
+        let max = CsafVersionNumber::from("18446744073709551615.18446744073709551615.18446744073709551615");
         assert!(matches!(max, CsafVersionNumber::SemVer(_)));
         assert_eq!(
             max.to_string(),
@@ -257,37 +237,37 @@ mod tests {
 
     #[test]
     fn test_parse_str_invalid_version() {
-        let semver = CsafVersionNumber::parse_str("v234");
+        let semver = CsafVersionNumber::from("v234");
         assert!(matches!(semver, CsafVersionNumber::Invalid(_)));
     }
 
     #[test]
     fn test_parse_str_leading_zero_invalid() {
-        let semver = CsafVersionNumber::parse_str("0123");
+        let semver = CsafVersionNumber::from("0123");
         assert!(matches!(semver, CsafVersionNumber::Invalid(_)));
     }
 
     #[test]
     fn test_parse_str_integer_overflow_invalid() {
-        let version = CsafVersionNumber::parse_str("18446744073709551616");
+        let version = CsafVersionNumber::from("18446744073709551616");
         assert!(matches!(version, CsafVersionNumber::Invalid(_)));
     }
 
     #[test]
     fn test_parse_str_semver_major_overflow_invalid() {
-        let version = CsafVersionNumber::parse_str("18446744073709551616.0.0");
+        let version = CsafVersionNumber::from("18446744073709551616.0.0");
         assert!(matches!(version, CsafVersionNumber::Invalid(_)));
     }
 
     #[test]
     fn test_parse_str_semver_minor_overflow_invalid() {
-        let version = CsafVersionNumber::parse_str("0.18446744073709551616.0");
+        let version = CsafVersionNumber::from("0.18446744073709551616.0");
         assert!(matches!(version, CsafVersionNumber::Invalid(_)));
     }
 
     #[test]
     fn test_parse_str_semver_patch_overflow_invalid() {
-        let version = CsafVersionNumber::parse_str("0.0.18446744073709551616");
+        let version = CsafVersionNumber::from("0.0.18446744073709551616");
         assert!(matches!(version, CsafVersionNumber::Invalid(_)));
     }
 
@@ -348,7 +328,7 @@ mod tests {
 
     #[test]
     fn test_increment_invalid_version_error() {
-        let version = CsafVersionNumber::parse_str("v123");
+        let version = CsafVersionNumber::from("v123");
         assert!(version.get_next_major_version().is_err());
     }
 
@@ -392,7 +372,7 @@ mod tests {
 
     #[test]
     fn test_decrement_invalid() {
-        let version = CsafVersionNumber::parse_str("v123v123");
+        let version = CsafVersionNumber::from("v123v123");
         assert!(version.get_previous_major_version().is_err());
     }
 
@@ -412,8 +392,8 @@ mod tests {
         assert_eq!(CsafVersionNumber::from("42"), CsafVersionNumber::from("42.0.0"));
         // IntVer(n) does not equal SemVer(n.x.y) when x > 0 or y > 0
         assert_ne!(CsafVersionNumber::from("1"), CsafVersionNumber::from("1.2.3"));
-        assert_ne!(CsafVersionNumber::from("1"), CsafVersionNumber::parse_str("v1"));
-        assert_ne!(CsafVersionNumber::parse_str("v1"), CsafVersionNumber::from("1.0.0"));
+        assert_ne!(CsafVersionNumber::from("1"), CsafVersionNumber::from("v1"));
+        assert_ne!(CsafVersionNumber::from("v1"), CsafVersionNumber::from("1.0.0"));
     }
 
     #[test]

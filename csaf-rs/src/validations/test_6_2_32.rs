@@ -48,6 +48,12 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
     product_tree.visit_all_products(&mut |product, instance_path| {
         let product_id = product.get_product_id().to_string();
         let path_str = instance_path.to_string();
+            // test id's
+            // ungerade = valid
+            // gerade = failure test
+        // valid = true -> gesamt valide für alle tests, im recommended test kann es failen aber trotzdem valide sein
+        // test jsons minimal so dass minimal schema prüfung stand hällt
+
 
         if let Some(helper) = product.get_product_identification_helper() {
             // Collect PURLs
@@ -134,7 +140,6 @@ mod tests {
 
     #[test]
     fn test_test_6_2_32() {
-        println!("DEBUG: Starting test 6.2.32");
         // Case 01
         let case_01_errors = vec![
             generate_duplicate_helper_error(
@@ -189,24 +194,28 @@ mod tests {
             ),
         ];
 
-        // Case s01: Matching the validator's internal serialization
-        // Use the exact debug string from the logs for the PURL
+        // Case s01: Comprehensive Integration Test
+        // P1 und P2 enthalten alle 5 Identifikator-Typen mit Kollisionen.
         let purl_val = "Valid(ValidPurl { original_purl: \"pkg:npm/csaf-validator@0.5.1\", normalized_purl: \"pkg:npm/csaf-validator@0.5.1\", base_without_qualifiers: \"pkg:npm/csaf-validator@0.5.1\" })";
         let hash_val = "file:f.bin;alg:sha256;value:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
         let case_s01_errors = vec![
+            // Hash Kollisionen
             generate_duplicate_helper_error("hashes", hash_val, "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("hashes", hash_val, "P2", "/product_tree/full_product_names/1"),
-            generate_duplicate_helper_error("purls", purl_val, "P3", "/product_tree/full_product_names/2"),
-            generate_duplicate_helper_error("purls", purl_val, "P4", "/product_tree/full_product_names/3"),
-            generate_duplicate_helper_error("serial_numbers", "SN-999", "P5", "/product_tree/full_product_names/4"),
-            generate_duplicate_helper_error("serial_numbers", "SN-999", "P6", "/product_tree/full_product_names/5"),
-            generate_duplicate_helper_error("model_numbers", "MN-888", "P7", "/product_tree/full_product_names/6"),
-            generate_duplicate_helper_error("model_numbers", "MN-888", "P8", "/product_tree/full_product_names/7"),
-            generate_duplicate_helper_error("skus", "SKU-777", "P9", "/product_tree/full_product_names/8"),
-            generate_duplicate_helper_error("skus", "SKU-777", "P10", "/product_tree/full_product_names/9"),
+            // PURL Kollisionen
+            generate_duplicate_helper_error("purls", purl_val, "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("purls", purl_val, "P2", "/product_tree/full_product_names/1"),
+            // Serial Number Kollisionen
+            generate_duplicate_helper_error("serial_numbers", "SN-999", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("serial_numbers", "SN-999", "P2", "/product_tree/full_product_names/1"),
+            // Model Number Kollisionen
+            generate_duplicate_helper_error("model_numbers", "MN-888", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("model_numbers", "MN-888", "P2", "/product_tree/full_product_names/1"),
+            // SKU Kollisionen
+            generate_duplicate_helper_error("skus", "SKU-777", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("skus", "SKU-777", "P2", "/product_tree/full_product_names/1"),
         ];
-
         // Case 01: Both colliding products should flag an error independently
         // Case 02: Model number collisions cross-flagged on both variants
         // Case 03: Corrected structural runtime paths matching the schema generation target

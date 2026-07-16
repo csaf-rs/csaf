@@ -45,7 +45,11 @@
               ],
               "filename": "f.bin"
             }
-          ]
+          ],
+          "purls": ["pkg:npm/csaf-validator@0.5.1"],
+          "serial_numbers": ["SN-999"],
+          "model_numbers": ["MN-888"],
+          "skus": ["SKU-777"]
         }
       },
       {
@@ -62,79 +66,11 @@
               ],
               "filename": "f.bin"
             }
-          ]
-        }
-      },
-      {
-        "name": "P3",
-        "product_id": "P3",
-        "product_identification_helper": {
-          "purls": [
-            "pkg:npm/csaf-validator@0.5.1"
-          ]
-        }
-      },
-      {
-        "name": "P4",
-        "product_id": "P4",
-        "product_identification_helper": {
-          "purls": [
-            "pkg:npm/csaf-validator@0.5.1"
-          ]
-        }
-      },
-      {
-        "name": "P5",
-        "product_id": "P5",
-        "product_identification_helper": {
-          "serial_numbers": [
-            "SN-999"
-          ]
-        }
-      },
-      {
-        "name": "P6",
-        "product_id": "P6",
-        "product_identification_helper": {
-          "serial_numbers": [
-            "SN-999"
-          ]
-        }
-      },
-      {
-        "name": "P7",
-        "product_id": "P7",
-        "product_identification_helper": {
-          "model_numbers": [
-            "MN-888"
-          ]
-        }
-      },
-      {
-        "name": "P8",
-        "product_id": "P8",
-        "product_identification_helper": {
-          "model_numbers": [
-            "MN-888"
-          ]
-        }
-      },
-      {
-        "name": "P9",
-        "product_id": "P9",
-        "product_identification_helper": {
-          "skus": [
-            "SKU-777"
-          ]
-        }
-      },
-      {
-        "name": "P10",
-        "product_id": "P10",
-        "product_identification_helper": {
-          "skus": [
-            "SKU-777"
-          ]
+          ],
+          "purls": ["pkg:npm/csaf-validator@0.5.1"],
+          "serial_numbers": ["SN-999"],
+          "model_numbers": ["MN-888"],
+          "skus": ["SKU-777"]
         }
       }
     ]
@@ -142,18 +78,7 @@
   "vulnerabilities": [
     {
       "product_status": {
-        "known_affected": [
-          "P1",
-          "P2",
-          "P3",
-          "P4",
-          "P5",
-          "P6",
-          "P7",
-          "P8",
-          "P9",
-          "P10"
-        ]
+        "known_affected": ["P1", "P2"]
       }
     }
   ]

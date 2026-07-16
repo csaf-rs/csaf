@@ -52,12 +52,6 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
     product_tree.visit_all_products(&mut |product, instance_path| {
         let product_id = product.get_product_id().to_string();
         let path_str = instance_path.to_string();
-        println!("DEBUG PATH: {}", path_str);
-        // test id's
-        // ungerade = valid
-        // gerade = failure test
-        // valid = true -> gesamt valide für alle tests, im recommended test kann es failen aber trotzdem valide sein
-        // test jsons minimal so dass minimal schema prüfung stand hällt
 
         if let Some(helper) = product.get_product_identification_helper() {
             // Collect PURLs

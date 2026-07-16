@@ -22,7 +22,11 @@ fn process_violations(
     errors: &mut HashSet<ValidationError>,
 ) {
     for (value, occurrences) in groups {
-        if occurrences.len() > 1 {
+        // Count how many UNIQUE products share this helper value
+        let unique_products: HashSet<&String> = occurrences.iter().map(|(prod_id, _)| prod_id).collect();
+
+        // Only a violation if shared by 2 or more DISTINCT products
+        if unique_products.len() > 1 {
             for (product_id, path) in occurrences {
                 errors.insert(generate_duplicate_helper_error(category, &value, &product_id, &path));
             }
@@ -235,8 +239,7 @@ mod tests {
             ),
         ];
 
-        // Case s01: Comprehensive Integration Test
-        // P1 and P2 contain all 8 product identification helpers with collisions
+        // Case s01: 24 errors (P1, P2, and P3 colliding)
         let purl_val = "Valid(ValidPurl { original_purl: \"pkg:npm/csaf-validator@0.5.1\", normalized_purl: \"pkg:npm/csaf-validator@0.5.1\", base_without_qualifiers: \"pkg:npm/csaf-validator@0.5.1\" })";
         let hash_val = "file:f.bin;alg:sha256;value:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
@@ -244,94 +247,84 @@ mod tests {
             // Hash collisions
             generate_duplicate_helper_error("hashes", hash_val, "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("hashes", hash_val, "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_error("hashes", hash_val, "P3", "/product_tree/branches/0/branches/0/product"),
             // PURL collisions
             generate_duplicate_helper_error("purls", purl_val, "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("purls", purl_val, "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_error("purls", purl_val, "P3", "/product_tree/branches/0/branches/0/product"),
             // Serial number collisions
             generate_duplicate_helper_error("serial_numbers", "SN-999", "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("serial_numbers", "SN-999", "P2", "/product_tree/full_product_names/1"),
-            // Model number collisions
-            generate_duplicate_helper_error("model_numbers", "MN-888", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("model_numbers", "MN-888", "P2", "/product_tree/full_product_names/1"),
-            // SKU collisions
-            generate_duplicate_helper_error("skus", "SKU-777", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("skus", "SKU-777", "P2", "/product_tree/full_product_names/1"),
-            // CPEs (Note the double 'cpe:' prefix: one from key format, one from the value)
-            generate_duplicate_helper_error(
-                "cpes",
-                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
-                "P1",
-                "/product_tree/full_product_names/0",
-            ),
-            generate_duplicate_helper_error(
-                "cpes",
-                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
-                "P2",
-                "/product_tree/full_product_names/1",
-            ),
-            // SBOMs (Note the 'sbom:' prefix)
-            generate_duplicate_helper_error(
-                "sbom_urls",
-                "sbom:https://example.com/sbom.json",
-                "P1",
-                "/product_tree/full_product_names/0",
-            ),
-            generate_duplicate_helper_error(
-                "sbom_urls",
-                "sbom:https://example.com/sbom.json",
-                "P2",
-                "/product_tree/full_product_names/1",
-            ),
-            // X-Generic URIs (Keep as is, they seem to match)
-            generate_duplicate_helper_error(
-                "x_generic_uris",
-                "ns:https://example.com/ns;uri:urn:test:id",
-                "P1",
-                "/product_tree/full_product_names/0",
-            ),
-            generate_duplicate_helper_error(
-                "x_generic_uris",
-                "ns:https://example.com/ns;uri:urn:test:id",
-                "P2",
-                "/product_tree/full_product_names/1",
-            ),
-            generate_duplicate_helper_error(
-                "cpes",
-                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
-                "P3",
-                "/product_tree/branches/0/branches/0/product",
-            ),
-            generate_duplicate_helper_error(
-                "hashes",
-                "file:f.bin;alg:sha256;value:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                "P3",
-                "/product_tree/branches/0/branches/0/product",
-            ),
-            generate_duplicate_helper_error(
-                "model_numbers",
-                "MN-888",
-                "P3",
-                "/product_tree/branches/0/branches/0/product",
-            ),
-            generate_duplicate_helper_error(
-                "purls",
-                "Valid(ValidPurl { original_purl: \"pkg:npm/csaf-validator@0.5.1\", normalized_purl: \"pkg:npm/csaf-validator@0.5.1\", base_without_qualifiers: \"pkg:npm/csaf-validator@0.5.1\" })",
-                "P3",
-                "/product_tree/branches/0/branches/0/product",
-            ),
-            generate_duplicate_helper_error(
-                "sbom_urls",
-                "sbom:https://example.com/sbom.json",
-                "P3",
-                "/product_tree/branches/0/branches/0/product",
-            ),
             generate_duplicate_helper_error(
                 "serial_numbers",
                 "SN-999",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
+            // Model number collisions
+            generate_duplicate_helper_error("model_numbers", "MN-888", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("model_numbers", "MN-888", "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_error(
+                "model_numbers",
+                "MN-888",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            // SKU collisions
+            generate_duplicate_helper_error("skus", "SKU-777", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("skus", "SKU-777", "P2", "/product_tree/full_product_names/1"),
             generate_duplicate_helper_error("skus", "SKU-777", "P3", "/product_tree/branches/0/branches/0/product"),
+            // CPEs
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "P1",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "P2",
+                "/product_tree/full_product_names/1",
+            ),
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            // SBOMs
+            generate_duplicate_helper_error(
+                "sbom_urls",
+                "sbom:https://example.com/sbom.json",
+                "P1",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "sbom_urls",
+                "sbom:https://example.com/sbom.json",
+                "P2",
+                "/product_tree/full_product_names/1",
+            ),
+            generate_duplicate_helper_error(
+                "sbom_urls",
+                "sbom:https://example.com/sbom.json",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            // X-Generic URIs
+            generate_duplicate_helper_error(
+                "x_generic_uris",
+                "ns:https://example.com/ns;uri:urn:test:id",
+                "P1",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "x_generic_uris",
+                "ns:https://example.com/ns;uri:urn:test:id",
+                "P2",
+                "/product_tree/full_product_names/1",
+            ),
             generate_duplicate_helper_error(
                 "x_generic_uris",
                 "ns:https://example.com/ns;uri:urn:test:id",
@@ -339,20 +332,22 @@ mod tests {
                 "/product_tree/branches/0/branches/0/product",
             ),
         ];
+
         // Case 01: Both colliding products should flag an error independently
         // Case 02: Model number collisions cross-flagged on both variants
         // Case 03: Corrected structural runtime paths matching the schema generation target
         // Case S01: Comprehensive Integration Verifies all 8 collisions (in P1 and P2)
         // Case 04: Disjoint product identification helpers (no collisions, expects pass)
         // Case 05: Products without identification helpers (no helpers to collide, expects pass)
-
+        // Case S11: Verifies that duplicate helper values inside the *same* product are correctly ignored (expects pass)
         TESTS_2_1.test_6_2_32.expect(
-            Err(case_01_errors),
-            Err(case_02_errors),
-            Err(case_03_errors),
-            Err(case_s01_errors),
-            Ok(()), // 04: Valid disjoint data
-            Ok(()), // 05: Missing identification helpers
+            Err(case_01_errors),  // index 0: case_01
+            Err(case_02_errors),  // index 1: case_02
+            Err(case_03_errors),  // index 2: case_03
+            Err(case_s01_errors), // index 3: case_s01 (Yields 24 errors)
+            Ok(()),               // index 4: case_11
+            Ok(()),               // index 5: case_12
+            Ok(()),               // index 6: case_s11 (Yields Ok)
         );
     }
 }

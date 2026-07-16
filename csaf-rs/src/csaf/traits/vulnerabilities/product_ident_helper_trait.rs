@@ -3,8 +3,12 @@ use crate::csaf::traits::vulnerabilities::generic_uri_trait::GenericUriTrait;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber, CsafStockKeepingUnit};
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
 use crate::csaf_traits::HashTrait;
-use crate::schema::csaf2_0::schema::{CryptographicHashes as CryptographicHashes20, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct20};
-use crate::schema::csaf2_1::schema::{CryptographicHashes as CryptographicHashes21, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct21};
+use crate::schema::csaf2_0::schema::{
+    CryptographicHashes as CryptographicHashes20, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct20,
+};
+use crate::schema::csaf2_1::schema::{
+    CryptographicHashes as CryptographicHashes21, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct21,
+};
 
 /// Trait representing an abstract product identification helper of a full product name.
 pub trait ProductIdentificationHelperTrait {

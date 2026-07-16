@@ -1,5 +1,6 @@
 use crate::csaf::traits::vulnerabilities::{
-    file_hash_trait::FileHashTrait, hash_trait::HashTrait, product_ident_helper_trait::ProductIdentificationHelperTrait, generic_uri_trait::GenericUriTrait, cpe_trait::CpeTrait
+    cpe_trait::CpeTrait, file_hash_trait::FileHashTrait, generic_uri_trait::GenericUriTrait, hash_trait::HashTrait,
+    product_ident_helper_trait::ProductIdentificationHelperTrait,
 };
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
@@ -52,12 +53,11 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
         let product_id = product.get_product_id().to_string();
         let path_str = instance_path.to_string();
         println!("DEBUG PATH: {}", path_str);
-            // test id's
-            // ungerade = valid
-            // gerade = failure test
+        // test id's
+        // ungerade = valid
+        // gerade = failure test
         // valid = true -> gesamt valide für alle tests, im recommended test kann es failen aber trotzdem valide sein
         // test jsons minimal so dass minimal schema prüfung stand hällt
-
 
         if let Some(helper) = product.get_product_identification_helper() {
             // Collect PURLs
@@ -121,7 +121,8 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             if let Some(cpes) = helper.get_cpes() {
                 for cpe in cpes {
                     let key = format!("cpe:{}", cpe.as_str());
-                    cpe_groups.entry(key)
+                    cpe_groups
+                        .entry(key)
                         .or_default()
                         .push((product_id.clone(), path_str.clone()));
                 }
@@ -129,13 +130,19 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
 
             // Collect SBOMs
             for sbom in helper.get_sbom_urls().unwrap_or_default() {
-                sbom_groups.entry(format!("sbom:{sbom}")).or_default().push((product_id.clone(), path_str.clone()));
+                sbom_groups
+                    .entry(format!("sbom:{sbom}"))
+                    .or_default()
+                    .push((product_id.clone(), path_str.clone()));
             }
 
             // Collect X-Generic URIs
             for x_uri in helper.get_x_generic_uris().unwrap_or_default() {
                 let key = format!("ns:{};uri:{}", x_uri.get_namespace(), x_uri.get_uri());
-                x_uri_groups.entry(key).or_default().push((product_id.clone(), path_str.clone()));
+                x_uri_groups
+                    .entry(key)
+                    .or_default()
+                    .push((product_id.clone(), path_str.clone()));
             }
         }
     });
@@ -220,8 +227,18 @@ mod tests {
                 "CSAFPID-908070605",
                 "/product_tree/relationships/0/full_product_name",
             ),
-            generate_duplicate_helper_error("cpes", "cpe:cpe:/a:example:product_d", "CSAFPID-908070604", "/product_tree/full_product_names/1"),
-            generate_duplicate_helper_error("cpes", "cpe:cpe:/a:example:product_d", "CSAFPID-908070605", "/product_tree/relationships/0/full_product_name"),
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:/a:example:product_d",
+                "CSAFPID-908070604",
+                "/product_tree/full_product_names/1",
+            ),
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:/a:example:product_d",
+                "CSAFPID-908070605",
+                "/product_tree/relationships/0/full_product_name",
+            ),
         ];
 
         // Case s01: Comprehensive Integration Test
@@ -246,14 +263,44 @@ mod tests {
             generate_duplicate_helper_error("skus", "SKU-777", "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("skus", "SKU-777", "P2", "/product_tree/full_product_names/1"),
             // CPEs (Note the double 'cpe:' prefix: one from key format, one from the value)
-            generate_duplicate_helper_error("cpes", "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("cpes", "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*", "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "P1",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "P2",
+                "/product_tree/full_product_names/1",
+            ),
             // SBOMs (Note the 'sbom:' prefix)
-            generate_duplicate_helper_error("sbom_urls", "sbom:https://example.com/sbom.json", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("sbom_urls", "sbom:https://example.com/sbom.json", "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_error(
+                "sbom_urls",
+                "sbom:https://example.com/sbom.json",
+                "P1",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "sbom_urls",
+                "sbom:https://example.com/sbom.json",
+                "P2",
+                "/product_tree/full_product_names/1",
+            ),
             // X-Generic URIs (Keep as is, they seem to match)
-            generate_duplicate_helper_error("x_generic_uris", "ns:https://example.com/ns;uri:urn:test:id", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("x_generic_uris", "ns:https://example.com/ns;uri:urn:test:id", "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_error(
+                "x_generic_uris",
+                "ns:https://example.com/ns;uri:urn:test:id",
+                "P1",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "x_generic_uris",
+                "ns:https://example.com/ns;uri:urn:test:id",
+                "P2",
+                "/product_tree/full_product_names/1",
+            ),
         ];
         // Case 01: Both colliding products should flag an error independently
         // Case 02: Model number collisions cross-flagged on both variants

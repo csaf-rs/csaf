@@ -27,14 +27,13 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
                 };
 
                 // We can also just run this part, and only look into the cwe file
-                if let Some((status, _)) = CWE_ENTRIES[version].1.get(&cwe_item.id) {
-                    if status == "Deprecated" {
-                        errors.push(create_deprecated_cwe_error(
-                            &cwe_item.id,
-                            version,
-                            format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
-                        ));
-                    }
+                if let Some((status, _)) = CWE_ENTRIES[version].1.get(&cwe_item.id) && status == "Deprecated" {
+                    errors.push(create_deprecated_cwe_error(
+                        &cwe_item.id,
+                        version,
+                        format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
+                    ));
+
                 }
             }
         }

@@ -44,7 +44,7 @@ pub trait ProductIdentificationHelperTrait {
     fn get_serial_numbers(&self) -> Option<Vec<CsafSerialNumber>>;
 
     /// Returns the hashes associated with this product.
-    fn get_hashes(&self) -> &Vec<Self::HashType>;
+    fn get_hashes(&self) -> Option<Vec<Self::HashType>>;
 
     /// Returns the CPEs (Common Platform Enumeration).
     fn get_cpes(&self) -> Option<Vec<Self::CpeType>>;
@@ -85,8 +85,8 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
             .map(|v| v.iter().map(CsafSerialNumber::from).collect())
     }
 
-    fn get_hashes(&self) -> &Vec<Self::HashType> {
-        self.hashes.as_ref()
+    fn get_hashes(&self) -> Option<Vec<Self::HashType>> {
+        Some(self.hashes.clone())
     }
 
     fn get_cpes(&self) -> Option<Vec<Self::CpeType>> {
@@ -139,12 +139,8 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
             .map(|v| v.iter().map(CsafSerialNumber::from).collect())
     }
 
-    fn get_hashes(&self) -> &Vec<Self::HashType> {
-        if self.hashes.is_none() {
-            &vec![]
-        } else {
-            self.hashes.as_ref().unwrap()
-        }
+    fn get_hashes(&self) -> Option<Vec<Self::HashType>> {
+        self.hashes.clone()
     }
 
     fn get_cpes(&self) -> Option<Vec<Self::CpeType>> {

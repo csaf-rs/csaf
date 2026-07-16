@@ -143,7 +143,7 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
         if self.hashes.is_none() {
             &vec![]
         } else {
-            self.hashes.as_ref().unwrap_or_default()
+            self.hashes.as_ref().unwrap()
         }
     }
 

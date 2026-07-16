@@ -295,14 +295,49 @@ mod tests {
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
-            generate_duplicate_helper_error("cpes", "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*", "P3", "/product_tree/branches/0/branches/0/product"),
-            generate_duplicate_helper_error("hashes", "file:f.bin;alg:sha256;value:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "P3", "/product_tree/branches/0/branches/0/product"),
-            generate_duplicate_helper_error("model_numbers", "MN-888", "P3", "/product_tree/branches/0/branches/0/product"),
-            generate_duplicate_helper_error("purls", "Valid(ValidPurl { original_purl: \"pkg:npm/csaf-validator@0.5.1\", normalized_purl: \"pkg:npm/csaf-validator@0.5.1\", base_without_qualifiers: \"pkg:npm/csaf-validator@0.5.1\" })", "P3", "/product_tree/branches/0/branches/0/product"),
-            generate_duplicate_helper_error("sbom_urls", "sbom:https://example.com/sbom.json", "P3", "/product_tree/branches/0/branches/0/product"),
-            generate_duplicate_helper_error("serial_numbers", "SN-999", "P3", "/product_tree/branches/0/branches/0/product"),
+            generate_duplicate_helper_error(
+                "cpes",
+                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "hashes",
+                "file:f.bin;alg:sha256;value:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "model_numbers",
+                "MN-888",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "purls",
+                "Valid(ValidPurl { original_purl: \"pkg:npm/csaf-validator@0.5.1\", normalized_purl: \"pkg:npm/csaf-validator@0.5.1\", base_without_qualifiers: \"pkg:npm/csaf-validator@0.5.1\" })",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "sbom_urls",
+                "sbom:https://example.com/sbom.json",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
+            generate_duplicate_helper_error(
+                "serial_numbers",
+                "SN-999",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
             generate_duplicate_helper_error("skus", "SKU-777", "P3", "/product_tree/branches/0/branches/0/product"),
-            generate_duplicate_helper_error("x_generic_uris", "ns:https://example.com/ns;uri:urn:test:id", "P3", "/product_tree/branches/0/branches/0/product"),
+            generate_duplicate_helper_error(
+                "x_generic_uris",
+                "ns:https://example.com/ns;uri:urn:test:id",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
         ];
         // Case 01: Both colliding products should flag an error independently
         // Case 02: Model number collisions cross-flagged on both variants

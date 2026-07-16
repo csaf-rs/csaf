@@ -35,6 +35,7 @@
         "name": "P1",
         "product_id": "P1",
         "product_identification_helper": {
+          "cpe": "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
           "hashes": [
             {
               "file_hashes": [
@@ -46,16 +47,34 @@
               "filename": "f.bin"
             }
           ],
-          "purls": ["pkg:npm/csaf-validator@0.5.1"],
-          "serial_numbers": ["SN-999"],
-          "model_numbers": ["MN-888"],
-          "skus": ["SKU-777"]
+          "model_numbers": [
+            "MN-888"
+          ],
+          "purls": [
+            "pkg:npm/csaf-validator@0.5.1"
+          ],
+          "sbom_urls": [
+            "https://example.com/sbom.json"
+          ],
+          "serial_numbers": [
+            "SN-999"
+          ],
+          "skus": [
+            "SKU-777"
+          ],
+          "x_generic_uris": [
+            {
+              "namespace": "https://example.com/ns",
+              "uri": "urn:test:id"
+            }
+          ]
         }
       },
       {
         "name": "P2",
         "product_id": "P2",
         "product_identification_helper": {
+          "cpe": "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
           "hashes": [
             {
               "file_hashes": [
@@ -67,10 +86,27 @@
               "filename": "f.bin"
             }
           ],
-          "purls": ["pkg:npm/csaf-validator@0.5.1"],
-          "serial_numbers": ["SN-999"],
-          "model_numbers": ["MN-888"],
-          "skus": ["SKU-777"]
+          "model_numbers": [
+            "MN-888"
+          ],
+          "purls": [
+            "pkg:npm/csaf-validator@0.5.1"
+          ],
+          "sbom_urls": [
+            "https://example.com/sbom.json"
+          ],
+          "serial_numbers": [
+            "SN-999"
+          ],
+          "skus": [
+            "SKU-777"
+          ],
+          "x_generic_uris": [
+            {
+              "namespace": "https://example.com/ns",
+              "uri": "urn:test:id"
+            }
+          ]
         }
       }
     ]
@@ -78,7 +114,10 @@
   "vulnerabilities": [
     {
       "product_status": {
-        "known_affected": ["P1", "P2"]
+        "known_affected": [
+          "P1",
+          "P2"
+        ]
       }
     }
   ]

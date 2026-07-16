@@ -140,7 +140,11 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
     }
 
     fn get_hashes(&self) -> &Vec<Self::HashType> {
-        self.hashes.as_ref()
+        if self.hashes.is_none() {
+            &vec![]
+        } else {
+            self.hashes.as_ref().unwrap_or_default()
+        }
     }
 
     fn get_cpes(&self) -> Option<Vec<Self::CpeType>> {
@@ -148,18 +152,10 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
     }
 
     fn get_sbom_urls(&self) -> Option<Vec<String>> {
-        if self.sbom_urls.is_empty() {
-            None
-        } else {
-            Some(self.sbom_urls.clone())
-        }
+        self.sbom_urls.clone()
     }
 
     fn get_x_generic_uris(&self) -> Option<Vec<Self::GenericUriType>> {
-        if self.x_generic_uris.is_empty() {
-            None
-        } else {
-            Some(self.x_generic_uris.clone())
-        }
+        self.x_generic_uris.clone()
     }
 }

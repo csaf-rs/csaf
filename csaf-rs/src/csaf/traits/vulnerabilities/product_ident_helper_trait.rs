@@ -1,14 +1,16 @@
+use crate::csaf::traits::vulnerabilities::cpe_trait::CpeTrait;
+use crate::csaf::traits::vulnerabilities::generic_uri_trait::GenericUriTrait;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber, CsafStockKeepingUnit};
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
 use crate::csaf_traits::HashTrait;
-use crate::schema::csaf2_0::schema::{CryptographicHashes as CryptographicHashes20, GenericUri as GenericUri20, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct20};
-use crate::schema::csaf2_1::schema::{GenericUri as GenericUri21, CryptographicHashes as CryptographicHashes21, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct21};
+use crate::schema::csaf2_0::schema::{CryptographicHashes as CryptographicHashes20, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct20};
+use crate::schema::csaf2_1::schema::{CryptographicHashes as CryptographicHashes21, HelperToIdentifyTheProduct as HelperToIdentifyTheProduct21};
 
 /// Trait representing an abstract product identification helper of a full product name.
 pub trait ProductIdentificationHelperTrait {
     type HashType: HashTrait;
-    type CpeType;
-    type GenericUriType;
+    type CpeType: CpeTrait;
+    type GenericUriType: GenericUriTrait;
 
     /// Returns the PURLs identifying the associated product.
     fn get_purls(&self) -> Option<Vec<CsafPurl>>;
@@ -53,7 +55,7 @@ pub trait ProductIdentificationHelperTrait {
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
     type HashType = CryptographicHashes20;
     type CpeType = crate::schema::csaf2_0::schema::CommonPlatformEnumerationRepresentation;
-    type GenericUriType = GenericUri20;
+    type GenericUriType = crate::schema::csaf2_0::schema::GenericUri;
 
     fn get_purls(&self) -> Option<Vec<CsafPurl>> {
         self.purl.as_ref().map(|s| vec![CsafPurl::from(s)])
@@ -107,7 +109,7 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
     type HashType = CryptographicHashes21;
     type CpeType = crate::schema::csaf2_1::schema::CommonPlatformEnumerationRepresentation;
-    type GenericUriType = GenericUri21;
+    type GenericUriType = crate::schema::csaf2_1::schema::GenericUri;
 
     fn get_purls(&self) -> Option<Vec<CsafPurl>> {
         self.purls.as_ref().map(|v| v.iter().map(CsafPurl::from).collect())

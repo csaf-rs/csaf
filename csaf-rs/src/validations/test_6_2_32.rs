@@ -1,5 +1,5 @@
 use crate::csaf::traits::vulnerabilities::{
-    file_hash_trait::FileHashTrait, hash_trait::HashTrait, product_ident_helper_trait::ProductIdentificationHelperTrait,
+    file_hash_trait::FileHashTrait, hash_trait::HashTrait, product_ident_helper_trait::ProductIdentificationHelperTrait, generic_uri_trait::GenericUriTrait, cpe_trait::CpeTrait
 };
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
@@ -43,11 +43,15 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
     let mut sn_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
     let mut mn_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
     let mut hash_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut cpe_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut sbom_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut x_uri_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
 
     // 1. Collect all occurrences using zero-copy / minimal lifetime allocations where possible
     product_tree.visit_all_products(&mut |product, instance_path| {
         let product_id = product.get_product_id().to_string();
         let path_str = instance_path.to_string();
+        println!("DEBUG PATH: {}", path_str);
             // test id's
             // ungerade = valid
             // gerade = failure test
@@ -112,6 +116,27 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                         .push((product_id.clone(), path_str.clone()));
                 }
             }
+
+            // Collect CPEs
+            if let Some(cpes) = helper.get_cpes() {
+                for cpe in cpes {
+                    let key = format!("cpe:{}", cpe.as_str());
+                    cpe_groups.entry(key)
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
+                }
+            }
+
+            // Collect SBOMs
+            for sbom in helper.get_sbom_urls().unwrap_or_default() {
+                sbom_groups.entry(format!("sbom:{sbom}")).or_default().push((product_id.clone(), path_str.clone()));
+            }
+
+            // Collect X-Generic URIs
+            for x_uri in helper.get_x_generic_uris().unwrap_or_default() {
+                let key = format!("ns:{};uri:{}", x_uri.get_namespace(), x_uri.get_uri());
+                x_uri_groups.entry(key).or_default().push((product_id.clone(), path_str.clone()));
+            }
         }
     });
 
@@ -120,6 +145,9 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
     process_violations(sn_groups, "serial_numbers", &mut errors);
     process_violations(mn_groups, "model_numbers", &mut errors);
     process_violations(hash_groups, "hashes", &mut errors);
+    process_violations(cpe_groups, "cpes", &mut errors);
+    process_violations(sbom_groups, "sbom_urls", &mut errors);
+    process_violations(x_uri_groups, "x_generic_uris", &mut errors);
 
     // Simplified deduplication leveraging implemented PartialEq trait
     errors.dedup();
@@ -192,36 +220,45 @@ mod tests {
                 "CSAFPID-908070605",
                 "/product_tree/relationships/0/full_product_name",
             ),
+            generate_duplicate_helper_error("cpes", "cpe:cpe:/a:example:product_d", "CSAFPID-908070604", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_error("cpes", "cpe:cpe:/a:example:product_d", "CSAFPID-908070605", "/product_tree/relationships/0/full_product_name"),
         ];
 
         // Case s01: Comprehensive Integration Test
-        // P1 und P2 enthalten alle 5 Identifikator-Typen mit Kollisionen.
+        // P1 and P2 contain all 8 product identification helpers with collisions
         let purl_val = "Valid(ValidPurl { original_purl: \"pkg:npm/csaf-validator@0.5.1\", normalized_purl: \"pkg:npm/csaf-validator@0.5.1\", base_without_qualifiers: \"pkg:npm/csaf-validator@0.5.1\" })";
         let hash_val = "file:f.bin;alg:sha256;value:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
         let case_s01_errors = vec![
-            // Hash Kollisionen
+            // Hash collisions
             generate_duplicate_helper_error("hashes", hash_val, "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("hashes", hash_val, "P2", "/product_tree/full_product_names/1"),
-            // PURL Kollisionen
+            // PURL collisions
             generate_duplicate_helper_error("purls", purl_val, "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("purls", purl_val, "P2", "/product_tree/full_product_names/1"),
-            // Serial Number Kollisionen
+            // Serial number collisions
             generate_duplicate_helper_error("serial_numbers", "SN-999", "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("serial_numbers", "SN-999", "P2", "/product_tree/full_product_names/1"),
-            // Model Number Kollisionen
+            // Model number collisions
             generate_duplicate_helper_error("model_numbers", "MN-888", "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("model_numbers", "MN-888", "P2", "/product_tree/full_product_names/1"),
-            // SKU Kollisionen
+            // SKU collisions
             generate_duplicate_helper_error("skus", "SKU-777", "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("skus", "SKU-777", "P2", "/product_tree/full_product_names/1"),
+            // CPEs (Note the double 'cpe:' prefix: one from key format, one from the value)
+            generate_duplicate_helper_error("cpes", "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("cpes", "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*", "P2", "/product_tree/full_product_names/1"),
+            // SBOMs (Note the 'sbom:' prefix)
+            generate_duplicate_helper_error("sbom_urls", "sbom:https://example.com/sbom.json", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("sbom_urls", "sbom:https://example.com/sbom.json", "P2", "/product_tree/full_product_names/1"),
+            // X-Generic URIs (Keep as is, they seem to match)
+            generate_duplicate_helper_error("x_generic_uris", "ns:https://example.com/ns;uri:urn:test:id", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_error("x_generic_uris", "ns:https://example.com/ns;uri:urn:test:id", "P2", "/product_tree/full_product_names/1"),
         ];
         // Case 01: Both colliding products should flag an error independently
         // Case 02: Model number collisions cross-flagged on both variants
         // Case 03: Corrected structural runtime paths matching the schema generation target
-        // Case S01: Comprehensive Integration
-        //      Verifies Hash collisions (P1/P2), PURL collisions (P3/P4),
-        //      and successful processing of disjoint Serial/Model/SKU identifiers (P5-P10).
+        // Case S01: Comprehensive Integration Verifies all 8 collisions (in P1 and P2)
         // Case 04: Disjoint product identification helpers (no collisions, expects pass)
         // Case 05: Products without identification helpers (no helpers to collide, expects pass)
 

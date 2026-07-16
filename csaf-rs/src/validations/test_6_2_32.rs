@@ -4,7 +4,7 @@ use crate::csaf::traits::vulnerabilities::{
 };
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str, base_path: &str) -> ValidationError {
     ValidationError {
@@ -19,12 +19,12 @@ fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str
 fn process_violations(
     groups: HashMap<String, Vec<(String, String)>>,
     category: &str,
-    errors: &mut Vec<ValidationError>,
+    errors: &mut HashSet<ValidationError>,
 ) {
     for (value, occurrences) in groups {
         if occurrences.len() > 1 {
             for (product_id, path) in occurrences {
-                errors.push(generate_duplicate_helper_error(category, &value, &product_id, &path));
+                errors.insert(generate_duplicate_helper_error(category, &value, &product_id, &path));
             }
         }
     }
@@ -36,7 +36,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
         return Ok(());
     };
 
-    let mut errors: Vec<ValidationError> = vec![];
+    let mut errors: HashSet<ValidationError> = HashSet::new();
 
     // Grouping tracking maps: map a unique token to a list of (product_id, base_instance_path)
     let mut purl_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
@@ -150,10 +150,10 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
     process_violations(sbom_groups, "sbom_urls", &mut errors);
     process_violations(x_uri_groups, "x_generic_uris", &mut errors);
 
-    // Simplified deduplication leveraging implemented PartialEq trait
-    errors.dedup();
+    // Convert error HashSet back to Vec at the very end
+    let error_vec: Vec<ValidationError> = errors.into_iter().collect();
 
-    if errors.is_empty() { Ok(()) } else { Err(errors) }
+    if error_vec.is_empty() { Ok(()) } else { Err(error_vec) }
 }
 
 crate::test_validation::impl_validator!(

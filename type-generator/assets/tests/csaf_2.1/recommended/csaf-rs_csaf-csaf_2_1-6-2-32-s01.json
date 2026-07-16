@@ -110,15 +110,5 @@
         }
       }
     ]
-  },
-  "vulnerabilities": [
-    {
-      "product_status": {
-        "known_affected": [
-          "P1",
-          "P2"
-        ]
-      }
-    }
-  ]
+  }
 }

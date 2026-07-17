@@ -94,7 +94,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_24() {
-        let case_01 = Err(vec![create_non_latest_cwe_error(
+        let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_error(
             "CWE-256",
             "4.12",
             "4.13",

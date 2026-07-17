@@ -17,7 +17,7 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
     let mut errors: Vec<ValidationError> = Vec::new();
 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
-        if let Some(cwes) = vulnerability.get_cwe() {
+        if let Some(cwes) = vulnerability.get_cwes() {
             for (i_cwe, cwe_item) in cwes.iter().enumerate() {
                 // Determine which CWE CSV version to check: use the version
                 // declared on the CWE item

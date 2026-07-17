@@ -35,10 +35,12 @@
         "category": "vendor",
         "name": "V1",
         "product": {
-          "product_id": "CSAFPID-B1",
           "name": "B1",
+          "product_id": "CSAFPID-B1",
           "product_identification_helper": {
-            "serial_numbers": ["SN"]
+            "serial_numbers": [
+              "SN"
+            ]
           }
         }
       },
@@ -46,41 +48,51 @@
         "category": "vendor",
         "name": "V2",
         "product": {
-          "product_id": "CSAFPID-B2",
           "name": "B2",
+          "product_id": "CSAFPID-B2",
           "product_identification_helper": {
-            "model_numbers": ["MN"]
+            "model_numbers": [
+              "MN"
+            ]
           }
         }
       }
     ],
     "full_product_names": [
       {
-        "product_id": "CSAFPID-F1",
         "name": "F1",
+        "product_id": "CSAFPID-F1",
         "product_identification_helper": {
-          "serial_numbers": ["SN"]
+          "serial_numbers": [
+            "SN"
+          ]
         }
       },
       {
-        "product_id": "CSAFPID-F2",
         "name": "F2",
+        "product_id": "CSAFPID-F2",
         "product_identification_helper": {
-          "model_numbers": ["MN"]
+          "model_numbers": [
+            "MN"
+          ]
         }
       },
       {
-        "product_id": "CSAFPID-F3",
         "name": "F3",
+        "product_id": "CSAFPID-F3",
         "product_identification_helper": {
-          "serial_numbers": ["SN"]
+          "serial_numbers": [
+            "SN"
+          ]
         }
       },
       {
-        "product_id": "CSAFPID-F4",
         "name": "F4",
+        "product_id": "CSAFPID-F4",
         "product_identification_helper": {
-          "model_numbers": ["MN"]
+          "model_numbers": [
+            "MN"
+          ]
         }
       }
     ],
@@ -88,10 +100,12 @@
       {
         "beginning_product_reference": "CSAFPID-SW1",
         "full_product_name": {
-          "product_id": "CSAFPID-F5",
           "name": "Software",
+          "product_id": "CSAFPID-F5",
           "product_identification_helper": {
-            "serial_numbers": ["SN-VALID"]
+            "serial_numbers": [
+              "SN-VALID"
+            ]
           }
         },
         "subpaths": [

@@ -56,8 +56,7 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Va
 
     // Map occurrence paths indexes to CVE identifiers
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
-        let cwe = vulnerability.get_cwe();
-        if let Some(cwe) = cwe {
+        if let Some(cwe) = vulnerability.get_cwes() {
             for (i_cwe, cwe_item) in cwe.iter().enumerate() {
                 let cwe_version = cwe_item
                     .version

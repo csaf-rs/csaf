@@ -35,10 +35,10 @@ pub(crate) static CVSS_V3_1_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
             "The embedded JSON schema assets/cvss-v3.1.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
         )
 });
-pub(crate) static CVSS_V4_0_2_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
-    serde_json::from_str(include_str!("../../../../assets/cvss-v4.0.2.json"))
+pub(crate) static CVSS_V4_0_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    serde_json::from_str(include_str!("../../../../assets/cvss-v4.0.json"))
         .expect(
-            "The embedded JSON schema assets/cvss-v4.0.2.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
+            "The embedded JSON schema assets/cvss-v4.0.json should be valid JSON. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",
         )
 });
 pub(crate) static EXTENSION_METASCHEMA: LazyLock<Value> = LazyLock::new(|| {

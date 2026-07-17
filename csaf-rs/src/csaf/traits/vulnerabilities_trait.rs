@@ -121,8 +121,8 @@ pub trait VulnerabilityTrait {
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&str>;
 
-    /// Returns the CWE associated with the vulnerability.
-    fn get_cwe(&self) -> Option<Vec<Cwe>>;
+    /// Returns the CWEs associated with the vulnerability.
+    fn get_cwes(&self) -> Option<Vec<Cwe>>;
 
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>>;
@@ -141,6 +141,7 @@ pub trait VulnerabilityTrait {
             (get_involvements_group_references,                     get_involvements_product_references,                     get_involvements,                     "involvements"),
             (get_notes_group_references,                            get_notes_product_references,                            get_notes,                            "notes"),
             (get_first_known_exploitation_dates_group_references,   get_first_known_exploitation_dates_product_references,   get_first_known_exploitation_dates,   "first_known_exploitation_dates"),
+            (get_ids_group_references,                              get_ids_product_references,                              get_ids,                              "ids"),
         ],
         custom_group_extraction: [],
         custom_product_extraction: [
@@ -201,7 +202,7 @@ impl VulnerabilityTrait for Vulnerability20 {
 
     impl_optional_str_field_getter!(get_cve, cve);
 
-    fn get_cwe(&self) -> Option<Vec<Cwe>> {
+    fn get_cwes(&self) -> Option<Vec<Cwe>> {
         self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
     }
 
@@ -267,7 +268,7 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     impl_optional_str_field_getter!(get_cve, cve);
 
-    fn get_cwe(&self) -> Option<Vec<Cwe>> {
+    fn get_cwes(&self) -> Option<Vec<Cwe>> {
         self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())
     }
 

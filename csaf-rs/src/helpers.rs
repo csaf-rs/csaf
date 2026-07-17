@@ -35,7 +35,6 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyL
                     let id = format!("CWE-{}", parts[0].trim());
                     let status = parts[1].trim().to_string();
                     let name = parts[2].trim().to_string();
-                    println!("Processing CWE entry: id={}, status={}, name={}", id, status, name);
                     versioned_data.insert(id, (status, name));
                 }
             }

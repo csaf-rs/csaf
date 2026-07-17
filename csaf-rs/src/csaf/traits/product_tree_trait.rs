@@ -148,10 +148,7 @@ pub trait ProductTreeTrait {
         let prefix = self.get_product_path_prefix();
         // Visit relationships
         for (i, rel) in self.get_product_paths().iter().enumerate() {
-            callback(
-                rel.get_full_product_name(),
-                &format!("{prefix}/{i}/full_product_name"),
-            );
+            callback(rel.get_full_product_name(), &format!("{prefix}/{i}/full_product_name"));
         }
     }
 

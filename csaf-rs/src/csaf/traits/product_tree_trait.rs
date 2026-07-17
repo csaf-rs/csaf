@@ -38,6 +38,9 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of product groups in the product tree.
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType>;
 
+    /// Returns the JSON pointer prefix for product path elements based on CSAF version.
+    fn get_product_path_prefix(&self) -> &'static str;
+
     /// Retrieves a reference to the list of relationships in the product tree.
     fn get_product_paths(&self) -> &Vec<Self::ProductPathType>;
 
@@ -141,11 +144,13 @@ pub trait ProductTreeTrait {
             callback(fpn, &format!("/product_tree/full_product_names/{i}"));
         }
 
+        // Visit relationships/product_paths using the new prefix method
+        let prefix = self.get_product_path_prefix();
         // Visit relationships
         for (i, rel) in self.get_product_paths().iter().enumerate() {
             callback(
                 rel.get_full_product_name(),
-                &format!("/product_tree/relationships/{i}/full_product_name"),
+                &format!("{prefix}/{i}/full_product_name"),
             );
         }
     }
@@ -331,6 +336,10 @@ impl ProductTreeTrait for ProductTree20 {
         &self.product_groups
     }
 
+    fn get_product_path_prefix(&self) -> &'static str {
+        "/product_tree/relationships"
+    }
+
     fn get_product_paths(&self) -> &Vec<Self::ProductPathType> {
         &self.relationships
     }
@@ -356,6 +365,10 @@ impl ProductTreeTrait for ProductTree21 {
 
     fn get_product_groups(&self) -> &Vec<Self::ProductGroupType> {
         &self.product_groups
+    }
+
+    fn get_product_path_prefix(&self) -> &'static str {
+        "/product_tree/product_paths"
     }
 
     fn get_product_paths(&self) -> &Vec<Self::ProductPathType> {

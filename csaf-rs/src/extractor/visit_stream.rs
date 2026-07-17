@@ -406,8 +406,8 @@ mod test {
 
     #[test]
     fn two_primitives() {
-        let mut x = AtPath::new("x", ExtractPrimitive::new_string());
-        let mut y = AtPath::new("y", ExtractPrimitive::new_bool());
+        let mut x = AtPath::new("x", ExtractPrimitive::new_string_with_path());
+        let mut y = AtPath::new("y", ExtractPrimitive::new_bool_with_path());
 
         let parse_result = visit_stream(&br#"{"x": "a", "y": true}"#[..], &mut [&mut x, &mut y]);
         parse_result.expect("parsing should succeed");

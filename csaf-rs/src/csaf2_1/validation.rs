@@ -138,7 +138,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.28" => Some(ValidatorForTest6_1_28.validate(self)),
                 "6.1.29" => Some(ValidatorForTest6_1_29.validate(self)),
                 "6.1.30" => Some(ValidatorForTest6_1_30.validate(self)),
-                "6.1.31" => Some(ValidatorForTest6_1_31.validate(self)),
+                "6.1.31" => None, // See below in RawVaildatable
                 "6.1.32" => Some(ValidatorForTest6_1_32.validate(self)),
                 "6.1.33" => None, // Some(ValidatorForTest6_1_33.validate(self)),
                 "6.1.34" => Some(ValidatorForTest6_1_34.validate(self)),
@@ -300,6 +300,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             test_id,
             Severity::Warning,
             match test_id {
+                "6.1.31" => Some(ValidatorForTest6_1_31.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 "6.2.38" => Some(ValidatorForTest6_2_38.validate(self)),

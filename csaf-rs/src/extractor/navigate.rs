@@ -1,6 +1,7 @@
 use crate::extractor::traits::{CanExtract, Extractor};
 
 /// An extractor that navigates to a specified path and applies another extractor there.
+#[derive(Clone)]
 pub struct AtPath<Source: Extractor> {
     path: Vec<String>,
     source: Source,
@@ -222,7 +223,7 @@ mod test {
 
     #[test]
     fn primitive_at_path() {
-        let mut collector = AtPath::new("x", ExtractPrimitive::new_string());
+        let mut collector = AtPath::new("x", ExtractPrimitive::new_string_with_path());
 
         let document = json!({"x": "hello", "y": false});
         visit_json_value(&document, &mut [&mut collector]);
@@ -233,7 +234,7 @@ mod test {
 
     #[test]
     fn deep_path() {
-        let mut collector = AtPath::new_path(&["x", "0", "x"], ExtractPrimitive::new_bool());
+        let mut collector = AtPath::new_path(&["x", "0", "x"], ExtractPrimitive::new_bool_with_path());
 
         let document = json!({"x": [{"y": "z", "x": false}], "y": null});
         visit_json_value(&document, &mut [&mut collector]);

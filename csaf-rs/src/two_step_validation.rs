@@ -75,8 +75,8 @@ where
 /// ```
 macro_rules! impl_two_step_validator {
     ($validator:ident, $validate_fn:path) => {
-        $crate::test_validation::impl_raw_json_validator!(csaf2_0, $validator, $validate_fn);
-        $crate::test_validation::impl_raw_json_validator!(csaf2_1, $validator, $validate_fn);
+        $crate::two_step_validation::impl_two_step_validator!(csaf2_0, $validator, $validate_fn);
+        $crate::two_step_validation::impl_two_step_validator!(csaf2_1, $validator, $validate_fn);
     };
     (csaf2_0, $validator:ident, $validate_fn:path) => {
         impl

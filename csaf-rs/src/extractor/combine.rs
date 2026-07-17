@@ -1,6 +1,7 @@
 use crate::extractor::traits::{CanExtract, Extractor, WrappedExtractor};
 
 /// An extractor that combines the results of two other extractors using a provided function.
+#[derive(Clone)]
 pub struct Combine<First, Second, FirstType, SecondType, ResultType> {
     first: First,
     second: Second,
@@ -63,7 +64,7 @@ mod test {
     #[test]
     fn combine_pair() {
         let mut pair = Combine::new_pair(
-            AtPath::new("x", ExtractPrimitive::new_string()),
+            AtPath::new("x", ExtractPrimitive::new_string_with_path()),
             AtPath::new("y", ExtractJsonValue::new()),
         );
 
@@ -83,8 +84,8 @@ mod test {
     #[test]
     fn combine_func() {
         let mut added = Combine::new(
-            AtPath::new_path(&["x"], ExtractPrimitive::new_number()),
-            AtPath::new_path(&["y"], ExtractPrimitive::new_number()),
+            AtPath::new_path(&["x"], ExtractPrimitive::new_number_with_path()),
+            AtPath::new_path(&["y"], ExtractPrimitive::new_number_with_path()),
             |x, y| x.unwrap().1.as_i64().unwrap() + y.unwrap().1.as_i64().unwrap(),
         );
 

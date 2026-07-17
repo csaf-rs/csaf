@@ -9,7 +9,7 @@ where
     matched: bool,
     depth: usize,
     source: Element,
-    result: Option<Vec<ElementType>>,
+    result: Vec<ElementType>,
 }
 
 impl<ElementType, Element: CanExtract<ElementType> + Extractor> CollectArray<Element, ElementType> {
@@ -20,7 +20,7 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> CollectArray<Ele
             matched: false,
             depth: 0,
             source,
-            result: None,
+            result: Vec::new(),
         }
     }
 
@@ -42,7 +42,7 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> CollectArray<Ele
         self.depth -= 1;
         if self.depth == 0 {
             if self.matched {
-                self.result.get_or_insert_default().push(self.source.extract())
+                self.result.push(self.source.extract())
             }
             self.matched = false;
         }
@@ -53,11 +53,11 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> CollectArray<Ele
     }
 }
 
-impl<ElementType, Element: CanExtract<ElementType> + Extractor> CanExtract<Option<Vec<ElementType>>>
+impl<ElementType, Element: CanExtract<ElementType> + Extractor> CanExtract<Vec<ElementType>>
     for CollectArray<Element, ElementType>
 {
-    fn extract(&mut self) -> Option<Vec<ElementType>> {
-        self.result.take()
+    fn extract(&mut self) -> Vec<ElementType> {
+        std::mem::take(&mut self.result)
     }
 }
 
@@ -103,7 +103,7 @@ impl<ElementType, Element: CanExtract<ElementType> + Extractor> Extractor for Co
     fn indexed_primitive(&mut self, json_pointer: &str, index: usize, primitive: &serde_json::Value) {
         if self.depth == 0 {
             self.source.init_primitive(json_pointer, primitive);
-            self.result.get_or_insert_default().push(self.source.extract())
+            self.result.push(self.source.extract())
         } else if self.matched {
             self.source.indexed_primitive(json_pointer, index, primitive);
         }
@@ -160,7 +160,7 @@ mod test {
 
     #[test]
     fn collect_array_of_primitives() {
-        let mut collector = CollectArray::new(AtPath::new("x", ExtractPrimitive::new_string()));
+        let mut collector = CollectArray::new(AtPath::new("x", ExtractPrimitive::new_string_with_path()));
 
         let document = json!([{"x": "a"}, {"x": "b"}]);
         visit_json_value(&document, &mut [&mut collector]);
@@ -168,10 +168,7 @@ mod test {
         let result = collector.extract();
         assert_eq!(
             result,
-            Some(vec![
-                Some(("/0/x".into(), "a".into())),
-                Some(("/1/x".into(), "b".into()))
-            ])
+            vec![Some(("/0/x".into(), "a".into())), Some(("/1/x".into(), "b".into()))]
         );
     }
 
@@ -189,18 +186,18 @@ mod test {
         let result = collector.extract();
         assert_eq!(
             result,
-            Some(vec![
+            vec![
                 Some(("/0".into(), interesting_object)),
                 Some(("/1".into(), json!({}))),
                 Some(("/2".into(), json!([]))),
                 Some(("/3".into(), json!(null)))
-            ])
+            ]
         );
     }
 
     #[test]
     fn collect_array_of_array_of_primitive() {
-        let mut collector = CollectArray::new(CollectArray::new(ExtractPrimitive::new_number()));
+        let mut collector = CollectArray::new(CollectArray::new(ExtractPrimitive::new_number_with_path()));
 
         let document = json!([[1], [2, 3], 4]);
         visit_json_value(&document, &mut [&mut collector]);
@@ -208,32 +205,32 @@ mod test {
         let result = collector.extract();
         assert_eq!(
             result,
-            Some(vec![
-                Some(vec![Some(("/0/0".into(), 1.into()))]),
-                Some(vec![Some(("/1/0".into(), 2.into())), Some(("/1/1".into(), 3.into()))]),
-                None
-            ])
+            vec![
+                vec![Some(("/0/0".into(), 1.into()))],
+                vec![Some(("/1/0".into(), 2.into())), Some(("/1/1".into(), 3.into()))],
+                vec![]
+            ]
         );
     }
 
     #[test]
     fn collect_from_object() {
-        let mut collector = CollectArray::new(ExtractPrimitive::new_string());
+        let mut collector = CollectArray::new(ExtractPrimitive::new_string_with_path());
 
         let document = json!({"a": "a", "b": "b"});
         visit_json_value(&document, &mut [&mut collector]);
 
         let result = collector.extract();
-        assert_eq!(result, None);
+        assert_eq!(result, vec![]);
     }
 
     #[test]
     fn collect_from_primitive() {
-        let mut collector = CollectArray::new(ExtractPrimitive::new_string());
+        let mut collector = CollectArray::new(ExtractPrimitive::new_string_with_path());
 
         visit_json_value(&json!("hello"), &mut [&mut collector]);
 
         let result = collector.extract();
-        assert_eq!(result, None);
+        assert_eq!(result, vec![]);
     }
 }

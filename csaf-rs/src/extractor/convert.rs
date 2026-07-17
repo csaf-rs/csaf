@@ -2,6 +2,7 @@ use crate::extractor::traits::{CanExtract, Extractor, WrappedExtractor};
 
 /// An extractor that converts the result of another extractor from one type to another using a
 /// provided function.
+#[derive(Clone)]
 pub struct Convert<SourceType, TargetType, Source: CanExtract<SourceType>> {
     inner: Source,
     convert: fn(value: SourceType) -> TargetType,
@@ -49,7 +50,9 @@ mod test {
 
     #[test]
     fn convert_drop_path_primitive() {
-        let mut value = Convert::new(AtPath::new("x", ExtractPrimitive::new_string()), |x| x.map(|x| x.1));
+        let mut value = Convert::new(AtPath::new("x", ExtractPrimitive::new_string_with_path()), |x| {
+            x.map(|x| x.1)
+        });
 
         let document = json!({"x": "hello", "y": [], "z": "hello"});
         visit_json_value(&document, &mut [&mut value]);

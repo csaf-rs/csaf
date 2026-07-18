@@ -53,5 +53,3 @@ tempfile = "3"
 name = "validation_benchmark"
 harness = false
 
-[package.metadata.docs.rs]
-rustc-args = ["--cfg", "docsrs"]

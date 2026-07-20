@@ -5,7 +5,7 @@ use crate::validation::ValidationError;
 fn create_deprecated_cwe_error(cwe: &str, version: &str, path: &str) -> ValidationError {
     ValidationError {
         message: format!("Weakness '{cwe}' is deprecated in version {version}."),
-        instance_path: format!("{path}/name"),
+        instance_path: format!("{path}/id"),
     }
 }
 

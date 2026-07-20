@@ -1287,6 +1287,12 @@
                 "text"
               ],
               "properties": {
+                "group_ids": {
+                  "$ref": "#/$defs/product_groups_t"
+                },
+                "product_ids": {
+                  "$ref": "#/$defs/products_t"
+                },
                 "system_name": {
                   "title": "System name",
                   "description": "Indicates the name of the vulnerability tracking or numbering system.",
@@ -1419,7 +1425,7 @@
                     },
                     "cvss_v4": {
                       "title": "CVSS v4",
-                      "$ref": "https://www.first.org/cvss/cvss-v4.0.2.json"
+                      "$ref": "https://www.first.org/cvss/cvss-v4.0.json"
                     },
                     "epss": {
                       "title": "EPSS",

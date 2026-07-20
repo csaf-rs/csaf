@@ -60,6 +60,18 @@ impl CsafVersionNumber {
         }
     }
 
+    /// Converts this version to a `semver::Version` for comparison purposes.
+    ///
+    /// An `IntVer(n)` is treated as `n.0.0`, consistent with the CSAF spec note in 6.1.14:
+    /// *"non-semantic versioning numbers are interpreted as semantic versioning numbers"*.
+    /// This allows mixed-variant revision histories to be sorted and compared correctly.
+    pub fn to_comparable_semver(&self) -> Version {
+        match self {
+            CsafVersionNumber::IntVer(intver) => Version::new(intver.get(), 0, 0),
+            CsafVersionNumber::SemVer(semver) => semver.get_version().clone(),
+        }
+    }
+
     /// Returns the next version number.
     ///
     /// Integer versions are incremented by 1.
@@ -132,48 +144,25 @@ impl Display for CsafVersionNumber {
 
 impl Hash for CsafVersionNumber {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        match self {
-            CsafVersionNumber::IntVer(num) => {
-                0u8.hash(state); // Discriminator for IntVer
-                num.hash(state);
-            },
-            CsafVersionNumber::SemVer(version) => {
-                1u8.hash(state); // Discriminator for SemVer
-                version.hash(state);
-            },
-        }
+        // Hash via the comparable semver representation so that IntVer(n) and SemVer(n.0.0)
+        // always produce the same hash, consistent with their PartialEq implementation.
+        self.to_comparable_semver().hash(state);
     }
 }
 
 impl Eq for CsafVersionNumber {}
 
-/// VersionNumbers are equal if they are of the same variant and their values are equal
-/// Otherwise, they are unequal
-/// Also, this relationship is reflexive
+/// Two version numbers are equal when their comparable semver representations are equal.
+/// This means `IntVer(n)` equals `SemVer(n.0.0)` but not `SemVer(n.x.y)` for `x > 0` or `y > 0`.
 impl PartialEq for CsafVersionNumber {
     fn eq(&self, other: &Self) -> bool {
-        match (&self, &other) {
-            (CsafVersionNumber::IntVer(a), CsafVersionNumber::IntVer(b)) => a == b,
-            (CsafVersionNumber::SemVer(a), CsafVersionNumber::SemVer(b)) => a == b,
-            // Integer and Semver are always unequal
-            (CsafVersionNumber::IntVer(_), CsafVersionNumber::SemVer(_)) => false,
-            (CsafVersionNumber::SemVer(_), CsafVersionNumber::IntVer(_)) => false,
-        }
+        self.to_comparable_semver() == other.to_comparable_semver()
     }
 }
 
-// TODO: Review this after revision history refactor
 impl Ord for CsafVersionNumber {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match (&self, &other) {
-            (CsafVersionNumber::IntVer(a), CsafVersionNumber::IntVer(b)) => a.cmp(b),
-            (CsafVersionNumber::SemVer(a), CsafVersionNumber::SemVer(b)) => a.cmp(b),
-            _ => {
-                panic!(
-                    "Cannot compare CsafVersionNumbers of different variants (IntVer vs SemVer). This looks like a dev error."
-                );
-            },
-        }
+        self.to_comparable_semver().cmp(&other.to_comparable_semver())
     }
 }
 
@@ -183,24 +172,6 @@ impl PartialOrd for CsafVersionNumber {
         Some(self.cmp(other))
     }
 }
-/*
-
-TODO: Uncomment this once revisionhistory has been typified to only allow one variant
-/// VersionNumbers can be ordered if they are of the same variant
-/// Otherwise, there is no ordering
-///
-/// Also, we do not implement Ord here, as mixed variant comparisons can't be ordered, or we rather do not care
-/// about their ordering.
-impl PartialOrd for VersionNumber {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (&self, &other) {
-            (VersionNumber::IntVer(a), VersionNumber::IntVer(b)) => Some(a.cmp(b)),
-            (VersionNumber::SemVer(a), VersionNumber::SemVer(b)) => Some(a.cmp(b)),
-            _ => None,
-        }
-    }
-}
-*/
 
 // Transform a raw version string into a CsafVersionNumber.  As the schema validation is the same
 // for CSAF 2.0 and 2.1, we can just push the raw string through either before parsing it into a CsafVersionNumber.
@@ -306,5 +277,29 @@ mod tests {
         let version = CsafVersionNumber::from("1.2.3-alpha+001");
 
         assert_eq!(version.get_next_major_version().to_string(), "2.0.0");
+    }
+
+    #[test]
+    fn test_cross_variant_equality() {
+        // IntVer(n) equals SemVer(n.0.0)
+        assert_eq!(CsafVersionNumber::from("1"), CsafVersionNumber::from("1.0.0"));
+        assert_eq!(CsafVersionNumber::from("42"), CsafVersionNumber::from("42.0.0"));
+        // IntVer(n) does not equal SemVer(n.x.y) when x > 0 or y > 0
+        assert_ne!(CsafVersionNumber::from("1"), CsafVersionNumber::from("1.2.3"));
+    }
+
+    #[test]
+    fn test_cross_variant_ordering() {
+        // IntVer(1) < SemVer(2.0.0)
+        assert!(CsafVersionNumber::from("1") < CsafVersionNumber::from("2.0.0"));
+        // IntVer(2) > SemVer(1.0.0)
+        assert!(CsafVersionNumber::from("2") > CsafVersionNumber::from("1.0.0"));
+        // IntVer(1) == SemVer(1.0.0) in ordering
+        assert_eq!(
+            CsafVersionNumber::from("1").cmp(&CsafVersionNumber::from("1.0.0")),
+            std::cmp::Ordering::Equal
+        );
+        // IntVer(1) < SemVer(1.2.3) because 1.0.0 < 1.2.3
+        assert!(CsafVersionNumber::from("1") < CsafVersionNumber::from("1.2.3"));
     }
 }

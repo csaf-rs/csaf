@@ -16,7 +16,7 @@ static CVSS30_VALIDATOR: LazyLock<Validator> =
 static CVSS31_VALIDATOR: LazyLock<Validator> =
     LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v3.1.json")));
 static CVSS40_VALIDATOR: LazyLock<Validator> =
-    LazyLock::new(|| create_draft_validator(include_str!("../../assets/cvss-v4.0.2.json")));
+    LazyLock::new(|| create_draft_validator(include_str!("../../assets/cvss-v4.0.json")));
 
 /// 6.1.8 Invalid CVSS
 /// Invalid CVSS object according to scheme

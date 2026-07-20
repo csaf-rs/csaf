@@ -54,9 +54,15 @@ pub mod error {
 ///  "properties": {
 ///    "name": {
 ///      "title": "Name of the test file",
-///      "description": "Contains the filename and path relative to the JSON that includes this object.",
+///      "description": "Contains the filename and path relative to the JSON that details the testcase.",
 ///      "type": "string",
 ///      "pattern": "^.+\\.json$"
+///    },
+///    "result": {
+///      "title": "Name of the result file",
+///      "description": "Contains the filename and path relative to the JSON that details the expected result.",
+///      "type": "string",
+///      "pattern": "^.+\\.result\\.json$"
 ///    },
 ///    "valid": {
 ///      "title": "Evaluation result",
@@ -71,8 +77,11 @@ pub mod error {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct FileT {
-    ///Contains the filename and path relative to the JSON that includes this object.
+    ///Contains the filename and path relative to the JSON that details the testcase.
     pub name: NameOfTheTestFile,
+    ///Contains the filename and path relative to the JSON that details the expected result.
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub result: ::std::option::Option<NameOfTheResultFile>,
     ///States whether the test file is valid according to the CSAF standard.
     pub valid: bool,
 }
@@ -165,14 +174,90 @@ impl ::std::convert::TryFrom<::std::string::String> for JsonSchema {
         value.parse()
     }
 }
-///Contains the filename and path relative to the JSON that includes this object.
+///Contains the filename and path relative to the JSON that details the expected result.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "title": "Name of the result file",
+///  "description": "Contains the filename and path relative to the JSON that details the expected result.",
+///  "type": "string",
+///  "pattern": "^.+\\.result\\.json$"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct NameOfTheResultFile(::std::string::String);
+impl ::std::ops::Deref for NameOfTheResultFile {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<NameOfTheResultFile> for ::std::string::String {
+    fn from(value: NameOfTheResultFile) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for NameOfTheResultFile {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^.+\\.result\\.json$").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err("doesn't match pattern \"^.+\\.result\\.json$\"".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for NameOfTheResultFile {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<&::std::string::String> for NameOfTheResultFile {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for NameOfTheResultFile {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for NameOfTheResultFile {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains the filename and path relative to the JSON that details the testcase.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
 ///  "title": "Name of the test file",
-///  "description": "Contains the filename and path relative to the JSON that includes this object.",
+///  "description": "Contains the filename and path relative to the JSON that details the testcase.",
 ///  "type": "string",
 ///  "pattern": "^.+\\.json$"
 ///}
@@ -624,12 +709,17 @@ pub mod builder {
     #[derive(Clone, Debug)]
     pub struct FileT {
         name: ::std::result::Result<super::NameOfTheTestFile, ::std::string::String>,
+        result: ::std::result::Result<
+            ::std::option::Option<super::NameOfTheResultFile>,
+            ::std::string::String,
+        >,
         valid: ::std::result::Result<bool, ::std::string::String>,
     }
     impl ::std::default::Default for FileT {
         fn default() -> Self {
             Self {
                 name: Err("no value supplied for name".to_string()),
+                result: Ok(Default::default()),
                 valid: Err("no value supplied for valid".to_string()),
             }
         }
@@ -643,6 +733,18 @@ pub mod builder {
             self.name = value
                 .try_into()
                 .map_err(|e| format!("error converting supplied value for name: {e}"));
+            self
+        }
+        pub fn result<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<super::NameOfTheResultFile>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.result = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for result: {e}"));
             self
         }
         pub fn valid<T>(mut self, value: T) -> Self
@@ -663,6 +765,7 @@ pub mod builder {
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
                 name: value.name?,
+                result: value.result?,
                 valid: value.valid?,
             })
         }
@@ -671,6 +774,7 @@ pub mod builder {
         fn from(value: super::FileT) -> Self {
             Self {
                 name: Ok(value.name),
+                result: Ok(value.result),
                 valid: Ok(value.valid),
             }
         }

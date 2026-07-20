@@ -133,6 +133,15 @@ mod tests {
             CsafVersionNumber::from("4"),
             &0,
         )]);
+        let case_intver_3_1_2_5_4_wrong_first_missing_1_2_4 = Err(vec![
+            test_6_1_21_err_wrong_first_version(CsafVersionNumber::from("3"), &0),
+            test_6_1_21_err_missing_version(CsafVersionNumber::from("4")),
+        ]);
+        let case_06 = Err(vec![
+            test_6_1_21_err_wrong_first_version(CsafVersionNumber::from("4.0.0"), &0),
+            test_6_1_21_err_missing_version(CsafVersionNumber::from("5.0.0")),
+        ]);
+        let case_07 = Err(vec![test_6_1_21_err_missing_version(CsafVersionNumber::from("2"))]);
 
         // Valid cases for both 2.0 and 2.1
         // case 11: valid intver final start with 1
@@ -165,6 +174,10 @@ mod tests {
             case_intver_1_3_missing_2,
             case_intver_2_3_missing_1,
             case_intver_1_3_4_with_timezone_missing_2,
+            case_semver_1_3_missing_2.clone(),
+            case_intver_3_1_2_5_4_wrong_first_missing_1_2_4,
+            case_06,
+            case_07,
             case_semver_1_3_missing_2,
             case_semver_2_3_missing_1,
             case_semver_missing_2,
@@ -172,6 +185,9 @@ mod tests {
             case_big_range_missing,
             case_semver_first_version_mismatch_multiple_versions_missing,
             case_intver_first_version_mismatch_range_missing,
+            Ok(()),
+            Ok(()),
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),

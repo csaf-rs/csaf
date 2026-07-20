@@ -1,5 +1,6 @@
-//! Holds the 6.1.13 PURL pipeline to the official purl-spec test suite (the `purl-spec`
-//! submodule, pinned): every `parse`/`roundtrip` case runs through the same two layers the
+//! Holds the 6.1.13 PURL pipeline to the official purl-spec test suite (the copies under
+//! `assets/purl-spec`, synced from the pinned `purl-spec` submodule by
+//! `scripts/update/update_assets.sh`): every `parse`/`roundtrip` case runs through the same two layers the
 //! validator applies — the `PackageUrlRepresentation` schema pattern, then the `packageurl`
 //! parse behind [`CsafPurl`] — and the verdict must match the suite's expectation.
 //!
@@ -82,14 +83,12 @@ struct Case {
 /// Every `(file, expected verdict, purl)` of the suite's parse and roundtrip cases, deduplicated
 /// (a purl often appears as both a parse and a roundtrip case).
 fn suite_cases() -> Vec<(String, bool, String)> {
-    let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../purl-spec/tests");
+    let root = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/purl-spec");
     let mut cases = Vec::new();
     for dir in ["spec", "types"] {
         let dir_path = format!("{root}/{dir}");
         let mut paths: Vec<_> = std::fs::read_dir(&dir_path)
-            .unwrap_or_else(|e| {
-                panic!("{dir_path}: {e} — initialize the purl-spec submodule (git submodule update --init)")
-            })
+            .unwrap_or_else(|e| panic!("{dir_path}: {e} — run scripts/update/update_assets.sh"))
             .map(|entry| entry.expect("directory entry").path())
             .filter(|path| path.extension().is_some_and(|ext| ext == "json"))
             .collect();

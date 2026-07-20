@@ -4,10 +4,61 @@ use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
 use crate::validation::ValidationError;
+use semver::Version;
 
 fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, path: &str) -> ValidationError {
+    // Parsing both strings as semantic versions. CWE assets use two-part
+    // versions like "4.13". `semver::Version::parse` expects three parts in the version
+    // (major.minor.patch), we normalize the version by appending 0 until we have three segments
+    //  and preserver prerelease/build metadata.
+    fn normalize_to_semver_str(s: &str) -> String {
+        // split off prerelease/build metadata
+        let mut rest = "";
+        let mut core = s;
+        if let Some(idx) = s.find('-') {
+            core = &s[..idx];
+            rest = &s[idx..];
+        } else if let Some(idx) = s.find('+') {
+            core = &s[..idx];
+            rest = &s[idx..];
+        }
+
+        let mut parts: Vec<&str> = core.split('.').collect();
+        while parts.len() < 3 {
+            parts.push("0");
+        }
+        format!("{}{}", parts.join("."), rest)
+    }
+
+    let norm_version = normalize_to_semver_str(version);
+    let norm_latest = normalize_to_semver_str(latest);
+    let parsed_version = Version::parse(norm_version.as_str());
+    let parsed_latest = Version::parse(norm_latest.as_str());
+
+    let error_message = match (parsed_version, parsed_latest) {
+        (Ok(v), Ok(l)) => {
+            if v < l {
+                format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest}).")
+            } else if v > l {
+                format!("Weakness '{cwe}' uses a future CWE version {version} (latest: {latest}).")
+            } else {
+                format!("Weakness '{cwe}' uses latest CWE version {version} but validation is incorrect.")
+            }
+        },
+        // If parsing fails for either side, fall back to string comparison to avoid panics.
+        _ => {
+            if version < latest {
+                format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest}).")
+            } else if version > latest {
+                format!("Weakness '{cwe}' uses a future CWE version {version} (latest: {latest}).")
+            } else {
+                format!("Weakness '{cwe}' uses latest CWE version {version} but validation is incorrect.")
+            }
+        },
+    };
+
     ValidationError {
-        message: format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest})."),
+        message: error_message,
         instance_path: format!("{path}/version"),
     }
 }
@@ -101,27 +152,34 @@ mod tests {
             "/vulnerabilities/0/cwes/0",
         )]);
 
-        let case_02 = Err(vec![create_non_latest_cwe_error(
+        let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_error(
             "CWE-143",
             "4.15",
             "4.13",
             "/vulnerabilities/0/cwes/0",
         )]);
 
-        let case_03 = Err(vec![
+        let case_03_cwe_version_mismatch = Err(vec![
             create_non_latest_cwe_error("CWE-262", "1.8.1", "4.13", "/vulnerabilities/0/cwes/0"),
             create_non_latest_cwe_error("CWE-287", "1.0", "4.13", "/vulnerabilities/0/cwes/2"),
         ]);
 
-        let case_04 = Err(vec![
+        let case_04_cwe_version_mismatch_multi_vulnerabilities = Err(vec![
             create_non_latest_cwe_error("CWE-158", "1.3", "4.13", "/vulnerabilities/0/cwes/0"),
             create_non_latest_cwe_error("CWE-138", "2.1", "4.13", "/vulnerabilities/0/cwes/1"),
             create_non_latest_cwe_error("CWE-318", "4.14", "4.13", "/vulnerabilities/1/cwes/0"),
             create_non_latest_cwe_error("CWE-61", "4.15", "4.13", "/vulnerabilities/2/cwes/0"),
         ]);
 
-        TESTS_2_1
-            .test_6_2_24
-            .expect(case_01, case_02, case_03, case_04, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_24.expect(
+            case_01_cwe_version_before_latest,
+            case_02_cwe_version_after_latest,
+            case_03_cwe_version_mismatch,
+            case_04_cwe_version_mismatch_multi_vulnerabilities,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

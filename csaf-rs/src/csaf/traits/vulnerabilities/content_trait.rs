@@ -1,6 +1,9 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::schema::csaf2_0::schema::Score;
 use crate::schema::csaf2_1::schema::{Content, Epss, QualitativeSeverityRating};
+use cvss_rs::v2_0::CvssV2;
+use cvss_rs::v3::CvssV3;
+use cvss_rs::v4_0::CvssV4;
 use serde::de::Error as SerdeError;
 use serde_json::{Map, Value};
 use ssvc::selection_list::SelectionList;
@@ -61,6 +64,12 @@ pub trait ContentTrait {
         self.get_cvss_v2().is_some()
     }
 
+    /// Returns the contained CVSS 2.0 metric parsed into its typed representation, if any.
+    fn get_cvss_v2_typed(&self) -> Option<Result<CvssV2, serde_json::Error>> {
+        self.get_cvss_v2()
+            .map(|map| serde_json::from_value(Value::Object(map.clone())))
+    }
+
     /// Returns a JSON representation of the contained CVSS 3.0/3.1 metric, if any.
     fn get_cvss_v3(&self) -> Option<&Map<String, Value>>;
 
@@ -69,12 +78,24 @@ pub trait ContentTrait {
         self.get_cvss_v3().is_some()
     }
 
+    /// Returns the contained CVSS 3.0/3.1 metric parsed into its typed representation, if any.
+    fn get_cvss_v3_typed(&self) -> Option<Result<CvssV3, serde_json::Error>> {
+        self.get_cvss_v3()
+            .map(|map| serde_json::from_value(Value::Object(map.clone())))
+    }
+
     /// Returns a JSON representation of the contained CVSS 4.0 metric, if any.
     fn get_cvss_v4(&self) -> Option<&Map<String, Value>>;
 
     /// Returns whether this content contains a CVSS 4.0 metric.
     fn has_cvss_v4(&self) -> bool {
         self.get_cvss_v4().is_some()
+    }
+
+    /// Returns the contained CVSS 4.0 metric parsed into its typed representation, if any.
+    fn get_cvss_v4_typed(&self) -> Option<Result<CvssV4, serde_json::Error>> {
+        self.get_cvss_v4()
+            .map(|map| serde_json::from_value(Value::Object(map.clone())))
     }
 
     /// Returns whether this content contains any CVSS metric (v2, v3, or v4).
@@ -221,5 +242,56 @@ impl ContentTrait for Content {
 
     fn get_content_json_path(&self, vulnerability_idx: usize, metric_idx: usize) -> String {
         format!("/vulnerabilities/{vulnerability_idx}/metrics/{metric_idx}/content",)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn score_cvss_v3_typed_parses_the_map() {
+        let score: Score = serde_json::from_value(json!({
+            "products": ["CSAFPID-0001"],
+            "cvss_v3": {
+                "version": "3.1",
+                "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                "baseScore": 9.8,
+                "baseSeverity": "CRITICAL"
+            }
+        }))
+        .expect("score deserializes");
+        let cvss = score.get_cvss_v3_typed().expect("present").expect("parses");
+        assert_eq!(cvss.vector_string, "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H");
+        assert!(score.get_cvss_v2_typed().is_none());
+    }
+
+    #[test]
+    fn score_cvss_v3_typed_reports_a_nonconforming_map() {
+        let score: Score = serde_json::from_value(json!({
+            "products": ["CSAFPID-0001"],
+            "cvss_v3": { "version": "3.1" }
+        }))
+        .expect("score deserializes");
+        assert!(score.get_cvss_v3_typed().expect("present").is_err());
+    }
+
+    #[test]
+    fn content_cvss_v4_typed_parses_the_map() {
+        let content: Content = serde_json::from_value(json!({
+            "cvss_v4": {
+                "version": "4.0",
+                "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+                "baseScore": 9.3,
+                "baseSeverity": "CRITICAL"
+            }
+        }))
+        .expect("content deserializes");
+        let cvss = content.get_cvss_v4_typed().expect("present").expect("parses");
+        assert_eq!(
+            cvss.vector_string,
+            "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+        );
     }
 }

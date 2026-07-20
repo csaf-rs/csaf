@@ -102,31 +102,34 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
     // Determine the latest CWE version available at document current_release_date.
     let latest_version = get_latest_cwe_version_for_date(&current_release_date);
 
-    for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
-        if let Some(cwes) = vulnerability.get_cwe() {
-            for (i_cwe, cwe_item) in cwes.iter().enumerate() {
-                // Require the CWE item to include a version. If missing, the parser
-                // should have rejected the document; skip checking here.
-                let Some(version) = cwe_item.version.as_deref() else {
-                    continue;
-                };
+    // If we cannot determine the latest CWE version for the document,
+    // skip the check (no external CWE data available).
+    if let Some(latest) = latest_version {
+        for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
+            if let Some(cwes) = vulnerability.get_cwe() {
+                for (i_cwe, cwe_item) in cwes.iter().enumerate() {
+                    // Require the CWE item to include a version. If missing, the parser
+                    // should have rejected the document; skip checking here.
+                    let Some(version) = cwe_item.version.as_deref() else {
+                        continue;
+                    };
 
-                // If we cannot determine the latest CWE version for the document,
-                // skip the check (no external CWE data available).
-                let Some(latest) = latest_version else {
-                    continue;
-                };
-
-                if version != latest {
-                    errors.push(create_non_latest_cwe_error(
-                        &cwe_item.id,
-                        version,
-                        latest,
-                        format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
-                    ));
+                    if version != latest {
+                        errors.push(create_non_latest_cwe_error(
+                            &cwe_item.id,
+                            version,
+                            latest,
+                            format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
+                        ));
+                    }
                 }
             }
         }
+    } else {
+        errors.push(ValidationError {
+            message: "CWE version information is not available for the current release date.".to_string(),
+            instance_path: "/document/tracking/current_release_date".to_string(),
+        });
     }
 
     if errors.is_empty() { Ok(()) } else { Err(errors) }

@@ -103,8 +103,8 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
         for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
             if let Some(cwes) = vulnerability.get_cwe() {
                 for (i_cwe, cwe_item) in cwes.iter().enumerate() {
-                    // Require the CWE item to include a version. If missing, the parser
-                    // should have rejected the document; skip checking here.
+                    // Extract the CWE version that is mandatory for CSAF 2.1 but
+                    // optional for CSAF 2.0., this test is only relevant for the former
                     let Some(version) = cwe_item.version.as_deref() else {
                         continue;
                     };

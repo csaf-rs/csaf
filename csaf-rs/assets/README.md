@@ -14,6 +14,14 @@ These assets are described within this `README.md`.
 See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
 They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
+### purl-spec test suite
+
+- `purl-spec/spec/*.json`
+- `purl-spec/types/*.json`
+
+See https://github.com/package-url/purl-spec for information regarding these files and their license (MIT).
+They are 1:1 copies from the `purl-spec` git submodule, synced by `scripts/update/update_assets.sh` and consumed by `csaf-rs/tests/purl_spec_conformance.rs`.
+
 ## External Assets
 
 - `scancode-licensedb.json`

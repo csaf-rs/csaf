@@ -1,3 +1,5 @@
+use crate::csaf::traits::vulnerabilities::cpe_trait::CpeTrait;
+use crate::csaf::traits::vulnerabilities::generic_uri_trait::GenericUriTrait;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber, CsafStockKeepingUnit};
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
 use crate::csaf_traits::HashTrait;
@@ -11,6 +13,8 @@ use crate::schema::csaf2_1::schema::{
 /// Trait representing an abstract product identification helper of a full product name.
 pub trait ProductIdentificationHelperTrait {
     type HashType: HashTrait;
+    type CpeType: CpeTrait;
+    type GenericUriType: GenericUriTrait;
 
     /// Returns the PURLs identifying the associated product.
     fn get_purls(&self) -> Option<Vec<CsafPurl>>;
@@ -40,11 +44,22 @@ pub trait ProductIdentificationHelperTrait {
     fn get_serial_numbers(&self) -> Option<Vec<CsafSerialNumber>>;
 
     /// Returns the hashes associated with this product.
-    fn get_hashes(&self) -> &Vec<Self::HashType>;
+    fn get_hashes(&self) -> Option<Vec<Self::HashType>>;
+
+    /// Returns the CPEs (Common Platform Enumeration).
+    fn get_cpes(&self) -> Option<Vec<Self::CpeType>>;
+
+    /// Returns the SBOM URLs.
+    fn get_sbom_urls(&self) -> Option<Vec<String>>;
+
+    /// Returns the X-Generic URIs.
+    fn get_x_generic_uris(&self) -> Option<Vec<Self::GenericUriType>>;
 }
 
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
     type HashType = CryptographicHashes20;
+    type CpeType = crate::schema::csaf2_0::schema::CommonPlatformEnumerationRepresentation;
+    type GenericUriType = crate::schema::csaf2_0::schema::GenericUri;
 
     fn get_purls(&self) -> Option<Vec<CsafPurl>> {
         self.purl.as_ref().map(|s| vec![CsafPurl::from(s)])
@@ -70,13 +85,35 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
             .map(|v| v.iter().map(CsafSerialNumber::from).collect())
     }
 
-    fn get_hashes(&self) -> &Vec<Self::HashType> {
-        self.hashes.as_ref()
+    fn get_hashes(&self) -> Option<Vec<Self::HashType>> {
+        Some(self.hashes.clone())
+    }
+
+    fn get_cpes(&self) -> Option<Vec<Self::CpeType>> {
+        self.cpe.as_ref().map(|v| vec![v.clone()])
+    }
+
+    fn get_sbom_urls(&self) -> Option<Vec<String>> {
+        if self.sbom_urls.is_empty() {
+            None
+        } else {
+            Some(self.sbom_urls.clone())
+        }
+    }
+
+    fn get_x_generic_uris(&self) -> Option<Vec<Self::GenericUriType>> {
+        if self.x_generic_uris.is_empty() {
+            None
+        } else {
+            Some(self.x_generic_uris.clone())
+        }
     }
 }
 
 impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
     type HashType = CryptographicHashes21;
+    type CpeType = crate::schema::csaf2_1::schema::CommonPlatformEnumerationRepresentation;
+    type GenericUriType = crate::schema::csaf2_1::schema::GenericUri;
 
     fn get_purls(&self) -> Option<Vec<CsafPurl>> {
         self.purls.as_ref().map(|v| v.iter().map(CsafPurl::from).collect())
@@ -102,7 +139,19 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
             .map(|v| v.iter().map(CsafSerialNumber::from).collect())
     }
 
-    fn get_hashes(&self) -> &Vec<Self::HashType> {
-        self.hashes.as_ref()
+    fn get_hashes(&self) -> Option<Vec<Self::HashType>> {
+        self.hashes.clone()
+    }
+
+    fn get_cpes(&self) -> Option<Vec<Self::CpeType>> {
+        self.cpe.as_ref().map(|v| vec![v.clone()])
+    }
+
+    fn get_sbom_urls(&self) -> Option<Vec<String>> {
+        self.sbom_urls.clone()
+    }
+
+    fn get_x_generic_uris(&self) -> Option<Vec<Self::GenericUriType>> {
+        self.x_generic_uris.clone()
     }
 }

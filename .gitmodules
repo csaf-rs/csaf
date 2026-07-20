@@ -5,3 +5,4 @@
 [submodule "purl-spec"]
 	path = purl-spec
 	url = https://github.com/package-url/purl-spec.git
+	branch = main

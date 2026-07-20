@@ -91,6 +91,7 @@ fn suite_cases() -> Vec<(String, bool, String)> {
                 panic!("{dir_path}: {e} — initialize the purl-spec submodule (git submodule update --init)")
             })
             .map(|entry| entry.expect("directory entry").path())
+            .filter(|path| path.extension().is_some_and(|ext| ext == "json"))
             .collect();
         paths.sort();
         for path in paths {

@@ -1,0 +1,16 @@
+//! The generated constrained-string newtypes compare against `&str` and borrow as `&str`
+//! directly, without dereferencing through the inner `String`.
+
+use csaf::schema::csaf2_0::schema::ProductIdT as ProductIdT20;
+use csaf::schema::csaf2_1::schema::ProductIdT as ProductIdT21;
+
+#[test]
+fn product_ids_compare_against_str() {
+    let id: ProductIdT20 = "CSAFPID-0001".parse().expect("valid product id");
+    assert_eq!(id, "CSAFPID-0001");
+    assert!(id != "CSAFPID-0002");
+    assert_eq!(id.as_ref(), "CSAFPID-0001");
+
+    let id: ProductIdT21 = "CSAFPID-0001".parse().expect("valid product id");
+    assert_eq!(id, "CSAFPID-0001");
+}

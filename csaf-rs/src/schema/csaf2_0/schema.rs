@@ -12978,3 +12978,693 @@ pub mod defaults {
         "https://www.first.org/tlp/".to_string()
     }
 }
+impl ::std::convert::AsRef<str> for AdditionalRestartInformation {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for AdditionalRestartInformation {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for AdditionalRestartInformation {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for AlgorithmOfTheCryptographicHash {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for AlgorithmOfTheCryptographicHash {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for AlgorithmOfTheCryptographicHash {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for AlternateName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for AlternateName {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for AlternateName {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for AudienceOfNote {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for AudienceOfNote {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for AudienceOfNote {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for CommonPlatformEnumerationRepresentation {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for CommonPlatformEnumerationRepresentation {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for CommonPlatformEnumerationRepresentation {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for ContactDetails {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for ContactDetails {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for ContactDetails {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for ContributingOrganization {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for ContributingOrganization {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for ContributingOrganization {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for Cve {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for Cve {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for Cve {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for DetailsOfTheRemediation {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for DetailsOfTheRemediation {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for DetailsOfTheRemediation {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for DetailsOfTheThreat {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for DetailsOfTheThreat {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for DetailsOfTheThreat {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for DocumentCategory {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for DocumentCategory {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for DocumentCategory {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for EngineName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for EngineName {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for EngineName {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for EngineVersion {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for EngineVersion {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for EngineVersion {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for EntitlementOfTheRemediation {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for EntitlementOfTheRemediation {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for EntitlementOfTheRemediation {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for Filename {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for Filename {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for Filename {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for IssuingAuthority {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for IssuingAuthority {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for IssuingAuthority {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for LangT {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for LangT {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for LangT {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for LegacyVersionOfTheRevision {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for LegacyVersionOfTheRevision {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for LegacyVersionOfTheRevision {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for ModelNumber {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for ModelNumber {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for ModelNumber {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for NameOfPublisher {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for NameOfPublisher {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for NameOfPublisher {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for NameOfTheBranch {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for NameOfTheBranch {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for NameOfTheBranch {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for NameOfTheContributor {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for NameOfTheContributor {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for NameOfTheContributor {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for NoteContent {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for NoteContent {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for NoteContent {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for PackageUrlRepresentation {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for PackageUrlRepresentation {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for PackageUrlRepresentation {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for ProductGroupIdT {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for ProductGroupIdT {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for ProductGroupIdT {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for ProductIdT {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for ProductIdT {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for ProductIdT {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for SerialNumber {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for SerialNumber {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for SerialNumber {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for StockKeepingUnit {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for StockKeepingUnit {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for StockKeepingUnit {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for SummaryOfTheAcknowledgment {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for SummaryOfTheAcknowledgment {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for SummaryOfTheAcknowledgment {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for SummaryOfTheInvolvement {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for SummaryOfTheInvolvement {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for SummaryOfTheInvolvement {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for SummaryOfTheProductGroup {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for SummaryOfTheProductGroup {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for SummaryOfTheProductGroup {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for SummaryOfTheReference {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for SummaryOfTheReference {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for SummaryOfTheReference {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for SummaryOfTheRevision {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for SummaryOfTheRevision {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for SummaryOfTheRevision {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for SystemName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for SystemName {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for SystemName {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for Text {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for Text {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for Text {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for TextOfAggregateSeverity {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for TextOfAggregateSeverity {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for TextOfAggregateSeverity {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for TextualDescription {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for TextualDescription {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for TextualDescription {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for TextualDescriptionOfTheProduct {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for TextualDescriptionOfTheProduct {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for TextualDescriptionOfTheProduct {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for Title {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for Title {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for Title {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for TitleOfNote {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for TitleOfNote {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for TitleOfNote {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for TitleOfThisDocument {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for TitleOfThisDocument {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for TitleOfThisDocument {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for UniqueIdentifierForTheDocument {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for UniqueIdentifierForTheDocument {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for UniqueIdentifierForTheDocument {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for ValueOfTheCryptographicHash {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for ValueOfTheCryptographicHash {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for ValueOfTheCryptographicHash {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for VersionT {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for VersionT {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for VersionT {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for WeaknessId {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for WeaknessId {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for WeaknessId {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for WeaknessName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for WeaknessName {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for WeaknessName {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}

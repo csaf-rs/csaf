@@ -28,3 +28,57 @@ pub fn add_generated_code_header(file: &mut syn::File) {
     let doc_attr: syn::Attribute = syn::parse_quote! { #![doc = #GENERATED_CODE_HEADER] };
     file.attrs.insert(0, doc_attr);
 }
+
+/// Appends `AsRef<str>` and `PartialEq<str>`/`PartialEq<&str>` impls for every generated
+/// single-field `String` tuple struct — the constrained-string newtypes, which otherwise
+/// only offer `Deref` and force double-dereferencing at comparison sites.
+pub fn add_string_newtype_impls(file: &mut syn::File) {
+    let mut impls: Vec<syn::Item> = Vec::new();
+    for item in &file.items {
+        let syn::Item::Struct(item_struct) = item else {
+            continue;
+        };
+        let syn::Fields::Unnamed(fields) = &item_struct.fields else {
+            continue;
+        };
+        if fields.unnamed.len() != 1 || !is_string_type(&fields.unnamed[0].ty) {
+            continue;
+        }
+        let ident = &item_struct.ident;
+        impls.push(syn::parse_quote! {
+            impl ::std::convert::AsRef<str> for #ident {
+                fn as_ref(&self) -> &str {
+                    &self.0
+                }
+            }
+        });
+        impls.push(syn::parse_quote! {
+            impl ::std::cmp::PartialEq<str> for #ident {
+                fn eq(&self, other: &str) -> bool {
+                    self.0 == other
+                }
+            }
+        });
+        impls.push(syn::parse_quote! {
+            impl ::std::cmp::PartialEq<&str> for #ident {
+                fn eq(&self, other: &&str) -> bool {
+                    self.0 == *other
+                }
+            }
+        });
+    }
+    file.items.extend(impls);
+}
+
+fn is_string_type(ty: &syn::Type) -> bool {
+    let syn::Type::Path(type_path) = ty else {
+        return false;
+    };
+    let segments: Vec<String> = type_path
+        .path
+        .segments
+        .iter()
+        .map(|segment| segment.ident.to_string())
+        .collect();
+    segments == ["std", "string", "String"] || segments == ["String"]
+}

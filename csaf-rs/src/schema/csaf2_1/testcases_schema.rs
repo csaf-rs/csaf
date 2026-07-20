@@ -944,3 +944,48 @@ pub mod builder {
         }
     }
 }
+impl ::std::convert::AsRef<str> for NameOfTheResultFile {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for NameOfTheResultFile {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for NameOfTheResultFile {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for NameOfTheTestFile {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for NameOfTheTestFile {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for NameOfTheTestFile {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+impl ::std::convert::AsRef<str> for NumberOfTheTest {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl ::std::cmp::PartialEq<str> for NumberOfTheTest {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+impl ::std::cmp::PartialEq<&str> for NumberOfTheTest {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}

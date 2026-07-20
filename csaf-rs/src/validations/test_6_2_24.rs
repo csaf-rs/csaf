@@ -101,7 +101,7 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
     // skip the check (no external CWE data available).
     if let Some(latest) = latest_version {
         for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
-            if let Some(cwes) = vulnerability.get_cwe() {
+            if let Some(cwes) = vulnerability.get_cwes() {
                 for (i_cwe, cwe_item) in cwes.iter().enumerate() {
                     // Extract the CWE version that is mandatory for CSAF 2.1 but
                     // optional for CSAF 2.0., this test is only relevant for the former

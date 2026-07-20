@@ -89,6 +89,30 @@ pub trait ProductTreeTrait {
         ids
     }
 
+    // Lookup functions
+
+    /// Returns the product definition carrying the given product ID, searching the same
+    /// sources as `visit_all_products_generic()`: branches (recursively), the top-level
+    /// full product names, and the relationships' full product names.
+    fn get_product_by_id(&self, product_id: &str) -> Option<&Self::FullProductNameType> {
+        if let Some(branches) = self.get_branches()
+            && let Some(product) = branches.iter().find_map(|branch| branch.find_product_by_id(product_id))
+        {
+            return Some(product);
+        }
+        if let Some(product) = self
+            .get_full_product_names()
+            .iter()
+            .find(|fpn| fpn.get_product_id() == product_id)
+        {
+            return Some(product);
+        }
+        self.get_product_paths()
+            .iter()
+            .map(|path| path.get_full_product_name())
+            .find(|fpn| fpn.get_product_id() == product_id)
+    }
+
     // Visitors for node types in the tree
 
     /// A trait wrapper for `visit_all_products_generic()` that allows implementations to provide
@@ -225,6 +249,19 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
 
     /// Retrieves the full product name associated with this branch, if available.
     fn get_product(&self) -> Option<&FPN>;
+
+    /// Returns the product definition carrying the given product ID from this branch or
+    /// its descendants.
+    fn find_product_by_id(&self, product_id: &str) -> Option<&FPN> {
+        if let Some(product) = self.get_product()
+            && product.get_product_id() == product_id
+        {
+            return Some(product);
+        }
+        self.get_branches()?
+            .iter()
+            .find_map(|branch| branch.find_product_by_id(product_id))
+    }
 
     /// Recursively visits all branches in the tree structure,
     /// applying the provided callback function to each branch.
@@ -426,5 +463,74 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
 
     fn get_product(&self) -> Option<&FullProductNameT21> {
         self.product.as_ref()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn get_product_by_id_searches_all_sources_in_csaf_2_0() {
+        let tree: ProductTree20 = serde_json::from_value(json!({
+            "branches": [{
+                "category": "vendor",
+                "name": "Vendor",
+                "branches": [{
+                    "category": "product_name",
+                    "name": "Product",
+                    "product": { "product_id": "CSAFPID-0001", "name": "Vendor Product 1.0" }
+                }]
+            }],
+            "full_product_names": [{ "product_id": "CSAFPID-0002", "name": "Top-level product" }],
+            "relationships": [{
+                "category": "installed_on",
+                "full_product_name": { "product_id": "CSAFPID-0003", "name": "Product on top-level" },
+                "product_reference": "CSAFPID-0001",
+                "relates_to_product_reference": "CSAFPID-0002"
+            }]
+        }))
+        .expect("product tree deserializes");
+
+        let branch_product = tree.get_product_by_id("CSAFPID-0001").expect("branch product");
+        assert_eq!(branch_product.get_name(), "Vendor Product 1.0");
+        let top_level = tree.get_product_by_id("CSAFPID-0002").expect("top-level product");
+        assert_eq!(top_level.get_name(), "Top-level product");
+        let relationship = tree.get_product_by_id("CSAFPID-0003").expect("relationship product");
+        assert_eq!(relationship.get_name(), "Product on top-level");
+        assert!(tree.get_product_by_id("CSAFPID-9999").is_none());
+    }
+
+    #[test]
+    fn get_product_by_id_searches_all_sources_in_csaf_2_1() {
+        let tree: ProductTree21 = serde_json::from_value(json!({
+            "branches": [{
+                "category": "vendor",
+                "name": "Vendor",
+                "branches": [{
+                    "category": "product_name",
+                    "name": "Product",
+                    "product": { "product_id": "CSAFPID-0001", "name": "Vendor Product 1.0" }
+                }]
+            }],
+            "full_product_names": [{ "product_id": "CSAFPID-0002", "name": "Top-level product" }],
+            "product_paths": [{
+                "beginning_product_reference": "CSAFPID-0001",
+                "full_product_name": { "product_id": "CSAFPID-0003", "name": "Product on top-level" },
+                "subpaths": []
+            }]
+        }))
+        .expect("product tree deserializes");
+
+        assert_eq!(
+            tree.get_product_by_id("CSAFPID-0001")
+                .expect("branch product")
+                .get_name(),
+            "Vendor Product 1.0"
+        );
+        assert!(tree.get_product_by_id("CSAFPID-0002").is_some());
+        assert!(tree.get_product_by_id("CSAFPID-0003").is_some());
+        assert!(tree.get_product_by_id("CSAFPID-9999").is_none());
     }
 }

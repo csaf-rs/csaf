@@ -64,11 +64,6 @@ fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, path: &st
 }
 
 fn get_latest_cwe_version_for_date(date: &CsafDateTime) -> Option<&'static String> {
-    // If the date is invalid, we cannot determine the latest CWE version — skip.
-    if !date.is_valid() {
-        return None;
-    }
-
     // Convert to a date (UTC) and compare against the release dates stored in the CWE assets.
     let doc_date: NaiveDate = match date {
         CsafDateTime::Valid(v) => v.get_as_utc().date_naive(),

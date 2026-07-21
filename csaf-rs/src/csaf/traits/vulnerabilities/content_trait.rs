@@ -248,50 +248,109 @@ impl ContentTrait for Content {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
     use serde_json::json;
 
-    #[test]
-    fn score_cvss_v3_typed_parses_the_map() {
-        let score: Score = serde_json::from_value(json!({
-            "products": ["CSAFPID-0001"],
-            "cvss_v3": {
-                "version": "3.1",
-                "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-                "baseScore": 9.8,
-                "baseSeverity": "CRITICAL"
-            }
-        }))
-        .expect("score deserializes");
-        let cvss = score.get_cvss_v3_typed().expect("present").expect("parses");
-        assert_eq!(cvss.vector_string, "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H");
-        assert!(score.get_cvss_v2_typed().is_none());
+    /// Builds a CSAF 2.1 `Content` carrying `metric` under `key`.
+    fn content_with(key: &str, metric: &Value) -> Content {
+        let mut map = Map::new();
+        map.insert(key.to_string(), metric.clone());
+        serde_json::from_value(Value::Object(map)).expect("content deserializes")
     }
 
-    #[test]
-    fn score_cvss_v3_typed_reports_a_nonconforming_map() {
-        let score: Score = serde_json::from_value(json!({
-            "products": ["CSAFPID-0001"],
-            "cvss_v3": { "version": "3.1" }
-        }))
-        .expect("score deserializes");
-        assert!(score.get_cvss_v3_typed().expect("present").is_err());
+    /// Builds a CSAF 2.0 `Score` carrying `metric` under `key`.
+    fn score_with(key: &str, metric: &Value) -> Score {
+        let mut map = Map::new();
+        map.insert("products".to_string(), json!(["CSAFPID-0001"]));
+        map.insert(key.to_string(), metric.clone());
+        serde_json::from_value(Value::Object(map)).expect("score deserializes")
     }
 
-    #[test]
-    fn content_cvss_v4_typed_parses_the_map() {
-        let content: Content = serde_json::from_value(json!({
-            "cvss_v4": {
-                "version": "4.0",
-                "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
-                "baseScore": 9.3,
-                "baseSeverity": "CRITICAL"
-            }
-        }))
-        .expect("content deserializes");
-        let cvss = content.get_cvss_v4_typed().expect("present").expect("parses");
-        assert_eq!(
-            cvss.vector_string,
-            "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+    /// Asserts the typed accessor matching `key` parses to `vector` and the other two
+    /// return `None`.
+    fn assert_only_typed(content: &impl ContentTrait, key: &str, vector: &str) {
+        let (v2, v3, v4) = (
+            content.get_cvss_v2_typed(),
+            content.get_cvss_v3_typed(),
+            content.get_cvss_v4_typed(),
         );
+        match key {
+            "cvss_v2" => {
+                assert_eq!(v2.expect("present").expect("parses").vector_string, vector);
+                assert!(v3.is_none());
+                assert!(v4.is_none());
+            },
+            "cvss_v3" => {
+                assert!(v2.is_none());
+                assert_eq!(v3.expect("present").expect("parses").vector_string, vector);
+                assert!(v4.is_none());
+            },
+            "cvss_v4" => {
+                assert!(v2.is_none());
+                assert!(v3.is_none());
+                assert_eq!(v4.expect("present").expect("parses").vector_string, vector);
+            },
+            _ => unreachable!(),
+        }
+    }
+
+    /// Asserts the typed accessor matching `key` reports a parse error.
+    fn assert_typed_err(content: &impl ContentTrait, key: &str) {
+        match key {
+            "cvss_v2" => assert!(content.get_cvss_v2_typed().expect("present").is_err()),
+            "cvss_v3" => assert!(content.get_cvss_v3_typed().expect("present").is_err()),
+            "cvss_v4" => assert!(content.get_cvss_v4_typed().expect("present").is_err()),
+            _ => unreachable!(),
+        }
+    }
+
+    #[rstest]
+    #[case::v2(
+        "cvss_v2",
+        json!({
+            "version": "2.0",
+            "vectorString": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
+            "baseScore": 10.0
+        }),
+        "AV:N/AC:L/Au:N/C:C/I:C/A:C"
+    )]
+    #[case::v3(
+        "cvss_v3",
+        json!({
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "baseScore": 9.8,
+            "baseSeverity": "CRITICAL"
+        }),
+        "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+    )]
+    #[case::v4(
+        "cvss_v4",
+        json!({
+            "version": "4.0",
+            "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+            "baseScore": 9.3,
+            "baseSeverity": "CRITICAL"
+        }),
+        "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+    )]
+    fn typed_accessor_parses_and_the_others_are_none(#[case] key: &str, #[case] metric: Value, #[case] vector: &str) {
+        assert_only_typed(&content_with(key, &metric), key, vector);
+        // CSAF 2.0 has no cvss_v4 property; Score::get_cvss_v4 always returns None.
+        if key != "cvss_v4" {
+            assert_only_typed(&score_with(key, &metric), key, vector);
+        }
+    }
+
+    #[rstest]
+    #[case::v2("cvss_v2", "2.0")]
+    #[case::v3("cvss_v3", "3.1")]
+    #[case::v4("cvss_v4", "4.0")]
+    fn typed_accessor_reports_a_nonconforming_map(#[case] key: &str, #[case] version: &str) {
+        let metric = json!({ "version": version });
+        assert_typed_err(&content_with(key, &metric), key);
+        if key != "cvss_v4" {
+            assert_typed_err(&score_with(key, &metric), key);
+        }
     }
 }

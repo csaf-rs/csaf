@@ -4,6 +4,7 @@ use crate::schema::csaf2_1::schema::{Content, Epss, QualitativeSeverityRating};
 use cvss_rs::v2_0::CvssV2;
 use cvss_rs::v3::CvssV3;
 use cvss_rs::v4_0::CvssV4;
+use serde::Deserialize;
 use serde::de::Error as SerdeError;
 use serde_json::{Map, Value};
 use ssvc::selection_list::SelectionList;
@@ -66,8 +67,7 @@ pub trait ContentTrait {
 
     /// Returns the contained CVSS 2.0 metric parsed into its typed representation, if any.
     fn get_cvss_v2_typed(&self) -> Option<Result<CvssV2, serde_json::Error>> {
-        self.get_cvss_v2()
-            .map(|map| serde_json::from_value(Value::Object(map.clone())))
+        self.get_cvss_v2().map(CvssV2::deserialize)
     }
 
     /// Returns a JSON representation of the contained CVSS 3.0/3.1 metric, if any.
@@ -80,8 +80,7 @@ pub trait ContentTrait {
 
     /// Returns the contained CVSS 3.0/3.1 metric parsed into its typed representation, if any.
     fn get_cvss_v3_typed(&self) -> Option<Result<CvssV3, serde_json::Error>> {
-        self.get_cvss_v3()
-            .map(|map| serde_json::from_value(Value::Object(map.clone())))
+        self.get_cvss_v3().map(CvssV3::deserialize)
     }
 
     /// Returns a JSON representation of the contained CVSS 4.0 metric, if any.
@@ -94,8 +93,7 @@ pub trait ContentTrait {
 
     /// Returns the contained CVSS 4.0 metric parsed into its typed representation, if any.
     fn get_cvss_v4_typed(&self) -> Option<Result<CvssV4, serde_json::Error>> {
-        self.get_cvss_v4()
-            .map(|map| serde_json::from_value(Value::Object(map.clone())))
+        self.get_cvss_v4().map(CvssV4::deserialize)
     }
 
     /// Returns whether this content contains any CVSS metric (v2, v3, or v4).

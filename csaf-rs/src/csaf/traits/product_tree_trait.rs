@@ -93,7 +93,7 @@ pub trait ProductTreeTrait {
 
     /// Returns the product definition carrying the given product ID, searching the same
     /// sources as `visit_all_products_generic()`: branches (recursively), the top-level
-    /// full product names, and the relationships' full product names.
+    /// full product names, and (for 2.0) the relationships' full product names, or (for 2.1) the product-paths' full product names.
     fn get_product_by_id(&self, product_id: &str) -> Option<&Self::FullProductNameType> {
         if let Some(branches) = self.get_branches()
             && let Some(product) = branches.iter().find_map(|branch| branch.find_product_by_id(product_id))

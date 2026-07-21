@@ -1,7 +1,7 @@
 # Coding Guidelines
 
 - Use the `CsafTrait` / `VulnerabilityTrait` / `ProductTreeTrait` / etc. abstractions for version-agnostic logic.
-- Collect all validation errors rather than failing fast — return `Err(Vec<ValidationError>)`, not a single error.
+- When implementing a validation tests, collect all validation errors rather than failing fast — return `Err(Vec<ValidationError>)`, not a single error.
 
 ## Pre-Commit Guidelines
 

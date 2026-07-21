@@ -2,8 +2,6 @@
 
 Thank you for your interest in contributing! If you have a question, need help or want to contribute code, here are a few guidelines to help you get started. These also help us maintain high quality and consistency in the project.
 
----
-
 ## Issues and Defects
 
 Before opening a new issue, please:
@@ -21,13 +19,9 @@ Before opening a new issue, please:
 - If submodule or schema updates are necessary, see [Schema](./CODING_GUIDELINES.md#schemas-and-type-generation)
 - If you need to extend the test harness see [Test harness](./CODING_GUIDELINES.md#test-harness) for instructions
 
----
-
 ## AI usage
 
 Assistance from LLMs or other artificial neural network tools should help our developers to create better results. Experiences in recent months (up to 2026-07) show that there is a real danger that use of so called "AI tools" for contributions creates significant more work than it saves. In addition there is the question of who is responsible for the code. Our current approach is: You - as a human contributor - are fully responsible for your contribution and the potential review work it causes. Thus we require: Indicate the extend of LLM or ANN assistance. Check the contents fully. (And as corollary: do not let agents generate contributions automatically.)
-
----
 
 ## Questions?
 

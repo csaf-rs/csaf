@@ -17,9 +17,9 @@ Before opening a new issue, please:
 - Do not include unrelated refactors, formatting fixes, or dependency bumps in a feature or bug-fix PR.
 - If you spot unrelated issues while working, open a separate issue or PR for them.
 - Link the issue that is related to the PR
-- Run formatting, linting and tests. See [Pre-Commit Guideline](./CODING_GUIDELINES.md/#pre-commit-guidelines)
-- If submodule or schema updates are necessary, see [Schema](./CODING_GUIDLINES.md#schemas-and-type-generation)
-- If you need to extend the test harness see [Test harness](./CODING_GUIDELINES.md/#test-harness) for instructions
+- Run formatting, linting and tests. See [Pre-Commit Guideline](./CODING_GUIDELINES.md#pre-commit-guidelines)
+- If submodule or schema updates are necessary, see [Schema](./CODING_GUIDELINES.md#schemas-and-type-generation)
+- If you need to extend the test harness see [Test harness](./CODING_GUIDELINES.md#test-harness) for instructions
 
 ---
 

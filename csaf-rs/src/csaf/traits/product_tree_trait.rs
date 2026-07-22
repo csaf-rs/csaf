@@ -523,14 +523,12 @@ mod tests {
         }))
         .expect("product tree deserializes");
 
-        assert_eq!(
-            tree.get_product_by_id("CSAFPID-0001")
-                .expect("branch product")
-                .get_name(),
-            "Vendor Product 1.0"
-        );
-        assert!(tree.get_product_by_id("CSAFPID-0002").is_some());
-        assert!(tree.get_product_by_id("CSAFPID-0003").is_some());
+        let branch_product = tree.get_product_by_id("CSAFPID-0001").expect("branch product");
+        assert_eq!(branch_product.get_name(), "Vendor Product 1.0");
+        let top_level = tree.get_product_by_id("CSAFPID-0002").expect("top-level product");
+        assert_eq!(top_level.get_name(), "Top-level product");
+        let product_path = tree.get_product_by_id("CSAFPID-0003").expect("product-path product");
+        assert_eq!(product_path.get_name(), "Product on top-level");
         assert!(tree.get_product_by_id("CSAFPID-9999").is_none());
     }
 }

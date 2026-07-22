@@ -20,7 +20,7 @@ jobs:
           app-id: ${{ secrets.ASSET_UPDATER_APP_ID }}
           private-key: ${{ secrets.ASSET_UPDATER_PRIVATE_KEY }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Update external assets
         run: ./scripts/update/update_ext_assets.sh

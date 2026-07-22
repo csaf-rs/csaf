@@ -91,26 +91,31 @@ pub trait ProductTreeTrait {
 
     // Lookup functions
 
-    /// Returns the product definition carrying the given product ID, searching the same
+    /// Returns every product definition carrying the given product ID, searching the same
     /// sources as `visit_all_products_generic()`: branches (recursively), the top-level
     /// full product names, and (for 2.0) the relationships' full product names, or (for 2.1) the product-paths' full product names.
-    fn get_product_by_id(&self, product_id: &str) -> Option<&Self::FullProductNameType> {
-        if let Some(branches) = self.get_branches()
-            && let Some(product) = branches.iter().find_map(|branch| branch.find_product_by_id(product_id))
-        {
-            return Some(product);
+    ///
+    /// A valid document defines each product ID once (test 6.1.2), so any element beyond the
+    /// first is a duplicate definition; handling those is the caller's choice.
+    fn get_products_by_id(&self, product_id: &str) -> Vec<&Self::FullProductNameType> {
+        let mut products = Vec::new();
+        if let Some(branches) = self.get_branches() {
+            for branch in branches {
+                branch.collect_products_by_id(product_id, &mut products);
+            }
         }
-        if let Some(product) = self
-            .get_full_product_names()
-            .iter()
-            .find(|fpn| fpn.get_product_id() == product_id)
-        {
-            return Some(product);
-        }
-        self.get_product_paths()
-            .iter()
-            .map(|path| path.get_full_product_name())
-            .find(|fpn| fpn.get_product_id() == product_id)
+        products.extend(
+            self.get_full_product_names()
+                .iter()
+                .filter(|fpn| fpn.get_product_id() == product_id),
+        );
+        products.extend(
+            self.get_product_paths()
+                .iter()
+                .map(|path| path.get_full_product_name())
+                .filter(|fpn| fpn.get_product_id() == product_id),
+        );
+        products
     }
 
     // Visitors for node types in the tree
@@ -250,17 +255,19 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// Retrieves the full product name associated with this branch, if available.
     fn get_product(&self) -> Option<&FPN>;
 
-    /// Returns the product definition carrying the given product ID from this branch or
-    /// its descendants.
-    fn find_product_by_id(&self, product_id: &str) -> Option<&FPN> {
+    /// Appends every product definition carrying the given product ID from this branch and
+    /// its descendants to `products`.
+    fn collect_products_by_id<'a>(&'a self, product_id: &str, products: &mut Vec<&'a FPN>) {
         if let Some(product) = self.get_product()
             && product.get_product_id() == product_id
         {
-            return Some(product);
+            products.push(product);
         }
-        self.get_branches()?
-            .iter()
-            .find_map(|branch| branch.find_product_by_id(product_id))
+        if let Some(branches) = self.get_branches() {
+            for branch in branches {
+                branch.collect_products_by_id(product_id, products);
+            }
+        }
     }
 
     /// Recursively visits all branches in the tree structure,
@@ -472,7 +479,7 @@ mod tests {
     use serde_json::json;
 
     #[test]
-    fn get_product_by_id_searches_all_sources_in_csaf_2_0() {
+    fn get_products_by_id_searches_all_sources_in_csaf_2_0() {
         let tree: ProductTree20 = serde_json::from_value(json!({
             "branches": [{
                 "category": "vendor",
@@ -493,17 +500,35 @@ mod tests {
         }))
         .expect("product tree deserializes");
 
-        let branch_product = tree.get_product_by_id("CSAFPID-0001").expect("branch product");
-        assert_eq!(branch_product.get_name(), "Vendor Product 1.0");
-        let top_level = tree.get_product_by_id("CSAFPID-0002").expect("top-level product");
-        assert_eq!(top_level.get_name(), "Top-level product");
-        let relationship = tree.get_product_by_id("CSAFPID-0003").expect("relationship product");
-        assert_eq!(relationship.get_name(), "Product on top-level");
-        assert!(tree.get_product_by_id("CSAFPID-9999").is_none());
+        let names = |id: &str| -> Vec<&str> { tree.get_products_by_id(id).iter().map(|fpn| fpn.get_name()).collect() };
+        assert_eq!(names("CSAFPID-0001"), ["Vendor Product 1.0"]);
+        assert_eq!(names("CSAFPID-0002"), ["Top-level product"]);
+        assert_eq!(names("CSAFPID-0003"), ["Product on top-level"]);
+        assert!(names("CSAFPID-9999").is_empty());
     }
 
     #[test]
-    fn get_product_by_id_searches_all_sources_in_csaf_2_1() {
+    fn get_products_by_id_returns_every_definition_in_csaf_2_0() {
+        let tree: ProductTree20 = serde_json::from_value(json!({
+            "branches": [{
+                "category": "product_name",
+                "name": "Product",
+                "product": { "product_id": "CSAFPID-0001", "name": "Defined in a branch" }
+            }],
+            "full_product_names": [{ "product_id": "CSAFPID-0001", "name": "Defined at the top level" }]
+        }))
+        .expect("product tree deserializes");
+
+        let names: Vec<&str> = tree
+            .get_products_by_id("CSAFPID-0001")
+            .iter()
+            .map(|fpn| fpn.get_name())
+            .collect();
+        assert_eq!(names, ["Defined in a branch", "Defined at the top level"]);
+    }
+
+    #[test]
+    fn get_products_by_id_searches_all_sources_in_csaf_2_1() {
         let tree: ProductTree21 = serde_json::from_value(json!({
             "branches": [{
                 "category": "vendor",
@@ -523,12 +548,30 @@ mod tests {
         }))
         .expect("product tree deserializes");
 
-        let branch_product = tree.get_product_by_id("CSAFPID-0001").expect("branch product");
-        assert_eq!(branch_product.get_name(), "Vendor Product 1.0");
-        let top_level = tree.get_product_by_id("CSAFPID-0002").expect("top-level product");
-        assert_eq!(top_level.get_name(), "Top-level product");
-        let product_path = tree.get_product_by_id("CSAFPID-0003").expect("product-path product");
-        assert_eq!(product_path.get_name(), "Product on top-level");
-        assert!(tree.get_product_by_id("CSAFPID-9999").is_none());
+        let names = |id: &str| -> Vec<&str> { tree.get_products_by_id(id).iter().map(|fpn| fpn.get_name()).collect() };
+        assert_eq!(names("CSAFPID-0001"), ["Vendor Product 1.0"]);
+        assert_eq!(names("CSAFPID-0002"), ["Top-level product"]);
+        assert_eq!(names("CSAFPID-0003"), ["Product on top-level"]);
+        assert!(names("CSAFPID-9999").is_empty());
+    }
+
+    #[test]
+    fn get_products_by_id_returns_every_definition_in_csaf_2_1() {
+        let tree: ProductTree21 = serde_json::from_value(json!({
+            "branches": [{
+                "category": "product_name",
+                "name": "Product",
+                "product": { "product_id": "CSAFPID-0001", "name": "Defined in a branch" }
+            }],
+            "full_product_names": [{ "product_id": "CSAFPID-0001", "name": "Defined at the top level" }]
+        }))
+        .expect("product tree deserializes");
+
+        let names: Vec<&str> = tree
+            .get_products_by_id("CSAFPID-0001")
+            .iter()
+            .map(|fpn| fpn.get_name())
+            .collect();
+        assert_eq!(names, ["Defined in a branch", "Defined at the top level"]);
     }
 }

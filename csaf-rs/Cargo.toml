@@ -29,7 +29,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
 rust-embed = { version = "8", features = ["include-exclude"] }
-packageurl = "0.6"
+packageurl = "0.7"
 uuid = { version = "1.17.0", features = ["v7", "serde"] }
 semver = { version = "1" }
 jsonschema = { version = "0.45.0", default-features = false }

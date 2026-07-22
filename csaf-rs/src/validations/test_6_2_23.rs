@@ -2,10 +2,10 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
 use crate::validation::ValidationError;
 
-fn create_deprecated_cwe_error(cwe: &str, version: &str, path: &str) -> ValidationError {
+fn create_deprecated_cwe_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> ValidationError {
     ValidationError {
         message: format!("Weakness '{cwe}' is deprecated in version {version}."),
-        instance_path: format!("{path}/id"),
+        instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}"),
     }
 }
 
@@ -37,7 +37,8 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
                     errors.push(create_deprecated_cwe_error(
                         &cwe_item.id,
                         version,
-                        format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
+                        i_r,
+                        i_cwe,
                     ));
                 }
             }
@@ -62,19 +63,22 @@ mod tests {
             Err(vec![create_deprecated_cwe_error(
                 "CWE-596",
                 "4.13",
-                "/vulnerabilities/0/cwes/0",
+                0,
+                0,
             )]),
             // case 02: first CWE is CWE-1324 deprecated in 4.10
             Err(vec![create_deprecated_cwe_error(
                 "CWE-1324",
                 "4.10",
-                "/vulnerabilities/0/cwes/0",
+                0,
+                0,
             )]),
             // case 03: the third vulnerability contains CWE-365 deprecated in 4.13
             Err(vec![create_deprecated_cwe_error(
                 "CWE-365",
                 "4.13",
-                "/vulnerabilities/2/cwes/0",
+                2,
+                0,
             )]),
             // case 11: valid
             Ok(()),

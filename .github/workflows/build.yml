@@ -163,7 +163,7 @@ jobs:
           rustup target add ${{ matrix.target.arch }}
       - name: Cache cargo-auditable
         id: auditable-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/cargo-auditable
           key: cargo-auditable-${{ runner.os }}-${{ runner.arch }}
@@ -244,7 +244,7 @@ jobs:
 
       - name: Cache cargo-llvm-cov
         id: llvm-cov-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/cargo-llvm-cov
           key: cargo-llvm-cov-${{ runner.os }}-${{ runner.arch }}
@@ -289,7 +289,7 @@ jobs:
         run: rustup target add wasm32-unknown-unknown
       - name: Cache uniffi-bindgen-js
         id: uniffi-js-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/uniffi-bindgen-js
           key: uniffi-bindgen-js-0.2.1-${{ runner.os }}-${{ runner.arch }}
@@ -340,7 +340,7 @@ jobs:
           cache: false
       - name: Cache uniffi-bindgen-go
         id: uniffi-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/uniffi-bindgen-go
           key: uniffi-bindgen-go-v0.7.0-${{ runner.os }}-${{ runner.arch }}
@@ -423,7 +423,7 @@ jobs:
 
       - name: Cache devguard-scanner
         id: cache-scanner
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/go/bin/devguard-scanner
           key: devguard-scanner-${{ runner.os }}

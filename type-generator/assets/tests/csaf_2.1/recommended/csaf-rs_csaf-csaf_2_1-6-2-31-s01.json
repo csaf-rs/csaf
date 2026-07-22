@@ -1,0 +1,120 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Recommended Test: Exhaustive Hardware/Software Mix Coverage Matrix (failing supplementary examples due to missing product path references)",
+    "tracking": {
+      "current_release_date": "2026-07-17T12:00:00Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-31-S01",
+      "initial_release_date": "2026-07-17T12:00:00Z",
+      "revision_history": [
+        {
+          "date": "2026-07-17T12:00:00Z",
+          "number": "1",
+          "summary": "All hardware products intentionally violate 6.2.31"
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "vendor",
+        "name": "V1",
+        "product": {
+          "name": "B1",
+          "product_id": "CSAFPID-B1",
+          "product_identification_helper": {
+            "serial_numbers": [
+              "SN"
+            ]
+          }
+        }
+      },
+      {
+        "category": "vendor",
+        "name": "V2",
+        "product": {
+          "name": "B2",
+          "product_id": "CSAFPID-B2",
+          "product_identification_helper": {
+            "model_numbers": [
+              "MN"
+            ]
+          }
+        }
+      }
+    ],
+    "full_product_names": [
+      {
+        "name": "F1",
+        "product_id": "CSAFPID-F1",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "SN"
+          ]
+        }
+      },
+      {
+        "name": "F2",
+        "product_id": "CSAFPID-F2",
+        "product_identification_helper": {
+          "model_numbers": [
+            "MN"
+          ]
+        }
+      },
+      {
+        "name": "F3",
+        "product_id": "CSAFPID-F3",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "SN"
+          ]
+        }
+      },
+      {
+        "name": "F4",
+        "product_id": "CSAFPID-F4",
+        "product_identification_helper": {
+          "model_numbers": [
+            "MN"
+          ]
+        }
+      }
+    ],
+    "product_paths": [
+      {
+        "beginning_product_reference": "CSAFPID-SW1",
+        "full_product_name": {
+          "name": "Software",
+          "product_id": "CSAFPID-F5",
+          "product_identification_helper": {
+            "serial_numbers": [
+              "SN-VALID"
+            ]
+          }
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-SW2"
+          }
+        ]
+      }
+    ]
+  }
+}

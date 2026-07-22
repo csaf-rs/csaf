@@ -318,11 +318,13 @@ This creates TypeScript + WASM output in `wasm/`.
 ### Recommended Tests
 
 | Test specification | 2.0                | 2.1 (experimental) |
-| --- |--------------------|--------------------|
-| 6.2.1 |  |  |
+|--------------------|--------------------|--------------------|
+| 6.2.1              |  |  |
+| 6.2.31             | ⭕ | ✅ |
 
 ### Informative Tests
 
-| Test specification | 2.0                | 2.1 (experimental) |
-| --- |--------------------|--------------------|
+| Test specification | 2.0               | 2.1 (experimental) |
+| --- |-------------------|--------------------|
 | 6.3.1 |  |  |
+

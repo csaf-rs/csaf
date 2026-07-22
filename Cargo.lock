@@ -1350,6 +1350,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "prettyplease"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2bfe0f4c752e450fc2faf62654f1c134747922825d5b04ca717b8874f41a40c0"
+dependencies = [
+ "proc-macro2",
+ "syn 3.0.3",
+]
+
+[[package]]
 name = "proc-macro-crate"
 version = "3.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1807,7 +1817,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aebb72b9145f9d78b72421f94170b4ba8059a3d08e8e5a3d3a13817fd209c886"
 dependencies = [
  "chrono",
- "prettyplease",
+ "prettyplease 0.2.37",
  "regress 0.10.5",
  "rust-embed",
  "serde",
@@ -2037,7 +2047,7 @@ version = "0.5.1"
 dependencies = [
  "clap",
  "json_dotpath",
- "prettyplease",
+ "prettyplease 0.3.0",
  "proc-macro2",
  "quote",
  "regress 0.11.1",
@@ -2045,7 +2055,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
- "syn 2.0.117",
+ "syn 3.0.3",
  "thiserror 2.0.18",
  "typify",
 ]
@@ -2554,7 +2564,7 @@ dependencies = [
  "anyhow",
  "heck",
  "indexmap",
- "prettyplease",
+ "prettyplease 0.2.37",
  "syn 2.0.117",
  "wasm-metadata",
  "wit-bindgen-core",
@@ -2568,7 +2578,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c0f9bfd77e6a48eccf51359e3ae77140a7f50b1e2ebfe62422d8afdaffab17a"
 dependencies = [
  "anyhow",
- "prettyplease",
+ "prettyplease 0.2.37",
  "proc-macro2",
  "quote",
  "syn 2.0.117",

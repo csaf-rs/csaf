@@ -34,12 +34,7 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
                 if let Some((status, _)) = CWE_ENTRIES[version].1.get(&cwe_item.id)
                     && status == "Deprecated"
                 {
-                    errors.push(create_deprecated_cwe_error(
-                        &cwe_item.id,
-                        version,
-                        i_r,
-                        i_cwe,
-                    ));
+                    errors.push(create_deprecated_cwe_error(&cwe_item.id, version, i_r, i_cwe));
                 }
             }
         }
@@ -57,35 +52,24 @@ mod tests {
 
     #[test]
     fn test_test_6_2_23() {
-        // Expect failing cases (01,02,03) and passing cases (11,12,13) as defined in testcases.json
+        // case 01: CWE-596 deprecated in 4.13
+        let case_01_single_vuln_with_deprecated_cwe = Err(vec![create_deprecated_cwe_error("CWE-596", "4.13", 0, 0)]);
+
+        // case 02: first CWE is CWE-1324 deprecated in 4.10
+        let case_02_single_vuln_containing_deprecated_cwe =
+            Err(vec![create_deprecated_cwe_error("CWE-1324", "4.10", 0, 0)]);
+
+        // case 03: the third vulnerability contains CWE-365 deprecated in 4.13
+        let case_03_third_multi_vuln_with_deprecated_cwe =
+            Err(vec![create_deprecated_cwe_error("CWE-365", "4.13", 2, 0)]);
+
         TESTS_2_1.test_6_2_23.expect(
-            // case 01: CWE-596 deprecated in 4.13
-            Err(vec![create_deprecated_cwe_error(
-                "CWE-596",
-                "4.13",
-                0,
-                0,
-            )]),
-            // case 02: first CWE is CWE-1324 deprecated in 4.10
-            Err(vec![create_deprecated_cwe_error(
-                "CWE-1324",
-                "4.10",
-                0,
-                0,
-            )]),
-            // case 03: the third vulnerability contains CWE-365 deprecated in 4.13
-            Err(vec![create_deprecated_cwe_error(
-                "CWE-365",
-                "4.13",
-                2,
-                0,
-            )]),
-            // case 11: valid
-            Ok(()),
-            // case 12: valid
-            Ok(()),
-            // case 13: valid
-            Ok(()),
+            case_01_single_vuln_with_deprecated_cwe,
+            case_02_single_vuln_containing_deprecated_cwe,
+            case_03_third_multi_vuln_with_deprecated_cwe,
+            Ok(()), // case 11: valid version of 01, one vulnerability containing one cwe that is not deprecated
+            Ok(()), // case 12: valid version of 02, one vulnerability containing several cwes, non deprecated
+            Ok(()), // case 13: valid version of 03, multiple vulnerabilities with one cwe each, non deprecated
         );
     }
 }

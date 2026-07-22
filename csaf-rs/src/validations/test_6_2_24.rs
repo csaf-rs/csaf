@@ -10,7 +10,7 @@ fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, path: &st
     // Parsing both strings as semantic versions. CWE assets use two-part
     // versions like "4.13". `semver::Version::parse` expects three parts in the version
     // (major.minor.patch), we normalize the version by appending 0 until we have three segments
-    //  and preserver prerelease/build metadata.
+    //  and preserve prerelease/build metadata.
     fn normalize_to_semver_str(s: &str) -> String {
         // split off prerelease/build metadata
         let mut rest = "";

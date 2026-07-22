@@ -310,6 +310,11 @@ fn is_not_defined(val: &impl std::fmt::Debug) -> bool {
     format!("{val:?}") == "NotDefined"
 }
 
+/// Returns true if a score is 0.0 after rounding to one decimal place (rounds via integer scaling)
+pub(crate) fn is_zero_score(actual: f64) -> bool {
+    (actual * 10.0).round() as i8 == 0
+}
+
 /// Compares an optional field from the deserialized JSON object against the value parsed from the
 /// vector string. `Some(NotDefined)` is treated as equivalent to `None`.
 pub fn check_optional_field_mismatch<T: PartialEq + std::fmt::Display + std::fmt::Debug>(

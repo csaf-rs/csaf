@@ -45,23 +45,55 @@ fn make_strict_inplace(schema_value: &mut Value) {
 }
 
 static STRICT_VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    let registry = jsonschema::Registry::new()
+        .extend([
+            (
+                CVSS_V2_SCHEMA_URL,
+                Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())),
+            ),
+            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+        ])
+        .unwrap()
+        .prepare()
+        .unwrap();
     jsonschema::options()
-        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())))
-        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
-        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
+        .with_registry(&registry)
         .build(&make_strict(CSAF_2_0_SCHEMA.clone()))
         .unwrap()
 });
 
 static STRICT_VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    let registry = jsonschema::Registry::new()
+        .extend([
+            (
+                EXTENSION_METASCHEMA_URL,
+                Resource::from_contents(make_strict(EXTENSION_METASCHEMA.clone())),
+            ),
+            (
+                EXTENSION_SCHEMA_URL,
+                Resource::from_contents(make_strict(EXTENSION_SCHEMA.clone())),
+            ),
+            (
+                CVSS_V2_SCHEMA_URL,
+                Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())),
+            ),
+            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+            (
+                CVSS_V4_0_SCHEMA_URL,
+                Resource::from_contents(make_strict(CVSS_V4_0_SCHEMA.clone())),
+            ),
+            (
+                SSVC_2_SCHEMA_URL,
+                Resource::from_contents(make_strict(SSVC_2_SCHEMA.clone())),
+            ),
+        ])
+        .unwrap()
+        .prepare()
+        .unwrap();
     jsonschema::options()
-        .with_resource(EXTENSION_METASCHEMA_URL, Resource::from_contents(make_strict(EXTENSION_METASCHEMA.clone())))
-        .with_resource(EXTENSION_SCHEMA_URL, Resource::from_contents(make_strict(EXTENSION_SCHEMA.clone())))
-        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())))
-        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
-        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
-        .with_resource(CVSS_V4_0_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V4_0_SCHEMA.clone())))
-        .with_resource(SSVC_2_SCHEMA_URL, Resource::from_contents(make_strict(SSVC_2_SCHEMA.clone())))
+        .with_registry(&registry)
         .build(&make_strict(CSAF_2_1_SCHEMA.clone()))
         .unwrap()
 });

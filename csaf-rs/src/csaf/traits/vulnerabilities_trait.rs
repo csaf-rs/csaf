@@ -124,6 +124,9 @@ pub trait VulnerabilityTrait {
     /// Returns the CWEs associated with the vulnerability.
     fn get_cwes(&self) -> Option<Vec<Cwe>>;
 
+    /// Returns the JSON property name used for CWE data in this CSAF version
+    fn get_cwe_property_name(&self) -> &'static str;
+
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>>;
 
@@ -206,6 +209,10 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
     }
 
+    fn get_cwe_property_name(&self) -> &'static str {
+        "cwe"
+    }
+
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {
         self.ids.as_ref()
     }
@@ -270,6 +277,10 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     fn get_cwes(&self) -> Option<Vec<Cwe>> {
         self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())
+    }
+
+    fn get_cwe_property_name(&self) -> &'static str {
+        "cwes"
     }
 
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {

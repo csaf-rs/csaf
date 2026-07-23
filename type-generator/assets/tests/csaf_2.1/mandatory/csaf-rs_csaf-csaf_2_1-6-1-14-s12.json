@@ -13,15 +13,15 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory test: Sorted Revision History (supplementary invalid example 1: invalid version number)",
+    "title": "Mandatory test: Sorted Revision History (supplementary valid example 1: invalid version number is ignored)",
     "tracking": {
       "current_release_date": "2021-07-25T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-14-S01",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-14-S12",
       "initial_release_date": "2021-07-21T10:00:00.000Z",
       "revision_history": [
         {
                  "date": "2021-07-21T10:00:00.000Z",
-                 "number": "1.0.0",
+                 "number": "1",
                  "summary": "Initial version."
                },
                {

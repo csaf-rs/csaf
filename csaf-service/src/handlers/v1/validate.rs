@@ -257,11 +257,11 @@ mod tests {
 
     #[test]
     fn test_from_potential_legacy_name() {
-        assert_eq!(from_potential_legacy_name("mandatory_6_1_10"), "6.1.10");
-        assert_eq!(from_potential_legacy_name("mandatory_6_1_1"), "6.1.1");
-        assert_eq!(from_potential_legacy_name("optional_6_2_3"), "6.2.3");
-        assert_eq!(from_potential_legacy_name("recommended_6_2_3"), "6.2.3");
-        assert_eq!(from_potential_legacy_name("informative_6_3_1"), "6.3.1");
+        assert_eq!(from_potential_legacy_name("mandatoryTest_6_1_10"), "6.1.10");
+        assert_eq!(from_potential_legacy_name("mandatoryTest_6_1_1"), "6.1.1");
+        assert_eq!(from_potential_legacy_name("optionalTest_6_2_3"), "6.2.3");
+        assert_eq!(from_potential_legacy_name("recommendedTest_6_2_3"), "6.2.3");
+        assert_eq!(from_potential_legacy_name("informativeTest_6_3_1"), "6.3.1");
         assert_eq!(from_potential_legacy_name("6.1.10"), "6.1.10");
         assert_eq!(from_potential_legacy_name("schema"), "schema");
     }

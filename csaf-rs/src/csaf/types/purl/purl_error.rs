@@ -14,11 +14,16 @@ pub enum PurlParseErrorKind {
     InvalidKey(String),
     MissingName,
     TypeProhibitsNamespace(String),
+    TypeRequiresNamespace(String),
+    MissingRequiredQualifier(String, String),
+    InvalidName(String, String),
+    InvalidVersion(String, String),
     InvalidNamespaceComponent(String),
     MissingScheme,
     MissingType,
     InvalidSubpathSegment(String),
     DecodingError,
+    Other(String),
 }
 
 impl PurlParseError {
@@ -66,11 +71,18 @@ impl From<packageurl::Error> for PurlParseErrorKind {
             packageurl::Error::InvalidKey(key) => Self::InvalidKey(key),
             packageurl::Error::MissingName => Self::MissingName,
             packageurl::Error::TypeProhibitsNamespace(package_type) => Self::TypeProhibitsNamespace(package_type),
+            packageurl::Error::TypeRequiresNamespace(package_type) => Self::TypeRequiresNamespace(package_type),
+            packageurl::Error::MissingRequiredQualifier(package_type, qualifier) => {
+                Self::MissingRequiredQualifier(package_type, qualifier)
+            },
+            packageurl::Error::InvalidName(package_type, name) => Self::InvalidName(package_type, name),
+            packageurl::Error::InvalidVersion(package_type, version) => Self::InvalidVersion(package_type, version),
             packageurl::Error::InvalidNamespaceComponent(component) => Self::InvalidNamespaceComponent(component),
             packageurl::Error::MissingScheme => Self::MissingScheme,
             packageurl::Error::MissingType => Self::MissingType,
             packageurl::Error::InvalidSubpathSegment(segment) => Self::InvalidSubpathSegment(segment),
             packageurl::Error::DecodingError(_) => Self::DecodingError,
+            error => Self::Other(error.to_string()),
         }
     }
 }
@@ -85,6 +97,18 @@ impl Display for PurlParseErrorKind {
             Self::TypeProhibitsNamespace(package_type) => {
                 write!(f, "no namespace allowed for type {package_type:?}")
             },
+            Self::TypeRequiresNamespace(package_type) => {
+                write!(f, "namespace required for type {package_type:?}")
+            },
+            Self::MissingRequiredQualifier(package_type, qualifier) => {
+                write!(f, "missing required qualifier {qualifier:?} for type {package_type:?}")
+            },
+            Self::InvalidName(package_type, name) => {
+                write!(f, "invalid name for type {package_type:?}: {name:?}")
+            },
+            Self::InvalidVersion(package_type, version) => {
+                write!(f, "invalid version for type {package_type:?}: {version:?}")
+            },
             Self::InvalidNamespaceComponent(component) => {
                 write!(f, "invalid namespace component: {component:?}")
             },
@@ -94,6 +118,7 @@ impl Display for PurlParseErrorKind {
                 write!(f, "invalid subpath segment: {segment:?}")
             },
             Self::DecodingError => write!(f, "utf-8 decoding failed"),
+            Self::Other(message) => write!(f, "{message}"),
         }
     }
 }

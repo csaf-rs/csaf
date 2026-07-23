@@ -22,8 +22,7 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyL
                 .expect("Date part of filenames in assets/cwe should be in 'YYYY-MM-DD' format."),
         };
         let mut versioned_data: HashMap<String, String> = HashMap::new();
-        let content =
-            std::str::from_utf8(data).expect("Files in assets/cwe should be valid UTF-8 encoded text files.");
+        let content = std::str::from_utf8(data).expect("Files in assets/cwe should be valid UTF-8 encoded text files.");
         for line in content.lines() {
             let parts: Vec<&str> = line.split('\t').collect();
             if parts.len() >= 2 {

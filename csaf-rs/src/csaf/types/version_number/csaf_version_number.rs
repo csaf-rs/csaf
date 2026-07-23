@@ -65,7 +65,7 @@ impl CsafVersionNumber {
     /// An `IntVer(n)` is treated as `n.0.0`, consistent with the CSAF spec note in 6.1.14:
     /// *"non-semantic versioning numbers are interpreted as semantic versioning numbers"*.
     /// This allows mixed-variant revision histories to be sorted and compared correctly.
-    pub fn to_comparable_semver(&self) -> Version {
+    pub(crate) fn to_comparable_semver(&self) -> Version {
         match self {
             CsafVersionNumber::IntVer(intver) => Version::new(intver.get(), 0, 0),
             CsafVersionNumber::SemVer(semver) => semver.get_version().clone(),
@@ -95,26 +95,30 @@ impl CsafVersionNumber {
         }
     }
 
-    /// Returns the previous version number.
+    /// Returns the previous version number up to including 1 or 1.0.0.
     ///
     /// Integer versions are decremented by 1.
     /// Semantic versions perform a major drop, producing `x-1.0.0`.
-    pub fn get_previous_major_version(&self) -> CsafVersionNumber {
+    pub fn get_previous_major_version(&self) -> Option<CsafVersionNumber> {
         match self {
-            CsafVersionNumber::IntVer(intver) => CsafVersionNumber::IntVer(IntVerVersion::new(
-                intver
-                    .get()
-                    .checked_sub(1)
-                    .expect("Integer version underflow while decrementing"),
-            )),
-            CsafVersionNumber::SemVer(semver) => CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
-                semver
-                    .get_major()
-                    .checked_sub(1)
-                    .expect("Semantic version major underflow while decrementing"),
-                0,
-                0,
-            ))),
+            CsafVersionNumber::IntVer(intver) => {
+                let previous_major = match intver.get() {
+                    1 => return None,
+                    c => c - 1,
+                };
+                Some(CsafVersionNumber::IntVer(IntVerVersion::new(previous_major)))
+            },
+            CsafVersionNumber::SemVer(semver) => {
+                let previous_major = match semver.get_major() {
+                    1 => return None,
+                    c => c - 1,
+                };
+                Some(CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+                    previous_major,
+                    0,
+                    0,
+                ))))
+            },
         }
     }
 }

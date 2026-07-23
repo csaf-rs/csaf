@@ -13,30 +13,25 @@
       "name": "OASIS CSAF TC",
       "namespace": "https://csaf.io"
     },
-    "title": "Mandatory Test: Missing Item in Revision History (failing supplementary example 6: first version not 0 or 1 and missing version ranges)",
+    "title": "Mandatory Test: Missing Item in Revision History (failing supplementary example 6: semver missing 1.0.0 before, 2.0.0 at all",
     "tracking": {
-      "current_release_date": "2024-01-21T10:00:00.000Z",
+      "current_release_date": "2026-03-03T11:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-21-S06",
-      "initial_release_date": "2023-08-22T10:00:00.000Z",
+      "initial_release_date": "2026-03-01T11:00:00.000Z",
       "revision_history": [
         {
-          "date": "2026-03-11T11:00:00.000Z",
+          "date": "2026-03-04T11:00:00.000Z",
           "number": "1.0.0",
           "summary": "1.0.0"
         },
         {
-          "date": "2026-03-09T11:00:00.000Z",
+          "date": "2026-03-03T11:00:00.000Z",
           "number": "3.0.0",
           "summary": "3.0.0"
-        },
-        {
-          "date": "2026-03-15T11:00:00.000Z",
-          "number": "8.0.0",
-          "summary": "8.0.0"
         }
       ],
       "status": "final",
-      "version": "100.0.0"
+      "version": "3.0.0"
     }
   }
 }

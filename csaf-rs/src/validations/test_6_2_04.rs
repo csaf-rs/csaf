@@ -24,6 +24,7 @@ pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result
                         .push(create_build_metadata_in_rev_history_error(&semver, &revision_index));
                 }
             },
+            CsafVersionNumber::Invalid(_) => {}, // ignore invalid version numbers // TODO TZ check
         }
     }
 

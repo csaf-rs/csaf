@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::csaf::aggregation::revision_history::CsafRevisionHistoryItem;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::version_number::CsafVersionNumber;
+use crate::csaf::types::version_number::{CsafVersionNumber, CsafVersionNumberError};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
 
@@ -34,12 +34,19 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
             match prev {
                 // checks first item
                 None => {
+                    if let CsafVersionNumber::Invalid(_) = current.number {
+                        return prev; // ignore invalid version numbers
+                    }
                     let mut first_item = current.number.clone();
-                    if !(first_item.get_major() == 0 || first_item.get_major() == 1) {
+                    if let Ok(major) = first_item.get_major()
+                        && !(major == 0 || major == 1)
+                    {
                         errors
                             .get_or_insert_default()
                             .push(test_6_1_21_err_wrong_first_version(&first_item));
-                        while let Some(previous_version) = first_item.get_previous_major_version() {
+                        while let Ok(previous_version) = first_item.get_previous_major_version()
+                            && let Some(previous_version) = previous_version
+                        {
                             missing_versions.insert(
                                 previous_version.clone(),
                                 MissingVersionMetadata {
@@ -54,7 +61,13 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                 },
                 // checks subsequent items
                 Some(prev_item) => {
-                    if current.number.get_major() < prev_item.number.get_major() {
+                    if let CsafVersionNumber::Invalid(_) = current.number {
+                        return prev; // ignore invalid version numbers
+                    }
+                    let current_major = current.number.get_major().ok().unwrap();
+                    // we can unwrap prev_item here as we make sure that 'prev' is always a valid version number
+                    let prev_major = prev_item.number.get_major().ok().unwrap();
+                    if current_major < prev_major {
                         // check if the current number was already marked as missing
                         if let Some(previously_missing_version) = missing_versions.get_mut(&current.number) {
                             // mark as found so we can distinguish between missing at all or not
@@ -72,21 +85,30 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                         }
                         return prev;
                     }
-                    if current.number.get_major() == prev_item.number.get_major() {
+                    if current_major == prev_major {
                         // we don't care about successive items with the same version number, we only care about missing versions
                         return prev;
                     }
 
                     let expected = prev_item.number.get_next_major_version();
-                    if current.number.get_major() == expected.get_major() {
+                    if expected == Err(CsafVersionNumberError::Overflow) {
+                        // last checked version was already the maximum version number, so all subsequent version must be lower
+                        // and we shouldn't get to this point or any further in this method
+                        return Some(current);
+                    }
+                    // we can safely unwrap the result and the major version here as we already checked for the overflow case above
+                    // and invalid versions are also handled above
+                    let expected = expected.unwrap();
+
+                    if current_major == expected.get_major().unwrap() {
                         // the current version is the expected next major version, so we can continue checking the next item
                         return Some(current);
                     }
                     // check if the current version is the expected next major version
-                    if current.number.get_major() > expected.get_major() {
+                    if current_major > expected.get_major().unwrap() {
                         // there is at least one missing version between the previous and current version
                         let mut start = prev_item.number.clone();
-                        while let next_version = start.get_next_major_version()
+                        while let Ok(next_version) = start.get_next_major_version()
                             && next_version < current.number
                         {
                             missing_versions.insert(
@@ -105,6 +127,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
             Some(current)
         });
     for (missing_version, version_metadata) in missing_versions {
+        // ToDo aggregate consequive missing versions into one error message, e.g. "missing revision history items with numbers 2,3,4 between 2026-03-01T11:00:00.000Z and 2026-03-03T11:00:00.000Z"
         if !version_metadata.found {
             errors
                 .get_or_insert_default()
@@ -133,6 +156,7 @@ fn test_6_1_21_err_wrong_first_version(version: &CsafVersionNumber) -> Validatio
     let expected_version = match version {
         CsafVersionNumber::IntVer(_) => "`0` or `1`",
         CsafVersionNumber::SemVer(_) => "`0.y.z` or `1.y.z`",
+        CsafVersionNumber::Invalid(_) => panic!("Invalid version number should not be passed to this function"),
     }
     .to_string();
 

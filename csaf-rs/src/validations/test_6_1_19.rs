@@ -28,6 +28,7 @@ pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
                         .push(create_prerelease_version_error(&semver, revision_index));
                 }
             },
+            CsafVersionNumber::Invalid(_) => {}, // ignore invalid version numbers
         }
     }
 

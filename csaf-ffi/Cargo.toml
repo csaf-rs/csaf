@@ -24,4 +24,4 @@ thiserror = "2"
 uniffi = { version = "0.32.0", features = ["scaffolding-ffi-buffer-fns", "wasm-unstable-single-threaded"] }
 
 [build-dependencies]
-uniffi = { version = "0.31.0", features = ["build"] }
+uniffi = { version = "0.32.0", features = ["build"] }

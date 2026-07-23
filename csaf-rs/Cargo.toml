@@ -22,7 +22,7 @@ default = []
 converter = []
 
 [dependencies]
-cvss-rs = "0.3.0"
+cvss-rs = "0.4.0"
 regress = "0.11"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1.0.131", features = ["preserve_order"] }

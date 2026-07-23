@@ -4,7 +4,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use csaf::csaf::raw::{HasParsed, RawDocument};
+use csaf::csaf::raw::RawDocument;
 use csaf::csaf2_0::loader::load_document as load_2_0;
 use csaf::csaf2_1::loader::load_document as load_2_1;
 use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
@@ -89,22 +89,10 @@ impl CsafDocument {
             message: "lock poisoned".into(),
         })?;
         let result = match &*guard {
-            DocumentInner::V20(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                validate_by_preset(parsed, &self.version_string, &preset)
-            },
-            DocumentInner::V21(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                validate_by_preset(parsed, &self.version_string, &preset)
-            },
+            DocumentInner::V20(raw) => validate_by_preset(raw, &self.version_string, &preset),
+            DocumentInner::V21(raw) => validate_by_preset(raw, &self.version_string, &preset),
         };
-        Ok(result.into())
+        result.map_or_else(|e| Err(CsafError::from(e)), |r| Ok(r.into()))
     }
 
     /// Run a single validation test by ID.
@@ -113,20 +101,8 @@ impl CsafDocument {
             message: "lock poisoned".into(),
         })?;
         let result = match &*guard {
-            DocumentInner::V20(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                validate_by_test(parsed, &test_id)
-            },
-            DocumentInner::V21(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                validate_by_test(parsed, &test_id)
-            },
+            DocumentInner::V20(raw) => validate_by_test(raw, &test_id),
+            DocumentInner::V21(raw) => validate_by_test(raw, &test_id),
         };
         Ok((&result).into())
     }
@@ -138,20 +114,8 @@ impl CsafDocument {
             message: "lock poisoned".into(),
         })?;
         let result = match &*guard {
-            DocumentInner::V20(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                validate_by_tests(parsed, &self.version_string, &refs)
-            },
-            DocumentInner::V21(raw) => {
-                let parsed = raw
-                    .get_parsed()
-                    .as_ref()
-                    .map_err(|e| CsafError::LoadError { message: e.clone() })?;
-                validate_by_tests(parsed, &self.version_string, &refs)
-            },
+            DocumentInner::V20(raw) => validate_by_tests(raw, &self.version_string, &refs),
+            DocumentInner::V21(raw) => validate_by_tests(raw, &self.version_string, &refs),
         };
         Ok(result.into())
     }

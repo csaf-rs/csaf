@@ -29,7 +29,7 @@ fn generate_incorrect_cwe_version_error(version: &str, path: &str) -> Validation
 fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Vec<ValidationError>) {
     if !CWE_ENTRIES.contains_key(version) {
         errors.push(generate_incorrect_cwe_version_error(version, path));
-    } else if let Some(cwe_name) = CWE_ENTRIES[version].1.get(&cwe.id) {
+    } else if let Some((_, cwe_name)) = CWE_ENTRIES[version].1.get(&cwe.id) {
         if *cwe_name != cwe.name {
             errors.push(generate_incorrect_cwe_name_error(&cwe.id, cwe_name, version, path));
         }

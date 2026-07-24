@@ -8,7 +8,18 @@ enum VersionMissmatch {
     Future,
 }
 
-fn check_version(cwe: &str, version: &str, latest: &str, i_r: usize, i_cwe: usize) -> Option<ValidationError> {
+fn check_for_non_latest_cwe_version(
+    cwe: &str,
+    version: &str,
+    latest: &str,
+    i_r: usize,
+    i_cwe: usize,
+) -> Option<ValidationError> {
+    // If the both version strings are already equal, we can return early
+    if version == latest {
+        return None;
+    }
+
     // Parsing both strings as semantic versions.
     let norm_version = normalize_to_semver_str(version);
     let norm_latest = normalize_to_semver_str(latest);
@@ -111,9 +122,7 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
                         continue;
                     };
 
-                    if version != latest
-                        && let Some(error) = check_version(&cwe_item.id, version, latest, i_r, i_cwe)
-                    {
+                    if let Some(error) = check_for_non_latest_cwe_version(&cwe_item.id, version, latest, i_r, i_cwe) {
                         errors.push(error);
                     }
                 }

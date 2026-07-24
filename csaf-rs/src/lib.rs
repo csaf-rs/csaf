@@ -5,6 +5,7 @@ pub mod csaf2_0;
 pub mod csaf2_1;
 pub mod csaf_traits;
 pub(crate) mod cvss;
+pub mod extractor;
 pub mod helpers;
 pub mod json;
 pub(crate) mod macros;
@@ -14,6 +15,7 @@ pub mod test_result_comparison;
 #[cfg(test)]
 pub mod test_structure;
 pub mod test_validation;
+pub mod two_step_validation;
 pub mod validation;
 pub mod validation_result;
 pub mod validations;

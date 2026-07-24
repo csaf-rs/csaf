@@ -5,7 +5,7 @@ use crate::validation::ValidationError;
 fn create_mixed_versioning_error(part: &str) -> ValidationError {
     ValidationError {
         message: "mixed integer and semantic versioning used".to_string(),
-        instance_path: format!("/document/tracking/{}", part),
+        instance_path: format!("/document/tracking/{part}"),
     }
 }
 

@@ -36,7 +36,7 @@ where
 
     fn get_parsed(&self) -> &Result<Self::Parsed, String> {
         self.parsed
-            .get_or_init(|| serde_json::from_value::<T>(self.raw.clone()).map_err(|e| e.to_string()))
+            .get_or_init(|| T::deserialize(&self.raw).map_err(|e| e.to_string()))
     }
 }
 

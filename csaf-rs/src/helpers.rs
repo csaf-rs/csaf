@@ -1,44 +1,37 @@
 use chrono::NaiveDate;
-use rust_embed::RustEmbed;
 use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;
 
-#[derive(RustEmbed)]
-#[folder = "assets/cwe/"]
-#[include = "*.csv"]
-struct CweCsvFiles;
+use crate::cwe_files::CWE_CSV_FILES;
 
 pub type CweReleaseDateAndData = (NaiveDate, HashMap<String, String>);
 pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyLock::new(|| {
     let mut entries = HashMap::new();
 
-    for filename in CweCsvFiles::iter() {
-        if let Some(file) = CweCsvFiles::get(&filename) {
-            let version_and_date = &filename
-                .strip_prefix("cwe_")
-                .expect("Filenames in assets/cwe should start with 'cwe_'.")
-                .strip_suffix(".csv")
-                .expect("Filenames in assets/cwe should end with '.csv'.");
-            let version_parts = version_and_date.split("_").collect::<Vec<&str>>();
-            let version = version_parts[0];
-            let release_date = match version_parts[1] {
-                "" => NaiveDate::from_ymd_opt(1970, 1, 1).expect("Fallback date should be valid."),
-                date_str => NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
-                    .expect("Date part of filenames in assets/cwe should be in 'YYYY-MM-DD' format."),
-            };
-            let mut versioned_data: HashMap<String, String> = HashMap::new();
-            let content =
-                std::str::from_utf8(&file.data).expect("Files in assets/cwe should be valid UTF-8 encoded text files.");
-            for line in content.lines() {
-                let parts: Vec<&str> = line.split('\t').collect();
-                if parts.len() >= 2 {
-                    let id = format!("CWE-{}", parts[0].trim());
-                    let name = parts[1].trim().to_string();
-                    versioned_data.insert(id, name);
-                }
+    for &(filename, data) in CWE_CSV_FILES {
+        let version_and_date = filename
+            .strip_prefix("cwe_")
+            .expect("Filenames in assets/cwe should start with 'cwe_'.")
+            .strip_suffix(".csv")
+            .expect("Filenames in assets/cwe should end with '.csv'.");
+        let version_parts = version_and_date.split("_").collect::<Vec<&str>>();
+        let version = version_parts[0];
+        let release_date = match version_parts[1] {
+            "" => NaiveDate::from_ymd_opt(1970, 1, 1).expect("Fallback date should be valid."),
+            date_str => NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
+                .expect("Date part of filenames in assets/cwe should be in 'YYYY-MM-DD' format."),
+        };
+        let mut versioned_data: HashMap<String, String> = HashMap::new();
+        let content = std::str::from_utf8(data).expect("Files in assets/cwe should be valid UTF-8 encoded text files.");
+        for line in content.lines() {
+            let parts: Vec<&str> = line.split('\t').collect();
+            if parts.len() >= 2 {
+                let id = format!("CWE-{}", parts[0].trim());
+                let name = parts[1].trim().to_string();
+                versioned_data.insert(id, name);
             }
-            entries.insert(version.to_string(), (release_date, versioned_data));
         }
+        entries.insert(version.to_string(), (release_date, versioned_data));
     }
 
     entries

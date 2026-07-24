@@ -200,8 +200,8 @@ where
     let mut test_ids: Vec<&str> = tests
         .iter()
         .flat_map(|test_or_preset| match T::tests_in_preset(test_or_preset) {
-            Some(test_ids) => test_ids,
-            None => vec![*test_or_preset],
+            Ok(test_ids) => test_ids,
+            Err(_) => vec![*test_or_preset],
         })
         .collect();
 

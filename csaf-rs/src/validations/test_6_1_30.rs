@@ -4,7 +4,7 @@ use crate::validation::ValidationError;
 
 fn create_mixed_versioning_error(part: &str) -> ValidationError {
     ValidationError {
-        message: format!("mixed integer and semantic versioning used"),
+        message: "mixed integer and semantic versioning used".to_string(),
         instance_path: format!("/document/tracking/{}", part),
     }
 }
@@ -87,7 +87,7 @@ mod tests {
         TESTS_2_1.test_6_1_30.expect(
             case_inconsistent_history_and_mismatch_to_document,
             case_consistent_history_mismatch_to_document.clone(),
-            case_consistent_history_mismatch_to_document.clone(),
+            case_consistent_history_mismatch_to_document,
             Ok(()), // only semver versioning
             Ok(()), // only intver versioning
         );

@@ -31,12 +31,12 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     rev_history_tuples
         .iter()
         .fold(None::<&CsafRevisionHistoryItem>, |prev, current| {
+            if let CsafVersionNumber::Invalid(_) = current.number {
+                return prev; // ignore invalid version numbers
+            }
             match prev {
                 // checks first item
                 None => {
-                    if let CsafVersionNumber::Invalid(_) = current.number {
-                        return prev; // ignore invalid version numbers
-                    }
                     let mut first_item = current.number.clone();
                     if let Ok(major) = first_item.get_major()
                         && !(major == 0 || major == 1)
@@ -61,12 +61,9 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                 },
                 // checks subsequent items
                 Some(prev_item) => {
-                    if let CsafVersionNumber::Invalid(_) = current.number {
-                        return prev; // ignore invalid version numbers
-                    }
-                    let current_major = current.number.get_major().ok().unwrap();
+                    let current_major = current.number.get_major().unwrap();
                     // we can unwrap prev_item here as we make sure that 'prev' is always a valid version number
-                    let prev_major = prev_item.number.get_major().ok().unwrap();
+                    let prev_major = prev_item.number.get_major().unwrap();
                     if current_major < prev_major {
                         // check if the current number was already marked as missing
                         if let Some(previously_missing_version) = missing_versions.get_mut(&current.number) {
@@ -207,17 +204,17 @@ mod tests {
 
     #[test]
     fn test_test_6_1_21() {
-        let case_01_intver_1_3_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(
-            &CsafVersionNumber::from("2"),
-        )]);
-        let case_02_intver_2_3_missing_1_at_all = Err(vec![
+        let case_intver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from(
+            "2",
+        ))]);
+        let case_intver_2_3_wrong_first_and_missing_1_at_all = Err(vec![
             test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2")),
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1")),
         ]);
-        let case_s01_semver_1_3_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(
-            &CsafVersionNumber::from("2.0.0"),
-        )]);
-        let case_s02_semver_2_3_missing_1_at_all = Err(vec![
+        let case_semver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from(
+            "2.0.0",
+        ))]);
+        let case_semver_2_3_missing_1_at_all = Err(vec![
             test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2.0.0")),
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1.0.0")),
         ]);
@@ -249,18 +246,43 @@ mod tests {
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("2.0.0")),
         ]);
 
-        let case_s07_mixed_versions_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(
+        let case_mixed_versions_start_with_intver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(
             &CsafVersionNumber::from("2"),
         )]);
-        let case_intver_3_1_2_5_4_wrong_first_missing_1_2_4 = Err(vec![
-            test_6_1_21_err_wrong_first_version(CsafVersionNumber::from("3"), &0),
-            test_6_1_21_err_missing_version(CsafVersionNumber::from("4")),
+        let case_intver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3")),
+            test_6_1_21_err_missing_version_before(
+                &CsafVersionNumber::from("1"),
+                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
+            ),
+            test_6_1_21_err_missing_version_before(
+                &CsafVersionNumber::from("2"),
+                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
+            ),
+            test_6_1_21_err_missing_version_between(
+                &CsafVersionNumber::from("4"),
+                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
+                &CsafDateTime::from("2024-01-21T11:00:00.000Z"),
+            ),
         ]);
-        let case_06 = Err(vec![
-            test_6_1_21_err_wrong_first_version(CsafVersionNumber::from("4.0.0"), &0),
-            test_6_1_21_err_missing_version(CsafVersionNumber::from("5.0.0")),
+
+        let case_semver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("4.0.0")),
+            test_6_1_21_err_missing_version_before(
+                &CsafVersionNumber::from("1.0.0"),
+                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
+            ),
+            test_6_1_21_err_missing_version_before(
+                &CsafVersionNumber::from("2.0.0"),
+                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
+            ),
+            test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("3.0.0")),
+            test_6_1_21_err_missing_version_between(
+                &CsafVersionNumber::from("5.0.0"),
+                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
+                &CsafDateTime::from("2024-01-21T11:00:00.000Z"),
+            ),
         ]);
-        let case_07 = Err(vec![test_6_1_21_err_missing_version(CsafVersionNumber::from("2"))]);
 
         // Valid cases for both 2.0 and 2.1
         // case 11: valid intver final start with 1
@@ -271,51 +293,43 @@ mod tests {
         // case s13: mixed versioning 1,2,3
 
         TESTS_2_0.test_6_1_21.expect(
-            case_01_intver_1_3_missing_2_at_all.clone(),
-            case_02_intver_2_3_missing_1_at_all.clone(),
-            case_s01_semver_1_3_missing_2_at_all.clone(),
-            case_s02_semver_2_3_missing_1_at_all.clone(),
-            case_s03_intver_1_3_2_missing_2_between.clone(),
-            case_s04_semver_1_3_2_missing_2_between.clone(),
-            case_s05_intver_3_1_missing_1_before_2_at_all.clone(),
-            case_s06_semver_3_1_missing_1_before_2_at_all.clone(),
-            case_s07_mixed_versions_missing_2_at_all.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
+            case_intver_missing_2_at_all.clone(),
+            case_intver_2_3_wrong_first_and_missing_1_at_all.clone(),
+            case_semver_missing_2_at_all.clone(),
+            case_semver_2_3_missing_1_at_all.clone(),
+            case_s03_intver_1_3_2_missing_2_between,
+            case_s04_semver_1_3_2_missing_2_between,
+            case_s05_intver_3_1_missing_1_before_2_at_all,
+            case_s06_semver_3_1_missing_1_before_2_at_all,
+            case_mixed_versions_start_with_intver_missing_2_at_all.clone(),
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_s11
+            Ok(()), // case_s12
+            Ok(()), // case_s13
         );
 
-        let case_intver_1_3_4_with_timezone_missing_2 = Err(vec![test_6_1_21_err_missing_version_at_all(
-            &CsafVersionNumber::from("2"),
-        )]);
-
         TESTS_2_1.test_6_1_21.expect(
-            case_intver_1_3_missing_2,
-            case_intver_2_3_missing_1,
-            case_intver_1_3_4_with_timezone_missing_2,
-            case_semver_1_3_missing_2.clone(),
-            case_intver_3_1_2_5_4_wrong_first_missing_1_2_4,
-            case_06,
-            case_07,
-            case_semver_1_3_missing_2,
-            case_semver_2_3_missing_1,
-            case_semver_missing_2,
-            case_semver_multiple_single_versions_and_range_missing,
-            case_big_range_missing,
-            case_semver_first_version_mismatch_multiple_versions_missing,
-            case_intver_first_version_mismatch_range_missing,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
+            case_intver_missing_2_at_all.clone(),
+            case_intver_2_3_wrong_first_and_missing_1_at_all,
+            case_intver_missing_2_at_all.clone(),
+            case_semver_missing_2_at_all,
+            case_intver_wrong_first_missing_1_and_2_before_4_between,
+            case_semver_wrong_first_missing_1_and_2_before_4_between,
+            case_intver_missing_2_at_all,
+            case_semver_2_3_missing_1_at_all,
+            case_mixed_versions_start_with_intver_missing_2_at_all,
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14 only wrong ordering in json
+            Ok(()), // case_15 only wrong ordering in json due to timezones
+            Ok(()), // case_16 only wrong ordering in json due to timezones
+            Ok(()), // case_17 1&2 have same date
+            Ok(()), // case_s11
+            Ok(()), // case_s12
+            Ok(()), // case_s13
         );
     }
 }

@@ -53,17 +53,14 @@ impl CsafVersionNumber {
     pub fn get_next_major_version(&self) -> Result<CsafVersionNumber, CsafVersionNumberError> {
         match self {
             CsafVersionNumber::IntVer(intver) => {
-                let next_major = intver
-                    .get()
-                    .checked_add(1)
-                    .ok_or_else(|| CsafVersionNumberError::Overflow)?;
+                let next_major = intver.get().checked_add(1).ok_or(CsafVersionNumberError::Overflow)?;
                 Ok(CsafVersionNumber::IntVer(IntVerVersion::new(next_major)))
             },
             CsafVersionNumber::SemVer(semver) => {
                 let next_major = semver
                     .get_major()
                     .checked_add(1)
-                    .ok_or_else(|| CsafVersionNumberError::Overflow)?;
+                    .ok_or(CsafVersionNumberError::Overflow)?;
                 Ok(CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
                     next_major, 0, 0,
                 ))))
@@ -120,7 +117,7 @@ impl From<&str> for CsafVersionNumber {
             return CsafVersionNumber::SemVer(SemVerVersion::new(semver));
         }
 
-        return CsafVersionNumber::Invalid(s.to_string());
+        CsafVersionNumber::Invalid(s.to_string())
     }
 }
 
@@ -168,8 +165,8 @@ impl Eq for CsafVersionNumber {}
 impl PartialEq for CsafVersionNumber {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (CsafVersionNumber::Invalid(s1), CsafVersionNumber::Invalid(s2)) => return s1 == s2,
-            (CsafVersionNumber::Invalid(_), _) | (_, CsafVersionNumber::Invalid(_)) => return false,
+            (CsafVersionNumber::Invalid(s1), CsafVersionNumber::Invalid(s2)) => s1 == s2,
+            (CsafVersionNumber::Invalid(_), _) | (_, CsafVersionNumber::Invalid(_)) => false,
             (v1, v2) => v1.to_comparable_semver().ok() == v2.to_comparable_semver().ok(),
         }
     }
@@ -178,9 +175,9 @@ impl PartialEq for CsafVersionNumber {
 impl Ord for CsafVersionNumber {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
-            (CsafVersionNumber::Invalid(s1), CsafVersionNumber::Invalid(s2)) => return s1.cmp(s2),
-            (CsafVersionNumber::Invalid(i), v) => return i.cmp(&v.to_string()), // fall back to string comparison for invalid vs valid
-            (v, CsafVersionNumber::Invalid(i)) => return v.to_string().cmp(i), // fall back to string comparison for valid vs invalid
+            (CsafVersionNumber::Invalid(s1), CsafVersionNumber::Invalid(s2)) => s1.cmp(s2),
+            (CsafVersionNumber::Invalid(i), v) => i.cmp(&v.to_string()), // fall back to string comparison for invalid vs valid
+            (v, CsafVersionNumber::Invalid(i)) => v.to_string().cmp(i), // fall back to string comparison for valid vs invalid
             (v1, v2) => v1.to_comparable_semver().ok().cmp(&v2.to_comparable_semver().ok()),
         }
     }

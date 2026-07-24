@@ -58,7 +58,6 @@ mod tests {
         // Error cases
         let case_error = Err(vec![create_revision_history_error()]);
 
-        // CSAF 2.0 has 17 test cases (01-08, 11-19)
         TESTS_2_0.test_6_1_14.expect(
             case_error.clone(),
             case_error.clone(),
@@ -77,33 +76,33 @@ mod tests {
             Ok(()), // case_17
             Ok(()), // case_18
             Ok(()), // case_19
-            Ok(()), // supplementary case s11 mixed versioning
+            Ok(()), // case_s11 mixed versioning
         );
 
         TESTS_2_1.test_6_1_14.expect(
-            case_error.clone(), // 01
-            case_error.clone(), // 02
-            case_error.clone(), // 03
-            case_error.clone(), // 04
-            case_error.clone(), // 05
-            case_error.clone(), // 06
-            case_error.clone(), // 07
-            case_error.clone(), // 08
-            case_error.clone(), // 09
-            case_error.clone(), // 21
-            Ok(()),             // case_s01
-            Ok(()),             // case_11
-            Ok(()),             // case_12
-            Ok(()),             // case_13
-            Ok(()),             // case_14
-            Ok(()),             // case_15
-            Ok(()),             // case_16
-            Ok(()),             // case_17
-            Ok(()),             // case_18
-            Ok(()),             // case_19
-            Ok(()),             // case_31
-            Ok(()),             // case_32
-            Ok(()),             // supplementary case s11 mixed versioning
+            case_error.clone(),
+            case_error.clone(),
+            case_error.clone(),
+            case_error.clone(),
+            case_error.clone(),
+            case_error.clone(),
+            case_error.clone(),
+            case_error.clone(),
+            case_error.clone(),
+            case_error,
+            Ok(()), // case_11
+            Ok(()), // case_12
+            Ok(()), // case_13
+            Ok(()), // case_14
+            Ok(()), // case_15
+            Ok(()), // case_16
+            Ok(()), // case_17
+            Ok(()), // case_18
+            Ok(()), // case_19
+            Ok(()), // case_31
+            Ok(()), // case_32
+            Ok(()), // case_s11 mixed versioning
+            Ok(()), // case_s12 invalid version number is ignored
         );
     }
 }

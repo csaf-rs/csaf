@@ -1,60 +1,58 @@
-use chrono::NaiveDate;
-
-use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
-use crate::helpers::CWE_ENTRIES;
+use crate::helpers::get_latest_cwe_version_for_date;
 use crate::validation::ValidationError;
 use semver::Version;
 
-fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, i_r: usize, i_cwe: usize) -> ValidationError {
-    // Parsing both strings as semantic versions. CWE assets use two-part
-    // versions like "4.13". `semver::Version::parse` expects three parts in the version
-    // (major.minor.patch), we normalize the version by appending 0 until we have three segments
-    //  and preserve prerelease/build metadata.
-    fn normalize_to_semver_str(s: &str) -> String {
-        // split off prerelease/build metadata
-        let mut rest = "";
-        let mut core = s;
-        if let Some(idx) = s.find('-') {
-            core = &s[..idx];
-            rest = &s[idx..];
-        } else if let Some(idx) = s.find('+') {
-            core = &s[..idx];
-            rest = &s[idx..];
-        }
+enum VersionMissmatch {
+    NonLatest,
+    Future,
+}
 
-        let mut parts: Vec<&str> = core.split('.').collect();
-        while parts.len() < 3 {
-            parts.push("0");
-        }
-        format!("{}{}", parts.join("."), rest)
-    }
-
+fn check_version(cwe: &str, version: &str, latest: &str, i_r: usize, i_cwe: usize) -> Option<ValidationError> {
+    // Parsing both strings as semantic versions.
     let norm_version = normalize_to_semver_str(version);
     let norm_latest = normalize_to_semver_str(latest);
     let parsed_version = Version::parse(norm_version.as_str());
     let parsed_latest = Version::parse(norm_latest.as_str());
 
-    let error_message = match (parsed_version, parsed_latest) {
+    let version_missmatch = match (parsed_version, parsed_latest) {
         (Ok(v), Ok(l)) => {
             if v < l {
-                format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest}).")
+                Some(VersionMissmatch::NonLatest)
             } else if v > l {
-                format!("Weakness '{cwe}' uses a future CWE version {version} (latest: {latest}).")
+                Some(VersionMissmatch::Future)
             } else {
-                format!("Weakness '{cwe}' uses latest CWE version {version} but validation is incorrect.")
+                None
             }
         },
         // If parsing fails for either side, fall back to string comparison to avoid panics.
         _ => {
             if version < latest {
-                format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest}).")
+                Some(VersionMissmatch::NonLatest)
             } else if version > latest {
-                format!("Weakness '{cwe}' uses a future CWE version {version} (latest: {latest}).")
+                Some(VersionMissmatch::Future)
             } else {
-                format!("Weakness '{cwe}' uses latest CWE version {version} but validation is incorrect.")
+                None
             }
         },
+    };
+
+    version_missmatch.map(|e_type| create_non_latest_cwe_error(e_type, cwe, version, latest, i_r, i_cwe))
+}
+
+fn create_non_latest_cwe_error(
+    e_type: VersionMissmatch,
+    cwe: &str,
+    version: &str,
+    latest: &str,
+    i_r: usize,
+    i_cwe: usize,
+) -> ValidationError {
+    let error_message = match e_type {
+        VersionMissmatch::NonLatest => {
+            format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest}).")
+        },
+        VersionMissmatch::Future => format!("Weakness '{cwe}' uses a future CWE version {version} (latest: {latest})."),
     };
 
     ValidationError {
@@ -63,22 +61,26 @@ fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, i_r: usiz
     }
 }
 
-fn get_latest_cwe_version_for_date(date: &CsafDateTime) -> Option<&'static String> {
-    // Convert to a date (UTC) and compare against the release dates stored in the CWE assets.
-    let doc_date: NaiveDate = match date {
-        CsafDateTime::Valid(v) => v.get_as_utc().date_naive(),
-        _ => return None,
-    };
-
-    let mut latest: Option<(&'static String, &NaiveDate)> = None;
-
-    for (version, (release_date, _)) in CWE_ENTRIES.iter() {
-        if *release_date <= doc_date && latest.as_ref().is_none_or(|l| *release_date > *l.1) {
-            latest = Some((version, release_date));
-        }
+///CWE assets use two-part versions like "4.13". `semver::Version::parse` expects three parts
+/// in the version (major.minor.patch). This function normalizes the version by appending 0
+/// until we have three segments and preserve prerelease/build metadata.
+fn normalize_to_semver_str(s: &str) -> String {
+    // split off prerelease/build metadata
+    let mut rest = "";
+    let mut core = s;
+    if let Some(idx) = s.find('-') {
+        core = &s[..idx];
+        rest = &s[idx..];
+    } else if let Some(idx) = s.find('+') {
+        core = &s[..idx];
+        rest = &s[idx..];
     }
 
-    latest.map(|(version, _)| version)
+    let mut parts: Vec<&str> = core.split('.').collect();
+    while parts.len() < 3 {
+        parts.push("0");
+    }
+    format!("{}{}", parts.join("."), rest)
 }
 
 /// 6.2.24 Usage of Non-Latest CWE Version
@@ -109,8 +111,10 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
                         continue;
                     };
 
-                    if version != latest {
-                        errors.push(create_non_latest_cwe_error(&cwe_item.id, version, latest, i_r, i_cwe));
+                    if version != latest
+                        && let Some(error) = check_version(&cwe_item.id, version, latest, i_r, i_cwe)
+                    {
+                        errors.push(error);
                     }
                 }
             }
@@ -135,23 +139,38 @@ crate::test_validation::impl_validator!(
 mod tests {
     use super::*;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use rstest::rstest;
 
     #[test]
     fn test_test_6_2_24() {
-        let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_error("CWE-256", "4.12", "4.13", 0, 0)]);
+        let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_error(
+            VersionMissmatch::NonLatest,
+            "CWE-256",
+            "4.12",
+            "4.13",
+            0,
+            0,
+        )]);
 
-        let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_error("CWE-143", "4.15", "4.13", 0, 0)]);
+        let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_error(
+            VersionMissmatch::Future,
+            "CWE-143",
+            "4.15",
+            "4.13",
+            0,
+            0,
+        )]);
 
         let case_03_cwe_version_mismatch = Err(vec![
-            create_non_latest_cwe_error("CWE-262", "1.8.1", "4.13", 0, 0),
-            create_non_latest_cwe_error("CWE-287", "1.0", "4.13", 0, 2),
+            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-262", "1.8.1", "4.13", 0, 0),
+            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-287", "1.0", "4.13", 0, 2),
         ]);
 
         let case_04_cwe_version_mismatch_multi_vulnerabilities = Err(vec![
-            create_non_latest_cwe_error("CWE-158", "1.3", "4.13", 0, 0),
-            create_non_latest_cwe_error("CWE-138", "2.1", "4.13", 0, 1),
-            create_non_latest_cwe_error("CWE-318", "4.14", "4.13", 1, 0),
-            create_non_latest_cwe_error("CWE-61", "4.15", "4.13", 2, 0),
+            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-158", "1.3", "4.13", 0, 0),
+            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-138", "2.1", "4.13", 0, 1),
+            create_non_latest_cwe_error(VersionMissmatch::Future, "CWE-318", "4.14", "4.13", 1, 0),
+            create_non_latest_cwe_error(VersionMissmatch::Future, "CWE-61", "4.15", "4.13", 2, 0),
         ]);
 
         TESTS_2_1.test_6_2_24.expect(
@@ -164,5 +183,20 @@ mod tests {
             Ok(()), // Case 13: 1 vuln, 3 correct cwe versions, correction of case 03 with versions 1.8.1 -> 4.13, 1.0 -> 4.13
             Ok(()), // Case 14: 3 vulns, 4 correct cwe versions, correction of case 04 with versions 1.3 -> 4.13, 2.1 -> 4.13, 4.14 -> 4.13, 4.15 -> 4.13
         );
+    }
+
+    #[rstest]
+    // Missing patch version defaults to .0.
+    #[case("4.13", "4.13.0")]
+    // Already valid semantic versions remain unchanged.
+    #[case("4.13.1", "4.13.1")]
+    // Missing patch version is inserted before a pre-release identifier.
+    #[case("4.13-alpha", "4.13.0-alpha")]
+    // Missing patch version is inserted while preserving pre-release and build metadata.
+    #[case("4.13-beta+build", "4.13.0-beta+build")]
+    // Fully qualified semantic versions with pre-release and build metadata remain unchanged.
+    #[case("4.13.1-beta+build", "4.13.1-beta+build")]
+    fn test_normalization(#[case] input: &str, #[case] expected: &str) {
+        assert_eq!(normalize_to_semver_str(input), expected);
     }
 }

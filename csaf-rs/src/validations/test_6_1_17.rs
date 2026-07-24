@@ -141,7 +141,6 @@ mod tests {
         // Case S13: document status is "draft", version has prerelease (should be skipped)
         // Case S14: document status is "final", version has metadata
 
-        // ToDo TZ case invalid version number in document
         TESTS_2_0.test_6_1_17.expect(
             case_final_with_semver_0.clone(),
             case_final_with_semver_0_ignored_metadata.clone(),

@@ -29,9 +29,10 @@ pub fn add_generated_code_header(file: &mut syn::File) {
     file.attrs.insert(0, doc_attr);
 }
 
-/// Appends `AsRef<str>` and `PartialEq<str>`/`PartialEq<&str>` impls for every generated
+/// Appends a `crate::macros::impl_string_newtype_ergonomics!` invocation for every generated
 /// single-field `String` tuple struct — the constrained-string newtypes, which otherwise
 /// only offer `Deref` and force double-dereferencing at comparison sites.
+/// The macro in csaf-rs is the single home of the emitted impl set.
 pub fn add_string_newtype_impls(file: &mut syn::File) {
     let mut impls: Vec<syn::Item> = Vec::new();
     for item in &file.items {
@@ -46,25 +47,7 @@ pub fn add_string_newtype_impls(file: &mut syn::File) {
         }
         let ident = &item_struct.ident;
         impls.push(syn::parse_quote! {
-            impl ::std::convert::AsRef<str> for #ident {
-                fn as_ref(&self) -> &str {
-                    &self.0
-                }
-            }
-        });
-        impls.push(syn::parse_quote! {
-            impl ::std::cmp::PartialEq<str> for #ident {
-                fn eq(&self, other: &str) -> bool {
-                    self.0 == other
-                }
-            }
-        });
-        impls.push(syn::parse_quote! {
-            impl ::std::cmp::PartialEq<&str> for #ident {
-                fn eq(&self, other: &&str) -> bool {
-                    self.0 == *other
-                }
-            }
+            crate::macros::impl_string_newtype_ergonomics!(#ident);
         });
     }
     file.items.extend(impls);

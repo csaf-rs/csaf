@@ -180,6 +180,9 @@ jobs:
       - name: Build with --no-default-features
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose
         if: ${{ matrix.target.skip-test != true }}
+      - name: Test the models-only build
+        run: cargo test --locked --target=${{ matrix.target.arch }} -p csaf-rs --no-default-features --verbose
+        if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version
         uses: actions/upload-artifact@v7

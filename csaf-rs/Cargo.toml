@@ -18,24 +18,36 @@ name = "csaf"
 crate-type = ["rlib"]
 
 [features]
-default = []
-converter = []
+default = ["validation"]
+validation = [
+    "dep:chrono",
+    "dep:cvss-rs",
+    "dep:jsonschema",
+    "dep:oxilangtag",
+    "dep:packageurl",
+    "dep:regex",
+    "dep:rust-embed",
+    "dep:semver",
+    "dep:spdx",
+    "dep:ssvc",
+]
+converter = ["validation"]
 
 [dependencies]
-cvss-rs = "0.4.0"
+cvss-rs = { version = "0.4.0", optional = true }
 regress = "0.11"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1.0.131", features = ["preserve_order"] }
-chrono = { version = "0.4", features = ["serde"] }
-regex = "1"
-rust-embed = { version = "8", features = ["include-exclude"] }
-packageurl = "0.7"
+chrono = { version = "0.4", features = ["serde"], optional = true }
+regex = { version = "1", optional = true }
+rust-embed = { version = "8", features = ["include-exclude"], optional = true }
+packageurl = { version = "0.7", optional = true }
 uuid = { version = "1.17.0", features = ["v7", "serde"] }
-semver = { version = "1" }
-jsonschema = { version = "0.49.1", default-features = false }
-spdx = "0.13.4"
-oxilangtag = "0.1.5"
-ssvc = "0.1.0"
+semver = { version = "1", optional = true }
+jsonschema = { version = "0.49.1", default-features = false, optional = true }
+spdx = { version = "0.13.4", optional = true }
+oxilangtag = { version = "0.1.5", optional = true }
+ssvc = { version = "0.1.0", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
@@ -52,4 +64,5 @@ tempfile = "3"
 [[bench]]
 name = "validation_benchmark"
 harness = false
+required-features = ["validation"]
 

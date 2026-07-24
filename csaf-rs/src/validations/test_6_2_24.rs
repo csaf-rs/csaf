@@ -50,7 +50,7 @@ fn create_non_latest_cwe_error(
 ) -> ValidationError {
     let error_message = match e_type {
         VersionMissmatch::NonLatest => {
-            format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest}).")
+            format!("Weakness '{cwe}' uses non-latest CWE version '{version}' (latest: '{latest}').")
         },
         VersionMissmatch::Future => format!("Weakness '{cwe}' uses a future CWE version '{version}' (latest: '{latest}')."),
     };

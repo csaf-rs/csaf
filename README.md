@@ -76,6 +76,7 @@ let test_ids_in_basic_preset = CommonSecurityAdvisoryFramework::tests_in_preset(
 
 `validation` (default) — the validation framework: the 6.x test implementations, the trait and rich-type layer, and the document loaders.
 Disabling it leaves a models-only build: the generated `schema::csaf2_0`/`schema::csaf2_1` serde types, with `serde`, `serde_json`, `regress`, and `uuid` as the only dependencies.
+The generated types enforce the structural schema — required fields, enums, string patterns, length bounds — on deserialization and on every constructor; the semantic tests require `validation`.
 
 ```toml
 csaf-rs = { version = "0.5", default-features = false }

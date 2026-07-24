@@ -53,8 +53,8 @@ impl CsafDocument {
             .to_string();
 
         match version.as_str() {
-            "2.0" => Self::from_json_2_0(json_str),
-            "2.1" => Self::from_json_2_1(json_str),
+            "2.0" => Self::from_value_2_0(value, json_str),
+            "2.1" => Self::from_value_2_1(value, json_str),
             other => Err(CsafError::UnsupportedVersion {
                 version: other.to_string(),
             }),
@@ -172,5 +172,27 @@ impl CsafDocument {
     /// The original JSON string used to create this document.
     pub fn to_json(&self) -> String {
         self.raw_json.clone()
+    }
+}
+
+impl CsafDocument {
+    /// Build a 2.0 document from the already parsed JSON value, keeping the original string.
+    fn from_value_2_0(value: serde_json::Value, json_str: String) -> Result<Arc<Self>, CsafError> {
+        let raw = load_2_0(value).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+        Ok(Arc::new(Self {
+            inner: Mutex::new(DocumentInner::V20(raw)),
+            version_string: "2.0".into(),
+            raw_json: json_str,
+        }))
+    }
+
+    /// Build a 2.1 document from the already parsed JSON value, keeping the original string.
+    fn from_value_2_1(value: serde_json::Value, json_str: String) -> Result<Arc<Self>, CsafError> {
+        let raw = load_2_1(value).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+        Ok(Arc::new(Self {
+            inner: Mutex::new(DocumentInner::V21(raw)),
+            version_string: "2.1".into(),
+            raw_json: json_str,
+        }))
     }
 }

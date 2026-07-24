@@ -12,8 +12,10 @@ pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result
     // For each product and its product identification helpers, check if any hash uses SHA-1 as the only hash algorithm.
     if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
-            if let Some(helper) = fpn.get_product_identification_helper() {
-                for (h_i, hash) in helper.get_hashes().iter().enumerate() {
+            if let Some(helper) = fpn.get_product_identification_helper()
+                && let Some(hashes) = helper.get_hashes()
+            {
+                for (h_i, hash) in hashes.iter().enumerate() {
                     if hash.contains_only_hash_algorithm(CsafHashAlgorithm::Sha1) {
                         errors
                             .get_or_insert_default()

@@ -6,7 +6,7 @@ use crate::helpers::CWE_ENTRIES;
 use crate::validation::ValidationError;
 use semver::Version;
 
-fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, path: &str) -> ValidationError {
+fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, i_r: usize, i_cwe: usize) -> ValidationError {
     // Parsing both strings as semantic versions. CWE assets use two-part
     // versions like "4.13". `semver::Version::parse` expects three parts in the version
     // (major.minor.patch), we normalize the version by appending 0 until we have three segments
@@ -59,7 +59,7 @@ fn create_non_latest_cwe_error(cwe: &str, version: &str, latest: &str, path: &st
 
     ValidationError {
         message: error_message,
-        instance_path: format!("{path}/version"),
+        instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}/version"),
     }
 }
 
@@ -98,7 +98,7 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
     let latest_version = get_latest_cwe_version_for_date(&current_release_date);
 
     // If we cannot determine the latest CWE version for the document,
-    // skip the check (no external CWE data available).
+    // we generate an error as the cwe list was not initialized correctly.
     if let Some(latest) = latest_version {
         for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
             if let Some(cwes) = vulnerability.get_cwes() {
@@ -110,12 +110,7 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
                     };
 
                     if version != latest {
-                        errors.push(create_non_latest_cwe_error(
-                            &cwe_item.id,
-                            version,
-                            latest,
-                            format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
-                        ));
+                        errors.push(create_non_latest_cwe_error(&cwe_item.id, version, latest, i_r, i_cwe));
                     }
                 }
             }
@@ -143,30 +138,20 @@ mod tests {
 
     #[test]
     fn test_test_6_2_24() {
-        let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_error(
-            "CWE-256",
-            "4.12",
-            "4.13",
-            "/vulnerabilities/0/cwes/0",
-        )]);
+        let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_error("CWE-256", "4.12", "4.13", 0, 0)]);
 
-        let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_error(
-            "CWE-143",
-            "4.15",
-            "4.13",
-            "/vulnerabilities/0/cwes/0",
-        )]);
+        let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_error("CWE-143", "4.15", "4.13", 0, 0)]);
 
         let case_03_cwe_version_mismatch = Err(vec![
-            create_non_latest_cwe_error("CWE-262", "1.8.1", "4.13", "/vulnerabilities/0/cwes/0"),
-            create_non_latest_cwe_error("CWE-287", "1.0", "4.13", "/vulnerabilities/0/cwes/2"),
+            create_non_latest_cwe_error("CWE-262", "1.8.1", "4.13", 0, 0),
+            create_non_latest_cwe_error("CWE-287", "1.0", "4.13", 0, 2),
         ]);
 
         let case_04_cwe_version_mismatch_multi_vulnerabilities = Err(vec![
-            create_non_latest_cwe_error("CWE-158", "1.3", "4.13", "/vulnerabilities/0/cwes/0"),
-            create_non_latest_cwe_error("CWE-138", "2.1", "4.13", "/vulnerabilities/0/cwes/1"),
-            create_non_latest_cwe_error("CWE-318", "4.14", "4.13", "/vulnerabilities/1/cwes/0"),
-            create_non_latest_cwe_error("CWE-61", "4.15", "4.13", "/vulnerabilities/2/cwes/0"),
+            create_non_latest_cwe_error("CWE-158", "1.3", "4.13", 0, 0),
+            create_non_latest_cwe_error("CWE-138", "2.1", "4.13", 0, 1),
+            create_non_latest_cwe_error("CWE-318", "4.14", "4.13", 1, 0),
+            create_non_latest_cwe_error("CWE-61", "4.15", "4.13", 2, 0),
         ]);
 
         TESTS_2_1.test_6_2_24.expect(

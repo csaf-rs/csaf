@@ -100,6 +100,7 @@ pub mod test_6_2_18;
 pub mod test_6_2_20;
 pub mod test_6_2_21;
 pub mod test_6_2_22;
+pub mod test_6_2_24;
 pub mod test_6_2_28;
 pub mod test_6_2_29;
 pub mod test_6_2_30;

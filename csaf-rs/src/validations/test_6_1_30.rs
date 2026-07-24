@@ -1,39 +1,11 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::ValidationError;
-use std::mem::discriminant;
 
-fn create_mixed_versioning_error(
-    doc_version: &CsafVersionNumber,
-    revision_version: &CsafVersionNumber,
-) -> ValidationError {
+fn create_mixed_versioning_error(part: &str) -> ValidationError {
     ValidationError {
-        message: format!(
-            "The document version '{doc_version}' and revision history number '{revision_version}' use different versioning schemes"
-        ),
-        instance_path: "/document/tracking/version".to_string(),
-    }
-}
-
-fn create_mixed_versioning_within_history_error(
-    first_version: &CsafVersionNumber,
-    second_version: &CsafVersionNumber,
-    revision_index: &usize,
-) -> ValidationError {
-    let first_version_type = get_version_type_name(first_version);
-    let second_version_type = get_version_type_name(second_version);
-    ValidationError {
-        message: format!(
-            "The versioning started with {first_version_type} ('{first_version}') and switched to {second_version_type} ('{second_version}')"
-        ),
-        instance_path: format!("/document/tracking/revision_history/{revision_index}/number"),
-    }
-}
-
-fn get_version_type_name(v: &CsafVersionNumber) -> &'static str {
-    match v {
-        CsafVersionNumber::SemVer(_) => "semantic versioning",
-        CsafVersionNumber::IntVer(_) => "integer versioning",
+        message: "mixed integer and semantic versioning used".to_string(),
+        instance_path: format!("/document/tracking/{}", part),
     }
 }
 
@@ -45,39 +17,42 @@ pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -
     let tracking = doc.get_document().get_tracking();
     // make sure revision history is consistent in itself
     let mut errors: Option<Vec<ValidationError>> = None;
-    let mut previous_version: Option<CsafVersionNumber> = None;
 
-    let mut rev_history_tuples = tracking.aggregate_revision_history();
-    rev_history_tuples.inplace_sort_by_date_then_number();
+    let rev_history_tuples = tracking.aggregate_revision_history();
+    let mut semver_count = 0;
+    let mut intver_count = 0;
 
-    for current_version in rev_history_tuples.iter() {
-        let current_number = current_version.number.clone();
-        let current_type = discriminant(&current_number);
-
-        if let Some(previous_number) = previous_version
-            && discriminant(&previous_number) != current_type
-        {
-            errors
-                .get_or_insert_default()
-                .push(create_mixed_versioning_within_history_error(
-                    &previous_number,
-                    &current_number,
-                    &current_version.path_index,
-                ));
+    for current in rev_history_tuples.iter() {
+        match current.number {
+            CsafVersionNumber::SemVer(_) => semver_count += 1,
+            CsafVersionNumber::IntVer(_) => intver_count += 1,
+            CsafVersionNumber::Invalid(_) => {}, // ignore invalid version numbers
         }
-        previous_version = Some(current_number);
     }
 
-    // now make sure revision history matches document versioning
-    let doc_version = doc.get_document().get_tracking().get_version();
+    if semver_count > 0 && intver_count > 0 {
+        errors
+            .get_or_insert_default()
+            .push(create_mixed_versioning_error("revision_history"));
+    }
 
-    if let Some(last_history_revision_number) = previous_version
-        && discriminant(&last_history_revision_number) != discriminant(&doc_version)
-    {
-        errors.get_or_insert_default().push(create_mixed_versioning_error(
-            &doc_version,
-            &last_history_revision_number,
-        ));
+    let doc_version = doc.get_document().get_tracking().get_version();
+    match doc_version {
+        CsafVersionNumber::SemVer(_) => {
+            if intver_count > 0 {
+                errors
+                    .get_or_insert_default()
+                    .push(create_mixed_versioning_error("version"));
+            }
+        },
+        CsafVersionNumber::IntVer(_) => {
+            if semver_count > 0 {
+                errors
+                    .get_or_insert_default()
+                    .push(create_mixed_versioning_error("version"));
+            }
+        },
+        CsafVersionNumber::Invalid(_) => {}, // ignore invalid version numbers
     }
 
     errors.map_or(Ok(()), Err)
@@ -96,69 +71,23 @@ mod tests {
 
     #[test]
     fn test_test_6_1_30() {
-        let case_semver_then_intver_in_history = Err(vec![create_mixed_versioning_within_history_error(
-            &CsafVersionNumber::from("1.0.0"),
-            &CsafVersionNumber::from("2"),
-            &1,
-        )]);
-        let case_intver_then_semver_in_history = Err(vec![create_mixed_versioning_within_history_error(
-            &CsafVersionNumber::from("1"),
-            &CsafVersionNumber::from("2.0.0"),
-            &1,
-        )]);
-        let case_intver_history_semver_document = Err(vec![create_mixed_versioning_error(
-            &CsafVersionNumber::from("3.0.0"),
-            &CsafVersionNumber::from("2"),
-        )]);
-        let case_semver_history_intver_document = Err(vec![create_mixed_versioning_error(
-            &CsafVersionNumber::from("3"),
-            &CsafVersionNumber::from("2.0.0"),
-        )]);
-
-        let case_unordered_intver_semver_in_history_semver_in_document = Err(vec![
-            create_mixed_versioning_within_history_error(
-                &CsafVersionNumber::from("1"),
-                &CsafVersionNumber::from("2.0.0"),
-                &2,
-            ),
-            create_mixed_versioning_within_history_error(
-                &CsafVersionNumber::from("2.0.0"),
-                &CsafVersionNumber::from("3"),
-                &0,
-            ),
-        ]);
-
-        let case_intver_then_semver_then_intver_in_history_semver_in_document = Err(vec![
-            create_mixed_versioning_within_history_error(
-                &CsafVersionNumber::from("1"),
-                &CsafVersionNumber::from("2.0.0"),
-                &1,
-            ),
-            create_mixed_versioning_within_history_error(
-                &CsafVersionNumber::from("2.0.0"),
-                &CsafVersionNumber::from("3"),
-                &2,
-            ),
-            create_mixed_versioning_error(&CsafVersionNumber::from("4.0.0"), &CsafVersionNumber::from("3")),
+        let case_consistent_history_mismatch_to_document = Err(vec![create_mixed_versioning_error("version")]);
+        let case_inconsistent_history_and_mismatch_to_document = Err(vec![
+            create_mixed_versioning_error("version"),
+            create_mixed_versioning_error("revision_history"),
         ]);
 
         TESTS_2_0.test_6_1_30.expect(
-            case_semver_then_intver_in_history.clone(),
-            case_intver_then_semver_in_history.clone(),
-            case_intver_history_semver_document.clone(),
-            case_semver_history_intver_document.clone(),
-            case_intver_then_semver_then_intver_in_history_semver_in_document.clone(),
-            case_unordered_intver_semver_in_history_semver_in_document.clone(),
+            case_inconsistent_history_and_mismatch_to_document.clone(),
+            case_consistent_history_mismatch_to_document.clone(),
+            case_consistent_history_mismatch_to_document.clone(),
             Ok(()), // only semver versioning
             Ok(()), // only intver versioning
         );
         TESTS_2_1.test_6_1_30.expect(
-            case_semver_then_intver_in_history,
-            case_intver_then_semver_in_history,
-            case_intver_history_semver_document,
-            case_semver_history_intver_document,
-            case_intver_then_semver_then_intver_in_history_semver_in_document,
-            case_unordered_intver_semver_in_history_semver_in_document,
+            case_inconsistent_history_and_mismatch_to_document,
+            case_consistent_history_mismatch_to_document.clone(),
+            case_consistent_history_mismatch_to_document,
             Ok(()), // only semver versioning
             Ok(()), // only intver versioning
         );

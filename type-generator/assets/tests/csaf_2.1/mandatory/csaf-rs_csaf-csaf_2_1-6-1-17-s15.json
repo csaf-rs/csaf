@@ -13,25 +13,20 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory Test: Mixed Integer and Semantic Versioning (failing example 1: intver document with consistent semantic history)",
+    "title": "Mandatory Test: Document Status Draft (valid supplementary example 5- status 'final' with invalid version number)",
     "tracking": {
-      "current_release_date": "2024-01-21T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-30-S01",
-      "initial_release_date": "2024-01-21T10:00:00.000Z",
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-17-S15",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {
-          "date": "2021-07-21T09:00:00.000Z",
-          "number": "1.0.0",
-          "summary": "Initial version."
-        },
-        {
           "date": "2021-07-21T10:00:00.000Z",
-          "number": "2.0.0",
-          "summary": "Second version."
+          "number": "v1.0.0",
+          "summary": "Initial version."
         }
       ],
       "status": "final",
-      "version": "2"
+      "version": "v1.0.0"
     }
   }
 }

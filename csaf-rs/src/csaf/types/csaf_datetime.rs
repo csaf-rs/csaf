@@ -19,6 +19,14 @@ impl CsafDateTime {
     pub fn is_valid(&self) -> bool {
         matches!(self, CsafDateTime::Valid(_))
     }
+
+    /// Returns the raw string representation of the date, regardless of whether it was valid or invalid.
+    pub fn get_raw_string(&self) -> &str {
+        match self {
+            CsafDateTime::Valid(valid) => valid.get_raw_string(),
+            CsafDateTime::Invalid(err) => err.get_raw_string(),
+        }
+    }
 }
 
 impl From<&str> for CsafDateTime {

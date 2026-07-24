@@ -8,6 +8,7 @@ fn create_revision_history_error(status: &DocumentStatus, number: &CsafVersionNu
     let reason = match number {
         CsafVersionNumber::IntVer(_) => "Version 0 is",
         CsafVersionNumber::SemVer(_) => "Versions 0.y.z are",
+        CsafVersionNumber::Invalid(i) => panic!("Invalid version number '{i}'."), // this is fine as it should only be called with valid version numbers
     };
     ValidationError {
         message: format!(
@@ -32,7 +33,10 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     let revision_history = tracking.get_revision_history();
     for (revision_index, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();
-        if number.get_major() == 0 {
+        // ToDo #409 maybe return a skipped here or return a warning if the version number is invalid, but for now we just ignore it
+        if let Ok(major) = number.get_major()
+            && major == 0
+        {
             errors
                 .get_or_insert_default()
                 .push(create_revision_history_error(&status, &number, revision_index));

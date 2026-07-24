@@ -58,7 +58,6 @@ mod tests {
         // Error cases
         let case_error = Err(vec![create_revision_history_error()]);
 
-        // CSAF 2.0 has 17 test cases (01-08, 11-19)
         TESTS_2_0.test_6_1_14.expect(
             case_error.clone(),
             case_error.clone(),
@@ -77,10 +76,9 @@ mod tests {
             Ok(()), // case_17
             Ok(()), // case_18
             Ok(()), // case_19
-            Ok(()), // supplementary case s11 mixed versioning
+            Ok(()), // case_s11 mixed versioning
         );
 
-        // CSAF 2.1 has 19 test cases (01-09, 11-19, 31)
         TESTS_2_1.test_6_1_14.expect(
             case_error.clone(),
             case_error.clone(),
@@ -103,7 +101,8 @@ mod tests {
             Ok(()), // case_19
             Ok(()), // case_31
             Ok(()), // case_32
-            Ok(()), // supplementary case s11 mixed versioning
+            Ok(()), // case_s11 mixed versioning
+            Ok(()), // case_s12 invalid version number is ignored
         );
     }
 }

@@ -31,3 +31,7 @@ rsync -c csaf/csaf_2.1/test/validator/testcases_json_schema.json type-generator/
 rsync -c csaf/csaf_2.1/language_specific_translation/translations.json type-generator/assets/language_specific_translations/translations.json
 
 rsync -c csaf/registry/id/registry.json type-generator/assets/rvisc/registry.json
+
+mkdir -p csaf-rs/assets/purl-spec/spec csaf-rs/assets/purl-spec/types
+rsync -rc --delete --include='*.json' --exclude='*' purl-spec/tests/spec/ csaf-rs/assets/purl-spec/spec/
+rsync -rc --delete --include='*.json' --exclude='*' purl-spec/tests/types/ csaf-rs/assets/purl-spec/types/

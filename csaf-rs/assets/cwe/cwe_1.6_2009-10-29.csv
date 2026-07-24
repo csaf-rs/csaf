@@ -1,651 +1,651 @@
-5	Draft	J2EE Misconfiguration: Data Transmission Without Encryption
-6	Incomplete	J2EE Misconfiguration: Insufficient Session-ID Length
-7	Incomplete	J2EE Misconfiguration: Missing Custom Error Page
-8	Incomplete	J2EE Misconfiguration: Entity Bean Declared Remote
-9	Draft	J2EE Misconfiguration: Weak Access Permissions for EJB Methods
-11	Draft	ASP.NET Misconfiguration: Creating Debug Binary
-12	Draft	ASP.NET Misconfiguration: Missing Custom Error Page
-13	Draft	ASP.NET Misconfiguration: Password in Configuration File
-14	Draft	Compiler Removal of Code to Clear Buffers
-15	Incomplete	External Control of System or Configuration Setting
-20	Usable	Improper Input Validation
-22	Draft	Path Traversal
-23	Draft	Relative Path Traversal
-24	Incomplete	Path Traversal: '../filedir'
-25	Incomplete	Path Traversal: '/../filedir'
-26	Draft	Path Traversal: '/dir/../filename'
-27	Draft	Path Traversal: 'dir/../../filename'
-28	Incomplete	Path Traversal: '..\filedir'
-29	Incomplete	Path Traversal: '\..\filename'
-30	Draft	Path Traversal: '\dir\..\filename'
-31	Draft	Path Traversal: 'dir\..\..\filename'
-32	Incomplete	Path Traversal: '...' (Triple Dot)
-33	Incomplete	Path Traversal: '....' (Multiple Dot)
-34	Incomplete	Path Traversal: '....//'
-35	Incomplete	Path Traversal: '.../...//'
-36	Draft	Absolute Path Traversal
-37	Draft	Path Traversal: '/absolute/pathname/here'
-38	Draft	Path Traversal: '\absolute\pathname\here'
-39	Draft	Path Traversal: 'C:dirname'
-40	Draft	Path Traversal: '\\UNC\share\name\' (Windows UNC Share)
-41	Incomplete	Improper Resolution of Path Equivalence
-42	Incomplete	Path Equivalence: 'filename.' (Trailing Dot)
-43	Incomplete	Path Equivalence: 'filename....' (Multiple Trailing Dot)
-44	Incomplete	Path Equivalence: 'file.name' (Internal Dot)
-45	Incomplete	Path Equivalence: 'file...name' (Multiple Internal Dot)
-46	Incomplete	Path Equivalence: 'filename ' (Trailing Space)
-47	Incomplete	Path Equivalence: ' filename (Leading Space)
-48	Incomplete	Path Equivalence: 'file name' (Internal Whitespace)
-49	Incomplete	Path Equivalence: 'filename/' (Trailing Slash)
-50	Incomplete	Path Equivalence: '//multiple/leading/slash'
-51	Incomplete	Path Equivalence: '/multiple//internal/slash'
-52	Incomplete	Path Equivalence: '/multiple/trailing/slash//'
-53	Incomplete	Path Equivalence: '\multiple\\internal\backslash'
-54	Incomplete	Path Equivalence: 'filedir\' (Trailing Backslash)
-55	Incomplete	Path Equivalence: '/./' (Single Dot Directory)
-56	Incomplete	Path Equivalence: 'filedir*' (Wildcard)
-57	Incomplete	Path Equivalence: 'fakedir/../realdir/filename'
-58	Incomplete	Path Equivalence: Windows 8.3 Filename
-59	Draft	Improper Link Resolution Before File Access ('Link Following')
-62	Incomplete	UNIX Hard Link
-64	Incomplete	Windows Shortcut Following (.LNK)
-65	Incomplete	Windows Hard Link
-66	Draft	Improper Handling of File Names that Identify Virtual Resources
-67	Incomplete	Improper Handling of Windows Device Names
-69	Incomplete	Failure to Handle Windows ::DATA Alternate Data Stream
-71	Incomplete	Apple '.DS_Store'
-72	Incomplete	Improper Handling of Apple HFS+ Alternate Data Stream Path
-73	Draft	External Control of File Name or Path
-74	Incomplete	Failure to Sanitize Data into a Different Plane ('Injection')
-75	Draft	Failure to Sanitize Special Elements into a Different Plane (Special Element Injection)
-76	Draft	Failure to Resolve Equivalent Special Elements into a Different Plane
-77	Draft	Improper Sanitization of Special Elements used in a Command ('Command Injection')
-78	Draft	Improper Sanitization of Special Elements used in an OS Command ('OS Command Injection')
-79	Usable	Failure to Preserve Web Page Structure ('Cross-site Scripting')
-80	Incomplete	Improper Sanitization of Script-Related HTML Tags in a Web Page (Basic XSS)
-81	Incomplete	Improper Sanitization of Script in an Error Message Web Page
-82	Incomplete	Improper Sanitization of Script in Attributes of IMG Tags in a Web Page
-83	Draft	Failure to Sanitize Script in Attributes in a Web Page
-84	Draft	Failure to Resolve Encoded URI Schemes in a Web Page
-85	Draft	Doubled Character XSS Manipulations
-86	Draft	Failure to Sanitize Invalid Characters in Identifiers in Web Pages
-87	Draft	Failure to Sanitize Alternate XSS Syntax
-88	Draft	Argument Injection or Modification
-89	Draft	Improper Sanitization of Special Elements used in an SQL Command ('SQL Injection')
-90	Draft	Failure to Sanitize Data into LDAP Queries ('LDAP Injection')
-91	Draft	XML Injection (aka Blind XPath Injection)
-92	Deprecated	DEPRECATED: Improper Sanitization of Custom Special Characters
-93	Draft	Failure to Sanitize CRLF Sequences ('CRLF Injection')
-94	Draft	Failure to Control Generation of Code ('Code Injection')
-95	Incomplete	Improper Sanitization of Directives in Dynamically Evaluated Code ('Eval Injection')
-96	Draft	Improper Sanitization of Directives in Statically Saved Code ('Static Code Injection')
-97	Draft	Failure to Sanitize Server-Side Includes (SSI) Within a Web Page
-99	Draft	Improper Control of Resource Identifiers ('Resource Injection')
-102	Incomplete	Struts: Duplicate Validation Forms
-103	Draft	Struts: Incomplete validate() Method Definition
-104	Draft	Struts: Form Bean Does Not Extend Validation Class
-105	Draft	Struts: Form Field Without Validator
-106	Draft	Struts: Plug-in Framework not in Use
-107	Draft	Struts: Unused Validation Form
-108	Incomplete	Struts: Unvalidated Action Form
-109	Draft	Struts: Validator Turned Off
-110	Draft	Struts: Validator Without Form Field
-111	Draft	Direct Use of Unsafe JNI
-112	Draft	Missing XML Validation
-113	Incomplete	Failure to Sanitize CRLF Sequences in HTTP Headers ('HTTP Response Splitting')
-114	Incomplete	Process Control
-115	Incomplete	Misinterpretation of Input
-116	Draft	Improper Encoding or Escaping of Output
-117	Draft	Improper Output Sanitization for Logs
-118	Incomplete	Improper Access of Indexable Resource ('Range Error')
-119	Usable	Failure to Constrain Operations within the Bounds of a Memory Buffer
-121	Draft	Stack-based Buffer Overflow
-122	Draft	Heap-based Buffer Overflow
-123	Draft	Write-what-where Condition
-124	Incomplete	Buffer Underwrite ('Buffer Underflow')
-125	Draft	Out-of-bounds Read
-126	Draft	Buffer Over-read
-127	Draft	Buffer Under-read
-128	Incomplete	Wrap-around Error
-129	Draft	Improper Validation of Array Index
-130	Incomplete	Improper Handling of Length Parameter Inconsistency 
-131	Draft	Incorrect Calculation of Buffer Size
-132	Deprecated	DEPRECATED (Duplicate): Miscalculated Null Termination
-134	Draft	Uncontrolled Format String
-135	Draft	Incorrect Calculation of Multi-Byte String Length
-138	Draft	Improper Sanitization of Special Elements
-140	Draft	Failure to Sanitize Delimiters
-141	Draft	Failure to Sanitize Parameter/Argument Delimiters
-142	Draft	Failure to Sanitize Value Delimiters
-143	Draft	Failure to Sanitize Record Delimiters
-144	Draft	Failure to Sanitize Line Delimiters
-145	Incomplete	Failure to Sanitize Section Delimiters
-146	Incomplete	Failure to Sanitize Expression/Command Delimiters
-147	Draft	Improper Sanitization of Input Terminators
-148	Draft	Failure to Sanitize Input Leaders
-149	Draft	Failure to Sanitize Quoting Syntax
-150	Incomplete	Failure to Sanitize Escape, Meta, or Control Sequences
-151	Draft	Improper Sanitization of Comment Delimiters
-152	Draft	Improper Sanitization of Macro Symbols
-153	Draft	Improper Sanitization of Substitution Characters
-154	Incomplete	Improper Sanitization of Variable Name Delimiters
-155	Draft	Improper Sanitization of Wildcards or Matching Symbols
-156	Draft	Improper Sanitization of Whitespace
-157	Draft	Failure to Sanitize Paired Delimiters
-158	Incomplete	Failure to Sanitize Null Byte or NUL Character
-159	Draft	Failure to Sanitize Special Element
-160	Incomplete	Improper Sanitization of Leading Special Elements
-161	Incomplete	Improper Sanitization of Multiple Leading Special Elements
-162	Incomplete	Improper Sanitization of Trailing Special Elements
-163	Incomplete	Improper Sanitization of Multiple Trailing Special Elements
-164	Incomplete	Improper Sanitization of Internal Special Elements
-165	Incomplete	Improper Sanitization of Multiple Internal Special Elements
-166	Draft	Improper Handling of Missing Special Element
-167	Draft	Improper Handling of Additional Special Element
-168	Draft	Failure to Resolve Inconsistent Special Elements
-170	Incomplete	Improper Null Termination
-172	Draft	Encoding Error
-173	Draft	Failure to Handle Alternate Encoding
-174	Draft	Double Decoding of the Same Data
-175	Draft	Failure to Handle Mixed Encoding
-176	Draft	Failure to Handle Unicode Encoding
-177	Draft	Failure to Handle URL Encoding (Hex Encoding)
-178	Incomplete	Failure to Resolve Case Sensitivity
-179	Incomplete	Incorrect Behavior Order: Early Validation
-180	Draft	Incorrect Behavior Order: Validate Before Canonicalize
-181	Draft	Incorrect Behavior Order: Validate Before Filter
-182	Draft	Collapse of Data Into Unsafe Value
-183	Draft	Permissive Whitelist
-184	Draft	Incomplete Blacklist
-185	Draft	Incorrect Regular Expression
-186	Draft	Overly Restrictive Regular Expression
-187	Incomplete	Partial Comparison
-188	Draft	Reliance on Data/Memory Layout
-190	Incomplete	Integer Overflow or Wraparound
-191	Draft	Integer Underflow (Wrap or Wraparound)
-193	Draft	Off-by-one Error
-194	Incomplete	Unexpected Sign Extension
-195	Draft	Signed to Unsigned Conversion Error
-196	Draft	Unsigned to Signed Conversion Error
-197	Incomplete	Numeric Truncation Error
-198	Draft	Use of Incorrect Byte Ordering
-200	Incomplete	Information Leak (Information Disclosure)
-201	Draft	Information Leak Through Sent Data
-202	Draft	Privacy Leak through Data Queries
-203	Incomplete	Discrepancy Information Leaks
-204	Incomplete	Response Discrepancy Information Leak
-205	Incomplete	Behavioral Discrepancy Information Leak
-206	Incomplete	Internal Behavioral Inconsistency Information Leak
-207	Draft	External Behavioral Inconsistency Information Leak
-208	Incomplete	Timing Discrepancy Information Leak
-209	Draft	Error Message Information Leak
-210	Draft	Product-Generated Error Message Information Leak
-211	Incomplete	Product-External Error Message Information Leak
-212	Incomplete	Cross-boundary Cleansing Information Leak
-213	Draft	Intended Information Leak
-214	Incomplete	Process Environment Information Leak
-215	Draft	Information Leak Through Debug Information
-216	Incomplete	Containment Errors (Container Errors)
-217	Deprecated	DEPRECATED: Failure to Protect Stored Data from Modification
-218	Deprecated	DEPRECATED (Duplicate): Failure to provide confidentiality for stored data
-219	Draft	Sensitive Data Under Web Root
-220	Draft	Sensitive Data Under FTP Root
-221	Incomplete	Information Loss or Omission
-222	Draft	Truncation of Security-relevant Information
-223	Draft	Omission of Security-relevant Information
-224	Incomplete	Obscured Security-relevant Information by Alternate Name
-225	Deprecated	DEPRECATED (Duplicate): General Information Management Problems
-226	Draft	Sensitive Information Uncleared Before Release
-227	Draft	Failure to Fulfill API Contract ('API Abuse')
-228	Incomplete	Improper Handling of Syntactically Invalid Structure
-229	Incomplete	Improper Handling of Values
-230	Draft	Improper Handling of Missing Values
-231	Draft	Improper Handling of Extra Values
-232	Draft	Improper Handling of Undefined Values
-233	Incomplete	Parameter Problems
-234	Incomplete	Failure to Handle Missing Parameter
-235	Draft	Improper Handling of Extra Parameters
-236	Draft	Improper Handling of Undefined Parameters
-237	Incomplete	Improper Handling of Structural Elements
-238	Draft	Improper Handling of Incomplete Structural Elements
-239	Draft	Failure to Handle Incomplete Element
-240	Draft	Improper Handling of Inconsistent Structural Elements
-241	Draft	Improper Handling of Unexpected Data Type
-242	Draft	Use of Inherently Dangerous Function
-243	Draft	Failure to Change Working Directory in chroot Jail
-244	Draft	Failure to Clear Heap Memory Before Release ('Heap Inspection')
-245	Draft	J2EE Bad Practices: Direct Management of Connections
-246	Draft	J2EE Bad Practices: Direct Use of Sockets
-247	Incomplete	Reliance on DNS Lookups in a Security Decision
-248	Draft	Uncaught Exception
-249	Deprecated	DEPRECATED: Often Misused: Path Manipulation
-250	Draft	Execution with Unnecessary Privileges
-252	Draft	Unchecked Return Value
-253	Incomplete	Incorrect Check of Function Return Value
-256	Incomplete	Plaintext Storage of a Password
-257	Incomplete	Storing Passwords in a Recoverable Format
-258	Incomplete	Empty Password in Configuration File
-259	Draft	Hard-Coded Password
-260	Incomplete	Password in Configuration File
-261	Incomplete	Weak Cryptography for Passwords
-262	Draft	Not Using Password Aging
-263	Draft	Password Aging with Long Expiration
-266	Draft	Incorrect Privilege Assignment
-267	Incomplete	Privilege Defined With Unsafe Actions
-268	Draft	Privilege Chaining
-269	Incomplete	Improper Privilege Management
-270	Draft	Privilege Context Switching Error
-271	Incomplete	Privilege Dropping / Lowering Errors
-272	Incomplete	Least Privilege Violation
-273	Incomplete	Improper Check for Dropped Privileges
-274	Draft	Improper Handling of Insufficient Privileges
-276	Draft	Incorrect Default Permissions
-277	Draft	Insecure Inherited Permissions
-278	Incomplete	Insecure Preserved Inherited Permissions
-279	Draft	Incorrect Execution-Assigned Permissions
-280	Draft	Improper Handling of Insufficient Permissions or Privileges 
-281	Draft	Improper Preservation of Permissions
-282	Draft	Improper Ownership Management
-283	Draft	Unverified Ownership
-284	Incomplete	Access Control (Authorization) Issues
-285	Draft	Improper Access Control (Authorization)
-286	Incomplete	Incorrect User Management
-287	Draft	Improper Authentication
-288	Incomplete	Authentication Bypass Using an Alternate Path or Channel
-289	Incomplete	Authentication Bypass by Alternate Name
-290	Incomplete	Authentication Bypass by Spoofing
-292	Incomplete	Trusting Self-reported DNS Name
-293	Draft	Using Referer Field for Authentication
-294	Incomplete	Authentication Bypass by Capture-replay
-296	Draft	Improper Following of Chain of Trust for Certificate Validation
-297	Incomplete	Improper Validation of Host-specific Certificate Data
-298	Draft	Improper Validation of Certificate Expiration
-299	Draft	Improper Check for Certificate Revocation
-300	Draft	Channel Accessible by Non-Endpoint ('Man-in-the-Middle')
-301	Draft	Reflection Attack in an Authentication Protocol
-302	Incomplete	Authentication Bypass by Assumed-Immutable Data
-303	Draft	Incorrect Implementation of Authentication Algorithm
-304	Draft	Missing Critical Step in Authentication
-305	Draft	Authentication Bypass by Primary Weakness
-306	Draft	No Authentication for Critical Function
-307	Draft	Failure to Restrict Excessive Authentication Attempts
-308	Draft	Use of Single-factor Authentication
-309	Draft	Use of Password System for Primary Authentication
-311	Draft	Failure to Encrypt Sensitive Data
-312	Draft	Cleartext Storage of Sensitive Information
-313	Draft	Plaintext Storage in a File or on Disk
-314	Draft	Plaintext Storage in the Registry
-315	Draft	Plaintext Storage in a Cookie
-316	Draft	Plaintext Storage in Memory
-317	Draft	Plaintext Storage in GUI
-318	Draft	Plaintext Storage in Executable
-319	Draft	Cleartext Transmission of Sensitive Information
-321	Draft	Use of Hard-coded Cryptographic Key
-322	Draft	Key Exchange without Entity Authentication
-323	Incomplete	Reusing a Nonce, Key Pair in Encryption
-324	Draft	Use of a Key Past its Expiration Date
-325	Incomplete	Missing Required Cryptographic Step
-326	Draft	Inadequate Encryption Strength
-327	Draft	Use of a Broken or Risky Cryptographic Algorithm
-328	Draft	Reversible One-Way Hash
-329	Draft	Not Using a Random IV with CBC Mode
-330	Draft	Use of Insufficiently Random Values
-331	Draft	Insufficient Entropy
-332	Draft	Insufficient Entropy in PRNG
-333	Draft	Improper Handling of Insufficient Entropy in TRNG
-334	Draft	Small Space of Random Values
-335	Draft	PRNG Seed Error
-336	Draft	Same Seed in PRNG
-337	Draft	Predictable Seed in PRNG
-338	Draft	Use of Cryptographically Weak PRNG
-339	Draft	Small Seed Space in PRNG
-340	Incomplete	Predictability Problems
-341	Draft	Predictable from Observable State
-342	Draft	Predictable Exact Value from Previous Values
-343	Draft	Predictable Value Range from Previous Values
-344	Draft	Use of Invariant Value in Dynamically Changing Context
-345	Draft	Insufficient Verification of Data Authenticity
-346	Draft	Origin Validation Error
-347	Draft	Improper Verification of Cryptographic Signature
-348	Draft	Use of Less Trusted Source
-349	Draft	Acceptance of Extraneous Untrusted Data With Trusted Data
-350	Draft	Improperly Trusted Reverse DNS
-351	Draft	Insufficient Type Distinction
-353	Draft	Failure to Add Integrity Check Value
-354	Draft	Improper Validation of Integrity Check Value
-356	Incomplete	Product UI does not Warn User of Unsafe Actions
-357	Draft	Insufficient UI Warning of Dangerous Operations
-358	Draft	Improperly Implemented Security Check for Standard
-359	Incomplete	Privacy Violation
-360	Incomplete	Trust of System Event Data
-362	Draft	Race Condition
-363	Draft	Race Condition Enabling Link Following
-364	Incomplete	Signal Handler Race Condition
-365	Draft	Race Condition in Switch
-366	Draft	Race Condition within a Thread
-367	Incomplete	Time-of-check Time-of-use (TOCTOU) Race Condition
-368	Draft	Context Switching Race Condition
-369	Draft	Divide By Zero
-370	Draft	Missing Check for Certificate Revocation after Initial Check
-372	Draft	Incomplete Internal State Distinction
-373	Draft	State Synchronization Error
-374	Draft	Mutable Objects Passed by Reference
-375	Draft	Passing Mutable Objects to an Untrusted Method
-377	Incomplete	Insecure Temporary File
-378	Draft	Creation of Temporary File With Insecure Permissions
-379	Incomplete	Creation of Temporary File in Directory with Incorrect Permissions
-382	Draft	J2EE Bad Practices: Use of System.exit()
-383	Draft	J2EE Bad Practices: Direct Use of Threads
-385	Incomplete	Covert Timing Channel
-386	Draft	Symbolic Name not Mapping to Correct Object
-390	Draft	Detection of Error Condition Without Action
-391	Incomplete	Unchecked Error Condition
-392	Draft	Failure to Report Error in Status Code
-393	Draft	Return of Wrong Status Code
-394	Draft	Unexpected Status Code or Return Value
-395	Draft	Use of NullPointerException Catch to Detect NULL Pointer Dereference
-396	Draft	Declaration of Catch for Generic Exception
-397	Draft	Declaration of Throws for Generic Exception
-398	Draft	Indicator of Poor Code Quality
-400	Incomplete	Uncontrolled Resource Consumption ('Resource Exhaustion')
-401	Draft	Failure to Release Memory Before Removing Last Reference ('Memory Leak')
-402	Draft	Transmission of Private Resources into a New Sphere ('Resource Leak')
-403	Draft	UNIX File Descriptor Leak
-404	Draft	Improper Resource Shutdown or Release
-405	Incomplete	Asymmetric Resource Consumption (Amplification)
-406	Incomplete	Insufficient Control of Network Message Volume (Network Amplification)
-407	Incomplete	Algorithmic Complexity
-408	Draft	Incorrect Behavior Order: Early Amplification
-409	Incomplete	Improper Handling of Highly Compressed Data (Data Amplification)
-410	Incomplete	Insufficient Resource Pool
-412	Incomplete	Unrestricted Externally Accessible Lock
-413	Draft	Insufficient Resource Locking
-414	Draft	Missing Lock Check
-415	Draft	Double Free
-416	Draft	Use After Free
-419	Draft	Unprotected Primary Channel
-420	Draft	Unprotected Alternate Channel
-421	Draft	Race Condition During Access to Alternate Channel
-422	Draft	Unprotected Windows Messaging Channel ('Shatter')
-423	Deprecated	DEPRECATED (Duplicate): Proxied Trusted Channel
-424	Draft	Failure to Protect Alternate Path
-425	Incomplete	Direct Request ('Forced Browsing')
-427	Draft	Uncontrolled Search Path Element
-428	Draft	Unquoted Search Path or Element
-430	Incomplete	Deployment of Wrong Handler
-431	Draft	Missing Handler
-432	Draft	Dangerous Handler not Disabled During Sensitive Operations
-433	Incomplete	Unparsed Raw Web Content Delivery
-435	Draft	Interaction Error
-436	Incomplete	Interpretation Conflict
-437	Incomplete	Incomplete Model of Endpoint Features
-439	Draft	Behavioral Change in New Version or Environment
-440	Draft	Expected Behavior Violation
-441	Draft	Unintended Proxy/Intermediary
-443	Deprecated	DEPRECATED (Duplicate): HTTP response splitting
-444	Incomplete	Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling')
-446	Incomplete	UI Discrepancy for Security Feature
-447	Draft	Unimplemented or Unsupported Feature in UI
-448	Draft	Obsolete Feature in UI
-449	Incomplete	The UI Performs the Wrong Action
-450	Draft	Multiple Interpretations of UI Input
-451	Draft	UI Misrepresentation of Critical Information
-453	Draft	Insecure Default Variable Initialization
-454	Draft	External Initialization of Trusted Variables
-455	Draft	Non-exit on Failed Initialization
-456	Draft	Missing Initialization
-457	Draft	Use of Uninitialized Variable
-458	Deprecated	DEPRECATED: Incorrect Initialization
-459	Draft	Incomplete Cleanup
-460	Draft	Improper Cleanup on Thrown Exception
-462	Incomplete	Duplicate Key in Associative List (Alist)
-463	Incomplete	Deletion of Data Structure Sentinel
-464	Incomplete	Addition of Data Structure Sentinel
-466	Draft	Return of Pointer Value Outside of Expected Range
-467	Draft	Use of sizeof() on a Pointer Type
-468	Incomplete	Incorrect Pointer Scaling
-469	Draft	Use of Pointer Subtraction to Determine Size
-470	Draft	Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')
-471	Draft	Modification of Assumed-Immutable Data (MAID)
-472	Draft	External Control of Assumed-Immutable Web Parameter
-473	Draft	PHP External Variable Modification
-474	Draft	Use of Function with Inconsistent Implementations
-475	Incomplete	Undefined Behavior for Input to API
-476	Draft	NULL Pointer Dereference
-477	Draft	Use of Obsolete Functions
-478	Draft	Missing Default Case in Switch Statement
-479	Draft	Unsafe Function Call from a Signal Handler
-480	Draft	Use of Incorrect Operator
-481	Draft	Assigning instead of Comparing
-482	Draft	Comparing instead of Assigning
-483	Draft	Incorrect Block Delimitation
-484	Draft	Omitted Break Statement in Switch
-485	Draft	Insufficient Encapsulation
-486	Draft	Comparison of Classes by Name
-487	Incomplete	Reliance on Package-level Scope
-488	Draft	Data Leak Between Sessions
-489	Draft	Leftover Debug Code
-491	Draft	Public cloneable() Method Without Final ('Object Hijack')
-492	Draft	Use of Inner Class Containing Sensitive Data
-493	Draft	Critical Public Variable Without Final Modifier
-494	Draft	Download of Code Without Integrity Check
-495	Draft	Private Array-Typed Field Returned From A Public Method
-496	Incomplete	Public Data Assigned to Private Array-Typed Field
-497	Incomplete	Information Leak of System Data
-498	Draft	Information Leak through Class Cloning
-499	Draft	Serializable Class Containing Sensitive Data
-500	Draft	Public Static Field Not Marked Final
-501	Draft	Trust Boundary Violation
-502	Draft	Deserialization of Untrusted Data
-506	Incomplete	Embedded Malicious Code
-507	Incomplete	Trojan Horse
-508	Incomplete	Non-Replicating Malicious Code
-509	Incomplete	Replicating Malicious Code (Virus or Worm)
-510	Incomplete	Trapdoor
-511	Incomplete	Logic/Time Bomb
-512	Incomplete	Spyware
-514	Incomplete	Covert Channel
-515	Incomplete	Covert Storage Channel
-516	Deprecated	DEPRECATED (Duplicate): Covert Timing Channel
-520	Incomplete	.NET Misconfiguration: Use of Impersonation
-521	Draft	Weak Password Requirements
-522	Incomplete	Insufficiently Protected Credentials
-523	Incomplete	Unprotected Transport of Credentials
-524	Incomplete	Information Leak Through Caching
-525	Incomplete	Information Leak Through Browser Caching
-526	Incomplete	Information Leak Through Environmental Variables
-527	Incomplete	Information Leak Through CVS Repository
-528	Draft	Information Leak Through Core Dump Files
-529	Incomplete	Information Leak Through Access Control List Files
-530	Incomplete	Information Leak Through Backup (.~bk) Files
-531	Incomplete	Information Leak Through Test Code
-532	Incomplete	Information Leak Through Log Files
-533	Incomplete	Information Leak Through Server Log Files
-534	Draft	Information Leak Through Debug Log Files
-535	Incomplete	Information Leak Through Shell Error Message
-536	Incomplete	Information Leak Through Servlet Runtime Error Message
-537	Incomplete	Information Leak Through Java Runtime Error Message
-538	Draft	File and Directory Information Leaks
-539	Incomplete	Information Leak Through Persistent Cookies
-540	Incomplete	Information Leak Through Source Code
-541	Incomplete	Information Leak Through Include Source Code
-542	Incomplete	Information Leak Through Cleanup Log Files
-543	Incomplete	Use of Singleton Pattern in a Non-thread-safe Manner
-544	Draft	Failure to Use a Standardized Error Handling Mechanism
-545	Incomplete	Use of Dynamic Class Loading
-546	Draft	Suspicious Comment
-547	Draft	Use of Hard-coded, Security-relevant Constants
-548	Draft	Information Leak Through Directory Listing
-549	Draft	Missing Password Field Masking
-550	Incomplete	Information Leak Through Server Error Message
-551	Incomplete	Incorrect Behavior Order: Authorization Before Parsing and Canonicalization
-552	Draft	Files or Directories Accessible to External Parties
-553	Incomplete	Command Shell in Externally Accessible Directory
-554	Draft	ASP.NET Misconfiguration: Not Using Input Validation Framework
-555	Draft	J2EE Misconfiguration: Plaintext Password in Configuration File
-556	Incomplete	ASP.NET Misconfiguration: Use of Identity Impersonation
-558	Draft	Use of getlogin() in Multithreaded Application
-560	Draft	Use of umask() with chmod-style Argument
-561	Draft	Dead Code
-562	Draft	Return of Stack Variable Address
-563	Draft	Unused Variable
-564	Incomplete	SQL Injection: Hibernate
-565	Incomplete	Reliance on Cookies without Validation and Integrity Checking
-566	Incomplete	Access Control Bypass Through User-Controlled SQL Primary Key
-567	Draft	Unsynchronized Access to Shared Data
-568	Draft	finalize() Method Without super.finalize()
-570	Draft	Expression is Always False
-571	Draft	Expression is Always True
-572	Draft	Call to Thread run() instead of start()
-573	Draft	Failure to Follow Specification
-574	Draft	EJB Bad Practices: Use of Synchronization Primitives
-575	Draft	EJB Bad Practices: Use of AWT Swing
-576	Draft	EJB Bad Practices: Use of Java I/O
-577	Draft	EJB Bad Practices: Use of Sockets
-578	Draft	EJB Bad Practices: Use of Class Loader
-579	Draft	J2EE Bad Practices: Non-serializable Object Stored in Session
-580	Draft	clone() Method Without super.clone()
-581	Draft	Object Model Violation: Just One of Equals and Hashcode Defined
-582	Draft	Array Declared Public, Final, and Static
-583	Incomplete	finalize() Method Declared Public
-584	Draft	Return Inside Finally Block
-585	Draft	Empty Synchronized Block
-586	Draft	Explicit Call to Finalize()
-587	Draft	Assignment of a Fixed Address to a Pointer
-588	Incomplete	Attempt to Access Child of a Non-structure Pointer
-589	Incomplete	Call to Non-ubiquitous API
-590	Incomplete	Free of Memory not on the Heap
-591	Draft	Sensitive Data Storage in Improperly Locked Memory
-592	Incomplete	Authentication Bypass Issues
-593	Draft	Authentication Bypass: OpenSSL CTX Object Modified after SSL Objects are Created
-594	Incomplete	J2EE Framework: Saving Unserializable Objects to Disk
-595	Incomplete	Comparison of Object References Instead of Object Contents
-596	Incomplete	Incorrect Semantic Object Comparison
-597	Draft	Use of Wrong Operator in String Comparison
-598	Draft	Information Leak Through Query Strings in GET Request
-599	Incomplete	Trust of OpenSSL Certificate Without Validation
-600	Draft	Failure to Catch All Exceptions in Servlet 
-601	Draft	URL Redirection to Untrusted Site ('Open Redirect')
-602	Draft	Client-Side Enforcement of Server-Side Security
-603	Draft	Use of Client-Side Authentication
-605	Draft	Multiple Binds to the Same Port
-606	Draft	Unchecked Input for Loop Condition
-607	Draft	Public Static Final Field References Mutable Object
-608	Draft	Struts: Non-private Field in ActionForm Class
-609	Draft	Double-Checked Locking
-610	Draft	Externally Controlled Reference to a Resource in Another Sphere
-611	Draft	Information Leak Through XML External Entity File Disclosure
-612	Draft	Information Leak Through Indexing of Private Data
-613	Incomplete	Insufficient Session Expiration
-614	Draft	Sensitive Cookie in HTTPS Session Without 'Secure' Attribute
-615	Incomplete	Information Leak Through Comments
-616	Incomplete	Incomplete Identification of Uploaded File Variables (PHP)
-617	Draft	Reachable Assertion
-618	Incomplete	Exposed Unsafe ActiveX Method
-619	Incomplete	Dangling Database Cursor ('Cursor Injection')
-620	Draft	Unverified Password Change
-621	Incomplete	Variable Extraction Error
-622	Draft	Unvalidated Function Hook Arguments
-623	Draft	Unsafe ActiveX Control Marked Safe For Scripting
-624	Incomplete	Executable Regular Expression Error
-625	Draft	Permissive Regular Expression
-626	Draft	Null Byte Interaction Error (Poison Null Byte)
-627	Incomplete	Dynamic Variable Evaluation
-628	Draft	Function Call with Incorrectly Specified Arguments
-636	Draft	Not Failing Securely ('Failing Open')
-637	Draft	Failure to Use Economy of Mechanism
-638	Draft	Failure to Use Complete Mediation
-639	Incomplete	Access Control Bypass Through User-Controlled Key
-640	Incomplete	Weak Password Recovery Mechanism for Forgotten Password
-641	Incomplete	Insufficient Filtering of File and Other Resource Names for Executable Content
-642	Draft	External Control of Critical State Data
-643	Incomplete	Failure to Sanitize Data within XPath Expressions ('XPath injection')
-644	Incomplete	Improper Sanitization of HTTP Headers for Scripting Syntax
-645	Incomplete	Overly Restrictive Account Lockout Mechanism
-646	Incomplete	Reliance on File Name or Extension of Externally-Supplied File
-647	Incomplete	Use of Non-Canonical URL Paths for Authorization Decisions
-648	Incomplete	Incorrect Use of Privileged APIs
-649	Incomplete	Reliance on Obfuscation or Encryption of Security-Relevant Inputs without Integrity Checking
-650	Incomplete	Trusting HTTP Permission Methods on the Server Side
-651	Incomplete	Information Leak through WSDL File
-652	Incomplete	Failure to Sanitize Data within XQuery Expressions ('XQuery Injection')
-653	Draft	Insufficient Compartmentalization
-654	Draft	Reliance on a Single Factor in a Security Decision
-655	Draft	Insufficient Psychological Acceptability
-656	Draft	Reliance on Security through Obscurity
-657	Draft	Violation of Secure Design Principles
-662	Draft	Insufficient Synchronization
-663	Draft	Use of a Non-reentrant Function in an Unsynchronized Context
-664	Draft	Improper Control of a Resource Through its Lifetime
-665	Draft	Improper Initialization
-666	Draft	Operation on Resource in Wrong Phase of Lifetime
-667	Draft	Insufficient Locking
-668	Draft	Exposure of Resource to Wrong Sphere
-669	Draft	Incorrect Resource Transfer Between Spheres
-670	Draft	Always-Incorrect Control Flow Implementation
-671	Draft	Lack of Administrator Control over Security
-672	Draft	Use of a Resource after Expiration or Release
-673	Draft	External Influence of Sphere Definition
-674	Draft	Uncontrolled Recursion
-675	Draft	Duplicate Operations on Resource
-676	Draft	Use of Potentially Dangerous Function
-681	Draft	Incorrect Conversion between Numeric Types
-682	Draft	Incorrect Calculation
-683	Draft	Function Call With Incorrect Order of Arguments
-684	Draft	Failure to Provide Specified Functionality
-685	Draft	Function Call With Incorrect Number of Arguments
-686	Draft	Function Call With Incorrect Argument Type
-687	Draft	Function Call With Incorrectly Specified Argument Value
-688	Draft	Function Call With Incorrect Variable or Reference as Argument
-691	Draft	Insufficient Control Flow Management
-693	Draft	Protection Mechanism Failure
-694	Incomplete	Use of Multiple Resources with Duplicate Identifier
-695	Incomplete	Use of Low-Level Functionality
-696	Incomplete	Incorrect Behavior Order
-697	Incomplete	Insufficient Comparison
-698	Incomplete	Redirect Without Exit
-703	Incomplete	Failure to Handle Exceptional Conditions
-704	Incomplete	Incorrect Type Conversion or Cast
-705	Incomplete	Incorrect Control Flow Scoping
-706	Incomplete	Use of Incorrectly-Resolved Name or Reference
-707	Incomplete	Improper Enforcement of Message or Data Structure
-708	Incomplete	Incorrect Ownership Assignment
-710	Incomplete	Coding Standards Violation
-732	Draft	Incorrect Permission Assignment for Critical Resource
-733	Incomplete	Compiler Optimization Removal or Modification of Security-critical Code
-749	Incomplete	Exposed Dangerous Method or Function
-754	Incomplete	Improper Check for Exceptional Conditions
-755	Incomplete	Improper Handling of Exceptional Conditions
-756	Incomplete	Missing Custom Error Page
-757	Incomplete	Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')
-758	Incomplete	Reliance on Undefined, Unspecified, or Implementation-Defined Behavior
-759	Incomplete	Use of a One-Way Hash without a Salt
-760	Incomplete	Use of a One-Way Hash with a Predictable Salt
-761	Incomplete	Free of Pointer not at Start of Buffer
-762	Incomplete	Mismatched Memory Management Routines
-763	Incomplete	Release of Invalid Pointer or Reference
-764	Incomplete	Multiple Locks of a Critical Resource
-765	Incomplete	Multiple Unlocks of a Critical Resource
-766	Incomplete	Critical Variable Declared Public
-767	Incomplete	Access to Critical Private Variable via Public Method
-768	Incomplete	Incorrect Short Circuit Evaluation
-770	Incomplete	Allocation of Resources Without Limits or Throttling
-771	Incomplete	Missing Reference to Active Allocated Resource
-772	Incomplete	Missing Release of Resource after Effective Lifetime
-773	Incomplete	Missing Reference to Active File Descriptor or Handle
-774	Incomplete	Allocation of File Descriptors or Handles Without Limits or Throttling
-775	Incomplete	Missing Release of File Descriptor or Handle after Effective Lifetime
-776	Draft	Unrestricted Recursive Entity References in DTDs ('XML Bomb')
-777	Incomplete	Regular Expression without Anchors
-778	Draft	Insufficient Logging
-779	Draft	Logging of Excessive Data
-780	Incomplete	Use of RSA Algorithm without OAEP
-781	Draft	Improper Address Validation in IOCTL with METHOD_NEITHER I/O Control Code
-782	Draft	Exposed IOCTL with Insufficient Access Control
-783	Draft	Operator Precedence Logic Error
-784	Draft	Reliance on Cookies without Validation and Integrity Checking in a Security Decision
-785	Incomplete	Use of Path Manipulation Function without Maximum-sized Buffer
-786	Incomplete	Access of Memory Location Before Start of Buffer
-787	Incomplete	Out-of-bounds Write
-788	Incomplete	Access of Memory Location After End of Buffer
-789	Draft	Uncontrolled Memory Allocation
+5	Draft	J2EE Misconfiguration: Data Transmission Without Encryption	0	
+6	Incomplete	J2EE Misconfiguration: Insufficient Session-ID Length	0	
+7	Incomplete	J2EE Misconfiguration: Missing Custom Error Page	0	
+8	Incomplete	J2EE Misconfiguration: Entity Bean Declared Remote	0	
+9	Draft	J2EE Misconfiguration: Weak Access Permissions for EJB Methods	0	
+11	Draft	ASP.NET Misconfiguration: Creating Debug Binary	0	
+12	Draft	ASP.NET Misconfiguration: Missing Custom Error Page	0	
+13	Draft	ASP.NET Misconfiguration: Password in Configuration File	0	
+14	Draft	Compiler Removal of Code to Clear Buffers	0	
+15	Incomplete	External Control of System or Configuration Setting	0	
+20	Usable	Improper Input Validation	0	
+22	Draft	Path Traversal	0	
+23	Draft	Relative Path Traversal	0	
+24	Incomplete	Path Traversal: '../filedir'	0	
+25	Incomplete	Path Traversal: '/../filedir'	0	
+26	Draft	Path Traversal: '/dir/../filename'	0	
+27	Draft	Path Traversal: 'dir/../../filename'	0	
+28	Incomplete	Path Traversal: '..\filedir'	0	
+29	Incomplete	Path Traversal: '\..\filename'	0	
+30	Draft	Path Traversal: '\dir\..\filename'	0	
+31	Draft	Path Traversal: 'dir\..\..\filename'	0	
+32	Incomplete	Path Traversal: '...' (Triple Dot)	0	
+33	Incomplete	Path Traversal: '....' (Multiple Dot)	0	
+34	Incomplete	Path Traversal: '....//'	0	
+35	Incomplete	Path Traversal: '.../...//'	0	
+36	Draft	Absolute Path Traversal	0	
+37	Draft	Path Traversal: '/absolute/pathname/here'	0	
+38	Draft	Path Traversal: '\absolute\pathname\here'	0	
+39	Draft	Path Traversal: 'C:dirname'	0	
+40	Draft	Path Traversal: '\\UNC\share\name\' (Windows UNC Share)	0	
+41	Incomplete	Improper Resolution of Path Equivalence	0	
+42	Incomplete	Path Equivalence: 'filename.' (Trailing Dot)	0	
+43	Incomplete	Path Equivalence: 'filename....' (Multiple Trailing Dot)	0	
+44	Incomplete	Path Equivalence: 'file.name' (Internal Dot)	0	
+45	Incomplete	Path Equivalence: 'file...name' (Multiple Internal Dot)	0	
+46	Incomplete	Path Equivalence: 'filename ' (Trailing Space)	0	
+47	Incomplete	Path Equivalence: ' filename (Leading Space)	0	
+48	Incomplete	Path Equivalence: 'file name' (Internal Whitespace)	0	
+49	Incomplete	Path Equivalence: 'filename/' (Trailing Slash)	0	
+50	Incomplete	Path Equivalence: '//multiple/leading/slash'	0	
+51	Incomplete	Path Equivalence: '/multiple//internal/slash'	0	
+52	Incomplete	Path Equivalence: '/multiple/trailing/slash//'	0	
+53	Incomplete	Path Equivalence: '\multiple\\internal\backslash'	0	
+54	Incomplete	Path Equivalence: 'filedir\' (Trailing Backslash)	0	
+55	Incomplete	Path Equivalence: '/./' (Single Dot Directory)	0	
+56	Incomplete	Path Equivalence: 'filedir*' (Wildcard)	0	
+57	Incomplete	Path Equivalence: 'fakedir/../realdir/filename'	0	
+58	Incomplete	Path Equivalence: Windows 8.3 Filename	0	
+59	Draft	Improper Link Resolution Before File Access ('Link Following')	0	
+62	Incomplete	UNIX Hard Link	0	
+64	Incomplete	Windows Shortcut Following (.LNK)	0	
+65	Incomplete	Windows Hard Link	0	
+66	Draft	Improper Handling of File Names that Identify Virtual Resources	0	
+67	Incomplete	Improper Handling of Windows Device Names	0	
+69	Incomplete	Failure to Handle Windows ::DATA Alternate Data Stream	0	
+71	Incomplete	Apple '.DS_Store'	0	
+72	Incomplete	Improper Handling of Apple HFS+ Alternate Data Stream Path	0	
+73	Draft	External Control of File Name or Path	0	
+74	Incomplete	Failure to Sanitize Data into a Different Plane ('Injection')	0	
+75	Draft	Failure to Sanitize Special Elements into a Different Plane (Special Element Injection)	0	
+76	Draft	Failure to Resolve Equivalent Special Elements into a Different Plane	0	
+77	Draft	Improper Sanitization of Special Elements used in a Command ('Command Injection')	0	
+78	Draft	Improper Sanitization of Special Elements used in an OS Command ('OS Command Injection')	0	
+79	Usable	Failure to Preserve Web Page Structure ('Cross-site Scripting')	0	
+80	Incomplete	Improper Sanitization of Script-Related HTML Tags in a Web Page (Basic XSS)	0	
+81	Incomplete	Improper Sanitization of Script in an Error Message Web Page	0	
+82	Incomplete	Improper Sanitization of Script in Attributes of IMG Tags in a Web Page	0	
+83	Draft	Failure to Sanitize Script in Attributes in a Web Page	0	
+84	Draft	Failure to Resolve Encoded URI Schemes in a Web Page	0	
+85	Draft	Doubled Character XSS Manipulations	0	
+86	Draft	Failure to Sanitize Invalid Characters in Identifiers in Web Pages	0	
+87	Draft	Failure to Sanitize Alternate XSS Syntax	0	
+88	Draft	Argument Injection or Modification	0	
+89	Draft	Improper Sanitization of Special Elements used in an SQL Command ('SQL Injection')	0	
+90	Draft	Failure to Sanitize Data into LDAP Queries ('LDAP Injection')	0	
+91	Draft	XML Injection (aka Blind XPath Injection)	0	
+92	Deprecated	DEPRECATED: Improper Sanitization of Custom Special Characters	0	
+93	Draft	Failure to Sanitize CRLF Sequences ('CRLF Injection')	0	
+94	Draft	Failure to Control Generation of Code ('Code Injection')	0	
+95	Incomplete	Improper Sanitization of Directives in Dynamically Evaluated Code ('Eval Injection')	0	
+96	Draft	Improper Sanitization of Directives in Statically Saved Code ('Static Code Injection')	0	
+97	Draft	Failure to Sanitize Server-Side Includes (SSI) Within a Web Page	0	
+99	Draft	Improper Control of Resource Identifiers ('Resource Injection')	0	
+102	Incomplete	Struts: Duplicate Validation Forms	0	
+103	Draft	Struts: Incomplete validate() Method Definition	0	
+104	Draft	Struts: Form Bean Does Not Extend Validation Class	0	
+105	Draft	Struts: Form Field Without Validator	0	
+106	Draft	Struts: Plug-in Framework not in Use	0	
+107	Draft	Struts: Unused Validation Form	0	
+108	Incomplete	Struts: Unvalidated Action Form	0	
+109	Draft	Struts: Validator Turned Off	0	
+110	Draft	Struts: Validator Without Form Field	0	
+111	Draft	Direct Use of Unsafe JNI	0	
+112	Draft	Missing XML Validation	0	
+113	Incomplete	Failure to Sanitize CRLF Sequences in HTTP Headers ('HTTP Response Splitting')	0	
+114	Incomplete	Process Control	0	
+115	Incomplete	Misinterpretation of Input	0	
+116	Draft	Improper Encoding or Escaping of Output	0	
+117	Draft	Improper Output Sanitization for Logs	0	
+118	Incomplete	Improper Access of Indexable Resource ('Range Error')	0	
+119	Usable	Failure to Constrain Operations within the Bounds of a Memory Buffer	0	
+121	Draft	Stack-based Buffer Overflow	0	
+122	Draft	Heap-based Buffer Overflow	0	
+123	Draft	Write-what-where Condition	0	
+124	Incomplete	Buffer Underwrite ('Buffer Underflow')	0	
+125	Draft	Out-of-bounds Read	0	
+126	Draft	Buffer Over-read	0	
+127	Draft	Buffer Under-read	0	
+128	Incomplete	Wrap-around Error	0	
+129	Draft	Improper Validation of Array Index	0	
+130	Incomplete	Improper Handling of Length Parameter Inconsistency 	0	
+131	Draft	Incorrect Calculation of Buffer Size	0	
+132	Deprecated	DEPRECATED (Duplicate): Miscalculated Null Termination	0	
+134	Draft	Uncontrolled Format String	0	
+135	Draft	Incorrect Calculation of Multi-Byte String Length	0	
+138	Draft	Improper Sanitization of Special Elements	0	
+140	Draft	Failure to Sanitize Delimiters	0	
+141	Draft	Failure to Sanitize Parameter/Argument Delimiters	0	
+142	Draft	Failure to Sanitize Value Delimiters	0	
+143	Draft	Failure to Sanitize Record Delimiters	0	
+144	Draft	Failure to Sanitize Line Delimiters	0	
+145	Incomplete	Failure to Sanitize Section Delimiters	0	
+146	Incomplete	Failure to Sanitize Expression/Command Delimiters	0	
+147	Draft	Improper Sanitization of Input Terminators	0	
+148	Draft	Failure to Sanitize Input Leaders	0	
+149	Draft	Failure to Sanitize Quoting Syntax	0	
+150	Incomplete	Failure to Sanitize Escape, Meta, or Control Sequences	0	
+151	Draft	Improper Sanitization of Comment Delimiters	0	
+152	Draft	Improper Sanitization of Macro Symbols	0	
+153	Draft	Improper Sanitization of Substitution Characters	0	
+154	Incomplete	Improper Sanitization of Variable Name Delimiters	0	
+155	Draft	Improper Sanitization of Wildcards or Matching Symbols	0	
+156	Draft	Improper Sanitization of Whitespace	0	
+157	Draft	Failure to Sanitize Paired Delimiters	0	
+158	Incomplete	Failure to Sanitize Null Byte or NUL Character	0	
+159	Draft	Failure to Sanitize Special Element	0	
+160	Incomplete	Improper Sanitization of Leading Special Elements	0	
+161	Incomplete	Improper Sanitization of Multiple Leading Special Elements	0	
+162	Incomplete	Improper Sanitization of Trailing Special Elements	0	
+163	Incomplete	Improper Sanitization of Multiple Trailing Special Elements	0	
+164	Incomplete	Improper Sanitization of Internal Special Elements	0	
+165	Incomplete	Improper Sanitization of Multiple Internal Special Elements	0	
+166	Draft	Improper Handling of Missing Special Element	0	
+167	Draft	Improper Handling of Additional Special Element	0	
+168	Draft	Failure to Resolve Inconsistent Special Elements	0	
+170	Incomplete	Improper Null Termination	0	
+172	Draft	Encoding Error	0	
+173	Draft	Failure to Handle Alternate Encoding	0	
+174	Draft	Double Decoding of the Same Data	0	
+175	Draft	Failure to Handle Mixed Encoding	0	
+176	Draft	Failure to Handle Unicode Encoding	0	
+177	Draft	Failure to Handle URL Encoding (Hex Encoding)	0	
+178	Incomplete	Failure to Resolve Case Sensitivity	0	
+179	Incomplete	Incorrect Behavior Order: Early Validation	0	
+180	Draft	Incorrect Behavior Order: Validate Before Canonicalize	0	
+181	Draft	Incorrect Behavior Order: Validate Before Filter	0	
+182	Draft	Collapse of Data Into Unsafe Value	0	
+183	Draft	Permissive Whitelist	0	
+184	Draft	Incomplete Blacklist	0	
+185	Draft	Incorrect Regular Expression	0	
+186	Draft	Overly Restrictive Regular Expression	0	
+187	Incomplete	Partial Comparison	0	
+188	Draft	Reliance on Data/Memory Layout	0	
+190	Incomplete	Integer Overflow or Wraparound	0	
+191	Draft	Integer Underflow (Wrap or Wraparound)	0	
+193	Draft	Off-by-one Error	0	
+194	Incomplete	Unexpected Sign Extension	0	
+195	Draft	Signed to Unsigned Conversion Error	0	
+196	Draft	Unsigned to Signed Conversion Error	0	
+197	Incomplete	Numeric Truncation Error	0	
+198	Draft	Use of Incorrect Byte Ordering	0	
+200	Incomplete	Information Leak (Information Disclosure)	0	
+201	Draft	Information Leak Through Sent Data	0	
+202	Draft	Privacy Leak through Data Queries	0	
+203	Incomplete	Discrepancy Information Leaks	0	
+204	Incomplete	Response Discrepancy Information Leak	0	
+205	Incomplete	Behavioral Discrepancy Information Leak	0	
+206	Incomplete	Internal Behavioral Inconsistency Information Leak	0	
+207	Draft	External Behavioral Inconsistency Information Leak	0	
+208	Incomplete	Timing Discrepancy Information Leak	0	
+209	Draft	Error Message Information Leak	0	
+210	Draft	Product-Generated Error Message Information Leak	0	
+211	Incomplete	Product-External Error Message Information Leak	0	
+212	Incomplete	Cross-boundary Cleansing Information Leak	0	
+213	Draft	Intended Information Leak	0	
+214	Incomplete	Process Environment Information Leak	0	
+215	Draft	Information Leak Through Debug Information	0	
+216	Incomplete	Containment Errors (Container Errors)	0	
+217	Deprecated	DEPRECATED: Failure to Protect Stored Data from Modification	0	
+218	Deprecated	DEPRECATED (Duplicate): Failure to provide confidentiality for stored data	0	
+219	Draft	Sensitive Data Under Web Root	0	
+220	Draft	Sensitive Data Under FTP Root	0	
+221	Incomplete	Information Loss or Omission	0	
+222	Draft	Truncation of Security-relevant Information	0	
+223	Draft	Omission of Security-relevant Information	0	
+224	Incomplete	Obscured Security-relevant Information by Alternate Name	0	
+225	Deprecated	DEPRECATED (Duplicate): General Information Management Problems	0	
+226	Draft	Sensitive Information Uncleared Before Release	0	
+227	Draft	Failure to Fulfill API Contract ('API Abuse')	0	
+228	Incomplete	Improper Handling of Syntactically Invalid Structure	0	
+229	Incomplete	Improper Handling of Values	0	
+230	Draft	Improper Handling of Missing Values	0	
+231	Draft	Improper Handling of Extra Values	0	
+232	Draft	Improper Handling of Undefined Values	0	
+233	Incomplete	Parameter Problems	0	
+234	Incomplete	Failure to Handle Missing Parameter	0	
+235	Draft	Improper Handling of Extra Parameters	0	
+236	Draft	Improper Handling of Undefined Parameters	0	
+237	Incomplete	Improper Handling of Structural Elements	0	
+238	Draft	Improper Handling of Incomplete Structural Elements	0	
+239	Draft	Failure to Handle Incomplete Element	0	
+240	Draft	Improper Handling of Inconsistent Structural Elements	0	
+241	Draft	Improper Handling of Unexpected Data Type	0	
+242	Draft	Use of Inherently Dangerous Function	0	
+243	Draft	Failure to Change Working Directory in chroot Jail	0	
+244	Draft	Failure to Clear Heap Memory Before Release ('Heap Inspection')	0	
+245	Draft	J2EE Bad Practices: Direct Management of Connections	0	
+246	Draft	J2EE Bad Practices: Direct Use of Sockets	0	
+247	Incomplete	Reliance on DNS Lookups in a Security Decision	0	
+248	Draft	Uncaught Exception	0	
+249	Deprecated	DEPRECATED: Often Misused: Path Manipulation	0	
+250	Draft	Execution with Unnecessary Privileges	0	
+252	Draft	Unchecked Return Value	0	
+253	Incomplete	Incorrect Check of Function Return Value	0	
+256	Incomplete	Plaintext Storage of a Password	0	
+257	Incomplete	Storing Passwords in a Recoverable Format	0	
+258	Incomplete	Empty Password in Configuration File	0	
+259	Draft	Hard-Coded Password	0	
+260	Incomplete	Password in Configuration File	0	
+261	Incomplete	Weak Cryptography for Passwords	0	
+262	Draft	Not Using Password Aging	0	
+263	Draft	Password Aging with Long Expiration	0	
+266	Draft	Incorrect Privilege Assignment	0	
+267	Incomplete	Privilege Defined With Unsafe Actions	0	
+268	Draft	Privilege Chaining	0	
+269	Incomplete	Improper Privilege Management	0	
+270	Draft	Privilege Context Switching Error	0	
+271	Incomplete	Privilege Dropping / Lowering Errors	0	
+272	Incomplete	Least Privilege Violation	0	
+273	Incomplete	Improper Check for Dropped Privileges	0	
+274	Draft	Improper Handling of Insufficient Privileges	0	
+276	Draft	Incorrect Default Permissions	0	
+277	Draft	Insecure Inherited Permissions	0	
+278	Incomplete	Insecure Preserved Inherited Permissions	0	
+279	Draft	Incorrect Execution-Assigned Permissions	0	
+280	Draft	Improper Handling of Insufficient Permissions or Privileges 	0	
+281	Draft	Improper Preservation of Permissions	0	
+282	Draft	Improper Ownership Management	0	
+283	Draft	Unverified Ownership	0	
+284	Incomplete	Access Control (Authorization) Issues	0	
+285	Draft	Improper Access Control (Authorization)	0	
+286	Incomplete	Incorrect User Management	0	
+287	Draft	Improper Authentication	0	
+288	Incomplete	Authentication Bypass Using an Alternate Path or Channel	0	
+289	Incomplete	Authentication Bypass by Alternate Name	0	
+290	Incomplete	Authentication Bypass by Spoofing	0	
+292	Incomplete	Trusting Self-reported DNS Name	0	
+293	Draft	Using Referer Field for Authentication	0	
+294	Incomplete	Authentication Bypass by Capture-replay	0	
+296	Draft	Improper Following of Chain of Trust for Certificate Validation	0	
+297	Incomplete	Improper Validation of Host-specific Certificate Data	0	
+298	Draft	Improper Validation of Certificate Expiration	0	
+299	Draft	Improper Check for Certificate Revocation	0	
+300	Draft	Channel Accessible by Non-Endpoint ('Man-in-the-Middle')	0	
+301	Draft	Reflection Attack in an Authentication Protocol	0	
+302	Incomplete	Authentication Bypass by Assumed-Immutable Data	0	
+303	Draft	Incorrect Implementation of Authentication Algorithm	0	
+304	Draft	Missing Critical Step in Authentication	0	
+305	Draft	Authentication Bypass by Primary Weakness	0	
+306	Draft	No Authentication for Critical Function	0	
+307	Draft	Failure to Restrict Excessive Authentication Attempts	0	
+308	Draft	Use of Single-factor Authentication	0	
+309	Draft	Use of Password System for Primary Authentication	0	
+311	Draft	Failure to Encrypt Sensitive Data	0	
+312	Draft	Cleartext Storage of Sensitive Information	0	
+313	Draft	Plaintext Storage in a File or on Disk	0	
+314	Draft	Plaintext Storage in the Registry	0	
+315	Draft	Plaintext Storage in a Cookie	0	
+316	Draft	Plaintext Storage in Memory	0	
+317	Draft	Plaintext Storage in GUI	0	
+318	Draft	Plaintext Storage in Executable	0	
+319	Draft	Cleartext Transmission of Sensitive Information	0	
+321	Draft	Use of Hard-coded Cryptographic Key	0	
+322	Draft	Key Exchange without Entity Authentication	0	
+323	Incomplete	Reusing a Nonce, Key Pair in Encryption	0	
+324	Draft	Use of a Key Past its Expiration Date	0	
+325	Incomplete	Missing Required Cryptographic Step	0	
+326	Draft	Inadequate Encryption Strength	0	
+327	Draft	Use of a Broken or Risky Cryptographic Algorithm	0	
+328	Draft	Reversible One-Way Hash	0	
+329	Draft	Not Using a Random IV with CBC Mode	0	
+330	Draft	Use of Insufficiently Random Values	0	
+331	Draft	Insufficient Entropy	0	
+332	Draft	Insufficient Entropy in PRNG	0	
+333	Draft	Improper Handling of Insufficient Entropy in TRNG	0	
+334	Draft	Small Space of Random Values	0	
+335	Draft	PRNG Seed Error	0	
+336	Draft	Same Seed in PRNG	0	
+337	Draft	Predictable Seed in PRNG	0	
+338	Draft	Use of Cryptographically Weak PRNG	0	
+339	Draft	Small Seed Space in PRNG	0	
+340	Incomplete	Predictability Problems	0	
+341	Draft	Predictable from Observable State	0	
+342	Draft	Predictable Exact Value from Previous Values	0	
+343	Draft	Predictable Value Range from Previous Values	0	
+344	Draft	Use of Invariant Value in Dynamically Changing Context	0	
+345	Draft	Insufficient Verification of Data Authenticity	0	
+346	Draft	Origin Validation Error	0	
+347	Draft	Improper Verification of Cryptographic Signature	0	
+348	Draft	Use of Less Trusted Source	0	
+349	Draft	Acceptance of Extraneous Untrusted Data With Trusted Data	0	
+350	Draft	Improperly Trusted Reverse DNS	0	
+351	Draft	Insufficient Type Distinction	0	
+353	Draft	Failure to Add Integrity Check Value	0	
+354	Draft	Improper Validation of Integrity Check Value	0	
+356	Incomplete	Product UI does not Warn User of Unsafe Actions	0	
+357	Draft	Insufficient UI Warning of Dangerous Operations	0	
+358	Draft	Improperly Implemented Security Check for Standard	0	
+359	Incomplete	Privacy Violation	0	
+360	Incomplete	Trust of System Event Data	0	
+362	Draft	Race Condition	0	
+363	Draft	Race Condition Enabling Link Following	0	
+364	Incomplete	Signal Handler Race Condition	0	
+365	Draft	Race Condition in Switch	0	
+366	Draft	Race Condition within a Thread	0	
+367	Incomplete	Time-of-check Time-of-use (TOCTOU) Race Condition	0	
+368	Draft	Context Switching Race Condition	0	
+369	Draft	Divide By Zero	0	
+370	Draft	Missing Check for Certificate Revocation after Initial Check	0	
+372	Draft	Incomplete Internal State Distinction	0	
+373	Draft	State Synchronization Error	0	
+374	Draft	Mutable Objects Passed by Reference	0	
+375	Draft	Passing Mutable Objects to an Untrusted Method	0	
+377	Incomplete	Insecure Temporary File	0	
+378	Draft	Creation of Temporary File With Insecure Permissions	0	
+379	Incomplete	Creation of Temporary File in Directory with Incorrect Permissions	0	
+382	Draft	J2EE Bad Practices: Use of System.exit()	0	
+383	Draft	J2EE Bad Practices: Direct Use of Threads	0	
+385	Incomplete	Covert Timing Channel	0	
+386	Draft	Symbolic Name not Mapping to Correct Object	0	
+390	Draft	Detection of Error Condition Without Action	0	
+391	Incomplete	Unchecked Error Condition	0	
+392	Draft	Failure to Report Error in Status Code	0	
+393	Draft	Return of Wrong Status Code	0	
+394	Draft	Unexpected Status Code or Return Value	0	
+395	Draft	Use of NullPointerException Catch to Detect NULL Pointer Dereference	0	
+396	Draft	Declaration of Catch for Generic Exception	0	
+397	Draft	Declaration of Throws for Generic Exception	0	
+398	Draft	Indicator of Poor Code Quality	0	
+400	Incomplete	Uncontrolled Resource Consumption ('Resource Exhaustion')	0	
+401	Draft	Failure to Release Memory Before Removing Last Reference ('Memory Leak')	0	
+402	Draft	Transmission of Private Resources into a New Sphere ('Resource Leak')	0	
+403	Draft	UNIX File Descriptor Leak	0	
+404	Draft	Improper Resource Shutdown or Release	0	
+405	Incomplete	Asymmetric Resource Consumption (Amplification)	0	
+406	Incomplete	Insufficient Control of Network Message Volume (Network Amplification)	0	
+407	Incomplete	Algorithmic Complexity	0	
+408	Draft	Incorrect Behavior Order: Early Amplification	0	
+409	Incomplete	Improper Handling of Highly Compressed Data (Data Amplification)	0	
+410	Incomplete	Insufficient Resource Pool	0	
+412	Incomplete	Unrestricted Externally Accessible Lock	0	
+413	Draft	Insufficient Resource Locking	0	
+414	Draft	Missing Lock Check	0	
+415	Draft	Double Free	0	
+416	Draft	Use After Free	0	
+419	Draft	Unprotected Primary Channel	0	
+420	Draft	Unprotected Alternate Channel	0	
+421	Draft	Race Condition During Access to Alternate Channel	0	
+422	Draft	Unprotected Windows Messaging Channel ('Shatter')	0	
+423	Deprecated	DEPRECATED (Duplicate): Proxied Trusted Channel	0	
+424	Draft	Failure to Protect Alternate Path	0	
+425	Incomplete	Direct Request ('Forced Browsing')	0	
+427	Draft	Uncontrolled Search Path Element	0	
+428	Draft	Unquoted Search Path or Element	0	
+430	Incomplete	Deployment of Wrong Handler	0	
+431	Draft	Missing Handler	0	
+432	Draft	Dangerous Handler not Disabled During Sensitive Operations	0	
+433	Incomplete	Unparsed Raw Web Content Delivery	0	
+435	Draft	Interaction Error	0	
+436	Incomplete	Interpretation Conflict	0	
+437	Incomplete	Incomplete Model of Endpoint Features	0	
+439	Draft	Behavioral Change in New Version or Environment	0	
+440	Draft	Expected Behavior Violation	0	
+441	Draft	Unintended Proxy/Intermediary	0	
+443	Deprecated	DEPRECATED (Duplicate): HTTP response splitting	0	
+444	Incomplete	Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling')	0	
+446	Incomplete	UI Discrepancy for Security Feature	0	
+447	Draft	Unimplemented or Unsupported Feature in UI	0	
+448	Draft	Obsolete Feature in UI	0	
+449	Incomplete	The UI Performs the Wrong Action	0	
+450	Draft	Multiple Interpretations of UI Input	0	
+451	Draft	UI Misrepresentation of Critical Information	0	
+453	Draft	Insecure Default Variable Initialization	0	
+454	Draft	External Initialization of Trusted Variables	0	
+455	Draft	Non-exit on Failed Initialization	0	
+456	Draft	Missing Initialization	0	
+457	Draft	Use of Uninitialized Variable	0	
+458	Deprecated	DEPRECATED: Incorrect Initialization	0	
+459	Draft	Incomplete Cleanup	0	
+460	Draft	Improper Cleanup on Thrown Exception	0	
+462	Incomplete	Duplicate Key in Associative List (Alist)	0	
+463	Incomplete	Deletion of Data Structure Sentinel	0	
+464	Incomplete	Addition of Data Structure Sentinel	0	
+466	Draft	Return of Pointer Value Outside of Expected Range	0	
+467	Draft	Use of sizeof() on a Pointer Type	0	
+468	Incomplete	Incorrect Pointer Scaling	0	
+469	Draft	Use of Pointer Subtraction to Determine Size	0	
+470	Draft	Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')	0	
+471	Draft	Modification of Assumed-Immutable Data (MAID)	0	
+472	Draft	External Control of Assumed-Immutable Web Parameter	0	
+473	Draft	PHP External Variable Modification	0	
+474	Draft	Use of Function with Inconsistent Implementations	0	
+475	Incomplete	Undefined Behavior for Input to API	0	
+476	Draft	NULL Pointer Dereference	0	
+477	Draft	Use of Obsolete Functions	0	
+478	Draft	Missing Default Case in Switch Statement	0	
+479	Draft	Unsafe Function Call from a Signal Handler	0	
+480	Draft	Use of Incorrect Operator	0	
+481	Draft	Assigning instead of Comparing	0	
+482	Draft	Comparing instead of Assigning	0	
+483	Draft	Incorrect Block Delimitation	0	
+484	Draft	Omitted Break Statement in Switch	0	
+485	Draft	Insufficient Encapsulation	0	
+486	Draft	Comparison of Classes by Name	0	
+487	Incomplete	Reliance on Package-level Scope	0	
+488	Draft	Data Leak Between Sessions	0	
+489	Draft	Leftover Debug Code	0	
+491	Draft	Public cloneable() Method Without Final ('Object Hijack')	0	
+492	Draft	Use of Inner Class Containing Sensitive Data	0	
+493	Draft	Critical Public Variable Without Final Modifier	0	
+494	Draft	Download of Code Without Integrity Check	0	
+495	Draft	Private Array-Typed Field Returned From A Public Method	0	
+496	Incomplete	Public Data Assigned to Private Array-Typed Field	0	
+497	Incomplete	Information Leak of System Data	0	
+498	Draft	Information Leak through Class Cloning	0	
+499	Draft	Serializable Class Containing Sensitive Data	0	
+500	Draft	Public Static Field Not Marked Final	0	
+501	Draft	Trust Boundary Violation	0	
+502	Draft	Deserialization of Untrusted Data	0	
+506	Incomplete	Embedded Malicious Code	0	
+507	Incomplete	Trojan Horse	0	
+508	Incomplete	Non-Replicating Malicious Code	0	
+509	Incomplete	Replicating Malicious Code (Virus or Worm)	0	
+510	Incomplete	Trapdoor	0	
+511	Incomplete	Logic/Time Bomb	0	
+512	Incomplete	Spyware	0	
+514	Incomplete	Covert Channel	0	
+515	Incomplete	Covert Storage Channel	0	
+516	Deprecated	DEPRECATED (Duplicate): Covert Timing Channel	0	
+520	Incomplete	.NET Misconfiguration: Use of Impersonation	0	
+521	Draft	Weak Password Requirements	0	
+522	Incomplete	Insufficiently Protected Credentials	0	
+523	Incomplete	Unprotected Transport of Credentials	0	
+524	Incomplete	Information Leak Through Caching	0	
+525	Incomplete	Information Leak Through Browser Caching	0	
+526	Incomplete	Information Leak Through Environmental Variables	0	
+527	Incomplete	Information Leak Through CVS Repository	0	
+528	Draft	Information Leak Through Core Dump Files	0	
+529	Incomplete	Information Leak Through Access Control List Files	0	
+530	Incomplete	Information Leak Through Backup (.~bk) Files	0	
+531	Incomplete	Information Leak Through Test Code	0	
+532	Incomplete	Information Leak Through Log Files	0	
+533	Incomplete	Information Leak Through Server Log Files	0	
+534	Draft	Information Leak Through Debug Log Files	0	
+535	Incomplete	Information Leak Through Shell Error Message	0	
+536	Incomplete	Information Leak Through Servlet Runtime Error Message	0	
+537	Incomplete	Information Leak Through Java Runtime Error Message	0	
+538	Draft	File and Directory Information Leaks	0	
+539	Incomplete	Information Leak Through Persistent Cookies	0	
+540	Incomplete	Information Leak Through Source Code	0	
+541	Incomplete	Information Leak Through Include Source Code	0	
+542	Incomplete	Information Leak Through Cleanup Log Files	0	
+543	Incomplete	Use of Singleton Pattern in a Non-thread-safe Manner	0	
+544	Draft	Failure to Use a Standardized Error Handling Mechanism	0	
+545	Incomplete	Use of Dynamic Class Loading	0	
+546	Draft	Suspicious Comment	0	
+547	Draft	Use of Hard-coded, Security-relevant Constants	0	
+548	Draft	Information Leak Through Directory Listing	0	
+549	Draft	Missing Password Field Masking	0	
+550	Incomplete	Information Leak Through Server Error Message	0	
+551	Incomplete	Incorrect Behavior Order: Authorization Before Parsing and Canonicalization	0	
+552	Draft	Files or Directories Accessible to External Parties	0	
+553	Incomplete	Command Shell in Externally Accessible Directory	0	
+554	Draft	ASP.NET Misconfiguration: Not Using Input Validation Framework	0	
+555	Draft	J2EE Misconfiguration: Plaintext Password in Configuration File	0	
+556	Incomplete	ASP.NET Misconfiguration: Use of Identity Impersonation	0	
+558	Draft	Use of getlogin() in Multithreaded Application	0	
+560	Draft	Use of umask() with chmod-style Argument	0	
+561	Draft	Dead Code	0	
+562	Draft	Return of Stack Variable Address	0	
+563	Draft	Unused Variable	0	
+564	Incomplete	SQL Injection: Hibernate	0	
+565	Incomplete	Reliance on Cookies without Validation and Integrity Checking	0	
+566	Incomplete	Access Control Bypass Through User-Controlled SQL Primary Key	0	
+567	Draft	Unsynchronized Access to Shared Data	0	
+568	Draft	finalize() Method Without super.finalize()	0	
+570	Draft	Expression is Always False	0	
+571	Draft	Expression is Always True	0	
+572	Draft	Call to Thread run() instead of start()	0	
+573	Draft	Failure to Follow Specification	0	
+574	Draft	EJB Bad Practices: Use of Synchronization Primitives	0	
+575	Draft	EJB Bad Practices: Use of AWT Swing	0	
+576	Draft	EJB Bad Practices: Use of Java I/O	0	
+577	Draft	EJB Bad Practices: Use of Sockets	0	
+578	Draft	EJB Bad Practices: Use of Class Loader	0	
+579	Draft	J2EE Bad Practices: Non-serializable Object Stored in Session	0	
+580	Draft	clone() Method Without super.clone()	0	
+581	Draft	Object Model Violation: Just One of Equals and Hashcode Defined	0	
+582	Draft	Array Declared Public, Final, and Static	0	
+583	Incomplete	finalize() Method Declared Public	0	
+584	Draft	Return Inside Finally Block	0	
+585	Draft	Empty Synchronized Block	0	
+586	Draft	Explicit Call to Finalize()	0	
+587	Draft	Assignment of a Fixed Address to a Pointer	0	
+588	Incomplete	Attempt to Access Child of a Non-structure Pointer	0	
+589	Incomplete	Call to Non-ubiquitous API	0	
+590	Incomplete	Free of Memory not on the Heap	0	
+591	Draft	Sensitive Data Storage in Improperly Locked Memory	0	
+592	Incomplete	Authentication Bypass Issues	0	
+593	Draft	Authentication Bypass: OpenSSL CTX Object Modified after SSL Objects are Created	0	
+594	Incomplete	J2EE Framework: Saving Unserializable Objects to Disk	0	
+595	Incomplete	Comparison of Object References Instead of Object Contents	0	
+596	Incomplete	Incorrect Semantic Object Comparison	0	
+597	Draft	Use of Wrong Operator in String Comparison	0	
+598	Draft	Information Leak Through Query Strings in GET Request	0	
+599	Incomplete	Trust of OpenSSL Certificate Without Validation	0	
+600	Draft	Failure to Catch All Exceptions in Servlet 	0	
+601	Draft	URL Redirection to Untrusted Site ('Open Redirect')	0	
+602	Draft	Client-Side Enforcement of Server-Side Security	0	
+603	Draft	Use of Client-Side Authentication	0	
+605	Draft	Multiple Binds to the Same Port	0	
+606	Draft	Unchecked Input for Loop Condition	0	
+607	Draft	Public Static Final Field References Mutable Object	0	
+608	Draft	Struts: Non-private Field in ActionForm Class	0	
+609	Draft	Double-Checked Locking	0	
+610	Draft	Externally Controlled Reference to a Resource in Another Sphere	0	
+611	Draft	Information Leak Through XML External Entity File Disclosure	0	
+612	Draft	Information Leak Through Indexing of Private Data	0	
+613	Incomplete	Insufficient Session Expiration	0	
+614	Draft	Sensitive Cookie in HTTPS Session Without 'Secure' Attribute	0	
+615	Incomplete	Information Leak Through Comments	0	
+616	Incomplete	Incomplete Identification of Uploaded File Variables (PHP)	0	
+617	Draft	Reachable Assertion	0	
+618	Incomplete	Exposed Unsafe ActiveX Method	0	
+619	Incomplete	Dangling Database Cursor ('Cursor Injection')	0	
+620	Draft	Unverified Password Change	0	
+621	Incomplete	Variable Extraction Error	0	
+622	Draft	Unvalidated Function Hook Arguments	0	
+623	Draft	Unsafe ActiveX Control Marked Safe For Scripting	0	
+624	Incomplete	Executable Regular Expression Error	0	
+625	Draft	Permissive Regular Expression	0	
+626	Draft	Null Byte Interaction Error (Poison Null Byte)	0	
+627	Incomplete	Dynamic Variable Evaluation	0	
+628	Draft	Function Call with Incorrectly Specified Arguments	0	
+636	Draft	Not Failing Securely ('Failing Open')	0	
+637	Draft	Failure to Use Economy of Mechanism	0	
+638	Draft	Failure to Use Complete Mediation	0	
+639	Incomplete	Access Control Bypass Through User-Controlled Key	0	
+640	Incomplete	Weak Password Recovery Mechanism for Forgotten Password	0	
+641	Incomplete	Insufficient Filtering of File and Other Resource Names for Executable Content	0	
+642	Draft	External Control of Critical State Data	0	
+643	Incomplete	Failure to Sanitize Data within XPath Expressions ('XPath injection')	0	
+644	Incomplete	Improper Sanitization of HTTP Headers for Scripting Syntax	0	
+645	Incomplete	Overly Restrictive Account Lockout Mechanism	0	
+646	Incomplete	Reliance on File Name or Extension of Externally-Supplied File	0	
+647	Incomplete	Use of Non-Canonical URL Paths for Authorization Decisions	0	
+648	Incomplete	Incorrect Use of Privileged APIs	0	
+649	Incomplete	Reliance on Obfuscation or Encryption of Security-Relevant Inputs without Integrity Checking	0	
+650	Incomplete	Trusting HTTP Permission Methods on the Server Side	0	
+651	Incomplete	Information Leak through WSDL File	0	
+652	Incomplete	Failure to Sanitize Data within XQuery Expressions ('XQuery Injection')	0	
+653	Draft	Insufficient Compartmentalization	0	
+654	Draft	Reliance on a Single Factor in a Security Decision	0	
+655	Draft	Insufficient Psychological Acceptability	0	
+656	Draft	Reliance on Security through Obscurity	0	
+657	Draft	Violation of Secure Design Principles	0	
+662	Draft	Insufficient Synchronization	0	
+663	Draft	Use of a Non-reentrant Function in an Unsynchronized Context	0	
+664	Draft	Improper Control of a Resource Through its Lifetime	0	
+665	Draft	Improper Initialization	0	
+666	Draft	Operation on Resource in Wrong Phase of Lifetime	0	
+667	Draft	Insufficient Locking	0	
+668	Draft	Exposure of Resource to Wrong Sphere	0	
+669	Draft	Incorrect Resource Transfer Between Spheres	0	
+670	Draft	Always-Incorrect Control Flow Implementation	0	
+671	Draft	Lack of Administrator Control over Security	0	
+672	Draft	Use of a Resource after Expiration or Release	0	
+673	Draft	External Influence of Sphere Definition	0	
+674	Draft	Uncontrolled Recursion	0	
+675	Draft	Duplicate Operations on Resource	0	
+676	Draft	Use of Potentially Dangerous Function	0	
+681	Draft	Incorrect Conversion between Numeric Types	0	
+682	Draft	Incorrect Calculation	0	
+683	Draft	Function Call With Incorrect Order of Arguments	0	
+684	Draft	Failure to Provide Specified Functionality	0	
+685	Draft	Function Call With Incorrect Number of Arguments	0	
+686	Draft	Function Call With Incorrect Argument Type	0	
+687	Draft	Function Call With Incorrectly Specified Argument Value	0	
+688	Draft	Function Call With Incorrect Variable or Reference as Argument	0	
+691	Draft	Insufficient Control Flow Management	0	
+693	Draft	Protection Mechanism Failure	0	
+694	Incomplete	Use of Multiple Resources with Duplicate Identifier	0	
+695	Incomplete	Use of Low-Level Functionality	0	
+696	Incomplete	Incorrect Behavior Order	0	
+697	Incomplete	Insufficient Comparison	0	
+698	Incomplete	Redirect Without Exit	0	
+703	Incomplete	Failure to Handle Exceptional Conditions	0	
+704	Incomplete	Incorrect Type Conversion or Cast	0	
+705	Incomplete	Incorrect Control Flow Scoping	0	
+706	Incomplete	Use of Incorrectly-Resolved Name or Reference	0	
+707	Incomplete	Improper Enforcement of Message or Data Structure	0	
+708	Incomplete	Incorrect Ownership Assignment	0	
+710	Incomplete	Coding Standards Violation	0	
+732	Draft	Incorrect Permission Assignment for Critical Resource	0	
+733	Incomplete	Compiler Optimization Removal or Modification of Security-critical Code	0	
+749	Incomplete	Exposed Dangerous Method or Function	0	
+754	Incomplete	Improper Check for Exceptional Conditions	0	
+755	Incomplete	Improper Handling of Exceptional Conditions	0	
+756	Incomplete	Missing Custom Error Page	0	
+757	Incomplete	Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')	0	
+758	Incomplete	Reliance on Undefined, Unspecified, or Implementation-Defined Behavior	0	
+759	Incomplete	Use of a One-Way Hash without a Salt	0	
+760	Incomplete	Use of a One-Way Hash with a Predictable Salt	0	
+761	Incomplete	Free of Pointer not at Start of Buffer	0	
+762	Incomplete	Mismatched Memory Management Routines	0	
+763	Incomplete	Release of Invalid Pointer or Reference	0	
+764	Incomplete	Multiple Locks of a Critical Resource	0	
+765	Incomplete	Multiple Unlocks of a Critical Resource	0	
+766	Incomplete	Critical Variable Declared Public	0	
+767	Incomplete	Access to Critical Private Variable via Public Method	0	
+768	Incomplete	Incorrect Short Circuit Evaluation	0	
+770	Incomplete	Allocation of Resources Without Limits or Throttling	0	
+771	Incomplete	Missing Reference to Active Allocated Resource	0	
+772	Incomplete	Missing Release of Resource after Effective Lifetime	0	
+773	Incomplete	Missing Reference to Active File Descriptor or Handle	0	
+774	Incomplete	Allocation of File Descriptors or Handles Without Limits or Throttling	0	
+775	Incomplete	Missing Release of File Descriptor or Handle after Effective Lifetime	0	
+776	Draft	Unrestricted Recursive Entity References in DTDs ('XML Bomb')	0	
+777	Incomplete	Regular Expression without Anchors	0	
+778	Draft	Insufficient Logging	0	
+779	Draft	Logging of Excessive Data	0	
+780	Incomplete	Use of RSA Algorithm without OAEP	0	
+781	Draft	Improper Address Validation in IOCTL with METHOD_NEITHER I/O Control Code	0	
+782	Draft	Exposed IOCTL with Insufficient Access Control	0	
+783	Draft	Operator Precedence Logic Error	0	
+784	Draft	Reliance on Cookies without Validation and Integrity Checking in a Security Decision	0	
+785	Incomplete	Use of Path Manipulation Function without Maximum-sized Buffer	0	
+786	Incomplete	Access of Memory Location Before Start of Buffer	0	
+787	Incomplete	Out-of-bounds Write	0	
+788	Incomplete	Access of Memory Location After End of Buffer	0	
+789	Draft	Uncontrolled Memory Allocation	0	

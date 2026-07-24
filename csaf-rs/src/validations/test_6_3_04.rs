@@ -37,14 +37,18 @@ mod tests {
     #[test]
     fn test_test_6_3_4() {
         let case_01_20 = Err(vec![create_missing_cwe_error(0, "cwe")]);
-        let case_02_20 = Err(vec![create_missing_cwe_error(0, "cwe"), create_missing_cwe_error(2, "cwe")]);
+        let case_02_20 = Err(vec![
+            create_missing_cwe_error(0, "cwe"),
+            create_missing_cwe_error(2, "cwe"),
+        ]);
         let case_01_21 = Err(vec![create_missing_cwe_error(0, "cwes")]);
-        let case_02_21 = Err(vec![create_missing_cwe_error(0, "cwes"), create_missing_cwe_error(2, "cwes")]);
+        let case_02_21 = Err(vec![
+            create_missing_cwe_error(0, "cwes"),
+            create_missing_cwe_error(2, "cwes"),
+        ]);
 
         // Both CSAF 2.0 and 2.1 have 4 test cases
-        TESTS_2_0
-            .test_6_3_4
-            .expect(case_01_20, case_02_20, Ok(()), Ok(()));
+        TESTS_2_0.test_6_3_4.expect(case_01_20, case_02_20, Ok(()), Ok(()));
         TESTS_2_1.test_6_3_4.expect(case_01_21, case_02_21, Ok(()), Ok(()));
     }
 }

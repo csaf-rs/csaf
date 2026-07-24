@@ -2972,7 +2972,8 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 ///        },
 ///        "additionalProperties": false
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "filename": {
 ///      "title": "Filename",
@@ -2994,7 +2995,7 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 #[serde(deny_unknown_fields)]
 pub struct CryptographicHashes {
     ///Contains a list of cryptographic hashes for this file.
-    pub file_hashes: ::std::vec::Vec<FileHash>,
+    pub file_hashes: Vec<FileHash>,
     ///Contains the name of the file which is identified by the hash values.
     pub filename: Filename,
 }
@@ -4900,7 +4901,8 @@ impl Flag {
 ///                  },
 ///                  "additionalProperties": false
 ///                },
-///                "minItems": 1
+///                "minItems": 1,
+///                "uniqueItems": true
 ///              },
 ///              "filename": {
 ///                "title": "Filename",
@@ -4916,7 +4918,8 @@ impl Flag {
 ///            },
 ///            "additionalProperties": false
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        },
 ///        "model_numbers": {
 ///          "title": "List of models",
@@ -4954,7 +4957,8 @@ impl Flag {
 ///            "description": "Contains a URL of one SBOM for this product.",
 ///            "type": "string"
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        },
 ///        "serial_numbers": {
 ///          "title": "List of serial numbers",
@@ -4979,7 +4983,8 @@ impl Flag {
 ///            "type": "string",
 ///            "minLength": 1
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        },
 ///        "x_generic_uris": {
 ///          "title": "List of generic URIs",
@@ -5007,7 +5012,8 @@ impl Flag {
 ///            },
 ///            "additionalProperties": false
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        }
 ///      },
 ///      "additionalProperties": false
@@ -5155,7 +5161,8 @@ impl GenericUri {
 ///              },
 ///              "additionalProperties": false
 ///            },
-///            "minItems": 1
+///            "minItems": 1,
+///            "uniqueItems": true
 ///          },
 ///          "filename": {
 ///            "title": "Filename",
@@ -5171,7 +5178,8 @@ impl GenericUri {
 ///        },
 ///        "additionalProperties": false
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "model_numbers": {
 ///      "title": "List of models",
@@ -5209,7 +5217,8 @@ impl GenericUri {
 ///        "description": "Contains a URL of one SBOM for this product.",
 ///        "type": "string"
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "serial_numbers": {
 ///      "title": "List of serial numbers",
@@ -5234,7 +5243,8 @@ impl GenericUri {
 ///        "type": "string",
 ///        "minLength": 1
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "x_generic_uris": {
 ///      "title": "List of generic URIs",
@@ -5262,7 +5272,8 @@ impl GenericUri {
 ///        },
 ///        "additionalProperties": false
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -5276,8 +5287,8 @@ pub struct HelperToIdentifyTheProduct {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub cpe: ::std::option::Option<CommonPlatformEnumerationRepresentation>,
     ///Contains a list of cryptographic hashes usable to identify files.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub hashes: ::std::vec::Vec<CryptographicHashes>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub hashes: ::std::option::Option<Vec<CryptographicHashes>>,
     ///Contains a list of model numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub model_numbers: ::std::option::Option<Vec<ModelNumber>>,
@@ -5285,17 +5296,17 @@ pub struct HelperToIdentifyTheProduct {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub purls: ::std::option::Option<Vec<PackageUrlRepresentation>>,
     ///Contains a list of URLs where SBOMs for this product can be retrieved.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub sbom_urls: ::std::vec::Vec<::std::string::String>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub sbom_urls: ::std::option::Option<Vec<::std::string::String>>,
     ///Contains a list of serial numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub serial_numbers: ::std::option::Option<Vec<SerialNumber>>,
     ///Contains a list of stock keeping units.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub skus: ::std::vec::Vec<StockKeepingUnit>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub skus: ::std::option::Option<Vec<StockKeepingUnit>>,
     ///Contains a list of identifiers which are either vendor-specific or derived from a standard not yet supported.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub x_generic_uris: ::std::vec::Vec<GenericUri>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub x_generic_uris: ::std::option::Option<Vec<GenericUri>>,
 }
 impl ::std::default::Default for HelperToIdentifyTheProduct {
     fn default() -> Self {
@@ -12035,10 +12046,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct CryptographicHashes {
-        file_hashes: ::std::result::Result<
-            ::std::vec::Vec<super::FileHash>,
-            ::std::string::String,
-        >,
+        file_hashes: ::std::result::Result<Vec<super::FileHash>, ::std::string::String>,
         filename: ::std::result::Result<super::Filename, ::std::string::String>,
     }
     impl ::std::default::Default for CryptographicHashes {
@@ -12052,7 +12060,7 @@ pub mod builder {
     impl CryptographicHashes {
         pub fn file_hashes<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::FileHash>>,
+            T: ::std::convert::TryInto<Vec<super::FileHash>>,
             T::Error: ::std::fmt::Display,
         {
             self.file_hashes = value
@@ -13057,7 +13065,7 @@ pub mod builder {
             ::std::string::String,
         >,
         hashes: ::std::result::Result<
-            ::std::vec::Vec<super::CryptographicHashes>,
+            ::std::option::Option<Vec<super::CryptographicHashes>>,
             ::std::string::String,
         >,
         model_numbers: ::std::result::Result<
@@ -13069,7 +13077,7 @@ pub mod builder {
             ::std::string::String,
         >,
         sbom_urls: ::std::result::Result<
-            ::std::vec::Vec<::std::string::String>,
+            ::std::option::Option<Vec<::std::string::String>>,
             ::std::string::String,
         >,
         serial_numbers: ::std::result::Result<
@@ -13077,11 +13085,11 @@ pub mod builder {
             ::std::string::String,
         >,
         skus: ::std::result::Result<
-            ::std::vec::Vec<super::StockKeepingUnit>,
+            ::std::option::Option<Vec<super::StockKeepingUnit>>,
             ::std::string::String,
         >,
         x_generic_uris: ::std::result::Result<
-            ::std::vec::Vec<super::GenericUri>,
+            ::std::option::Option<Vec<super::GenericUri>>,
             ::std::string::String,
         >,
     }
@@ -13114,7 +13122,9 @@ pub mod builder {
         }
         pub fn hashes<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::CryptographicHashes>>,
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<super::CryptographicHashes>>,
+            >,
             T::Error: ::std::fmt::Display,
         {
             self.hashes = value
@@ -13148,7 +13158,9 @@ pub mod builder {
         }
         pub fn sbom_urls<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<::std::string::String>>,
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<::std::string::String>>,
+            >,
             T::Error: ::std::fmt::Display,
         {
             self.sbom_urls = value
@@ -13172,7 +13184,9 @@ pub mod builder {
         }
         pub fn skus<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::StockKeepingUnit>>,
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<super::StockKeepingUnit>>,
+            >,
             T::Error: ::std::fmt::Display,
         {
             self.skus = value
@@ -13182,7 +13196,7 @@ pub mod builder {
         }
         pub fn x_generic_uris<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::GenericUri>>,
+            T: ::std::convert::TryInto<::std::option::Option<Vec<super::GenericUri>>>,
             T::Error: ::std::fmt::Display,
         {
             self.x_generic_uris = value

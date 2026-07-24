@@ -65,6 +65,7 @@ versions=(
   v4.18
   v4.19
   v4.19.1
+  v4.20
 )
 
 for version in "${versions[@]}"; do

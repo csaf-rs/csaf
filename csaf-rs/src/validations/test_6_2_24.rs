@@ -61,9 +61,9 @@ fn create_non_latest_cwe_error(
 ) -> ValidationError {
     let error_message = match e_type {
         VersionMissmatch::NonLatest => {
-            format!("Weakness '{cwe}' uses non-latest CWE version {version} (latest: {latest}).")
+            format!("Weakness '{cwe}' uses non-latest CWE version '{version}' (latest: '{latest}').")
         },
-        VersionMissmatch::Future => format!("Weakness '{cwe}' uses a future CWE version {version} (latest: {latest})."),
+        VersionMissmatch::Future => format!("Weakness '{cwe}' uses a future CWE version '{version}' (latest: '{latest}')."),
     };
 
     ValidationError {
@@ -117,7 +117,7 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
             if let Some(cwes) = vulnerability.get_cwes() {
                 for (i_cwe, cwe_item) in cwes.iter().enumerate() {
                     // Extract the CWE version that is mandatory for CSAF 2.1 but
-                    // optional for CSAF 2.0., this test is only relevant for the former
+                    // does not exist in CSAF 2.0, this test is only relevant for the former
                     let Some(version) = cwe_item.version.as_deref() else {
                         continue;
                     };

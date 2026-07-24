@@ -90,6 +90,7 @@ mod tests {
             case_error.clone(),
             case_error.clone(),
             case_error.clone(),
+            case_error.clone(),
             case_error,
             Ok(()), // case_11
             Ok(()), // case_12
@@ -101,6 +102,7 @@ mod tests {
             Ok(()), // case_18
             Ok(()), // case_19
             Ok(()), // case_31
+            Ok(()), // case_32
             Ok(()), // supplementary case s11 mixed versioning
         );
     }

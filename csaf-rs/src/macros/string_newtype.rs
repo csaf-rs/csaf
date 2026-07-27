@@ -22,30 +22,35 @@ macro_rules! impl_string_newtype_ergonomics {
             }
         }
 
+        // newtype == &str without deref
         impl ::std::cmp::PartialEq<&str> for $ident {
             fn eq(&self, other: &&str) -> bool {
                 self.0 == *other
             }
         }
 
+        // newtype == String without deref
         impl ::std::cmp::PartialEq<::std::string::String> for $ident {
             fn eq(&self, other: &::std::string::String) -> bool {
                 self.0 == *other
             }
         }
 
+        // str == newtype without deref
         impl ::std::cmp::PartialEq<$ident> for str {
             fn eq(&self, other: &$ident) -> bool {
                 *self == other.0
             }
         }
 
+        // &str == newtype without deref
         impl ::std::cmp::PartialEq<$ident> for &str {
             fn eq(&self, other: &$ident) -> bool {
                 **self == other.0
             }
         }
 
+        // String == newtype without deref
         impl ::std::cmp::PartialEq<$ident> for ::std::string::String {
             fn eq(&self, other: &$ident) -> bool {
                 *self == other.0

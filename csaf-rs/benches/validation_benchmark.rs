@@ -202,22 +202,33 @@ fn bench_full_validation(c: &mut Criterion) {
 
 /// Benchmark parsing only (no validation).
 fn bench_parse_only(c: &mut Criterion) {
-    let fixtures_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
-    let contents = load_fixture_contents(&collect_fixture_files(fixtures_dir));
+    let fixtures_dir_2_0 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
+    let fixtures_dir_2_1 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.1/test/validator/data");
 
-    if contents.is_empty() {
-        return;
-    }
+    let contents_2_0 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_0));
+    let contents_2_1 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_1));
 
     let mut group = c.benchmark_group("parse_only");
 
-    group.bench_function("csaf_2_0", |b| {
-        b.iter(|| {
-            for (_name, content) in &contents {
-                let _ = black_box(load_document_2_0(content));
-            }
+    if !contents_2_0.is_empty() {
+        group.bench_function("csaf_2_0", |b| {
+            b.iter(|| {
+                for (_name, content) in &contents_2_0 {
+                    let _ = black_box(load_document_2_0(content));
+                }
+            });
         });
-    });
+    }
+
+    if !contents_2_1.is_empty() {
+        group.bench_function("csaf_2_1", |b| {
+            b.iter(|| {
+                for (_name, content) in &contents_2_1 {
+                    let _ = black_box(load_document_2_1(content));
+                }
+            });
+        });
+    }
 
     group.finish();
 }
@@ -227,24 +238,37 @@ fn bench_parse_only(c: &mut Criterion) {
 /// `parse_only` stops at the JSON `Value`; the delta between the two groups isolates the
 /// cost of materializing the typed document that every validation run pays once per document.
 fn bench_typed_parse(c: &mut Criterion) {
-    let fixtures_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
-    let contents = load_fixture_contents(&collect_fixture_files(fixtures_dir));
+    let fixtures_dir_2_0 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
+    let fixtures_dir_2_1 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.1/test/validator/data");
 
-    if contents.is_empty() {
-        return;
-    }
+    let contents_2_0 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_0));
+    let contents_2_1 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_1));
 
     let mut group = c.benchmark_group("typed_parse");
 
-    group.bench_function("csaf_2_0", |b| {
-        b.iter(|| {
-            for (_name, content) in &contents {
-                if let Ok(doc) = load_document_2_0(content) {
-                    let _ = black_box(doc.get_parsed());
+    if !contents_2_0.is_empty() {
+        group.bench_function("csaf_2_0", |b| {
+            b.iter(|| {
+                for (_name, content) in &contents_2_0 {
+                    if let Ok(doc) = load_document_2_0(content) {
+                        let _ = black_box(doc.get_parsed());
+                    }
                 }
-            }
+            });
         });
-    });
+    }
+
+    if !contents_2_1.is_empty() {
+        group.bench_function("csaf_2_1", |b| {
+            b.iter(|| {
+                for (_name, content) in &contents_2_1 {
+                    if let Ok(doc) = load_document_2_1(content) {
+                        let _ = black_box(doc.get_parsed());
+                    }
+                }
+            });
+        });
+    }
 
     group.finish();
 }

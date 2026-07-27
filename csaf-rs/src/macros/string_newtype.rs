@@ -15,6 +15,7 @@ macro_rules! impl_string_newtype_ergonomics {
             }
         }
 
+        // newtype == str without deref
         impl ::std::cmp::PartialEq<str> for $ident {
             fn eq(&self, other: &str) -> bool {
                 self.0 == other

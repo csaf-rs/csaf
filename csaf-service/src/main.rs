@@ -1,9 +1,11 @@
 mod handlers;
 mod routes;
+mod settings;
 mod test_helpers;
 
 use axum::Router;
 use axum::extract::DefaultBodyLimit;
+use axum::http::{HeaderValue, Method};
 use axum::routing::{get, post};
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
@@ -14,21 +16,44 @@ use crate::handlers::health::*;
 use crate::handlers::v1::errors::*;
 use crate::handlers::v1::get_tests::*;
 use crate::handlers::v1::validate::*;
+use crate::settings::{CorsSettings, Settings};
 
-fn permissive_cors_enabled() -> bool {
-    std::env::var("CSAF_SERVICE_PERMISSIVE_CORS")
-        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
-        .unwrap_or(false)
-}
+fn build_cors_layer(cors: &CorsSettings) -> CorsLayer {
+    if cors.permissive {
+        tracing::warn!("Permissive CORS is enabled — do not use in production");
+        return CorsLayer::permissive();
+    }
 
-const MAX_BODY_SIZE: usize = 150 * 1024 * 1024; // 150 MB
+    let origins: Vec<HeaderValue> = cors
+        .allowed_origins
+        .iter()
+        .filter_map(|origin| {
+            origin
+                .parse()
+                .inspect_err(|_| tracing::warn!("Ignoring invalid CORS origin: {origin}"))
+                .ok()
+        })
+        .collect();
 
-fn body_limit() -> usize {
-    std::env::var("CSAF_SERVICE_BODY_LIMIT")
-        .ok()
-        .and_then(|v| v.parse::<usize>().ok())
-        .unwrap_or(MAX_BODY_SIZE)
-        .min(MAX_BODY_SIZE)
+    let methods: Vec<Method> = cors
+        .allowed_methods
+        .iter()
+        .filter_map(|method| {
+            method
+                .parse()
+                .inspect_err(|_| tracing::warn!("Ignoring invalid CORS method: {method}"))
+                .ok()
+        })
+        .collect();
+
+    let mut layer = CorsLayer::new();
+    if !origins.is_empty() {
+        layer = layer.allow_origin(origins);
+    }
+    if !methods.is_empty() {
+        layer = layer.allow_methods(methods);
+    }
+    layer
 }
 
 #[derive(OpenApi)]
@@ -66,25 +91,16 @@ async fn main() {
         .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
         .init();
 
-    let port = std::env::var("CSAF_SERVICE_PORT").unwrap_or_else(|_| "8082".to_string());
-    let host = std::env::var("CSAF_SERVICE_HOST").unwrap_or_else(|_| "localhost".to_string());
-    let addr = format!("{host}:{port}");
-
-    let cors_layer = if permissive_cors_enabled() {
-        tracing::warn!("Permissive CORS is enabled — do not use in production");
-        CorsLayer::permissive()
-    } else {
-        CorsLayer::new()
-    };
-    // ToDo: Allow configuring CORS more granularly (e.g. allowed origins) via environment variables
-    // See https://docs.rs/tower-http/latest/tower_http/cors/struct.CorsLayer.html for details
+    let settings = Settings::load().expect("Failed to load configuration");
+    let addr = settings.addr();
+    let cors_layer = build_cors_layer(&settings.cors);
 
     let app = Router::new()
         .route(routes::HEALTH, get(health))
         .route(routes::V1_TESTS, get(get_tests))
         .route(routes::V1_VALIDATE, post(validate))
         .merge(SwaggerUi::new("/openapi").url("/api/openapi.json", ApiDoc::openapi()))
-        .layer(DefaultBodyLimit::max(body_limit()))
+        .layer(DefaultBodyLimit::max(settings.body_limit_bytes()))
         .layer(cors_layer)
         .layer(TraceLayer::new_for_http());
 

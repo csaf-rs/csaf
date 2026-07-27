@@ -1,0 +1,10 @@
+# Local development override file (template).
+#
+# Copy this file to `config/local.toml` (which is gitignored) and adjust as
+# needed. Values here override `config/default.toml`; only include the
+# settings you actually want to change — omitted keys keep their default.
+#
+# Example: relax CORS for local frontend development.
+
+[cors]
+permissive = true

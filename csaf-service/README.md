@@ -26,3 +26,7 @@ Settings are loaded, in increasing order of precedence, from:
 | Permissive CORS | `cors.permissive` | `CSAF_SERVICE__CORS__PERMISSIVE` | Whether to use a permissive CORS policy (allow all origins/methods/headers). Do not use in production. | `false` |
 | Allowed origins | `cors.allowed_origins` | `CSAF_SERVICE__CORS__ALLOWED_ORIGINS` | Allow-list of origins for CORS, used when `permissive` is `false`. | `[]` |
 | Allowed methods | `cors.allowed_methods` | `CSAF_SERVICE__CORS__ALLOWED_METHODS` | Allow-list of HTTP methods for CORS, used when `permissive` is `false`. | `["GET", "POST"]` |
+| Log level | `logging.level` | `CSAF_SERVICE__LOGGING__LEVEL` | Default log filter, used only when the `RUST_LOG` environment variable is not set. Accepts any `tracing_subscriber::EnvFilter` directive, e.g. `"info,tower_http=debug"`. | `info` |
+| Request log level | `logging.request_level` | `CSAF_SERVICE__LOGGING__REQUEST_LEVEL` | Level at which incoming/outgoing HTTP requests are logged by `tower_http`'s `TraceLayer` (one of `trace`, `debug`, `info`, `warn`, `error`). | `debug` |
+
+`RUST_LOG` always takes precedence over `logging.level` when set, e.g. `RUST_LOG=debug cargo run -p csaf-service` for verbose logging without touching config.

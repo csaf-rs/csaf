@@ -9,6 +9,7 @@ use crate::validation::ValidationError;
 use cvss_rs::Cvss;
 use cvss_rs::Severity;
 use cvss_rs::Version;
+use serde::Deserialize;
 use serde_json::Value;
 
 /// Validates CVSS scores for all CVSS versions present.
@@ -165,7 +166,7 @@ pub fn deserialize_cvss(
     instance_path: &str,
     errors: &mut Option<Vec<ValidationError>>,
 ) -> Option<Cvss> {
-    match serde_json::from_value(Value::Object(cvss_map.to_owned())) {
+    match Cvss::deserialize(cvss_map) {
         Ok(cvss) => Some(cvss),
         Err(e) => {
             errors

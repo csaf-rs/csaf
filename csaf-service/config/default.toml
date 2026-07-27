@@ -23,3 +23,13 @@ permissive = false
 # cross-origin requests are allowed.
 allowed_origins = []
 allowed_methods = ["GET", "POST"]
+
+[logging]
+# Default log filter, used when the RUST_LOG environment variable is not
+# set. Accepts anything tracing_subscriber's EnvFilter understands, e.g.
+# "info" or "info,tower_http=debug".
+level = "info"
+# Level at which incoming/outgoing HTTP requests are logged (tower_http's
+# TraceLayer defaults to "debug", which is easy to miss at the default
+# "info" level). One of: trace, debug, info, warn, error.
+request_level = "debug"

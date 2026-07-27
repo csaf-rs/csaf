@@ -8,7 +8,7 @@ use axum::extract::DefaultBodyLimit;
 use axum::http::{HeaderValue, Method};
 use axum::routing::{get, post};
 use tower_http::cors::CorsLayer;
-use tower_http::trace::TraceLayer;
+use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -87,13 +87,22 @@ struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
+    let settings = Settings::load().expect("Failed to load configuration");
+
     tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| settings.logging.level.clone().into()),
+        )
         .init();
 
-    let settings = Settings::load().expect("Failed to load configuration");
     let addr = settings.addr();
     let cors_layer = build_cors_layer(&settings.cors);
+    let request_level = settings.request_log_level();
+    let trace_layer = TraceLayer::new_for_http()
+        .make_span_with(DefaultMakeSpan::new().level(request_level))
+        .on_request(DefaultOnRequest::new().level(request_level))
+        .on_response(DefaultOnResponse::new().level(request_level));
 
     let app = Router::new()
         .route(routes::HEALTH, get(health))
@@ -102,7 +111,7 @@ async fn main() {
         .merge(SwaggerUi::new("/openapi").url("/api/openapi.json", ApiDoc::openapi()))
         .layer(DefaultBodyLimit::max(settings.body_limit_bytes()))
         .layer(cors_layer)
-        .layer(TraceLayer::new_for_http());
+        .layer(trace_layer);
 
     tracing::info!("Starting CSAF Validation API on {addr}");
     tracing::info!("Swagger UI available at http://{addr}/openapi/");

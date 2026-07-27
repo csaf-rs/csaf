@@ -1,5 +1,6 @@
 use config::{Config, ConfigError, Environment, File, FileFormat};
 use serde::Deserialize;
+use tracing::Level;
 
 /// Defaults are compiled into the binary so the service runs correctly even
 /// when no config directory is present at runtime (e.g. a bare binary or a
@@ -29,9 +30,22 @@ pub struct CorsSettings {
 }
 
 #[derive(Debug, Deserialize, Clone)]
+pub struct LoggingSettings {
+    /// Default log filter, used when the `RUST_LOG` environment variable is
+    /// not set. Accepts anything `tracing_subscriber::EnvFilter` understands
+    /// (e.g. `"info"` or `"info,tower_http=debug"`).
+    pub level: String,
+    /// Level at which incoming/outgoing HTTP requests are logged by
+    /// `tower_http`'s `TraceLayer`. Must be one of `trace`, `debug`, `info`,
+    /// `warn`, `error`.
+    pub request_level: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
 pub struct Settings {
     pub server: ServerSettings,
     pub cors: CorsSettings,
+    pub logging: LoggingSettings,
 }
 
 impl Settings {
@@ -73,5 +87,17 @@ impl Settings {
 
     pub fn addr(&self) -> String {
         format!("{}:{}", self.server.host, self.server.port)
+    }
+
+    /// Parses `logging.request_level`, falling back to `INFO` (and logging a
+    /// warning) if it isn't a valid tracing level.
+    pub fn request_log_level(&self) -> Level {
+        self.logging.request_level.parse().unwrap_or_else(|_| {
+            tracing::warn!(
+                "Invalid logging.request_level '{}', falling back to INFO",
+                self.logging.request_level
+            );
+            Level::INFO
+        })
     }
 }

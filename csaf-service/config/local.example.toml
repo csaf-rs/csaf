@@ -8,3 +8,6 @@
 
 [cors]
 permissive = true
+
+[logging]
+request_level = "info"

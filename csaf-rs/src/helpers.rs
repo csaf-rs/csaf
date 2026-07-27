@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime;
 use chrono::NaiveDate;
 use rust_embed::RustEmbed;
 use std::collections::{HashMap, HashSet};
@@ -44,6 +45,24 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyL
 
     entries
 });
+
+pub fn get_latest_cwe_version_for_date(date: &CsafDateTime) -> Option<&'static String> {
+    // Convert to a date (UTC) and compare against the release dates stored in the CWE assets.
+    let doc_date: NaiveDate = match date {
+        CsafDateTime::Valid(v) => v.get_as_utc().date_naive(),
+        _ => return None,
+    };
+
+    let mut latest: Option<(&'static String, &NaiveDate)> = None;
+
+    for (version, (release_date, _)) in CWE_ENTRIES.iter() {
+        if *release_date <= doc_date && latest.as_ref().is_none_or(|l| *release_date > *l.1) {
+            latest = Some((version, release_date));
+        }
+    }
+
+    latest.map(|(version, _)| version)
+}
 
 #[derive(::serde::Deserialize)]
 pub struct ScancodeLicense {

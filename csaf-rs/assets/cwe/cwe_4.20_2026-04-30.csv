@@ -9,7 +9,7 @@
 14	Draft	Compiler Removal of Code to Clear Buffers	1	Allowed
 15	Incomplete	External Control of System or Configuration Setting	1	Allowed
 20	Stable	Improper Input Validation	1	Discouraged
-22	Stable	Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')	1	Allowed
+22	Stable	Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')	1	Allowed-with-Review
 23	Draft	Relative Path Traversal	1	Allowed
 24	Incomplete	Path Traversal: '../filedir'	1	Allowed
 25	Incomplete	Path Traversal: '/../filedir'	1	Allowed
@@ -74,10 +74,10 @@
 88	Draft	Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')	1	Allowed
 89	Stable	Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')	1	Allowed
 90	Draft	Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')	1	Allowed
-91	Draft	XML Injection (aka Blind XPath Injection)	1	Allowed
+91	Draft	XML Injection (aka Blind XPath Injection)	1	Allowed-with-Review
 92	Deprecated	DEPRECATED: Improper Sanitization of Custom Special Characters	1	Prohibited
 93	Draft	Improper Neutralization of CRLF Sequences ('CRLF Injection')	1	Allowed
-94	Draft	Improper Control of Generation of Code ('Code Injection')	1	Allowed
+94	Draft	Improper Control of Generation of Code ('Code Injection')	1	Allowed-with-Review
 95	Incomplete	Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')	1	Allowed
 96	Draft	Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')	1	Allowed
 97	Draft	Improper Neutralization of Server-Side Includes (SSI) Within a Web Page	1	Allowed
@@ -95,7 +95,7 @@
 111	Draft	Direct Use of Unsafe JNI	1	Allowed
 112	Draft	Missing XML Validation	1	Allowed
 113	Incomplete	Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')	1	Allowed
-114	Incomplete	Process Control	1	Allowed-with-Review
+114	Incomplete	Process Control	1	Discouraged
 115	Incomplete	Misinterpretation of Input	1	Allowed
 116	Draft	Improper Encoding or Escaping of Output	1	Allowed-with-Review
 117	Draft	Improper Output Neutralization for Logs	1	Allowed
@@ -232,7 +232,7 @@
 260	Incomplete	Password in Configuration File	1	Allowed
 261	Incomplete	Weak Encoding for Password	1	Allowed
 262	Draft	Not Using Password Aging	1	Allowed
-263	Draft	Password Aging with Long Expiration	1	Allowed
+263	Draft	Password Aging with Long Expiration	1	Discouraged
 266	Draft	Incorrect Privilege Assignment	1	Allowed
 267	Incomplete	Privilege Defined With Unsafe Actions	1	Allowed
 268	Draft	Privilege Chaining	1	Allowed
@@ -246,7 +246,7 @@
 277	Draft	Insecure Inherited Permissions	1	Allowed
 278	Incomplete	Insecure Preserved Inherited Permissions	1	Allowed
 279	Draft	Incorrect Execution-Assigned Permissions	1	Allowed
-280	Draft	Improper Handling of Insufficient Permissions or Privileges 	1	Allowed
+280	Draft	Improper Handling of Insufficient Permissions or Privileges	1	Allowed
 281	Draft	Improper Preservation of Permissions	1	Allowed
 282	Draft	Improper Ownership Management	1	Allowed-with-Review
 283	Draft	Unverified Ownership	1	Allowed
@@ -376,8 +376,8 @@
 423	Deprecated	DEPRECATED: Proxied Trusted Channel	1	Prohibited
 424	Draft	Improper Protection of Alternate Path	1	Allowed-with-Review
 425	Incomplete	Direct Request ('Forced Browsing')	1	Allowed
-426	Stable	Untrusted Search Path	1	Allowed
-427	Draft	Uncontrolled Search Path Element	1	Allowed
+426	Stable	Untrusted Search Path	1	Allowed-with-Review
+427	Draft	Uncontrolled Search Path Element	1	Allowed-with-Review
 428	Draft	Unquoted Search Path or Element	1	Allowed
 430	Incomplete	Deployment of Wrong Handler	1	Allowed
 431	Draft	Missing Handler	1	Allowed
@@ -529,9 +529,9 @@
 595	Incomplete	Comparison of Object References Instead of Object Contents	1	Allowed
 596	Deprecated	DEPRECATED: Incorrect Semantic Object Comparison	1	Prohibited
 597	Draft	Use of Wrong Operator in String Comparison	1	Allowed
-598	Draft	Use of GET Request Method With Sensitive Query Strings	1	Allowed
+598	Draft	Use of HTTP Request With Sensitive Query String	1	Allowed
 599	Incomplete	Missing Validation of OpenSSL Certificate	1	Allowed
-600	Draft	Uncaught Exception in Servlet 	1	Allowed
+600	Draft	Uncaught Exception in Servlet	1	Allowed
 601	Draft	URL Redirection to Untrusted Site ('Open Redirect')	1	Allowed
 602	Draft	Client-Side Enforcement of Server-Side Security	1	Allowed-with-Review
 603	Draft	Use of Client-Side Authentication	1	Allowed
@@ -543,7 +543,7 @@
 610	Draft	Externally Controlled Reference to a Resource in Another Sphere	1	Discouraged
 611	Draft	Improper Restriction of XML External Entity Reference	1	Allowed
 612	Draft	Improper Authorization of Index Containing Sensitive Information	1	Allowed
-613	Incomplete	Insufficient Session Expiration	1	Allowed
+613	Incomplete	Insufficient Session Expiration	1	Allowed-with-Review
 614	Draft	Sensitive Cookie in HTTPS Session Without 'Secure' Attribute	1	Allowed
 615	Incomplete	Inclusion of Sensitive Information in Source Code Comments	1	Allowed
 616	Incomplete	Incomplete Identification of Uploaded File Variables (PHP)	1	Allowed
@@ -658,7 +658,7 @@
 784	Draft	Reliance on Cookies without Validation and Integrity Checking in a Security Decision	1	Allowed
 785	Incomplete	Use of Path Manipulation Function without Maximum-sized Buffer	1	Allowed
 786	Incomplete	Access of Memory Location Before Start of Buffer	1	Discouraged
-787	Draft	Out-of-bounds Write	1	Allowed
+787	Draft	Out-of-bounds Write	1	Allowed-with-Review
 788	Incomplete	Access of Memory Location After End of Buffer	1	Discouraged
 789	Draft	Memory Allocation with Excessive Size Value	1	Allowed
 790	Incomplete	Improper Filtering of Special Elements	1	Allowed-with-Review
@@ -669,7 +669,7 @@
 795	Incomplete	Only Filtering Special Elements at a Specified Location	1	Allowed
 796	Incomplete	Only Filtering Special Elements Relative to a Marker	1	Allowed
 797	Incomplete	Only Filtering Special Elements at an Absolute Position	1	Allowed
-798	Draft	Use of Hard-coded Credentials	1	Allowed
+798	Draft	Use of Hard-coded Credentials	1	Allowed-with-Review
 799	Incomplete	Improper Control of Interaction Frequency	1	Allowed-with-Review
 804	Incomplete	Guessable CAPTCHA	1	Allowed
 805	Incomplete	Buffer Access with Incorrect Length Value	1	Allowed
@@ -722,7 +722,7 @@
 939	Incomplete	Improper Authorization in Handler for Custom URL Scheme	1	Allowed
 940	Incomplete	Improper Verification of Source of a Communication Channel	1	Allowed
 941	Incomplete	Incorrectly Specified Destination in a Communication Channel	1	Allowed
-942	Incomplete	Permissive Cross-domain Policy with Untrusted Domains	1	Allowed
+942	Incomplete	Permissive Cross-domain Security Policy with Untrusted Domains	1	Allowed
 943	Incomplete	Improper Neutralization of Special Elements in Data Query Logic	1	Allowed-with-Review
 1004	Incomplete	Sensitive Cookie Without 'HttpOnly' Flag	1	Allowed
 1007	Incomplete	Insufficient Visual Distinction of Homoglyphs Presented to User	1	Allowed
@@ -733,7 +733,7 @@
 1025	Incomplete	Comparison Using Wrong Factors	1	Allowed
 1037	Incomplete	Processor Optimization Removal or Modification of Security-critical Code	1	Allowed
 1038	Draft	Insecure Automated Optimizations	1	Allowed-with-Review
-1039	Incomplete	Automated Recognition Mechanism with Inadequate Detection or Handling of Adversarial Input Perturbations	1	Allowed-with-Review
+1039	Incomplete	Inadequate Detection or Handling of Adversarial Input Perturbations in Automated Recognition Mechanism	1	Allowed-with-Review
 1041	Incomplete	Use of Redundant Code	1	Prohibited
 1042	Incomplete	Static Member Data Element outside of a Singleton Class Element	1	Prohibited
 1043	Incomplete	Data Element Aggregating an Excessively Large Number of Non-Primitive Elements	1	Prohibited
@@ -762,7 +762,7 @@
 1066	Incomplete	Missing Serialization Control Element	1	Prohibited
 1067	Incomplete	Excessive Execution of Sequential Searches of Data Resource	1	Allowed
 1068	Incomplete	Inconsistency Between Implementation and Documented Design	1	Prohibited
-1069	Incomplete	Empty Exception Block	1	Prohibited
+1069	Incomplete	Empty Exception Block	1	Allowed
 1070	Incomplete	Serializable Data Element Containing non-Serializable Item Elements	1	Prohibited
 1071	Incomplete	Empty Code Block	1	Allowed
 1072	Incomplete	Data Resource Access without Use of Connection Pooling	1	Prohibited
@@ -808,7 +808,7 @@
 1113	Incomplete	Inappropriate Comment Style	1	Prohibited
 1114	Incomplete	Inappropriate Whitespace Style	1	Prohibited
 1115	Incomplete	Source Code Element without Standard Prologue	1	Prohibited
-1116	Incomplete	Inaccurate Comments	1	Allowed
+1116	Incomplete	Inaccurate Source Code Comments	1	Allowed
 1117	Incomplete	Callable with Insufficient Behavioral Summary	1	Prohibited
 1118	Incomplete	Insufficient Documentation of Error Handling Techniques	1	Prohibited
 1119	Incomplete	Excessive Use of Unconditional Branching	1	Prohibited
@@ -898,7 +898,7 @@
 1287	Incomplete	Improper Validation of Specified Type of Input	1	Allowed
 1288	Incomplete	Improper Validation of Consistency within Input	1	Allowed
 1289	Incomplete	Improper Validation of Unsafe Equivalence in Input	1	Allowed
-1290	Incomplete	Incorrect Decoding of Security Identifiers 	1	Allowed
+1290	Incomplete	Incorrect Decoding of Security Identifiers	1	Allowed
 1291	Draft	Public Key Re-Use for Signing both Debug and Production Code	1	Allowed
 1292	Draft	Incorrect Conversion of Security Identifiers	1	Allowed
 1293	Draft	Missing Source Correlation of Multiple Independent Data	1	Allowed
@@ -962,3 +962,8 @@
 1422	Incomplete	Exposure of Sensitive Information caused by Incorrect Data Forwarding during Transient Execution	1	Allowed
 1423	Incomplete	Exposure of Sensitive Information caused by Shared Microarchitectural Predictor State that Influences Transient Execution	1	Allowed
 1426	Incomplete	Improper Validation of Generative AI Output	1	Discouraged
+1427	Incomplete	Improper Neutralization of Input Used for LLM Prompting	1	Allowed
+1428	Incomplete	Reliance on HTTP instead of HTTPS	1	Allowed
+1429	Incomplete	Missing Security-Relevant Feedback for Unexecuted Operations in Hardware Interface	1	Allowed
+1431	Incomplete	Driving Intermediate Cryptographic State/Results to Hardware Module Outputs	1	Allowed
+1434	Draft	Insecure Setting of Generative AI/ML Model Inference Parameters	1	Allowed

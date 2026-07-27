@@ -195,7 +195,7 @@ impl ContentTrait for Content {
     }
 
     fn get_ssvc_v2(&self) -> Result<SelectionList, serde_json::Error> {
-        serde_json::from_value::<SelectionList>(Value::Object(self.ssvc_v2.clone()))
+        SelectionList::deserialize(&self.ssvc_v2)
     }
 
     fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>> {

@@ -1,3 +1,4 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime;
 use chrono::NaiveDate;
 use rust_embed::RustEmbed;
 use std::collections::{HashMap, HashSet};
@@ -8,7 +9,7 @@ use std::sync::LazyLock;
 #[include = "*.csv"]
 struct CweCsvFiles;
 
-pub type CweReleaseDateAndData = (NaiveDate, HashMap<String, String>);
+pub type CweReleaseDateAndData = (NaiveDate, HashMap<String, (String, String)>);
 pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyLock::new(|| {
     let mut entries = HashMap::new();
 
@@ -26,15 +27,16 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyL
                 date_str => NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
                     .expect("Date part of filenames in assets/cwe should be in 'YYYY-MM-DD' format."),
             };
-            let mut versioned_data: HashMap<String, String> = HashMap::new();
+            let mut versioned_data: HashMap<String, (String, String)> = HashMap::new();
             let content =
                 std::str::from_utf8(&file.data).expect("Files in assets/cwe should be valid UTF-8 encoded text files.");
             for line in content.lines() {
                 let parts: Vec<&str> = line.split('\t').collect();
-                if parts.len() >= 2 {
+                if parts.len() >= 3 {
                     let id = format!("CWE-{}", parts[0].trim());
-                    let name = parts[1].trim().to_string();
-                    versioned_data.insert(id, name);
+                    let status = parts[1].trim().to_string();
+                    let name = parts[2].trim().to_string();
+                    versioned_data.insert(id, (status, name));
                 }
             }
             entries.insert(version.to_string(), (release_date, versioned_data));
@@ -43,6 +45,24 @@ pub static CWE_ENTRIES: LazyLock<HashMap<String, CweReleaseDateAndData>> = LazyL
 
     entries
 });
+
+pub fn get_latest_cwe_version_for_date(date: &CsafDateTime) -> Option<&'static String> {
+    // Convert to a date (UTC) and compare against the release dates stored in the CWE assets.
+    let doc_date: NaiveDate = match date {
+        CsafDateTime::Valid(v) => v.get_as_utc().date_naive(),
+        _ => return None,
+    };
+
+    let mut latest: Option<(&'static String, &NaiveDate)> = None;
+
+    for (version, (release_date, _)) in CWE_ENTRIES.iter() {
+        if *release_date <= doc_date && latest.as_ref().is_none_or(|l| *release_date > *l.1) {
+            latest = Some((version, release_date));
+        }
+    }
+
+    latest.map(|(version, _)| version)
+}
 
 #[derive(::serde::Deserialize)]
 pub struct ScancodeLicense {

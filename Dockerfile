@@ -25,9 +25,9 @@ RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /app/target/release/csaf-service /usr/local/bin/csaf-service
 
-ENV CSAF_SERVICE_PORT=8082
+ENV CSAF_SERVICE__SERVER__PORT=8082
 # Listen on all interfaces for container compatibility
-ENV CSAF_SERVICE_HOST=0.0.0.0
+ENV CSAF_SERVICE__SERVER__HOST=0.0.0.0
 EXPOSE 8082
 
 ENTRYPOINT ["csaf-service"]

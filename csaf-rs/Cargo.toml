@@ -38,7 +38,6 @@ spdx = "0.13.4"
 oxilangtag = "0.1.5"
 ssvc = "0.2.1"
 strum = { version = "0.28", features = ["derive"] }
-ssvc = "0.1.0"
 thiserror = { version = "2" }
 utoipa = { version = "5", optional = true }
 

@@ -119,6 +119,9 @@ fn from_potential_legacy_name(name: &str) -> String {
         "recommendedTest_",
         "informativeTest_",
     ];
+    if name == "csaf_2_0_strict" {
+        return "schema".to_string();
+    }
     for prefix in PREFIXES {
         if let Some(rest) = name.strip_prefix(prefix) {
             return rest.replace('_', ".");
@@ -238,13 +241,14 @@ pub(crate) async fn validate(
         },
     };
 
-    if result.num_not_found > 0 {
-        return Err(error_response(
-            StatusCode::BAD_REQUEST,
-            "TEST_NOT_FOUND",
-            format!("One or more tests not found: {test_ids:?}"),
-        ));
-    }
+    // ToDo reenable this when all tests are implemented to catch bad input.
+    // if result.num_not_found > 0 {
+    //     return Err(error_response(
+    //         StatusCode::BAD_REQUEST,
+    //         "TEST_NOT_FOUND",
+    //         format!("One or more tests not found: {test_ids:?}"),
+    //     ));
+    // }
     Ok(Json(to_legacy_response(result)))
 }
 

@@ -8,6 +8,7 @@
 /// `String` tuple struct in the `schema/*/schema.rs` and `schema/*/testcases_schema.rs` files.
 macro_rules! impl_string_newtype_ergonomics {
     ($ident:ident) => {
+        // newtype.as_ref() returns &str without deref
         impl ::std::convert::AsRef<str> for $ident {
             fn as_ref(&self) -> &str {
                 &self.0

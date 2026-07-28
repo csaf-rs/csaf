@@ -72,6 +72,24 @@ let single_test_result = validate_by_test(&document, "6.1.13");
 let test_ids_in_basic_preset = CommonSecurityAdvisoryFramework::tests_in_preset("basic");
 ```
 
+#### Cargo features
+
+`validation` (default) — the validation framework: the 6.x test implementations, the trait and rich-type layer, and the document loaders.
+Disabling it leaves a models-only build: the generated `schema::csaf2_0`/`schema::csaf2_1` serde types, with `serde`, `serde_json`, `regress`, and `uuid` as the only dependencies.
+The generated types enforce the structural schema — required fields, enums, string patterns, length bounds — on deserialization and on every constructor; the semantic tests require `validation`.
+
+```toml
+csaf-rs = { version = "0.5", default-features = false }
+```
+
+```rust
+use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
+
+let document: CommonSecurityAdvisoryFramework = serde_json::from_str(&json)?;
+```
+
+`converter` — the document conversion helpers; implies `validation`.
+
 ### Go 
 
 To use this library you have to download the binaries for your specific operating system and platform. A download script is provided to help you with that.

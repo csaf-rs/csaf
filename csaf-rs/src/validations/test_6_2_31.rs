@@ -1,5 +1,3 @@
-use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
-use crate::csaf::traits::product_tree_trait::BranchTrait;
 use crate::csaf::traits::vulnerabilities::product_ident_helper_trait::ProductIdentificationHelperTrait;
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
@@ -14,25 +12,6 @@ fn generate_hardware_software_mix_error(product_id: &str, base_path: &str) -> Va
     }
 }
 
-fn check_product<P: ProductTrait>(
-    product: &P,
-    instance_path: &str,
-    valid_path_references: &HashSet<String>,
-    errors: &mut Vec<ValidationError>,
-) {
-    let product_id = product.get_product_id();
-
-    if let Some(helper) = product.get_product_identification_helper() {
-        let has_serial = helper.get_serial_numbers().is_some_and(|sn| !sn.is_empty());
-        let has_model = helper.get_model_numbers().is_some_and(|mn| !mn.is_empty());
-
-        // If it has hardware ID but is NOT in the paths registry -> Error
-        if (has_serial || has_model) && !valid_path_references.contains(product_id) {
-            errors.push(generate_hardware_software_mix_error(product_id, instance_path));
-        }
-    }
-}
-
 /// Test 6.2.31: Hardware and Software Mix
 pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let Some(product_tree) = doc.get_product_tree() else {
@@ -40,40 +19,24 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
     };
     let mut errors: Vec<ValidationError> = vec![];
 
-    let mut valid_path_references = HashSet::new();
-
-    let mut valid_path_references = HashSet::new();
+    let mut valid_path_references: HashSet<String> = HashSet::new();
     for (id, _) in product_tree.get_relationships_product_references() {
         valid_path_references.insert(id.to_string());
     }
 
-    // Check Branches
-    product_tree.visit_all_branches(&mut |branch, path| {
-        if let Some(product) = branch.get_product() {
-            check_product(product, &format!("{path}/product"), &valid_path_references, &mut errors);
+    product_tree.visit_all_products(&mut |product, instance_path| {
+        if let Some(helper) = product.get_product_identification_helper() {
+            let has_serial = helper.get_serial_numbers().is_some_and(|sn| !sn.is_empty());
+            let has_model = helper.get_model_numbers().is_some_and(|mn| !mn.is_empty());
+
+            if (has_serial || has_model) && !valid_path_references.contains(product.get_product_id()) {
+                errors.push(generate_hardware_software_mix_error(
+                    product.get_product_id(),
+                    &instance_path,
+                ));
+            }
         }
     });
-
-    // Check Full Product Names
-    for (i, fpn) in product_tree.get_full_product_names().iter().enumerate() {
-        check_product(
-            fpn,
-            &format!("/product_tree/full_product_names/{i}"),
-            &valid_path_references,
-            &mut errors,
-        );
-    }
-
-    // Check Product Paths anchors
-    let prefix = product_tree.get_product_path_prefix();
-    for (i, rel) in product_tree.get_product_paths().iter().enumerate() {
-        check_product(
-            rel.get_full_product_name(),
-            &format!("{prefix}/{i}/full_product_name"),
-            &valid_path_references,
-            &mut errors,
-        );
-    }
 
     if errors.is_empty() { Ok(()) } else { Err(errors) }
 }

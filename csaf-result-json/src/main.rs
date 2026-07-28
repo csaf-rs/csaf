@@ -173,9 +173,6 @@ fn main() -> Result<(), anyhow::Error> {
     }
 }
 
-/// Validate a CSAF document of the specified version with the provided arguments.
-///
-/// This prints the results of the tests on stdout.
 /// Load a document of the given version from any JSON source and validate it.
 fn load_and_validate<S: JsonSource>(source: S, version: &str, tests: &[&str]) -> Result<ValidationResult> {
     match version {
@@ -185,6 +182,9 @@ fn load_and_validate<S: JsonSource>(source: S, version: &str, tests: &[&str]) ->
     }
 }
 
+/// Validate a CSAF document of the specified version with the provided arguments.
+///
+/// This prints the results of the tests on stdout.
 fn validate_document<T>(document: T, version: &str, tests: &[&str]) -> ValidationResult
 where
     T: Validatable,

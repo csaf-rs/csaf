@@ -59,7 +59,7 @@ mod tests {
         // S01: Edge case for 6.2.31
         // These are the 6 failing cases defined in your updated JSON
         let s01_errors = vec![
-            generate_hardware_software_mix_error("CSAFPID-B2", "/product_tree/branches/1/product"),
+            generate_hardware_software_mix_error("CSAFPID-B2", "/product_tree/branches/0/product"),
             generate_hardware_software_mix_error("CSAFPID-F1", "/product_tree/full_product_names/0"),
             generate_hardware_software_mix_error("CSAFPID-F2", "/product_tree/full_product_names/1"),
             generate_hardware_software_mix_error("CSAFPID-F3", "/product_tree/full_product_names/2"),

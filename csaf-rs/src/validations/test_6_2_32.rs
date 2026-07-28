@@ -5,6 +5,7 @@ use crate::csaf::traits::vulnerabilities::{
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
+use crate::csaf::types::purl::csaf_purl::CsafPurl;
 
 fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str, base_path: &str) -> ValidationError {
     ValidationError {
@@ -61,7 +62,10 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             // Collect PURLs
             if let Some(purls) = helper.get_purls() {
                 for purl in purls {
-                    let key = format!("{purl:?}"); // format necessary due to enum debug representation
+                    let key = match purl {
+                        CsafPurl::Valid(valid) => valid.normalized_purl(),
+                        CsafPurl::Invalid(err) => err.original_purl(), // fallback for invalid PURLs
+                    }; // solving Enum representation as Match with normalized if Valid
                     purl_groups
                         .entry(key)
                         .or_default()

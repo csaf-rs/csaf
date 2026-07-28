@@ -153,13 +153,13 @@ pub fn test_6_2_19_cvss_for_fixed_products(doc: &impl CsafTrait) -> Result<(), V
                 let content = metric.get_content();
                 for (p_i, product_id) in metric.get_products().enumerate() {
                     // if the metric/score is relevant to a product
-                    if let Some(statuses) = fixed_products.get(product_id.as_str()) {
+                    if let Some(statuses) = fixed_products.get(product_id) {
                         // and the product does not have an env score of zero, generate an error
                         if !content_has_all_cvss_env_score_zero(content) {
                             errors
                                 .get_or_insert_default()
                                 .push(create_cvss_for_fixed_products_error(
-                                    product_id.as_str(),
+                                    product_id,
                                     statuses,
                                     &format!("/vulnerabilities/{v_i}/{metrics_path}/{m_i}/products/{p_i}"),
                                 ));

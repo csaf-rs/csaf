@@ -9,6 +9,7 @@ This is work-in-progress.
 - `csaf-validator` contains a command line tool to validate CSAF documents.
 - `csaf-rs` contains the actual validator library which currently publishes a crate to [crates.io](https://crates.io/crates/csaf-rs).
 - `csaf-ffi` contains [UniFFI](https://github.com/mozilla/uniffi-rs) bindings that expose `csaf-rs` to other languages (Go, WASM/TypeScript, and more).
+- `csaf-service` contains a web API that exposes the validation functionality of `csaf-rs` via HTTP endpoints.
 - `go/` contains generated Go bindings and integration tests.
 - `wasm/` contains generated WASM/TypeScript bindings and integration tests.
 
@@ -169,47 +170,6 @@ cd go
 go test -v ./csaf_ffi/
 ```
 
-As a demonstration there is a small CLI and Webserver example included.
-
-##### Cli
-
-```bash
-cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/example/ <PATH_TO_CSAF_FILE>
-```
-
-##### Web server (API)
-
-```bash
-cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/webapi/
-```
-
-The server listens on port `8080` by default. Set the `PORT` environment variable
-to use a different port:
-
-```bash
-PORT=9090 go run -buildvcs=false ./cmd/webapi/
-```
-
-*Endpoints*
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/validate/json` | Validate a CSAF document sent as a raw JSON body |
-| `POST` | `/api/validate/upload` | Validate a CSAF document sent as a multipart file upload (field: `file`) |
-
-Both endpoints accept the optional query parameter `?preset=basic` (default),
-`?preset=extended`, or `?preset=full`.
-
-*Example:*
-
-```bash
-curl -X POST http://localhost:8080/api/validate/json?preset=basic \
-  -H 'Content-Type: application/json' \
-  --data-binary @my-csaf.json
-```
-
 #### WASM
 
 The WASM bindings are generated via [uniffi-bindgen-js](https://crates.io/crates/uniffi-bindgen-js).
@@ -223,6 +183,20 @@ cargo install uniffi-bindgen-js --version 0.2.1
 ```
 
 This creates TypeScript + WASM output in `wasm/`. 
+
+
+## Docker
+
+You can also run the service via Docker. To build and run the container, use the following commands:
+```bash
+docker build -t csaf-service .
+docker run -p 8082:8082 csaf-service
+```
+> Note: This is intended for development and testing purposes only, as the container is not hardened for production use.
+
+You can then access the service at `http://localhost:8082` and navigate to `/swagger-ui` for the API documentation.
+For further configuration options, please refer to the [csaf-service README](csaf-service/README.md).
+
 
 ## Implementation status in regards to the Standard
 

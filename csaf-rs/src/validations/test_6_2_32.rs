@@ -115,28 +115,26 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                 }
             }
 
-            // Collect CPEs
-            if let Some(cpes) = helper.get_cpes() {
-                for cpe in cpes {
-                    let key = format!("cpe:{}", cpe.as_str());
-                    cpe_groups
-                        .entry(key)
-                        .or_default()
-                        .push((product_id.clone(), path_str.clone()));
-                }
+            // Collect CPE
+            if let Some(cpe) = helper.get_cpe() {
+                cpe_groups
+                    .entry(cpe.as_str())
+                    .or_default()
+                    .push((product_id.clone(), path_str.clone()));
+
             }
 
             // Collect SBOMs
             for sbom in helper.get_sbom_urls().unwrap_or_default() {
                 sbom_groups
-                    .entry(format!("sbom:{sbom}"))
+                    .entry(sbom)
                     .or_default()
                     .push((product_id.clone(), path_str.clone()));
             }
 
             // Collect X-Generic URIs
             for x_uri in helper.get_x_generic_uris().unwrap_or_default() {
-                let key = format!("ns:{};uri:{}", x_uri.get_namespace(), x_uri.get_uri());
+                let key = format!("{};{}", x_uri.get_namespace(), x_uri.get_uri());
                 x_uri_groups
                     .entry(key)
                     .or_default()

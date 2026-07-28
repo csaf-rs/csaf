@@ -33,19 +33,6 @@
     "branches": [
       {
         "category": "vendor",
-        "name": "V1",
-        "product": {
-          "name": "B1",
-          "product_id": "CSAFPID-B1",
-          "product_identification_helper": {
-            "serial_numbers": [
-              "SN"
-            ]
-          }
-        }
-      },
-      {
-        "category": "vendor",
         "name": "V2",
         "product": {
           "name": "B2",

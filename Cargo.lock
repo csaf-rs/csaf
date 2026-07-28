@@ -507,7 +507,7 @@ dependencies = [
  "oxilangtag",
  "packageurl",
  "regex",
- "regress 0.11.1",
+ "regress",
  "rstest",
  "rust-embed",
  "semver",
@@ -1509,16 +1509,6 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "regress"
-version = "0.10.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2057b2325e68a893284d1538021ab90279adac1139957ca2a74426c6f118fb48"
-dependencies = [
- "hashbrown 0.16.1",
- "memchr",
-]
-
-[[package]]
-name = "regress"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "158a764437582235e3501f683b93a0a6f8d825d04a789dbe5ed30b8799b8908a"
@@ -1828,18 +1818,18 @@ dependencies = [
 
 [[package]]
 name = "ssvc"
-version = "0.1.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aebb72b9145f9d78b72421f94170b4ba8059a3d08e8e5a3d3a13817fd209c886"
+checksum = "591d8eb7f7ab8f67baa6250ede8c342b3022528020e360055528afbadae69042"
 dependencies = [
  "chrono",
  "prettyplease 0.2.37",
- "regress 0.10.5",
+ "regress",
  "rust-embed",
  "serde",
  "serde_json",
  "syn 2.0.117",
- "typify 0.6.2",
+ "typify",
 ]
 
 [[package]]
@@ -2065,14 +2055,14 @@ dependencies = [
  "prettyplease 0.3.0",
  "proc-macro2",
  "quote",
- "regress 0.11.1",
+ "regress",
  "rstest",
  "schemars",
  "serde",
  "serde_json",
  "syn 3.0.3",
  "thiserror 2.0.19",
- "typify 0.7.0",
+ "typify",
 ]
 
 [[package]]
@@ -2083,42 +2073,12 @@ checksum = "40ce102ab67701b8526c123c1bab5cbe42d7040ccfd0f64af1a385808d2f43de"
 
 [[package]]
 name = "typify"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc0b89f47309feaeb23c4509c15c9a04234f7deccef6f96c3bfe95319819a304"
-dependencies = [
- "typify-impl 0.6.2",
- "typify-macro 0.6.2",
-]
-
-[[package]]
-name = "typify"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8cdc2e612ea322c6e232d46a0b34607c8eb28978fd6060ecfb139f2a50db8d5f"
 dependencies = [
- "typify-impl 0.7.0",
- "typify-macro 0.7.0",
-]
-
-[[package]]
-name = "typify-impl"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa7b026f540b148b81043c720889dbb942b08659aa8a43f624ac4f04dbfc1861"
-dependencies = [
- "heck",
- "log",
- "proc-macro2",
- "quote",
- "regress 0.11.1",
- "schemars",
- "semver",
- "serde",
- "serde_json",
- "syn 2.0.117",
- "thiserror 2.0.19",
- "unicode-ident",
+ "typify-impl",
+ "typify-macro",
 ]
 
 [[package]]
@@ -2131,7 +2091,7 @@ dependencies = [
  "log",
  "proc-macro2",
  "quote",
- "regress 0.11.1",
+ "regress",
  "schemars",
  "semver",
  "serde",
@@ -2139,23 +2099,6 @@ dependencies = [
  "syn 2.0.117",
  "thiserror 2.0.19",
  "unicode-ident",
-]
-
-[[package]]
-name = "typify-macro"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39ed96c57f06ae0839416b986921a98f18b220da63bbb243a8570a00c8492183"
-dependencies = [
- "proc-macro2",
- "quote",
- "schemars",
- "semver",
- "serde",
- "serde_json",
- "serde_tokenstream",
- "syn 2.0.117",
- "typify-impl 0.6.2",
 ]
 
 [[package]]
@@ -2172,7 +2115,7 @@ dependencies = [
  "serde_json",
  "serde_tokenstream",
  "syn 2.0.117",
- "typify-impl 0.7.0",
+ "typify-impl",
 ]
 
 [[package]]

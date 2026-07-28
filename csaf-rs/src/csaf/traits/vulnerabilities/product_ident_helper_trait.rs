@@ -47,7 +47,7 @@ pub trait ProductIdentificationHelperTrait {
     fn get_hashes(&self) -> Option<Vec<Self::HashType>>;
 
     /// Returns the CPEs (Common Platform Enumeration).
-    fn get_cpes(&self) -> Option<Vec<Self::CpeType>>;
+    fn get_cpe(&self) -> Option<Self::CpeType>;
 
     /// Returns the SBOM URLs.
     fn get_sbom_urls(&self) -> Option<Vec<String>>;
@@ -89,8 +89,8 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
         Some(self.hashes.clone())
     }
 
-    fn get_cpes(&self) -> Option<Vec<Self::CpeType>> {
-        self.cpe.as_ref().map(|v| vec![v.clone()])
+    fn get_cpe(&self) -> Option<Self::CpeType> {
+        self.cpe.as_ref().cloned()
     }
 
     fn get_sbom_urls(&self) -> Option<Vec<String>> {
@@ -143,8 +143,8 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
         self.hashes.clone()
     }
 
-    fn get_cpes(&self) -> Option<Vec<Self::CpeType>> {
-        self.cpe.as_ref().map(|v| vec![v.clone()])
+    fn get_cpe(&self) -> Option<Self::CpeType> {
+        self.cpe.as_ref().cloned()
     }
 
     fn get_sbom_urls(&self) -> Option<Vec<String>> {

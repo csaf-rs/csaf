@@ -84,7 +84,7 @@ fn load_and_validate<S: JsonSource>(source: S, version: &str, args: &Args) -> Re
             let document = load_document_2_1(source)?;
             Ok(validate_document(document, "2.1", args))
         },
-        _ => bail!(format!("Invalid CSAF version: {version}")),
+        _ => bail!("Invalid CSAF version: {version}"),
     }
 }
 

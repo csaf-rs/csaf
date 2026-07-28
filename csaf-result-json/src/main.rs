@@ -181,7 +181,7 @@ fn load_and_validate<S: JsonSource>(source: S, version: &str, tests: &[&str]) ->
     match version {
         "2.0" => Ok(validate_document(load_document_2_0(source)?, "2.0", tests)),
         "2.1" => Ok(validate_document(load_document_2_1(source)?, "2.1", tests)),
-        _ => bail!(format!("Invalid CSAF version: {version}")),
+        _ => bail!("Invalid CSAF version: {version}"),
     }
 }
 

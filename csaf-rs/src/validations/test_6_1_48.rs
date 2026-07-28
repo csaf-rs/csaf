@@ -1,7 +1,5 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
-use ssvc::selection_list::SelectionList;
-use ssvc::validation::SsvcError;
 
 fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
     ValidationError {
@@ -12,14 +10,14 @@ fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usi
 
 /// Test function for invocation by users, does not permit usage of the "test" namespace.
 pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    test_6_1_48_ssvc_decision_points_internal(doc, ssvc::validation::validate_selection_list)
+    test_6_1_48_ssvc_decision_points_internal(doc, false)
 }
 
 /// Internal, actual test function allowing usage of a custom validation function, i.e.,
 /// a function permitting the reserved "test" namespace for testing.
 fn test_6_1_48_ssvc_decision_points_internal(
     doc: &impl CsafTrait,
-    validation_fn: fn(&SelectionList) -> Result<(), Vec<SsvcError>>,
+    allow_test_namespaces: bool,
 ) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
@@ -30,8 +28,10 @@ fn test_6_1_48_ssvc_decision_points_internal(
                 if content.has_ssvc_v2() {
                     match content.get_ssvc_v2() {
                         Ok(ssvc) => {
-                            if let Err(ssvc_errors) = validation_fn(&ssvc) {
-                                let validation_errors: Vec<ValidationError> = ssvc_errors
+                            let result = ssvc::validation::validate_selection_list(&ssvc, allow_test_namespaces);
+                            if !result.success {
+                                let validation_errors: Vec<ValidationError> = result
+                                    .errors
                                     .into_iter()
                                     .map(|ssvc_error| {
                                         let path_suffix = ssvc_error.instance_path.join("/");
@@ -66,7 +66,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
         doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
     ) -> Result<(), Vec<ValidationError>> {
         // Use the internal validation function allowing usage of the "test" namespace.
-        test_6_1_48_ssvc_decision_points_internal(doc, ssvc::validation::validate_selection_list_allow_test)
+        test_6_1_48_ssvc_decision_points_internal(doc, true)
     }
 }
 
@@ -86,12 +86,26 @@ mod tests {
             message: "Unknown SSVC decision point 'ssvc::SIs' with version '2.0.0'".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
         }]);
-        let case_03 = Err(vec![ValidationError {
-            message:
-                "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
-                    .to_string(),
-            instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
-        }]);
+        let case_03 = Err(vec![
+            ValidationError {
+                message:
+                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
+                        .to_string(),
+                instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
+            },
+            ValidationError {
+                message:
+                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
+                        .to_string(),
+                instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
+            },
+            ValidationError {
+                message:
+                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
+                        .to_string(),
+                instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/3".to_string(),
+            },
+        ]);
         let case_04 = Err(vec![ValidationError {
             message: "Unknown SSVC decision point 'ssvc::SI' with version '1.9.7'".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),

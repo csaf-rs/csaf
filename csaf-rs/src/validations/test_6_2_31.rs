@@ -42,12 +42,9 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
 
     let mut valid_path_references = HashSet::new();
 
-    for path in product_tree.get_product_paths() {
-        valid_path_references.insert(path.get_beginning_product_reference().to_owned());
-
-        for next in path.get_subpath_product_references() {
-            valid_path_references.insert(next.to_owned());
-        }
+    let mut valid_path_references = HashSet::new();
+    for (id, _) in product_tree.get_relationships_product_references() {
+        valid_path_references.insert(id.to_string());
     }
 
     // Check Branches

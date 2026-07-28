@@ -13,8 +13,8 @@ pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<
     test_6_1_48_ssvc_decision_points_internal(doc, false)
 }
 
-/// Internal, actual test function allowing usage of a custom validation function, i.e.,
-/// a function permitting the reserved "test" namespace for testing.
+/// Internal, actual test function. Set `allow_test_namespaces` to `true` to permit the reserved
+/// "test" namespace, which is used in test fixtures but disallowed in production.
 fn test_6_1_48_ssvc_decision_points_internal(
     doc: &impl CsafTrait,
     allow_test_namespaces: bool,

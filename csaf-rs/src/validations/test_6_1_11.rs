@@ -26,15 +26,21 @@ fn generate_incorrect_cwe_version_error(version: &str, path: &str) -> Validation
     }
 }
 
-fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Vec<ValidationError>) {
+fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Option<Vec<ValidationError>>) {
     if !CWE_ENTRIES.contains_key(version) {
-        errors.push(generate_incorrect_cwe_version_error(version, path));
+        errors
+            .get_or_insert_default()
+            .push(generate_incorrect_cwe_version_error(version, path));
     } else if let Some((_, cwe_name)) = CWE_ENTRIES[version].1.get(&cwe.id) {
         if *cwe_name != cwe.name {
-            errors.push(generate_incorrect_cwe_name_error(&cwe.id, cwe_name, version, path));
+            errors
+                .get_or_insert_default()
+                .push(generate_incorrect_cwe_name_error(&cwe.id, cwe_name, version, path));
         }
     } else {
-        errors.push(generate_incorrect_cwe_error(&cwe.id, version, path));
+        errors
+            .get_or_insert_default()
+            .push(generate_incorrect_cwe_error(&cwe.id, version, path));
     }
 }
 
@@ -52,7 +58,7 @@ fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static String> {
 
 pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors = Vec::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
 
     // Map occurrence paths indexes to CVE identifiers
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
@@ -93,10 +99,7 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Va
         }
     }
 
-    match errors.len() {
-        0 => Ok(()),
-        _ => Err(errors),
-    }
+    errors.map_or(Ok(()), Err)
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>

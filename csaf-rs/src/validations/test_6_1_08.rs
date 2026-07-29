@@ -21,7 +21,7 @@ static CVSS40_VALIDATOR: LazyLock<Validator> =
 /// 6.1.8 Invalid CVSS
 /// Invalid CVSS object according to scheme
 pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Vec<ValidationError> = Vec::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
@@ -61,7 +61,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<Validati
         }
     }
 
-    if errors.is_empty() { Ok(()) } else { Err(errors) }
+    errors.map_or(Ok(()), Err)
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_8, test_6_1_08_invalid_cvss);
@@ -81,11 +81,13 @@ fn evaluate_cvss(
     validator: &Validator,
     base_path: &str,
     metric: CsafVulnerabilityMetric,
-    errors: &mut Vec<ValidationError>,
+    errors: &mut Option<Vec<ValidationError>>,
 ) {
     let value = serde_json::to_value(cvss_value).unwrap();
     for error in validator.iter_errors(&value) {
-        errors.push(create_validation_error(error.to_string(), base_path, metric.clone()));
+        errors
+            .get_or_insert_default()
+            .push(create_validation_error(error.to_string(), base_path, metric.clone()));
     }
 }
 

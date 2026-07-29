@@ -36,18 +36,18 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
     }
 
     // Generate an error for each product group ID that is defined more than once
-    let errors: Vec<ValidationError> = product_group_ids_with_paths
-        .iter()
-        .filter(|(_, paths)| paths.len() > 1)
-        .flat_map(|(group_id, paths)| {
-            paths
-                .iter()
-                .map(move |path| generate_multiple_group_id_definition_error(group_id, path))
-        })
-        .collect();
+    let mut errors: Option<Vec<ValidationError>> = None;
+    for (group_id, paths) in &product_group_ids_with_paths {
+        if paths.len() > 1 {
+            for path in paths {
+                errors
+                    .get_or_insert_default()
+                    .push(generate_multiple_group_id_definition_error(group_id, path));
+            }
+        }
+    }
 
-    // If there are no errors, the test passes, otherwise return the errors
-    if errors.is_empty() { Ok(()) } else { Err(errors) }
+    errors.map_or(Ok(()), Err)
 }
 
 crate::test_validation::impl_validator!(

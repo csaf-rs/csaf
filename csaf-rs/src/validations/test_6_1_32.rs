@@ -3,7 +3,7 @@ use crate::validation::ValidationError;
 
 fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> ValidationError {
     ValidationError {
-        message: "A flag must have at least of the elements group_ids or product_ids".to_string(),
+        message: "A flag must have at least one of the elements group_ids or product_ids".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/flags/{flag_index}"),
     }
 }

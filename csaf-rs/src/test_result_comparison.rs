@@ -50,7 +50,7 @@ pub fn compare_test_results(
                     expected_err.message == actual_err.message && expected_err.instance_path == actual_err.instance_path
                 }) {
                     errors.push(format!(
-                        "CSAF {csaf_version}: Test {test_id} case {case_num}: Found not expected error: '{}', path: '{}'",
+                        "CSAF {csaf_version}: Test {test_id} case {case_num}: Found unexpected error: '{}', path: '{}'",
                         actual_err.message, actual_err.instance_path
                     ));
                 }

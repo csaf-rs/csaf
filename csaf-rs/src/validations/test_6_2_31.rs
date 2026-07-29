@@ -21,7 +21,7 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
 
     let mut valid_path_references: HashSet<String> = HashSet::new();
     for (id, _) in product_tree.get_relationships_product_references() {
-        valid_path_references.insert(id.to_string());
+        valid_path_references.insert(id.clone());
     }
 
     product_tree.visit_all_products(&mut |product, instance_path| {
@@ -32,7 +32,7 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
             if (has_serial || has_model) && !valid_path_references.contains(product.get_product_id()) {
                 errors.push(generate_hardware_software_mix_error(
                     product.get_product_id(),
-                    &instance_path,
+                    instance_path,
                 ));
             }
         }

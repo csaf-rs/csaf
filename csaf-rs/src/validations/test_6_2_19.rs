@@ -8,6 +8,7 @@ use crate::validation::ValidationError;
 use cvss_rs::Cvss;
 use cvss_rs::v2_0::{CvssV2, TargetDistribution};
 use cvss_rs::v3::{CvssV3, Impact};
+use cvss_rs::v4_0::{CvssV4, ModifiedImpact, ModifiedSubsequentImpact};
 
 fn create_cvss_for_fixed_products_error(product_id: &str, instance_path: String) -> ValidationError {
     ValidationError {
@@ -74,9 +75,53 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> bool {
     }
 }
 
-/// Returns the JSON keys (`cvss_v2` and/or `cvss_v3`) of the CVSS objects in this content whose
-/// environmental score is not 0. An empty result means every present CVSS score (if any) has an
-/// environmental score of 0.
+/// Checks if a CVSS v4 score has an overall score of 0.
+///
+/// CVSS v4 has no separate environmental score; the modified environmental metrics directly
+/// influence the single overall/base score, so a score of 0 is checked instead.
+fn cvss_v4_has_env_score_zero(cvss_v4: CvssV4) -> bool {
+    let has_all_modified_impacts_zeroed = |cvss_v4: &CvssV4| -> bool {
+        matches!(
+            (
+                &cvss_v4.modified_vuln_confidentiality_impact,
+                &cvss_v4.modified_vuln_integrity_impact,
+                &cvss_v4.modified_vuln_availability_impact,
+                &cvss_v4.modified_sub_confidentiality_impact,
+                &cvss_v4.modified_sub_integrity_impact,
+                &cvss_v4.modified_sub_availability_impact,
+            ),
+            (
+                Some(ModifiedImpact::None),
+                Some(ModifiedImpact::None),
+                Some(ModifiedImpact::None),
+                Some(ModifiedSubsequentImpact::Negligible),
+                Some(ModifiedSubsequentImpact::Negligible),
+                Some(ModifiedSubsequentImpact::Negligible),
+            )
+        )
+    };
+
+    // check the overall score provided in json
+    if is_zero_score(cvss_v4.base_score) {
+        return true;
+    }
+
+    // check if json contains props that would reduce the overall score to zero
+    if has_all_modified_impacts_zeroed(&cvss_v4) {
+        return true;
+    }
+
+    // generate cvss object from vector
+    match CvssV4::from_str(&cvss_v4.vector_string) {
+        Err(_) => false, // #409 nondeterminable
+        // check if vector contains props that would reduce the overall score to zero
+        Ok(from_vector) => has_all_modified_impacts_zeroed(&from_vector),
+    }
+}
+
+/// Returns the JSON keys (`cvss_v2`, `cvss_v3`, and/or `cvss_v4`) of the CVSS objects in this
+/// content whose environmental (resp. overall) score is not 0. An empty result means every
+/// present CVSS score (if any) has a score of 0.
 fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<&'static str> {
     let mut failing_keys = Vec::new();
 
@@ -107,6 +152,21 @@ fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<&'static str> {
         };
         if !v3_is_zero {
             failing_keys.push("cvss_v3");
+        }
+    }
+
+    // check if the cvss_v4 prop is set (CSAF 2.1 only)
+    if let Some(cvss_v4) = content.get_cvss_v4() {
+        // deserialize cvss, we only care about result, not errors
+        let v4_is_zero = match deserialize_cvss(cvss_v4, "", &mut None) {
+            // TODO: Nondeterminable #409, could not deserialize
+            None => false,
+            Some(Cvss::V4(v4)) => cvss_v4_has_env_score_zero(v4),
+            // TODO: Nondeterminable #409 - deserialized into wrong version
+            Some(_) => false,
+        };
+        if !v4_is_zero {
+            failing_keys.push("cvss_v4");
         }
     }
 
@@ -170,6 +230,7 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_19, test_6_2_19_cvss
 mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_2_19() {
@@ -205,6 +266,62 @@ mod tests {
             err_v2,
             err_v3.clone(),
             err_v3,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
+    }
+
+    #[test]
+    fn test_test_6_2_19_2_1() {
+        // CSAF 2.1 uses /metrics/{m}/content instead of /scores/{m}
+        let err_v3 = Err(vec![create_cvss_for_fixed_products_error(
+            "CSAFPID-9080700",
+            "/vulnerabilities/0/metrics/0/content/cvss_v3".to_string(),
+        )]);
+        let err_v2 = Err(vec![create_cvss_for_fixed_products_error(
+            "CSAFPID-9080700",
+            "/vulnerabilities/0/metrics/0/content/cvss_v2".to_string(),
+        )]);
+        let err_v4 = Err(vec![create_cvss_for_fixed_products_error(
+            "CSAFPID-9080700",
+            "/vulnerabilities/0/metrics/0/content/cvss_v4".to_string(),
+        )]);
+
+        // Case 01: CVSS v3.1, no metric that sets to 0, status fixed
+        // Case 02: CVSS v3.1, JSON modifiedAvailabilityImpact is not set to None, status fixed
+        // Case 03: CVSS v2, JSON targetDistribution is not set to None, status fixed
+        // Case 04: CVSS v2, no metric that sets to 0, status fixed
+        // Case 05: CVSS v3.0, no metric that sets to 0, status first_fixed
+        // Case 06: CVSS v3.0, JSON modifiedAvailabilityImpact is not set to None, status fixed
+        // Case 07: CVSS v4.0, no metric that sets to 0, status first_fixed
+        // Case 08: CVSS v4.0, JSON modifiedSubAvailabilityImpact is not set to NEGLIGIBLE, status first_fixed
+
+        // Case 11: CVSS v3.1, all modifiedImpact metrics are None in vector, status fixed
+        // Case 12: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
+        // Case 13: CVSS v2, targetDistribution is None in JSON, status fixed
+        // Case 14: CVSS v2, targetDistribution is None in vector, status fixed
+        // Case 15: CVSS v3.0, all modifiedImpact metrics are None in vector, status first_fixed
+        // Case 16: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
+        // Case 17: product status known_affected
+        // Case 18: CVSS v4.0, all modified* metrics are None/NEGLIGIBLE in vector, status first_fixed
+        // Case 19: CVSS v4.0, all modified* metrics are None/NEGLIGIBLE in JSON, status first_fixed
+
+        TESTS_2_1.test_6_2_19.expect(
+            err_v3.clone(),
+            err_v3.clone(),
+            err_v2.clone(),
+            err_v2,
+            err_v3.clone(),
+            err_v3,
+            err_v4.clone(),
+            err_v4,
+            Ok(()),
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),

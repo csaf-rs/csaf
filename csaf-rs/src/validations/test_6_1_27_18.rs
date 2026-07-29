@@ -49,7 +49,7 @@ pub fn test_6_1_27_18_document_notes_for_supersession(doc: &impl CsafTrait) -> R
         None => {},    // no language set
     }
 
-    let mut errors = Vec::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
     let mut supersessions = Vec::new();
 
     if let Some(notes) = doc.get_document().get_notes() {
@@ -58,7 +58,9 @@ pub fn test_6_1_27_18_document_notes_for_supersession(doc: &impl CsafTrait) -> R
                 && title == "Reasoning for Supersession"
             {
                 if note.get_category() != NoteCategory::Description {
-                    errors.push(create_incorrect_category_error(i_n));
+                    errors
+                        .get_or_insert_default()
+                        .push(create_incorrect_category_error(i_n));
                 }
                 supersessions.push(i_n);
             }
@@ -66,7 +68,7 @@ pub fn test_6_1_27_18_document_notes_for_supersession(doc: &impl CsafTrait) -> R
     }
 
     // The fact that there is none or more than one note with the required title is the primary error and we ignore the category check, which is
-    // only relevant if there is exactly one occurence.
+    // only relevant if there is exactly one occurrence.
     if supersessions.is_empty() {
         return Err(vec![create_missing_reasoning_error(&doc_category)]);
     } else if supersessions.len() > 1 {
@@ -75,10 +77,7 @@ pub fn test_6_1_27_18_document_notes_for_supersession(doc: &impl CsafTrait) -> R
             .map(|f| create_duplicated_reasoning_error(&doc_category, *f))
             .collect::<Vec<_>>());
     }
-    if !errors.is_empty() {
-        return Err(errors);
-    }
-    Ok(())
+    errors.map_or(Ok(()), Err)
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =

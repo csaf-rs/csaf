@@ -80,7 +80,7 @@ mod tests {
             Ok(()), // supplementary case s11 mixed versioning
         );
 
-        // CSAF 2.1 has 19 test cases (01-09, 11-19, 31)
+        // CSAF 2.1 has 19 test cases (01-09, 11-19, 31, 32)
         TESTS_2_1.test_6_1_14.expect(
             case_error.clone(),
             case_error.clone(),
@@ -90,7 +90,8 @@ mod tests {
             case_error.clone(),
             case_error.clone(),
             case_error.clone(),
-            case_error,
+            case_error.clone(),
+            case_error.clone(), // 21
             Ok(()), // case_11
             Ok(()), // case_12
             Ok(()), // case_13
@@ -101,7 +102,8 @@ mod tests {
             Ok(()), // case_18
             Ok(()), // case_19
             Ok(()), // case_31
-            Ok(()), // supplementary case s11 mixed versioning
+            Ok(()), // case_32
+            Ok(()), // supplementary case s11 mixed versioning6.1
         );
     }
 }

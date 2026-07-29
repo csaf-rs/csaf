@@ -30,16 +30,18 @@ pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<Vali
     if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
             if let Some(helper) = fpn.get_product_identification_helper() {
-                for (h_i, hash) in helper.get_hashes().iter().enumerate() {
-                    for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                        let file_hash_len = file_hash.get_hash().len();
-                        if file_hash_len < 64 {
-                            errors.get_or_insert_default().push(create_short_hash_error(
-                                path,
-                                h_i,
-                                fh_i,
-                                file_hash_len,
-                            ));
+                if let Some(hashes) = helper.get_hashes() {
+                    for (h_i, hash) in hashes.iter().enumerate() {
+                        for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
+                            let file_hash_len = file_hash.get_hash().len();
+                            if file_hash_len < 64 {
+                                errors.get_or_insert_default().push(create_short_hash_error(
+                                    path,
+                                    h_i,
+                                    fh_i,
+                                    file_hash_len,
+                                ));
+                            }
                         }
                     }
                 }

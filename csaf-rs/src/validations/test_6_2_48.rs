@@ -20,7 +20,7 @@ fn create_misuse_at_vendor_name_error(vendor_name: &str, path: &str) -> Validati
 fn is_open_source(name: &str) -> bool {
     let normalized: String = name
         .chars()
-        .filter(|c| !c.is_whitespace() && !is_invisible_char(c))
+        .filter(|c| !c.is_whitespace() && !is_invisible_char(*c))
         .collect::<String>()
         .to_lowercase();
     normalized == "opensource"

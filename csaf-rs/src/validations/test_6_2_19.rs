@@ -6,9 +6,9 @@ use crate::csaf_traits::{
 use crate::cvss::{deserialize_cvss, is_zero_score};
 use crate::validation::ValidationError;
 use cvss_rs::Cvss;
-use cvss_rs::v2_0::{CvssV2, TargetDistribution};
-use cvss_rs::v3::{CvssV3, Impact};
-use cvss_rs::v4_0::{CvssV4, ModifiedImpact, ModifiedSubsequentImpact};
+use cvss_rs::v2_0::CvssV2;
+use cvss_rs::v3::CvssV3;
+use cvss_rs::v4_0::CvssV4;
 
 fn create_cvss_for_fixed_products_error(product_id: &str, instance_path: String) -> ValidationError {
     ValidationError {
@@ -18,105 +18,116 @@ fn create_cvss_for_fixed_products_error(product_id: &str, instance_path: String)
 }
 
 /// Checks if a CVSS v2 score has an environmental score of 0.
+///
+/// Per the CVSS v2 specification, an environmental metric that is not defined (either absent
+/// from the vector string or absent from the JSON object) does not simply count as "not set" for
+/// scoring purposes: it falls back to its default (`targetDistribution` defaults to `ND`, i.e. a
+/// multiplier of 1.0). To correctly honor this, the effective score is calculated (using the
+/// library's own scoring implementation) from a CVSS object seeded with the base metrics parsed
+/// from `vectorString`, with any environmental metric given explicitly in JSON overlaid on top
+/// (JSON properties take precedence over the vector string, mirroring how CSAF documents are
+/// allowed to convey them either way).
 fn cvss_v2_has_env_score_zero(cvss_v2: CvssV2) -> bool {
-    let has_target_distribution_none =
-        |cvss_v2: &CvssV2| -> bool { matches!(cvss_v2.target_distribution, Some(TargetDistribution::None)) };
-
-    // check env score provided in json
+    // an explicitly reported environmental score is authoritative
     if let Some(env_score) = cvss_v2.environmental_score
         && is_zero_score(env_score)
     {
         return true;
     }
 
-    // check if json contains prop that would set env score to zero
-    if has_target_distribution_none(&cvss_v2) {
-        return true;
+    // seed the effective CVSS object with the base (and any vector-encoded environmental) metrics
+    let Ok(mut effective) = CvssV2::from_str(&cvss_v2.vector_string) else {
+        return false; // #409 nondeterminable
+    };
+
+    // JSON-provided environmental properties take precedence over the vector string
+    if cvss_v2.target_distribution.is_some() {
+        effective.target_distribution = cvss_v2.target_distribution;
     }
 
-    // generate cvss object from vector
-    match CvssV2::from_str(&cvss_v2.vector_string) {
-        Err(_) => false, // #409 nondeterminable
-        // check if vector contains prop that would set env score to zero
-        Ok(from_vector) => has_target_distribution_none(&from_vector),
-    }
+    // let the library calculate the actual environmental score, correctly handling metrics
+    // that are inherited from their base counterpart when not explicitly defined
+    effective.calculated_environmental_score().is_some_and(is_zero_score)
 }
 
 /// Checks if a CVSS v3 score has an environmental score of 0.
+///
+/// See [`cvss_v2_has_env_score_zero`] for why the effective score is (re)calculated instead of
+/// only checking whether the modified impact metrics are explicitly `NONE`: an undefined modified
+/// impact metric inherits the value of its corresponding base impact metric, which can also
+/// result in an environmental score of 0 (e.g. `.../A:N/MC:N/MI:N` with no `MA` at all).
 fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> bool {
-    let has_all_modified_impacts_none = |cvss_v3: &CvssV3| -> bool {
-        matches!(
-            (
-                &cvss_v3.modified_availability_impact,
-                &cvss_v3.modified_confidentiality_impact,
-                &cvss_v3.modified_integrity_impact
-            ),
-            (Some(Impact::None), Some(Impact::None), Some(Impact::None))
-        )
-    };
-
-    // check env score provided in json
+    // an explicitly reported environmental score is authoritative
     if let Some(env_score) = cvss_v3.environmental_score
         && is_zero_score(env_score)
     {
         return true;
     }
 
-    // check if json contains prop that would set env score to zero
-    if has_all_modified_impacts_none(&cvss_v3) {
-        return true;
+    // seed the effective CVSS object with the base (and any vector-encoded environmental) metrics
+    let Ok(mut effective) = CvssV3::from_str(&cvss_v3.vector_string) else {
+        return false; // #409 nondeterminable
+    };
+
+    // JSON-provided environmental properties take precedence over the vector string
+    if cvss_v3.modified_confidentiality_impact.is_some() {
+        effective.modified_confidentiality_impact = cvss_v3.modified_confidentiality_impact;
+    }
+    if cvss_v3.modified_integrity_impact.is_some() {
+        effective.modified_integrity_impact = cvss_v3.modified_integrity_impact;
+    }
+    if cvss_v3.modified_availability_impact.is_some() {
+        effective.modified_availability_impact = cvss_v3.modified_availability_impact;
     }
 
-    // generate cvss object from vector
-    match CvssV3::from_str(&cvss_v3.vector_string) {
-        Err(_) => false, // #409 nondeterminable
-        // check if vector contains prop that would set env score to zero
-        Ok(from_vector) => has_all_modified_impacts_none(&from_vector),
-    }
+    // let the library calculate the actual environmental score, correctly handling metrics
+    // that are inherited from their base counterpart when not explicitly defined
+    effective.calculated_environmental_score().is_some_and(is_zero_score)
 }
 
 /// Checks if a CVSS v4 score has an overall score of 0.
 ///
 /// CVSS v4 has no separate environmental score; the modified environmental metrics directly
-/// influence the single overall/base score, so a score of 0 is checked instead.
+/// influence the single overall score. See [`cvss_v2_has_env_score_zero`] for why the effective
+/// score is (re)calculated instead of only checking whether the modified impact metrics are
+/// explicitly set: an undefined modified impact metric inherits the value of its corresponding
+/// base impact metric.
 fn cvss_v4_has_env_score_zero(cvss_v4: CvssV4) -> bool {
-    let has_all_modified_impacts_zeroed = |cvss_v4: &CvssV4| -> bool {
-        matches!(
-            (
-                &cvss_v4.modified_vuln_confidentiality_impact,
-                &cvss_v4.modified_vuln_integrity_impact,
-                &cvss_v4.modified_vuln_availability_impact,
-                &cvss_v4.modified_sub_confidentiality_impact,
-                &cvss_v4.modified_sub_integrity_impact,
-                &cvss_v4.modified_sub_availability_impact,
-            ),
-            (
-                Some(ModifiedImpact::None),
-                Some(ModifiedImpact::None),
-                Some(ModifiedImpact::None),
-                Some(ModifiedSubsequentImpact::Negligible),
-                Some(ModifiedSubsequentImpact::Negligible),
-                Some(ModifiedSubsequentImpact::Negligible),
-            )
-        )
-    };
-
-    // check the overall score provided in json
+    // an explicitly reported overall score is authoritative
     if is_zero_score(cvss_v4.base_score) {
         return true;
     }
 
-    // check if json contains props that would reduce the overall score to zero
-    if has_all_modified_impacts_zeroed(&cvss_v4) {
-        return true;
+    // seed the effective CVSS object with the base (and any vector-encoded environmental) metrics
+    let Ok(mut effective) = CvssV4::from_str(&cvss_v4.vector_string) else {
+        return false; // #409 nondeterminable
+    };
+
+    // JSON-provided environmental properties take precedence over the vector string
+    if cvss_v4.modified_vuln_confidentiality_impact.is_some() {
+        effective.modified_vuln_confidentiality_impact = cvss_v4.modified_vuln_confidentiality_impact;
+    }
+    if cvss_v4.modified_vuln_integrity_impact.is_some() {
+        effective.modified_vuln_integrity_impact = cvss_v4.modified_vuln_integrity_impact;
+    }
+    if cvss_v4.modified_vuln_availability_impact.is_some() {
+        effective.modified_vuln_availability_impact = cvss_v4.modified_vuln_availability_impact;
+    }
+    if cvss_v4.modified_sub_confidentiality_impact.is_some() {
+        effective.modified_sub_confidentiality_impact = cvss_v4.modified_sub_confidentiality_impact;
+    }
+    if cvss_v4.modified_sub_integrity_impact.is_some() {
+        effective.modified_sub_integrity_impact = cvss_v4.modified_sub_integrity_impact;
+    }
+    if cvss_v4.modified_sub_availability_impact.is_some() {
+        effective.modified_sub_availability_impact = cvss_v4.modified_sub_availability_impact;
     }
 
-    // generate cvss object from vector
-    match CvssV4::from_str(&cvss_v4.vector_string) {
-        Err(_) => false, // #409 nondeterminable
-        // check if vector contains props that would reduce the overall score to zero
-        Ok(from_vector) => has_all_modified_impacts_zeroed(&from_vector),
-    }
+    // let the library calculate the actual overall score, correctly handling metrics that are
+    // inherited from their base counterpart when not explicitly defined
+    effective
+        .calculated_score()
+        .is_some_and(|(score, _)| is_zero_score(score))
 }
 
 /// Returns the JSON keys (`cvss_v2`, `cvss_v3`, and/or `cvss_v4`) of the CVSS objects in this
@@ -251,6 +262,9 @@ mod tests {
         // Case 05: CVSS v3.0, no metric that sets to 0, status first_fixed
         // Case 06: CVSS v3.0, JSON modifiedAvailabilityImpact is not set to None, status fixed
 
+        // Case s01: CVSS v3.1, MC/MI set to None in vector but MA omitted while base A:H
+        //           (MA inherits the non-zero base value, so the score is not zero), status fixed
+
         // Case 11: CVSS v3.1, all modifiedImpact metrics are None in vector, status fixed
         // Case 12: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
         // Case 13: CVSS v2, targetDistribution is None in JSON, status fixed
@@ -258,6 +272,10 @@ mod tests {
         // Case 15: CVSS v3.0, all modifiedImpact metrics are None in vector, status first_fixed
         // Case 16: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
         // Case 17: product status known_affected
+        // Case s11: CVSS v3.1, MC/MI set to None in vector, MA omitted while base A:N
+        //           (MA inherits the zero-valued base, so the score is zero), status fixed
+        // Case s12: CVSS v2, explicit environmentalScore of 0 without targetDistribution NONE, status fixed
+        // Case s13: CVSS v3.1, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
 
         TESTS_2_0.test_6_2_19.expect(
             err_v3.clone(),
@@ -265,7 +283,11 @@ mod tests {
             err_v2.clone(),
             err_v2,
             err_v3.clone(),
+            err_v3.clone(),
             err_v3,
+            Ok(()),
+            Ok(()),
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),
@@ -300,6 +322,8 @@ mod tests {
         // Case 06: CVSS v3.0, JSON modifiedAvailabilityImpact is not set to None, status fixed
         // Case 07: CVSS v4.0, no metric that sets to 0, status first_fixed
         // Case 08: CVSS v4.0, JSON modifiedSubAvailabilityImpact is not set to NEGLIGIBLE, status first_fixed
+        // Case s01: CVSS v3.1, MC/MI set to None in vector but MA omitted while base A:H
+        //           (MA inherits the non-zero base value, so the score is not zero), status fixed
 
         // Case 11: CVSS v3.1, all modifiedImpact metrics are None in vector, status fixed
         // Case 12: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
@@ -310,6 +334,11 @@ mod tests {
         // Case 17: product status known_affected
         // Case 18: CVSS v4.0, all modified* metrics are None/NEGLIGIBLE in vector, status first_fixed
         // Case 19: CVSS v4.0, all modified* metrics are None/NEGLIGIBLE in JSON, status first_fixed
+        // Case s11: CVSS v3.1, MC/MI set to None in vector, MA omitted while base A:N
+        //           (MA inherits the zero-valued base, so the score is zero), status fixed
+        // Case s12: CVSS v2, explicit environmentalScore of 0 without targetDistribution NONE, status fixed
+        // Case s13: CVSS v3.1, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
+        // Case s14: CVSS v4.0, explicit baseScore of 0 without all six modified impacts set, status fixed
 
         TESTS_2_1.test_6_2_19.expect(
             err_v3.clone(),
@@ -317,9 +346,14 @@ mod tests {
             err_v2.clone(),
             err_v2,
             err_v3.clone(),
-            err_v3,
+            err_v3.clone(),
             err_v4.clone(),
             err_v4,
+            err_v3,
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),

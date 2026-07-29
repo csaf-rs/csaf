@@ -70,7 +70,7 @@ mod tests {
         ]);
         TESTS_2_0
             .test_6_1_2
-            .expect(shared_error_01.clone(), error_02_v2_0.clone());
+            .expect(shared_error_01.clone(), error_02_v2_0);
         TESTS_2_1.test_6_1_2.expect(shared_error_01, error_02_v2_1);
     }
 }

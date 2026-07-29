@@ -1,8 +1,7 @@
 use std::str::FromStr;
 
 use crate::csaf_traits::{
-    ContentTrait, CsafTrait, MetricTrait, ProductStatusAndPath, ProductStatusGroup, ProductStatusGroupMap,
-    VulnerabilityTrait,
+    ContentTrait, CsafTrait, MetricTrait, ProductStatusGroup, ProductStatusGroupMap, VulnerabilityTrait,
 };
 use crate::cvss::{deserialize_cvss, is_zero_score};
 use crate::validation::ValidationError;
@@ -10,19 +9,10 @@ use cvss_rs::Cvss;
 use cvss_rs::v2_0::{CvssV2, TargetDistribution};
 use cvss_rs::v3::{CvssV3, Impact};
 
-fn create_cvss_for_fixed_products_error(
-    product_id: &str,
-    statuses: &[ProductStatusAndPath],
-    path: &str,
-) -> ValidationError {
-    let status_list: Vec<String> = statuses.iter().map(|s| s.status.to_string()).collect();
+fn create_cvss_for_fixed_products_error(product_id: &str, instance_path: String) -> ValidationError {
     ValidationError {
-        message: format!(
-            "Product '{}' is listed as fixed (status(es): '{}') but has a CVSS environmental score that is not 0.0",
-            product_id,
-            status_list.join(", ")
-        ),
-        instance_path: path.to_string(),
+        message: format!("environmental score should be 0 since {product_id} is listed as fixed"),
+        instance_path,
     }
 }
 
@@ -84,45 +74,43 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> bool {
     }
 }
 
-/// Returns true if all CVSS scores in this content have environmental score of 0.
-/// If both v2 and v3 are present, both must have an environmental score of 0.
-fn content_has_all_cvss_env_score_zero(content: &impl ContentTrait) -> bool {
+/// Returns the JSON keys (`cvss_v2` and/or `cvss_v3`) of the CVSS objects in this content whose
+/// environmental score is not 0. An empty result means every present CVSS score (if any) has an
+/// environmental score of 0.
+fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<&'static str> {
+    let mut failing_keys = Vec::new();
+
     // check if cvss_v2 prop is set
     if let Some(cvss_v2) = content.get_cvss_v2() {
         // deserialize cvss, we only care about result, not errors
-        let Some(deserialized) = deserialize_cvss(cvss_v2, "", &mut None) else {
+        let v2_is_zero = match deserialize_cvss(cvss_v2, "", &mut None) {
             // TODO: Nondeterminable #409, could not deserialize
-            return false;
-        };
-        let v2_is_zero = match deserialized {
-            Cvss::V2(v2) => cvss_v2_has_env_score_zero(v2),
+            None => false,
+            Some(Cvss::V2(v2)) => cvss_v2_has_env_score_zero(v2),
             // TODO: Nondeterminable #409 - deserialized into wrong version
-            _ => false,
+            Some(_) => false,
         };
         if !v2_is_zero {
-            return false;
+            failing_keys.push("cvss_v2");
         }
     }
 
     // check if the cvss_v3 prop is set
     if let Some(cvss_v3) = content.get_cvss_v3() {
         // deserialize cvss, we only care about result, not errors
-        let Some(deserialized) = deserialize_cvss(cvss_v3, "", &mut None) else {
+        let v3_is_zero = match deserialize_cvss(cvss_v3, "", &mut None) {
             // TODO: Nondeterminable #409, could not deserialize
-            return false;
-        };
-        let v3_is_zero = match deserialized {
-            Cvss::V3_0(v3) | Cvss::V3_1(v3) => cvss_v3_has_env_score_zero(v3),
+            None => false,
+            Some(Cvss::V3_0(v3)) | Some(Cvss::V3_1(v3)) => cvss_v3_has_env_score_zero(v3),
             // TODO: Nondeterminable #409 - deserialized into wrong version
-            _ => false,
+            Some(_) => false,
         };
         if !v3_is_zero {
-            return false;
+            failing_keys.push("cvss_v3");
         }
     }
 
-    // true if there are no CVSS scores, or all present CVSS scores have env score of zero
-    true
+    failing_keys
 }
 
 /// 6.2.19 CVSS for Fixed Products
@@ -146,22 +134,25 @@ pub fn test_6_2_19_cvss_for_fixed_products(doc: &impl CsafTrait) -> Result<(), V
             None => continue,
         };
 
-        // check each metric/score
+        // check each metric/score for a reference to a fixed product with a
+        // non-zero environmental score, reporting the offending CVSS object's path
         if let Some(metrics) = vuln.get_metrics() {
-            let metrics_path = vuln.get_metrics_path();
             for (m_i, metric) in metrics.iter().enumerate() {
                 let content = metric.get_content();
-                for (p_i, product_id) in metric.get_products().enumerate() {
-                    // if the metric/score is relevant to a product
-                    if let Some(statuses) = fixed_products.get(product_id) {
-                        // and the product does not have an env score of zero, generate an error
-                        if !content_has_all_cvss_env_score_zero(content) {
+                let failing_keys = failing_cvss_keys(content);
+                if failing_keys.is_empty() {
+                    continue;
+                }
+
+                let content_path = content.get_content_json_path(v_i, m_i);
+                for product_id in metric.get_products() {
+                    if fixed_products.contains_key(product_id) {
+                        for key in &failing_keys {
                             errors
                                 .get_or_insert_default()
                                 .push(create_cvss_for_fixed_products_error(
                                     product_id,
-                                    statuses,
-                                    &format!("/vulnerabilities/{v_i}/{metrics_path}/{m_i}/products/{p_i}"),
+                                    format!("{content_path}/{key}"),
                                 ));
                         }
                     }
@@ -178,27 +169,18 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_19, test_6_2_19_cvss
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf_traits::ProductStatus;
     use crate::csaf2_0::testcases::TESTS_2_0;
 
     #[test]
     fn test_test_6_2_19() {
-        // Test data only contains two paths, so we can share the error messages
-        let err_fixed = Err(vec![create_cvss_for_fixed_products_error(
+        // Test data only contains two CVSS keys, so we can share the error messages
+        let err_v3 = Err(vec![create_cvss_for_fixed_products_error(
             "CSAFPID-9080700",
-            &[ProductStatusAndPath {
-                status: ProductStatus::Fixed,
-                index: 0,
-            }],
-            "/vulnerabilities/0/scores/0/products/0",
+            "/vulnerabilities/0/scores/0/cvss_v3".to_string(),
         )]);
-        let err_first_fixed = Err(vec![create_cvss_for_fixed_products_error(
+        let err_v2 = Err(vec![create_cvss_for_fixed_products_error(
             "CSAFPID-9080700",
-            &[ProductStatusAndPath {
-                status: ProductStatus::FirstFixed,
-                index: 0,
-            }],
-            "/vulnerabilities/0/scores/0/products/0",
+            "/vulnerabilities/0/scores/0/cvss_v2".to_string(),
         )]);
 
         // Case 01: CVSS v3.1, no metric that sets to 0, status fixed
@@ -217,12 +199,12 @@ mod tests {
         // Case 17: product status known_affected
 
         TESTS_2_0.test_6_2_19.expect(
-            err_fixed.clone(),
-            err_fixed.clone(),
-            err_fixed.clone(),
-            err_fixed.clone(),
-            err_first_fixed,
-            err_fixed,
+            err_v3.clone(),
+            err_v3.clone(),
+            err_v2.clone(),
+            err_v2,
+            err_v3.clone(),
+            err_v3,
             Ok(()),
             Ok(()),
             Ok(()),

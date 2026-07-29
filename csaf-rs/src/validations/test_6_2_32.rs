@@ -74,7 +74,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             }
 
             // Collect SKUs - using direct string allocation fallback
-            if let Some(skus) = helper.get_skus()  {
+            if let Some(skus) = helper.get_skus() {
                 for sku in skus {
                     sku_groups
                         .entry(sku.to_string())

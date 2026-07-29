@@ -71,7 +71,7 @@ fn test_6_1_21_err_wrong_first_version(version: CsafVersionNumber, revision_inde
         CsafVersionNumber::IntVer(_) => "integer version of 0 or 1",
         CsafVersionNumber::SemVer(_) => "semver version of 0.y.z or 1.y.z",
     }
-        .to_string();
+    .to_string();
     ValidationError {
         message: format!("The first revision history item should have {version_error}, but was {version}"),
         instance_path: format!("/document/tracking/revision_history/{revision_index}"),

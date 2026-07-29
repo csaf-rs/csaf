@@ -1,6 +1,6 @@
 use crate::build_errors::BuildError;
 use crate::utils::codegen_snippets::{
-    add_generated_code_header, add_ignore_clippy, add_ignore_rustdoc, add_ignore_rustfmt,
+    add_generated_code_header, add_ignore_clippy, add_ignore_rustdoc, add_ignore_rustfmt, add_string_newtype_impls,
 };
 use crate::utils::read_write_fs::write_generated_file;
 use typify::{TypeSpace, TypeSpaceSettings};
@@ -21,6 +21,7 @@ pub fn generate_from_schema(
     // Convert the TypeSpace token stream into a syn::File so we can inject a file-level doc attribute
     let mut file = syn::parse2::<syn::File>(type_space.to_stream())?;
 
+    add_string_newtype_impls(&mut file);
     add_ignore_rustdoc(&mut file);
     add_ignore_rustfmt(&mut file);
     add_ignore_clippy(&mut file);

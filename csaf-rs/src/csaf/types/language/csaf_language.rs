@@ -160,6 +160,15 @@ mod tests {
     #[case("en-Wxyz-QK", CsafLanguageError::InvalidScriptSubtag)]
     // all three invalid → primary takes precedence
     #[case("EZ-Wxyz-QK", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    // malformed standalone private-use tags
+    // subtag exceeds 8-char limit
+    #[case("x-abcdefghijkl", CsafLanguageError::ParserError)]
+    // trailing dash -> empty subtag
+    #[case("x-foo-", CsafLanguageError::ParserError)]
+    // double dash -> empty subtag
+    #[case("x--foo", CsafLanguageError::ParserError)]
+    // non-alphanumeric char in subtag
+    #[case("x-foo_bar", CsafLanguageError::ParserError)]
     fn test_invalid_language_tag_throws_error(
         #[case] input: &str,
         #[case] expected_error: fn(String, String) -> CsafLanguageError,

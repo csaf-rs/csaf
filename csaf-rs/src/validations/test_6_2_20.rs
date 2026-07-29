@@ -108,8 +108,11 @@ pub fn test_6_2_20_additional_properties(
     let mut errors: Option<Vec<ValidationError>> = None;
     for error in validator.iter_errors(json) {
         if let ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind() {
-            for property in unexpected.iter() {
-                errors.get_or_insert_default().push(create_additional_properties_error(property, error.instance_path().as_str()));
+            for property in unexpected {
+                errors.get_or_insert_default().push(create_additional_properties_error(
+                    property,
+                    error.instance_path().as_str(),
+                ));
             }
         }
     }

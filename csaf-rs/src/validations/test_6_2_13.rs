@@ -16,7 +16,9 @@ fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<Val
             // object -> check if keys are sorted
             let keys_ok = map.keys().zip(map.keys().skip(1)).all(|(a, b)| {
                 if a > b {
-                    errors.get_or_insert_default().push(create_unsorted_keys_error(format!("{path}/{a}").as_str()));
+                    errors
+                        .get_or_insert_default()
+                        .push(create_unsorted_keys_error(format!("{path}/{a}").as_str()));
                     false
                 } else {
                     true

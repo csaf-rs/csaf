@@ -2,10 +2,10 @@ use crate::csaf::traits::vulnerabilities::{
     cpe_trait::CpeTrait, file_hash_trait::FileHashTrait, generic_uri_trait::GenericUriTrait, hash_trait::HashTrait,
     product_ident_helper_trait::ProductIdentificationHelperTrait,
 };
+use crate::csaf::types::purl::csaf_purl::CsafPurl;
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::ValidationError;
 use std::collections::{HashMap, HashSet};
-use crate::csaf::types::purl::csaf_purl::CsafPurl;
 
 fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str, base_path: &str) -> ValidationError {
     ValidationError {
@@ -125,7 +125,6 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                     .entry(cpe.as_str())
                     .or_default()
                     .push((product_id.clone(), path_str.clone()));
-
             }
 
             // Collect SBOMs
@@ -242,7 +241,6 @@ mod tests {
         ];
 
         // Case s01: 24 errors (P1, P2, and P3 colliding)
-        let purl_val = "Valid(ValidPurl { original_purl: \"pkg:npm/csaf-validator@0.5.1\", normalized_purl: \"pkg:npm/csaf-validator@0.5.1\", base_without_qualifiers: \"pkg:npm/csaf-validator@0.5.1\" })";
         let hash_val = "file:f.bin;alg:sha256;value:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
         let case_s01_errors = vec![
@@ -251,9 +249,24 @@ mod tests {
             generate_duplicate_helper_error("hashes", hash_val, "P2", "/product_tree/full_product_names/1"),
             generate_duplicate_helper_error("hashes", hash_val, "P3", "/product_tree/branches/0/branches/0/product"),
             // PURL collisions
-            generate_duplicate_helper_error("purls", purl_val, "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("purls", purl_val, "P2", "/product_tree/full_product_names/1"),
-            generate_duplicate_helper_error("purls", purl_val, "P3", "/product_tree/branches/0/branches/0/product"),
+            generate_duplicate_helper_error(
+                "purls",
+                "pkg:npm/csaf-validator@0.5.1",
+                "P1",
+                "/product_tree/full_product_names/0",
+            ),
+            generate_duplicate_helper_error(
+                "purls",
+                "pkg:npm/csaf-validator@0.5.1",
+                "P2",
+                "/product_tree/full_product_names/1",
+            ),
+            generate_duplicate_helper_error(
+                "purls",
+                "pkg:npm/csaf-validator@0.5.1",
+                "P3",
+                "/product_tree/branches/0/branches/0/product",
+            ),
             // Serial number collisions
             generate_duplicate_helper_error("serial_numbers", "SN-999", "P1", "/product_tree/full_product_names/0"),
             generate_duplicate_helper_error("serial_numbers", "SN-999", "P2", "/product_tree/full_product_names/1"),

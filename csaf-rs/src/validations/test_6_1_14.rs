@@ -23,23 +23,17 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
     rev_history_tuples_sort_by_date.inplace_sort_by_date_then_number();
     rev_history_tuples_sort_by_number.inplace_sort_by_number();
 
-    // Generate errors if revision history items are sorted differently between sort by date and sort by number
-    let mut errors = Vec::new();
+    // Generate an error if revision history items are sorted differently between sort by date and sort by number
     for i in 0..rev_history_tuples_sort_by_date.len() {
         if let Some(by_date) = rev_history_tuples_sort_by_date.get(i)
             && let Some(by_number) = rev_history_tuples_sort_by_number.get(i)
         {
             if by_date.date != by_number.date {
-                errors.push(create_revision_history_error());
-                break;
+                return Err(vec![create_revision_history_error()]);
             }
         } else {
             unreachable!("Both arrays should have same length, this looks like a dev error.")
         }
-    }
-
-    if !errors.is_empty() {
-        return Err(errors);
     }
 
     Ok(())

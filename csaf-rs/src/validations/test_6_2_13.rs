@@ -5,20 +5,18 @@ use serde_json::Value;
 ///
 /// All keys in a CSAF document must be sorted alphabetically.
 pub fn test_6_2_13_sorting(json: &Value) -> Result<(), Vec<ValidationError>> {
-    let mut errors = Vec::new();
-    match check_sorted_recursive(json, "", &mut errors) {
-        true => Ok(()),
-        false => Err(errors),
-    }
+    let mut errors: Option<Vec<ValidationError>> = None;
+    check_sorted_recursive(json, "", &mut errors);
+    errors.map_or(Ok(()), Err)
 }
 
-fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Vec<ValidationError>) -> bool {
+fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<ValidationError>>) -> bool {
     match value {
         Value::Object(map) => {
             // object -> check if keys are sorted
             let keys_ok = map.keys().zip(map.keys().skip(1)).all(|(a, b)| {
                 if a > b {
-                    errors.push(create_unsorted_keys_error(format!("{path}/{a}").as_str()));
+                    errors.get_or_insert_default().push(create_unsorted_keys_error(format!("{path}/{a}").as_str()));
                     false
                 } else {
                     true

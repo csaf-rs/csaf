@@ -8,12 +8,12 @@ pub trait CpeTrait {
 
 impl CpeTrait for CommonPlatformEnumerationRepresentation20 {
     fn as_str(&self) -> &str {
-        &self.deref()
+        self.deref()
     }
 }
 
 impl CpeTrait for CommonPlatformEnumerationRepresentation21 {
     fn as_str(&self) -> &str {
-        &self.deref()
+        self.deref()
     }
 }

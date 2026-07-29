@@ -86,7 +86,11 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
     }
 
     fn get_hashes(&self) -> Option<Vec<Self::HashType>> {
-        Some(self.hashes.clone())
+        if self.hashes.is_empty() {
+            None
+        } else {
+            Some(self.hashes.clone())
+        }
     }
 
     fn get_cpe(&self) -> Option<Self::CpeType> {
@@ -124,7 +128,10 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
     }
 
     fn get_skus(&self) -> Vec<CsafStockKeepingUnit> {
-        self.skus.iter().map(CsafStockKeepingUnit::from).collect()
+        self.skus
+            .as_ref()
+            .map(|v| v.iter().map(CsafStockKeepingUnit::from).collect())
+            .unwrap_or_default()
     }
 
     fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>> {

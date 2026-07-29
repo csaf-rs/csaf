@@ -63,8 +63,8 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             if let Some(purls) = helper.get_purls() {
                 for purl in purls {
                     let key = match purl {
-                        CsafPurl::Valid(valid) => valid.normalized_purl(),
-                        CsafPurl::Invalid(err) => err.original_purl(), // fallback for invalid PURLs
+                        CsafPurl::Valid(valid) => valid.normalized_purl().to_string(),
+                        CsafPurl::Invalid(err) => err.original_purl().to_string(), // fallback for invalid PURLs
                     }; // solving Enum representation as Match with normalized if Valid
                     purl_groups
                         .entry(key)
@@ -102,27 +102,29 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             }
 
             // Collect Hashes
-            for hash_obj in helper.get_hashes() {
-                let filename = hash_obj.get_filename();
+            if let Some(hashes) = helper.get_hashes() {
+                for hash_obj in hashes {
+                    let filename = hash_obj.get_filename();
 
-                // Instead of one combined string, track each inner hash independently:
-                for fh in hash_obj.get_file_hashes() {
-                    // Safe string conversion without using the Debug {:?} trait token format
-                    let alg_str = format!("{}", fh.get_algorithm()).to_lowercase();
-                    let hash_val = fh.get_hash().to_lowercase();
+                    // Instead of one combined string, track each inner hash independently:
+                    for fh in hash_obj.get_file_hashes() {
+                        // Safe string conversion without using the Debug {:?} trait token format
+                        let alg_str = format!("{}", fh.get_algorithm()).to_lowercase();
+                        let hash_val = fh.get_hash().to_lowercase();
 
-                    let specific_hash_key = format!("file:{filename};alg:{alg_str};value:{hash_val}");
-                    hash_groups
-                        .entry(specific_hash_key)
-                        .or_default()
-                        .push((product_id.clone(), path_str.clone()));
+                        let specific_hash_key = format!("file:{filename};alg:{alg_str};value:{hash_val}");
+                        hash_groups
+                            .entry(specific_hash_key)
+                            .or_default()
+                            .push((product_id.clone(), path_str.clone()));
+                    }
                 }
             }
 
             // Collect CPE
             if let Some(cpe) = helper.get_cpe() {
                 cpe_groups
-                    .entry(cpe.as_str())
+                    .entry(cpe.as_str().to_string())
                     .or_default()
                     .push((product_id.clone(), path_str.clone()));
             }
@@ -228,13 +230,13 @@ mod tests {
             ),
             generate_duplicate_helper_error(
                 "cpes",
-                "cpe:cpe:/a:example:product_d",
+                "cpe:/a:example:product_d",
                 "CSAFPID-908070604",
                 "/product_tree/full_product_names/1",
             ),
             generate_duplicate_helper_error(
                 "cpes",
-                "cpe:cpe:/a:example:product_d",
+                "cpe:/a:example:product_d",
                 "CSAFPID-908070605",
                 "/product_tree/relationships/0/full_product_name",
             ),
@@ -292,57 +294,57 @@ mod tests {
             // CPEs
             generate_duplicate_helper_error(
                 "cpes",
-                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
                 "P1",
                 "/product_tree/full_product_names/0",
             ),
             generate_duplicate_helper_error(
                 "cpes",
-                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
             generate_duplicate_helper_error(
                 "cpes",
-                "cpe:cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
             // SBOMs
             generate_duplicate_helper_error(
                 "sbom_urls",
-                "sbom:https://example.com/sbom.json",
+                "https://example.com/sbom.json",
                 "P1",
                 "/product_tree/full_product_names/0",
             ),
             generate_duplicate_helper_error(
                 "sbom_urls",
-                "sbom:https://example.com/sbom.json",
+                "https://example.com/sbom.json",
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
             generate_duplicate_helper_error(
                 "sbom_urls",
-                "sbom:https://example.com/sbom.json",
+                "https://example.com/sbom.json",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
             // X-Generic URIs
             generate_duplicate_helper_error(
                 "x_generic_uris",
-                "ns:https://example.com/ns;uri:urn:test:id",
+                "https://example.com/ns;urn:test:id",
                 "P1",
                 "/product_tree/full_product_names/0",
             ),
             generate_duplicate_helper_error(
                 "x_generic_uris",
-                "ns:https://example.com/ns;uri:urn:test:id",
+                "https://example.com/ns;urn:test:id",
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
             generate_duplicate_helper_error(
                 "x_generic_uris",
-                "ns:https://example.com/ns;uri:urn:test:id",
+                "https://example.com/ns;urn:test:id",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),

@@ -24,34 +24,34 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
     // Visit all products in the product tree
     product_tree.visit_all_products(&mut |product, path| {
         // Check all file_hashes in all hashes in all product identification helpers
-        if let Some(helper) = product.get_product_identification_helper() {
-            if let Some(some_hashes) = helper.get_hashes() {
-                for (hash_i, hash) in some_hashes.iter().enumerate() {
-                    // Iterate over file_hashes, build hashmap of all encountered algos and their indices
-                    let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<(Option<CsafHashAlgorithm>, usize)>>::new();
-                    for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                        let original_algorithm = file_hash.get_algorithm();
-                        let normalized_algorithm = original_algorithm.normalize();
-                        let original_algo_if_normalized = if original_algorithm != normalized_algorithm {
-                            Some(original_algorithm)
-                        } else {
-                            None
-                        };
-                        let file_hash_is = algorithms.entry(normalized_algorithm).or_default();
-                        file_hash_is.push((original_algo_if_normalized, file_hash_i));
-                    }
-                    // For each algo found multiple times, generate error message for all indices with the algo
-                    for (normalized_algo, file_hash_is) in &algorithms {
-                        if file_hash_is.len() > 1 {
-                            for (original_algo, file_hash_i) in file_hash_is {
-                                errors.get_or_insert_default().push(test_6_1_25_err_generator(
-                                    normalized_algo,
-                                    original_algo.as_ref(),
-                                    path.to_string(),
-                                    hash_i.to_string(),
-                                    file_hash_i.to_string(),
-                                ));
-                            }
+        if let Some(helper) = product.get_product_identification_helper()
+            && let Some(hashes) = helper.get_hashes()
+        {
+            for (hash_i, hash) in hashes.iter().enumerate() {
+                // Iterate over file_hashes, build hashmap of all encountered algos and their indices
+                let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<(Option<CsafHashAlgorithm>, usize)>>::new();
+                for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
+                    let original_algorithm = file_hash.get_algorithm();
+                    let normalized_algorithm = original_algorithm.normalize();
+                    let original_algo_if_normalized = if original_algorithm != normalized_algorithm {
+                        Some(original_algorithm)
+                    } else {
+                        None
+                    };
+                    let file_hash_is = algorithms.entry(normalized_algorithm).or_default();
+                    file_hash_is.push((original_algo_if_normalized, file_hash_i));
+                }
+                // For each algo found multiple times, generate error message for all indices with the algo
+                for (normalized_algo, file_hash_is) in &algorithms {
+                    if file_hash_is.len() > 1 {
+                        for (original_algo, file_hash_i) in file_hash_is {
+                            errors.get_or_insert_default().push(test_6_1_25_err_generator(
+                                normalized_algo,
+                                original_algo.as_ref(),
+                                path.to_string(),
+                                hash_i.to_string(),
+                                file_hash_i.to_string(),
+                            ));
                         }
                     }
                 }

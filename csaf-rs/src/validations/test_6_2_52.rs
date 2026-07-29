@@ -18,16 +18,16 @@ pub fn test_6_2_52_unknown_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Ve
 
     if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
-            if let Some(helper) = fpn.get_product_identification_helper() {
-                if let Some(hashes) = helper.get_hashes() {
-                    for (h_i, hash) in hashes.iter().enumerate() {
-                        for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                            let algorithm = file_hash.get_algorithm();
-                            if !algorithm.is_supported_algorithm() {
-                                errors
-                                    .get_or_insert_default()
-                                    .push(create_unknown_hash_algorithm_error(&algorithm, path, h_i, fh_i));
-                            }
+            if let Some(helper) = fpn.get_product_identification_helper()
+                && let Some(hashes) = helper.get_hashes()
+            {
+                for (h_i, hash) in hashes.iter().enumerate() {
+                    for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
+                        let algorithm = file_hash.get_algorithm();
+                        if !algorithm.is_supported_algorithm() {
+                            errors
+                                .get_or_insert_default()
+                                .push(create_unknown_hash_algorithm_error(&algorithm, path, h_i, fh_i));
                         }
                     }
                 }

@@ -12,14 +12,14 @@ pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<
     // for each product in the product tree, check all product identification helper hashes for MD5 as the only hash algorithm
     if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
-            if let Some(helper) = fpn.get_product_identification_helper() {
-                if let Some(hashes) = helper.get_hashes() {
-                    for (h_i, hash) in hashes.iter().enumerate() {
-                        if hash.contains_only_hash_algorithm(CsafHashAlgorithm::Md5) {
-                            errors
-                                .get_or_insert_default()
-                                .push(create_md5_only_hash_error(path, h_i));
-                        }
+            if let Some(helper) = fpn.get_product_identification_helper()
+                && let Some(hashes) = helper.get_hashes()
+            {
+                for (h_i, hash) in hashes.iter().enumerate() {
+                    if hash.contains_only_hash_algorithm(CsafHashAlgorithm::Md5) {
+                        errors
+                            .get_or_insert_default()
+                            .push(create_md5_only_hash_error(path, h_i));
                     }
                 }
             }

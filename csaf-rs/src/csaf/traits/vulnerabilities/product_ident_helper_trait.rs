@@ -35,7 +35,7 @@ pub trait ProductIdentificationHelperTrait {
     fn get_purls_json_path(&self, path: &str, purl_idx: usize) -> String;
 
     /// Returns the stock keeping units associated with this product.
-    fn get_skus(&self) -> Vec<CsafStockKeepingUnit>;
+    fn get_skus(&self) -> Option<Vec<CsafStockKeepingUnit>>;
 
     /// Returns the model numbers associated with this product.
     fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>>;
@@ -69,8 +69,12 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
         format!("{product_path}/product_identification_helper/purl")
     }
 
-    fn get_skus(&self) -> Vec<CsafStockKeepingUnit> {
-        self.skus.iter().map(CsafStockKeepingUnit::from).collect()
+    fn get_skus(&self) -> Option<Vec<CsafStockKeepingUnit>> {
+        if self.skus.is_empty() {
+            None
+        } else {
+            Some(self.skus.iter().map(CsafStockKeepingUnit::from).collect())
+        }
     }
 
     fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>> {
@@ -127,11 +131,10 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
         format!("{product_path}/product_identification_helper/purls/{purl_idx}")
     }
 
-    fn get_skus(&self) -> Vec<CsafStockKeepingUnit> {
+    fn get_skus(&self) -> Option<Vec<CsafStockKeepingUnit>> {
         self.skus
             .as_ref()
             .map(|v| v.iter().map(CsafStockKeepingUnit::from).collect())
-            .unwrap_or_default()
     }
 
     fn get_model_numbers(&self) -> Option<Vec<CsafModelNumber>> {

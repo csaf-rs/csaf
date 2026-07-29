@@ -68,9 +68,7 @@ mod tests {
             generate_err_msg("CSAFPID-9080700", "/product_tree/branches/1/branches/1/product"),
             generate_err_msg("CSAFPID-9080701", "/product_tree/product_paths/2/full_product_name"),
         ]);
-        TESTS_2_0
-            .test_6_1_2
-            .expect(shared_error_01.clone(), error_02_v2_0);
+        TESTS_2_0.test_6_1_2.expect(shared_error_01.clone(), error_02_v2_0);
         TESTS_2_1.test_6_1_2.expect(shared_error_01, error_02_v2_1);
     }
 }

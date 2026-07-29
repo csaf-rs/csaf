@@ -74,11 +74,13 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             }
 
             // Collect SKUs - using direct string allocation fallback
-            for sku in helper.get_skus() {
-                sku_groups
-                    .entry(sku.to_string())
-                    .or_default()
-                    .push((product_id.clone(), path_str.clone()));
+            if let Some(skus) = helper.get_skus()  {
+                for sku in skus {
+                    sku_groups
+                        .entry(sku.to_string())
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
+                }
             }
 
             // Collect Serial Numbers - optimization: use the internal reference if available

@@ -75,20 +75,12 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Va
                     })
                     .expect("At least one CWE version should be available in the data source.");
 
-                match use_2_1 {
-                    true => check_cwe(
-                        cwe_item,
-                        cwe_version,
-                        format!("/vulnerabilities/{i_r}/cwes/{i_cwe}").as_str(),
-                        &mut errors,
-                    ),
-                    false => check_cwe(
-                        cwe_item,
-                        cwe_version,
-                        format!("/vulnerabilities/{i_r}/cwe").as_str(),
-                        &mut errors,
-                    ),
-                }
+                let path = if use_2_1 {
+                    format!("/vulnerabilities/{i_r}/cwes/{i_cwe}")
+                } else {
+                    format!("/vulnerabilities/{i_r}/cwe")
+                };
+                check_cwe(cwe_item, cwe_version, &path, &mut errors);
             }
         }
     }

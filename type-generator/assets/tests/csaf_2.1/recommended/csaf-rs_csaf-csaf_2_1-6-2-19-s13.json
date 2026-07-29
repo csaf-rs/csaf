@@ -32,18 +32,13 @@
   "product_tree": {
     "full_product_names": [
       {
-        "product_id": "CSAFPID-9080700",
-        "name": "Product A"
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
       }
     ]
   },
   "vulnerabilities": [
     {
-      "product_status": {
-        "fixed": [
-          "CSAFPID-9080700"
-        ]
-      },
       "metrics": [
         {
           "content": {
@@ -60,7 +55,12 @@
             "CSAFPID-9080700"
           ]
         }
-      ]
+      ],
+      "product_status": {
+        "fixed": [
+          "CSAFPID-9080700"
+        ]
+      }
     }
   ]
 }

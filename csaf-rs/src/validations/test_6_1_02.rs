@@ -49,7 +49,7 @@ mod tests {
             generate_err_msg("CSAFPID-9080700", "/product_tree/full_product_names/0"),
             generate_err_msg("CSAFPID-9080700", "/product_tree/full_product_names/1"),
         ]);
-        let shared_error_02 = Err(vec![
+        let error_02_v2_0 = Err(vec![
             generate_err_msg("CSAFPID-9080700", "/product_tree/full_product_names/0"),
             generate_err_msg("CSAFPID-9080701", "/product_tree/branches/0/product"),
             generate_err_msg("CSAFPID-9080701", "/product_tree/branches/1/branches/0/product"),
@@ -58,9 +58,19 @@ mod tests {
             generate_err_msg("CSAFPID-9080700", "/product_tree/branches/1/branches/1/product"),
             generate_err_msg("CSAFPID-9080701", "/product_tree/relationships/2/full_product_name"),
         ]);
+        // different paths for v2.1
+        let error_02_v2_1 = Err(vec![
+            generate_err_msg("CSAFPID-9080700", "/product_tree/full_product_names/0"),
+            generate_err_msg("CSAFPID-9080701", "/product_tree/branches/0/product"),
+            generate_err_msg("CSAFPID-9080701", "/product_tree/branches/1/branches/0/product"),
+            generate_err_msg("CSAFPID-9080702", "/product_tree/product_paths/0/full_product_name"),
+            generate_err_msg("CSAFPID-9080702", "/product_tree/product_paths/1/full_product_name"),
+            generate_err_msg("CSAFPID-9080700", "/product_tree/branches/1/branches/1/product"),
+            generate_err_msg("CSAFPID-9080701", "/product_tree/product_paths/2/full_product_name"),
+        ]);
         TESTS_2_0
             .test_6_1_2
-            .expect(shared_error_01.clone(), shared_error_02.clone());
-        TESTS_2_1.test_6_1_2.expect(shared_error_01, shared_error_02);
+            .expect(shared_error_01.clone(), error_02_v2_0.clone());
+        TESTS_2_1.test_6_1_2.expect(shared_error_01, error_02_v2_1);
     }
 }

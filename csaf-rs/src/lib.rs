@@ -9,6 +9,7 @@ pub mod extractor;
 pub mod helpers;
 pub mod json;
 pub(crate) mod macros;
+pub mod non_strict;
 pub mod schema;
 #[cfg(test)]
 pub mod test_result_comparison;

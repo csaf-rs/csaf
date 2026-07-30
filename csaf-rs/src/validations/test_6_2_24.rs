@@ -2,11 +2,17 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityT
 use crate::helpers::get_latest_cwe_version_for_date;
 use crate::validation::ValidationError;
 use semver::Version;
+use std::sync::LazyLock;
 
 enum VersionMissmatch {
     NonLatest,
     Future,
 }
+
+static CWE_VERSION_UNAVAILABLE_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "CWE version information is not available for the current release date.".to_string(),
+    instance_path: "/document/tracking/current_release_date".to_string(),
+});
 
 fn check_for_non_latest_cwe_version(
     cwe: &str,
@@ -104,7 +110,7 @@ fn normalize_to_semver_str(s: &str) -> String {
 /// most recent CWE version as of the document's current_release_date).
 pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Vec<ValidationError> = Vec::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
 
     let tracking = doc.get_document().get_tracking();
     let current_release_date = tracking.get_current_release_date();
@@ -125,19 +131,18 @@ pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Resu
                     };
 
                     if let Some(error) = check_for_non_latest_cwe_version(&cwe_item.id, version, latest, i_r, i_cwe) {
-                        errors.push(error);
+                        errors.get_or_insert_default().push(error);
                     }
                 }
             }
         }
     } else {
-        errors.push(ValidationError {
-            message: "CWE version information is not available for the current release date.".to_string(),
-            instance_path: "/document/tracking/current_release_date".to_string(),
-        });
+        errors
+            .get_or_insert_default()
+            .push(CWE_VERSION_UNAVAILABLE_ERROR.clone());
     }
 
-    if errors.is_empty() { Ok(()) } else { Err(errors) }
+    errors.map_or(Ok(()), Err)
 }
 
 crate::test_validation::impl_validator!(

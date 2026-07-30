@@ -61,8 +61,8 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
     // the document is not valid, even if there is also a reference with correct summary and correct category.
     // So the incorrect category has precedence over the missing reference. This way the error message is more specific and hints more
     // directly to the wrong instance.
-    if errors.clone().is_some_and(|e| !e.is_empty()) {
-        return Err(errors.unwrap());
+    if let Some(errs) = errors {
+        return Err(errs);
     }
 
     // completely missing reference with correct summary and category has second precedence

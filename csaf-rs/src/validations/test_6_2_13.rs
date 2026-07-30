@@ -5,45 +5,36 @@ use serde_json::Value;
 ///
 /// All keys in a CSAF document must be sorted alphabetically.
 pub fn test_6_2_13_sorting(json: &Value) -> Result<(), Vec<ValidationError>> {
-    let mut errors = Vec::new();
-    match check_sorted_recursive(json, "", &mut errors) {
-        true => Ok(()),
-        false => Err(errors),
-    }
+    let mut errors: Option<Vec<ValidationError>> = None;
+    check_sorted_recursive(json, "", &mut errors);
+    errors.map_or(Ok(()), Err)
 }
 
-fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Vec<ValidationError>) -> bool {
+fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<ValidationError>>) {
     match value {
         Value::Object(map) => {
             // object -> check if keys are sorted
-            let keys_ok = map.keys().zip(map.keys().skip(1)).all(|(a, b)| {
+            for (a, b) in map.keys().zip(map.keys().skip(1)) {
                 if a > b {
-                    errors.push(create_unsorted_keys_error(format!("{path}/{a}").as_str()));
-                    false
-                } else {
-                    true
+                    errors
+                        .get_or_insert_default()
+                        .push(create_unsorted_keys_error(format!("{path}/{a}").as_str()));
                 }
-            });
+            }
 
             // check all children recursively
-            let children_ok = map
-                .iter()
-                .filter(|(key, value)| !check_sorted_recursive(value, format!("{path}/{key}").as_str(), errors))
-                .count()
-                == 0;
-
-            keys_ok && children_ok
+            for (key, value) in map {
+                check_sorted_recursive(value, format!("{path}/{key}").as_str(), errors);
+            }
         },
         Value::Array(arr) => {
             // array -> check for each item
-            arr.iter()
-                .enumerate()
-                .filter(|(key, value)| !check_sorted_recursive(value, format!("{path}/{key}").as_str(), errors))
-                .count()
-                == 0
+            for (key, value) in arr.iter().enumerate() {
+                check_sorted_recursive(value, format!("{path}/{key}").as_str(), errors);
+            }
         },
         // primitive types are always sorted
-        _ => true,
+        _ => {},
     }
 }
 

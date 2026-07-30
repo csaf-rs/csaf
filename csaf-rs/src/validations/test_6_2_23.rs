@@ -14,7 +14,7 @@ fn create_deprecated_cwe_error(cwe: &str, version: &str, i_r: usize, i_cwe: usiz
 /// For each item in the CWE array it MUST be tested that the CWE is not deprecated in the given version.
 pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Vec<ValidationError> = Vec::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwes) = vulnerability.get_cwes() {
@@ -34,13 +34,15 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
                 if let Some((status, _)) = CWE_ENTRIES[version].1.get(&cwe_item.id)
                     && status == "Deprecated"
                 {
-                    errors.push(create_deprecated_cwe_error(&cwe_item.id, version, i_r, i_cwe));
+                    errors
+                        .get_or_insert_default()
+                        .push(create_deprecated_cwe_error(&cwe_item.id, version, i_r, i_cwe));
                 }
             }
         }
     }
 
-    if errors.is_empty() { Ok(()) } else { Err(errors) }
+    errors.map_or(Ok(()), Err)
 }
 
 crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_23, test_6_2_23_usage_of_deprecated_cwe);

@@ -105,18 +105,19 @@ pub fn test_6_2_20_additional_properties(
     json: &Value,
     validator: &jsonschema::Validator,
 ) -> Result<(), Vec<ValidationError>> {
-    let results: Vec<_> = validator
-        .iter_errors(json)
-        .flat_map(|error| match error.kind() {
-            ValidationErrorKind::UnevaluatedProperties { unexpected } => unexpected
-                .iter()
-                .map(|property| create_additional_properties_error(property, error.instance_path().as_str()))
-                .collect(),
-            _ => vec![],
-        })
-        .collect();
+    let mut errors: Option<Vec<ValidationError>> = None;
+    for error in validator.iter_errors(json) {
+        if let ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind() {
+            for property in unexpected {
+                errors.get_or_insert_default().push(create_additional_properties_error(
+                    property,
+                    error.instance_path().as_str(),
+                ));
+            }
+        }
+    }
 
-    if results.is_empty() { Ok(()) } else { Err(results) }
+    errors.map_or(Ok(()), Err)
 }
 
 fn create_additional_properties_error(key: &str, path: &str) -> ValidationError {

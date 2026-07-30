@@ -143,21 +143,23 @@ impl From<&str> for CsafSerialNumber {
 #[cfg(test)]
 mod tests {
     use super::ProductIdentificationHelperNumber as PIHNumber;
+    use rstest::rstest;
 
-    #[test]
-    fn test_count_unescaped_stars() {
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abcdef"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("*"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc*def"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc*def*ghi"), 2);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\*def"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\*def"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\\\*def"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\\\\\*def"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\\\*\\\\\\*def"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\*\\\\*def"), 2);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("\\*\\*\\*"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\*def*ghi"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\*def\\*ghi"), 1);
+    #[rstest]
+    #[case("abcdef", 0)]
+    #[case("*", 1)]
+    #[case("abc*def", 1)]
+    #[case("abc*def*ghi", 2)]
+    #[case("abc\\*def", 0)]
+    #[case("abc\\\\*def", 1)]
+    #[case("abc\\\\\\*def", 0)]
+    #[case("abc\\\\\\\\*def", 1)]
+    #[case("abc\\\\\\*\\\\\\*def", 0)]
+    #[case("abc\\\\*\\\\*def", 2)]
+    #[case("\\*\\*\\*", 0)]
+    #[case("abc\\*def*ghi", 1)]
+    #[case("abc\\\\*def\\*ghi", 1)]
+    fn test_count_unescaped_stars(#[case] input: &str, #[case] expected: u32) {
+        assert_eq!(PIHNumber::count_unescaped_stars_impl(input), expected);
     }
 }

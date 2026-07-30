@@ -228,7 +228,7 @@ mod tests {
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070605",
-                "/product_tree/relationships/0/full_product_name",
+                "/product_tree/product_paths/0/full_product_name",
             ),
             generate_duplicate_helper_error(
                 "cpes",
@@ -240,7 +240,7 @@ mod tests {
                 "cpes",
                 "cpe:/a:example:product_d",
                 "CSAFPID-908070605",
-                "/product_tree/relationships/0/full_product_name",
+                "/product_tree/product_paths/0/full_product_name",
             ),
         ];
 

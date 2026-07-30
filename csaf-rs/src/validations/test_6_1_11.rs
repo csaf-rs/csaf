@@ -31,11 +31,11 @@ fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Option<Vec<Valid
         errors
             .get_or_insert_default()
             .push(generate_incorrect_cwe_version_error(version, path));
-    } else if let Some((_, cwe_name)) = CWE_ENTRIES[version].1.get(&cwe.id) {
-        if *cwe_name != cwe.name {
+    } else if let Some(entry) = CWE_ENTRIES[version].entries.get(&cwe.id) {
+        if entry.name != cwe.name {
             errors
                 .get_or_insert_default()
-                .push(generate_incorrect_cwe_name_error(&cwe.id, cwe_name, version, path));
+                .push(generate_incorrect_cwe_name_error(&cwe.id, &entry.name, version, path));
         }
     } else {
         errors
@@ -47,9 +47,11 @@ fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Option<Vec<Valid
 fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static String> {
     let mut latest: Option<(&'static String, &NaiveDate)> = None;
 
-    for (version, (release_date, _)) in CWE_ENTRIES.iter() {
-        if date.is_none_or(|date| *release_date <= date) && latest.is_none_or(|latest| *release_date > *latest.1) {
-            latest = Some((version, release_date));
+    for (version, version_data) in CWE_ENTRIES.iter() {
+        if date.is_none_or(|date| version_data.release_date <= date)
+            && latest.is_none_or(|latest| version_data.release_date > *latest.1)
+        {
+            latest = Some((version, &version_data.release_date));
         }
     }
 

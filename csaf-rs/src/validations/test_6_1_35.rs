@@ -2,20 +2,14 @@ use crate::csaf_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::ValidationError;
 use std::collections::BTreeMap;
-use std::fmt::{Display, Formatter};
+use strum::{AsRefStr, Display};
 
+#[derive(Display, AsRefStr)]
 enum ExclusivityKind {
+    #[strum(serialize = "exclusive")]
     Exclusive,
+    #[strum(serialize = "mutually exclusive")]
     MutuallyExclusive,
-}
-
-impl Display for ExclusivityKind {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ExclusivityKind::Exclusive => write!(f, "exclusive"),
-            ExclusivityKind::MutuallyExclusive => write!(f, "mutually exclusive"),
-        }
-    }
 }
 
 fn generate_category_contradiction_error(

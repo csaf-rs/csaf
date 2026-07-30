@@ -6,20 +6,14 @@ use crate::csaf_traits::{
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use std::fmt;
+use strum::{AsRefStr, Display};
 
+#[derive(Display, AsRefStr)]
 enum DateProperty {
+    #[strum(serialize = "date")]
     Date,
+    #[strum(serialize = "exploitation_date")]
     ExploitationDate,
-}
-
-impl fmt::Display for DateProperty {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            DateProperty::Date => write!(f, "date"),
-            DateProperty::ExploitationDate => write!(f, "exploitation_date"),
-        }
-    }
 }
 
 fn create_date_too_new_error(

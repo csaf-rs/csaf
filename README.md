@@ -151,6 +151,10 @@ Bindings for other languages are created through the `csaf-ffi` crate, which is 
 
 The Go bindings are generated via [uniffi-bindgen-go](https://github.com/NordSecurity/uniffi-bindgen-go).
 
+> **Note:** The `generate_go_bindings.sh` script invokes `go fmt`, `go env GOOS` and `go env GOARCH` 
+> to autoformat the output and detect the target platform, which is used to name the generated file.
+> This requires Go to be installed and available on `PATH`, instructions can be found [here](https://go.dev/).
+
 ```bash
 # Install the Go binding generator (one-time)
 cargo install uniffi-bindgen-go \

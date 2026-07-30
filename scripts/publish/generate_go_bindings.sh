@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Generate UniFFI Go bindings for csaf-ffi.
 #
-# Usage: ./generate_go_bindings.sh [--skip-build]
+# Usage: ./scripts/publish/generate_go_bindings.sh [--skip-build]
 #
 # This script:
 #   1. Builds csaf-ffi as a native release (dylib + static archive)
@@ -10,7 +10,12 @@
 #      so that the per-platform #cgo LDFLAGS in cgo_*.go can find it
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Always run from the repository root so paths are deterministic
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "Error: not inside a git repository." >&2
+  exit 1
+}
+cd "$REPO_ROOT"
 
 # Ensure cargo-installed tools are on PATH
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -22,16 +27,16 @@ fi
 
 echo "Generating Go bindings..."
 uniffi-bindgen-go \
-  --library "$SCRIPT_DIR/target/release/libcsaf_ffi.dylib" \
-  --out-dir "$SCRIPT_DIR/go/" 
+  --library "$REPO_ROOT/target/release/libcsaf_ffi.dylib" \
+  --out-dir "$REPO_ROOT/go/" 
 
 # Copy the static archive into the per-platform lib directory so CGo can find
 # it without needing CGO_LDFLAGS to be set manually.
 GOOS="$(go env GOOS)"
 GOARCH="$(go env GOARCH)"
-LIB_DIR="$SCRIPT_DIR/go/csaf_ffi/lib/${GOOS}_${GOARCH}"
+LIB_DIR="$REPO_ROOT/go/csaf_ffi/lib/${GOOS}_${GOARCH}"
 mkdir -p "$LIB_DIR"
-cp "$SCRIPT_DIR/target/release/libcsaf_ffi.a" "$LIB_DIR/"
+cp "$REPO_ROOT/target/release/libcsaf_ffi.a" "$LIB_DIR/"
 echo "Copied libcsaf_ffi.a → $LIB_DIR/"
 
-echo "Done! Output in $SCRIPT_DIR/go/csaf_ffi/"
+echo "Done! Output in $REPO_ROOT/go/csaf_ffi/"

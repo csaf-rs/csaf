@@ -116,10 +116,10 @@ To bump the version across all crates and `wasm/package.json` at once, use the p
 # Install cargo-edit (one-time)
 cargo install cargo-edit
 
-./bump_version.sh patch        # x.y.z -> x.y.z+1
-./bump_version.sh minor        # x.y.z -> x.y+1.0
-./bump_version.sh major        # x.y.z -> x+1.0.0
-./bump_version.sh set 1.2.3    # explicit version
+./scripts/publish/bump_version.sh patch        # x.y.z -> x.y.z+1
+./scripts/publish/bump_version.sh minor        # x.y.z -> x.y+1.0
+./scripts/publish/bump_version.sh major        # x.y.z -> x+1.0.0
+./scripts/publish/bump_version.sh set 1.2.3    # explicit version
 ```
 
 ## Build
@@ -158,7 +158,7 @@ cargo install uniffi-bindgen-go \
   --tag v0.7.0+v0.31.0
 
 # Build the Rust library, generate bindings, and copy the static archive
-./generate_go_bindings.sh
+./scripts/publish/generate_go_bindings.sh
 ```
 This creates GO code in the `go/csaf_ffi` folder.
 
@@ -219,7 +219,7 @@ The WASM bindings are generated via [uniffi-bindgen-js](https://crates.io/crates
 cargo install uniffi-bindgen-js --version 0.2.1
 
 # Build and generate (uses generate_wasm_bindings.sh)
-./generate_wasm_bindings.sh
+./scripts/publish/generate_wasm_bindings.sh
 ```
 
 This creates TypeScript + WASM output in `wasm/`. 

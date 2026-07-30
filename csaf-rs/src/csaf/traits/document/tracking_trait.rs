@@ -12,9 +12,20 @@ use crate::schema::csaf2_1::schema::{
     Tracking as Tracking21,
 };
 use chrono::{DateTime, Utc};
+use regex::Regex;
+use std::sync::LazyLock;
 
 /// Type alias for a vector of revision history items
 pub type RevisionHistory = Vec<RevisionHistoryItem>;
+
+/// Generates the canonical filename for a CSAF document from its tracking ID, per section 5.1:
+/// lowercase, non-`[+\-a-z0-9]` sequences replaced with `_`, `.json` appended.
+fn canonical_filename_from_id(tracking_id: &str) -> String {
+    static INVALID_CHARS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^+\-a-z0-9]+").unwrap());
+    let lowercase_id = tracking_id.to_lowercase();
+    let cleaned_id = INVALID_CHARS.replace_all(&lowercase_id, "_");
+    format!("{cleaned_id}.json")
+}
 
 /// Struct representing a revision history item
 /// Includes the path index in the original revision history, the date, and the version number
@@ -83,6 +94,12 @@ pub trait TrackingTrait {
     /// Returns the tracking ID of this document
     fn get_id(&self) -> &str;
 
+    /// Generates the canonical filename from this document's tracking ID, per section 5.1:
+    /// lowercased, non-`[+\-a-z0-9]` sequences replaced with `_`, `.json` appended.
+    fn get_canonical_filename(&self) -> String {
+        canonical_filename_from_id(self.get_id())
+    }
+
     fn get_version(&self) -> CsafVersionNumber;
 }
 
@@ -149,5 +166,23 @@ impl TrackingTrait for Tracking21 {
 
     fn get_version(&self) -> CsafVersionNumber {
         CsafVersionNumber::from(&self.version)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::rstest;
+
+    #[rstest]
+    #[case(
+        "OASIS_CSAF_TC-CSAF_2.0-2021-6-2-11-01",
+        "oasis_csaf_tc-csaf_2_0-2021-6-2-11-01.json"
+    )]
+    #[case("2022_#01-A", "2022_01-a.json")]
+    #[case("test###value", "test_value.json")]
+    #[case("Test+123-456", "test+123-456.json")]
+    fn test_canonical_filename_from_id(#[case] input: &str, #[case] expected: &str) {
+        assert_eq!(canonical_filename_from_id(input), expected);
     }
 }

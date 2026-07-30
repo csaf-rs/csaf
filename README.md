@@ -27,37 +27,41 @@ A validator for CSAF documents
 Usage: csaf-validator [OPTIONS] <PATH>
 
 Arguments:
-  <PATH>  
+  <PATH>  Path to the CSAF document(s) to validate
 
 Options:
-  -c, --csaf-version <CSAF_VERSION>  Version of CSAF to use [default: 2.0]
-  -p, --preset <PRESET>              The validation preset to use [default: basic]
-  -t, --test-id <TEST_ID>            Run only the selected tests, may be specified multiple times
-  -h, --help                         Print help
-  -V, --version                      Print version
+  -C, --csaf-version <CSAF_VERSION>  Version of CSAF to use [possible values: auto, 2.0, 2.1] [default: auto]
+  -T, --test <TEST>                  The validation preset or test id to use; may be specified multiple times [default: basic]
+  -v, --verbose                       Show detailed validation results
+  -h, --help                          Print help
+  -V, --version                       Print version
 ```
 
 Some examples to use are included below. Please note that the validation is not yet fully implemented!
 
 ```bash
-# validate a CSAF 2.0 document with profile basic (the default)
-csaf-validator --csaf-version 2.0 my-csaf-2-0-document.json
+# validate a CSAF document, auto-detecting the version, with profile basic (the default)
+csaf-validator my-csaf-document.json
 
 # validate a CSAF 2.0 document with profile full
-csaf-validator --csaf-version 2.0 --preset full my-csaf-2-0-document.json
+csaf-validator --csaf-version 2.0 --test full my-csaf-2-0-document.json
 
 # validate a CSAF 2.1 document with one specific test
-csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
+csaf-validator --csaf-version 2.1 --test 6.1.34 my-csaf-2-1-document.json
 ```
 
 You can also use the library version as depicted here:
 ```rust
+use std::path::Path;
 use csaf::csaf2_0::loader::load_document;
 use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use csaf::validation::{Validatable, validate_by_preset, validate_by_test, validate_by_tests};
 
 let csaf_version = "2.0";
 let path = "/path/to/local/cve-2025-9820.json";
+
+// load the document
+let document = load_document(Path::new(path))?;
 
 // validate a preset
 let preset_results = validate_by_preset(&document, csaf_version, "basic");
@@ -132,7 +136,7 @@ git submodule init
 git submodule update --remote
 
 # make sure that local assets are in sync with git submodules
-./update_assets.sh
+./scripts/update/update_assets.sh
 
 # run the tests
 cargo test
@@ -179,14 +183,14 @@ As a demonstration there is a small CLI and Webserver example included.
 
 ```bash
 cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/example/ <PATH_TO_CSAF_FILE>
+CGO_LDFLAGS="-L$HOME/.cache/csaf-ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/example/ <PATH_TO_CSAF_FILE>
 ```
 
 ##### Web server (API)
 
 ```bash
 cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/webapi/
+CGO_LDFLAGS="-L$HOME/.cache/csaf-ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/webapi/
 ```
 
 The server listens on port `8080` by default. Set the `PORT` environment variable

@@ -51,6 +51,11 @@ impl PurlParseError {
     pub fn kind(&self) -> &PurlParseErrorKind {
         &self.kind
     }
+
+    /// Returns the raw input PURL string that failed parsing.
+    pub fn original_purl(&self) -> &str {
+        self.original_purl.as_str()
+    }
 }
 
 impl IntoValidationError for PurlParseError {

@@ -74,7 +74,7 @@ mod tests {
             Ok(()), // supplementary case s11 mixed versioning
         );
 
-        // CSAF 2.1 has 19 test cases (01-09, 11-19, 31)
+        // CSAF 2.1 has 19 test cases (01-09, 11-19, 31, 32)
         TESTS_2_1.test_6_1_14.expect(
             case_error.clone(),
             case_error.clone(),

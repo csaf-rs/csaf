@@ -297,7 +297,7 @@ jobs:
         if: steps.uniffi-js-cache.outputs.cache-hit != 'true'
         run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
       - name: Build UniFFI WASM bindings
-        run: bash generate_wasm_bindings.sh
+        run: bash scripts/publish/generate_wasm_bindings.sh
       - name: NPM publish dry-run
         working-directory: ./wasm
         run: npm publish --dry-run

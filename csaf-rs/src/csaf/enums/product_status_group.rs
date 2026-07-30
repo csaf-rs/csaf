@@ -28,9 +28,7 @@ pub enum ProductStatusGroup {
 impl From<&ProductStatus> for ProductStatusGroup {
     fn from(status: &ProductStatus) -> Self {
         match status {
-            ProductStatus::FirstAffected | ProductStatus::KnownAffected | ProductStatus::LastAffected => {
-                Self::Affected
-            },
+            ProductStatus::FirstAffected | ProductStatus::KnownAffected | ProductStatus::LastAffected => Self::Affected,
             ProductStatus::KnownNotAffected => Self::NotAffected,
             ProductStatus::Fixed | ProductStatus::FirstFixed => Self::Fixed,
             ProductStatus::UnderInvestigation => Self::UnderInvestigation,

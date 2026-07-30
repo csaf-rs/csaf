@@ -33,12 +33,7 @@ pub(crate) enum SubtagKind {
 
 impl SubtagKind {
     /// All variants in a fixed order.
-    pub const ALL: &[SubtagKind] = &[
-        Self::Language,
-        Self::Region,
-        Self::Script,
-        Self::Grandfathered,
-    ];
+    pub const ALL: &[SubtagKind] = &[Self::Language, Self::Region, Self::Script, Self::Grandfathered];
 
     /// Returns the registry `Type:` value that corresponds to this kind.
     pub fn registry_key(&self) -> &str {

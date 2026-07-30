@@ -82,10 +82,7 @@ impl CsafDocumentCategory {
 
     /// Checks if the category is DocumentCategory::CsafBase or DocumentCategory::CsafBaseOther
     pub fn is_base(&self) -> bool {
-        matches!(
-            self,
-            Self::CsafBase | Self::CsafBaseOther(_)
-        )
+        matches!(self, Self::CsafBase | Self::CsafBaseOther(_))
     }
 
     /// Checks if the document category is a known profile for the given CSAF version

@@ -20,6 +20,14 @@ cd "$REPO_ROOT"
 # Ensure cargo-installed tools are on PATH
 export PATH="$HOME/.cargo/bin:$PATH"
 
+if ! command -v go >/dev/null 2>&1; then
+  echo "ERROR: Go is not installed or not on PATH." >&2
+  echo "       This script requires Go to autoformat (via 'go fmt')" >&2
+  echo "       and to determine the target platform (via 'go env GOOS' and 'go env GOARCH')" >&2
+  echo "       to correctly name the file. Install it from https://go.dev/ and rerun." >&2
+  exit 1
+fi
+
 if [[ "${1:-}" != "--skip-build" ]]; then
   echo "Building csaf-ffi (native release)..."
   cargo build -p csaf-ffi --release --locked
@@ -28,7 +36,7 @@ fi
 echo "Generating Go bindings..."
 uniffi-bindgen-go \
   --library "$REPO_ROOT/target/release/libcsaf_ffi.dylib" \
-  --out-dir "$REPO_ROOT/go/" 
+  --out-dir "$REPO_ROOT/go/"
 
 # Copy the static archive into the per-platform lib directory so CGo can find
 # it without needing CGO_LDFLAGS to be set manually.
@@ -39,4 +47,4 @@ mkdir -p "$LIB_DIR"
 cp "$REPO_ROOT/target/release/libcsaf_ffi.a" "$LIB_DIR/"
 echo "Copied libcsaf_ffi.a → $LIB_DIR/"
 
-echo "Done! Output in $REPO_ROOT/go/csaf_ffi/"
+echo "Done! Output in $REPO_ROOT/go/csaf_ffi/ (static lib copied to $LIB_DIR/)"

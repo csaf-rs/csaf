@@ -21,7 +21,7 @@ impl IntVerVersion {
     /// Creates a new `IntVerVersion` from a `u64`.
     /// Only available within the version_number module.
     pub(super) const fn new(value: u64) -> Self {
-        IntVerVersion(value)
+        Self(value)
     }
 }
 
@@ -29,7 +29,7 @@ impl IntVerVersion {
 // This is only used for testing and not available on the public API
 impl From<u64> for IntVerVersion {
     fn from(value: u64) -> Self {
-        IntVerVersion::new(value)
+        Self::new(value)
     }
 }
 

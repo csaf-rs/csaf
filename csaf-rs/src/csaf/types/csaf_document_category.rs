@@ -28,63 +28,63 @@ pub enum CsafDocumentCategory {
 impl From<&str> for CsafDocumentCategory {
     fn from(category: &str) -> Self {
         match category {
-            "csaf_base" => CsafDocumentCategory::CsafBase,
-            "csaf_informational_advisory" => CsafDocumentCategory::CsafInformationalAdvisory,
-            "csaf_security_incident_response" => CsafDocumentCategory::CsafSecurityIncidentResponse,
-            "csaf_security_advisory" => CsafDocumentCategory::CsafSecurityAdvisory,
-            "csaf_vex" => CsafDocumentCategory::CsafVex,
-            "csaf_deprecated_security_advisory" => CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-            "csaf_withdrawn" => CsafDocumentCategory::CsafWithdrawn,
-            "csaf_superseded" => CsafDocumentCategory::CsafSuperseded,
-            default => CsafDocumentCategory::CsafBaseOther(default.to_string()),
+            "csaf_base" => Self::CsafBase,
+            "csaf_informational_advisory" => Self::CsafInformationalAdvisory,
+            "csaf_security_incident_response" => Self::CsafSecurityIncidentResponse,
+            "csaf_security_advisory" => Self::CsafSecurityAdvisory,
+            "csaf_vex" => Self::CsafVex,
+            "csaf_deprecated_security_advisory" => Self::CsafDeprecatedSecurityAdvisory,
+            "csaf_withdrawn" => Self::CsafWithdrawn,
+            "csaf_superseded" => Self::CsafSuperseded,
+            default => Self::CsafBaseOther(default.to_string()),
         }
     }
 }
 
 impl From<&DocumentCategory20> for CsafDocumentCategory {
     fn from(value: &DocumentCategory20) -> Self {
-        CsafDocumentCategory::from(value.as_str())
+        Self::from(value.as_str())
     }
 }
 
 impl From<&DocumentCategory21> for CsafDocumentCategory {
     fn from(value: &DocumentCategory21) -> Self {
-        CsafDocumentCategory::from(value.as_str())
+        Self::from(value.as_str())
     }
 }
 
 impl CsafDocumentCategory {
     /// Well-known CSAF 2.0 profiles
     const CSAF_20_KNOWN_PROFILES: [CsafDocumentCategory; 5] = [
-        CsafDocumentCategory::CsafBase,
-        CsafDocumentCategory::CsafSecurityIncidentResponse,
-        CsafDocumentCategory::CsafInformationalAdvisory,
-        CsafDocumentCategory::CsafSecurityAdvisory,
-        CsafDocumentCategory::CsafVex,
+        Self::CsafBase,
+        Self::CsafSecurityIncidentResponse,
+        Self::CsafInformationalAdvisory,
+        Self::CsafSecurityAdvisory,
+        Self::CsafVex,
     ];
 
     /// Well-known CSAF 2.1 profiles
     const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 8] = [
-        CsafDocumentCategory::CsafBase,
-        CsafDocumentCategory::CsafSecurityIncidentResponse,
-        CsafDocumentCategory::CsafInformationalAdvisory,
-        CsafDocumentCategory::CsafSecurityAdvisory,
-        CsafDocumentCategory::CsafVex,
-        CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-        CsafDocumentCategory::CsafWithdrawn,
-        CsafDocumentCategory::CsafSuperseded,
+        Self::CsafBase,
+        Self::CsafSecurityIncidentResponse,
+        Self::CsafInformationalAdvisory,
+        Self::CsafSecurityAdvisory,
+        Self::CsafVex,
+        Self::CsafDeprecatedSecurityAdvisory,
+        Self::CsafWithdrawn,
+        Self::CsafSuperseded,
     ];
 
     /// Checks if the category is DocumentCategory::CsafBaseOther
     pub fn is_base_other(&self) -> bool {
-        matches!(self, CsafDocumentCategory::CsafBaseOther(_))
+        matches!(self, Self::CsafBaseOther(_))
     }
 
     /// Checks if the category is DocumentCategory::CsafBase or DocumentCategory::CsafBaseOther
     pub fn is_base(&self) -> bool {
         matches!(
             self,
-            CsafDocumentCategory::CsafBase | CsafDocumentCategory::CsafBaseOther(_)
+            Self::CsafBase | Self::CsafBaseOther(_)
         )
     }
 
@@ -211,15 +211,15 @@ impl CsafDocumentCategory {
 impl Display for CsafDocumentCategory {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            CsafDocumentCategory::CsafBase => write!(f, "csaf_base"),
-            CsafDocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
-            CsafDocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
-            CsafDocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
-            CsafDocumentCategory::CsafVex => write!(f, "csaf_vex"),
-            CsafDocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
-            CsafDocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
-            CsafDocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
-            CsafDocumentCategory::CsafBaseOther(other) => write!(f, "{other}"),
+            Self::CsafBase => write!(f, "csaf_base"),
+            Self::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
+            Self::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
+            Self::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
+            Self::CsafVex => write!(f, "csaf_vex"),
+            Self::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
+            Self::CsafWithdrawn => write!(f, "csaf_withdrawn"),
+            Self::CsafSuperseded => write!(f, "csaf_superseded"),
+            Self::CsafBaseOther(other) => write!(f, "{other}"),
         }
     }
 }

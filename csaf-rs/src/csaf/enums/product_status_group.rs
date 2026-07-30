@@ -29,13 +29,13 @@ impl From<&ProductStatus> for ProductStatusGroup {
     fn from(status: &ProductStatus) -> Self {
         match status {
             ProductStatus::FirstAffected | ProductStatus::KnownAffected | ProductStatus::LastAffected => {
-                ProductStatusGroup::Affected
+                Self::Affected
             },
-            ProductStatus::KnownNotAffected => ProductStatusGroup::NotAffected,
-            ProductStatus::Fixed | ProductStatus::FirstFixed => ProductStatusGroup::Fixed,
-            ProductStatus::UnderInvestigation => ProductStatusGroup::UnderInvestigation,
-            ProductStatus::Unknown => ProductStatusGroup::Unknown,
-            ProductStatus::Recommended => ProductStatusGroup::Recommended,
+            ProductStatus::KnownNotAffected => Self::NotAffected,
+            ProductStatus::Fixed | ProductStatus::FirstFixed => Self::Fixed,
+            ProductStatus::UnderInvestigation => Self::UnderInvestigation,
+            ProductStatus::Unknown => Self::Unknown,
+            ProductStatus::Recommended => Self::Recommended,
         }
     }
 }

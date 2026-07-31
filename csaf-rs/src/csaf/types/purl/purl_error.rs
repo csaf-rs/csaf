@@ -29,7 +29,7 @@ pub enum PurlParseErrorKind {
 impl PurlParseError {
     /// Private constructor
     fn new(purl_str: &str, kind: PurlParseErrorKind) -> Self {
-        PurlParseError {
+        Self {
             original_purl: purl_str.to_owned(),
             kind,
         }

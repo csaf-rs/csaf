@@ -24,10 +24,10 @@ After [building](README.md#build) or downloading `csaf-validator` from [the avai
 ```
 A validator for CSAF documents
 
-Usage: csaf-validator [OPTIONS] <PATH>
+Usage: csaf-validator [OPTIONS] <PATH>...
 
 Arguments:
-  <PATH>  Path to the CSAF document(s) to validate
+  <PATH>...  Path(s) to the CSAF document(s) to validate
 
 Options:
   -C, --csaf-version <CSAF_VERSION>  Version of CSAF to use [possible values: auto, 2.0, 2.1] [default: auto]

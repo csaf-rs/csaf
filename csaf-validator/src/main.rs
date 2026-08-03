@@ -17,7 +17,7 @@ use std::path::Path;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Path to the CSAF document(s) to validate
+    /// Path(s) to CSAF document(s) to validate, specify multiple files as: <PATH>... (e.g. `doc1.json doc2.json`)
     #[arg(action = clap::ArgAction::Append)]
     path: Vec<String>,
 

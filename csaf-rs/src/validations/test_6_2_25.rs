@@ -41,7 +41,7 @@ pub fn test_6_2_25_usage_of_cwe_not_allowed_for_vulnerability_mapping(
                     continue;
                 };
 
-                // Skip this entry if the CWE version or CWE ID are unknown, this will reported
+                // Skip this entry if the CWE version or CWE ID are unknown, this will be reported
                 // by 6.1.11.
                 let Some(entry) = CWE_ENTRIES.get(version).and_then(|v| v.entries.get(&cwe_item.id)) else {
                     // Revisit after #407
@@ -116,15 +116,20 @@ mod tests {
             1,
         )]);
 
+        // Case 11: CWE-112 (Allowed)
+        // Case 12: CWE-908 (Allowed)
+        // Case 13: CWE-1287 (Allowed)
+        // Case 14: multiple vulns, multiple cwes, all allowed
+
         TESTS_2_1.test_6_2_25.expect(
             case_01_discouraged,
             case_02_prohibited,
             case_03_multiple_cwes_with_discouraged,
             case_04_multiple_vulns_cwe_with_discouraged,
-            Ok(()), // case_11: CWE-112 (Allowed)
-            Ok(()), // case_12: CWE-908 (Allowed)
-            Ok(()), // case_13: CWE-1287 (Allowed)
-            Ok(()), // case_14: multiple vulns, multiple cwes, all allowed
+            Ok(()),
+            Ok(()),
+            Ok(()),
+            Ok(()),
         );
     }
 }

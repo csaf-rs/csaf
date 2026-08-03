@@ -35,7 +35,7 @@ pub fn test_6_2_26_usage_of_cwe_allowed_with_review_for_vulnerability_mapping(
                     continue;
                 };
 
-                // Skip this entry if the CWE version or CWE ID are unknown, this will reported
+                // Skip this entry if the CWE version or CWE ID are unknown, this will be reported
                 // by 6.1.11.
                 let Some(entry) = CWE_ENTRIES.get(version).and_then(|v| v.entries.get(&cwe_item.id)) else {
                     continue;
@@ -47,7 +47,7 @@ pub fn test_6_2_26_usage_of_cwe_allowed_with_review_for_vulnerability_mapping(
                     continue;
                 };
 
-                // Generate an error if the usage field is
+                // Generate an error if the usage field is "Allowed-with-Review"
                 if usage == "Allowed-with-Review" {
                     errors.get_or_insert_default().push(create_allowed_with_review_error(
                         &cwe_item.id,

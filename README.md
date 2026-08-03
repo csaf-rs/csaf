@@ -32,18 +32,18 @@ Arguments:
 Options:
   -C, --csaf-version <CSAF_VERSION>  Version of CSAF to use [possible values: auto, 2.0, 2.1] [default: auto]
   -T, --test <TEST>                  The validation preset or test ID to use; may be specified multiple times [default: basic]
-  -v, --verbose                       Show detailed validation results
-  -h, --help                          Print help
-  -V, --version                       Print version
+  -v, --verbose                      Show detailed validation results
+  -h, --help                         Print help
+  -V, --version                      Print version
 ```
 
 Some examples to use are included below. Please note that the validation is not yet fully implemented!
 
 ```bash
-# validate a CSAF document, auto-detecting the version, with profile basic (the default)
+# validate a CSAF document, auto-detecting the version, with preset basic (the default)
 csaf-validator my-csaf-document.json
 
-# validate a CSAF 2.0 document with profile full
+# validate a CSAF 2.0 document with preset full
 csaf-validator --csaf-version 2.0 --test full my-csaf-2-0-document.json
 
 # validate a CSAF 2.1 document with one specific test

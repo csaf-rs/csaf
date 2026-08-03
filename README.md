@@ -31,7 +31,7 @@ Arguments:
 
 Options:
   -C, --csaf-version <CSAF_VERSION>  Version of CSAF to use [possible values: auto, 2.0, 2.1] [default: auto]
-  -T, --test <TEST>                  The validation preset or test id to use; may be specified multiple times [default: basic]
+  -T, --test <TEST>                  The validation preset or test ID to use; may be specified multiple times [default: basic]
   -v, --verbose                       Show detailed validation results
   -h, --help                          Print help
   -V, --version                       Print version
@@ -72,7 +72,7 @@ let multiple_tests_result = validate_by_tests(&document, csaf_version, &["6.1.1"
 // validate a single test
 let single_test_result = validate_by_test(&document, "6.1.13");
 
-// get all test ids from a preset
+// get all test IDs from a preset
 let test_ids_in_basic_preset = CommonSecurityAdvisoryFramework::tests_in_preset("basic");
 ```
 

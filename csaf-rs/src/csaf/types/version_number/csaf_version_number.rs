@@ -25,9 +25,9 @@ impl CsafVersionNumber {
     /// Helper function to get the major version number, which is either the integer version or the major version of the semantic version.
     pub fn get_major(&self) -> Result<u64, CsafVersionNumberError> {
         match &self {
-            CsafVersionNumber::IntVer(intver) => Ok(intver.get()),
-            CsafVersionNumber::SemVer(semver) => Ok(semver.get_major()),
-            CsafVersionNumber::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
+            Self::IntVer(intver) => Ok(intver.get()),
+            Self::SemVer(semver) => Ok(semver.get_major()),
+            Self::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
         }
     }
 
@@ -39,9 +39,9 @@ impl CsafVersionNumber {
     pub(crate) fn to_comparable_semver(&self) -> Result<Version, CsafVersionNumberError> {
         // ToDo TZ we should return a CsafVersionNumber here.
         match self {
-            CsafVersionNumber::IntVer(intver) => Ok(Version::new(intver.get(), 0, 0)),
-            CsafVersionNumber::SemVer(semver) => Ok(semver.get_version().clone()),
-            CsafVersionNumber::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
+            Self::IntVer(intver) => Ok(Version::new(intver.get(), 0, 0)),
+            Self::SemVer(semver) => Ok(semver.get_version().clone()),
+            Self::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
         }
     }
 
@@ -52,20 +52,18 @@ impl CsafVersionNumber {
     /// This returns an error if the next version would overflow `u64::MAX` for either integer or semantic versions.
     pub fn get_next_major_version(&self) -> Result<CsafVersionNumber, CsafVersionNumberError> {
         match self {
-            CsafVersionNumber::IntVer(intver) => {
+            Self::IntVer(intver) => {
                 let next_major = intver.get().checked_add(1).ok_or(CsafVersionNumberError::Overflow)?;
-                Ok(CsafVersionNumber::IntVer(IntVerVersion::new(next_major)))
+                Ok(Self::IntVer(IntVerVersion::new(next_major)))
             },
-            CsafVersionNumber::SemVer(semver) => {
+            Self::SemVer(semver) => {
                 let next_major = semver
                     .get_major()
                     .checked_add(1)
                     .ok_or(CsafVersionNumberError::Overflow)?;
-                Ok(CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
-                    next_major, 0, 0,
-                ))))
+                Ok(Self::SemVer(SemVerVersion::new(Version::new(next_major, 0, 0))))
             },
-            CsafVersionNumber::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
+            Self::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
         }
     }
 
@@ -75,25 +73,25 @@ impl CsafVersionNumber {
     /// Semantic versions perform a major drop, producing `x-1.0.0`.
     pub fn get_previous_major_version(&self) -> Result<Option<CsafVersionNumber>, CsafVersionNumberError> {
         match self {
-            CsafVersionNumber::IntVer(intver) => {
+            Self::IntVer(intver) => {
                 let previous_major = match intver.get() {
                     1 => return Ok(None),
                     c => c - 1,
                 };
-                Ok(Some(CsafVersionNumber::IntVer(IntVerVersion::new(previous_major))))
+                Ok(Some(Self::IntVer(IntVerVersion::new(previous_major))))
             },
-            CsafVersionNumber::SemVer(semver) => {
+            Self::SemVer(semver) => {
                 let previous_major = match semver.get_major() {
                     1 => return Ok(None),
                     c => c - 1,
                 };
-                Ok(Some(CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+                Ok(Some(Self::SemVer(SemVerVersion::new(Version::new(
                     previous_major,
                     0,
                     0,
                 )))))
             },
-            CsafVersionNumber::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
+            Self::Invalid(v) => Err(CsafVersionNumberError::Invalid(v.clone())),
         }
     }
 }
@@ -110,37 +108,37 @@ impl From<&str> for CsafVersionNumber {
             && !(s.len() > 1 && s.starts_with('0'))
             && let Ok(num) = s.parse::<u64>()
         {
-            return CsafVersionNumber::IntVer(IntVerVersion::new(num));
+            return Self::IntVer(IntVerVersion::new(num));
         }
 
         if let Ok(semver) = Version::parse(s) {
-            return CsafVersionNumber::SemVer(SemVerVersion::new(semver));
+            return Self::SemVer(SemVerVersion::new(semver));
         }
 
-        CsafVersionNumber::Invalid(s.to_string())
+        Self::Invalid(s.to_string())
     }
 }
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber
 impl From<&VersionT20> for CsafVersionNumber {
     fn from(v: &VersionT20) -> Self {
-        CsafVersionNumber::from(v.deref().as_str())
+        Self::from(v.deref().as_str())
     }
 }
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.1 into a CsafVersionNumber
 impl From<&VersionT21> for CsafVersionNumber {
     fn from(v: &VersionT21) -> Self {
-        CsafVersionNumber::from(v.deref().as_str())
+        Self::from(v.deref().as_str())
     }
 }
 
 impl Display for CsafVersionNumber {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            CsafVersionNumber::IntVer(num) => write!(f, "{num}"),
-            CsafVersionNumber::SemVer(version) => write!(f, "{version}"),
-            CsafVersionNumber::Invalid(s) => write!(f, "{s}"),
+            Self::IntVer(num) => write!(f, "{num}"),
+            Self::SemVer(version) => write!(f, "{version}"),
+            Self::Invalid(s) => write!(f, "{s}"),
         }
     }
 }
@@ -150,7 +148,7 @@ impl Hash for CsafVersionNumber {
         // Hash via the comparable semver representation so that IntVer(n) and SemVer(n.0.0)
         // always produce the same hash, consistent with their PartialEq implementation.
         match self {
-            CsafVersionNumber::Invalid(s) => s.hash(state),
+            Self::Invalid(s) => s.hash(state),
             valid => valid.to_comparable_semver().ok().hash(state),
         }
     }
@@ -165,8 +163,8 @@ impl Eq for CsafVersionNumber {}
 impl PartialEq for CsafVersionNumber {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (CsafVersionNumber::Invalid(s1), CsafVersionNumber::Invalid(s2)) => s1 == s2,
-            (CsafVersionNumber::Invalid(_), _) | (_, CsafVersionNumber::Invalid(_)) => false,
+            (Self::Invalid(s1), Self::Invalid(s2)) => s1 == s2,
+            (Self::Invalid(_), _) | (_, Self::Invalid(_)) => false,
             (v1, v2) => v1.to_comparable_semver().ok() == v2.to_comparable_semver().ok(),
         }
     }
@@ -175,9 +173,9 @@ impl PartialEq for CsafVersionNumber {
 impl Ord for CsafVersionNumber {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
-            (CsafVersionNumber::Invalid(s1), CsafVersionNumber::Invalid(s2)) => s1.cmp(s2),
-            (CsafVersionNumber::Invalid(i), v) => i.cmp(&v.to_string()), // fall back to string comparison for invalid vs valid
-            (v, CsafVersionNumber::Invalid(i)) => v.to_string().cmp(i), // fall back to string comparison for valid vs invalid
+            (Self::Invalid(s1), Self::Invalid(s2)) => s1.cmp(s2),
+            (Self::Invalid(i), v) => i.cmp(&v.to_string()), // fall back to string comparison for invalid vs valid
+            (v, Self::Invalid(i)) => v.to_string().cmp(i),  // fall back to string comparison for valid vs invalid
             (v1, v2) => v1.to_comparable_semver().ok().cmp(&v2.to_comparable_semver().ok()),
         }
     }

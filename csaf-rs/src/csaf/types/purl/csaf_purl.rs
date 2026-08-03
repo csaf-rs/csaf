@@ -21,26 +21,26 @@ impl CsafPurl {
             Ok(mut purl) => {
                 let normalized_purl = purl.to_string();
                 let base_without_qualifiers = purl.clear_qualifiers().to_string();
-                CsafPurl::Valid(ValidPurl::new(
+                Self::Valid(ValidPurl::new(
                     purl_str.to_owned(),
                     normalized_purl,
                     base_without_qualifiers,
                 ))
             },
-            Err(e) => CsafPurl::Invalid(PurlParseError::from_packageurl_error(purl_str, e)),
+            Err(e) => Self::Invalid(PurlParseError::from_packageurl_error(purl_str, e)),
         }
     }
 }
 
 impl From<&PackageUrlRepresentation20> for CsafPurl {
     fn from(purl: &PackageUrlRepresentation20) -> Self {
-        CsafPurl::parse(purl.deref())
+        Self::parse(purl.deref())
     }
 }
 
 impl From<&PackageUrlRepresentation21> for CsafPurl {
     fn from(purl: &PackageUrlRepresentation21) -> Self {
-        CsafPurl::parse(purl.deref())
+        Self::parse(purl.deref())
     }
 }
 

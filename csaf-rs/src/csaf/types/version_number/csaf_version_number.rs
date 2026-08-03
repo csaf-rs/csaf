@@ -38,12 +38,12 @@ impl CsafVersionNumber {
             && !(s.len() > 1 && s.starts_with('0'))
             && let Ok(num) = s.parse::<u64>()
         {
-            return CsafVersionNumber::IntVer(IntVerVersion::new(num));
+            return Self::IntVer(IntVerVersion::new(num));
         }
 
         // Try to parse as semver
         if let Ok(semver) = Version::parse(s) {
-            return CsafVersionNumber::SemVer(SemVerVersion::new(semver));
+            return Self::SemVer(SemVerVersion::new(semver));
         }
 
         // Panic if both fail
@@ -55,8 +55,8 @@ impl CsafVersionNumber {
     /// Helper function to get the major version number, which is either the integer version or the major version of the semantic version.
     pub fn get_major(&self) -> u64 {
         match &self {
-            CsafVersionNumber::IntVer(intver) => intver.get(),
-            CsafVersionNumber::SemVer(semver) => semver.get_major(),
+            Self::IntVer(intver) => intver.get(),
+            Self::SemVer(semver) => semver.get_major(),
         }
     }
 
@@ -67,8 +67,8 @@ impl CsafVersionNumber {
     /// This allows mixed-variant revision histories to be sorted and compared correctly.
     pub fn to_comparable_semver(&self) -> Version {
         match self {
-            CsafVersionNumber::IntVer(intver) => Version::new(intver.get(), 0, 0),
-            CsafVersionNumber::SemVer(semver) => semver.get_version().clone(),
+            Self::IntVer(intver) => Version::new(intver.get(), 0, 0),
+            Self::SemVer(semver) => semver.get_version().clone(),
         }
     }
 
@@ -78,13 +78,13 @@ impl CsafVersionNumber {
     /// Semantic versions perform a major bump, producing `x+1.0.0`.
     pub fn get_next_major_version(&self) -> CsafVersionNumber {
         match self {
-            CsafVersionNumber::IntVer(intver) => CsafVersionNumber::IntVer(IntVerVersion::new(
+            Self::IntVer(intver) => Self::IntVer(IntVerVersion::new(
                 intver
                     .get()
                     .checked_add(1)
                     .expect("Integer version overflow while incrementing"),
             )),
-            CsafVersionNumber::SemVer(semver) => CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+            Self::SemVer(semver) => Self::SemVer(SemVerVersion::new(Version::new(
                 semver
                     .get_major()
                     .checked_add(1)
@@ -101,13 +101,13 @@ impl CsafVersionNumber {
     /// Semantic versions perform a major drop, producing `x-1.0.0`.
     pub fn get_previous_major_version(&self) -> CsafVersionNumber {
         match self {
-            CsafVersionNumber::IntVer(intver) => CsafVersionNumber::IntVer(IntVerVersion::new(
+            Self::IntVer(intver) => Self::IntVer(IntVerVersion::new(
                 intver
                     .get()
                     .checked_sub(1)
                     .expect("Integer version underflow while decrementing"),
             )),
-            CsafVersionNumber::SemVer(semver) => CsafVersionNumber::SemVer(SemVerVersion::new(Version::new(
+            Self::SemVer(semver) => Self::SemVer(SemVerVersion::new(Version::new(
                 semver
                     .get_major()
                     .checked_sub(1)
@@ -122,22 +122,22 @@ impl CsafVersionNumber {
 // Transform an already schema-validated version string (VersionT) from CSAF 2.0 into a CsafVersionNumber
 impl From<&VersionT20> for CsafVersionNumber {
     fn from(v: &VersionT20) -> Self {
-        CsafVersionNumber::parse_str(v.deref().as_str())
+        Self::parse_str(v.deref().as_str())
     }
 }
 
 // Transform an already schema-validated version string (VersionT) from CSAF 2.1 into a CsafVersionNumber
 impl From<&VersionT21> for CsafVersionNumber {
     fn from(v: &VersionT21) -> Self {
-        CsafVersionNumber::parse_str(v.deref().as_str())
+        Self::parse_str(v.deref().as_str())
     }
 }
 
 impl Display for CsafVersionNumber {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            CsafVersionNumber::IntVer(num) => write!(f, "{num}"),
-            CsafVersionNumber::SemVer(version) => write!(f, "{version}"),
+            Self::IntVer(num) => write!(f, "{num}"),
+            Self::SemVer(version) => write!(f, "{version}"),
         }
     }
 }
@@ -180,7 +180,7 @@ impl PartialOrd for CsafVersionNumber {
 impl From<&str> for CsafVersionNumber {
     fn from(s: &str) -> Self {
         use std::str::FromStr;
-        CsafVersionNumber::parse_str(
+        Self::parse_str(
             &crate::schema::csaf2_1::schema::VersionT::from_str(s).unwrap_or_else(|err| {
                 panic!("Raw version string '{s}' failed schema validation: {err}. This looks like a dev error.")
             }),

@@ -132,7 +132,7 @@ pub fn defang_url(url: &str) -> String {
 /// Only available when the `external-connections` feature is enabled.
 #[cfg(feature = "external-connections")]
 pub fn get_status_code(url: &str) -> u16 {
-    match ureq::head(url).call() {
+    match ureq::head(url).config().http_status_as_error(false).build().call() {
         Ok(response) => response.status().as_u16(),
         Err(_) => 0,
     }

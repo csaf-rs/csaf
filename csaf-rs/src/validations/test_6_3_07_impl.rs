@@ -5,7 +5,7 @@ use crate::validation::ValidationError;
 fn create_url_resolution_error(url: &str, status_code: Option<u16>, instance_path: &str) -> ValidationError {
     let message = match status_code {
         Some(code) => format!(
-            "The URL '{}' does not resolve with HTTP status code in the interval between (including) 200 and (excluding) 400. Got status code: {}",
+            "The URL '{}' does not resolve with HTTP status code of less than 400. Got status code: {}",
             defang_url(url),
             code
         ),

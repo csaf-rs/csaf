@@ -68,7 +68,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                         // check if the current number was already marked as missing
                         if let Some(previously_missing_version) = missing_versions.get_mut(&current.number) {
                             // mark as found so we can distinguish between missing at all or not
-                            // example squence: 3, 2 -> 1,2 would be already marked as missing, now we found 2 and can add a before or between error
+                            // example sequence: 3, 2 -> 1,2 would be already marked as missing, now we found 2 and can add a before or between error
                             previously_missing_version.found = true;
                         } else {
                             missing_versions.insert(
@@ -124,7 +124,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
             Some(current)
         });
     for (missing_version, version_metadata) in missing_versions {
-        // ToDo aggregate consequive missing versions into one error message, e.g. "missing revision history items with numbers 2,3,4 between 2026-03-01T11:00:00.000Z and 2026-03-03T11:00:00.000Z"
+        // ToDo aggregate consecutive missing versions into one error message, e.g. "missing revision history items with numbers 2,3,4 between 2026-03-01T11:00:00.000Z and 2026-03-03T11:00:00.000Z"
         if !version_metadata.found {
             errors
                 .get_or_insert_default()

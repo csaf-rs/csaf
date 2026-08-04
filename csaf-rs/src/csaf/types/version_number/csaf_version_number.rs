@@ -13,6 +13,8 @@ use std::ops::Deref;
 pub enum CsafVersionNumber {
     IntVer(IntVerVersion),
     SemVer(SemVerVersion),
+    // We can levergage the invalid state to leniently parse the JSON in the future.
+    // For now, invalid strings break the deserialization of the entire document, which is the desired behavior.
     Invalid(String),
 }
 

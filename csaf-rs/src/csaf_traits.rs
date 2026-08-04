@@ -7,7 +7,7 @@ pub use crate::csaf::enums::product_status::ProductStatus;
 pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
 pub use crate::csaf::traits::csaf_trait::CsafTrait;
 pub use crate::csaf::traits::document::distribution_trait::DistributionTrait;
-pub use crate::csaf::traits::document::document_references_trait::DocumentReferenceTrait;
+pub use crate::csaf::traits::shared::references_trait::ReferenceTrait;
 pub use crate::csaf::traits::document::generator_trait::GeneratorTrait;
 pub use crate::csaf::traits::document::publisher_trait::PublisherTrait;
 pub use crate::csaf::traits::document::revision_trait::RevisionTrait;

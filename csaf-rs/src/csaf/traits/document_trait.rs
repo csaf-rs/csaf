@@ -5,7 +5,7 @@ use crate::csaf::traits::util::extract_references::{
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
-use crate::csaf_traits::{DistributionTrait, DocumentReferenceTrait, NoteTrait, PublisherTrait, TrackingTrait};
+use crate::csaf_traits::{DistributionTrait, ReferenceTrait, NoteTrait, PublisherTrait, TrackingTrait};
 use crate::schema::csaf2_0::schema::{
     CsafVersion as CsafVersion20, DocumentLevelMetaData as DocumentLevelMetaData20, Note as Note20,
     Publisher as Publisher20, Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20,
@@ -20,7 +20,7 @@ use crate::validation::ValidationError;
 
 /// Returns an iterator over the reference URLs that satisfy the canonical URL requirements:
 /// `category = "self"`, starts with `https://`, ends with the tracking-ID-derived filename.
-fn canonical_url_candidates<'a, R: DocumentReferenceTrait>(
+fn canonical_url_candidates<'a, R: ReferenceTrait>(
     references: Option<&'a Vec<R>>,
     expected_filename: &str,
 ) -> impl Iterator<Item = &'a str> {
@@ -47,7 +47,7 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
-    type DocumentReferenceType: DocumentReferenceTrait;
+    type ReferenceType: ReferenceTrait;
 
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
@@ -82,7 +82,7 @@ pub trait DocumentTrait {
     fn get_category(&self) -> CsafDocumentCategory;
 
     /// Returns the references of this document
-    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
 
     /// Returns the canonical URLs from this document's references.
     fn get_canonical_urls(&self) -> Vec<&str> {
@@ -109,7 +109,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     type DistributionType = RulesForSharingDocument20;
     type NoteType = Note20;
     type PublisherType = Publisher20;
-    type DocumentReferenceType = Reference20;
+    type ReferenceType = Reference20;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -143,7 +143,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
         self.source_lang.as_deref().map(CsafLanguage::from)
     }
 
-    fn get_publisher(&self) -> &Publisher20 {
+    fn get_publisher(&self) -> &Self::PublisherType {
         &self.publisher
     }
 
@@ -151,7 +151,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
         CsafDocumentCategory::from(&self.category)
     }
 
-    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>> {
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
     }
 
@@ -169,7 +169,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     type DistributionType = RulesForDocumentSharing21;
     type NoteType = Note21;
     type PublisherType = Publisher21;
-    type DocumentReferenceType = Reference21;
+    type ReferenceType = Reference21;
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -205,7 +205,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
         CsafDocumentCategory::from(&self.category)
     }
 
-    fn get_references(&self) -> Option<&Vec<Reference21>> {
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
     }
 

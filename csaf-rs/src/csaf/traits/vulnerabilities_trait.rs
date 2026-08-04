@@ -6,17 +6,17 @@ use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    Cwe, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait, MetricTrait, NoteTrait, RemediationTrait,
+    Cwe, ReferenceTrait, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait, MetricTrait, NoteTrait, RemediationTrait,
     ThreatTrait, VulnerabilityIdTrait,
 };
 use crate::schema::csaf2_0::schema::{
     Flag as Flag20, Id as Id20, Involvement as Involvement20, Note as Note20, ProductStatus as ProductStatus20,
-    Remediation as Remediation20, Score as Score20, Threat as Threat20, Vulnerability as Vulnerability20,
+    Reference as Reference20, Remediation as Remediation20, Score as Score20, Threat as Threat20, Vulnerability as Vulnerability20,
 };
 use crate::schema::csaf2_1::schema::{
     FirstKnownExploitationDate as FirstKnownExploitationDate21, Flag as Flag21, Id as Id21,
     Involvement as Involvement21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21,
-    Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
+    Reference as Reference21, Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
 };
 
 /// Collects references from all vulnerabilities using the given extractor, prepending
@@ -66,6 +66,9 @@ pub trait VulnerabilityTrait {
     type NoteType: NoteTrait;
 
     type FirstKnownExploitationDatesType: FirstKnownExploitationDatesTrait;
+
+    /// The associated type representing vulnerability references.
+    type ReferenceType: ReferenceTrait;
 
     /// Retrieves a list of remediations associated with the vulnerability.
     fn get_remediations(&self) -> &Vec<Self::RemediationType>;
@@ -136,6 +139,9 @@ pub trait VulnerabilityTrait {
     /// Returns the information about the first known exploitation dates of this vulnerability.
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
 
+    /// Returns the references associated with this vulnerability.
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
+
     define_reference_accessors! {
         both: [
             (get_remediations_group_references,                     get_remediations_product_references,                     get_remediations,                     "remediations"),
@@ -166,6 +172,7 @@ impl VulnerabilityTrait for Vulnerability20 {
     type NoteType = Note20;
     // First known exploitation dates are not implemented in CSAF 2.0
     type FirstKnownExploitationDatesType = NotPresentInCsaf20;
+    type ReferenceType = Reference20;
 
     fn get_remediations(&self) -> &Vec<Self::RemediationType> {
         &self.remediations
@@ -224,6 +231,10 @@ impl VulnerabilityTrait for Vulnerability20 {
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>> {
         None
     }
+
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
+        self.references.as_deref()
+    }
 }
 
 impl VulnerabilityTrait for Vulnerability21 {
@@ -236,6 +247,7 @@ impl VulnerabilityTrait for Vulnerability21 {
     type VulnerabilityIdType = Id21;
     type NoteType = Note21;
     type FirstKnownExploitationDatesType = FirstKnownExploitationDate21;
+    type ReferenceType = Reference21;
 
     fn get_remediations(&self) -> &Vec<Self::RemediationType> {
         &self.remediations
@@ -293,5 +305,9 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>> {
         self.first_known_exploitation_dates.as_ref()
+    }
+
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
+        self.references.as_deref()
     }
 }

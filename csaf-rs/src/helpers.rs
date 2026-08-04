@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use chrono::{Duration, NaiveDate};
+use chrono::NaiveDate;
 use rust_embed::RustEmbed;
 use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;

@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf_traits::{CsafTrait, ReferenceTrait, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::ValidationError;
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;

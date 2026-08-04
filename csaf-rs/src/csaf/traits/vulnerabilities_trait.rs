@@ -6,12 +6,13 @@ use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    Cwe, ReferenceTrait, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait, MetricTrait, NoteTrait, RemediationTrait,
-    ThreatTrait, VulnerabilityIdTrait,
+    Cwe, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait, MetricTrait, NoteTrait, ReferenceTrait,
+    RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
 };
 use crate::schema::csaf2_0::schema::{
     Flag as Flag20, Id as Id20, Involvement as Involvement20, Note as Note20, ProductStatus as ProductStatus20,
-    Reference as Reference20, Remediation as Remediation20, Score as Score20, Threat as Threat20, Vulnerability as Vulnerability20,
+    Reference as Reference20, Remediation as Remediation20, Score as Score20, Threat as Threat20,
+    Vulnerability as Vulnerability20,
 };
 use crate::schema::csaf2_1::schema::{
     FirstKnownExploitationDate as FirstKnownExploitationDate21, Flag as Flag21, Id as Id21,

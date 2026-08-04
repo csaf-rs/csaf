@@ -123,7 +123,18 @@ pub mod test_6_3_03;
 pub mod test_6_3_04;
 pub mod test_6_3_05;
 // pub mod test_6_3_06;
-// pub mod test_6_3_07;
+
+// Test 6.3.7 requires external connectivity. Depending on the build feature, we
+// inject either the stubbed test or the actual test impl.
+
+#[cfg(feature = "external-connections")]
+pub mod test_6_3_07_impl;
+#[cfg(feature = "external-connections")]
+pub use test_6_3_07_impl as test_6_3_07;
+#[cfg(not(feature = "external-connections"))]
+pub mod test_6_3_07_stub;
+#[cfg(not(feature = "external-connections"))]
+pub use test_6_3_07_stub as test_6_3_07;
 // pub mod test_6_3_08;
 pub mod test_6_3_09;
 pub mod test_6_3_10;

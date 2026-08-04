@@ -115,3 +115,25 @@ pub static SCANCODE_LICENSEDB_LICENSES: LazyLock<HashSet<String>> = LazyLock::ne
         })
         .collect()
 });
+
+/// Defangs a URL by replacing dangerous characters to prevent accidental execution.
+/// Replaces:
+/// - `https://` with `hXXps[://]`
+/// - `http://` with `hXXp[://]`
+/// - `.` with `[.]`
+pub fn defang_url(url: &str) -> String {
+    url.replace("https://", "hXXps[://]")
+        .replace("http://", "hXXp[://]")
+        .replace(".", "[.]")
+}
+
+/// Helper function to get the HTTP status code of a URL
+/// Returns the status code as u16, or 0 if the request fails (no connection, network error, etc.)
+/// Only available when the `external-connections` feature is enabled.
+#[cfg(feature = "external-connections")]
+pub fn get_status_code(url: &str) -> u16 {
+    match ureq::head(url).call() {
+        Ok(response) => response.status().as_u16(),
+        Err(_) => 0,
+    }
+}

@@ -39,7 +39,6 @@ impl CsafVersionNumber {
     /// *"non-semantic versioning numbers are interpreted as semantic versioning numbers"*.
     /// This allows mixed-variant revision histories to be sorted and compared correctly.
     pub(crate) fn to_comparable_semver(&self) -> Result<Version, CsafVersionNumberError> {
-        // ToDo TZ we should return a CsafVersionNumber here.
         match self {
             Self::IntVer(intver) => Ok(Version::new(intver.get(), 0, 0)),
             Self::SemVer(semver) => Ok(semver.get_version().clone()),
@@ -174,10 +173,12 @@ impl PartialEq for CsafVersionNumber {
 
 impl Ord for CsafVersionNumber {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // we can't determine a meaningful ordering between invalid or mixed versions,
+        // so we assume invalid versions are always less than valid versions, and invalid versions are equal to each other.
         match (self, other) {
-            (Self::Invalid(s1), Self::Invalid(s2)) => s1.cmp(s2),
-            (Self::Invalid(i), v) => i.cmp(&v.to_string()), // fall back to string comparison for invalid vs valid
-            (v, Self::Invalid(i)) => v.to_string().cmp(i),  // fall back to string comparison for valid vs invalid
+            (Self::Invalid(_), Self::Invalid(_)) => std::cmp::Ordering::Equal,
+            (Self::Invalid(_), _) => std::cmp::Ordering::Less,
+            (_, Self::Invalid(_)) => std::cmp::Ordering::Greater,
             (v1, v2) => v1.to_comparable_semver().ok().cmp(&v2.to_comparable_semver().ok()),
         }
     }
@@ -391,6 +392,7 @@ mod tests {
         assert_ne!(CsafVersionNumber::from("1"), CsafVersionNumber::from("1.2.3"));
         assert_ne!(CsafVersionNumber::from("1"), CsafVersionNumber::from("v1"));
         assert_ne!(CsafVersionNumber::from("v1"), CsafVersionNumber::from("1.0.0"));
+        assert_ne!(CsafVersionNumber::from("v1"), CsafVersionNumber::from("v2"));
     }
 
     #[test]
@@ -406,5 +408,17 @@ mod tests {
         );
         // IntVer(1) < SemVer(1.2.3) because 1.0.0 < 1.2.3
         assert!(CsafVersionNumber::from("1") < CsafVersionNumber::from("1.2.3"));
+        assert_eq!(
+            CsafVersionNumber::from("v1").cmp(&CsafVersionNumber::from("v2")),
+            std::cmp::Ordering::Equal
+        );
+        assert_eq!(
+            CsafVersionNumber::from("1").cmp(&CsafVersionNumber::from("v2")),
+            std::cmp::Ordering::Greater
+        );
+        assert_eq!(
+            CsafVersionNumber::from("v1").cmp(&CsafVersionNumber::from("2")),
+            std::cmp::Ordering::Less
+        );
     }
 }

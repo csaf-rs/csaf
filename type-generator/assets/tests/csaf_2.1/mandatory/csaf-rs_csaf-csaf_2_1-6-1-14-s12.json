@@ -9,34 +9,34 @@
       }
     },
     "publisher": {
-      "category": "other",
+      "category": "vendor",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory Test: Mixed Integer and Semantic Versioning (failing example 4: intver then semver then intver in revision history, semver in document)",
+    "title": "Mandatory test: Sorted Revision History (supplementary valid example 1: invalid version number is ignored)",
     "tracking": {
-      "current_release_date": "2024-01-21T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-30-S04",
-      "initial_release_date": "2024-01-21T10:00:00.000Z",
+      "current_release_date": "2021-07-25T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-14-S12",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
       "revision_history": [
         {
-          "date": "2021-07-21T09:00:00.000Z",
+          "date": "2021-07-21T10:00:00.000Z",
           "number": "1",
           "summary": "Initial version."
         },
         {
-          "date": "2021-07-21T10:00:00.000Z",
-          "number": "2.0.0",
+          "date": "2021-07-23T10:00:00.000Z",
+          "number": "v2",
           "summary": "Second version."
         },
         {
-          "date": "2021-07-21T11:00:00.000Z",
+          "date": "2021-07-22T10:00:00.000Z",
           "number": "3",
           "summary": "Third version."
         }
       ],
-      "status": "draft",
-      "version": "4.0.0"
+      "status": "final",
+      "version": "3"
     }
   }
 }

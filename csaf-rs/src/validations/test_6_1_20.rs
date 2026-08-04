@@ -31,6 +31,7 @@ pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<()
                 return Err(vec![create_status_version_error(&status, &semver)]);
             }
         },
+        CsafVersionNumber::Invalid(_) => {}, // ignore invalid version numbers
     }
 
     Ok(())
@@ -58,7 +59,9 @@ mod tests {
             &SemVerVersion::from(Version::from_str("1.0.0-alpha").unwrap()),
         )]);
 
-        TESTS_2_0.test_6_1_20.expect(case_interim.clone(), case_final.clone());
-        TESTS_2_1.test_6_1_20.expect(case_interim, case_final);
+        TESTS_2_0
+            .test_6_1_20
+            .expect(case_interim.clone(), case_final.clone(), Ok(()));
+        TESTS_2_1.test_6_1_20.expect(case_interim, case_final, Ok(()));
     }
 }

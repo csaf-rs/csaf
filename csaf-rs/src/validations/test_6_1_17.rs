@@ -78,6 +78,7 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
             }
             errors.map_or(Ok(()), Err)
         },
+        CsafVersionNumber::Invalid(_) => Ok(()), // #409 this may be skipped, as the version is invalid and will be caught by schema test
     }
 }
 
@@ -151,6 +152,7 @@ mod tests {
             Ok(()),
             Ok(()),
             Ok(()),
+            Ok(()),
         );
         TESTS_2_1.test_6_1_17.expect(
             case_final_with_semver_0,
@@ -159,6 +161,7 @@ mod tests {
             case_final_with_semver_0_prerelease,
             case_interim_with_semver_0,
             case_final_with_intver_0,
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),

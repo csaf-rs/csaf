@@ -51,6 +51,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 rstest = "0.26.1"
 criterion = { version = "0.8", features = ["html_reports"] }
 tempfile = "3"
+httpmock = "0.8.3"
 
 [[bench]]
 name = "validation_benchmark"

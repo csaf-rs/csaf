@@ -1,4 +1,5 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
+use crate::csaf::traits::shared::references_trait::ReferenceVecTrait;
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
@@ -47,7 +48,7 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
-    type ReferenceType: ReferenceTrait;
+    type ReferenceType: ReferenceTrait + ReferenceVecTrait;
 
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
@@ -83,6 +84,18 @@ pub trait DocumentTrait {
 
     /// Returns the references of this document
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
+
+    /// Returns only the self references of this document (filtered by category).
+    fn get_self_references(&self) -> Option<Vec<(usize, &Self::ReferenceType)>> {
+        self.get_references()
+            .map(|refs| Self::ReferenceType::get_self_references(refs))
+    }
+
+    /// Returns only the external references of this document (filtered by category).
+    fn get_external_references(&self) -> Option<Vec<(usize, &Self::ReferenceType)>> {
+        self.get_references()
+            .map(|refs| Self::ReferenceType::get_external_references(refs))
+    }
 
     /// Returns the canonical URLs from this document's references.
     fn get_canonical_urls(&self) -> Vec<&str> {

@@ -12,6 +12,25 @@ pub trait ReferenceTrait {
     fn get_url(&self) -> &str;
 }
 
+/// Extension trait for filtering reference vectors by category
+pub trait ReferenceVecTrait: ReferenceTrait + Sized {
+    fn filter_by_category(references: &[Self], category: CategoryOfReference21) -> Vec<(usize, &Self)> {
+        references
+            .iter()
+            .enumerate()
+            .filter(|(_, r)| r.get_category() == category)
+            .collect()
+    }
+
+    fn get_self_references(references: &[Self]) -> Vec<(usize, &Self)> {
+        Self::filter_by_category(references, CategoryOfReference21::Self_)
+    }
+
+    fn get_external_references(references: &[Self]) -> Vec<(usize, &Self)> {
+        Self::filter_by_category(references, CategoryOfReference21::External)
+    }
+}
+
 impl ReferenceTrait for Reference20 {
     fn get_category(&self) -> CategoryOfReference21 {
         match &self.category {
@@ -24,6 +43,8 @@ impl ReferenceTrait for Reference20 {
     impl_str_field_getter!(get_url, url);
 }
 
+impl ReferenceVecTrait for Reference20 {}
+
 impl ReferenceTrait for Reference21 {
     fn get_category(&self) -> CategoryOfReference21 {
         self.category
@@ -32,3 +53,5 @@ impl ReferenceTrait for Reference21 {
     impl_str_field_getter!(get_summary, summary);
     impl_str_field_getter!(get_url, url);
 }
+
+impl ReferenceVecTrait for Reference21 {}

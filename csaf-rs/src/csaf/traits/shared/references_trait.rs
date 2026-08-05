@@ -12,6 +12,25 @@ pub trait ReferenceTrait {
     fn get_url(&self) -> &str;
 }
 
+/// Filters a slice of references by category, returning each match paired with its original index.
+fn filter_by_category<R: ReferenceTrait>(references: &[R], category: CategoryOfReference21) -> Vec<(usize, &R)> {
+    references
+        .iter()
+        .enumerate()
+        .filter(|(_, r)| r.get_category() == category)
+        .collect()
+}
+
+/// Returns only the self references from the given slice (filtered by category).
+pub fn get_self_references<R: ReferenceTrait>(references: &[R]) -> Vec<(usize, &R)> {
+    filter_by_category(references, CategoryOfReference21::Self_)
+}
+
+/// Returns only the external references from the given slice (filtered by category).
+pub fn get_external_references<R: ReferenceTrait>(references: &[R]) -> Vec<(usize, &R)> {
+    filter_by_category(references, CategoryOfReference21::External)
+}
+
 impl ReferenceTrait for Reference20 {
     fn get_category(&self) -> CategoryOfReference21 {
         match &self.category {

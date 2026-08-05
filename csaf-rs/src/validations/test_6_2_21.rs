@@ -80,6 +80,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_21 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -177,15 +178,15 @@ mod tests {
         ]);
 
         // Cases 11-13: Valid (all timestamps are distinct, with subsecond precision and timezones)
-        TESTS_2_1.test_6_2_21.expect(
-            case_01_two_items_with_same_date,
-            case_02_two_groups_with_same_date,
+        TESTS_2_1.test_6_2_21.expect(ExpectedResults {
+            case_01: case_01_two_items_with_same_date,
+            case_02: case_02_two_groups_with_same_date,
             case_03,
-            case_04_subsecond_precision,
-            case_05_empty_timezone_expr,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_04: case_04_subsecond_precision,
+            case_05: case_05_empty_timezone_expr,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

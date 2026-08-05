@@ -25,7 +25,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_11, test_6_2_11_miss
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_11 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_11 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -34,11 +36,19 @@ mod tests {
         let ok = Ok(());
 
         // CSAF 2.0 has 2 test cases
-        TESTS_2_0.test_6_2_11.expect(err.clone(), ok.clone());
+        TESTS_2_0.test_6_2_11.expect(ExpectedResults_2_0 {
+            case_01: err.clone(),
+            case_11: ok.clone(),
+        });
 
         // CSAF 2.1 has 6 test cases
-        TESTS_2_1
-            .test_6_2_11
-            .expect(err.clone(), err.clone(), err, ok.clone(), ok.clone(), ok);
+        TESTS_2_1.test_6_2_11.expect(ExpectedResults_2_1 {
+            case_01: err.clone(),
+            case_02: err.clone(),
+            case_03: err,
+            case_11: ok.clone(),
+            case_12: ok.clone(),
+            case_13: ok,
+        });
     }
 }

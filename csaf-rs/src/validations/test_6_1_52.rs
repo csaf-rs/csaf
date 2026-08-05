@@ -110,6 +110,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_52 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -174,11 +175,11 @@ mod tests {
         // Case 11: dates are before or equal to newest revision date
         // Case 12: dates with timezones are to before or equal to newest revision date
 
-        TESTS_2_1.test_6_1_52.expect(
-            case_01_date_and_exploit_date_after_newest_rev_date,
-            case_02_multiple_vulns_multiple_first_exploit_dates_also_timezones,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_52.expect(ExpectedResults {
+            case_01: case_01_date_and_exploit_date_after_newest_rev_date,
+            case_02: case_02_multiple_vulns_multiple_first_exploit_dates_also_timezones,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

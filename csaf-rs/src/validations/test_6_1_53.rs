@@ -57,6 +57,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_53 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -88,11 +89,11 @@ mod tests {
         // Case 11: exploitation_date is before date
         // Case 12: exploitation_date after, but with timezones
 
-        TESTS_2_1.test_6_1_53.expect(
-            case_01_exp_date_after_date,
-            case_02_exp_date_after_date_timezones,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_53.expect(ExpectedResults {
+            case_01: case_01_exp_date_after_date,
+            case_02: case_02_exp_date_after_date_timezones,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

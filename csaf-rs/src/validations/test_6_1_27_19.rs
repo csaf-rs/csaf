@@ -86,6 +86,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_19 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -94,15 +95,15 @@ mod tests {
         let lang_en_missing_category = Err(vec![create_missing_reference_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);
-        TESTS_2_1.test_6_1_27_19.expect(
-            undefined_lang_wrong_category.clone(),
-            Ok(()), // ToDo this test case is currently marked as failing, but the data is valid see https://github.com/oasis-tcs/csaf/issues/1359
-            undefined_lang_wrong_category,
-            lang_en_missing_category,
-            Ok(()), // lang: unspecified, single correct reference
-            Ok(()), // lang: en-us, multiple correct references
-            Ok(()), // lang: de-DE is ignored
-            Ok(()), // lang: en-us, wrong category
-        );
+        TESTS_2_1.test_6_1_27_19.expect(ExpectedResults {
+            case_01: undefined_lang_wrong_category.clone(),
+            case_02: Ok(()), // ToDo this test case is currently marked as failing, but the data is valid see https://github.com/oasis-tcs/csaf/issues/1359
+            case_s01: undefined_lang_wrong_category,
+            case_s02: lang_en_missing_category,
+            case_11: Ok(()),  // lang: unspecified, single correct reference
+            case_12: Ok(()),  // lang: en-us, multiple correct references
+            case_13: Ok(()),  // lang: de-DE is ignored
+            case_s11: Ok(()), // lang: en-us, wrong category
+        });
     }
 }

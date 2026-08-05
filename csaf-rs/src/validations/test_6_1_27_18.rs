@@ -92,6 +92,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_18 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -105,17 +106,17 @@ mod tests {
         let lang_en_gb_missing_reasoning = Err(vec![create_missing_reasoning_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);
-        TESTS_2_1.test_6_1_27_18.expect(
-            undefined_lang_wrong_category.clone(),
-            undefined_lang_duplicate_title.clone(),
-            undefined_lang_wrong_category,
-            undefined_lang_duplicate_title,
-            lang_en_us_wrong_category,
-            lang_en_gb_missing_reasoning.clone(),
-            lang_en_gb_missing_reasoning,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_27_18.expect(ExpectedResults {
+            case_01: undefined_lang_wrong_category.clone(),
+            case_02: undefined_lang_duplicate_title.clone(),
+            case_03: undefined_lang_wrong_category,
+            case_04: undefined_lang_duplicate_title,
+            case_05: lang_en_us_wrong_category,
+            case_s01: lang_en_gb_missing_reasoning.clone(),
+            case_s02: lang_en_gb_missing_reasoning,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

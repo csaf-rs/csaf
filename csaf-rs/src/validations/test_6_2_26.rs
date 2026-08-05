@@ -72,6 +72,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_26 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -82,13 +83,13 @@ mod tests {
 
         let case_03_multiple_vulns = Err(vec![create_allowed_with_review_error("CWE-1039", "4.13", 3, 0)]);
 
-        TESTS_2_1.test_6_2_26.expect(
-            case_01_allowed_with_review,
-            case_02_multiple_cwes,
-            case_03_multiple_vulns,
-            Ok(()), // case_11: CWE-184 (Allowed)
-            Ok(()), // case_12: CWE-14 + CWE-733 (both Allowed)
-            Ok(()), // case_13: all Allowed
-        );
+        TESTS_2_1.test_6_2_26.expect(ExpectedResults {
+            case_01: case_01_allowed_with_review,
+            case_02: case_02_multiple_cwes,
+            case_03: case_03_multiple_vulns,
+            case_11: Ok(()), // CWE-184 (Allowed)
+            case_12: Ok(()), // CWE-14 + CWE-733 (both Allowed)
+            case_13: Ok(()), // all Allowed
+        });
     }
 }

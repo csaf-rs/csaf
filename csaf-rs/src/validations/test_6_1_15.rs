@@ -32,7 +32,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_15, test_6_1_15_tran
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_15 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_15 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -46,20 +48,20 @@ mod tests {
         // case 12: translator category with source_lang and lang field is present
         // case S11: source_lang is missing, but category is not translator (should be skipped)
 
-        TESTS_2_0.test_6_1_15.expect(
-            missing_source_lang_error.clone(),
-            missing_source_lang_error.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_15.expect(ExpectedResults_2_0 {
+            case_01: missing_source_lang_error.clone(),
+            case_02: missing_source_lang_error.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_15.expect(
-            missing_source_lang_error.clone(),
-            missing_source_lang_error,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_15.expect(ExpectedResults_2_1 {
+            case_01: missing_source_lang_error.clone(),
+            case_02: missing_source_lang_error,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

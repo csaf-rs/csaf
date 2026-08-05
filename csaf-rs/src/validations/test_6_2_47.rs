@@ -68,6 +68,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_47 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -82,8 +83,11 @@ mod tests {
         // Case 11: metric without source and without qualitative severity
         // Case 12: metric with third-party URL as source and qualitative severity rating
 
-        TESTS_2_1
-            .test_6_2_47
-            .expect(case_01_no_source, case_02_source_is_canonical, Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_47.expect(ExpectedResults {
+            case_01: case_01_no_source,
+            case_02: case_02_source_is_canonical,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

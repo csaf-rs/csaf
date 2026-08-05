@@ -47,31 +47,32 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_38 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_38() {
         let err = Err(vec![NON_PUBLIC_SHARING_GROUP_ERROR.clone()]);
         // Only CSAF 2.1 has this test with 9 test cases (4 error cases, 5 success cases)
-        TESTS_2_1.test_6_1_38.expect(
-            // Case 01: Max UUID with TLP:RED
+        TESTS_2_1.test_6_1_38.expect(ExpectedResults {
+            case_01: // Case 01: Max UUID with TLP:RED
             err.clone(),
-            // Case 02: Max UUID with TLP:AMBER+STRICT
+            case_02: // Case 02: Max UUID with TLP:AMBER+STRICT
             err.clone(),
-            // Case 03: Max UUID with TLP:AMBER
+            case_03: // Case 03: Max UUID with TLP:AMBER
             err.clone(),
-            // Case 04: Max UUID with TLP:GREEN
+            case_04: // Case 04: Max UUID with TLP:GREEN
             err,
-            // Case 11: Regular UUID with TLP:RED
+            case_11: // Case 11: Regular UUID with TLP:RED
             Ok(()),
-            // Case 12: Regular UUID with TLP:AMBER+STRICT, no name
+            case_12: // Case 12: Regular UUID with TLP:AMBER+STRICT, no name
             Ok(()),
-            // Case 13: Regular UUID with TLP:AMBER
+            case_13: // Case 13: Regular UUID with TLP:AMBER
             Ok(()),
-            // Case 14: No sharing group with TLP:GREEN
+            case_14: // Case 14: No sharing group with TLP:GREEN
             Ok(()),
-            // Case 15: Max UUID with TLP:CLEAR
+            case_15: // Case 15: Max UUID with TLP:CLEAR
             Ok(()),
-        );
+        });
     }
 }

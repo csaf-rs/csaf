@@ -48,7 +48,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_6, test_6_1_27_06
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_6 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_6 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -62,11 +64,13 @@ mod tests {
             &0,
         )]);
 
-        TESTS_2_0.test_6_1_27_6.expect(case_security_advisory.clone());
-        TESTS_2_1.test_6_1_27_6.expect(
-            case_security_advisory.clone(),
-            case_security_advisory,
-            case_deprecated_security_advisory,
-        );
+        TESTS_2_0.test_6_1_27_6.expect(ExpectedResults_2_0 {
+            case_01: case_security_advisory.clone(),
+        });
+        TESTS_2_1.test_6_1_27_6.expect(ExpectedResults_2_1 {
+            case_01: case_security_advisory.clone(),
+            case_02: case_security_advisory,
+            case_03: case_deprecated_security_advisory,
+        });
     }
 }

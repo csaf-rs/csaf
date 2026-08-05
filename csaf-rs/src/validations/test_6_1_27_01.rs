@@ -61,7 +61,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_1, test_6_1_27_01
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_1 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_1 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -70,11 +72,11 @@ mod tests {
             CsafDocumentCategory::CsafSecurityIncidentResponse,
         )]);
 
-        TESTS_2_0
-            .test_6_1_27_1
-            .expect(case_security_incident_response_no_valid_note.clone());
-        TESTS_2_1
-            .test_6_1_27_1
-            .expect(case_security_incident_response_no_valid_note);
+        TESTS_2_0.test_6_1_27_1.expect(ExpectedResults_2_0 {
+            case_01: case_security_incident_response_no_valid_note.clone(),
+        });
+        TESTS_2_1.test_6_1_27_1.expect(ExpectedResults_2_1 {
+            case_01: case_security_incident_response_no_valid_note,
+        });
     }
 }

@@ -111,6 +111,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_55, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_55 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -126,14 +127,14 @@ mod tests {
         )]);
         let case_s01_multiple = Err(vec![MULTIPLE_LICENSE_TEXT_ERROR.clone()]);
 
-        TESTS_2_1.test_6_1_55.expect(
-            case_01_category_other,
-            case_02_category_general,
-            case_s01_multiple,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_55.expect(ExpectedResults {
+            case_01: case_01_category_other,
+            case_02: case_02_category_general,
+            case_s01: case_s01_multiple,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 }

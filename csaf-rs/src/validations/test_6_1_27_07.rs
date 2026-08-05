@@ -51,14 +51,22 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_7, test_6_1_27_07
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_7 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_7 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_07() {
         let case_01 = Err(vec![test_6_1_27_07_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
 
-        TESTS_2_0.test_6_1_27_7.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_1_27_7.expect(case_01, Ok(()));
+        TESTS_2_0.test_6_1_27_7.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_27_7.expect(ExpectedResults_2_1 {
+            case_01,
+            case_s11: Ok(()),
+        });
     }
 }

@@ -32,21 +32,23 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_1, validate_missing_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_1 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_1 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_6_1_01() {
-        TESTS_2_0.test_6_1_1.expect(
-            Err(vec![
+        TESTS_2_0.test_6_1_1.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![
                 generate_err_msg("CSAFPID-9080700", "/product_tree/product_groups/0/product_ids/0"),
                 generate_err_msg("CSAFPID-9080701", "/product_tree/product_groups/0/product_ids/1"),
             ]),
-            Err(vec![
+            case_02: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/vulnerabilities/0/flags/0/product_ids/1"),
                 generate_err_msg("CSAFPID-9080702", "/vulnerabilities/1/flags/0/product_ids/0"),
             ]),
-            Err(vec![
+            case_s01: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/product_tree/relationships/0/product_reference"),
                 generate_err_msg(
                     "CSAFPID-9080702",
@@ -70,16 +72,16 @@ mod tests {
                 generate_err_msg("CSAFPID-9080705", "/vulnerabilities/0/scores/0/products/0"),
                 generate_err_msg("CSAFPID-9080706", "/vulnerabilities/0/threats/0/product_ids/0"),
             ]),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_1.expect(
-            Err(vec![
+        TESTS_2_1.test_6_1_1.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![
                 generate_err_msg("CSAFPID-9080700", "/product_tree/product_groups/0/product_ids/0"),
                 generate_err_msg("CSAFPID-9080701", "/product_tree/product_groups/0/product_ids/1"),
             ]),
-            Err(vec![
+            case_02: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/document/notes/0/product_ids/1"),
                 generate_err_msg("CSAFPID-9080702", "/document/notes/0/product_ids/2"),
                 generate_err_msg("CSAFPID-9080703", "/document/notes/0/product_ids/3"),
@@ -135,14 +137,14 @@ mod tests {
                     "/product_tree/product_paths/2/subpaths/0/next_product_reference",
                 ),
             ]),
-            Err(vec![
+            case_03: Err(vec![
                 generate_err_msg("CSAFPID-9080710", "/vulnerabilities/0/ids/0/product_ids/0"),
                 generate_err_msg("CSAFPID-9080711", "/vulnerabilities/0/ids/0/product_ids/1"),
                 generate_err_msg("CSAFPID-9080712", "/vulnerabilities/0/ids/1/product_ids/0"),
                 generate_err_msg("CSAFPID-9080714", "/vulnerabilities/0/ids/1/product_ids/2"),
                 generate_err_msg("CSAFPID-9080715", "/vulnerabilities/0/ids/2/product_ids/0"),
             ]),
-            Err(vec![
+            case_s01: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/document/notes/0/product_ids/0"),
                 generate_err_msg(
                     "CSAFPID-9080703",
@@ -178,9 +180,9 @@ mod tests {
                     "/vulnerabilities/0/first_known_exploitation_dates/0/product_ids/0",
                 ),
             ]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

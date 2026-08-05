@@ -31,7 +31,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_4, test_6_3_4_missin
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_4 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_4 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -48,7 +50,17 @@ mod tests {
         ]);
 
         // Both CSAF 2.0 and 2.1 have 4 test cases
-        TESTS_2_0.test_6_3_4.expect(case_01_20, case_02_20, Ok(()), Ok(()));
-        TESTS_2_1.test_6_3_4.expect(case_01_21, case_02_21, Ok(()), Ok(()));
+        TESTS_2_0.test_6_3_4.expect(ExpectedResults_2_0 {
+            case_01: case_01_20,
+            case_02: case_02_20,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_3_4.expect(ExpectedResults_2_1 {
+            case_01: case_01_21,
+            case_02: case_02_21,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

@@ -52,6 +52,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_12, test
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_12 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -65,12 +66,12 @@ mod tests {
             create_missing_affected_products_error(&CsafDocumentCategory::CsafSecurityAdvisory, 1),
         ]);
 
-        TESTS_2_1.test_6_1_27_12.expect(
-            case_security_advisory_missing_affected.clone(),
-            case_security_advisory_missing_affected,
-            case_security_advisory_two_vulnerabilities_missing_affected,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_27_12.expect(ExpectedResults {
+            case_01: case_security_advisory_missing_affected.clone(),
+            case_s01: case_security_advisory_missing_affected,
+            case_s02: case_security_advisory_two_vulnerabilities_missing_affected,
+            case_11: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

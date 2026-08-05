@@ -5,7 +5,7 @@ pub(crate) mod url_mock;
 use get_status_code::get_status_code;
 
 /// The reason a URL failed to resolve successfully.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum UrlResolutionFailure {
     /// The URL resolved, but with a status code the caller-supplied classifier rejected.
     FailedWithStatusCode(u16),

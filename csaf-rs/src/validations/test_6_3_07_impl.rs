@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
 use crate::validations::utils::external_connections::{UrlResolutionFailure, check_url_resolution, defang_url};
@@ -30,36 +32,47 @@ fn create_url_resolution_error(url: &str, failure: UrlResolutionFailure, instanc
 pub fn test_6_3_7_use_of_self_referencing_urls_failing_to_resolve(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+    // Collect all self-referencing URLs first, keyed by URL, so that each distinct URL is only
+    // resolved once.
+    let mut urls_to_instance_paths: Option<HashMap<&str, Vec<String>>> = None;
 
-    let resolve_success = |url: &str| check_url_resolution(url, |status_code| status_code < 400);
-
-    // Check document references
+    // document self-reference urls
     if let Some(self_refs) = doc.get_document().get_self_references() {
         for (r_i, reference) in self_refs {
-            let url = reference.get_url();
-            if let Err(failure) = resolve_success(url) {
-                errors.get_or_insert_default().push(create_url_resolution_error(
-                    url,
-                    failure,
-                    &format!("/document/references/{r_i}"),
-                ));
+            urls_to_instance_paths
+                .get_or_insert_default()
+                .entry(reference.get_url())
+                .or_default()
+                .push(format!("/document/references/{r_i}"));
+        }
+    }
+
+    // vulnerabilities self-reference urls
+    for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
+        if let Some(self_refs) = vulnerability.get_self_references() {
+            for (r_i, reference) in self_refs {
+                urls_to_instance_paths
+                    .get_or_insert_default()
+                    .entry(reference.get_url())
+                    .or_default()
+                    .push(format!("/vulnerabilities/{v_i}/references/{r_i}"));
             }
         }
     }
 
-    // Check vulnerability references
-    for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
-        if let Some(self_refs) = vulnerability.get_self_references() {
-            for (r_i, reference) in self_refs {
-                let url = reference.get_url();
-                if let Err(failure) = resolve_success(url) {
-                    errors.get_or_insert_default().push(create_url_resolution_error(
-                        url,
-                        failure,
-                        &format!("/vulnerabilities/{v_i}/references/{r_i}"),
-                    ));
-                }
+    // no self-reference urls
+    let Some(urls_to_instance_paths) = urls_to_instance_paths else {
+        return Ok(());
+    };
+
+    let mut errors: Option<Vec<ValidationError>> = None;
+
+    for (url, instance_paths) in urls_to_instance_paths {
+        if let Err(failure) = check_url_resolution(url, |status_code| status_code < 400) {
+            for instance_path in instance_paths {
+                errors
+                    .get_or_insert_default()
+                    .push(create_url_resolution_error(url, failure.clone(), &instance_path));
             }
         }
     }

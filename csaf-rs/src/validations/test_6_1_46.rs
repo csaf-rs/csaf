@@ -63,6 +63,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_46, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_46 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -72,19 +73,19 @@ mod tests {
         // Case 11: minimal valid ssvc
         // Case 12: valid ssvc
 
-        TESTS_2_1.test_6_1_46.expect(
-            Err(vec![create_invalid_ssvc_error(
+        TESTS_2_1.test_6_1_46.expect(ExpectedResults {
+            case_01: Err(vec![create_invalid_ssvc_error(
                 "\"selections\" is a required property",
                 "",
                 0,
                 0,
             )]),
-            Err(vec![
+            case_02: Err(vec![
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0", 0, 0),
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0/values/0", 0, 0),
             ]),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

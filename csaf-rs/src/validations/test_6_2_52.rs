@@ -68,6 +68,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_52, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_52 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -81,6 +82,9 @@ mod tests {
 
         // Case 11: "blake2s256" is mentioned in the spec and should be supported
 
-        TESTS_2_1.test_6_2_52.expect(case_01, Ok(()));
+        TESTS_2_1.test_6_2_52.expect(ExpectedResults {
+            case_01,
+            case_11: Ok(()),
+        });
     }
 }

@@ -66,7 +66,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_30 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_30 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -77,19 +79,19 @@ mod tests {
             create_mixed_versioning_error("revision_history"),
         ]);
 
-        TESTS_2_0.test_6_1_30.expect(
-            case_inconsistent_history_and_mismatch_to_document.clone(),
-            case_consistent_history_mismatch_to_document.clone(),
-            case_consistent_history_mismatch_to_document.clone(),
-            Ok(()), // only semver versioning
-            Ok(()), // only intver versioning
-        );
-        TESTS_2_1.test_6_1_30.expect(
-            case_inconsistent_history_and_mismatch_to_document,
-            case_consistent_history_mismatch_to_document.clone(),
-            case_consistent_history_mismatch_to_document,
-            Ok(()), // only semver versioning
-            Ok(()), // only intver versioning
-        );
+        TESTS_2_0.test_6_1_30.expect(ExpectedResults_2_0 {
+            case_01: case_inconsistent_history_and_mismatch_to_document.clone(),
+            case_s01: case_consistent_history_mismatch_to_document.clone(),
+            case_s02: case_consistent_history_mismatch_to_document.clone(),
+            case_11: Ok(()),  // only semver versioning
+            case_s11: Ok(()), // only intver versioning
+        });
+        TESTS_2_1.test_6_1_30.expect(ExpectedResults_2_1 {
+            case_01: case_inconsistent_history_and_mismatch_to_document,
+            case_s01: case_consistent_history_mismatch_to_document.clone(),
+            case_s02: case_consistent_history_mismatch_to_document,
+            case_11: Ok(()),  // only semver versioning
+            case_s11: Ok(()), // only intver versioning
+        });
     }
 }

@@ -80,6 +80,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_25 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -121,15 +122,15 @@ mod tests {
         // Case 13: CWE-1287 (Allowed)
         // Case 14: multiple vulns, multiple cwes, all allowed
 
-        TESTS_2_1.test_6_2_25.expect(
-            case_01_discouraged,
-            case_02_prohibited,
-            case_03_multiple_cwes_with_discouraged,
-            case_04_multiple_vulns_cwe_with_discouraged,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_25.expect(ExpectedResults {
+            case_01: case_01_discouraged,
+            case_02: case_02_prohibited,
+            case_03: case_03_multiple_cwes_with_discouraged,
+            case_04: case_04_multiple_vulns_cwe_with_discouraged,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

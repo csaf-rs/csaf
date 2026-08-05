@@ -46,7 +46,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_29 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_29 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -66,11 +68,21 @@ mod tests {
         // Case S12: A remediation with both group_ids and product_ids
 
         // Both CSAF 2.0 and 2.1 have 6 test cases
-        TESTS_2_0
-            .test_6_1_29
-            .expect(case_01.clone(), case_s01.clone(), Ok(()), Ok(()), Ok(()), Ok(()));
-        TESTS_2_1
-            .test_6_1_29
-            .expect(case_01, case_s01, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_0.test_6_1_29.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_s01: case_s01.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
+        TESTS_2_1.test_6_1_29.expect(ExpectedResults_2_1 {
+            case_01,
+            case_s01,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 }

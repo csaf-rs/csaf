@@ -36,7 +36,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_4 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_4 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -74,20 +76,20 @@ mod tests {
             generate_err_msg("CSAFPID-9080700", "/vulnerabilities/0/ids/2/group_ids/0"),
         ]);
 
-        TESTS_2_0.test_6_1_4.expect(
-            case_threats.clone(), // threats
-            case_flags,           // flags
-            case_remediations,    // remediations
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_4.expect(
-            case_threats,         // threats
-            case_vulnerabilities, // vulnerabilities
-            case_vuln_id,         // vulnerability ids
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_4.expect(ExpectedResults_2_0 {
+            case_01: case_threats.clone(), // threats
+            case_02: case_flags,           // flags
+            case_s01: case_remediations,   // remediations
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_1_4.expect(ExpectedResults_2_1 {
+            case_01: case_threats,         // threats
+            case_02: case_vulnerabilities, // vulnerabilities
+            case_03: case_vuln_id,         // vulnerability ids
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

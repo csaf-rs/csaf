@@ -42,6 +42,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_20 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -54,6 +55,9 @@ mod tests {
 
         // Case 11: Valid OASIS CSAF TC Issues system name
 
-        TESTS_2_1.test_6_3_20.expect(case_01, Ok(()));
+        TESTS_2_1.test_6_3_20.expect(ExpectedResults {
+            case_01,
+            case_11: Ok(()),
+        });
     }
 }

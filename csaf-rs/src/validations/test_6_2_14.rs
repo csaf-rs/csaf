@@ -76,7 +76,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_14, test_6_2_14_use_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_14 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_14 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -161,33 +163,33 @@ mod tests {
         // Case 11: /document/lang is set to a non-private language
         // Case 12: Both are set to non-private languages
 
-        TESTS_2_0.test_6_2_14.expect(
-            case_01_private_primary_lang.clone(),
-            case_02_private_primary_source_lang.clone(),
-            case_03_both_private_primary_lang.clone(),
-            case_04_private_region_qm.clone(),
-            case_05_private_region_xp.clone(),
-            case_06_private_script_qabc.clone(),
-            case_07_private_region_aa.clone(),
-            case_08_private_region_zz.clone(),
-            case_s01_private_use_tag.clone(),
-            case_s02_multiple_reasons.clone(),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_2_14.expect(
-            case_01_private_primary_lang,
-            case_02_private_primary_source_lang,
-            case_03_both_private_primary_lang,
-            case_04_private_region_qm,
-            case_05_private_region_xp,
-            case_06_private_script_qabc,
-            case_07_private_region_aa,
-            case_08_private_region_zz,
-            case_s01_private_use_tag,
-            case_s02_multiple_reasons,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_2_14.expect(ExpectedResults_2_0 {
+            case_01: case_01_private_primary_lang.clone(),
+            case_02: case_02_private_primary_source_lang.clone(),
+            case_03: case_03_both_private_primary_lang.clone(),
+            case_04: case_04_private_region_qm.clone(),
+            case_05: case_05_private_region_xp.clone(),
+            case_06: case_06_private_script_qabc.clone(),
+            case_07: case_07_private_region_aa.clone(),
+            case_08: case_08_private_region_zz.clone(),
+            case_s01: case_s01_private_use_tag.clone(),
+            case_s02: case_s02_multiple_reasons.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_2_14.expect(ExpectedResults_2_1 {
+            case_01: case_01_private_primary_lang,
+            case_02: case_02_private_primary_source_lang,
+            case_03: case_03_both_private_primary_lang,
+            case_04: case_04_private_region_qm,
+            case_05: case_05_private_region_xp,
+            case_06: case_06_private_script_qabc,
+            case_07: case_07_private_region_aa,
+            case_08: case_08_private_region_zz,
+            case_s01: case_s01_private_use_tag,
+            case_s02: case_s02_multiple_reasons,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

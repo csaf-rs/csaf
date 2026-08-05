@@ -51,7 +51,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_18, test_6_1_18_rele
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_18 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_18 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -68,13 +70,15 @@ mod tests {
         )]);
 
         // Case S11: Document status draft, revision history item with version 0.y.z
-        TESTS_2_0.test_6_1_18.expect(
-            case_intver_zero_status_final.clone(),
-            case_semver_zero_status_final.clone(),
-            Ok(()),
-        );
-        TESTS_2_1
-            .test_6_1_18
-            .expect(case_intver_zero_status_final, case_semver_zero_status_final, Ok(()));
+        TESTS_2_0.test_6_1_18.expect(ExpectedResults_2_0 {
+            case_01: case_intver_zero_status_final.clone(),
+            case_s01: case_semver_zero_status_final.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_18.expect(ExpectedResults_2_1 {
+            case_01: case_intver_zero_status_final,
+            case_s01: case_semver_zero_status_final,
+            case_s11: Ok(()),
+        });
     }
 }

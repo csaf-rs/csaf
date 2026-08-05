@@ -40,7 +40,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_2, test_6_1_02_multi
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_2 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_2 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -68,7 +70,13 @@ mod tests {
             generate_err_msg("CSAFPID-9080700", "/product_tree/branches/1/branches/1/product"),
             generate_err_msg("CSAFPID-9080701", "/product_tree/product_paths/2/full_product_name"),
         ]);
-        TESTS_2_0.test_6_1_2.expect(shared_error_01.clone(), error_02_v2_0);
-        TESTS_2_1.test_6_1_2.expect(shared_error_01, error_02_v2_1);
+        TESTS_2_0.test_6_1_2.expect(ExpectedResults_2_0 {
+            case_01: shared_error_01.clone(),
+            case_s01: error_02_v2_0,
+        });
+        TESTS_2_1.test_6_1_2.expect(ExpectedResults_2_1 {
+            case_01: shared_error_01,
+            case_s01: error_02_v2_1,
+        });
     }
 }

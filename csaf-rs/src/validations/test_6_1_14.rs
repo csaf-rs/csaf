@@ -44,7 +44,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_14, test_6_1_14_sort
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_14 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_14 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -52,51 +54,51 @@ mod tests {
         // Error cases
         let case_error = Err(vec![create_revision_history_error()]);
 
-        TESTS_2_0.test_6_1_14.expect(
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-            Ok(()), // case_15
-            Ok(()), // case_16
-            Ok(()), // case_17
-            Ok(()), // case_18
-            Ok(()), // case_19
-            Ok(()), // case_s11 mixed versioning
-        );
+        TESTS_2_0.test_6_1_14.expect(ExpectedResults_2_0 {
+            case_01: case_error.clone(),
+            case_02: case_error.clone(),
+            case_03: case_error.clone(),
+            case_04: case_error.clone(),
+            case_05: case_error.clone(),
+            case_06: case_error.clone(),
+            case_07: case_error.clone(),
+            case_08: case_error.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+            case_19: Ok(()),
+            case_s11: Ok(()), // mixed versioning
+        });
 
-        TESTS_2_1.test_6_1_14.expect(
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error.clone(),
-            case_error,
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-            Ok(()), // case_15
-            Ok(()), // case_16
-            Ok(()), // case_17
-            Ok(()), // case_18
-            Ok(()), // case_19
-            Ok(()), // case_31
-            Ok(()), // case_32
-            Ok(()), // case_s11 mixed versioning
-            Ok(()), // case_s12 invalid version number is ignored
-        );
+        TESTS_2_1.test_6_1_14.expect(ExpectedResults_2_1 {
+            case_01: case_error.clone(),
+            case_02: case_error.clone(),
+            case_03: case_error.clone(),
+            case_04: case_error.clone(),
+            case_05: case_error.clone(),
+            case_06: case_error.clone(),
+            case_07: case_error.clone(),
+            case_08: case_error.clone(),
+            case_09: case_error.clone(),
+            case_21: case_error,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+            case_19: Ok(()),
+            case_31: Ok(()),
+            case_32: Ok(()),
+            case_s11: Ok(()), // mixed versioning
+            case_s12: Ok(()), // invalid version number is ignored
+        });
     }
 }

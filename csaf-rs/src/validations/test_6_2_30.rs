@@ -33,6 +33,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_30 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -43,6 +44,10 @@ mod tests {
         // Case 11: TLP:CLEAR without sharing group
         // Case 12: sharing group present with TLP:RED
 
-        TESTS_2_1.test_6_2_30.expect(err, Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_30.expect(ExpectedResults {
+            case_01: err,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

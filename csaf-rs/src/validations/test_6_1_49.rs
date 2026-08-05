@@ -114,33 +114,34 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_49, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_49 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_49() {
         // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success cases)
-        TESTS_2_1.test_6_1_49.expect(
-            Err(vec![create_ssvc_timestamp_too_late_error(
+        TESTS_2_1.test_6_1_49.expect(ExpectedResults {
+            case_01: Err(vec![create_ssvc_timestamp_too_late_error(
                 "2024-07-13T10:00:00+00:00",
                 0,
                 "2024-01-24T10:00:00+00:00",
                 0,
             )]),
-            Err(vec![create_ssvc_timestamp_too_late_error(
+            case_02: Err(vec![create_ssvc_timestamp_too_late_error(
                 "2024-02-29T10:30:00+00:00",
                 0,
                 "2024-02-29T10:00:00+00:00",
                 0,
             )]),
-            Err(vec![create_ssvc_timestamp_too_late_error(
+            case_03: Err(vec![create_ssvc_timestamp_too_late_error(
                 "2024-02-29T10:30:00+00:00",
                 0,
                 "2024-02-29T10:00:00+00:00",
                 0,
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

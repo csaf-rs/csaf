@@ -100,6 +100,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_41, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_41 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -119,8 +120,11 @@ mod tests {
         // Case 11: EPSS timestamp is same as newest revision history date
         // Case 12: Newest EPSS timestamp (with timezone) is within 15 days of newest revision
 
-        TESTS_2_1
-            .test_6_2_41
-            .expect(case_01_old_epss, case_02_old_epss_with_timezone, Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_41.expect(ExpectedResults {
+            case_01: case_01_old_epss,
+            case_02: case_02_old_epss_with_timezone,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

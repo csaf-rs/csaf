@@ -55,7 +55,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_2, test_6_1_27_02
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_2 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_2 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -64,7 +66,11 @@ mod tests {
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
 
-        TESTS_2_0.test_6_1_27_2.expect(case_informational_advisory.clone());
-        TESTS_2_1.test_6_1_27_2.expect(case_informational_advisory);
+        TESTS_2_0.test_6_1_27_2.expect(ExpectedResults_2_0 {
+            case_01: case_informational_advisory.clone(),
+        });
+        TESTS_2_1.test_6_1_27_2.expect(ExpectedResults_2_1 {
+            case_01: case_informational_advisory,
+        });
     }
 }

@@ -182,6 +182,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_35, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_35 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     fn join_categories(categories: Vec<CategoryOfTheRemediation>) -> String {
@@ -266,17 +267,17 @@ mod tests {
         // Case s11: Duplicate optional_patch (same exclusive category, no contradiction)
         // Case s12: Duplicate vendor_fix (same mut_ex category, no contradiction)
 
-        TESTS_2_1.test_6_1_35.expect(
-            case_01_mutually_exclusive_via_product,
-            case_02_exclusive_none_available_via_group,
-            case_03_exclusive_optional_patch_via_group,
-            case_04_exclusive_optional_patch_via_groups_multiple_products,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_35.expect(ExpectedResults {
+            case_01: case_01_mutually_exclusive_via_product,
+            case_02: case_02_exclusive_none_available_via_group,
+            case_03: case_03_exclusive_optional_patch_via_group,
+            case_04: case_04_exclusive_optional_patch_via_groups_multiple_products,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 }

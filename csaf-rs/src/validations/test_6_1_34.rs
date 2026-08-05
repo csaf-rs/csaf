@@ -32,6 +32,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_34, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_34 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -59,11 +60,11 @@ mod tests {
                 /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                 /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
         )]);
-        TESTS_2_1.test_6_1_34.expect(
-            one_too_long_branch_error,
-            more_complex_too_long_branch_error,
-            two_too_long_branches_error,
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_34.expect(ExpectedResults {
+            case_01: one_too_long_branch_error,
+            case_02: more_complex_too_long_branch_error,
+            case_s01: two_too_long_branches_error,
+            case_11: Ok(()),
+        });
     }
 }

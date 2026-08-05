@@ -77,19 +77,27 @@ mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validations::utils::external_connections::url_mock::{
+        MockResponse, clear_mock_responses, set_mock_response,
+    };
 
     #[test]
     fn test_test_6_3_7() {
+        // mock the urls contained in the test case jsn files
+        set_mock_response("https://example.invalid", MockResponse::ConnectionFailure);
+        set_mock_response("https://example.net", MockResponse::StatusCode(200));
+
         // Case 01: Failing example with https://example.invalid
         let case_01_invalid_url = Err(vec![create_url_resolution_error(
             "https://example.invalid",
-            UrlResolutionFailure::FailedWithError(String::new()),
+            UrlResolutionFailure::FailedWithError("mocked connection failure".to_string()),
             "/document/references/0",
         )]);
 
         // Case 11: Valid example with resolvable URL (https://example.net)
-
         TESTS_2_0.test_6_3_7.expect(case_01_invalid_url.clone(), Ok(()));
         TESTS_2_1.test_6_3_7.expect(case_01_invalid_url, Ok(()));
+
+        clear_mock_responses();
     }
 }

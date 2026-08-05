@@ -1,9 +1,25 @@
+#[cfg(feature = "external-connections")]
 use std::collections::HashMap;
 
-use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait, VulnerabilityTrait};
+use crate::csaf_traits::CsafTrait;
+#[cfg(feature = "external-connections")]
+use crate::csaf_traits::{DocumentTrait, ReferenceTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
+#[cfg(feature = "external-connections")]
 use crate::validations::utils::external_connections::{UrlResolutionFailure, check_url_resolution, defang_url};
 
+/// 6.3.7 Use of Self Referencing URLs Failing to Resolve
+///
+/// When the `external-connections` feature is not enabled, this validation is skipped and returns Ok(()).
+#[cfg(not(feature = "external-connections"))]
+pub fn test_6_3_7_use_of_self_referencing_urls_failing_to_resolve(
+    _doc: &impl CsafTrait,
+) -> Result<(), Vec<ValidationError>> {
+    // TODO: #407 this would be another use-case?
+    Ok(())
+}
+
+#[cfg(feature = "external-connections")]
 fn create_url_resolution_error(url: &str, failure: UrlResolutionFailure, instance_path: &str) -> ValidationError {
     let message = match failure {
         UrlResolutionFailure::FailedWithStatusCode(code) => format!(
@@ -29,6 +45,7 @@ fn create_url_resolution_error(url: &str, failure: UrlResolutionFailure, instanc
 ///
 /// This function is only available when the `external-connections` feature is enabled.
 /// It will attempt to make HEAD calls to all self-referencing URLs.
+#[cfg(feature = "external-connections")]
 pub fn test_6_3_7_use_of_self_referencing_urls_failing_to_resolve(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {
@@ -85,7 +102,7 @@ crate::test_validation::impl_validator!(
     test_6_3_7_use_of_self_referencing_urls_failing_to_resolve
 );
 
-#[cfg(test)]
+#[cfg(all(test, feature = "external-connections"))]
 mod tests {
     use super::*;
     use crate::csaf2_0::testcases::TESTS_2_0;

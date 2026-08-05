@@ -176,7 +176,7 @@ impl Ord for CsafVersionNumber {
         // we can't determine a meaningful ordering between invalid or mixed versions,
         // so we assume invalid versions are always less than valid versions, and invalid versions are equal to each other.
         match (self, other) {
-            (Self::Invalid(_), Self::Invalid(_)) => std::cmp::Ordering::Equal,
+            (Self::Invalid(i1), Self::Invalid(i2)) => i1.cmp(i2),
             (Self::Invalid(_), _) => std::cmp::Ordering::Less,
             (_, Self::Invalid(_)) => std::cmp::Ordering::Greater,
             (v1, v2) => v1.to_comparable_semver().ok().cmp(&v2.to_comparable_semver().ok()),
@@ -393,6 +393,7 @@ mod tests {
         assert_ne!(CsafVersionNumber::from("1"), CsafVersionNumber::from("v1"));
         assert_ne!(CsafVersionNumber::from("v1"), CsafVersionNumber::from("1.0.0"));
         assert_ne!(CsafVersionNumber::from("v1"), CsafVersionNumber::from("v2"));
+        assert_eq!(CsafVersionNumber::from("v1"), CsafVersionNumber::from("v1"));
     }
 
     #[test]
@@ -410,7 +411,7 @@ mod tests {
         assert!(CsafVersionNumber::from("1") < CsafVersionNumber::from("1.2.3"));
         assert_eq!(
             CsafVersionNumber::from("v1").cmp(&CsafVersionNumber::from("v2")),
-            std::cmp::Ordering::Equal
+            std::cmp::Ordering::Less
         );
         assert_eq!(
             CsafVersionNumber::from("1").cmp(&CsafVersionNumber::from("v2")),

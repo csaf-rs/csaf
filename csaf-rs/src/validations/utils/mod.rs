@@ -3,3 +3,4 @@ pub(crate) mod language_specific_translations;
 pub(crate) mod rvisc;
 pub(crate) mod validation_schema_urls;
 pub(crate) mod validation_schemas;
+pub(crate) mod external_connections;

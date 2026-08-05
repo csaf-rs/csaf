@@ -1,15 +1,15 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait, VulnerabilityTrait};
-use crate::helpers::{defang_url, get_status_code};
 use crate::validation::ValidationError;
+use crate::validations::utils::external_connections::{check_url_resolution, defang_url, UrlResolutionFailure};
 
-fn create_url_resolution_error(url: &str, status_code: Option<u16>, instance_path: &str) -> ValidationError {
-    let message = match status_code {
-        Some(code) => format!(
+fn create_url_resolution_error(url: &str, failure: UrlResolutionFailure, instance_path: &str) -> ValidationError {
+    let message = match failure {
+        UrlResolutionFailure::FailedWithStatusCode(code) => format!(
             "The URL '{}' does not resolve with HTTP status code of less than 400. Got status code: {}",
             defang_url(url),
             code
         ),
-        None => format!(
+        UrlResolutionFailure::FailedWithError(_) => format!(
             "The URL '{}' does not resolve. It may be invalid or the server may be unreachable.",
             defang_url(url)
         ),
@@ -32,27 +32,16 @@ pub fn test_6_3_7_use_of_self_referencing_urls_failing_to_resolve(
 ) -> Result<(), Vec<ValidationError>> {
     let mut errors: Option<Vec<ValidationError>> = None;
 
-    // Helper closure to check if a URL resolves with HTTP status code < 400
-    // Returns Ok(()) if status is < 400, Err with status code otherwise
-    let check_url_resolution = |url: &str| -> Result<(), Option<u16>> {
-        let status_code = get_status_code(url);
-        if status_code == 0 {
-            Err(None)
-        } else if status_code < 400 {
-            Ok(())
-        } else {
-            Err(Some(status_code))
-        }
-    };
+    let resolve_success = |url: &str| check_url_resolution(url, |status_code| status_code < 400);
 
     // Check document references
     if let Some(self_refs) = doc.get_document().get_self_references() {
         for (r_i, reference) in self_refs {
             let url = reference.get_url();
-            if let Err(status) = check_url_resolution(url) {
+            if let Err(failure) = resolve_success(url) {
                 errors.get_or_insert_default().push(create_url_resolution_error(
                     url,
-                    status,
+                    failure,
                     &format!("/document/references/{r_i}"),
                 ));
             }
@@ -64,10 +53,10 @@ pub fn test_6_3_7_use_of_self_referencing_urls_failing_to_resolve(
         if let Some(self_refs) = vulnerability.get_self_references() {
             for (r_i, reference) in self_refs {
                 let url = reference.get_url();
-                if let Err(status) = check_url_resolution(url) {
+                if let Err(failure) = resolve_success(url) {
                     errors.get_or_insert_default().push(create_url_resolution_error(
                         url,
-                        status,
+                        failure,
                         &format!("/vulnerabilities/{v_i}/references/{r_i}"),
                     ));
                 }
@@ -94,7 +83,7 @@ mod tests {
         // Case 01: Failing example with https://example.invalid
         let case_01_invalid_url = Err(vec![create_url_resolution_error(
             "https://example.invalid",
-            None,
+            UrlResolutionFailure::FailedWithError(String::new()),
             "/document/references/0",
         )]);
 

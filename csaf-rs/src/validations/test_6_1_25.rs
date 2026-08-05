@@ -87,7 +87,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_25, test_6_1_25_mult
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_25 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_25 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -175,22 +177,22 @@ mod tests {
             ),
         ]);
 
-        TESTS_2_0.test_6_1_25.expect(
-            one_file_hash_two_hashes_same_algo.clone(),
-            three_elements_two_same_algo.clone(),
-            three_elements_all_same_algo.clone(),
-            two_elements_same_algo_different_casing,
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_25.expect(
-            one_file_hash_two_hashes_same_algo,
-            three_elements_two_same_algo,
-            three_elements_all_same_algo,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_25.expect(ExpectedResults_2_0 {
+            case_01: one_file_hash_two_hashes_same_algo.clone(),
+            case_s01: three_elements_two_same_algo.clone(),
+            case_s02: three_elements_all_same_algo.clone(),
+            case_s03: two_elements_same_algo_different_casing,
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
+        TESTS_2_1.test_6_1_25.expect(ExpectedResults_2_1 {
+            case_01: one_file_hash_two_hashes_same_algo,
+            case_s01: three_elements_two_same_algo,
+            case_s02: three_elements_all_same_algo,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 }

@@ -28,6 +28,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_28, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_28 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -38,6 +39,10 @@ mod tests {
         // Case 11: no sharing group present
         // Case 12: sharing group with a regular UUID
 
-        TESTS_2_1.test_6_2_28.expect(err, Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_28.expect(ExpectedResults {
+            case_01: err,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

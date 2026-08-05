@@ -66,42 +66,44 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_1, test_6_3_1_use_of
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_1 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_1 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_3_1() {
         // CSAF 2.0 has 4 test cases and CSAF 2.1 has 8 test cases
-        TESTS_2_0.test_6_3_1.expect(
-            Err(vec![create_cvss_v2_only_error(
+        TESTS_2_0.test_6_3_1.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![create_cvss_v2_only_error(
                 "/vulnerabilities/0/scores/0".to_string(),
             )]),
-            Err(vec![
+            case_02: Err(vec![
                 create_cvss_v2_only_error("/vulnerabilities/0/scores/0".to_string()),
                 create_cvss_v2_only_error("/vulnerabilities/2/scores/0".to_string()),
             ]),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_3_1.expect(
-            Err(vec![create_cvss_v2_only_error(
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_3_1.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![create_cvss_v2_only_error(
                 "/vulnerabilities/0/metrics/0/content".to_string(),
             )]),
-            Err(vec![
+            case_02: Err(vec![
                 create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
                 create_cvss_v2_only_error("/vulnerabilities/2/metrics/0/content".to_string()),
             ]),
-            Err(vec![
+            case_03: Err(vec![
                 create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
                 create_cvss_v2_only_error("/vulnerabilities/3/metrics/0/content".to_string()),
             ]),
-            Err(vec![create_cvss_v2_only_error(
+            case_04: Err(vec![create_cvss_v2_only_error(
                 "/vulnerabilities/2/metrics/0/content".to_string(),
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

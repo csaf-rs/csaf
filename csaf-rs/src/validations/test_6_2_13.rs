@@ -50,7 +50,9 @@ crate::test_validation::impl_raw_json_validator!(ValidatorForTest6_2_13, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_13 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_13 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -58,7 +60,9 @@ mod tests {
         let err = Err(vec![create_unsorted_keys_error("/document/csaf_version")]);
 
         // Both CSAF 2.0 and 2.1 have 1 test cases
-        TESTS_2_0.test_6_2_13.expect(err.clone());
-        TESTS_2_1.test_6_2_13.expect(err);
+        TESTS_2_0
+            .test_6_2_13
+            .expect(ExpectedResults_2_0 { case_01: err.clone() });
+        TESTS_2_1.test_6_2_13.expect(ExpectedResults_2_1 { case_01: err });
     }
 }

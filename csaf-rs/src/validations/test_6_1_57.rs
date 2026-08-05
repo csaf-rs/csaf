@@ -78,6 +78,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_57, test_6_
 #[cfg(test)]
 mod tests {
     use crate::csaf_traits::CategoryOfTheBranch;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_57 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::validations::test_6_1_57::create_stacked_categories_error;
 
@@ -135,8 +136,13 @@ mod tests {
         // Case 12: 30 branches deep, but the only stacked category is product_family
         // Case 13: breadth with no stacked categories
 
-        TESTS_2_1
-            .test_6_1_57
-            .expect(case_01_simple, case_02_depth, case_03_breadth, Ok(()), Ok(()), Ok(()))
+        TESTS_2_1.test_6_1_57.expect(ExpectedResults {
+            case_01: case_01_simple,
+            case_02: case_02_depth,
+            case_03: case_03_breadth,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        })
     }
 }

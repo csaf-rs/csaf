@@ -22,7 +22,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_12, test_6_2_12_miss
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_12 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_12 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -30,7 +32,9 @@ mod tests {
         let err = Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_2_12.expect(err.clone());
-        TESTS_2_1.test_6_2_12.expect(err);
+        TESTS_2_0
+            .test_6_2_12
+            .expect(ExpectedResults_2_0 { case_01: err.clone() });
+        TESTS_2_1.test_6_2_12.expect(ExpectedResults_2_1 { case_01: err });
     }
 }

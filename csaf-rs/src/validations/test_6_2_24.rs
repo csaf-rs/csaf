@@ -154,6 +154,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_24 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use rstest::rstest;
 
@@ -189,16 +190,16 @@ mod tests {
             create_non_latest_cwe_error(VersionMissmatch::Future, "CWE-61", "4.15", "4.13", 2, 0),
         ]);
 
-        TESTS_2_1.test_6_2_24.expect(
-            case_01_cwe_version_before_latest,
-            case_02_cwe_version_after_latest,
-            case_03_cwe_version_mismatch,
-            case_04_cwe_version_mismatch_multi_vulnerabilities,
-            Ok(()), // Case 11: 1 vuln, 1 correct cwe version, correction of case 01 with version 4.12 -> 4.13
-            Ok(()), // Case 12: 1 vuln, 1 correct cwe version, correction of case 02 where version 4.15 was newer than latest 4.13
-            Ok(()), // Case 13: 1 vuln, 3 correct cwe versions, correction of case 03 with versions 1.8.1 -> 4.13, 1.0 -> 4.13
-            Ok(()), // Case 14: 3 vulns, 4 correct cwe versions, correction of case 04 with versions 1.3 -> 4.13, 2.1 -> 4.13, 4.14 -> 4.13, 4.15 -> 4.13
-        );
+        TESTS_2_1.test_6_2_24.expect(ExpectedResults {
+            case_01: case_01_cwe_version_before_latest,
+            case_02: case_02_cwe_version_after_latest,
+            case_03: case_03_cwe_version_mismatch,
+            case_04: case_04_cwe_version_mismatch_multi_vulnerabilities,
+            case_11: Ok(()), // Case 11: 1 vuln, 1 correct cwe version, correction of case 01 with version 4.12 -> 4.13
+            case_12: Ok(()), // Case 12: 1 vuln, 1 correct cwe version, correction of case 02 where version 4.15 was newer than latest 4.13
+            case_13: Ok(()), // Case 13: 1 vuln, 3 correct cwe versions, correction of case 03 with versions 1.8.1 -> 4.13, 1.0 -> 4.13
+            case_14: Ok(()), // Case 14: 3 vulns, 4 correct cwe versions, correction of case 04 with versions 1.3 -> 4.13, 2.1 -> 4.13, 4.14 -> 4.13, 4.15 -> 4.13
+        });
     }
 
     #[rstest]

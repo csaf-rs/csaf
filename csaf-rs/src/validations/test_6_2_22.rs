@@ -32,6 +32,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_22 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -56,13 +57,13 @@ mod tests {
         // Case 11: title does not contain its own tracking ID
         // Case 12: title contains a different tracking ID (not its own)
 
-        TESTS_2_1.test_6_2_22.expect(
-            case_01_starts_with_id_colon_as_sep,
-            case_02_ends_with_id_in_parenthesis,
-            case_03_ends_with_id_colon_sep,
-            case_04_starts_with_id_dash_sep,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_22.expect(ExpectedResults {
+            case_01: case_01_starts_with_id_colon_as_sep,
+            case_02: case_02_ends_with_id_in_parenthesis,
+            case_03: case_03_ends_with_id_colon_sep,
+            case_04: case_04_starts_with_id_dash_sep,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

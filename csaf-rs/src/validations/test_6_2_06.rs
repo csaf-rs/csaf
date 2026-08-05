@@ -51,34 +51,36 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_6 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_6 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_2_06() {
         // Both CSAF 2.0 and 2.1 have test cases
-        TESTS_2_0
-            .test_6_2_6
-            .expect(Err(vec![create_older_current_release_date_error(
+        TESTS_2_0.test_6_2_6.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![create_older_current_release_date_error(
                 "2021-05-06T10:00:00.000Z",
                 "2021-07-21T11:00:00.000Z",
-            )]));
-        TESTS_2_1.test_6_2_6.expect(
-            Err(vec![create_older_current_release_date_error(
+            )]),
+        });
+        TESTS_2_1.test_6_2_6.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![create_older_current_release_date_error(
                 "2023-09-06T10:00:00.000Z",
                 "2024-01-21T11:00:00.000Z",
             )]),
-            Err(vec![create_older_current_release_date_error(
+            case_02: Err(vec![create_older_current_release_date_error(
                 "2024-01-21T11:00:00.000+11:00",
                 "2024-01-21T11:00:00.000+10:00",
             )]),
-            Err(vec![create_older_current_release_date_error(
+            case_03: Err(vec![create_older_current_release_date_error(
                 "2024-01-22T11:00:00.000+11:30",
                 "2024-01-21T13:00:00.000-11:30",
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

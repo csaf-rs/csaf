@@ -72,7 +72,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_26, test_6_1_26_proh
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_26 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_26 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -142,31 +144,31 @@ mod tests {
             CsafVersion::X20,
         )]);
 
-        TESTS_2_0.test_6_1_26.expect(
-            case_01_shared.clone(),
-            case_02_csaf20,
-            case_03_csaf20,
-            case_04_csaf20,
-            deprecated_sec_advisory_csaf20,
-            withdrawn_csaf20,
-            superseded_csaf20,
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_26.expect(
-            case_01_shared,
-            case_02_csaf21,
-            case_03_csaf21,
-            case_04_csaf21,
-            case_05_csaf21,
-            case_06_csaf21,
-            case_07_csaf21,
-            case_08_csaf21,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_26.expect(ExpectedResults_2_0 {
+            case_01: case_01_shared.clone(),
+            case_02: case_02_csaf20,
+            case_03: case_03_csaf20,
+            case_04: case_04_csaf20,
+            case_s01: deprecated_sec_advisory_csaf20,
+            case_s02: withdrawn_csaf20,
+            case_s03: superseded_csaf20,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_1_26.expect(ExpectedResults_2_1 {
+            case_01: case_01_shared,
+            case_02: case_02_csaf21,
+            case_03: case_03_csaf21,
+            case_04: case_04_csaf21,
+            case_05: case_05_csaf21,
+            case_06: case_06_csaf21,
+            case_07: case_07_csaf21,
+            case_08: case_08_csaf21,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 
     // Additional unit tests from the editorial version of CSAF 2.1

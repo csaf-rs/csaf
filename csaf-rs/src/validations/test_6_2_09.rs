@@ -41,7 +41,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_9, test_6_2_09_use_o
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_9 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_9 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -56,14 +58,16 @@ mod tests {
         // Case S01: (CSAF 2.0 only) two sha1 hashes with non-default casing
         // Case S11: two file hashes, one with sha1
 
-        TESTS_2_0.test_6_2_9.expect(
-            case_01_and_02.clone(),
-            case_01_and_02.clone(),
-            case_01_and_02.clone(),
-            Ok(()),
-        );
-        TESTS_2_1
-            .test_6_2_9
-            .expect(case_01_and_02.clone(), case_01_and_02, Ok(()));
+        TESTS_2_0.test_6_2_9.expect(ExpectedResults_2_0 {
+            case_01: case_01_and_02.clone(),
+            case_02: case_01_and_02.clone(),
+            case_s01: case_01_and_02.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_9.expect(ExpectedResults_2_1 {
+            case_01: case_01_and_02.clone(),
+            case_02: case_01_and_02,
+            case_s11: Ok(()),
+        });
     }
 }

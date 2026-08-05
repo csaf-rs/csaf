@@ -119,6 +119,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_47, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_47 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -157,18 +158,18 @@ mod tests {
         // Case 14: 2 vulns, target ID equals vuln ID, there is also a CVE in the second vuln
         // Case 15: target ID matches both document ID and vuln ID
 
-        TESTS_2_1.test_6_1_47.expect(
-            case_01_target_id_cve_mismatch,
-            case_02_target_id_vuln_id_mismatch,
-            case_03_target_id_vuln_id_partial_mismatch,
-            case_04_target_id_vuln_id_swapped_mismatch,
-            case_05_target_id_document_id_mismatch,
-            case_06_target_id_document_id_match_multi_vuln,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_47.expect(ExpectedResults {
+            case_01: case_01_target_id_cve_mismatch,
+            case_02: case_02_target_id_vuln_id_mismatch,
+            case_03: case_03_target_id_vuln_id_partial_mismatch,
+            case_04: case_04_target_id_vuln_id_swapped_mismatch,
+            case_05: case_05_target_id_document_id_mismatch,
+            case_06: case_06_target_id_document_id_match_multi_vuln,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+        });
     }
 }

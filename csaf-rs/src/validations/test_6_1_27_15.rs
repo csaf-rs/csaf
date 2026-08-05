@@ -40,6 +40,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_15, test
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_15 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -52,8 +53,11 @@ mod tests {
         )]);
         // Case 11: category csaf_withdrawn, no product tree
         // Case 12: category csaf_superseded, no product tree
-        TESTS_2_1
-            .test_6_1_27_15
-            .expect(fail_withdrawn, fail_superseded, Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_27_15.expect(ExpectedResults {
+            case_01: fail_withdrawn,
+            case_02: fail_superseded,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

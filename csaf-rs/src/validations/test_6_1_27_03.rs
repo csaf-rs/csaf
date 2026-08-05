@@ -44,7 +44,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_3, test_6_1_27_03
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_3 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_3 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -58,14 +60,16 @@ mod tests {
         let case_superseded = Err(vec![create_must_not_have_vuln_element_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);
-        TESTS_2_0.test_6_1_27_3.expect(case_informational_advisory.clone());
-        TESTS_2_1.test_6_1_27_3.expect(
-            case_informational_advisory,
-            case_withdrawn,
-            case_superseded,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_27_3.expect(ExpectedResults_2_0 {
+            case_01: case_informational_advisory.clone(),
+        });
+        TESTS_2_1.test_6_1_27_3.expect(ExpectedResults_2_1 {
+            case_01: case_informational_advisory,
+            case_02: case_withdrawn,
+            case_03: case_superseded,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

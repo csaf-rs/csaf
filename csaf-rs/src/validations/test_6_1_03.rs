@@ -147,7 +147,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_3, test_6_1_03_circu
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_3 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_3 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -181,11 +183,11 @@ mod tests {
             ),
         ]);
 
-        TESTS_2_0.test_6_1_3.expect(
-            csaf_20_case_01_self_ref_via_relates_to_product_ref,
-            csaf_20_case_s01_self_ref_via_product_ref,
-            csaf_20_case_s02_cycle,
-        );
+        TESTS_2_0.test_6_1_3.expect(ExpectedResults_2_0 {
+            case_01: csaf_20_case_01_self_ref_via_relates_to_product_ref,
+            case_s01: csaf_20_case_s01_self_ref_via_product_ref,
+            case_s02: csaf_20_case_s02_cycle,
+        });
 
         let csaf_21_case_01_self_ref_via_product_path_next_ref = Err(vec![generate_self_reference_relates_to_error(
             CsafVersion::X21,
@@ -223,14 +225,14 @@ mod tests {
         // Case 12: multiple paths, no cycle
         // Case 13: multiple paths with different subpath categories, no cycle
 
-        TESTS_2_1.test_6_1_3.expect(
-            csaf_21_case_01_self_ref_via_product_path_next_ref,
-            csaf_21_case_02_cycle,
-            csaf_21_case_s01_self_ref_via_product_path_beginning_ref,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_3.expect(ExpectedResults_2_1 {
+            case_01: csaf_21_case_01_self_ref_via_product_path_next_ref,
+            case_02: csaf_21_case_02_cycle,
+            case_s01: csaf_21_case_s01_self_ref_via_product_path_beginning_ref,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 
     #[test]

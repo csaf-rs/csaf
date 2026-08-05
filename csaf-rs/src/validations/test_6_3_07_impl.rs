@@ -26,7 +26,7 @@ fn create_url_resolution_error(url: &str, status_code: Option<u16>, instance_pat
 /// the URL referenced resolves with an HTTP status code less than 400.
 ///
 /// This function is only available when the `external-connections` feature is enabled.
-/// It will attempt to make HEAD calls to all self reference urls.
+/// It will attempt to make HEAD calls to all self-referencing URLs.
 pub fn test_6_3_7_use_of_self_referencing_urls_failing_to_resolve(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<ValidationError>> {

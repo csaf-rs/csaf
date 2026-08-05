@@ -115,4 +115,3 @@ pub static SCANCODE_LICENSEDB_LICENSES: LazyLock<HashSet<String>> = LazyLock::ne
         })
         .collect()
 });
-

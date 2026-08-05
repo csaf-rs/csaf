@@ -12,23 +12,23 @@ pub trait ReferenceTrait {
     fn get_url(&self) -> &str;
 }
 
-/// Extension trait for filtering reference vectors by category
-pub trait ReferenceVecTrait: ReferenceTrait + Sized {
-    fn filter_by_category(references: &[Self], category: CategoryOfReference21) -> Vec<(usize, &Self)> {
-        references
-            .iter()
-            .enumerate()
-            .filter(|(_, r)| r.get_category() == category)
-            .collect()
-    }
+/// Filters a slice of references by category, returning each match paired with its original index.
+fn filter_by_category<R: ReferenceTrait>(references: &[R], category: CategoryOfReference21) -> Vec<(usize, &R)> {
+    references
+        .iter()
+        .enumerate()
+        .filter(|(_, r)| r.get_category() == category)
+        .collect()
+}
 
-    fn get_self_references(references: &[Self]) -> Vec<(usize, &Self)> {
-        Self::filter_by_category(references, CategoryOfReference21::Self_)
-    }
+/// Returns only the self references from the given slice (filtered by category).
+pub fn get_self_references<R: ReferenceTrait>(references: &[R]) -> Vec<(usize, &R)> {
+    filter_by_category(references, CategoryOfReference21::Self_)
+}
 
-    fn get_external_references(references: &[Self]) -> Vec<(usize, &Self)> {
-        Self::filter_by_category(references, CategoryOfReference21::External)
-    }
+/// Returns only the external references from the given slice (filtered by category).
+pub fn get_external_references<R: ReferenceTrait>(references: &[R]) -> Vec<(usize, &R)> {
+    filter_by_category(references, CategoryOfReference21::External)
 }
 
 impl ReferenceTrait for Reference20 {
@@ -43,8 +43,6 @@ impl ReferenceTrait for Reference20 {
     impl_str_field_getter!(get_url, url);
 }
 
-impl ReferenceVecTrait for Reference20 {}
-
 impl ReferenceTrait for Reference21 {
     fn get_category(&self) -> CategoryOfReference21 {
         self.category
@@ -53,5 +51,3 @@ impl ReferenceTrait for Reference21 {
     impl_str_field_getter!(get_summary, summary);
     impl_str_field_getter!(get_url, url);
 }
-
-impl ReferenceVecTrait for Reference21 {}

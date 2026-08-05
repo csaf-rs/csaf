@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait, VulnerabilityTrait};
 use crate::validation::ValidationError;
-use crate::validations::utils::external_connections::{check_url_resolution, defang_url, UrlResolutionFailure};
+use crate::validations::utils::external_connections::{UrlResolutionFailure, check_url_resolution, defang_url};
 
 fn create_url_resolution_error(url: &str, failure: UrlResolutionFailure, instance_path: &str) -> ValidationError {
     let message = match failure {

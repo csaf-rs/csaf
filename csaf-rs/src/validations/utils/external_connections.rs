@@ -9,6 +9,7 @@ pub fn defang_url(url: &str) -> String {
         .replace(".", "[.]")
 }
 
+
 /// The reason a URL failed to resolve successfully.
 #[derive(Debug, PartialEq)]
 pub enum UrlResolutionFailure {
@@ -27,7 +28,6 @@ pub enum UrlResolutionFailure {
 /// [`UrlResolutionFailure::FailedWithError`].
 ///
 /// Only available when the `external-connections` feature is enabled.
-#[cfg(feature = "external-connections")]
 pub fn check_url_resolution(url: &str, is_success: impl Fn(u16) -> bool) -> Result<(), UrlResolutionFailure> {
     match get_status_code(url) {
         Ok(status_code) => {
@@ -36,7 +36,7 @@ pub fn check_url_resolution(url: &str, is_success: impl Fn(u16) -> bool) -> Resu
             } else {
                 Err(UrlResolutionFailure::FailedWithStatusCode(status_code))
             }
-        }
+        },
         Err(e) => Err(UrlResolutionFailure::FailedWithError(e)),
     }
 }
@@ -47,8 +47,7 @@ pub fn check_url_resolution(url: &str, is_success: impl Fn(u16) -> bool) -> Resu
 /// Only available when the `external-connections` feature is enabled.
 ///
 /// Returns the status code as `Ok(u16)`, or `Err` with a description of the failure
-/// if there was no status code 
-#[cfg(feature = "external-connections")]
+/// if there was no status code
 fn get_status_code(url: &str) -> Result<u16, String> {
     match ureq::head(url)
         .config()
@@ -63,7 +62,7 @@ fn get_status_code(url: &str) -> Result<u16, String> {
     }
 }
 
-#[cfg(all(test, feature = "external-connections"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     use httpmock::prelude::*;

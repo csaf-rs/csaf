@@ -45,29 +45,20 @@ mod tests {
 
     #[test]
     fn test_test_6_1_43() {
-        // Ideas for supplementary test cases:
-        // S01: 1 model number, no stars
-
-        // Only CSAF 2.1 has this test with 5 test cases (2 error cases, 3 success cases)
         TESTS_2_1.test_6_1_43.expect(ExpectedResults {
-            case_01: // Case 01: One model number with two unescaped stars
-            Err(vec![create_multiple_stars_model_number_error(
+            case_01: Err(vec![create_multiple_stars_model_number_error(
                 &CsafModelNumber::from("P*A*"),
                 "/product_tree/full_product_names/0",
                 0,
             )]),
-            case_02: // Case 02: One model number with one escaped and two unescaped stars
-            Err(vec![create_multiple_stars_model_number_error(
+            case_02: Err(vec![create_multiple_stars_model_number_error(
                 &CsafModelNumber::from("*P*\\*?*"),
                 "/product_tree/full_product_names/0",
                 0,
             )]),
-            case_11: // Case 03: 5 model numbers, all end with one unescaped star (and some '?' in between)
-            Ok(()),
-            case_12: // Case 04: 1 model number, starts with unescaped star, 3 escaped stars
-            Ok(()),
-            case_13: // Case 05: 1 model number, 2 escaped stars, one escaped backslash
-            Ok(()),
+            case_11: Ok(()), // 5 model numbers, all end with one unescaped star (and some '?' in between)
+            case_12: Ok(()), // 1 model number, starts with unescaped star, 3 escaped stars
+            case_13: Ok(()), // 1 model number, 2 escaped stars, one escaped backslash
         });
     }
 }

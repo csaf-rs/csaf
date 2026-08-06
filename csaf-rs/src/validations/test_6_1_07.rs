@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
 /// Maps product ids to a per-metric-type, per-source list of JSON paths.
@@ -50,8 +50,8 @@ fn aggregate_product_cvss_metrics(
 ///
 /// For each item in `/vulnerabilities` it MUST be tested that the same Product ID
 /// is not a member of more than one CVSS vector with the same version and same source.
-pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         let product_metrics = aggregate_product_cvss_metrics(vulnerability, vulnerability_index);
         // if there are any cvss metrics
@@ -86,12 +86,12 @@ fn create_validation_error(
     product_id: &str,
     path: String,
     source: Option<String>,
-) -> ValidationError {
+) -> TestFinding {
     let source_info = source.map_or("by author".to_string(), |s| format!("for source: {s}"));
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!("Multiple {score_type} scores are given for {product_id} {source_info}."),
         instance_path: format!("{}/{}", path, score_type.get_metric_prop_name()),
-    }
+    })
 }
 
 #[cfg(test)]

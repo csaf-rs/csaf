@@ -2,23 +2,23 @@ use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_missing_reference_error(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_missing_reference_error(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document with category `{document_category}' must have at least one reference whose summary starts with `Superseding Document` and has the category `external`"
         ),
         instance_path: "/document/references".to_string(),
-    }
+    })
 }
 
-fn create_incorrect_category_error(reference_index: usize) -> ValidationError {
-    ValidationError {
+fn create_incorrect_category_error(reference_index: usize) -> TestFinding {
+    TestFinding::Error ( TestFindingData {
         message: "The reference summary starts with the correct string \"Superseding Document\". However it uses the wrong category.".to_string(),
         instance_path: format!("/document/references/{reference_index}"),
-    }
+    })
 }
 
 /// 6.1.27.19 Reference to superseding document
@@ -27,7 +27,7 @@ fn create_incorrect_category_error(reference_index: usize) -> ValidationError {
 ///
 /// It MUST be tested that at least one item in document references exists that has a summary starting with "Superseding Document".
 /// The category of this item MUST be external.
-pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -41,7 +41,7 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
     }
 
     let mut has_external_reference_with_correct_summary = false;
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // Check for summary starting with "Superseding Document" and category external
     if let Some(references) = doc.get_document().get_references() {
         for (r_i, reference) in references.iter().enumerate() {

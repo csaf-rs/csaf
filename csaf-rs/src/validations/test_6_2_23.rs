@@ -1,20 +1,20 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_deprecated_cwe_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> ValidationError {
-    ValidationError {
+fn create_deprecated_cwe_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("Weakness '{cwe}' is deprecated in version {version}."),
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}"),
-    }
+    })
 }
 
 /// 6.2.23 Usage of Deprecated CWE
 ///
 /// For each item in the CWE array it MUST be tested that the CWE is not deprecated in the given version.
-pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwes) = vulnerability.get_cwes() {

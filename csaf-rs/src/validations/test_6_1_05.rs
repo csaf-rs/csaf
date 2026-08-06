@@ -1,17 +1,17 @@
 use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
-fn generate_multiple_group_id_definition_error(group_id: &str, path: &str) -> ValidationError {
-    ValidationError {
+fn generate_multiple_group_id_definition_error(group_id: &str, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Duplicate definition for product group ID {group_id}"),
         instance_path: path.to_owned(),
-    }
+    })
 }
 
 /// 6.1.5 Multiple Definition of Product Group ID
 /// Checks that all product group IDs defined in the document are unique.
-pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // Check if there is a product tree, if there isn't, this test can be skipped
     let Some(tree) = doc.get_product_tree() else {
         // This will be WasSkipped in the future
@@ -36,7 +36,7 @@ pub fn test_6_1_05_multiple_definition_of_product_group_id(doc: &impl CsafTrait)
     }
 
     // Generate an error for each product group ID that is defined more than once
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (group_id, paths) in &product_group_ids_with_paths {
         if paths.len() > 1 {
             for path in paths {

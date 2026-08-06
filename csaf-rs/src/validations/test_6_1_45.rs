@@ -2,20 +2,20 @@ use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait, TrackingTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 fn create_disclosure_date_too_late_error(
     doc_status: &DocumentStatus,
     disclosure_date: &ValidCsafDateTime,
     i_v: usize,
     newest_revision_date: &ValidCsafDateTime,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Disclosure date ({disclosure_date}) for vulnerability at index {i_v} is newer than the newest revision date ({newest_revision_date}) on a document with TLP:CLEAR and document status {doc_status}"
         ),
         instance_path: format!("/vulnerabilities/{i_v}/disclosure_date"),
-    }
+    })
 }
 
 /// 6.1.45 Inconsistent Disclosure Date
@@ -23,7 +23,7 @@ fn create_disclosure_date_too_late_error(
 /// For each vulnerability, it is tested that the `disclosure_date` is earlier or equal to the `date`
 /// of the newest item in the `revision_history` (taking timezones into consideration)
 /// if the document is TLP:CLEAR and the document status is `final` or `interim`.
-pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
     let status = tracking.get_status();
@@ -57,7 +57,7 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
     };
 
     // Check each vulnerability's disclosure date
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(disclosure_date) = vulnerability.get_disclosure_date() {
             match disclosure_date {

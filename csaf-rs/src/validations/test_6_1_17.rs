@@ -1,7 +1,7 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use strum::{AsRefStr, Display};
 
 #[derive(Display, AsRefStr)]
@@ -18,13 +18,13 @@ fn generate_status_version_error(
     version: &CsafVersionNumber,
     status: &DocumentStatus,
     reason: &DocumentStatusDraftErrorReason,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document version is '{version}' but the document status is '{status}'. {reason} reserved for document status 'Draft'"
         ),
         instance_path: "/document/tracking/version".to_string(),
-    }
+    })
 }
 
 /// 6.1.17 Document Status Draft
@@ -37,7 +37,7 @@ fn generate_status_version_error(
 /// and this test can only pass, so we can return early.
 /// If not, we know the secondary criteria is not fulfilled, and we can check if `/document/version`
 /// meets one of the failing criteria and generate the corresponding error(s).
-pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
 
     // This is explicitly **NOT** a wasSkipped. The test prose does not mention skipping,
@@ -61,7 +61,7 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
             }
         },
         CsafVersionNumber::SemVer(semver) => {
-            let mut errors: Option<Vec<ValidationError>> = None;
+            let mut errors: Option<Vec<TestFinding>> = None;
             if semver.get_major() == 0 {
                 errors.get_or_insert_default().push(generate_status_version_error(
                     &doc_version,

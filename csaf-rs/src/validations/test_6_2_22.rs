@@ -1,17 +1,17 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_tracking_id_in_title_error(title: &str, tracking_id: &str) -> ValidationError {
-    ValidationError {
+fn create_tracking_id_in_title_error(title: &str, tracking_id: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("The document title '{title}' contains the document tracking id '{tracking_id}'."),
         instance_path: "/document/title".to_string(),
-    }
+    })
 }
 
 /// 6.2.22 Document Tracking ID in Title
 ///
 /// It MUST be tested that the /document/title does not contain the /document/tracking/id.
-pub fn test_6_2_22_document_tracking_id_in_title(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_22_document_tracking_id_in_title(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
     let title = document.get_title();
     let tracking_id = document.get_tracking().get_id();

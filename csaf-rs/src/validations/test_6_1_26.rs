@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.1.26 Prohibited Document Category Name
-pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_version = doc.get_document().get_csaf_version();
     let doc_category = doc.get_document().get_category();
 
@@ -14,7 +14,7 @@ pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<
 fn validate_document_category(
     doc_category: &CsafDocumentCategory,
     doc_version: CsafVersion,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     // skip test for known profiles and categories
     if doc_category.is_known_profile(doc_version) {
         return Ok(());
@@ -45,26 +45,26 @@ fn validate_document_category(
 fn test_6_1_26_err_generator_starts_with_csaf(
     doc_category: &CsafDocumentCategory,
     version: CsafVersion,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document category '{doc_category}' is prohibited. Only the following values starting with 'csaf_' (or similar) are allowed: {}",
             CsafDocumentCategory::known_profile_concat(version)
         ),
         instance_path: "/document/category".to_string(),
-    }
+    })
 }
 
 fn test_6_1_26_err_generator_too_similar(
     doc_category: &CsafDocumentCategory,
     known_category: &CsafDocumentCategory,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document category '{doc_category}' is prohibited. It is too similar to the known category: {known_category}",
         ),
         instance_path: "/document/category".to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_26, test_6_1_26_prohibited_document_category);

@@ -1,17 +1,17 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> ValidationError {
-    ValidationError {
+fn create_flag_without_product_reference_error(vulnerability_index: usize, flag_index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: "A flag must have at least one of the elements group_ids or product_ids".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/flags/{flag_index}"),
-    }
+    })
 }
 
 /// 6.1.32 Flag without Product Reference
 ///
 /// Each `/vulnerabilities[]/flags[]` must have at least one of the elements group_ids or product_ids.
-pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     // Check if there are any vulnerabilities, if there aren't, this test can be skipped
@@ -20,7 +20,7 @@ pub fn test_6_1_32_flag_without_product_reference(doc: &impl CsafTrait) -> Resul
         return Ok(());
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // Check each flag in each vulnerability
     for (vuln_i, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(flags) = vulnerability.get_flags() {

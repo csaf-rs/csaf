@@ -1,18 +1,18 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_product_version_range_error(path: &str) -> ValidationError {
-    ValidationError {
+fn create_product_version_range_error(path: &str) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: "Usage of 'product_version_range' branch category is not recommended".to_string(),
         instance_path: path.to_owned(),
-    }
+    })
 }
 
 /// 6.3.10 Usage of Product Version Range
 ///
 /// Tests that the `product_version_range` branch category is not used anywhere in the product tree.
-pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {

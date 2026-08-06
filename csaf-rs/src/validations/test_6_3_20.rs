@@ -1,20 +1,20 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::rvisc;
 
-fn create_unregistered_id_system_error(system_name: &str, vuln_index: usize, id_index: usize) -> ValidationError {
-    ValidationError {
+fn create_unregistered_id_system_error(system_name: &str, vuln_index: usize, id_index: usize) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: format!("The system_name '{system_name}' is not registered in RVISC."),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/system_name"),
-    }
+    })
 }
 
 /// 6.3.20 Use of Unregistered ID System
 ///
 /// For each item in `/vulnerabilities[]/ids` it MUST be tested that the value of `system_name`
 /// belongs to a registered vulnerability ID system in RVISC.
-pub fn test_6_3_20_use_of_unregistered_id_system(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_20_use_of_unregistered_id_system(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(ids) = vuln.get_ids() {

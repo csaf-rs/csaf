@@ -1,20 +1,20 @@
 use std::collections::HashMap;
 
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 fn generate_cvss_and_qualitative_error(
     product_id: &str,
     source: &Option<String>,
     v_i: usize,
     m_i: usize,
-) -> ValidationError {
+) -> TestFinding {
     let source_str = match source {
         Some(s) => format!("and source '{s}'"),
         None => "by author".to_string(),
     };
 
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Vulnerability has both a CVSS score and qualitative severity rating for product_id '{product_id}' {source_str}"
         ),
@@ -23,17 +23,17 @@ fn generate_cvss_and_qualitative_error(
         // So even if we implement running CSAF 2.1 tests for CSAF 2.0 docs, this test will always pass,
         // as the offending metric type does not exist on CSAF 2.0, and this will never print the wrong path.
         instance_path: format!("/vulnerabilities/{v_i}/metrics/{m_i}/content/qualitative_severity_rating",),
-    }
+    })
 }
 
 /// 6.1.56 Use of CVSS and Qualitative Severity Rating
 ///
 /// In each vulnerability, for each tuple of Product ID and source, there cannot be both a CVSS score
 /// and a qualitative severity rating present.
-pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_56_cvss_and_qualitative_severity_rating(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     type ProductIdSourceTuple = (String, Option<String>);
     type HasRatingsTuple = (usize, bool, bool);
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // for each vulnerability
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {

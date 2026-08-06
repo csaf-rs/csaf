@@ -1,17 +1,19 @@
 use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-static USAGE_OF_NIL_UUID_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "The sharing group id uses the Nil UUID.".to_string(),
-    instance_path: "/document/distribution/sharing_group/id".to_string(),
+static USAGE_OF_NIL_UUID_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The sharing group id uses the Nil UUID.".to_string(),
+        instance_path: "/document/distribution/sharing_group/id".to_string(),
+    })
 });
 
 /// 6.2.29 Usage of Nil UUID
 ///
 /// It MUST be tested that the Nil UUID is not used as sharing group id.
-pub fn test_6_2_29_usage_of_nil_uuid(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_29_usage_of_nil_uuid(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group()

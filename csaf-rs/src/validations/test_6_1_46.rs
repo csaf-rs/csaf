@@ -3,7 +3,7 @@ use std::sync::LazyLock;
 use jsonschema::Validator;
 
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::validation_schemas::SSVC_2_SCHEMA;
 
 static SSVC_VALIDATOR: LazyLock<Validator> = LazyLock::new(|| jsonschema::draft202012::new(&SSVC_2_SCHEMA).unwrap());
@@ -13,25 +13,25 @@ fn create_invalid_ssvc_error(
     error_path: &str,
     vulnerability_index: usize,
     metric_index: usize,
-) -> ValidationError {
+) -> TestFinding {
     let path_info = if error_path.is_empty() {
         String::new()
     } else {
         format!(" at {error_path}")
     };
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid SSVC object{path_info}: {error_message}"),
         instance_path: format!(
             "/vulnerabilities/{vulnerability_index}/metrics/{metric_index}/content/ssvc_v2{error_path}"
         ),
-    }
+    })
 }
 
 /// 6.1.46 Invalid SSVC
 ///
 /// It MUST be tested that the given SSVC object is valid according to the referenced schema.
-pub fn test_6_1_46_invalid_ssvc(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_46_invalid_ssvc(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
     // look for ssvc_v2 metrics in all vulnerabilities and metrics
     for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {

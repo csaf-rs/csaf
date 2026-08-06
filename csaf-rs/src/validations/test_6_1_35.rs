@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, RemediationTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::BTreeMap;
 use strum::{AsRefStr, Display};
 
@@ -19,13 +19,13 @@ fn generate_category_contradiction_error(
     contradiction_categories: String,
     vulnerability_index: usize,
     remediation_index: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Product {product_id} has {exclusivity_kind} remediation category '{exclusive_category}', but also '{contradiction_categories}'",
         ),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/remediations/{remediation_index}"),
-    }
+    })
 }
 
 /// Aggregation mapping:
@@ -83,7 +83,7 @@ impl ProductIdRemediationCategoriesMap {
     ///
     /// For each exclusive category, if there are any other categories, for each remediation with
     /// this category an error is added to `errors`.
-    fn check_exclusive_categories_contradiction(&self, vuln_index: usize, errors: &mut Option<Vec<ValidationError>>) {
+    fn check_exclusive_categories_contradiction(&self, vuln_index: usize, errors: &mut Option<Vec<TestFinding>>) {
         // for each product and the associated categories map
         for (product_id, category_map) in &self.0 {
             // check if the map contains an exclusive category and any other category
@@ -118,7 +118,7 @@ impl ProductIdRemediationCategoriesMap {
     fn check_mutually_exclusive_category_contradiction(
         &self,
         vuln_index: usize,
-        errors: &mut Option<Vec<ValidationError>>,
+        errors: &mut Option<Vec<TestFinding>>,
     ) {
         // for each product and the associated categories map
         for (product_id, category_map) in &self.0 {
@@ -152,7 +152,7 @@ impl ProductIdRemediationCategoriesMap {
     }
 
     /// Calls [`Self::check_mutually_exclusive_category_contradiction`] and [`Self::check_exclusive_categories_contradiction].
-    pub fn check_category_contradiction(&self, vuln_index: usize, errors: &mut Option<Vec<ValidationError>>) {
+    pub fn check_category_contradiction(&self, vuln_index: usize, errors: &mut Option<Vec<TestFinding>>) {
         self.check_exclusive_categories_contradiction(vuln_index, errors);
         self.check_mutually_exclusive_category_contradiction(vuln_index, errors);
     }
@@ -165,12 +165,12 @@ impl ProductIdRemediationCategoriesMap {
 /// This takes indirect relations through product groups into account.
 ///
 /// For more details on how the checks work, see `ProductIdRemediationCategoriesMap`.
-pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_35_contradicting_remediations(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
     if vulnerabilities.is_empty() {
         return Ok(()); // TODO #409 this will be noData after refactor
     }
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (v_i, v) in vulnerabilities.iter().enumerate() {
         ProductIdRemediationCategoriesMap::aggregate(doc, v).check_category_contradiction(v_i, &mut errors);
     }

@@ -1,14 +1,14 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_allowed_with_review_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> ValidationError {
-    ValidationError {
+fn create_allowed_with_review_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Weakness '{cwe}' has usage 'Allowed-with-Review' in version {version}, which requires a thorough review."
         ),
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}"),
-    }
+    })
 }
 
 /// 6.2.26 Usage of CWE Allowed with Review for Vulnerability Mapping
@@ -21,9 +21,9 @@ fn create_allowed_with_review_error(cwe: &str, version: &str, i_r: usize, i_cwe:
 /// CWE version 4.12.
 pub fn test_6_2_26_usage_of_cwe_allowed_with_review_for_vulnerability_mapping(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwes) = vulnerability.get_cwes() {

@@ -1,7 +1,7 @@
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
     cvss,
-    validation::ValidationError,
+    validation::TestFinding,
 };
 
 /// 6.1.9 Invalid CVSS computation
@@ -10,8 +10,8 @@ use crate::{
 /// For CVSS v2.0, the base, temporal and environmental scores are checked.
 /// For CVSS v3.0 and v3.1, the base, temporal and environmental scores and severities are checked.
 /// For CVSS v4.0, the score and severity are checked
-pub fn test_6_1_09_invalid_cvss_computation(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_09_invalid_cvss_computation(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {

@@ -1,15 +1,15 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_product_tree_exists_error(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_product_tree_exists_error(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document contains a product tree which is prohibited for documents with category {document_category}"
         ),
         instance_path: "/product_tree".to_string(),
-    }
+    })
 }
 
 /// 6.1.27.15 Product tree
@@ -17,7 +17,7 @@ fn create_product_tree_exists_error(document_category: &CsafDocumentCategory) ->
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseded`.
 ///
 /// An item `/product_tree` shall not exist.
-pub fn test_6_1_27_15_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_15_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {

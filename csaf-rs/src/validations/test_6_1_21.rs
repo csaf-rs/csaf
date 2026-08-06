@@ -4,7 +4,7 @@ use crate::csaf::aggregation::revision_history::CsafRevisionHistoryItem;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::version_number::{CsafVersionNumber, CsafVersionNumberError};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.1.21 Missing Item in Revision History
 ///
@@ -12,8 +12,8 @@ use crate::validation::ValidationError;
 /// In the case of semantic versioning, this applies only to the Major version.
 /// It MUST also be tested that the first item in such a sorted list has either the version number 0 or 1 in
 /// the case of integer versioning or a Major version of 0 or 1 in the case of semantic versioning.
-pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     struct MissingVersionMetadata {
         found: bool,
@@ -149,7 +149,7 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_21, test_6_1_21_miss
 
 const REVISION_HISTORY_PATH: &str = "/document/tracking/revision_history";
 
-fn test_6_1_21_err_wrong_first_version(version: &CsafVersionNumber) -> ValidationError {
+fn test_6_1_21_err_wrong_first_version(version: &CsafVersionNumber) -> TestFinding {
     let expected_version = match version {
         CsafVersionNumber::IntVer(_) => "`0` or `1`",
         CsafVersionNumber::SemVer(_) => "`0.y.z` or `1.y.z`",
@@ -157,43 +157,40 @@ fn test_6_1_21_err_wrong_first_version(version: &CsafVersionNumber) -> Validatio
     }
     .to_string();
 
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         instance_path: REVISION_HISTORY_PATH.to_string(),
         message: format!(
             "revision history does not start with a version of {expected_version} when sorted by date (was `{version}`)"
         ),
-    }
+    })
 }
 
-fn test_6_1_21_err_missing_version_at_all(missing_version: &CsafVersionNumber) -> ValidationError {
-    ValidationError {
+fn test_6_1_21_err_missing_version_at_all(missing_version: &CsafVersionNumber) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         instance_path: REVISION_HISTORY_PATH.to_string(),
         message: format!("missing revision history item with number `{missing_version}` at all"),
-    }
+    })
 }
 
-fn test_6_1_21_err_missing_version_before(
-    missing_version: &CsafVersionNumber,
-    start: &CsafDateTime,
-) -> ValidationError {
+fn test_6_1_21_err_missing_version_before(missing_version: &CsafVersionNumber, start: &CsafDateTime) -> TestFinding {
     let start = start.get_raw_string();
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         instance_path: REVISION_HISTORY_PATH.to_string(),
         message: format!("missing revision history item with number `{missing_version}` before `{start}`"),
-    }
+    })
 }
 
 fn test_6_1_21_err_missing_version_between(
     missing_version: &CsafVersionNumber,
     start: &CsafDateTime,
     end: &CsafDateTime,
-) -> ValidationError {
+) -> TestFinding {
     let start = start.get_raw_string();
     let end = end.get_raw_string();
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         instance_path: REVISION_HISTORY_PATH.to_string(),
         message: format!("missing revision history item with number `{missing_version}` between `{start}` and `{end}`"),
-    }
+    })
 }
 
 #[cfg(test)]

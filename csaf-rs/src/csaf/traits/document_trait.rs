@@ -16,7 +16,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentLevelMetaData as DocumentLevelMetaData21, Note as Note21, Publisher as Publisher21,
     Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// Returns an iterator over the reference URLs that satisfy the canonical URL requirements:
 /// `category = "self"`, starts with `https://`, ends with the tracking-ID-derived filename.
@@ -53,7 +53,7 @@ pub trait DocumentTrait {
     fn get_tracking(&self) -> &Self::TrackingType;
 
     /// Returns the distribution information for this document with CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError>;
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, TestFinding>;
 
     /// Returns the distribution information for this document with CSAF 2.0 semantics
     fn get_distribution_20(&self) -> Option<&Self::DistributionType>;
@@ -121,12 +121,12 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     }
 
     /// Return distribution or a Validation error to satisfy CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, TestFinding> {
         match self.distribution.as_ref() {
-            None => Err(ValidationError {
+            None => Err(TestFinding::Error(TestFindingData {
                 message: "CSAF 2.1 requires the distribution property, but it is not set.".to_string(),
                 instance_path: "/document/distribution".to_string(),
-            }),
+            })),
             Some(distribution) => Ok(distribution),
         }
     }
@@ -176,7 +176,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     }
 
     /// We normalize to Option here because property was optional in CSAF 2.0
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, TestFinding> {
         Ok(&self.distribution)
     }
 

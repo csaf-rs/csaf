@@ -1,20 +1,14 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_disallowed_cwe_usage_error(
-    cwe: &str,
-    usage: &str,
-    version: &str,
-    i_r: usize,
-    i_cwe: usize,
-) -> ValidationError {
-    ValidationError {
+fn create_disallowed_cwe_usage_error(cwe: &str, usage: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Weakness '{cwe}' has usage '{usage}' in version '{version}', which is not allowed for vulnerability mapping."
         ),
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}"),
-    }
+    })
 }
 
 /// 6.2.25 Usage of CWE Not Allowed for Vulnerability Mapping
@@ -27,9 +21,9 @@ fn create_disallowed_cwe_usage_error(
 /// CWE version 4.12.
 pub fn test_6_2_25_usage_of_cwe_not_allowed_for_vulnerability_mapping(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwes) = vulnerability.get_cwes() {

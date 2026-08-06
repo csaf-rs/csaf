@@ -4,7 +4,7 @@ use crate::csaf_traits::{
     CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, TrackingTrait, VulnerabilityTrait, WithDate,
     WithOptionalDate,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -17,7 +17,7 @@ static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 ///
 /// This function checks all date/time fields in the document, including tracking dates,
 /// vulnerability disclosure/discovery dates, remediation dates, threat dates, etc.
-pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
 
     // Check the initial release date
@@ -108,23 +108,23 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
     Ok(())
 }
 
-fn create_invalid_format_error(date_time: &str, instance_path: &str) -> ValidationError {
-    ValidationError {
+fn create_invalid_format_error(date_time: &str, instance_path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Invalid date-time string {date_time}, expected RFC3339-compliant format with non-empty timezone and no leap seconds"
         ),
         instance_path: instance_path.to_string(),
-    }
+    })
 }
 
-fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> ValidationError {
-    ValidationError {
+fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Date-time string {date_time} matched RFC3339 regex but failed chrono parsing: {error}"),
         instance_path: instance_path.to_string(),
-    }
+    })
 }
 
-fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), Vec<ValidationError>> {
+fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), Vec<TestFinding>> {
     let date = match date_time {
         Valid(date) => date.get_raw_string(),
         Invalid(err) => err.get_raw_string(),

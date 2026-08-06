@@ -1,17 +1,19 @@
 use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-static USAGE_OF_MAX_UUID_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "The sharing group id uses the Max UUID.".to_string(),
-    instance_path: "/document/distribution/sharing_group/id".to_string(),
+static USAGE_OF_MAX_UUID_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The sharing group id uses the Max UUID.".to_string(),
+        instance_path: "/document/distribution/sharing_group/id".to_string(),
+    })
 });
 
 /// 6.2.28 Usage of Max UUID
 ///
 /// It MUST be tested that the Max UUID is not used as sharing group id.
-pub fn test_6_2_28_usage_of_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_28_usage_of_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group()

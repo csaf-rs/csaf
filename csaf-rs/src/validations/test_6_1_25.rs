@@ -2,7 +2,7 @@ use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf_traits::{
     CsafTrait, FileHashTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
 /// Test 6.1.25: Multiple Use of the Same Hash Algorithm
@@ -14,13 +14,13 @@ use std::collections::HashMap;
 /// `/product_tree/branches[](/branches[])*/product/product_identification_helper/hashes[]/file_hashes[]`
 /// `/product_tree/full_product_names[]/product_identification_helper/hashes[]/file_hashes[]`
 /// `/product_tree/relationships[]/full_product_name/product_identification_helper/hashes[]/file_hashes[]`
-pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // TODO: This can be a wasSkipped later
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
     };
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // Visit all products in the product tree
     product_tree.visit_all_products(&mut |product, path| {
         // Check all file_hashes in all hashes in all product identification helpers
@@ -67,19 +67,19 @@ fn test_6_1_25_err_generator(
     path: String,
     hash_i: String,
     file_hash_i: String,
-) -> ValidationError {
+) -> TestFinding {
     let message = match original_algo {
         Some(original) => format!(
             "Multiple use of the same hash algorithm '{normalized_algo}' (written as '{original}') in file_hashes"
         ),
         None => format!("Multiple use of the same hash algorithm '{normalized_algo}' in file_hashes"),
     };
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message,
         instance_path: format!(
             "{path}/product_identification_helper/hashes/{hash_i}/file_hashes/{file_hash_i}/algorithm"
         ),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_25, test_6_1_25_multiple_use_of_same_hash_algorithm);

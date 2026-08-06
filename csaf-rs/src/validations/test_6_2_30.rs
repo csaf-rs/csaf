@@ -2,17 +2,19 @@ use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-static USAGE_OF_SHARING_GROUP_ON_TLP_CLEAR_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "A sharing group must not be used when the document is TLP:CLEAR.".to_string(),
-    instance_path: "/document/distribution/sharing_group".to_string(),
+static USAGE_OF_SHARING_GROUP_ON_TLP_CLEAR_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "A sharing group must not be used when the document is TLP:CLEAR.".to_string(),
+        instance_path: "/document/distribution/sharing_group".to_string(),
+    })
 });
 
 /// 6.2.30 Usage of Sharing Group on TLP:CLEAR
 ///
 /// It MUST be tested that no sharing group is used if the document is TLP:CLEAR.
-pub fn test_6_2_30_usage_of_sharing_group_on_tlp_clear(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_30_usage_of_sharing_group_on_tlp_clear(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() == LabelOfTlp::Clear

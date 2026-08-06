@@ -1,25 +1,25 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
 static V_AS_VERSION_INDICATOR_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[vV][0-9].*$").unwrap());
 
-fn create_v_version_indicator_error(version: &str, path: &str) -> ValidationError {
-    ValidationError {
+fn create_v_version_indicator_error(version: &str, path: &str) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: format!(
             "Product version name {version} starting with 'v' or 'V' as version indicator is not recommended"
         ),
         instance_path: format!("{path}/name"),
-    }
+    })
 }
 
 /// 6.3.11 Usage of V as Version Indicator
 ///
 /// Tests that products in the product tree with the `product_version` branch category do not start
 /// with a `v` or `V` before their version.
-pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
         product_tree.visit_all_branches(&mut |branch, path| {
@@ -41,7 +41,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_11, test_6_3_11_usag
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_11 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_11 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -52,7 +54,13 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_3_11.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_3_11.expect(case_01, Ok(()));
+        TESTS_2_0.test_6_3_11.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_11: Ok(()),
+        });
+        TESTS_2_1.test_6_3_11.expect(ExpectedResults_2_1 {
+            case_01,
+            case_11: Ok(()),
+        });
     }
 }

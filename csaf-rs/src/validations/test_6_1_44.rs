@@ -1,16 +1,16 @@
 use crate::csaf::types::csaf_product_id_helper_number::CsafSerialNumber;
 use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_multiple_stars_serial_number_error(number: &CsafSerialNumber, path: &str, index: usize) -> ValidationError {
-    ValidationError {
+fn create_multiple_stars_serial_number_error(number: &CsafSerialNumber, path: &str, index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Serial number '{number}' must not contain multiple unescaped asterisks (stars)"),
         instance_path: format!("{path}/product_identification_helper/serial_numbers/{index}"),
-    }
+    })
 }
 
-pub fn test_6_1_44_multiple_stars_in_serial_number(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_44_multiple_stars_in_serial_number(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
@@ -40,6 +40,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_44 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -48,25 +49,25 @@ mod tests {
         // S01: 1 serial number, no stars
 
         // Only CSAF 2.1 has this test with 5 test cases (2 error cases, 3 success cases)
-        TESTS_2_1.test_6_1_44.expect(
-            // Case 01: One serial number with two unescaped stars
+        TESTS_2_1.test_6_1_44.expect(ExpectedResults {
+            case_01: // Case 01: One serial number with two unescaped stars
             Err(vec![create_multiple_stars_serial_number_error(
                 &CsafSerialNumber::from("P*A*"),
                 "/product_tree/full_product_names/0",
                 0,
             )]),
-            // Case 02: One serial number with one escaped and two unescaped stars
+            case_02: // Case 02: One serial number with one escaped and two unescaped stars
             Err(vec![create_multiple_stars_serial_number_error(
                 &CsafSerialNumber::from("*P*\\*?*"),
                 "/product_tree/full_product_names/0",
                 0,
             )]),
-            // Case 03: 5 serial numbers, all end with one unescaped star (and some '?' in between)
+            case_11: // Case 03: 5 serial numbers, all end with one unescaped star (and some '?' in between)
             Ok(()),
-            // Case 04: 1 serial number, starts with unescaped star, 3 escaped stars
+            case_12: // Case 04: 1 serial number, starts with unescaped star, 3 escaped stars
             Ok(()),
-            // Case 05: 1 serial number, 2 escaped stars, one escaped backslash
+            case_13: // Case 05: 1 serial number, 2 escaped stars, one escaped backslash
             Ok(()),
-        );
+        });
     }
 }

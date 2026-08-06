@@ -1,20 +1,15 @@
 use crate::csaf_traits::{
     CsafTrait, FileHashTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_short_hash_error(
-    path: &str,
-    hash_index: usize,
-    file_hash_index: usize,
-    hash_length: usize,
-) -> ValidationError {
-    ValidationError {
+fn create_short_hash_error(path: &str, hash_index: usize, file_hash_index: usize, hash_length: usize) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: format!("Too short hash found (length: {hash_length}), expected to be >= 64 chars"),
         instance_path: format!(
             "{path}/product_identification_helper/hashes/{hash_index}/file_hashes/{file_hash_index}/value"
         ),
-    }
+    })
 }
 
 /// 6.3.5 Use of Short Hash
@@ -24,8 +19,8 @@ fn create_short_hash_error(
 ///
 /// Hint: This will fail for algorithms like SHA-1 (40 characters) or MD5 (32 characters), which are also
 /// discouraged by 6.2.8 and 6.2.9.
-pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
@@ -57,7 +52,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_5, test_6_3_5_use_of
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_5 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_5 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -70,7 +67,9 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_3_5.expect(case_01.clone());
-        TESTS_2_1.test_6_3_5.expect(case_01);
+        TESTS_2_0.test_6_3_5.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+        });
+        TESTS_2_1.test_6_3_5.expect(ExpectedResults_2_1 { case_01 });
     }
 }

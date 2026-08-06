@@ -1,11 +1,11 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait, build_leaf_instance_path};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_both_product_version_version_range_error(instance_path: String) -> ValidationError {
-    ValidationError {
+fn create_both_product_version_version_range_error(instance_path: String) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: "Path contains both branches with category 'product_version' and 'product_version_range'".to_string(),
         instance_path,
-    }
+    })
 }
 
 /// 6.1.58 Use of product_version in one Path with product_version_range
@@ -14,12 +14,12 @@ fn create_both_product_version_version_range_error(instance_path: String) -> Val
 /// and 'product_version_range' are not allowed to occur together.
 pub fn test_6_1_58_product_version_and_product_version_range_in_one_path(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(()); // this will be a Passed::NoData later (#409)
     };
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // get all paths from root to leaves in the product tree
     let leaf_paths = product_tree.collect_leaf_paths();
@@ -56,6 +56,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::create_both_product_version_version_range_error;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_58 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -71,6 +72,9 @@ mod tests {
         ]);
         // Case 11: Only version range
 
-        TESTS_2_1.test_6_1_58.expect(case_01, Ok(()))
+        TESTS_2_1.test_6_1_58.expect(ExpectedResults {
+            case_01,
+            case_11: Ok(()),
+        })
     }
 }

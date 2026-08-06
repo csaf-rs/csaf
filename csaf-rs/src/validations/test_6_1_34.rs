@@ -1,22 +1,22 @@
 use crate::csaf_traits::{BranchTrait, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 static MAX_DEPTH: u32 = 30;
 
-fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> ValidationError {
-    ValidationError {
+fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Branches recursion depth too big (> {MAX_DEPTH})"),
         instance_path: format!("/product_tree/branches/{branch_index}{path}"),
-    }
+    })
 }
 
-pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // TODO This can be wasSkipped in the future
     let Some(branches) = doc.get_product_tree().and_then(|t| t.get_branches()) else {
         return Ok(());
     };
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (i, branch) in branches.iter().enumerate() {
         if let Some(path) = branch.find_excessive_branch_depth(MAX_DEPTH) {
             errors
@@ -32,6 +32,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_34, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_34 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -59,11 +60,11 @@ mod tests {
                 /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0\
                 /branches/0/branches/0/branches/0/branches/0/branches/0/branches/0",
         )]);
-        TESTS_2_1.test_6_1_34.expect(
-            one_too_long_branch_error,
-            more_complex_too_long_branch_error,
-            two_too_long_branches_error,
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_34.expect(ExpectedResults {
+            case_01: one_too_long_branch_error,
+            case_02: more_complex_too_long_branch_error,
+            case_s01: two_too_long_branches_error,
+            case_11: Ok(()),
+        });
     }
 }

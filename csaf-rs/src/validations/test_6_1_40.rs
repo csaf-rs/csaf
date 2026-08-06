@@ -3,16 +3,20 @@ use std::sync::LazyLock;
 use crate::csaf_traits::{
     CsafTrait, DistributionTrait, DocumentTrait, SG_NAME_PRIVATE, SG_NAME_PUBLIC, SharingGroupTrait,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!("Sharing group name \"{SG_NAME_PUBLIC}\" is prohibited without max UUID."),
-    instance_path: "/document/distribution/sharing_group/name".to_string(),
+static PUBLIC_SHARING_GROUP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: format!("Sharing group name \"{SG_NAME_PUBLIC}\" is prohibited without max UUID."),
+        instance_path: "/document/distribution/sharing_group/name".to_string(),
+    })
 });
 
-static PRIVATE_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: format!("Sharing group name \"{SG_NAME_PRIVATE}\" is prohibited without nil UUID."),
-    instance_path: "/document/distribution/sharing_group/name".to_string(),
+static PRIVATE_SHARING_GROUP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: format!("Sharing group name \"{SG_NAME_PRIVATE}\" is prohibited without nil UUID."),
+        instance_path: "/document/distribution/sharing_group/name".to_string(),
+    })
 });
 
 /// Validates the sharing group name and ID combinations in a CSAF document.
@@ -32,9 +36,9 @@ static PRIVATE_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(||
 /// # Returns
 ///
 /// * `Ok(())` if the validation passes.
-/// * `Err(vec![ValidationError])` if the validation fails, with a message explaining the reason
+/// * `Err(vec![TestFinding])` if the validation fails, with a message explaining the reason
 ///   and the JSON path to the invalid element.
-pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
@@ -56,24 +60,25 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_40, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_40 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_40() {
         // Only CSAF 2.1 has this test with 6 test cases (2 error cases, 4 success cases)
-        TESTS_2_1.test_6_1_40.expect(
-            // Case 01: Name "Public" with regular UUID
+        TESTS_2_1.test_6_1_40.expect(ExpectedResults {
+            case_01: // Case 01: Name "Public" with regular UUID
             Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
-            // Case 02: Name "No sharing allowed" with regular UUID
+            case_02: // Case 02: Name "No sharing allowed" with regular UUID
             Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]),
-            // Case 11: Name "Public" with Max UUID
+            case_11: // Case 11: Name "Public" with Max UUID
             Ok(()),
-            // Case 12: Name "No sharing allowed" with Nil UUID
+            case_12: // Case 12: Name "No sharing allowed" with Nil UUID
             Ok(()),
-            // Case 13: Regular UUID without name
+            case_13: // Case 13: Regular UUID without name
             Ok(()),
-            // Case 14: Regular UUID with arbitrary name
+            case_14: // Case 14: Regular UUID with arbitrary name
             Ok(()),
-        );
+        });
     }
 }

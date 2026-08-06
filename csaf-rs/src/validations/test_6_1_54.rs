@@ -2,13 +2,13 @@ use spdx::Expression;
 
 use crate::csaf_traits::CsafTrait;
 use crate::schema::csaf2_1::schema::LicenseExpression;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> ValidationError {
-    ValidationError {
+fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid license expression '{license_expression}': {error}."),
         instance_path: "/document/license_expression".to_string(),
-    }
+    })
 }
 
 /// Parses the given license expression using the SPDX parser with specific options that align with the requirements of CSAF.
@@ -60,7 +60,7 @@ fn parse_license_as_allowed_in_csaf(license: &LicenseExpression) -> Result<Expre
 /// on the DocumentRef part given in 3.2.2.7.
 pub fn test_6_1_54_invalid_license_expression(
     doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     document
@@ -81,43 +81,44 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_54, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_54 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_54() {
         // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success case)
-        TESTS_2_1.test_6_1_54.expect(
-            Err(vec![create_invalid_license_expression_error(
+        TESTS_2_1.test_6_1_54.expect(ExpectedResults {
+            case_01: Err(vec![create_invalid_license_expression_error(
                 "This is a license text that should not be here.",
                 r#"Error at position 5: expected one of `AND`, `OR`, `WITH`, `)`, `+` here"#,
             )]),
-            // Ok(()),
+            case_02: // Ok(()),
             Err(vec![create_invalid_license_expression_error(
                 "DocumentRef-some-document-reference:LicenseRef-www.example.org-Example-CSAF-License-2.0",
                 r#"Error at position 0: expected a `LicenseRef` here"#,
             )]),
-            Err(vec![create_invalid_license_expression_error(
+            case_03: Err(vec![create_invalid_license_expression_error(
                 "LicenseRef-www.example.org-Example-CSAF-License-3.0+",
                 r#"Error at position 51: expected one of `AND`, `OR`, `WITH`, `)` here"#,
             )]),
-            Err(vec![create_invalid_license_expression_error(
+            case_04: Err(vec![create_invalid_license_expression_error(
                 "LicenseRef-www.example.org/Example-CSAF-License-3.0",
                 "Error at position 26: invalid character(s)",
             )]),
-            Err(vec![create_invalid_license_expression_error(
+            case_05: Err(vec![create_invalid_license_expression_error(
                 "LicenseRef-www.example.org%20Example-CSAF-License-3.0",
                 "Error at position 26: invalid character(s)",
             )]),
-            Err(vec![create_invalid_license_expression_error(
+            case_06: Err(vec![create_invalid_license_expression_error(
                 "LicenseRef-www.example.org#Example-CSAF-License-3.0",
                 "Error at position 26: invalid character(s)",
             )]),
-            Ok(()), // TODO: clarify if licenseref-... should be allowed, #672
-            Ok(()), // TODO: clarify if licenseREF-... should be allowed, #672
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_07: Ok(()), // TODO: clarify if licenseref-... should be allowed, #672
+            case_08: Ok(()), // TODO: clarify if licenseREF-... should be allowed, #672
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

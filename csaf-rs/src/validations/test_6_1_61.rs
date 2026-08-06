@@ -1,16 +1,16 @@
 use crate::csaf::types::csaf_product_id_helper_number::CsafStockKeepingUnit;
 use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_multiple_stars_sku_error(sku: &CsafStockKeepingUnit, path: &str, index: usize) -> ValidationError {
-    ValidationError {
+fn create_multiple_stars_sku_error(sku: &CsafStockKeepingUnit, path: &str, index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Stock keeping unit '{sku}' must not contain multiple unescaped asterisks (stars)"),
         instance_path: format!("{path}/product_identification_helper/skus/{index}"),
-    }
+    })
 }
 
-pub fn test_6_1_61_multiple_stars_in_sku(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_61_multiple_stars_in_sku(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
@@ -36,6 +36,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_61, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_61 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -54,12 +55,12 @@ mod tests {
         // Case 12: One unescaped star, multiple escaped stars
         // Case 13: Escaped stars, also escaped question mark
 
-        TESTS_2_1.test_6_1_61.expect(
-            case01_two_unescaped,
-            case02_escaped_unescaped_mixed,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_61.expect(ExpectedResults {
+            case_01: case01_two_unescaped,
+            case_02: case02_escaped_unescaped_mixed,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

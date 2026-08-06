@@ -20,7 +20,7 @@ fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str
 fn process_violations(
     groups: HashMap<String, Vec<(String, String)>>,
     category: &str,
-    errors: &mut HashSet<TestFinding>, // ToDo TZ
+    errors: &mut HashSet<TestFinding>,
 ) {
     for (value, occurrences) in groups {
         // Count how many UNIQUE products share this helper value

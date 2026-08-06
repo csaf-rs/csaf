@@ -2,22 +2,16 @@ use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::ValidationError;
-use std::fmt::{Display, Formatter};
+use strum::{AsRefStr, Display};
 
+#[derive(Display, AsRefStr)]
 pub enum DocumentStatusDraftErrorReason {
+    #[strum(serialize = "Version 0 is")]
     IntVerZero,
+    #[strum(serialize = "Versions 0.y.z are")]
     SemVerMajorZero,
+    #[strum(serialize = "Versions with prerelease are")]
     SemVerHasPre,
-}
-
-impl Display for DocumentStatusDraftErrorReason {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match &self {
-            DocumentStatusDraftErrorReason::IntVerZero => write!(f, "Version 0 is"),
-            DocumentStatusDraftErrorReason::SemVerMajorZero => write!(f, "Versions 0.y.z are"),
-            DocumentStatusDraftErrorReason::SemVerHasPre => write!(f, "Versions with prerelease are"),
-        }
-    }
 }
 
 fn generate_status_version_error(
@@ -84,6 +78,7 @@ pub fn test_6_1_17_document_status_draft(doc: &impl CsafTrait) -> Result<(), Vec
             }
             errors.map_or(Ok(()), Err)
         },
+        CsafVersionNumber::Invalid(_) => Ok(()), // #409 this may be skipped, as the version is invalid and will be caught by schema test
     }
 }
 
@@ -157,6 +152,7 @@ mod tests {
             Ok(()),
             Ok(()),
             Ok(()),
+            Ok(()),
         );
         TESTS_2_1.test_6_1_17.expect(
             case_final_with_semver_0,
@@ -165,6 +161,7 @@ mod tests {
             case_final_with_semver_0_prerelease,
             case_interim_with_semver_0,
             case_final_with_intver_0,
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),

@@ -24,8 +24,10 @@ pub fn test_6_1_25_multiple_use_of_same_hash_algorithm(doc: &impl CsafTrait) -> 
     // Visit all products in the product tree
     product_tree.visit_all_products(&mut |product, path| {
         // Check all file_hashes in all hashes in all product identification helpers
-        if let Some(helper) = product.get_product_identification_helper() {
-            for (hash_i, hash) in helper.get_hashes().iter().enumerate() {
+        if let Some(helper) = product.get_product_identification_helper()
+            && let Some(hashes) = helper.get_hashes()
+        {
+            for (hash_i, hash) in hashes.iter().enumerate() {
                 // Iterate over file_hashes, build hashmap of all encountered algos and their indices
                 let mut algorithms = HashMap::<CsafHashAlgorithm, Vec<(Option<CsafHashAlgorithm>, usize)>>::new();
                 for (file_hash_i, file_hash) in hash.get_file_hashes().iter().enumerate() {

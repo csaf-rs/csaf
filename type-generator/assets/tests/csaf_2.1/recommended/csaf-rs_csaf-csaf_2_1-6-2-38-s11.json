@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": " csaf_deprecated_some_other_type",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "csaf-rs project",
+      "namespace": "https://github.com/csaf-poc/csaf-rs"
+    },
+    "title": "Recommended Test: Usage of Deprecated Profile (supplemental passing example 1 - leading white space before csaf_deprecated_)",
+    "tracking": {
+      "current_release_date": "2026-05-22T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2.1-6-2-38-S11",
+      "initial_release_date": "2026-05-22T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2026-05-22T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  }
+}

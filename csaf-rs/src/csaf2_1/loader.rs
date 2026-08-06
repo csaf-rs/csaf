@@ -1,27 +1,7 @@
-use crate::{csaf::raw::RawDocument, schema::csaf2_1::schema::CommonSecurityAdvisoryFramework};
-use std::{fs::File, io::BufReader};
+use crate::{csaf::raw::RawDocument, json::JsonSource, schema::csaf2_1::schema::CommonSecurityAdvisoryFramework};
 
-pub fn load_document(path: &str) -> std::io::Result<RawDocument<CommonSecurityAdvisoryFramework>> {
-    let f = File::open(path)?;
-    let reader = BufReader::new(f);
-    let doc: RawDocument<CommonSecurityAdvisoryFramework> = RawDocument::new(serde_json::from_reader(reader)?);
-    Ok(doc)
-}
-
-/// Load a CSAF document from a JSON string
-pub fn load_document_from_str(json_str: &str) -> std::io::Result<RawDocument<CommonSecurityAdvisoryFramework>> {
-    let doc: RawDocument<CommonSecurityAdvisoryFramework> = RawDocument::new(serde_json::from_str(json_str)?);
-    Ok(doc)
-}
-
-/// Load a CSAF document from an already-parsed [`serde_json::Value`].
-///
-/// Use this when the JSON has already been parsed (e.g. to extract the
-/// `document.csaf_version` field) to avoid parsing the same string twice.
-pub fn load_document_from_value(
-    value: serde_json::Value,
-) -> Result<RawDocument<CommonSecurityAdvisoryFramework>, serde_json::Error> {
-    Ok(RawDocument::new(serde_json::from_value(value)?))
+pub fn load_document<T: JsonSource>(source: T) -> std::io::Result<RawDocument<CommonSecurityAdvisoryFramework>> {
+    Ok(RawDocument::new(source.parse()?))
 }
 
 #[cfg(test)]

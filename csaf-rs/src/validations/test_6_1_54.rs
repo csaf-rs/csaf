@@ -100,6 +100,21 @@ mod tests {
                 "LicenseRef-www.example.org-Example-CSAF-License-3.0+",
                 r#"Error at position 51: expected one of `AND`, `OR`, `WITH`, `)` here"#,
             )]),
+            Err(vec![create_invalid_license_expression_error(
+                "LicenseRef-www.example.org/Example-CSAF-License-3.0",
+                "Error at position 26: invalid character(s)",
+            )]),
+            Err(vec![create_invalid_license_expression_error(
+                "LicenseRef-www.example.org%20Example-CSAF-License-3.0",
+                "Error at position 26: invalid character(s)",
+            )]),
+            Err(vec![create_invalid_license_expression_error(
+                "LicenseRef-www.example.org#Example-CSAF-License-3.0",
+                "Error at position 26: invalid character(s)",
+            )]),
+            Ok(()), // TODO: clarify if licenseref-... should be allowed, #672
+            Ok(()), // TODO: clarify if licenseREF-... should be allowed, #672
+            Ok(()),
             Ok(()),
             Ok(()),
             Ok(()),

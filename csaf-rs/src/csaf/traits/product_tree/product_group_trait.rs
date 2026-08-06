@@ -1,7 +1,6 @@
-use crate::csaf::traits::util::impl_str_field_getter;
+use crate::csaf::traits::util::{impl_str_field_getter, impl_str_iter_field_getter};
 use crate::schema::csaf2_0::schema::ProductGroup as ProductGroup20;
 use crate::schema::csaf2_1::schema::ProductGroup as ProductGroup21;
-use std::ops::Deref;
 
 /// Trait representing an abstract product group in a CSAF document.
 ///
@@ -11,22 +10,16 @@ pub trait ProductGroupTrait {
     /// Returns the unique identifier of the product group.
     fn get_group_id(&self) -> &str;
 
-    /// Retrieves a vector of product IDs contained within the product group.
-    fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_;
+    /// Retrieves an iterator over product IDs contained within the product group.
+    fn get_product_ids(&self) -> impl Iterator<Item = &str> + '_;
 }
 
 impl ProductGroupTrait for ProductGroup20 {
     impl_str_field_getter!(get_group_id, group_id);
-
-    fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_ {
-        self.product_ids.iter().map(|id| id.deref())
-    }
+    impl_str_iter_field_getter!(get_product_ids, product_ids);
 }
 
 impl ProductGroupTrait for ProductGroup21 {
     impl_str_field_getter!(get_group_id, group_id);
-
-    fn get_product_ids(&self) -> impl Iterator<Item = &String> + '_ {
-        self.product_ids.iter().map(|id| id.deref())
-    }
+    impl_str_iter_field_getter!(get_product_ids, product_ids);
 }

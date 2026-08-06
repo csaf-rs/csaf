@@ -14,8 +14,9 @@ pub fn test_6_1_61_multiple_stars_in_sku(doc: &impl CsafTrait) -> Result<(), Vec
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
-            if let Some(helper) = product.get_product_identification_helper() {
-                let skus = helper.get_skus();
+            if let Some(helper) = product.get_product_identification_helper()
+                && let Some(skus) = helper.get_skus()
+            {
                 for (index, sku) in skus.iter().enumerate() {
                     if sku.count_unescaped_stars() > 1 {
                         errors

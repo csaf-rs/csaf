@@ -2,18 +2,18 @@ use crate::csaf::types::csaf_datetime::CsafDateTime;
 
 pub trait WithOptionalGroupIds {
     /// Returns the product group IDs associated with this entity
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &str> + '_>;
 }
 
 pub trait WithOptionalProductIds {
     /// Returns the product IDs associated with this entity
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_>;
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &str> + '_>;
 }
 
 /// Implements `WithOptionalGroupIds` or `WithOptionalProductIds` for a type.
 ///
 /// If `ReturnsValues` is specified, the implementation expects `group_ids` or `product_ids`
-/// to be an `Option<Vec<String>>` field in the struct.
+/// to be an `Option<T>` field where T derefs to a Vec of items that have `as_str()`.
 ///
 /// # Usage
 /// - `impl_optional_ids!(MyType, WithOptionalGroupIds, ReturnsValues)` — delegates to `self.group_ids`
@@ -23,33 +23,33 @@ pub trait WithOptionalProductIds {
 macro_rules! impl_optional_ids {
     ($type:ty, WithOptionalGroupIds, ReturnsValues) => {
         impl $crate::csaf_traits::WithOptionalGroupIds for $type {
-            fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+            fn get_group_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
                 self.group_ids
                     .as_ref()
-                    .map(|items| items.iter().map(|x| ::std::ops::Deref::deref(x)))
+                    .map(|items| items.iter().map(|x| x.as_str()))
             }
         }
     };
     ($type:ty, WithOptionalGroupIds, ReturnsEmpty) => {
         impl $crate::csaf_traits::WithOptionalGroupIds for $type {
-            fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-                None::<::std::iter::Empty<&::std::string::String>>
+            fn get_group_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
+                None::<::std::iter::Empty<&str>>
             }
         }
     };
     ($type:ty, WithOptionalProductIds, ReturnsValues) => {
         impl $crate::csaf_traits::WithOptionalProductIds for $type {
-            fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+            fn get_product_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
                 self.product_ids
                     .as_ref()
-                    .map(|items| items.iter().map(|x| ::std::ops::Deref::deref(x)))
+                    .map(|items| items.iter().map(|x| x.as_str()))
             }
         }
     };
     ($type:ty, WithOptionalProductIds, ReturnsEmpty) => {
         impl $crate::csaf_traits::WithOptionalProductIds for $type {
-            fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
-                None::<::std::iter::Empty<&::std::string::String>>
+            fn get_product_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
+                None::<::std::iter::Empty<&str>>
             }
         }
     };

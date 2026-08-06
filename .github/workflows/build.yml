@@ -29,7 +29,7 @@ jobs:
       target-ref: ${{ steps.get-versions.outputs.targetref }}
       go-targets: ${{ steps.get-go-targets.outputs.go-targets }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: "true"
           fetch-depth: 0
@@ -149,7 +149,7 @@ jobs:
         target: ${{ fromJson(needs.prepare.outputs.targets) }}
     runs-on: ${{ matrix.target.runs-on }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: "true"
       - name: Use cache
@@ -163,7 +163,7 @@ jobs:
           rustup target add ${{ matrix.target.arch }}
       - name: Cache cargo-auditable
         id: auditable-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/cargo-auditable
           key: cargo-auditable-${{ runner.os }}-${{ runner.arch }}
@@ -204,6 +204,7 @@ jobs:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: cyclonedx-json
           artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.cdx.json
+          upload-release-assets: false
       - name: Generate SPDX SBOM
         if: matrix.version == needs.prepare.outputs.stable-version
         uses: anchore/sbom-action@v0.24.0
@@ -211,6 +212,7 @@ jobs:
           file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           format: spdx-json
           artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.spdx.json
+          upload-release-assets: false
 
   build-platforms:
     needs: build-matrix
@@ -226,7 +228,7 @@ jobs:
       - prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: "true"
 
@@ -242,7 +244,7 @@ jobs:
 
       - name: Cache cargo-llvm-cov
         id: llvm-cov-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/cargo-llvm-cov
           key: cargo-llvm-cov-${{ runner.os }}-${{ runner.arch }}
@@ -274,7 +276,7 @@ jobs:
       - prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: "true"
       - name: Use cache
@@ -287,7 +289,7 @@ jobs:
         run: rustup target add wasm32-unknown-unknown
       - name: Cache uniffi-bindgen-js
         id: uniffi-js-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/uniffi-bindgen-js
           key: uniffi-bindgen-js-0.2.1-${{ runner.os }}-${{ runner.arch }}
@@ -295,7 +297,7 @@ jobs:
         if: steps.uniffi-js-cache.outputs.cache-hit != 'true'
         run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
       - name: Build UniFFI WASM bindings
-        run: bash generate_wasm_bindings.sh
+        run: bash scripts/publish/generate_wasm_bindings.sh
       - name: NPM publish dry-run
         working-directory: ./wasm
         run: npm publish --dry-run
@@ -310,12 +312,14 @@ jobs:
           file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           format: cyclonedx-json
           artifact-name: csaf-ffi-wasm_wasm32_sbom.cdx.json
+          upload-release-assets: false
       - name: Generate SPDX SBOM
         uses: anchore/sbom-action@v0.24.0
         with:
           file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           format: spdx-json
           artifact-name: csaf-ffi-wasm_wasm32_sbom.spdx.json
+          upload-release-assets: false
 
   go-bindings:
     needs:
@@ -326,17 +330,17 @@ jobs:
         target: ${{ fromJson(needs.prepare.outputs.go-targets) }}
     runs-on: ${{ matrix.target.runs-on }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: "true"
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version: "stable"
           cache: false
       - name: Cache uniffi-bindgen-go
         id: uniffi-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/bin/uniffi-bindgen-go
           key: uniffi-bindgen-go-v0.7.0-${{ runner.os }}-${{ runner.arch }}
@@ -419,7 +423,7 @@ jobs:
 
       - name: Cache devguard-scanner
         id: cache-scanner
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/go/bin/devguard-scanner
           key: devguard-scanner-${{ runner.os }}
@@ -476,7 +480,7 @@ jobs:
       - build-platforms
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: "true"
       - uses: rust-lang/crates-io-auth-action@v1
@@ -499,7 +503,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
@@ -508,10 +512,10 @@ jobs:
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
-      #- name: Publish to NPM
-      #  working-directory: ./wasm
-      #  run: |
-      #    npm publish --provenance
+      - name: Publish to NPM
+        working-directory: ./wasm
+        run: |
+          npm publish --provenance
 
   publish-go:
     runs-on: ubuntu-latest
@@ -522,34 +526,34 @@ jobs:
       - go-bindings
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-tags: true
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version: "stable"
           cache: false
       - name: Download Go library for verification
         uses: actions/download-artifact@v8
         with:
-          name: go-csaf-ffi-lib-Linux-X64-${{ needs.prepare.outputs.git-version }}
+          name: go-csaf-ffi-lib-Linux-amd64-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
       - name: Verify Go module builds
         working-directory: ./go
         run: |
           CGO_LDFLAGS="-L$(pwd)/csaf_ffi/lib/linux_amd64" go build ./...
-      # - name: Push Go module tag
-      #   run: |
-      #     GO_TAG="go/${{ github.ref_name }}"
-      #     if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null 2>&1; then
-      #       git tag "$GO_TAG"
-      #       git push origin "$GO_TAG"
-      #     else
-      #       echo "Tag $GO_TAG already exists, skipping."
-      #     fi
-      #- name: Publish to Go module proxy
-      #  run: GOPROXY=proxy.golang.org go list -m "github.com/csaf-rs/csaf/go@${{ github.ref_name }}"
+      - name: Push Go module tag
+        run: |
+          GO_TAG="go/${{ github.ref_name }}"
+          if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null 2>&1; then
+            git tag "$GO_TAG"
+            git push origin "$GO_TAG"
+          else
+            echo "Tag $GO_TAG already exists, skipping."
+          fi
+      - name: Publish to Go module proxy
+        run: GOPROXY=proxy.golang.org go list -m "github.com/csaf-rs/csaf/go@${{ github.ref_name }}"
 
   create-release:
     runs-on: ubuntu-latest

@@ -72,6 +72,9 @@ pub trait VulnerabilityTrait {
 
     type FirstKnownExploitationDatesType: FirstKnownExploitationDatesTrait;
 
+    /// The associated type representing vulnerability references.
+    type ReferenceType: ReferenceTrait;
+
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
 
     /// Retrieves a list of remediations associated with the vulnerability.
@@ -128,8 +131,11 @@ pub trait VulnerabilityTrait {
     /// Returns the CVE associated with the vulnerability.
     fn get_cve(&self) -> Option<&str>;
 
-    /// Returns the CWE associated with the vulnerability.
-    fn get_cwe(&self) -> Option<Vec<Cwe>>;
+    /// Returns the CWEs associated with the vulnerability.
+    fn get_cwes(&self) -> Option<Vec<Cwe>>;
+
+    /// Returns the JSON property name used for CWE data in this CSAF version
+    fn get_cwe_property_name(&self) -> &'static str;
 
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>>;
@@ -140,6 +146,9 @@ pub trait VulnerabilityTrait {
     /// Returns the information about the first known exploitation dates of this vulnerability.
     fn get_first_known_exploitation_dates(&self) -> Option<&Vec<Self::FirstKnownExploitationDatesType>>;
 
+    /// Returns the references associated with this vulnerability.
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
+
     define_reference_accessors! {
         both: [
             (get_remediations_group_references,                     get_remediations_product_references,                     get_remediations,                     "remediations"),
@@ -148,6 +157,7 @@ pub trait VulnerabilityTrait {
             (get_involvements_group_references,                     get_involvements_product_references,                     get_involvements,                     "involvements"),
             (get_notes_group_references,                            get_notes_product_references,                            get_notes,                            "notes"),
             (get_first_known_exploitation_dates_group_references,   get_first_known_exploitation_dates_product_references,   get_first_known_exploitation_dates,   "first_known_exploitation_dates"),
+            (get_ids_group_references,                              get_ids_product_references,                              get_ids,                              "ids"),
         ],
         custom_group_extraction: [],
         custom_product_extraction: [
@@ -155,7 +165,7 @@ pub trait VulnerabilityTrait {
             get_metrics_product_references,
         ],
     }
-    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
+
     fn get_title(&self) -> Option<&str>;
 }
 
@@ -218,8 +228,12 @@ impl VulnerabilityTrait for Vulnerability20 {
 
     impl_optional_str_field_getter!(get_cve, cve);
 
-    fn get_cwe(&self) -> Option<Vec<Cwe>> {
+    fn get_cwes(&self) -> Option<Vec<Cwe>> {
         self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
+    }
+
+    fn get_cwe_property_name(&self) -> &'static str {
+        "cwe"
     }
 
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {
@@ -297,8 +311,12 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     impl_optional_str_field_getter!(get_cve, cve);
 
-    fn get_cwe(&self) -> Option<Vec<Cwe>> {
+    fn get_cwes(&self) -> Option<Vec<Cwe>> {
         self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())
+    }
+
+    fn get_cwe_property_name(&self) -> &'static str {
+        "cwes"
     }
 
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {

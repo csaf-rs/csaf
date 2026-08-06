@@ -21,7 +21,7 @@ fn create_missing_remediation_error(
 
 fn check_product_status_group_for_missing_remediations<'a>(
     errors: &mut Option<Vec<ValidationError>>,
-    status_group_product_ids: impl Iterator<Item = &'a String>,
+    status_group_product_ids: impl Iterator<Item = &'a str>,
     remediation_product_ids: &HashSet<String>,
     vulnerability_index: usize,
     status_group_name: &str,
@@ -68,7 +68,7 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
                     && let Some(product_ids) = remediation.get_product_ids()
                 {
                     for product_id in product_ids {
-                        remediation_product_ids.insert(product_id.clone());
+                        remediation_product_ids.insert(product_id.to_owned());
                     }
                 }
             }

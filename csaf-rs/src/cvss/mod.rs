@@ -2,14 +2,14 @@ pub mod v2;
 pub mod v3;
 pub mod v4;
 
-use std::fmt;
-
 use crate::csaf_traits::ContentTrait;
 use crate::validation::ValidationError;
 use cvss_rs::Cvss;
 use cvss_rs::Severity;
 use cvss_rs::Version;
+use serde::Deserialize;
 use serde_json::Value;
+use strum::{AsRefStr, Display};
 
 /// Validates CVSS scores for all CVSS versions present.
 pub fn validate_content_scores(
@@ -117,21 +117,11 @@ fn validate_consistency(
 }
 
 /// The type of CVSS score being validated, use for error messages.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Display, AsRefStr)]
 pub enum ScoreType {
     Base,
     Temporal,
     Environmental,
-}
-
-impl fmt::Display for ScoreType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ScoreType::Base => write!(f, "Base"),
-            ScoreType::Temporal => write!(f, "Temporal"),
-            ScoreType::Environmental => write!(f, "Environmental"),
-        }
-    }
 }
 
 pub fn create_deserialization_error(error_message: String, instance_path: String) -> ValidationError {
@@ -165,7 +155,7 @@ pub fn deserialize_cvss(
     instance_path: &str,
     errors: &mut Option<Vec<ValidationError>>,
 ) -> Option<Cvss> {
-    match serde_json::from_value(Value::Object(cvss_map.to_owned())) {
+    match Cvss::deserialize(cvss_map) {
         Ok(cvss) => Some(cvss),
         Err(e) => {
             errors

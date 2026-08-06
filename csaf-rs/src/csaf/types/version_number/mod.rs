@@ -7,3 +7,9 @@ pub use csaf_version_number::{
 };
 pub use int_ver_version::IntVerVersion;
 pub use sem_ver_version::SemVerVersion;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CsafVersionNumberError {
+    Invalid(String),
+    Overflow,
+}

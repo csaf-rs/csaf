@@ -9,7 +9,7 @@ pub(crate) const CSAF_2_1_SCHEMA_URL: &str = "https://docs.oasis-open.org/csaf/c
 pub(crate) const CVSS_V2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v2.0.json";
 pub(crate) const CVSS_V3_0_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.0.json";
 pub(crate) const CVSS_V3_1_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v3.1.json";
-pub(crate) const CVSS_V4_0_2_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.2.json";
+pub(crate) const CVSS_V4_0_SCHEMA_URL: &str = "https://www.first.org/cvss/cvss-v4.0.json";
 pub(crate) const EXTENSION_METASCHEMA_URL: &str =
     "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json";
 pub(crate) const EXTENSION_SCHEMA_URL: &str =

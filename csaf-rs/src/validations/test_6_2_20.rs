@@ -4,11 +4,11 @@ use crate::{
     validation::ValidationError,
     validations::utils::{
         validation_schema_urls::{
-            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_2_SCHEMA_URL,
+            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_SCHEMA_URL,
             EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA_URL,
         },
         validation_schemas::{
-            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_2_SCHEMA,
+            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_SCHEMA,
             EXTENSION_METASCHEMA, EXTENSION_SCHEMA, SSVC_2_SCHEMA,
         },
     },
@@ -45,23 +45,55 @@ fn make_strict_inplace(schema_value: &mut Value) {
 }
 
 static STRICT_VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    let registry = jsonschema::Registry::new()
+        .extend([
+            (
+                CVSS_V2_SCHEMA_URL,
+                Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())),
+            ),
+            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+        ])
+        .unwrap()
+        .prepare()
+        .unwrap();
     jsonschema::options()
-        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())))
-        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
-        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
+        .with_registry(&registry)
         .build(&make_strict(CSAF_2_0_SCHEMA.clone()))
         .unwrap()
 });
 
 static STRICT_VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    let registry = jsonschema::Registry::new()
+        .extend([
+            (
+                EXTENSION_METASCHEMA_URL,
+                Resource::from_contents(make_strict(EXTENSION_METASCHEMA.clone())),
+            ),
+            (
+                EXTENSION_SCHEMA_URL,
+                Resource::from_contents(make_strict(EXTENSION_SCHEMA.clone())),
+            ),
+            (
+                CVSS_V2_SCHEMA_URL,
+                Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())),
+            ),
+            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
+            (
+                CVSS_V4_0_SCHEMA_URL,
+                Resource::from_contents(make_strict(CVSS_V4_0_SCHEMA.clone())),
+            ),
+            (
+                SSVC_2_SCHEMA_URL,
+                Resource::from_contents(make_strict(SSVC_2_SCHEMA.clone())),
+            ),
+        ])
+        .unwrap()
+        .prepare()
+        .unwrap();
     jsonschema::options()
-        .with_resource(EXTENSION_METASCHEMA_URL, Resource::from_contents(make_strict(EXTENSION_METASCHEMA.clone())))
-        .with_resource(EXTENSION_SCHEMA_URL, Resource::from_contents(make_strict(EXTENSION_SCHEMA.clone())))
-        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())))
-        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
-        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))     // we may not make this strict, otherwise the oneOf does not match
-        .with_resource(CVSS_V4_0_2_SCHEMA_URL, Resource::from_contents(make_strict(CVSS_V4_0_2_SCHEMA.clone())))
-        .with_resource(SSVC_2_SCHEMA_URL, Resource::from_contents(make_strict(SSVC_2_SCHEMA.clone())))
+        .with_registry(&registry)
         .build(&make_strict(CSAF_2_1_SCHEMA.clone()))
         .unwrap()
 });
@@ -73,18 +105,19 @@ pub fn test_6_2_20_additional_properties(
     json: &Value,
     validator: &jsonschema::Validator,
 ) -> Result<(), Vec<ValidationError>> {
-    let results: Vec<_> = validator
-        .iter_errors(json)
-        .flat_map(|error| match error.kind() {
-            ValidationErrorKind::UnevaluatedProperties { unexpected } => unexpected
-                .iter()
-                .map(|property| create_additional_properties_error(property, error.instance_path().as_str()))
-                .collect(),
-            _ => vec![],
-        })
-        .collect();
+    let mut errors: Option<Vec<ValidationError>> = None;
+    for error in validator.iter_errors(json) {
+        if let ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind() {
+            for property in unexpected {
+                errors.get_or_insert_default().push(create_additional_properties_error(
+                    property,
+                    error.instance_path().as_str(),
+                ));
+            }
+        }
+    }
 
-    if results.is_empty() { Ok(()) } else { Err(results) }
+    errors.map_or(Ok(()), Err)
 }
 
 fn create_additional_properties_error(key: &str, path: &str) -> ValidationError {

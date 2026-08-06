@@ -2186,6 +2186,12 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///                "text"
 ///              ],
 ///              "properties": {
+///                "group_ids": {
+///                  "$ref": "#/$defs/product_groups_t"
+///                },
+///                "product_ids": {
+///                  "$ref": "#/$defs/products_t"
+///                },
 ///                "system_name": {
 ///                  "title": "System name",
 ///                  "description": "Indicates the name of the vulnerability tracking or numbering system.",
@@ -2966,7 +2972,8 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 ///        },
 ///        "additionalProperties": false
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "filename": {
 ///      "title": "Filename",
@@ -2988,7 +2995,7 @@ impl<'de> ::serde::Deserialize<'de> for ContributingOrganization {
 #[serde(deny_unknown_fields)]
 pub struct CryptographicHashes {
     ///Contains a list of cryptographic hashes for this file.
-    pub file_hashes: ::std::vec::Vec<FileHash>,
+    pub file_hashes: Vec<FileHash>,
     ///Contains the name of the file which is identified by the hash values.
     pub filename: Filename,
 }
@@ -4894,7 +4901,8 @@ impl Flag {
 ///                  },
 ///                  "additionalProperties": false
 ///                },
-///                "minItems": 1
+///                "minItems": 1,
+///                "uniqueItems": true
 ///              },
 ///              "filename": {
 ///                "title": "Filename",
@@ -4910,7 +4918,8 @@ impl Flag {
 ///            },
 ///            "additionalProperties": false
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        },
 ///        "model_numbers": {
 ///          "title": "List of models",
@@ -4948,7 +4957,8 @@ impl Flag {
 ///            "description": "Contains a URL of one SBOM for this product.",
 ///            "type": "string"
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        },
 ///        "serial_numbers": {
 ///          "title": "List of serial numbers",
@@ -4973,7 +4983,8 @@ impl Flag {
 ///            "type": "string",
 ///            "minLength": 1
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        },
 ///        "x_generic_uris": {
 ///          "title": "List of generic URIs",
@@ -5001,7 +5012,8 @@ impl Flag {
 ///            },
 ///            "additionalProperties": false
 ///          },
-///          "minItems": 1
+///          "minItems": 1,
+///          "uniqueItems": true
 ///        }
 ///      },
 ///      "additionalProperties": false
@@ -5149,7 +5161,8 @@ impl GenericUri {
 ///              },
 ///              "additionalProperties": false
 ///            },
-///            "minItems": 1
+///            "minItems": 1,
+///            "uniqueItems": true
 ///          },
 ///          "filename": {
 ///            "title": "Filename",
@@ -5165,7 +5178,8 @@ impl GenericUri {
 ///        },
 ///        "additionalProperties": false
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "model_numbers": {
 ///      "title": "List of models",
@@ -5203,7 +5217,8 @@ impl GenericUri {
 ///        "description": "Contains a URL of one SBOM for this product.",
 ///        "type": "string"
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "serial_numbers": {
 ///      "title": "List of serial numbers",
@@ -5228,7 +5243,8 @@ impl GenericUri {
 ///        "type": "string",
 ///        "minLength": 1
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    },
 ///    "x_generic_uris": {
 ///      "title": "List of generic URIs",
@@ -5256,7 +5272,8 @@ impl GenericUri {
 ///        },
 ///        "additionalProperties": false
 ///      },
-///      "minItems": 1
+///      "minItems": 1,
+///      "uniqueItems": true
 ///    }
 ///  },
 ///  "additionalProperties": false
@@ -5270,8 +5287,8 @@ pub struct HelperToIdentifyTheProduct {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub cpe: ::std::option::Option<CommonPlatformEnumerationRepresentation>,
     ///Contains a list of cryptographic hashes usable to identify files.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub hashes: ::std::vec::Vec<CryptographicHashes>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub hashes: ::std::option::Option<Vec<CryptographicHashes>>,
     ///Contains a list of model numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub model_numbers: ::std::option::Option<Vec<ModelNumber>>,
@@ -5279,17 +5296,17 @@ pub struct HelperToIdentifyTheProduct {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub purls: ::std::option::Option<Vec<PackageUrlRepresentation>>,
     ///Contains a list of URLs where SBOMs for this product can be retrieved.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub sbom_urls: ::std::vec::Vec<::std::string::String>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub sbom_urls: ::std::option::Option<Vec<::std::string::String>>,
     ///Contains a list of serial numbers.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub serial_numbers: ::std::option::Option<Vec<SerialNumber>>,
     ///Contains a list of stock keeping units.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub skus: ::std::vec::Vec<StockKeepingUnit>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub skus: ::std::option::Option<Vec<StockKeepingUnit>>,
     ///Contains a list of identifiers which are either vendor-specific or derived from a standard not yet supported.
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub x_generic_uris: ::std::vec::Vec<GenericUri>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub x_generic_uris: ::std::option::Option<Vec<GenericUri>>,
 }
 impl ::std::default::Default for HelperToIdentifyTheProduct {
     fn default() -> Self {
@@ -5324,6 +5341,12 @@ impl HelperToIdentifyTheProduct {
 ///    "text"
 ///  ],
 ///  "properties": {
+///    "group_ids": {
+///      "$ref": "#/$defs/product_groups_t"
+///    },
+///    "product_ids": {
+///      "$ref": "#/$defs/products_t"
+///    },
 ///    "system_name": {
 ///      "title": "System name",
 ///      "description": "Indicates the name of the vulnerability tracking or numbering system.",
@@ -5354,6 +5377,10 @@ impl HelperToIdentifyTheProduct {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Id {
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub group_ids: ::std::option::Option<ProductGroupsT>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub product_ids: ::std::option::Option<ProductsT>,
     ///Indicates the name of the vulnerability tracking or numbering system.
     pub system_name: SystemName,
     ///Is unique label or tracking ID for the vulnerability (if such information exists).
@@ -10771,6 +10798,12 @@ impl<'de> ::serde::Deserialize<'de> for VersionT {
 ///          "text"
 ///        ],
 ///        "properties": {
+///          "group_ids": {
+///            "$ref": "#/$defs/product_groups_t"
+///          },
+///          "product_ids": {
+///            "$ref": "#/$defs/products_t"
+///          },
 ///          "system_name": {
 ///            "title": "System name",
 ///            "description": "Indicates the name of the vulnerability tracking or numbering system.",
@@ -12013,10 +12046,7 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct CryptographicHashes {
-        file_hashes: ::std::result::Result<
-            ::std::vec::Vec<super::FileHash>,
-            ::std::string::String,
-        >,
+        file_hashes: ::std::result::Result<Vec<super::FileHash>, ::std::string::String>,
         filename: ::std::result::Result<super::Filename, ::std::string::String>,
     }
     impl ::std::default::Default for CryptographicHashes {
@@ -12030,7 +12060,7 @@ pub mod builder {
     impl CryptographicHashes {
         pub fn file_hashes<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::FileHash>>,
+            T: ::std::convert::TryInto<Vec<super::FileHash>>,
             T::Error: ::std::fmt::Display,
         {
             self.file_hashes = value
@@ -13035,7 +13065,7 @@ pub mod builder {
             ::std::string::String,
         >,
         hashes: ::std::result::Result<
-            ::std::vec::Vec<super::CryptographicHashes>,
+            ::std::option::Option<Vec<super::CryptographicHashes>>,
             ::std::string::String,
         >,
         model_numbers: ::std::result::Result<
@@ -13047,7 +13077,7 @@ pub mod builder {
             ::std::string::String,
         >,
         sbom_urls: ::std::result::Result<
-            ::std::vec::Vec<::std::string::String>,
+            ::std::option::Option<Vec<::std::string::String>>,
             ::std::string::String,
         >,
         serial_numbers: ::std::result::Result<
@@ -13055,11 +13085,11 @@ pub mod builder {
             ::std::string::String,
         >,
         skus: ::std::result::Result<
-            ::std::vec::Vec<super::StockKeepingUnit>,
+            ::std::option::Option<Vec<super::StockKeepingUnit>>,
             ::std::string::String,
         >,
         x_generic_uris: ::std::result::Result<
-            ::std::vec::Vec<super::GenericUri>,
+            ::std::option::Option<Vec<super::GenericUri>>,
             ::std::string::String,
         >,
     }
@@ -13092,7 +13122,9 @@ pub mod builder {
         }
         pub fn hashes<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::CryptographicHashes>>,
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<super::CryptographicHashes>>,
+            >,
             T::Error: ::std::fmt::Display,
         {
             self.hashes = value
@@ -13126,7 +13158,9 @@ pub mod builder {
         }
         pub fn sbom_urls<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<::std::string::String>>,
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<::std::string::String>>,
+            >,
             T::Error: ::std::fmt::Display,
         {
             self.sbom_urls = value
@@ -13150,7 +13184,9 @@ pub mod builder {
         }
         pub fn skus<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::StockKeepingUnit>>,
+            T: ::std::convert::TryInto<
+                ::std::option::Option<Vec<super::StockKeepingUnit>>,
+            >,
             T::Error: ::std::fmt::Display,
         {
             self.skus = value
@@ -13160,7 +13196,7 @@ pub mod builder {
         }
         pub fn x_generic_uris<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::vec::Vec<super::GenericUri>>,
+            T: ::std::convert::TryInto<::std::option::Option<Vec<super::GenericUri>>>,
             T::Error: ::std::fmt::Display,
         {
             self.x_generic_uris = value
@@ -13206,18 +13242,52 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Id {
+        group_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductGroupsT>,
+            ::std::string::String,
+        >,
+        product_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductsT>,
+            ::std::string::String,
+        >,
         system_name: ::std::result::Result<super::SystemName, ::std::string::String>,
         text: ::std::result::Result<super::Text, ::std::string::String>,
     }
     impl ::std::default::Default for Id {
         fn default() -> Self {
             Self {
+                group_ids: Ok(Default::default()),
+                product_ids: Ok(Default::default()),
                 system_name: Err("no value supplied for system_name".to_string()),
                 text: Err("no value supplied for text".to_string()),
             }
         }
     }
     impl Id {
+        pub fn group_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductGroupsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.group_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {e}")
+                });
+            self
+        }
+        pub fn product_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.product_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {e}")
+                });
+            self
+        }
         pub fn system_name<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<super::SystemName>,
@@ -13247,6 +13317,8 @@ pub mod builder {
             value: Id,
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
+                group_ids: value.group_ids?,
+                product_ids: value.product_ids?,
                 system_name: value.system_name?,
                 text: value.text?,
             })
@@ -13255,6 +13327,8 @@ pub mod builder {
     impl ::std::convert::From<super::Id> for Id {
         fn from(value: super::Id) -> Self {
             Self {
+                group_ids: Ok(value.group_ids),
+                product_ids: Ok(value.product_ids),
                 system_name: Ok(value.system_name),
                 text: Ok(value.text),
             }
@@ -15525,3 +15599,55 @@ pub mod defaults {
         "https://www.first.org/tlp/".to_string()
     }
 }
+crate::macros::impl_string_newtype_ergonomics!(AdditionalRestartInformation);
+crate::macros::impl_string_newtype_ergonomics!(AlgorithmOfTheCryptographicHash);
+crate::macros::impl_string_newtype_ergonomics!(AlternateName);
+crate::macros::impl_string_newtype_ergonomics!(AudienceOfNote);
+crate::macros::impl_string_newtype_ergonomics!(CommonPlatformEnumerationRepresentation);
+crate::macros::impl_string_newtype_ergonomics!(ContactDetails);
+crate::macros::impl_string_newtype_ergonomics!(ContributingOrganization);
+crate::macros::impl_string_newtype_ergonomics!(Cve);
+crate::macros::impl_string_newtype_ergonomics!(CweVersion);
+crate::macros::impl_string_newtype_ergonomics!(DetailsOfTheRemediation);
+crate::macros::impl_string_newtype_ergonomics!(DetailsOfTheThreat);
+crate::macros::impl_string_newtype_ergonomics!(DocumentCategory);
+crate::macros::impl_string_newtype_ergonomics!(EngineName);
+crate::macros::impl_string_newtype_ergonomics!(EngineVersion);
+crate::macros::impl_string_newtype_ergonomics!(EntitlementOfTheRemediation);
+crate::macros::impl_string_newtype_ergonomics!(Filename);
+crate::macros::impl_string_newtype_ergonomics!(IssuingAuthority);
+crate::macros::impl_string_newtype_ergonomics!(LangT);
+crate::macros::impl_string_newtype_ergonomics!(LegacyVersionOfTheRevision);
+crate::macros::impl_string_newtype_ergonomics!(LicenseExpression);
+crate::macros::impl_string_newtype_ergonomics!(ModelNumber);
+crate::macros::impl_string_newtype_ergonomics!(NameOfPublisher);
+crate::macros::impl_string_newtype_ergonomics!(NameOfTheBranch);
+crate::macros::impl_string_newtype_ergonomics!(NameOfTheContributor);
+crate::macros::impl_string_newtype_ergonomics!(NoteContent);
+crate::macros::impl_string_newtype_ergonomics!(PackageUrlRepresentation);
+crate::macros::impl_string_newtype_ergonomics!(PartyContactInformation);
+crate::macros::impl_string_newtype_ergonomics!(Percentile);
+crate::macros::impl_string_newtype_ergonomics!(Probability);
+crate::macros::impl_string_newtype_ergonomics!(ProductGroupIdT);
+crate::macros::impl_string_newtype_ergonomics!(ProductIdT);
+crate::macros::impl_string_newtype_ergonomics!(SerialNumber);
+crate::macros::impl_string_newtype_ergonomics!(SharingGroupName);
+crate::macros::impl_string_newtype_ergonomics!(StockKeepingUnit);
+crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheAcknowledgment);
+crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheInvolvement);
+crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheProductGroup);
+crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheReference);
+crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheRevision);
+crate::macros::impl_string_newtype_ergonomics!(SystemName);
+crate::macros::impl_string_newtype_ergonomics!(Text);
+crate::macros::impl_string_newtype_ergonomics!(TextOfAggregateSeverity);
+crate::macros::impl_string_newtype_ergonomics!(TextualDescription);
+crate::macros::impl_string_newtype_ergonomics!(TextualDescriptionOfTheProduct);
+crate::macros::impl_string_newtype_ergonomics!(Title);
+crate::macros::impl_string_newtype_ergonomics!(TitleOfNote);
+crate::macros::impl_string_newtype_ergonomics!(TitleOfThisDocument);
+crate::macros::impl_string_newtype_ergonomics!(UniqueIdentifierForTheDocument);
+crate::macros::impl_string_newtype_ergonomics!(ValueOfTheCryptographicHash);
+crate::macros::impl_string_newtype_ergonomics!(VersionT);
+crate::macros::impl_string_newtype_ergonomics!(WeaknessId);
+crate::macros::impl_string_newtype_ergonomics!(WeaknessName);

@@ -26,6 +26,11 @@ pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<V
         }
     }
 
+    // TODO: Add new check condition from editor revision 2026-05-27 #694
+    // If no `cve` is present and all items in `ids` contain `group_ids` or `product_ids`,
+    // it MUST be tested that each product mentioned in `product_status[*][*]` is assigned at least one item in `ids`.
+    // This is independent from whether the product is referenced directly or indirectly through a product group.
+
     errors.map_or(Ok(()), Err)
 }
 
@@ -56,6 +61,12 @@ mod tests {
         TESTS_2_0
             .test_6_1_27_8
             .expect(case_vex_without_cve_or_id.clone(), Ok(()));
-        TESTS_2_1.test_6_1_27_8.expect(case_vex_without_cve_or_id, Ok(()));
+        TESTS_2_1.test_6_1_27_8.expect(
+            case_vex_without_cve_or_id,
+            Ok(()), // TODO: Adapt once check condition is implemented #694
+            Ok(()),
+            Ok(()),
+            Ok(()),
+        );
     }
 }

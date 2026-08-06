@@ -1,31 +1,24 @@
-use std::fmt::{Display, Formatter};
+use strum::{AsRefStr, Display};
 
 /// Enum representing individual product statuses in a CSAF document.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd, Display, AsRefStr)]
 pub enum ProductStatus {
+    #[strum(serialize = "first_affected")]
     FirstAffected,
+    #[strum(serialize = "first_fixed")]
     FirstFixed,
+    #[strum(serialize = "fixed")]
     Fixed,
+    #[strum(serialize = "known_affected")]
     KnownAffected,
+    #[strum(serialize = "known_not_affected")]
     KnownNotAffected,
+    #[strum(serialize = "last_affected")]
     LastAffected,
+    #[strum(serialize = "recommended")]
     Recommended,
+    #[strum(serialize = "under_investigation")]
     UnderInvestigation,
+    #[strum(serialize = "unknown")]
     Unknown,
-}
-
-impl Display for ProductStatus {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ProductStatus::FirstAffected => write!(f, "first_affected"),
-            ProductStatus::FirstFixed => write!(f, "first_fixed"),
-            ProductStatus::Fixed => write!(f, "fixed"),
-            ProductStatus::KnownAffected => write!(f, "known_affected"),
-            ProductStatus::KnownNotAffected => write!(f, "known_not_affected"),
-            ProductStatus::LastAffected => write!(f, "last_affected"),
-            ProductStatus::Recommended => write!(f, "recommended"),
-            ProductStatus::UnderInvestigation => write!(f, "under_investigation"),
-            ProductStatus::Unknown => write!(f, "unknown"),
-        }
-    }
 }

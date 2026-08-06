@@ -24,15 +24,15 @@ After [building](README.md#build) or downloading `csaf-validator` from [the avai
 ```
 A validator for CSAF documents
 
-Usage: csaf-validator [OPTIONS] <PATH>
+Usage: csaf-validator [OPTIONS] <PATH>...
 
 Arguments:
-  <PATH>  
+  <PATH>...  Path(s) to the CSAF document(s) to validate
 
 Options:
-  -c, --csaf-version <CSAF_VERSION>  Version of CSAF to use [default: 2.0]
-  -p, --preset <PRESET>              The validation preset to use [default: basic]
-  -t, --test-id <TEST_ID>            Run only the selected tests, may be specified multiple times
+  -C, --csaf-version <CSAF_VERSION>  Version of CSAF to use [possible values: auto, 2.0, 2.1] [default: auto]
+  -T, --test <TEST>                  The validation preset or test ID to use; may be specified multiple times [default: basic]
+  -v, --verbose                      Show detailed validation results
   -h, --help                         Print help
   -V, --version                      Print version
 ```
@@ -40,24 +40,28 @@ Options:
 Some examples to use are included below. Please note that the validation is not yet fully implemented!
 
 ```bash
-# validate a CSAF 2.0 document with profile basic (the default)
-csaf-validator --csaf-version 2.0 my-csaf-2-0-document.json
+# validate a CSAF document, auto-detecting the version, with preset basic (the default)
+csaf-validator my-csaf-document.json
 
-# validate a CSAF 2.0 document with profile full
-csaf-validator --csaf-version 2.0 --preset full my-csaf-2-0-document.json
+# validate a CSAF 2.0 document with preset full
+csaf-validator --csaf-version 2.0 --test full my-csaf-2-0-document.json
 
 # validate a CSAF 2.1 document with one specific test
-csaf-validator --csaf-version 2.1 --test-id 6.1.34 my-csaf-2-1-document.json
+csaf-validator --csaf-version 2.1 --test 6.1.34 my-csaf-2-1-document.json
 ```
 
 You can also use the library version as depicted here:
 ```rust
+use std::path::Path;
 use csaf::csaf2_0::loader::load_document;
 use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use csaf::validation::{Validatable, validate_by_preset, validate_by_test, validate_by_tests};
 
 let csaf_version = "2.0";
 let path = "/path/to/local/cve-2025-9820.json";
+
+// load the document
+let document = load_document(Path::new(path))?;
 
 // validate a preset
 let preset_results = validate_by_preset(&document, csaf_version, "basic");
@@ -68,7 +72,7 @@ let multiple_tests_result = validate_by_tests(&document, csaf_version, &["6.1.1"
 // validate a single test
 let single_test_result = validate_by_test(&document, "6.1.13");
 
-// get all test ids from a preset
+// get all test IDs from a preset
 let test_ids_in_basic_preset = CommonSecurityAdvisoryFramework::tests_in_preset("basic");
 ```
 
@@ -108,6 +112,20 @@ The easiest way to validate a document is to use the generic `ValidateCsaf` func
 result, err := csaf_ffi.ValidateCsaf(string(data), preset)
 ```
 
+## Versioning
+
+To bump the version across all crates and `wasm/package.json` at once, use the provided script. It requires [`cargo-edit`](https://crates.io/crates/cargo-edit) and `npm`.
+
+```bash
+# Install cargo-edit (one-time)
+cargo install cargo-edit
+
+./scripts/publish/bump_version.sh patch        # x.y.z -> x.y.z+1
+./scripts/publish/bump_version.sh minor        # x.y.z -> x.y+1.0
+./scripts/publish/bump_version.sh major        # x.y.z -> x+1.0.0
+./scripts/publish/bump_version.sh set 1.2.3    # explicit version
+```
+
 ## Build
 
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run
@@ -118,7 +136,7 @@ git submodule init
 git submodule update --remote
 
 # make sure that local assets are in sync with git submodules
-./update_assets.sh
+./scripts/update/update_assets.sh
 
 # run the tests
 cargo test
@@ -137,6 +155,10 @@ Bindings for other languages are created through the `csaf-ffi` crate, which is 
 
 The Go bindings are generated via [uniffi-bindgen-go](https://github.com/NordSecurity/uniffi-bindgen-go).
 
+> **Note:** The `generate_go_bindings.sh` script invokes `go fmt`, `go env GOOS` and `go env GOARCH` 
+> to autoformat the output and detect the target platform, which is used to name the generated file.
+> This requires Go to be installed and available on `PATH`, instructions can be found [here](https://go.dev/).
+
 ```bash
 # Install the Go binding generator (one-time)
 cargo install uniffi-bindgen-go \
@@ -144,7 +166,7 @@ cargo install uniffi-bindgen-go \
   --tag v0.7.0+v0.31.0
 
 # Build the Rust library, generate bindings, and copy the static archive
-./generate_go_bindings.sh
+./scripts/publish/generate_go_bindings.sh
 ```
 This creates GO code in the `go/csaf_ffi` folder.
 
@@ -161,14 +183,14 @@ As a demonstration there is a small CLI and Webserver example included.
 
 ```bash
 cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/example/ <PATH_TO_CSAF_FILE>
+CGO_LDFLAGS="-L$HOME/.cache/csaf-ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/example/ <PATH_TO_CSAF_FILE>
 ```
 
 ##### Web server (API)
 
 ```bash
 cd go
-CGO_LDFLAGS="-L$HOME/.cache/csaf_ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/webapi/
+CGO_LDFLAGS="-L$HOME/.cache/csaf-ffi/lib/$(go env GOOS)_$(go env GOARCH)" go run -buildvcs=false ./cmd/webapi/
 ```
 
 The server listens on port `8080` by default. Set the `PORT` environment variable
@@ -205,7 +227,7 @@ The WASM bindings are generated via [uniffi-bindgen-js](https://crates.io/crates
 cargo install uniffi-bindgen-js --version 0.2.1
 
 # Build and generate (uses generate_wasm_bindings.sh)
-./generate_wasm_bindings.sh
+./scripts/publish/generate_wasm_bindings.sh
 ```
 
 This creates TypeScript + WASM output in `wasm/`. 
@@ -252,7 +274,7 @@ This creates TypeScript + WASM output in `wasm/`.
 | 6.1.27.5 | ✅ | ✅ |
 | 6.1.27.6 | ✅ | ✅ |
 | 6.1.27.7 | ✅ | ✅ |
-| 6.1.27.8 | ✅ | ✅ |
+| 6.1.27.8 | ✅ |   |
 | 6.1.27.9 | ✅ | ✅ |
 | 6.1.27.10 | ✅ | ✅ |
 | 6.1.27.11 | ✅ | ✅ |
@@ -306,9 +328,15 @@ This creates TypeScript + WASM output in `wasm/`.
 | Test specification | 2.0                | 2.1 (experimental) |
 | --- |--------------------|--------------------|
 | 6.2.1 |  |  |
+| 6.2.23 | ⭕ | ✅ |
+| 6.2.24 | ⭕ | ✅ |
+| 6.2.25 | ⭕ | ✅ |
+| 6.2.26 | ⭕ | ✅ |
+| 6.2.47 | ⭕ | ✅ |
 
 ### Informative Tests
 
-| Test specification | 2.0                | 2.1 (experimental) |
-| --- |--------------------|--------------------|
+| Test specification | 2.0               | 2.1 (experimental) |
+| --- |-------------------|--------------------|
 | 6.3.1 |  |  |
+

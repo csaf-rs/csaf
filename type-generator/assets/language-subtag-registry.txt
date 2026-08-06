@@ -1,4 +1,4 @@
-File-Date: 2026-05-05
+File-Date: 2026-06-14
 %%
 Type: language
 Subtag: aa
@@ -91,6 +91,8 @@ Type: language
 Subtag: bh
 Description: Bihari languages
 Added: 2005-10-16
+Deprecated: 2026-06-14
+Preferred-Value: bih
 Scope: collection
 %%
 Type: language
@@ -4921,6 +4923,12 @@ Type: language
 Subtag: big
 Description: Biangai
 Added: 2009-07-29
+%%
+Type: language
+Subtag: bih
+Description: Bihari languages
+Added: 2026-06-14
+Scope: collection
 %%
 Type: language
 Subtag: bij

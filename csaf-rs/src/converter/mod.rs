@@ -13,12 +13,13 @@ mod tests {
     use crate::csaf::raw::HasParsed;
     use crate::csaf2_0::loader::load_document as load_document_2_0;
     use crate::csaf2_1::loader::load_document as load_document_2_1;
+    use std::path::Path;
 
     #[test]
     fn test_is_csaf_2_0_returns_true_for_v20() {
-        let doc = load_document_2_0(
+        let doc = load_document_2_0(Path::new(
             "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json",
-        )
+        ))
         .expect("Failed to load CSAF 2.0 test document");
         let parsed = doc.get_parsed().as_ref().expect("Failed to parse CSAF 2.0 document");
         assert!(is_csaf_2_0(parsed));
@@ -26,9 +27,9 @@ mod tests {
 
     #[test]
     fn test_is_csaf_2_0_returns_false_for_v21() {
-        let doc = load_document_2_1(
+        let doc = load_document_2_1(Path::new(
             "../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-06-11.json",
-        )
+        ))
         .expect("Failed to load CSAF 2.1 test document");
         let parsed = doc.get_parsed().as_ref().expect("Failed to parse CSAF 2.1 document");
         assert!(!is_csaf_2_0(parsed));

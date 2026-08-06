@@ -68,6 +68,11 @@ mod tests {
                 "/vulnerabilities/0/first_known_exploitation_dates/0/group_ids/0",
             ),
         ]);
+        let case_vuln_id = Err(vec![
+            generate_err_msg("CSAFGID-1020314", "/vulnerabilities/0/ids/0/group_ids/0"),
+            generate_err_msg("CSAFGID-1020313", "/vulnerabilities/0/ids/1/group_ids/2"),
+            generate_err_msg("CSAFPID-9080700", "/vulnerabilities/0/ids/2/group_ids/0"),
+        ]);
 
         TESTS_2_0.test_6_1_4.expect(
             case_threats.clone(), // threats
@@ -79,6 +84,8 @@ mod tests {
         TESTS_2_1.test_6_1_4.expect(
             case_threats,         // threats
             case_vulnerabilities, // vulnerabilities
+            case_vuln_id,         // vulnerability ids
+            Ok(()),
             Ok(()),
             Ok(()),
         );

@@ -26,13 +26,13 @@ impl NotPresentInCsaf20 {
 }
 
 impl WithOptionalProductIds for NotPresentInCsaf20 {
-    fn get_product_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+    fn get_product_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
         self.into_any_iter()
     }
 }
 
 impl WithOptionalGroupIds for NotPresentInCsaf20 {
-    fn get_group_ids(&self) -> Option<impl Iterator<Item = &String> + '_> {
+    fn get_group_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
         self.into_any_iter()
     }
 }

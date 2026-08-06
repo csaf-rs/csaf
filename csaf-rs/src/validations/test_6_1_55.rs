@@ -1,4 +1,5 @@
 use spdx::Expression;
+use std::sync::LazyLock;
 
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
@@ -7,19 +8,15 @@ use crate::schema::csaf2_1::schema::LicenseExpression;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::ValidationError;
 
-fn create_missing_license_text_error() -> ValidationError {
-    ValidationError {
-        message: "Missing license text (document note with title 'License') for non-standard license.".to_string(),
-        instance_path: "/document/license_expression".to_string(),
-    }
-}
+static MISSING_LICENSE_TEXT_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "Missing license text (document note with title 'License') for non-standard license.".to_string(),
+    instance_path: "/document/license_expression".to_string(),
+});
 
-fn create_multiple_license_text_error() -> ValidationError {
-    ValidationError {
-        message: "Multiple license texts (document notes with title 'License') for non-standard license.".to_string(),
-        instance_path: "/document/license_expression".to_string(),
-    }
-}
+static MULTIPLE_LICENSE_TEXT_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
+    message: "Multiple license texts (document notes with title 'License') for non-standard license.".to_string(),
+    instance_path: "/document/license_expression".to_string(),
+});
 
 fn create_incorrect_license_text_category_error(
     license_expression_path: &str,
@@ -54,17 +51,19 @@ fn is_english_or_default(doc: &impl CsafTrait) -> bool {
 
 fn expect_exactly_one_license_text(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
     if let Some(notes) = doc.get_document().get_notes() {
-        let mut errors: Vec<ValidationError> = Vec::new();
+        let mut errors: Option<Vec<ValidationError>> = None;
         let license_notes = notes
             .iter()
             .enumerate()
             .filter(|(note_index, note)| {
                 if note.get_title().is_some_and(|title| title == "License") {
                     if note.get_category() != NoteCategory::LegalDisclaimer {
-                        errors.push(create_incorrect_license_text_category_error(
-                            &format!("/document/notes/{note_index}/category"),
-                            &note.get_category(),
-                        ));
+                        errors
+                            .get_or_insert_default()
+                            .push(create_incorrect_license_text_category_error(
+                                &format!("/document/notes/{note_index}/category"),
+                                &note.get_category(),
+                            ));
                     }
                     true
                 } else {
@@ -73,14 +72,14 @@ fn expect_exactly_one_license_text(doc: &impl CsafTrait) -> Result<(), Vec<Valid
             })
             .count();
         if license_notes > 1 {
-            errors.push(create_multiple_license_text_error());
+            errors.get_or_insert_default().push(MULTIPLE_LICENSE_TEXT_ERROR.clone());
         } else if license_notes < 1 {
-            errors.push(create_missing_license_text_error());
+            errors.get_or_insert_default().push(MISSING_LICENSE_TEXT_ERROR.clone());
         }
 
-        if errors.is_empty() { Ok(()) } else { Err(errors) }
+        errors.map_or(Ok(()), Err)
     } else {
-        Err(vec![create_missing_license_text_error()])
+        Err(vec![MISSING_LICENSE_TEXT_ERROR.clone()])
     }
 }
 
@@ -125,7 +124,7 @@ mod tests {
             "/document/notes/0/category",
             &NoteCategory::General,
         )]);
-        let case_s01_multiple = Err(vec![create_multiple_license_text_error()]);
+        let case_s01_multiple = Err(vec![MULTIPLE_LICENSE_TEXT_ERROR.clone()]);
 
         TESTS_2_1.test_6_1_55.expect(
             case_01_category_other,

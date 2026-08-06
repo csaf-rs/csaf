@@ -15,12 +15,28 @@ use crate::schema::csaf2_0::schema::{
     Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20, Tracking as Tracking20,
 };
 use crate::schema::csaf2_1::schema::{
-    Acknowledgment as Acknowledgment21, AggregateSeverity as AggregateSeverity21, CsafVersion as CsafVersion21,
+    Acknowledgment as Acknowledgment21, CategoryOfReference as CategoryOfReference21, AggregateSeverity as AggregateSeverity21, CsafVersion as CsafVersion21,
     DocumentLevelMetaData as DocumentLevelMetaData21, Note as Note21, Publisher as Publisher21,
     Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
 };
 use crate::validation::ValidationError;
 
+/// Returns an iterator over the reference URLs that satisfy the canonical URL requirements:
+/// `category = "self"`, starts with `https://`, ends with the tracking-ID-derived filename.
+fn canonical_url_candidates<'a, R: ReferenceTrait>(
+    references: Option<&'a Vec<R>>,
+    expected_filename: &str,
+) -> impl Iterator<Item = &'a str> {
+    references
+        .into_iter()
+        .flatten()
+        // using CategoryOfReference21 here is fine, CategoryOfReference20 is 1:1 mapped to this
+        .filter(|r| r.get_category() == CategoryOfReference21::Self_)
+        .map(|r| r.get_url())
+        .filter(move |url| url.starts_with("https://") && url.ends_with(expected_filename))
+}
+
+/// Trait representing document meta-level information
 pub trait DocumentTrait {
     type AcknowledgmentType: AcknowledgmentTrait;
 
@@ -37,7 +53,7 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
-    type DocumentReferenceType: ReferenceTrait;
+    type ReferenceType: ReferenceTrait;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
 
@@ -76,7 +92,21 @@ pub trait DocumentTrait {
     fn get_category(&self) -> CsafDocumentCategory;
 
     /// Returns the references of this document
-    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>>;
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
+
+    /// Returns the canonical URLs from this document's references.
+    fn get_canonical_urls(&self) -> Vec<&str> {
+        let expected_filename = self.get_tracking().get_canonical_filename();
+        canonical_url_candidates(self.get_references(), expected_filename.as_str()).collect()
+    }
+
+    /// Returns `true` if the document has at least one canonical URL.
+    fn has_canonical_url(&self) -> bool {
+        let expected_filename = self.get_tracking().get_canonical_filename();
+        canonical_url_candidates(self.get_references(), expected_filename.as_str())
+            .next()
+            .is_some()
+    }
 
     fn get_csaf_version(&self) -> CsafVersion;
 
@@ -91,7 +121,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     type DistributionType = RulesForSharingDocument20;
     type NoteType = Note20;
     type PublisherType = Publisher20;
-    type DocumentReferenceType = Reference20;
+    type ReferenceType = Reference20;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
         self.acknowledgments.as_deref()
@@ -133,7 +163,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
         self.source_lang.as_deref().map(CsafLanguage::from)
     }
 
-    fn get_publisher(&self) -> &Publisher20 {
+    fn get_publisher(&self) -> &Self::PublisherType {
         &self.publisher
     }
 
@@ -141,7 +171,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
         CsafDocumentCategory::from(&self.category)
     }
 
-    fn get_references(&self) -> Option<&Vec<Self::DocumentReferenceType>> {
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
     }
 
@@ -161,7 +191,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     type DistributionType = RulesForDocumentSharing21;
     type NoteType = Note21;
     type PublisherType = Publisher21;
-    type DocumentReferenceType = Reference21;
+    type ReferenceType = Reference21;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
         self.acknowledgments.as_deref()
@@ -205,7 +235,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
         CsafDocumentCategory::from(&self.category)
     }
 
-    fn get_references(&self) -> Option<&Vec<Reference21>> {
+    fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
     }
 
@@ -216,4 +246,50 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     }
 
     impl_str_field_getter!(get_title, title);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::schema::csaf2_1::schema::Reference as Reference21;
+    use rstest::rstest;
+    use serde_json::json;
+
+    /// Reference21 mock, Reference20 is exactly the same though
+    fn make_ref21(category: &str, url: &str) -> Reference21 {
+        serde_json::from_value(json!({
+            "category": category,
+            "summary": "x",
+            "url": url
+        }))
+        .unwrap()
+    }
+
+    const FILENAME: &str = "example_company_-_2019-yh3234.json";
+    const HTTPS_MATCH: &str = "https://example.com/example_company_-_2019-yh3234.json";
+    const HTTP_MATCH: &str = "http://example.com/example_company_-_2019-yh3234.json";
+    const HTTPS_WRONG_FILE: &str = "https://example.com/example_company_-_2019-yh3235.json";
+
+    #[rstest]
+    #[case::no_references(None, 0)]
+    #[case::http_rejected(Some(vec![make_ref21("self", HTTP_MATCH)]), 0)]
+    #[case::wrong_filename(Some(vec![make_ref21("self", HTTPS_WRONG_FILE)]), 0)]
+    #[case::external_rejected(Some(vec![make_ref21("external", HTTPS_MATCH)]), 0)]
+    #[case::valid_match(Some(vec![make_ref21("self", HTTPS_MATCH)]), 1)]
+    fn test_candidate_filtering(#[case] refs: Option<Vec<Reference21>>, #[case] expected_count: usize) {
+        let refs_ref = refs.as_ref();
+        assert_eq!(canonical_url_candidates(refs_ref, FILENAME).count(), expected_count);
+    }
+
+    #[test]
+    fn only_matching_refs_are_returned_from_mixed_list() {
+        let refs = vec![
+            make_ref21("self", HTTPS_MATCH),
+            make_ref21("self", HTTP_MATCH),
+            make_ref21("self", HTTPS_WRONG_FILE),
+            make_ref21("external", HTTPS_MATCH),
+        ];
+        let result: Vec<_> = canonical_url_candidates(Some(&refs), FILENAME).collect();
+        assert_eq!(result, vec![HTTPS_MATCH]);
+    }
 }

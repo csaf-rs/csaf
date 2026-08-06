@@ -28,65 +28,61 @@ pub enum CsafDocumentCategory {
 impl From<&str> for CsafDocumentCategory {
     fn from(category: &str) -> Self {
         match category {
-            "csaf_base" => CsafDocumentCategory::CsafBase,
-            "csaf_informational_advisory" => CsafDocumentCategory::CsafInformationalAdvisory,
-            "csaf_security_incident_response" => CsafDocumentCategory::CsafSecurityIncidentResponse,
-            "csaf_security_advisory" => CsafDocumentCategory::CsafSecurityAdvisory,
-            "csaf_vex" => CsafDocumentCategory::CsafVex,
-            "csaf_deprecated_security_advisory" => CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-            "csaf_withdrawn" => CsafDocumentCategory::CsafWithdrawn,
-            "csaf_superseded" => CsafDocumentCategory::CsafSuperseded,
-            default => CsafDocumentCategory::CsafBaseOther(default.to_string()),
+            "csaf_base" => Self::CsafBase,
+            "csaf_informational_advisory" => Self::CsafInformationalAdvisory,
+            "csaf_security_incident_response" => Self::CsafSecurityIncidentResponse,
+            "csaf_security_advisory" => Self::CsafSecurityAdvisory,
+            "csaf_vex" => Self::CsafVex,
+            "csaf_deprecated_security_advisory" => Self::CsafDeprecatedSecurityAdvisory,
+            "csaf_withdrawn" => Self::CsafWithdrawn,
+            "csaf_superseded" => Self::CsafSuperseded,
+            default => Self::CsafBaseOther(default.to_string()),
         }
     }
 }
 
 impl From<&DocumentCategory20> for CsafDocumentCategory {
     fn from(value: &DocumentCategory20) -> Self {
-        CsafDocumentCategory::from(value.as_str())
+        Self::from(value.as_str())
     }
 }
 
 impl From<&DocumentCategory21> for CsafDocumentCategory {
     fn from(value: &DocumentCategory21) -> Self {
-        CsafDocumentCategory::from(value.as_str())
+        Self::from(value.as_str())
     }
 }
 
 impl CsafDocumentCategory {
-    // --------------------------------------------------------------------------
-    // Known profiles per CSAF version and some helper functions
-    // --------------------------------------------------------------------------
+    /// Well-known CSAF 2.0 profiles
     const CSAF_20_KNOWN_PROFILES: [CsafDocumentCategory; 5] = [
-        CsafDocumentCategory::CsafBase,
-        CsafDocumentCategory::CsafSecurityIncidentResponse,
-        CsafDocumentCategory::CsafInformationalAdvisory,
-        CsafDocumentCategory::CsafSecurityAdvisory,
-        CsafDocumentCategory::CsafVex,
+        Self::CsafBase,
+        Self::CsafSecurityIncidentResponse,
+        Self::CsafInformationalAdvisory,
+        Self::CsafSecurityAdvisory,
+        Self::CsafVex,
     ];
 
+    /// Well-known CSAF 2.1 profiles
     const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 8] = [
-        CsafDocumentCategory::CsafBase,
-        CsafDocumentCategory::CsafSecurityIncidentResponse,
-        CsafDocumentCategory::CsafInformationalAdvisory,
-        CsafDocumentCategory::CsafSecurityAdvisory,
-        CsafDocumentCategory::CsafVex,
-        CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-        CsafDocumentCategory::CsafWithdrawn,
-        CsafDocumentCategory::CsafSuperseded,
+        Self::CsafBase,
+        Self::CsafSecurityIncidentResponse,
+        Self::CsafInformationalAdvisory,
+        Self::CsafSecurityAdvisory,
+        Self::CsafVex,
+        Self::CsafDeprecatedSecurityAdvisory,
+        Self::CsafWithdrawn,
+        Self::CsafSuperseded,
     ];
 
     /// Checks if the category is DocumentCategory::CsafBaseOther
     pub fn is_base_other(&self) -> bool {
-        matches!(self, CsafDocumentCategory::CsafBaseOther(_))
+        matches!(self, Self::CsafBaseOther(_))
     }
 
     /// Checks if the category is DocumentCategory::CsafBase or DocumentCategory::CsafBaseOther
     pub fn is_base(&self) -> bool {
-        matches!(
-            self,
-            CsafDocumentCategory::CsafBase | CsafDocumentCategory::CsafBaseOther(_)
-        )
+        matches!(self, Self::CsafBase | Self::CsafBaseOther(_))
     }
 
     /// Checks if the document category is a known profile for the given CSAF version
@@ -133,7 +129,9 @@ impl CsafDocumentCategory {
     /// We additionally cover some zero-width / invisible characters which would also break validation.
     fn get_with_ignored_chars_removed(s: &str) -> String {
         s.chars()
-            .filter(|c| !(c.is_whitespace() || is_invisible_char(c) || is_hyphen_dash_char(c) || is_underscore_char(c)))
+            .filter(|&c| {
+                !(c.is_whitespace() || is_invisible_char(c) || is_hyphen_dash_char(c) || is_underscore_char(c))
+            })
             .collect()
     }
 
@@ -152,7 +150,7 @@ impl CsafDocumentCategory {
                 if !Self::get_with_ignored_chars_removed(prefix).is_empty() {
                     return false;
                 }
-                postfix.chars().next().is_some_and(|c| is_underscore_char(&c))
+                postfix.chars().next().is_some_and(is_underscore_char)
             },
         }
     }
@@ -177,59 +175,6 @@ impl CsafDocumentCategory {
         }
 
         Self::string_starts_with_csaf_underscore(&self.to_string())
-    }
-
-    /// Helper function to check if a string starts with `csaf_deprecated_`. See [Self::starts_with_csaf_deprecated]
-    /// for more details.
-    #[inline]
-    fn string_starts_with_csaf_deprecated_underscore(s: &str) -> bool {
-        let lower = s.to_lowercase();
-        // Split at "csaf"
-        match lower.split_once("csaf") {
-            None => false,
-            Some((prefix, after_csaf)) => {
-                // Everything before "csaf" must be only ignored chars
-                if !Self::get_with_ignored_chars_removed(prefix).is_empty() {
-                    return false;
-                }
-                // First char after "csaf" must be an underscore variant
-                let mut chars = after_csaf.chars();
-                if !chars.next().is_some_and(|c| is_underscore_char(&c)) {
-                    return false;
-                }
-                let after_first_underscore = chars.as_str();
-                // Must continue with "deprecated" followed by another underscore variant
-                after_first_underscore
-                    .strip_prefix("deprecated")
-                    .is_some_and(|s| s.chars().next().is_some_and(|c| is_underscore_char(&c)))
-            },
-        }
-    }
-
-    /// Checks if the category string starts with `csaf_deprecated_` (case-insensitive), where the `_` can be
-    /// any of the known underscore variant characters from [is_underscore_char].
-    /// Also checks that everything before `csaf_deprecated_` consists only of whitespace, underscores and hyphens variants.
-    ///
-    /// Examples:
-    /// `csaf_deprecated_security_advisory` -> true
-    /// ` csaf_deprecated_security_advisory` -> true
-    /// `CSAF_DEPRECATED_foo` -> true
-    /// `csaf＿deprecated＿foo` -> true
-    /// `csaf_base` -> false
-    /// `csaf_vex` -> false
-    pub fn starts_with_csaf_deprecated(&self) -> bool {
-        // The only known variant starting with csaf_deprecated_ is CsafDeprecatedSecurityAdvisory
-        if matches!(self, CsafDocumentCategory::CsafDeprecatedSecurityAdvisory) {
-            return true;
-        }
-
-        // For CsafBaseOther, check the actual string with unicode-aware logic
-        if let CsafDocumentCategory::CsafBaseOther(s) = self {
-            return Self::string_starts_with_csaf_deprecated_underscore(s);
-        }
-
-        // All other known variants don't start with csaf_deprecated_
-        false
     }
 
     /// Helper function to normalize a category string
@@ -263,15 +208,15 @@ impl CsafDocumentCategory {
 impl Display for CsafDocumentCategory {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            CsafDocumentCategory::CsafBase => write!(f, "csaf_base"),
-            CsafDocumentCategory::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
-            CsafDocumentCategory::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
-            CsafDocumentCategory::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
-            CsafDocumentCategory::CsafVex => write!(f, "csaf_vex"),
-            CsafDocumentCategory::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
-            CsafDocumentCategory::CsafWithdrawn => write!(f, "csaf_withdrawn"),
-            CsafDocumentCategory::CsafSuperseded => write!(f, "csaf_superseded"),
-            CsafDocumentCategory::CsafBaseOther(other) => write!(f, "{other}"),
+            Self::CsafBase => write!(f, "csaf_base"),
+            Self::CsafInformationalAdvisory => write!(f, "csaf_informational_advisory"),
+            Self::CsafSecurityIncidentResponse => write!(f, "csaf_security_incident_response"),
+            Self::CsafSecurityAdvisory => write!(f, "csaf_security_advisory"),
+            Self::CsafVex => write!(f, "csaf_vex"),
+            Self::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
+            Self::CsafWithdrawn => write!(f, "csaf_withdrawn"),
+            Self::CsafSuperseded => write!(f, "csaf_superseded"),
+            Self::CsafBaseOther(other) => write!(f, "{other}"),
         }
     }
 }
@@ -302,42 +247,6 @@ mod tests {
     fn string_starts_with_csaf_underscore(#[case] input: &str, #[case] expected: bool) {
         assert_eq!(
             CsafDocumentCategory::string_starts_with_csaf_underscore(input),
-            expected,
-            "input: {input:?}"
-        );
-    }
-
-    #[rstest]
-    // basic example
-    #[case("csaf_deprecated_security_advisory", true)]
-    // known other categories
-    #[case("csaf_base", false)]
-    #[case("csaf_vex", false)]
-    #[case("csaf_security_advisory", false)]
-    #[case("csaf_informational_advisory", false)]
-    #[case("csaf_security_incident_response", false)]
-    #[case("csaf_withdrawn", false)]
-    #[case("csaf_superseded", false)]
-    // casing
-    #[case("CSAF_DEPRECATED_SOMETHING", true)]
-    #[case("Csaf_Deprecated_Something", true)]
-    // with underscore variants
-    #[case("csaf\u{FF3F}deprecated\u{FF3F}foo", true)]
-    #[case("csaf_deprecated\u{FF3F}bar", true)]
-    #[case("csaf\u{FF3F}deprecated_bar", true)]
-    // with leading underscore, hyphen, whitespace
-    #[case(" csaf_deprecated_foo", true)]
-    #[case("_csaf_deprecated_foo", true)]
-    #[case("-csaf_deprecated_foo", true)]
-    // no underscore before / after deprecated
-    #[case("csaf_deprecated", false)]
-    #[case("csafdeprecated_foo", false)]
-    // no csaf prefix
-    #[case("deprecated_something", false)]
-    #[case("some_other_category", false)]
-    fn string_starts_with_csaf_deprecated_underscore(#[case] input: &str, #[case] expected: bool) {
-        assert_eq!(
-            CsafDocumentCategory::string_starts_with_csaf_deprecated_underscore(input),
             expected,
             "input: {input:?}"
         );

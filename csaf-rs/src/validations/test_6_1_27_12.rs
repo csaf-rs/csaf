@@ -27,7 +27,7 @@ pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
-    let mut errors: Vec<ValidationError> = Vec::new();
+    let mut errors: Option<Vec<ValidationError>> = None;
     let vulnerabilities = doc.get_vulnerabilities();
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         if vulnerability
@@ -35,11 +35,13 @@ pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<
             .and_then(|ps| ps.get_known_affected())
             .is_none()
         {
-            errors.push(create_missing_affected_products_error(&doc_category, v_i));
+            errors
+                .get_or_insert_default()
+                .push(create_missing_affected_products_error(&doc_category, v_i));
         }
     }
 
-    if !errors.is_empty() { Err(errors) } else { Ok(()) }
+    errors.map_or(Ok(()), Err)
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =

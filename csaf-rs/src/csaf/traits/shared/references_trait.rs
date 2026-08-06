@@ -2,13 +2,13 @@ use crate::csaf::traits::util::impl_str_field_getter;
 use crate::schema::csaf2_0::schema::{CategoryOfReference as CategoryOfReference20, Reference as Reference20};
 use crate::schema::csaf2_1::schema::{CategoryOfReference as CategoryOfReference21, Reference as Reference21};
 
-/// Trait representing document references
+/// Trait representing document or vulnerability references
 pub trait ReferenceTrait {
-    /// Returns the category of the document reference as enum
+    /// Returns the category of the reference as enum
     fn get_category(&self) -> CategoryOfReference21;
-    /// Returns the summary of the document reference
+    /// Returns the summary of the reference
     fn get_summary(&self) -> &str;
-    /// Returns the URL of the document reference
+    /// Returns the URL of the reference
     fn get_url(&self) -> &str;
 }
 

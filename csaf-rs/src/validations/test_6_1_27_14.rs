@@ -52,6 +52,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_14 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -63,8 +64,12 @@ mod tests {
             &CsafDocumentCategory::CsafSuperseded,
         )]);
 
-        TESTS_2_1
-            .test_6_1_27_14
-            .expect(fail_withdrawn.clone(), fail_superseded, fail_withdrawn, Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_27_14.expect(ExpectedResults {
+            case_01: fail_withdrawn.clone(),
+            case_02: fail_superseded,
+            case_s01: fail_withdrawn,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

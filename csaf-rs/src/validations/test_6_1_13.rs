@@ -38,7 +38,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_13, test_6_1_13_purl
 mod tests {
     use super::*;
     use crate::csaf::types::purl::{PurlParseError, PurlParseErrorKind};
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_13 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_13 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -68,18 +70,18 @@ mod tests {
         // Case 11/S11: valid purl
         // Case 12/S12: valid purl with repo url
 
-        TESTS_2_0.test_6_1_13.expect(
-            case_01_missing_name("purl", ""),
-            case_02_or_s06_type_prohibits_namespace("purl", ""),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_13.expect(ExpectedResults_2_0 {
+            case_01: case_01_missing_name("purl", ""),
+            case_s06: case_02_or_s06_type_prohibits_namespace("purl", ""),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_13.expect(
-            case_01_missing_name("purls", "/0"),
-            case_02_or_s06_type_prohibits_namespace("purls", "/0"),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_13.expect(ExpectedResults_2_1 {
+            case_01: case_01_missing_name("purls", "/0"),
+            case_02: case_02_or_s06_type_prohibits_namespace("purls", "/0"),
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

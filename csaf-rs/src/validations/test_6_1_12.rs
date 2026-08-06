@@ -39,7 +39,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_12, test_6_1_12_lang
 mod tests {
     use super::*;
     use crate::csaf::types::language::CsafLanguage::Invalid;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_12 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_12 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -63,22 +65,22 @@ mod tests {
         // Case S12: Both /document/lang and /document/source_lang are missing (should be skipped? #409)
         // Case S13: default language code in /document/lang
 
-        TESTS_2_0.test_6_1_12.expect(
-            case_01_lang_invalid.clone(),
-            case_s01_source_lang_invalid.clone(),
-            case_s02_both_langs_invalid.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_12.expect(ExpectedResults_2_0 {
+            case_01: case_01_lang_invalid.clone(),
+            case_s01: case_s01_source_lang_invalid.clone(),
+            case_s02: case_s02_both_langs_invalid.clone(),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_12.expect(
-            case_01_lang_invalid,
-            case_s01_source_lang_invalid,
-            case_s02_both_langs_invalid,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_12.expect(ExpectedResults_2_1 {
+            case_01: case_01_lang_invalid,
+            case_s01: case_s01_source_lang_invalid,
+            case_s02: case_s02_both_langs_invalid,
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
     }
 }

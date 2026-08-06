@@ -52,7 +52,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_15, test_6_2_15_use_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_15 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_15 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -77,21 +79,21 @@ mod tests {
 
         // Case 11: /document/lang is not set to the default language
         // Case S11: Both /document/lang and /document/source_lang are missing (should be skipped? #409)
-        TESTS_2_0.test_6_2_15.expect(
-            case_01_default_lang.clone(),
-            case_02_default_source_lang.clone(),
-            case_s01_default_both_langs.clone(),
-            case_s02_default_lang_uppercase.clone(),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_2_15.expect(
-            case_01_default_lang,
-            case_02_default_source_lang,
-            case_s01_default_both_langs,
-            case_s02_default_lang_uppercase,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_2_15.expect(ExpectedResults_2_0 {
+            case_01: case_01_default_lang.clone(),
+            case_02: case_02_default_source_lang.clone(),
+            case_s01: case_s01_default_both_langs.clone(),
+            case_s02: case_s02_default_lang_uppercase.clone(),
+            case_11: Ok(()),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_15.expect(ExpectedResults_2_1 {
+            case_01: case_01_default_lang,
+            case_02: case_02_default_source_lang,
+            case_s01: case_s01_default_both_langs,
+            case_s02: case_s02_default_lang_uppercase,
+            case_11: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

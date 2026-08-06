@@ -89,6 +89,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_3_12, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_12 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -161,19 +162,19 @@ mod tests {
         // Vuln 1: with both products covered
         // Vuln 2: with 2 metrics, the second one covering both products
 
-        TESTS_2_1.test_6_3_12.expect(
-            case_01_cvss_v3_1_only,
-            case_02_cvss_v3_0_only,
-            case_03_cvss_v2_only,
-            case_04_multiple_vulns_two_without_cvss_v4,
-            case_05_uncovered_affected,
-            case_s01_last_affected_not_covered,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_3_12.expect(ExpectedResults {
+            case_01: case_01_cvss_v3_1_only,
+            case_02: case_02_cvss_v3_0_only,
+            case_03: case_03_cvss_v2_only,
+            case_04: case_04_multiple_vulns_two_without_cvss_v4,
+            case_05: case_05_uncovered_affected,
+            case_s01: case_s01_last_affected_not_covered,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
     }
 }

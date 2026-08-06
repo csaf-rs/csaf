@@ -92,6 +92,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_45 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -121,14 +122,14 @@ mod tests {
         // Case 13: Not TLP:CLEAR, so test doesn't apply
         // Case 14: disclosure_date before newest revision date, with timezone
 
-        TESTS_2_1.test_6_1_45.expect(
-            case_01_disclosure_date_too_late,
-            case_02_disclosure_date_too_late,
-            case_03_disclosure_date_too_late_with_timezone,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_45.expect(ExpectedResults {
+            case_01: case_01_disclosure_date_too_late,
+            case_02: case_02_disclosure_date_too_late,
+            case_03: case_03_disclosure_date_too_late_with_timezone,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

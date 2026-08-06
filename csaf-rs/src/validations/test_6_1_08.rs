@@ -101,77 +101,79 @@ fn create_validation_error(message: String, base: &str, metric: CsafVulnerabilit
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_8 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_8 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_08() {
         // CSAF 2.0 has 7 test cases (01-03, 11-14)
-        TESTS_2_0.test_6_1_8.expect(
-            Err(vec![create_validation_error(
+        TESTS_2_0.test_6_1_8.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
                 CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_02: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
                 CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_03: Err(vec![create_validation_error(
                 "\"version\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
                 CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
             )]),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
 
         // CSAF 2.1 has 13 test cases (01-06, 11-17)
-        TESTS_2_1.test_6_1_8.expect(
-            Err(vec![create_validation_error(
+        TESTS_2_1.test_6_1_8.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_02: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_03: Err(vec![create_validation_error(
                 "\"version\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_04: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
             )]),
-            Err(vec![
+            case_05: Err(vec![
                 create_validation_error(
                     "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
                     CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                 ),
             ]),
-            Err(vec![
+            case_06: Err(vec![
                 create_validation_error(
                     "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
                     CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                 ),
             ]),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-            Ok(()), // case_15
-            Ok(()), // case_16
-            Ok(()), // case_17
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+        });
     }
 }

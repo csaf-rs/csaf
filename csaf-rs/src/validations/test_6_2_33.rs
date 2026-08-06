@@ -84,6 +84,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_33 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -114,13 +115,13 @@ mod tests {
         // Case 12: disclosure_date is definitely not in the past (9999-12-31)
         // Case 13: disclosure_date is earlier than newest revision, with timezones
 
-        TESTS_2_1.test_6_2_33.expect(
-            case_01_disclosure_date_newer_than_newest_rev,
-            case_02_disclosure_date_newer_than_newest_rev_with_timezone,
-            case_03_disclosure_date_newer_than_newest_rev_with_timezone,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_33.expect(ExpectedResults {
+            case_01: case_01_disclosure_date_newer_than_newest_rev,
+            case_02: case_02_disclosure_date_newer_than_newest_rev_with_timezone,
+            case_03: case_03_disclosure_date_newer_than_newest_rev_with_timezone,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

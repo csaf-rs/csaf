@@ -40,6 +40,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_16, test
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_16 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -54,8 +55,13 @@ mod tests {
         // Case 12: document status is final, category is csaf_withdrawn, two revision history elements
         // Case 13: document status is final, category is csaf_superseded, two revision history elements
         // Case 14: document status is draft, category is csaf_superseded, two revision history elements, one of which is a draft
-        TESTS_2_1
-            .test_6_1_27_16
-            .expect(fail_withdrawn, fail_superseded, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_27_16.expect(ExpectedResults {
+            case_01: fail_withdrawn,
+            case_02: fail_superseded,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

@@ -72,6 +72,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 
 #[cfg(test)]
 mod tests {
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_48 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::validation::ValidationError;
 
@@ -143,7 +144,7 @@ mod tests {
         }]);
 
         // Only CSAF 2.1 has this test, with 20 test cases (6 error cases, 14 success cases)
-        TESTS_2_1.test_6_1_48.expect(
+        TESTS_2_1.test_6_1_48.expect(ExpectedResults {
             case_01,
             case_02,
             case_03,
@@ -154,16 +155,16 @@ mod tests {
             case_08,
             case_09,
             case_21,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
             case_16, // no Exploit Maturity E v3.0.1
-            Ok(()),
-            Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
             case_19, // wrong order of translated keys "R" and "C"
-            Ok(()),
-        );
+            case_31: Ok(()),
+        });
     }
 }

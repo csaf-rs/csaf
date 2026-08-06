@@ -38,6 +38,7 @@ crate::test_validation::impl_validator!(csaf2_0, ValidatorForTest6_2_10, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_10 as ExpectedResults;
     use crate::csaf2_0::testcases::TESTS_2_0;
 
     #[test]
@@ -46,7 +47,10 @@ mod tests {
 
         // Case S11: A CSAF 2.0 document with a valid TLP label
 
-        TESTS_2_0.test_6_2_10.expect(err, Ok(()));
+        TESTS_2_0.test_6_2_10.expect(ExpectedResults {
+            case_01: err,
+            case_s11: Ok(()),
+        });
     }
 
     /// Check that the test is skipped (returns Ok) for CSAF 2.1 documents.

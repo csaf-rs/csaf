@@ -36,6 +36,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_61, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_61 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -54,12 +55,12 @@ mod tests {
         // Case 12: One unescaped star, multiple escaped stars
         // Case 13: Escaped stars, also escaped question mark
 
-        TESTS_2_1.test_6_1_61.expect(
-            case01_two_unescaped,
-            case02_escaped_unescaped_mixed,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_61.expect(ExpectedResults {
+            case_01: case01_two_unescaped,
+            case_02: case02_escaped_unescaped_mixed,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

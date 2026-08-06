@@ -44,7 +44,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_32, test_6_1_32_flag
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_32 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_32 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -63,11 +65,21 @@ mod tests {
         // Case S12: A flag with both product_ids and group_ids
         // Case S13: A vulnerability without a flag
 
-        TESTS_2_0
-            .test_6_1_32
-            .expect(case_01.clone(), case_s01.clone(), Ok(()), Ok(()), Ok(()), Ok(()));
-        TESTS_2_1
-            .test_6_1_32
-            .expect(case_01, case_s01, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_0.test_6_1_32.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_s01: case_s01.clone(),
+            case_11: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
+        TESTS_2_1.test_6_1_32.expect(ExpectedResults_2_1 {
+            case_01,
+            case_s01,
+            case_11: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
     }
 }

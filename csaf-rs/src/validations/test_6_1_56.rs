@@ -81,6 +81,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_56 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -149,20 +150,20 @@ mod tests {
         // Case 18: complex case, 4 vulnerabilities, all of them with 2 metrics, overlapping product,
         // different sources, one with CVSS and the other with qualitative, but differently ordered
 
-        TESTS_2_1.test_6_1_56.expect(
-            qualitative_in_second_metric_no_source.clone(),
-            case_02_qualitative_in_first_metric_no_source,
-            qualitative_in_second_metric_no_source.clone(),
-            qualitative_in_second_metric_no_source,
-            case_05_err,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_56.expect(ExpectedResults {
+            case_01: qualitative_in_second_metric_no_source.clone(),
+            case_02: case_02_qualitative_in_first_metric_no_source,
+            case_03: qualitative_in_second_metric_no_source.clone(),
+            case_04: qualitative_in_second_metric_no_source,
+            case_05: case_05_err,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+        });
     }
 }

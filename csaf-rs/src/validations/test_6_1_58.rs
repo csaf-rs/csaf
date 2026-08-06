@@ -56,6 +56,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::create_both_product_version_version_range_error;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_58 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -71,6 +72,9 @@ mod tests {
         ]);
         // Case 11: Only version range
 
-        TESTS_2_1.test_6_1_58.expect(case_01, Ok(()))
+        TESTS_2_1.test_6_1_58.expect(ExpectedResults {
+            case_01,
+            case_11: Ok(()),
+        })
     }
 }

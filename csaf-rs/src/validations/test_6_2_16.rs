@@ -38,7 +38,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_16 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_16 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -51,7 +53,15 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_2_16.expect(case_01.clone(), case_02.clone(), Ok(()));
-        TESTS_2_1.test_6_2_16.expect(case_01, case_02, Ok(()));
+        TESTS_2_0.test_6_2_16.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_02: case_02.clone(),
+            case_11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_16.expect(ExpectedResults_2_1 {
+            case_01,
+            case_02,
+            case_11: Ok(()),
+        });
     }
 }

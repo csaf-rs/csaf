@@ -33,7 +33,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_10, test_6_1_10_inco
 
 #[cfg(test)]
 mod tests {
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_10 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_10 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::cvss::create_field_value_mismatch_error;
 
@@ -47,7 +49,9 @@ mod tests {
             create_field_value_mismatch_error("availabilityImpact", &"L", &"H", path_2_0),
         ]);
 
-        TESTS_2_0.test_6_1_10.expect(case_01_3_1_mismatch_csaf_2_0);
+        TESTS_2_0.test_6_1_10.expect(ExpectedResults_2_0 {
+            case_01: case_01_3_1_mismatch_csaf_2_0,
+        });
 
         let path_2_1 = "/vulnerabilities/0/metrics/0/content";
 
@@ -88,15 +92,15 @@ mod tests {
         // Case 13: v2.0 correct
         // Case 14: v4.0 correct
 
-        TESTS_2_1.test_6_1_10.expect(
-            case_01_3_1_mismatch_csaf_2_1,
-            case_02_3_0_mismatch_csaf_2_1,
-            case_03_2_0_mismatch_csaf_2_1,
-            case_04_4_0_mismatch_csaf_2_1,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_10.expect(ExpectedResults_2_1 {
+            case_01: case_01_3_1_mismatch_csaf_2_1,
+            case_02: case_02_3_0_mismatch_csaf_2_1,
+            case_03: case_03_2_0_mismatch_csaf_2_1,
+            case_04: case_04_4_0_mismatch_csaf_2_1,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

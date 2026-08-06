@@ -121,59 +121,63 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_11 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_11 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_11() {
-        TESTS_2_0.test_6_1_11.expect(Err(vec![generate_incorrect_cwe_name_error(
-            "CWE-79",
-            "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
-            "4.5",
-            "/vulnerabilities/0/cwe",
-        )]));
-        TESTS_2_1.test_6_1_11.expect(
-            Err(vec![generate_incorrect_cwe_name_error(
+        TESTS_2_0.test_6_1_11.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![generate_incorrect_cwe_name_error(
+                "CWE-79",
+                "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+                "4.5",
+                "/vulnerabilities/0/cwe",
+            )]),
+        });
+        TESTS_2_1.test_6_1_11.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![generate_incorrect_cwe_name_error(
                 "CWE-79",
                 "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
                 "4.13",
                 "/vulnerabilities/0/cwes/0",
             )]),
-            Err(vec![generate_incorrect_cwe_error(
+            case_02: Err(vec![generate_incorrect_cwe_error(
                 "CWE-1419",
                 "4.12",
                 "/vulnerabilities/0/cwes/0",
             )]),
-            Err(vec![generate_incorrect_cwe_name_error(
+            case_03: Err(vec![generate_incorrect_cwe_name_error(
                 "CWE-1324",
                 "DEPRECATED: Sensitive Information Accessible by Physical Probing of JTAG Interface",
                 "4.10",
                 "/vulnerabilities/0/cwes/0",
             )]),
-            Err(vec![generate_incorrect_cwe_name_error(
+            case_04: Err(vec![generate_incorrect_cwe_name_error(
                 "CWE-1192",
                 "System-on-Chip (SoC) Using Components without Unique, Immutable Identifiers",
                 "4.13",
                 "/vulnerabilities/0/cwes/0",
             )]),
-            Err(vec![generate_incorrect_cwe_error(
+            case_05: Err(vec![generate_incorrect_cwe_error(
                 "CWE-19",
                 "2.11",
                 "/vulnerabilities/0/cwes/0",
             )]),
-            Err(vec![generate_incorrect_cwe_error(
+            case_06: Err(vec![generate_incorrect_cwe_error(
                 "CWE-1008",
                 "4.13",
                 "/vulnerabilities/1/cwes/1",
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+        });
     }
 }

@@ -199,7 +199,9 @@ fn test_6_1_21_err_missing_version_between(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_21 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_21 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -292,44 +294,44 @@ mod tests {
         // case s12: valid intver interim start with 1
         // case s13: mixed versioning 1,2,3
 
-        TESTS_2_0.test_6_1_21.expect(
-            case_intver_missing_2_at_all.clone(),
-            case_intver_2_3_wrong_first_and_missing_1_at_all.clone(),
-            case_semver_missing_2_at_all.clone(),
-            case_semver_2_3_missing_1_at_all.clone(),
-            case_s03_intver_1_3_2_missing_2_between,
-            case_s04_semver_1_3_2_missing_2_between,
-            case_s05_intver_3_1_missing_1_before_2_at_all,
-            case_s06_semver_3_1_missing_1_before_2_at_all,
-            case_mixed_versions_start_with_intver_missing_2_at_all.clone(),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_s11
-            Ok(()), // case_s12
-            Ok(()), // case_s13
-        );
+        TESTS_2_0.test_6_1_21.expect(ExpectedResults_2_0 {
+            case_01: case_intver_missing_2_at_all.clone(),
+            case_02: case_intver_2_3_wrong_first_and_missing_1_at_all.clone(),
+            case_s01: case_semver_missing_2_at_all.clone(),
+            case_s02: case_semver_2_3_missing_1_at_all.clone(),
+            case_s03: case_s03_intver_1_3_2_missing_2_between,
+            case_s04: case_s04_semver_1_3_2_missing_2_between,
+            case_s05: case_s05_intver_3_1_missing_1_before_2_at_all,
+            case_s06: case_s06_semver_3_1_missing_1_before_2_at_all,
+            case_s07: case_mixed_versions_start_with_intver_missing_2_at_all.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_21.expect(
-            case_intver_missing_2_at_all.clone(),
-            case_intver_2_3_wrong_first_and_missing_1_at_all,
-            case_intver_missing_2_at_all.clone(),
-            case_semver_missing_2_at_all,
-            case_intver_wrong_first_missing_1_and_2_before_4_between,
-            case_semver_wrong_first_missing_1_and_2_before_4_between,
-            case_intver_missing_2_at_all,
-            case_semver_2_3_missing_1_at_all,
-            case_mixed_versions_start_with_intver_missing_2_at_all,
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14 only wrong ordering in json
-            Ok(()), // case_15 only wrong ordering in json due to timezones
-            Ok(()), // case_16 only wrong ordering in json due to timezones
-            Ok(()), // case_17 1&2 have same date
-            Ok(()), // case_s11
-            Ok(()), // case_s12
-            Ok(()), // case_s13
-        );
+        TESTS_2_1.test_6_1_21.expect(ExpectedResults_2_1 {
+            case_01: case_intver_missing_2_at_all.clone(),
+            case_02: case_intver_2_3_wrong_first_and_missing_1_at_all,
+            case_03: case_intver_missing_2_at_all.clone(),
+            case_04: case_semver_missing_2_at_all,
+            case_05: case_intver_wrong_first_missing_1_and_2_before_4_between,
+            case_06: case_semver_wrong_first_missing_1_and_2_before_4_between,
+            case_07: case_intver_missing_2_at_all,
+            case_s01: case_semver_2_3_missing_1_at_all,
+            case_s02: case_mixed_versions_start_with_intver_missing_2_at_all,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()), // only wrong ordering in json
+            case_15: Ok(()), // only wrong ordering in json due to timezones
+            case_16: Ok(()), // only wrong ordering in json due to timezones
+            case_17: Ok(()), // 1&2 have same date
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
     }
 }

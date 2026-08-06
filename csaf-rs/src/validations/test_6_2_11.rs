@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait, TrackingTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::ValidationError;
 use std::sync::LazyLock;
 

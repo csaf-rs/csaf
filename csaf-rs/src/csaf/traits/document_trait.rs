@@ -15,7 +15,8 @@ use crate::schema::csaf2_0::schema::{
     Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20, Tracking as Tracking20,
 };
 use crate::schema::csaf2_1::schema::{
-    Acknowledgment as Acknowledgment21, CategoryOfReference as CategoryOfReference21, AggregateSeverity as AggregateSeverity21, CsafVersion as CsafVersion21,
+    Acknowledgment as Acknowledgment21, AggregateSeverity as AggregateSeverity21,
+    CategoryOfReference as CategoryOfReference21, CsafVersion as CsafVersion21,
     DocumentLevelMetaData as DocumentLevelMetaData21, Note as Note21, Publisher as Publisher21,
     Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
 };

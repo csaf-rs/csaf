@@ -43,8 +43,6 @@ pub(crate) fn collect_references<V: VulnerabilityTrait>(
 /// The `VulnerabilityTrait` defines the structure of a vulnerability and includes
 /// information about potential remediations.
 pub trait VulnerabilityTrait {
-    type ReferenceType: ReferenceTrait;
-
     type AcknowledgmentType: AcknowledgmentTrait;
     /// The associated type representing the type of remediations in a vulnerability.
     type RemediationType: RemediationTrait;
@@ -170,7 +168,6 @@ pub trait VulnerabilityTrait {
 }
 
 impl VulnerabilityTrait for Vulnerability20 {
-    type ReferenceType = Reference20;
     type AcknowledgmentType = Acknowledgment20;
     type RemediationType = Remediation20;
     type ProductStatusType = ProductStatus20;
@@ -183,6 +180,7 @@ impl VulnerabilityTrait for Vulnerability20 {
     type NoteType = Note20;
     // First known exploitation dates are not implemented in CSAF 2.0
     type FirstKnownExploitationDatesType = NotPresentInCsaf20;
+    type ReferenceType = Reference20;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
         self.acknowledgments.as_deref()

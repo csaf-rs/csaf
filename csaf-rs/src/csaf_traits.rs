@@ -41,6 +41,7 @@ pub use crate::csaf::traits::vulnerabilities::product_ident_helper_trait::Produc
 pub use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 pub use crate::csaf::traits::vulnerabilities::remediation_trait::RemediationTrait;
 pub use crate::csaf::traits::vulnerabilities::threat_trait::ThreatTrait;
+pub use crate::csaf::traits::vulnerabilities::restart_required_trait::RestartRequiredTrait;
 pub use crate::csaf::traits::vulnerabilities::vulnerability_id_trait::VulnerabilityIdTrait;
 pub use crate::csaf::traits::vulnerabilities_trait::VulnerabilityTrait;
 pub use crate::csaf::types::csaf_cwe::Cwe;

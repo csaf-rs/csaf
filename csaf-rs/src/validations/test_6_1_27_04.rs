@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 /// 6.1.27.4 Product Tree
@@ -10,7 +10,7 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 /// value `csaf_deprecated_security_advisory` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with this category must have a `/product_tree` element.
-pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_04_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -32,11 +32,11 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
     ])
     .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
-fn test_6_1_27_04_err_generator(document_category: CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn test_6_1_27_04_err_generator(document_category: CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Document with category '{document_category}' must have a '/product_tree' element"),
         instance_path: "/product_tree".to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_4, test_6_1_27_04_product_tree);

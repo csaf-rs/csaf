@@ -1,25 +1,25 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
 static V_AS_VERSION_INDICATOR_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[vV][0-9].*$").unwrap());
 
-fn create_v_version_indicator_error(version: &str, path: &str) -> ValidationError {
-    ValidationError {
+fn create_v_version_indicator_error(version: &str, path: &str) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: format!(
             "Product version name {version} starting with 'v' or 'V' as version indicator is not recommended"
         ),
         instance_path: format!("{path}/name"),
-    }
+    })
 }
 
 /// 6.3.11 Usage of V as Version Indicator
 ///
 /// Tests that products in the product tree with the `product_version` branch category do not start
 /// with a `v` or `V` before their version.
-pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
         product_tree.visit_all_branches(&mut |branch, path| {

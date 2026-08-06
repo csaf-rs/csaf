@@ -2,7 +2,7 @@ use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
 use crate::schema::csaf2_1::schema::PartyCategory;
-use crate::validation::{IntoValidationError, ValidationError};
+use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 use std::collections::HashMap;
 
 fn generate_duplicate_involvement_error(
@@ -10,21 +10,21 @@ fn generate_duplicate_involvement_error(
     party: &PartyCategory,
     vul_r: usize,
     inv_r: usize,
-) -> ValidationError {
+) -> TestFinding {
     let date_str = date
         .as_ref()
         .map_or("none (optional property not present)".to_string(), |d| d.to_string());
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!("Duplicate usage of tuple of involvement date '{date_str}' and party '{party}'"),
         instance_path: format!("/vulnerabilities/{vul_r}/involvements/{inv_r}"),
-    }
+    })
 }
 
 /// Test 6.1.24: Multiple Definition in Involvements
 ///
 /// Vulnerability items must not contain the same tuples of the `/vulnerabilities[]/involvements[]/date`
 /// and `/vulnerabilities[]/involvements[]/party` fields.
-pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     // Check if there are any vulnerabilities, if there aren't, this test can be skipped
@@ -33,7 +33,7 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
         return Ok(());
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // Iterate over all vulnerabilities and their involvements
     for (vuln_i, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(involvements) = vulnerability.get_involvements() {
@@ -50,7 +50,9 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
                     // while for 2.0, we will need to do that precondition check here (and throw the respective errors, while for 2.1 warnings should be sufficient)
                     Some(Invalid(err)) => {
                         errors.get_or_insert_default().push(
-                            err.into_validation_error(&format!("/vulnerabilities/{vuln_i}/involvements/{inv_i}/date")),
+                            err.into_test_finding_error(&format!(
+                                "/vulnerabilities/{vuln_i}/involvements/{inv_i}/date"
+                            )),
                         );
                         continue;
                     },
@@ -96,6 +98,7 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_24 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validation::IntoTestFindingError;
     use std::str::FromStr;
 
     #[test]
@@ -135,7 +138,7 @@ mod tests {
             unreachable!()
         };
         let case_s02 = Err(vec![
-            case_s02_err.into_validation_error("/vulnerabilities/0/involvements/0/date"),
+            case_s02_err.into_test_finding_error("/vulnerabilities/0/involvements/0/date"),
         ]);
 
         TESTS_2_0.test_6_1_24.expect(ExpectedResults_2_0 {

@@ -2,32 +2,32 @@ use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
 use crate::schema::csaf2_1::schema::NoteCategory;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_missing_reasoning_error(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_missing_reasoning_error(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document does not contain a note with title `Reasoning for Withdrawal` and category `description`  which is required for documents with category {document_category}"
         ),
         instance_path: "/document/notes".to_string(),
-    }
+    })
 }
 
-fn create_duplicated_reasoning_error(document_category: &CsafDocumentCategory, note_index: usize) -> ValidationError {
-    ValidationError {
+fn create_duplicated_reasoning_error(document_category: &CsafDocumentCategory, note_index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Duplicate note with title `Reasoning for Withdrawal` found while only one is allowed for documents with category {document_category}"
         ),
         instance_path: format!("/document/notes[{note_index}]"),
-    }
+    })
 }
 
-fn create_incorrect_category_error(note_index: usize) -> ValidationError {
-    ValidationError {
+fn create_incorrect_category_error(note_index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: "The note has the correct title. However it uses the wrong category.".to_string(),
         instance_path: format!("/document/notes[{note_index}]"),
-    }
+    })
 }
 
 /// 6.1.27.17 Reasoning for withdrawal
@@ -36,7 +36,7 @@ fn create_incorrect_category_error(note_index: usize) -> ValidationError {
 ///
 /// If the document language is English or unspecified, it MUST be tested that exactly one item in document notes exists that has the title Reasoning for Withdrawal.
 /// The category of this item MUST be description.
-pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -49,7 +49,7 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
         None => {},    // no language set
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     let mut withdrawals = Vec::new();
 
     if let Some(notes) = doc.get_document().get_notes() {

@@ -1,5 +1,5 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait, build_leaf_instance_path};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 fn format_category_path(categories: &[CategoryOfTheBranch]) -> String {
     categories
@@ -13,19 +13,19 @@ fn create_branch_categories_error(
     full_path: &[CategoryOfTheBranch],
     relevant_categories: &[CategoryOfTheBranch],
     instance_path: String,
-) -> ValidationError {
+) -> TestFinding {
     let full_display = format_category_path(full_path);
     let found_display = if relevant_categories.is_empty() {
         "(none)".to_string()
     } else {
         format_category_path(relevant_categories)
     };
-    ValidationError {
+    TestFinding::Information(TestFindingData {
         message: format!(
             "Branch path to product does not follow the recommended sequence of the categories 'vendor' -> 'product_name' -> 'product_version'. Along the categories of this path '{full_display}', the following sequence was found: '{found_display}'"
         ),
         instance_path,
-    }
+    })
 }
 
 /// Required category sequence for branch paths.
@@ -43,8 +43,8 @@ const REQUIRED_CATEGORIES_ORDER: [CategoryOfTheBranch; 3] = [
 ///
 /// Other branch categories can be used before, after or between the aforementioned branch categories
 /// without making the test invalid.
-pub fn test_6_3_9_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_9_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(()); // this will be a Passed::NoData later (#409)

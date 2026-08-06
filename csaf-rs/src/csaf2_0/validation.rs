@@ -2,41 +2,31 @@ use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_0::testcases::*;
 use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestResult, TestResultStatus, Validatable};
+use crate::validation::{TestFinding, TestResult, TestResultStatus, Validatable, ValidationError};
 use crate::validations::test_schema::validate_schema_csaf_2_0;
 
-enum Severity {
-    Error,
-    Warning,
-    Info,
-}
-
-fn to_test_result(
-    test_id: &str,
-    severity: Severity,
-    result: Option<Result<(), Vec<crate::validation::ValidationError>>>,
-) -> TestResult {
+fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation::TestFinding>>>) -> TestResult {
     TestResult {
         test_id: test_id.to_string(),
         status: match result {
             None => TestResultStatus::NotFound,
             Some(Ok(())) => TestResultStatus::Success,
-            Some(Err(data)) => match severity {
-                Severity::Error => TestResultStatus::Failure {
-                    errors: data,
-                    warnings: vec![],
-                    infos: vec![],
-                },
-                Severity::Warning => TestResultStatus::Failure {
-                    errors: vec![],
-                    warnings: data,
-                    infos: vec![],
-                },
-                Severity::Info => TestResultStatus::Failure {
-                    errors: vec![],
-                    warnings: vec![],
-                    infos: data,
-                },
+            Some(Err(data)) => TestResultStatus::Failure {
+                errors: data
+                    .iter()
+                    .filter(|f| matches!(f, TestFinding::Error(_)))
+                    .map(ValidationError::from)
+                    .collect(),
+                warnings: data
+                    .iter()
+                    .filter(|f| matches!(f, TestFinding::Warning(_)))
+                    .map(ValidationError::from)
+                    .collect(),
+                infos: data
+                    .iter()
+                    .filter(|f| matches!(f, TestFinding::Information(_)))
+                    .map(ValidationError::from)
+                    .collect(),
             },
         },
     }
@@ -63,7 +53,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
     fn run_test(&self, test_id: &str) -> TestResult {
         let mandatory_result = to_test_result(
             test_id,
-            Severity::Error,
             match test_id {
                 // mandatory tests
                 "6.1.1" => Some(ValidatorForTest6_1_1.validate(self)),
@@ -118,7 +107,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
         let recommended_result = to_test_result(
             test_id,
-            Severity::Warning,
             match test_id {
                 // recommended tests
                 "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
@@ -162,7 +150,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
         to_test_result(
             test_id,
-            Severity::Info,
             match test_id {
                 // informative tests
                 "6.3.1" => Some(ValidatorForTest6_3_1.validate(self)),
@@ -186,12 +173,11 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
         if test_id == "schema" {
-            return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_0(self)));
+            return to_test_result(test_id, Some(validate_schema_csaf_2_0(self)));
         }
 
         to_test_result(
             test_id,
-            Severity::Warning,
             match test_id {
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),

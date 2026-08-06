@@ -2,22 +2,22 @@ use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status
 use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_status_version_error(status: &DocumentStatus, version: &SemVerVersion) -> ValidationError {
-    ValidationError {
+fn create_status_version_error(status: &DocumentStatus, version: &SemVerVersion) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document status is {status} but the document version {version} contains a pre-release part"
         ),
         instance_path: "/document/tracking/version".to_string(),
-    }
+    })
 }
 
 /// 6.1.20 Non-draft Document Version
 ///
 /// For documents with status "final" or "interim", the `/document/tracking/version` field must not contain
 /// a pre-release part (e.g. "1.0.0-alpha").
-pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_20_non_draft_document_version(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
 
     let status = tracking.get_status();

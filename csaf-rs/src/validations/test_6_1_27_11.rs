@@ -1,13 +1,13 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_missing_vulnerabilities_error(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_missing_vulnerabilities_error(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Document with category '{document_category}' must have a '/vulnerabilities' element"),
         instance_path: "/vulnerabilities".to_string(),
-    }
+    })
 }
 
 /// 6.1.27.11 Vulnerabilities
@@ -17,7 +17,7 @@ fn create_missing_vulnerabilities_error(document_category: &CsafDocumentCategory
 /// value `csaf_deprecated_security_advisory` for `/document/csaf_version` `2.1`.
 ///
 /// In documents with this category a `/vulnerabilities[]` element must exist.
-pub fn test_6_1_27_11_vulnerabilities(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_11_vulnerabilities(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {

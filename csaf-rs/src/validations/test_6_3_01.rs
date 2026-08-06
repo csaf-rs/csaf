@@ -1,20 +1,20 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::{HashMap, HashSet};
 
-fn create_cvss_v2_only_error(instance_path: String) -> ValidationError {
-    ValidationError {
+fn create_cvss_v2_only_error(instance_path: String) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: "Vulnerability uses CVSS v2 as the only scoring system".to_string(),
         instance_path,
-    }
+    })
 }
 
 /// 6.3.1 Use of CVSS v2 as the only Scoring System
 ///
 /// For each vulnerability, tests if in the scores / metrics, CVSS v2 is not the only scoring system used.
-pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // for each vuln
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {

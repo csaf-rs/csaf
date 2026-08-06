@@ -1,8 +1,8 @@
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<ValidationError>> {
+fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<TestFinding>> {
     let mut definitions_set = HashSet::<String>::new();
     if let Some(tree) = doc.get_product_tree().as_ref() {
         tree.visit_all_products(&mut |fpn, _path| {
@@ -11,7 +11,7 @@ fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<Vali
     }
 
     let references = doc.get_all_product_references();
-    let mut errors: Option<Vec<ValidationError>> = Option::None;
+    let mut errors: Option<Vec<TestFinding>> = Option::None;
     for (ref_id, ref_path) in &references {
         if !definitions_set.contains(ref_id) {
             errors.get_or_insert_default().push(generate_err_msg(ref_id, ref_path));
@@ -20,11 +20,11 @@ fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<Vali
     errors.map_or(Ok(()), Err)
 }
 
-fn generate_err_msg(ref_id: &str, ref_path: &str) -> ValidationError {
-    ValidationError {
+fn generate_err_msg(ref_id: &str, ref_path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Missing definition of product_id: {ref_id}"),
         instance_path: ref_path.to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_1, validate_missing_product_id);

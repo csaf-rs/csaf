@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DistributionTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::sync::LazyLock;
 
 /// 6.2.10 Missing TLP label
@@ -10,7 +10,7 @@ use std::sync::LazyLock;
 /// The test harness for CSAF 2.1 does not include the test.
 /// If the test function was to be called programmatically on a CSAF 2.1 doc, we are returning
 /// Ok(()). (later wasSkipped TODO)
-pub fn test_6_2_10_missing_tlp_label(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_10_missing_tlp_label(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // In CSAF 2.1 this field is mandatory and validated via the schema, so we skip this test
     if doc.get_document().get_csaf_version() == CsafVersion::X21 {
         return Ok(()); // TODO #409 wasSkipped
@@ -28,9 +28,11 @@ pub fn test_6_2_10_missing_tlp_label(doc: &impl CsafTrait) -> Result<(), Vec<Val
     }
 }
 
-static MISSING_TLP_LABEL_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "The CSAF document has no TLP label".to_string(),
-    instance_path: "/document/distribution/tlp/label".to_string(),
+static MISSING_TLP_LABEL_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The CSAF document has no TLP label".to_string(),
+        instance_path: "/document/distribution/tlp/label".to_string(),
+    })
 });
 
 crate::test_validation::impl_validator!(csaf2_0, ValidatorForTest6_2_10, test_6_2_10_missing_tlp_label);

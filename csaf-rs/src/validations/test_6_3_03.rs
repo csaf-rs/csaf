@@ -1,18 +1,18 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_missing_cve_error(vulnerability_index: usize) -> ValidationError {
-    ValidationError {
+fn create_missing_cve_error(vulnerability_index: usize) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: "Vulnerability is missing 'cve' property".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}"),
-    }
+    })
 }
 
 /// 6.3.3 Missing CVE
 ///
 /// Tests if all vulnerabilities have their `/vulnerabilities[]/cve` field filled.
-pub fn test_6_3_3_missing_cve(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_3_missing_cve(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if vuln.get_cve().is_none() {

@@ -1,12 +1,12 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
 fn create_forbidden_strings_in_version_error(
     product_name: &str,
     forbidden_substrings: Vec<&str>,
     product_path: &str,
-) -> ValidationError {
+) -> TestFinding {
     let forbidden_substrings_str: String = {
         if forbidden_substrings.len() > 1 {
             format!("substrings '{}'", forbidden_substrings.join("', '"))
@@ -14,10 +14,10 @@ fn create_forbidden_strings_in_version_error(
             format!("substring '{}'", forbidden_substrings[0])
         }
     };
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!("Product version '{product_name}' contains forbidden {forbidden_substrings_str}"),
         instance_path: format!("{product_path}/name"),
-    }
+    })
 }
 const FORBIDDEN_LESS_EQUAL: &str = "<=";
 const FORBIDDEN_GREATER_EQUAL: &str = ">=";
@@ -79,14 +79,12 @@ fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&
 /// tokenized by whitespace in their branch `name`.
 /// `<=` and `>=` are prioritized before `<` and `>` respectively.
 /// The error contains all unique offending operators and keywords.
-pub fn test_6_1_31_version_range_in_product_version_branch_name(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_31_version_range_in_product_version_branch_name(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
     };
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     product_tree.visit_all_branches(&mut |branch, path| {
         if branch.get_category() == CategoryOfTheBranch::ProductVersion {

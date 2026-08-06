@@ -1,27 +1,27 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
 use crate::csaf_traits::{CsafTrait, FirstKnownExploitationDatesTrait, VulnerabilityTrait, WithDate};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 fn create_inconsistent_exploitation_date_error(
     exploitation_date: &str,
     date: &str,
     v_i: usize,
     f_i: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The exploitation date '{exploitation_date}' must not be later than the date '{date}' of a first known exploitation date"
         ),
         instance_path: format!("/vulnerabilities/{v_i}/first_known_exploitation_dates/{f_i}/exploitation_date"),
-    }
+    })
 }
 
 /// 6.1.53 Inconsistent Exploitation Date
 ///
 /// For each `/vulnerabilities[]/first_known_exploitation_dates[]`, it is tested that `exploitation_date`
 /// is earlier or equal to the `date`.
-pub fn test_6_1_53_inconsistent_exploitation_date(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_53_inconsistent_exploitation_date(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(first_known_exploitation_dates) = vulnerability.get_first_known_exploitation_dates() {
             for (f_i, first_known_exploitation_date) in first_known_exploitation_dates.iter().enumerate() {

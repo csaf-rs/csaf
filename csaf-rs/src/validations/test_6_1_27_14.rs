@@ -1,16 +1,16 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
 use crate::schema::csaf2_1::schema::NoteCategory;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_missing_description_note(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_missing_description_note(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document does not contain a note with category `description` which is required for documents with category {document_category}"
         ),
         instance_path: "/document/notes".to_string(),
-    }
+    })
 }
 
 /// 6.1.27.14 Document Notes
@@ -18,7 +18,7 @@ fn create_missing_description_note(document_category: &CsafDocumentCategory) -> 
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseded`.
 ///
 /// There must be at least one item in `/document/notes[]` with category `description`.
-pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_14_document_notes_with_description(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {

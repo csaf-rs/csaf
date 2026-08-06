@@ -6,7 +6,7 @@ use serde_json::{Map, Value};
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
-    validation::ValidationError,
+    validation::{TestFinding, TestFindingData},
 };
 
 static CVSS20_VALIDATOR: LazyLock<Validator> =
@@ -20,8 +20,8 @@ static CVSS40_VALIDATOR: LazyLock<Validator> =
 
 /// 6.1.8 Invalid CVSS
 /// Invalid CVSS object according to scheme
-pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
@@ -81,7 +81,7 @@ fn evaluate_cvss(
     validator: &Validator,
     base_path: &str,
     metric: CsafVulnerabilityMetric,
-    errors: &mut Option<Vec<ValidationError>>,
+    errors: &mut Option<Vec<TestFinding>>,
 ) {
     let value = serde_json::to_value(cvss_value).unwrap();
     for error in validator.iter_errors(&value) {
@@ -91,11 +91,11 @@ fn evaluate_cvss(
     }
 }
 
-fn create_validation_error(message: String, base: &str, metric: CsafVulnerabilityMetric) -> ValidationError {
-    ValidationError {
+fn create_validation_error(message: String, base: &str, metric: CsafVulnerabilityMetric) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message,
         instance_path: format!("{}/{}", base, metric.get_metric_prop_name()),
-    }
+    })
 }
 
 #[cfg(test)]

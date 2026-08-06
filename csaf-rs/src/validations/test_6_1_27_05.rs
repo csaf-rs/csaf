@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 /// 6.1.27.5 Vulnerability Notes
@@ -10,14 +10,14 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 /// value `csaf_deprecated_security_advisory` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with these categories must have a `/vulnerabilities[]/notes` element.
-pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_05_vulnerability_notes(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // return error if there are vulnerabilities without notes
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_notes().is_none() {
@@ -37,13 +37,13 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
     ])
     .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
-fn test_6_1_27_05_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> ValidationError {
-    ValidationError {
+fn test_6_1_27_05_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document with category '{document_category}' must have a notes element in each vulnerability"
         ),
         instance_path: format!("/vulnerabilities/{vuln_path_index}/notes"),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_5, test_6_1_27_05_vulnerability_notes);
@@ -63,11 +63,10 @@ mod tests {
             &0,
         )]);
         let case_vex = Err(vec![test_6_1_27_05_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
-        let case_deprecated_security_advisory: Result<(), Vec<ValidationError>> =
-            Err(vec![test_6_1_27_05_err_generator(
-                &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
-                &0,
-            )]);
+        let case_deprecated_security_advisory: Result<(), Vec<TestFinding>> = Err(vec![test_6_1_27_05_err_generator(
+            &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+            &0,
+        )]);
 
         TESTS_2_0.test_6_1_27_5.expect(ExpectedResults_2_0 {
             case_01: case_security_advisory.clone(),

@@ -1,11 +1,11 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait, build_leaf_instance_path};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
 fn create_stacked_categories_error(
     stacked_categories: &[(CategoryOfTheBranch, &u64)],
     instance_path: String,
-) -> ValidationError {
+) -> TestFinding {
     // singular / plural of category
     let category_word = if stacked_categories.len() == 1 {
         "category"
@@ -18,18 +18,18 @@ fn create_stacked_categories_error(
         .map(|(cat, count)| format!("{cat} ({count})"))
         .collect();
     let stacked_list_str = stacked_list.join(", ");
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!("Stacked branch {category_word} found in path: {stacked_list_str}"),
         instance_path,
-    }
+    })
 }
 
 /// 6.1.57 Stacked Branch Categories
 ///
 /// In the product tree, the path from root to any FPN, all branch categories (except 'product_family')
 /// are only allowed to occur once.
-pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_57_stacked_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(()); // this will be a Passed::NoData later (#409)

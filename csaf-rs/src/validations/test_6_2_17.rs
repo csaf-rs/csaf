@@ -1,22 +1,22 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
 static CVE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^CVE-[0-9]{4}-[0-9]{4,}$").unwrap());
 
-fn create_cve_in_ids_error(id: &str, vuln_index: usize, id_index: usize) -> ValidationError {
-    ValidationError {
+fn create_cve_in_ids_error(id: &str, vuln_index: usize, id_index: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("Vulnerability ID text '{id}' matches CVE format"),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/text"),
-    }
+    })
 }
 
 /// 6.2.17 CVE in field IDs
 ///
 /// All `/vulnerabilities[]/ids[]` items must not match the CVE ID format in their `text` field.
-pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(ids) = vuln.get_ids() {

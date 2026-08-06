@@ -1,18 +1,18 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_cvss_v3_0_used_error(content_path: &str) -> ValidationError {
-    ValidationError {
+fn create_cvss_v3_0_used_error(content_path: &str) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: "CVSS v3.0 is used (version is '3.0').".to_string(),
         instance_path: format!("{content_path}/cvss_v3/version"),
-    }
+    })
 }
 
-fn create_cvss_v3_0_vector_string_error(content_path: &str) -> ValidationError {
-    ValidationError {
+fn create_cvss_v3_0_vector_string_error(content_path: &str) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: "CVSS v3.0 is used (vectorString prefix is 'CVSS:3.0/').".to_string(),
         instance_path: format!("{content_path}/cvss_v3/vectorString"),
-    }
+    })
 }
 
 /// 6.3.2 Use of CVSS v3.0
@@ -25,8 +25,8 @@ fn create_cvss_v3_0_vector_string_error(content_path: &str) -> ValidationError {
 /// indicate CVSS v3.0, which can be done with simple string comparisons.
 ///
 /// Returns up to two errors, if `version` is `3.0` and / or `vectorString` starts with `CVSS:3.0/`.
-pub fn test_6_3_2_use_of_cvss_v3_0(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_2_use_of_cvss_v3_0(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vuln.get_metrics() {

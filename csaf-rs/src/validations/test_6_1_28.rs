@@ -1,18 +1,18 @@
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_same_language_error(lang: &CsafLanguage) -> ValidationError {
-    ValidationError {
+fn create_same_language_error(lang: &CsafLanguage) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("document language and source language have the same value '{lang}'"),
         instance_path: "/document/source_lang".to_string(),
-    }
+    })
 }
 
 /// 6.1.28 Translation
 ///
 /// `/document/lang` and `/document/source_lang` must have different values
-pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_28_translation(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     // Check if both lang and source_lang are present

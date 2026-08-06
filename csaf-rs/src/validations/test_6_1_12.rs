@@ -1,15 +1,15 @@
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::{IntoValidationError, ValidationError};
+use crate::validation::{IntoTestFindingError, TestFinding};
 
-pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     if document.get_lang().is_none() && document.get_source_lang().is_none() {
         return Ok(()); // This should be a wasSkipped later (see #409)
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     validate_language(document.get_lang(), "/document/lang", &mut errors);
     validate_language(document.get_source_lang(), "/document/source_lang", &mut errors);
 
@@ -18,18 +18,18 @@ pub fn test_6_1_12_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationEr
 
 /// Validate a language code and append the validation error to the errors vector.
 ///
-/// If the given language is [`CsafLanguage::Invalid`], a [`ValidationError`] is created
+/// If the given language is [`CsafLanguage::Invalid`], a [`TestFinding`] is created
 /// with the specified JSON path and added to the errors collection.
 ///
 /// # Arguments
 /// - `lang`: An optional language code to validate.
 /// - `json_path`: The JSON path to the language code being validated
 /// - `errors`: A mutable reference to an optional vector of validation errors.
-fn validate_language(lang: Option<CsafLanguage>, json_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+fn validate_language(lang: Option<CsafLanguage>, json_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     if let Some(CsafLanguage::Invalid(_, err)) = lang {
         errors
             .get_or_insert_default()
-            .push(err.into_validation_error(json_path));
+            .push(err.into_test_finding_error(json_path));
     }
 }
 
@@ -43,6 +43,7 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_12 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validation::IntoTestFindingError;
 
     #[test]
     fn test_test_6_1_12() {
@@ -54,11 +55,11 @@ mod tests {
             unreachable!()
         };
 
-        let case_01_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/lang")]);
-        let case_s01_source_lang_invalid = Err(vec![ez_error.clone().into_validation_error("/document/source_lang")]);
+        let case_01_lang_invalid = Err(vec![ez_error.clone().into_test_finding_error("/document/lang")]);
+        let case_s01_source_lang_invalid = Err(vec![ez_error.clone().into_test_finding_error("/document/source_lang")]);
         let case_s02_both_langs_invalid = Err(vec![
-            ez_error.into_validation_error("/document/lang"),
-            zzz_error.into_validation_error("/document/source_lang"),
+            ez_error.into_test_finding_error("/document/lang"),
+            zzz_error.into_test_finding_error("/document/source_lang"),
         ]);
 
         // Case S11: Valid language code in both /document/lang and /document/source_lang

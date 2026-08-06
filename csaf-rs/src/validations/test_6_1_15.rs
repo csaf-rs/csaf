@@ -1,17 +1,19 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, PublisherTrait};
 use crate::schema::csaf2_1::schema::CategoryOfPublisher;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::sync::LazyLock;
 
-static MISSING_SOURCE_LANG_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "source_lang is required when the publisher category is 'translator'".to_string(),
-    instance_path: "/document/source_lang".to_string(),
+static MISSING_SOURCE_LANG_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: "source_lang is required when the publisher category is 'translator'".to_string(),
+        instance_path: "/document/source_lang".to_string(),
+    })
 });
 
 /// 6.1.15 Translator
 ///
 /// If the `/document/publisher/category` is "translator", then the `/document/source_lang` must be present and set.
-pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     // This test only applies if the publisher category is "translator"

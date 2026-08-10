@@ -58,7 +58,7 @@ jobs:
       - name: Run shared format check
         uses: csaf-rs/shared-workflows/.github/actions/rust-checks@main
         with:
-          run-format: "true"
+          run-clippy: "false"
       - name: Doc check
         run: cargo doc --no-deps --document-private-items --locked
         env:
@@ -132,8 +132,8 @@ jobs:
       - name: Run shared clippy check
         uses: csaf-rs/shared-workflows/.github/actions/rust-checks@main
         with:
-          run-clippy: "true"
-          clippy-args: "--all-targets --locked --target=${{ matrix.target.arch }} --release"
+          run-format: "false"
+          clippy-extra-args: "--target=${{ matrix.target.arch }} --release"
       - name: Build
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
       - name: Run tests

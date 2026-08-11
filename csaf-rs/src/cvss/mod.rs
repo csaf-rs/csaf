@@ -343,3 +343,171 @@ pub fn check_optional_field_mismatch<T: PartialEq + std::fmt::Display + std::fmt
         _ => {},
     }
 }
+
+// ---- Typed construction of score objects ----
+
+use cvss_rs::v2_0::CvssV2;
+use cvss_rs::v3::CvssV3;
+use cvss_rs::v4_0::CvssV4;
+use serde::Serialize;
+use serde_json::Map;
+use std::str::FromStr;
+
+/// Renders a typed CVSS object into the JSON object that a score's
+/// `cvss_v2`/`cvss_v3`/`cvss_v4` property carries. The CSAF schemas type these
+/// properties as untyped objects; the typed models serialize to exactly the
+/// shape the referenced FIRST CVSS schemas expect.
+fn to_score_map<T: Serialize>(cvss: &T) -> Map<String, Value> {
+    match serde_json::to_value(cvss) {
+        Ok(Value::Object(map)) => map,
+        // A derived struct serialization always yields an object.
+        _ => Map::new(),
+    }
+}
+
+/// Renders a typed CVSS v2.0 object for a score's `cvss_v2` property.
+pub fn cvss_v2_to_score_map(cvss: &CvssV2) -> Map<String, Value> {
+    to_score_map(cvss)
+}
+
+/// Renders a typed CVSS v3.0/v3.1 object for a score's `cvss_v3` property.
+pub fn cvss_v3_to_score_map(cvss: &CvssV3) -> Map<String, Value> {
+    to_score_map(cvss)
+}
+
+/// Renders a typed CVSS v4.0 object for a content's `cvss_v4` property (CSAF 2.1).
+pub fn cvss_v4_to_score_map(cvss: &CvssV4) -> Map<String, Value> {
+    to_score_map(cvss)
+}
+
+/// Parses a CVSS v2.0 vector and renders its score object with the base score
+/// and severity recomputed from the parsed metrics, so the CSAF mandatory
+/// tests 6.1.9 and 6.1.10 hold by construction. A vector whose base metrics
+/// are incomplete keeps the parsed score as-is.
+pub fn cvss_v2_score_map_from_vector(vector: &str) -> Result<Map<String, Value>, cvss_rs::ParseError> {
+    let mut cvss = CvssV2::from_str(vector)?;
+    if let Some(score) = cvss.calculated_base_score() {
+        cvss.severity = Some(v2_severity(score));
+        cvss.base_score = score;
+    }
+    Ok(cvss_v2_to_score_map(&cvss))
+}
+
+/// Parses a CVSS v3.0/v3.1 vector and renders its score object with the base
+/// score and base severity recomputed from the parsed metrics, so the CSAF
+/// mandatory tests 6.1.9 and 6.1.10 hold by construction. A vector whose base
+/// metrics are incomplete keeps the parsed score as-is.
+pub fn cvss_v3_score_map_from_vector(vector: &str) -> Result<Map<String, Value>, cvss_rs::ParseError> {
+    let mut cvss = CvssV3::from_str(vector)?;
+    if let Some(score) = cvss.calculated_base_score() {
+        cvss.base_severity = v3_severity(score);
+        cvss.base_score = score;
+    }
+    Ok(cvss_v3_to_score_map(&cvss))
+}
+
+/// Parses a CVSS v4.0 vector and renders its score object with the base score
+/// and base severity recomputed from the parsed metrics, so the CSAF mandatory
+/// tests 6.1.9 and 6.1.10 hold by construction. A vector whose base metrics
+/// are incomplete keeps the parsed score as-is.
+pub fn cvss_v4_score_map_from_vector(vector: &str) -> Result<Map<String, Value>, cvss_rs::ParseError> {
+    let mut cvss = CvssV4::from_str(vector)?;
+    if let Some(score) = cvss.calculated_base_score() {
+        cvss.base_severity = v4_severity(score);
+        cvss.base_score = score;
+    }
+    Ok(cvss_v4_to_score_map(&cvss))
+}
+
+/// The CVSS v2.0 severity band of a base score.
+fn v2_severity(score: f64) -> cvss_rs::v2_0::Severity {
+    use cvss_rs::v2_0::Severity;
+    if score < 4.0 {
+        Severity::Low
+    } else if score < 7.0 {
+        Severity::Medium
+    } else {
+        Severity::High
+    }
+}
+
+/// The CVSS v3.x severity band of a base score.
+fn v3_severity(score: f64) -> cvss_rs::v3::Severity {
+    use cvss_rs::v3::Severity;
+    if score == 0.0 {
+        Severity::None
+    } else if score < 4.0 {
+        Severity::Low
+    } else if score < 7.0 {
+        Severity::Medium
+    } else if score < 9.0 {
+        Severity::High
+    } else {
+        Severity::Critical
+    }
+}
+
+/// The CVSS v4.0 severity band of a base score.
+fn v4_severity(score: f64) -> cvss_rs::v4_0::Severity {
+    use cvss_rs::v4_0::Severity;
+    if score == 0.0 {
+        Severity::None
+    } else if score < 4.0 {
+        Severity::Low
+    } else if score < 7.0 {
+        Severity::Medium
+    } else if score < 9.0 {
+        Severity::High
+    } else {
+        Severity::Critical
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn v3_from_vector_recomputes_score_and_severity() {
+        let map = cvss_v3_score_map_from_vector("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H").expect("vector parses");
+        assert_eq!(map.get("baseScore"), Some(&json!(9.8)));
+        assert_eq!(map.get("baseSeverity"), Some(&json!("CRITICAL")));
+        assert_eq!(map.get("attackVector"), Some(&json!("NETWORK")));
+        assert_eq!(
+            map.get("vectorString"),
+            Some(&json!("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"))
+        );
+    }
+
+    #[test]
+    fn v2_from_vector_recomputes_score_and_severity() {
+        let map = cvss_v2_score_map_from_vector("AV:N/AC:L/Au:N/C:C/I:C/A:C").expect("vector parses");
+        assert_eq!(map.get("baseScore"), Some(&json!(10.0)));
+        assert_eq!(map.get("severity"), Some(&json!("High")));
+        assert_eq!(map.get("accessVector"), Some(&json!("NETWORK")));
+    }
+
+    #[test]
+    fn v4_from_vector_recomputes_score_and_severity() {
+        let map = cvss_v4_score_map_from_vector("CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N")
+            .expect("vector parses");
+        assert_eq!(map.get("baseScore"), Some(&json!(9.3)));
+        assert_eq!(map.get("baseSeverity"), Some(&json!("CRITICAL")));
+    }
+
+    #[test]
+    fn score_maps_parse_back_into_the_typed_models() {
+        let vector = "CVSS:3.0/AV:A/AC:H/PR:L/UI:R/S:C/C:L/I:L/A:N";
+        let map = cvss_v3_score_map_from_vector(vector).expect("vector parses");
+        let parsed = CvssV3::deserialize(&map).expect("round-trips");
+        assert_eq!(parsed.vector_string, vector);
+    }
+
+    #[test]
+    fn invalid_vectors_are_rejected() {
+        assert!(cvss_v3_score_map_from_vector("CVSS:9.9/AV:N").is_err());
+        assert!(cvss_v2_score_map_from_vector("").is_err());
+        assert!(cvss_v4_score_map_from_vector("CVSS:9.9/AV:N").is_err());
+    }
+}

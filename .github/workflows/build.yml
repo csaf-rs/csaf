@@ -401,10 +401,15 @@ jobs:
           path: sboms/
 
       - name: Process CDX files
+        # Prevent direct interpolation of potentially untrusted Git ref values into the shell script:
+        # https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          TARGET_REF: ${{ needs.prepare.outputs.target-ref }}
         run: |
           # Determine version segment for PURL
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            PURL_VERSION="${{ github.ref_name }}"
+            PURL_VERSION="$REF_NAME"
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             PURL_VERSION="pr-${{ github.event.pull_request.number }}"
           else
@@ -431,7 +436,7 @@ jobs:
               tagOpt="--isTag=true"
             fi
 
-            devguard-scanner sbom "$cdx_file" --assetName="${{ vars.DEVGUARD_ASSET }}" --token="${{ secrets.DEVGUARD_TOKEN }}" --artifactName="$artifactName" ${{ needs.prepare.outputs.target-ref }} $tagOpt  2>&1
+            devguard-scanner sbom "$cdx_file" --assetName="${{ vars.DEVGUARD_ASSET }}" --token="${{ secrets.DEVGUARD_TOKEN }}" --artifactName="$artifactName" "$TARGET_REF" $tagOpt 2>&1
           done
 
   publish-crates:

@@ -2,7 +2,7 @@ use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrai
 use crate::validation::{TestFinding, TestFindingData};
 
 fn create_qualitative_severity_rating_error(instance_path: String) -> TestFinding {
-    TestFinding::Error ( TestFindingData {
+    TestFinding::Information ( TestFindingData {
         message: "The metric uses a qualitative severity rating. The use of qualitative severity ratings is generally discouraged.".to_string(),
         instance_path,
     })

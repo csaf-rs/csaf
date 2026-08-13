@@ -35,7 +35,7 @@ jobs:
         run: rustup update stable --no-self-update
 
       - name: Run benchmarks
-        run: cargo bench --bench validation_benchmark -- --output-format bencher | tee output.txt
+        run: cargo bench --bench validation_benchmark -- --output-format bencher > output.txt
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1

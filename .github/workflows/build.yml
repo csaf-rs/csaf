@@ -133,7 +133,7 @@ jobs:
         uses: csaf-rs/shared-workflows/.github/actions/rust-checks@main
         with:
           run-format: "false"
-          clippy-extra-args: "--target=${{ matrix.target.arch }} --release"
+          clippy-extra-args: "--target=${{ matrix.target.arch }}"
       - name: Build
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
       - name: Run tests

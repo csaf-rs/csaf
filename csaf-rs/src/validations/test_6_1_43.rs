@@ -46,12 +46,14 @@ mod tests {
     #[test]
     fn test_test_6_1_43() {
         TESTS_2_1.test_6_1_43.expect(ExpectedResults {
-            case_01: Err(vec![create_multiple_stars_model_number_error(
+            case_01: // One model number with two unescaped stars
+            Err(vec![create_multiple_stars_model_number_error(
                 &CsafModelNumber::from("P*A*"),
                 "/product_tree/full_product_names/0",
                 0,
             )]),
-            case_02: Err(vec![create_multiple_stars_model_number_error(
+            case_02: // One model number with one escaped and two unescaped stars
+            Err(vec![create_multiple_stars_model_number_error(
                 &CsafModelNumber::from("*P*\\*?*"),
                 "/product_tree/full_product_names/0",
                 0,

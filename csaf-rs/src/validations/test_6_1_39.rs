@@ -61,13 +61,13 @@ mod tests {
         let err = Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
         TESTS_2_1.test_6_1_39.expect(ExpectedResults {
-            case_01: // Case 01: TLP:CLEAR with regular UUID, status final
+            case_01: // TLP:CLEAR with regular UUID, status final
             err.clone(),
-            case_02: // Case 02: TLP:CLEAR with Nil UUID, status final
+            case_02: // TLP:CLEAR with Nil UUID, status final
             err,
-            case_11: // Case 11: TLP:CLEAR with Max UUID, status final
+            case_11: // TLP:CLEAR with Max UUID, status final
             Ok(()),
-            case_12: // Case 12: TLP:CLEAR with Nil UUID, status draft
+            case_12: // TLP:CLEAR with Nil UUID, status draft
             Ok(()),
         });
     }

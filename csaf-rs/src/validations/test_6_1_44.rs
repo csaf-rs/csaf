@@ -46,12 +46,14 @@ mod tests {
     #[test]
     fn test_test_6_1_44() {
         TESTS_2_1.test_6_1_44.expect(ExpectedResults {
-            case_01: Err(vec![create_multiple_stars_serial_number_error(
+            case_01: // One serial number with two unescaped stars
+            Err(vec![create_multiple_stars_serial_number_error(
                 &CsafSerialNumber::from("P*A*"),
                 "/product_tree/full_product_names/0",
                 0,
             )]),
-            case_02: Err(vec![create_multiple_stars_serial_number_error(
+            case_02: // One serial number with one escaped and two unescaped stars
+            Err(vec![create_multiple_stars_serial_number_error(
                 &CsafSerialNumber::from("*P*\\*?*"),
                 "/product_tree/full_product_names/0",
                 0,

@@ -361,13 +361,13 @@ mod tests {
         // Case 05: Products without identification helpers (no helpers to collide, expects pass)
         // Case S11: Verifies that duplicate helper values inside the *same* product are correctly ignored (expects pass)
         TESTS_2_1.test_6_2_32.expect(ExpectedResults {
-            case_01: Err(case_01_errors),   // index 0: case_01
-            case_02: Err(case_02_errors),   // index 1: case_02
-            case_03: Err(case_03_errors),   // index 2: case_03
-            case_s01: Err(case_s01_errors), // index 3: case_s01 (Yields 24 errors)
-            case_11: Ok(()),                // index 4: case_11
-            case_12: Ok(()),                // index 5: case_12
-            case_s11: Ok(()),               // index 6: case_s11 (Yields Ok)
+            case_01: Err(case_01_errors),
+            case_02: Err(case_02_errors),
+            case_03: Err(case_03_errors),
+            case_s01: Err(case_s01_errors),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
         });
     }
 }

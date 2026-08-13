@@ -195,10 +195,10 @@ mod tests {
             case_02: case_02_cwe_version_after_latest,
             case_03: case_03_cwe_version_mismatch,
             case_04: case_04_cwe_version_mismatch_multi_vulnerabilities,
-            case_11: Ok(()), // Case 11: 1 vuln, 1 correct cwe version, correction of case 01 with version 4.12 -> 4.13
-            case_12: Ok(()), // Case 12: 1 vuln, 1 correct cwe version, correction of case 02 where version 4.15 was newer than latest 4.13
-            case_13: Ok(()), // Case 13: 1 vuln, 3 correct cwe versions, correction of case 03 with versions 1.8.1 -> 4.13, 1.0 -> 4.13
-            case_14: Ok(()), // Case 14: 3 vulns, 4 correct cwe versions, correction of case 04 with versions 1.3 -> 4.13, 2.1 -> 4.13, 4.14 -> 4.13, 4.15 -> 4.13
+            case_11: Ok(()), // 1 vuln, 1 correct cwe version, correction of case 01 with version 4.12 -> 4.13
+            case_12: Ok(()), // 1 vuln, 1 correct cwe version, correction of case 02 where version 4.15 was newer than latest 4.13
+            case_13: Ok(()), // 1 vuln, 3 correct cwe versions, correction of case 03 with versions 1.8.1 -> 4.13, 1.0 -> 4.13
+            case_14: Ok(()), // 3 vulns, 4 correct cwe versions, correction of case 04 with versions 1.3 -> 4.13, 2.1 -> 4.13, 4.14 -> 4.13, 4.15 -> 4.13
         });
     }
 

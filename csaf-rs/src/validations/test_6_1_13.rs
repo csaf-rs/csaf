@@ -44,7 +44,6 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_13 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validation::IntoTestFindingError;
     use crate::validations::test_6_1_13::tests::PurlPath::{Purl2_0, Purl2_1};
 
     enum PurlPath {
@@ -63,40 +62,23 @@ mod tests {
     #[test]
     fn test_test_6_1_13() {
         // Shared expected results (only "purl"/"purls" field name differs between 2.0 and 2.1)
-<<<<<<< HEAD
-        let case_01_missing_name = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
+        let case_01_missing_name = |purl_path: PurlPath| -> Result<(), Vec<ValidationError>> {
             Err(vec![
                 PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName)
                     .into_validation_error(&format!(
-                        "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
-=======
-        let case_01_missing_name = |purl_path: PurlPath| -> Result<(), Vec<TestFinding>> {
-            Err(vec![
-                PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName)
-                    .into_test_finding_error(&format!(
                         "/product_tree/full_product_names/0/product_identification_helper/{purl_path}"
->>>>>>> 3f5e2c4 (make purl validation in 6.1.13 more clear)
                     )),
             ])
         };
 
-<<<<<<< HEAD
-        let case_02_or_s06_type_prohibits_namespace = |field: &str, idx: &str| -> Result<(), Vec<ValidationError>> {
-=======
-        let case_02_or_s06_type_prohibits_namespace = |purl_path: PurlPath| -> Result<(), Vec<TestFinding>> {
->>>>>>> 3f5e2c4 (make purl validation in 6.1.13 more clear)
+        let case_02_or_s06_type_prohibits_namespace = |purl_path: PurlPath| -> Result<(), Vec<ValidationError>> {
             Err(vec![
                 PurlParseError::new_for_test(
                     "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
                     PurlParseErrorKind::TypeProhibitsNamespace("oci".to_string()),
                 )
-<<<<<<< HEAD
                 .into_validation_error(&format!(
-                    "/product_tree/full_product_names/0/product_identification_helper/{field}{idx}"
-=======
-                .into_test_finding_error(&format!(
                     "/product_tree/full_product_names/0/product_identification_helper/{purl_path}"
->>>>>>> 3f5e2c4 (make purl validation in 6.1.13 more clear)
                 )),
             ])
         };

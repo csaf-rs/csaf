@@ -425,6 +425,16 @@ RustBuffer uniffi_csaf_ffi_fn_method_csafdocument_to_json(uint64_t ptr, RustCall
 RustBuffer uniffi_csaf_ffi_fn_method_csafdocument_validate(uint64_t ptr, RustBuffer preset, RustCallStatus *out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_GET_TESTS
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_GET_TESTS
+RustBuffer uniffi_csaf_ffi_fn_func_get_tests(RustBuffer version, RustCallStatus *out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_GET_TESTS_IN_PRESET
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_GET_TESTS_IN_PRESET
+RustBuffer uniffi_csaf_ffi_fn_func_get_tests_in_preset(RustBuffer version, RustBuffer preset, RustCallStatus *out_status
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF
 #define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_FN_FUNC_VALIDATE_CSAF
 RustBuffer uniffi_csaf_ffi_fn_func_validate_csaf(RustBuffer json_str, RustBuffer preset, RustCallStatus *out_status
@@ -713,6 +723,18 @@ void ffi_csaf_ffi_rust_future_free_void(uint64_t handle
 #ifndef UNIFFI_FFIDEF_FFI_CSAF_FFI_RUST_FUTURE_COMPLETE_VOID
 #define UNIFFI_FFIDEF_FFI_CSAF_FFI_RUST_FUTURE_COMPLETE_VOID
 void ffi_csaf_ffi_rust_future_complete_void(uint64_t handle, RustCallStatus *out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_GET_TESTS
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_GET_TESTS
+uint16_t uniffi_csaf_ffi_checksum_func_get_tests(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_GET_TESTS_IN_PRESET
+#define UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_GET_TESTS_IN_PRESET
+uint16_t uniffi_csaf_ffi_checksum_func_get_tests_in_preset(void
+    
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_CSAF_FFI_CHECKSUM_FUNC_VALIDATE_CSAF

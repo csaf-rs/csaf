@@ -51,7 +51,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
     }
 
     fn run_test(&self, test_id: &str) -> TestResult {
-        let mandatory_result = to_test_result(
+        to_test_result(
             test_id,
             match test_id {
                 // mandatory tests
@@ -98,17 +98,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.31" => Some(ValidatorForTest6_1_31.validate(self)),
                 "6.1.32" => Some(ValidatorForTest6_1_32.validate(self)),
                 "6.1.33" => Some(ValidatorForTest6_1_33.validate(self)),
-                _ => None,
-            },
-        );
-        if TestResultStatus::NotFound != mandatory_result.status {
-            return mandatory_result;
-        }
-
-        let recommended_result = to_test_result(
-            test_id,
-            match test_id {
-                // recommended tests
+                // optional
                 "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
                 "6.2.2" => Some(ValidatorForTest6_2_2.validate(self)),
                 "6.2.3" => Some(ValidatorForTest6_2_3.validate(self)),
@@ -141,16 +131,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                         status: TestResultStatus::Skipped,
                     };
                 },
-                _ => None,
-            },
-        );
-        if TestResultStatus::NotFound != recommended_result.status {
-            return recommended_result;
-        }
-
-        to_test_result(
-            test_id,
-            match test_id {
                 // informative tests
                 "6.3.1" => Some(ValidatorForTest6_3_1.validate(self)),
                 "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
@@ -163,7 +143,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.9" => Some(ValidatorForTest6_3_9.validate(self)),
                 "6.3.10" => Some(ValidatorForTest6_3_10.validate(self)),
                 "6.3.11" => Some(ValidatorForTest6_3_11.validate(self)),
-                // invalid tests
                 _ => None,
             },
         )
@@ -172,13 +151,10 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
-        if test_id == "schema" {
-            return to_test_result(test_id, Some(validate_schema_csaf_2_0(self)));
-        }
-
         to_test_result(
             test_id,
             match test_id {
+                "schema" => Some(validate_schema_csaf_2_0(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

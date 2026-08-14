@@ -76,7 +76,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
     }
 
     fn run_test(&self, test_id: &str) -> TestResult {
-        let mandatory_result = to_test_result(
+        to_test_result(
             test_id,
             match test_id {
                 // mandatory tests
@@ -161,16 +161,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.60.2" => None, // Some(ValidatorForTest6_1_60_2.validate(self)),
                 "6.1.60.3" => None, // Some(ValidatorForTest6_1_60_3.validate(self)),
                 "6.1.61" => Some(ValidatorForTest6_1_61.validate(self)),
-                _ => None,
-            },
-        );
-        if TestResultStatus::NotFound != mandatory_result.status {
-            return mandatory_result;
-        }
-
-        let recommended_result = to_test_result(
-            test_id,
-            match test_id {
                 // recommended tests
                 "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
                 "6.2.2" => Some(ValidatorForTest6_2_2.validate(self)),
@@ -241,16 +231,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.51" => None,   // Some(ValidatorForTest6_2_51.validate(self)),
                 "6.2.52" => Some(ValidatorForTest6_2_52.validate(self)),
                 "6.2.53" => Some(ValidatorForTest6_2_53.validate(self)),
-                _ => None,
-            },
-        );
-        if TestResultStatus::NotFound != recommended_result.status {
-            return recommended_result;
-        }
-
-        to_test_result(
-            test_id,
-            match test_id {
                 // informative tests
                 "6.3.1" => None, // Some(ValidatorForTest6_3_1.validate(self)),
                 "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
@@ -280,13 +260,10 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
-        if test_id == "schema" {
-            return to_test_result(test_id, Some(validate_schema_csaf_2_1(self)));
-        }
-
         to_test_result(
             test_id,
             match test_id {
+                "schema" => Some(validate_schema_csaf_2_1(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

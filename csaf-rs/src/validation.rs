@@ -51,11 +51,6 @@ impl std::fmt::Display for ValidationError {
     }
 }
 
-/// Trait for types that can be converted into a [`ValidationError`] by providing an instance path.
-pub trait IntoValidationError {
-    fn into_validation_error(self, instance_path: &str) -> ValidationError;
-}
-
 pub trait IntoTestFindingError {
     fn into_test_finding_error(self, instance_path: &str) -> TestFinding;
 }

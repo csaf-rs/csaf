@@ -1,4 +1,10 @@
-use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
+use crate::extractor::collect_tree::CollectTree;
+use crate::extractor::combine::Combine;
+use crate::extractor::convert::Convert;
+use crate::extractor::extract::ExtractPrimitive;
+use crate::extractor::navigate::AtPath;
+use crate::schema::csaf2_1::schema::CategoryOfTheBranch as CategoryOfTheBranch21;
+use crate::two_step_validation::{TwoStepValidator, impl_two_step_validator, make_validator};
 use crate::validation::ValidationError;
 use std::collections::HashSet;
 
@@ -16,7 +22,7 @@ fn create_forbidden_strings_in_version_error(
     };
     ValidationError {
         message: format!("Product version '{product_name}' contains forbidden {forbidden_substrings_str}"),
-        instance_path: format!("{product_path}/name"),
+        instance_path: product_path.to_string(),
     }
 }
 const FORBIDDEN_LESS_EQUAL: &str = "<=";
@@ -79,37 +85,48 @@ fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&
 /// tokenized by whitespace in their branch `name`.
 /// `<=` and `>=` are prioritized before `<` and `>` respectively.
 /// The error contains all unique offending operators and keywords.
-pub fn test_6_1_31_version_range_in_product_version_branch_name(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
-    let Some(product_tree) = doc.get_product_tree() else {
-        return Ok(());
-    };
-
-    let mut errors: Option<Vec<ValidationError>> = None;
-
-    product_tree.visit_all_branches(&mut |branch, path| {
-        if branch.get_category() == CategoryOfTheBranch::ProductVersion {
-            // if there are any forbidden substrings found, create an error
-            if let Some(forbidden_substrings) = check_branch_name_for_forbidden_substrings(branch.get_name()) {
-                errors
-                    .get_or_insert_default()
-                    .push(create_forbidden_strings_in_version_error(
-                        branch.get_name(),
-                        forbidden_substrings,
-                        path,
-                    ));
+fn create_validator_6_1_31() -> impl TwoStepValidator {
+    make_validator(
+        AtPath::new(
+            "product_tree",
+            CollectTree::new(
+                "branches",
+                Combine::new_pair(
+                    AtPath::new("name", ExtractPrimitive::new_string_with_path()),
+                    AtPath::new(
+                        "category",
+                        Convert::new(ExtractPrimitive::<CategoryOfTheBranch21>::new_from_str(), |category| {
+                            category == Some(CategoryOfTheBranch21::ProductVersion)
+                        }),
+                    ),
+                ),
+            ),
+        ),
+        |data: Vec<(Option<(String, String)>, bool)>| -> Result<(), Vec<ValidationError>> {
+            let mut errors: Option<Vec<ValidationError>> = None;
+            for (name, category_is_product_version) in data {
+                if let Some((path, name)) = name
+                    && category_is_product_version
+                {
+                    // if there are any forbidden substrings found, create an error
+                    if let Some(forbidden_substrings) = check_branch_name_for_forbidden_substrings(&name) {
+                        errors
+                            .get_or_insert_default()
+                            .push(create_forbidden_strings_in_version_error(
+                                &name,
+                                forbidden_substrings,
+                                &path,
+                            ));
+                    }
+                }
             }
-        }
-    });
 
-    errors.map_or(Ok(()), Err)
+            errors.map_or(Ok(()), Err)
+        },
+    )
 }
 
-crate::test_validation::impl_validator!(
-    ValidatorForTest6_1_31,
-    test_6_1_31_version_range_in_product_version_branch_name
-);
+impl_two_step_validator!(ValidatorForTest6_1_31, create_validator_6_1_31);
 
 #[cfg(test)]
 mod tests {
@@ -122,68 +139,68 @@ mod tests {
         let case_01_prior = Err(vec![create_forbidden_strings_in_version_error(
             "prior to 4.2",
             vec!["prior"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_02_less_than = Err(vec![create_forbidden_strings_in_version_error(
             "<4.2",
             vec!["<"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_03_less_equal = Err(vec![create_forbidden_strings_in_version_error(
             "<=4.1",
             vec!["<="],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_04_less_equal_space = Err(vec![create_forbidden_strings_in_version_error(
             "<= 4.1",
             vec!["<="],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_05_earlier = Err(vec![create_forbidden_strings_in_version_error(
             "4.1 and earlier",
             vec!["earlier"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_06_all = Err(vec![create_forbidden_strings_in_version_error(
             "all",
             vec!["all"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_07_before = Err(vec![create_forbidden_strings_in_version_error(
             "before 4.2",
             vec!["before"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_08_later = Err(vec![create_forbidden_strings_in_version_error(
             "4.2 and later",
             vec!["later"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_09_versions = Err(vec![create_forbidden_strings_in_version_error(
             "3.X versions",
             vec!["versions"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_s01_all_uppercase = Err(vec![create_forbidden_strings_in_version_error(
             "ALL",
             vec!["all"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_s02_greater_than = Err(vec![create_forbidden_strings_in_version_error(
             ">4.2",
             vec![">"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         let case_s03_greater_equal = Err(vec![create_forbidden_strings_in_version_error(
             ">=4.2",
             vec![">="],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
         // Case S04: Multiple operators and keywords
         let case_s04_multiple = Err(vec![create_forbidden_strings_in_version_error(
             ">=2.0 and <3.0 and after 4.1 and before 5.1",
             vec!["<", ">=", "after", "before"],
-            "/product_tree/branches/0/branches/0/branches/0",
+            "/product_tree/branches/0/branches/0/branches/0/name",
         )]);
 
         // Case 11: Using product_version_range

@@ -1,38 +1,38 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::{HashMap, HashSet};
 
-fn generate_self_reference_product_error(version: CsafVersion, path: &str) -> ValidationError {
-    ValidationError {
+fn generate_self_reference_product_error(version: CsafVersion, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: if version == CsafVersion::X21 {
             "Product path references itself via 'beginning product reference'".to_string()
         } else {
             "Relationship references itself via 'product reference'".to_string()
         },
         instance_path: path.to_string(),
-    }
+    })
 }
 
-fn generate_self_reference_relates_to_error(version: CsafVersion, path: &str) -> ValidationError {
-    ValidationError {
+fn generate_self_reference_relates_to_error(version: CsafVersion, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: if version == CsafVersion::X21 {
             "Product path references itself via 'next product reference'".to_string()
         } else {
             "Relationship references itself via 'relates to product reference'".to_string()
         },
         instance_path: path.to_string(),
-    }
+    })
 }
 
-fn generate_cycle_error(version: CsafVersion, cycle: &[String], path: String) -> ValidationError {
-    ValidationError {
+fn generate_cycle_error(version: CsafVersion, cycle: &[String], path: String) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: if version == CsafVersion::X21 {
             format!("Found cycle in product path definitions: {}", cycle.join(" -> "))
         } else {
             format!("Found cycle in relationship definitions: {}", cycle.join(" -> "))
         },
         instance_path: path,
-    }
+    })
 }
 
 /// Find the first cycle in the given `relation_map`, if any.
@@ -73,9 +73,9 @@ pub fn find_cycle<'a>(
     None
 }
 
-pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let version = doc.get_document().get_csaf_version();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     if let Some(tree) = doc.get_product_tree() {
         let mut relation_map = HashMap::<String, HashMap<String, String>>::new();
         for (pp_i, pp) in tree.get_product_paths().iter().enumerate() {

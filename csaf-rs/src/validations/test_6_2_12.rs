@@ -1,20 +1,22 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::sync::LazyLock;
 
 /// 6.2.12 Missing Document Language
 ///
 /// `/document/lang` must be set.
-pub fn test_6_2_12_missing_document_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_12_missing_document_language(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     if doc.get_document().get_lang().is_none() {
         return Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]);
     }
     Ok(())
 }
 
-static MISSING_DOCUMENT_LANGUAGE: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "The document language is not defined".to_string(),
-    instance_path: "/document/lang".to_string(),
+static MISSING_DOCUMENT_LANGUAGE: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The document language is not defined".to_string(),
+        instance_path: "/document/lang".to_string(),
+    })
 });
 
 crate::test_validation::impl_validator!(ValidatorForTest6_2_12, test_6_2_12_missing_document_language);

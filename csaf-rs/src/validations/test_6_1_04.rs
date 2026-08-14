@@ -1,16 +1,16 @@
 use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn generate_err_msg(ref_id: &str, ref_path: &str) -> ValidationError {
-    ValidationError {
+fn generate_err_msg(ref_id: &str, ref_path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Missing definition of product_group_id: {ref_id}"),
         instance_path: ref_path.to_owned(),
-    }
+    })
 }
 
-pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = Option::None;
+pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = Option::None;
     if let Some(tree) = doc.get_product_tree() {
         let mut known_groups = HashSet::<String>::new();
         for g in tree.get_product_groups() {

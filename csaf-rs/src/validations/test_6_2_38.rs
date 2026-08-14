@@ -1,20 +1,20 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::test_validation::impl_validator;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_usage_of_deprecated_profile_error(category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_usage_of_deprecated_profile_error(category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("Document category '{category}' starts with 'csaf_deprecated_' (or similar)"),
         instance_path: "/document/category".to_string(),
-    }
+    })
 }
 
 /// 6.2.38 Usage of Deprecated Profile
 ///
 /// It MUST be tested that the `/document/category` does not start with `csaf_deprecated_`.
 /// To implement this test it is deemed sufficient to do a "starts with" check.
-pub fn test_6_2_38_usage_of_deprecated_profile(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_38_usage_of_deprecated_profile(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let category = doc.get_document().get_category();
 
     if category.to_string().starts_with("csaf_deprecated_") {

@@ -1,8 +1,8 @@
 use crate::csaf_traits::{CsafTrait, ProductGroupsByIdMap, ProductStatusGroup, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = vulnerability.get_product_status() {
             let product_to_groups = ProductGroupsByIdMap::from(product_status);
@@ -31,16 +31,16 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_6, test_6_1_06_contradicting_product_status);
 
-fn generate_err_msg(product_id: &str, groups: &[ProductStatusGroup], vulnerability_index: usize) -> ValidationError {
+fn generate_err_msg(product_id: &str, groups: &[ProductStatusGroup], vulnerability_index: usize) -> TestFinding {
     let group_names: Vec<String> = groups.iter().map(|g| format!("'{g}'")).collect();
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Product {} is member of contradicting product status groups: {}",
             product_id,
             group_names.join(", ")
         ),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/product_status"),
-    }
+    })
 }
 
 #[cfg(test)]

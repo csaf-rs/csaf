@@ -1,13 +1,13 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
-fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> ValidationError {
-    ValidationError {
+fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("Product version range {version_range} does not match vers syntax"),
         instance_path: format!("{path}/name"),
-    }
+    })
 }
 
 static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^vers:[a-z.\-+][a-z0-9.\-+]*/.+").unwrap());
@@ -16,8 +16,8 @@ static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^vers:[a-z.\-
 ///
 /// Tests that in the product tree, all branches with the category `product_version_range` use vers
 /// in their `name` property.
-pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {

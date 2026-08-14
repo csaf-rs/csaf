@@ -1,14 +1,14 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.1.16 Latest Document Version
 ///
 /// `/document/tracking/version` must be equal to the last `/document/tracking/revision_history[]/number` when
 /// sorting the revision history ascending by `date`. Build metadata is ignored. Pre-release parts are ignored
 /// if `/document/status` is "draft".
-pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
 
     let mut revision_history = tracking.aggregate_revision_history();
@@ -58,13 +58,13 @@ fn test_6_1_16_err_generator(
     doc_version: &CsafVersionNumber,
     latest_number: &CsafVersionNumber,
     doc_status: &DocumentStatus,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document version '{doc_version}' is not equal to the latest revision history number '{latest_number}' in document with status '{doc_status}'"
         ),
         instance_path: "/document/tracking/version".to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_16, test_6_1_16_latest_document_version);

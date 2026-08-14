@@ -1,9 +1,9 @@
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
-pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(tree) = doc.get_product_tree() {
         // Map to store each key with all of its paths
@@ -28,11 +28,11 @@ pub fn test_6_1_02_multiple_definition_of_product_id(doc: &impl CsafTrait) -> Re
     errors.map_or(Ok(()), Err)
 }
 
-fn generate_err_msg(product_id: &str, path: &str) -> ValidationError {
-    ValidationError {
+fn generate_err_msg(product_id: &str, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Duplicate definition for product ID {product_id}"),
         instance_path: format!("{path}/product_id"),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_2, test_6_1_02_multiple_definition_of_product_id);

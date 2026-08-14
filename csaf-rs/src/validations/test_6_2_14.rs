@@ -1,20 +1,20 @@
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf::types::language::valid_language::PrivateUseReason;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.2.14 Use of Private Language
 ///
 /// For each element of type `/$defs/lang_t` it MUST be tested that the language code does not
 /// contain subtags reserved for private use.
-pub fn test_6_2_14_use_of_private_language(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_14_use_of_private_language(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     if document.get_lang().is_none() && document.get_source_lang().is_none() {
         return Ok(()); // This should be a wasSkipped later (see #409)
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     validate_private_language(document.get_lang(), "/document/lang", &mut errors);
     validate_private_language(document.get_source_lang(), "/document/source_lang", &mut errors);
@@ -31,7 +31,7 @@ pub fn test_6_2_14_use_of_private_language(doc: &impl CsafTrait) -> Result<(), V
 /// - `lang`: The (optional) language tag to validate
 /// - `json_path`: The JSON path to the language tag
 /// - `errors`: A mutable reference to the errors vector
-fn validate_private_language(lang: Option<CsafLanguage>, json_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+fn validate_private_language(lang: Option<CsafLanguage>, json_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     if let Some(CsafLanguage::Valid(valid_lang)) = lang
         && let Some(private_use_reasons) = valid_lang.get_private_use()
     {
@@ -47,28 +47,28 @@ fn validate_private_language(lang: Option<CsafLanguage>, json_path: &str, errors
 
 /// Keeping this in, if we ever want less "detailed" error messages.
 #[allow(dead_code)]
-fn create_private_language_error(lang_tag: String, instance_path: &str) -> ValidationError {
-    ValidationError {
+fn create_private_language_error(lang_tag: String, instance_path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("The language tag '{lang_tag}' contains subtags reserved for private use"),
         instance_path: instance_path.to_string(),
-    }
+    })
 }
 
 fn create_private_language_error_from_reasons(
     lang_tag: String,
     reasons: &[PrivateUseReason],
     instance_path: &str,
-) -> ValidationError {
+) -> TestFinding {
     // Reasons are constructed in the fixed order from ValidCsafLanguage::get_private_use, so no sorting is necessary here
     let reasons_str = reasons
         .iter()
         .map(|reason| reason.to_string())
         .collect::<Vec<String>>()
         .join(", ");
-    ValidationError {
+    TestFinding::Warning(TestFindingData {
         message: format!("The language tag '{lang_tag}' contains subtags reserved for private use: {reasons_str}"),
         instance_path: instance_path.to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_2_14, test_6_2_14_use_of_private_language);

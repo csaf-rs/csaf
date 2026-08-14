@@ -1,23 +1,23 @@
 use crate::csaf::traits::vulnerabilities::product_ident_helper_trait::ProductIdentificationHelperTrait;
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn generate_hardware_software_mix_error(product_id: &str, base_path: &str) -> ValidationError {
-    ValidationError {
+fn generate_hardware_software_mix_error(product_id: &str, base_path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Product '{product_id}' contains serial_numbers or model_numbers but lacks a valid product path. This indicates a potential hardware and software mix in the product tree."
         ),
         instance_path: base_path.to_string(),
-    }
+    })
 }
 
 /// Test 6.2.31: Hardware and Software Mix
-pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
     };
-    let mut errors: Vec<ValidationError> = vec![];
+    let mut errors: Vec<TestFinding> = vec![];
 
     let mut valid_path_references: HashSet<String> = HashSet::new();
     for (id, _) in product_tree.get_relationships_product_references() {

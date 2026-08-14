@@ -1,22 +1,22 @@
 use crate::csaf_traits::{BranchTrait, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 static MAX_DEPTH: u32 = 30;
 
-fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> ValidationError {
-    ValidationError {
+fn create_excessive_branch_depth_error(branch_index: usize, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Branches recursion depth too big (> {MAX_DEPTH})"),
         instance_path: format!("/product_tree/branches/{branch_index}{path}"),
-    }
+    })
 }
 
-pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_34_branches_recursion_depth(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // TODO This can be wasSkipped in the future
     let Some(branches) = doc.get_product_tree().and_then(|t| t.get_branches()) else {
         return Ok(());
     };
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (i, branch) in branches.iter().enumerate() {
         if let Some(path) = branch.find_excessive_branch_depth(MAX_DEPTH) {
             errors

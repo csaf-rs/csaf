@@ -59,11 +59,11 @@ macro_rules! define_csaf_test {
             ///
             /// # Returns
             /// * `Ok(())` if validation passes
-            /// * `Err(Vec<ValidationError>)` if validation fails
+            /// * `Err(Vec<TestFinding>)` if validation fails
             pub fn validate(
                 &self,
                 doc: &crate::csaf::raw::RawDocument<$doc_type>,
-            ) -> Result<(), Vec<crate::validation::ValidationError>> {
+            ) -> Result<(), Vec<crate::validation::TestFinding>> {
                 let validator = V::default();
                 validator.validate(doc)
             }
@@ -74,7 +74,7 @@ macro_rules! define_csaf_test {
         #[derive(Debug)]
         #[allow(non_camel_case_types)]
         pub struct $expect_name {
-            $(pub $case_name: Result<(), Vec<crate::validation::ValidationError>>,)*
+            $(pub $case_name: Result<(), Vec<crate::validation::TestFinding>>,)*
         }
 
         #[cfg(test)]

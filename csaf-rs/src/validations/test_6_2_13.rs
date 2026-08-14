@@ -1,16 +1,16 @@
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use serde_json::Value;
 
 /// 6.2.13 Sorting
 ///
 /// All keys in a CSAF document must be sorted alphabetically.
-pub fn test_6_2_13_sorting(json: &Value) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_13_sorting(json: &Value) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
     check_sorted_recursive(json, "", &mut errors);
     errors.map_or(Ok(()), Err)
 }
 
-fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<ValidationError>>) {
+fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<TestFinding>>) {
     match value {
         Value::Object(map) => {
             // object -> check if keys are sorted
@@ -38,11 +38,11 @@ fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<Val
     }
 }
 
-fn create_unsorted_keys_error(path: &str) -> ValidationError {
-    ValidationError {
+fn create_unsorted_keys_error(path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: "The keys in the CSAF document are not sorted alphabetically".to_string(),
         instance_path: path.to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_raw_json_validator!(ValidatorForTest6_2_13, test_6_2_13_sorting);

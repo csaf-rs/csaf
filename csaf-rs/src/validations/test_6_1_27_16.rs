@@ -1,15 +1,15 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_revision_history_only_one_entry_error(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_revision_history_only_one_entry_error(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The revision history contains only one entry which is prohibited for documents with category {document_category}"
         ),
         instance_path: "/document/tracking/revision_history".to_string(),
-    }
+    })
 }
 
 /// 6.1.27.16 Revision history
@@ -17,7 +17,7 @@ fn create_revision_history_only_one_entry_error(document_category: &CsafDocument
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseded`.
 ///
 /// The revision history shall not contain only one entry.
-pub fn test_6_1_27_16_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_16_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {

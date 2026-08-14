@@ -1,22 +1,22 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 fn create_older_current_release_date_error(
     current_release_date: impl std::fmt::Display,
     newest_rev_history_release_date: impl std::fmt::Display,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Current release date '{current_release_date}' is older than the newest revision history date '{newest_rev_history_release_date}'"
         ),
         instance_path: "/document/tracking/current_release_date".to_string(),
-    }
+    })
 }
 
 /// 6.2.6 Older Current Release Date than Revision History
 ///
-pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let current_release_date = doc.get_document().get_tracking().get_current_release_date();
     // TODO: Check for invalid dates here, will be done after revision history refactor, which will introduce
     // generic parsing error handling

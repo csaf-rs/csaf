@@ -1,13 +1,13 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_must_not_have_vuln_element_error(doc_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_must_not_have_vuln_element_error(doc_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Document with category '{doc_category}' must not have a '/vulnerabilities' element"),
         instance_path: "/vulnerabilities".to_string(),
-    }
+    })
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
@@ -24,7 +24,7 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
 /// value `csaf_withdrawn` and `csaf_superseded` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with this category must not have a `/vulnerabilities` element.
-pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_03_vulnerability(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
     // check if document has a relevant category for this test
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {

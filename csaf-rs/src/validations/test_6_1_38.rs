@@ -2,11 +2,13 @@ use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-static NON_PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Document must be public (TLP:CLEAR) when using max UUID as sharing group ID.".to_string(),
-    instance_path: "/document/distribution/sharing_group/tlp/label".to_string(),
+static NON_PUBLIC_SHARING_GROUP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: "Document must be public (TLP:CLEAR) when using max UUID as sharing group ID.".to_string(),
+        instance_path: "/document/distribution/sharing_group/tlp/label".to_string(),
+    })
 });
 
 /// Validates that a CSAF document using the maximum UUID as the sharing group ID
@@ -23,9 +25,9 @@ static NON_PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new
 /// # Returns
 ///
 /// * `Ok(())` if the validation passes.
-/// * `Err(vec![ValidationError])` if the validation fails, with a message explaining the reason
+/// * `Err(vec![TestFinding])` if the validation fails, with a message explaining the reason
 ///   and the JSON path to the invalid element.
-pub fn test_6_1_38_non_public_sharing_group_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_38_non_public_sharing_group_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if let Some(sharing_group) = distribution.get_sharing_group()

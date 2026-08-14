@@ -2,13 +2,13 @@ use spdx::Expression;
 
 use crate::csaf_traits::CsafTrait;
 use crate::schema::csaf2_1::schema::LicenseExpression;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> ValidationError {
-    ValidationError {
+fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid license expression '{license_expression}': {error}."),
         instance_path: "/document/license_expression".to_string(),
-    }
+    })
 }
 
 /// Parses the given license expression using the SPDX parser with specific options that align with the requirements of CSAF.
@@ -60,7 +60,7 @@ fn parse_license_as_allowed_in_csaf(license: &LicenseExpression) -> Result<Expre
 /// on the DocumentRef part given in 3.2.2.7.
 pub fn test_6_1_54_invalid_license_expression(
     doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     document

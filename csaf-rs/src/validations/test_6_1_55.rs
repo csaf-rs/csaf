@@ -6,26 +6,27 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
 use crate::helpers::SCANCODE_LICENSEDB_LICENSES;
 use crate::schema::csaf2_1::schema::LicenseExpression;
 use crate::schema::csaf2_1::schema::NoteCategory;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-static MISSING_LICENSE_TEXT_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Missing license text (document note with title 'License') for non-standard license.".to_string(),
-    instance_path: "/document/license_expression".to_string(),
+static MISSING_LICENSE_TEXT_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: "Missing license text (document note with title 'License') for non-standard license.".to_string(),
+        instance_path: "/document/license_expression".to_string(),
+    })
 });
 
-static MULTIPLE_LICENSE_TEXT_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Multiple license texts (document notes with title 'License') for non-standard license.".to_string(),
-    instance_path: "/document/license_expression".to_string(),
+static MULTIPLE_LICENSE_TEXT_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: "Multiple license texts (document notes with title 'License') for non-standard license.".to_string(),
+        instance_path: "/document/license_expression".to_string(),
+    })
 });
 
-fn create_incorrect_license_text_category_error(
-    license_expression_path: &str,
-    category: &NoteCategory,
-) -> ValidationError {
-    ValidationError {
+fn create_incorrect_license_text_category_error(license_expression_path: &str, category: &NoteCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid category for license text: '{category}' instead of 'legal_disclaimer'."),
         instance_path: license_expression_path.to_string(),
-    }
+    })
 }
 
 fn license_listed_in_spdx_licensedb(license: &LicenseExpression) -> bool {
@@ -49,9 +50,9 @@ fn is_english_or_default(doc: &impl CsafTrait) -> bool {
     }
 }
 
-fn expect_exactly_one_license_text(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+fn expect_exactly_one_license_text(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     if let Some(notes) = doc.get_document().get_notes() {
-        let mut errors: Option<Vec<ValidationError>> = None;
+        let mut errors: Option<Vec<TestFinding>> = None;
         let license_notes = notes
             .iter()
             .enumerate()
@@ -91,7 +92,7 @@ fn expect_exactly_one_license_text(doc: &impl CsafTrait) -> Result<(), Vec<Valid
 /// MUST be legal_disclaimer.
 pub fn test_6_1_55_license_text(
     doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     if document

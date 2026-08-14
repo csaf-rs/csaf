@@ -1,4 +1,4 @@
-use crate::validation::{IntoValidationError, ValidationError};
+use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 use chrono::{DateTime, FixedOffset, ParseError, Utc};
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter, Result as FmtResult};
@@ -123,12 +123,12 @@ impl CsafDateTimeParseError {
     }
 }
 
-impl IntoValidationError for CsafDateTimeParseError {
-    fn into_validation_error(self, instance_path: &str) -> ValidationError {
-        ValidationError {
+impl IntoTestFindingError for CsafDateTimeParseError {
+    fn into_test_finding_error(self, instance_path: &str) -> TestFinding {
+        TestFinding::Error(TestFindingData {
             message: self.to_string(),
             instance_path: instance_path.to_string(),
-        }
+        })
     }
 }
 

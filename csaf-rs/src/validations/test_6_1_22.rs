@@ -1,23 +1,23 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
-fn generate_duplicate_revision_error(number: &CsafVersionNumber, path: &usize) -> ValidationError {
-    ValidationError {
+fn generate_duplicate_revision_error(number: &CsafVersionNumber, path: &usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Duplicate definition of revision history number {number}"),
         instance_path: format!("/document/tracking/revision_history/{path}/number"),
-    }
+    })
 }
 
 /// Test 6.1.22: Multiple Definition in Revision History
 ///
 /// Items of the revision history must not contain the same value in the
 /// `/document/tracking/revision_history[]/number` field.
-pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let revision_history = doc.get_document().get_tracking().get_revision_history();
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // Map occurrence paths indexes to revision numbers
     let mut number_revision_index_map: HashMap<CsafVersionNumber, Vec<usize>> = HashMap::new();
     for (i_r, revision) in revision_history.iter().enumerate() {

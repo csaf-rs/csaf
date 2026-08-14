@@ -2,34 +2,34 @@ use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_revision_history_error(status: &DocumentStatus, number: &CsafVersionNumber, index: usize) -> ValidationError {
+fn create_revision_history_error(status: &DocumentStatus, number: &CsafVersionNumber, index: usize) -> TestFinding {
     let reason = match number {
         CsafVersionNumber::IntVer(_) => "Version 0 is",
         CsafVersionNumber::SemVer(_) => "Versions 0.y.z are",
         CsafVersionNumber::Invalid(i) => panic!("Invalid version number '{i}'."), // this is fine as it should only be called with valid version numbers
     };
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document with status '{status}' contains a revision history item with number '{number}', {reason} forbidden"
         ),
         instance_path: format!("/document/tracking/revision_history/{index}/number"),
-    }
+    })
 }
 
 /// 6.1.18 Released Revision History
 ///
 /// For documents with `/document/status` "final" or "interim", no item in `/document/tracking/revision_history[]`
 /// may have the version 0 or 0.y.z.
-pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
 
     let status = tracking.get_status();
     skip_if_document_status_is_not!(status, Final, Interim);
 
     // Check that no revision history item has version 0 or 0.y.z
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     let revision_history = tracking.get_revision_history();
     for (revision_index, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();

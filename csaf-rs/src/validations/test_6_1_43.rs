@@ -1,16 +1,16 @@
 use crate::csaf::types::csaf_product_id_helper_number::CsafModelNumber;
 use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_multiple_stars_model_number_error(number: &CsafModelNumber, path: &str, index: usize) -> ValidationError {
-    ValidationError {
+fn create_multiple_stars_model_number_error(number: &CsafModelNumber, path: &str, index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Model number '{number}' must not contain multiple unescaped asterisks (stars)"),
         instance_path: format!("{path}/product_identification_helper/model_numbers/{index}"),
-    }
+    })
 }
 
-pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_43_multiple_stars_in_model_number(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {

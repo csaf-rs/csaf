@@ -1,22 +1,22 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_mixed_versioning_error(part: &str) -> ValidationError {
-    ValidationError {
+fn create_mixed_versioning_error(part: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: "mixed integer and semantic versioning used".to_string(),
         instance_path: format!("/document/tracking/{part}"),
-    }
+    })
 }
 
 /// 6.1.30 Mixed Integer and Semantic Versioning
 ///
 /// `/document/tracking/version` and `document/tracking/revision_history[]/number` need to use
 /// the same versioning scheme (either integer versioning or semantic versioning) across the document.
-pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
     // make sure revision history is consistent in itself
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     let rev_history_tuples = tracking.aggregate_revision_history();
     let mut semver_count = 0;

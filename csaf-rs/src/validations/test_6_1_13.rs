@@ -1,6 +1,6 @@
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
 use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::{IntoValidationError, ValidationError};
+use crate::validation::{IntoTestFindingError, TestFinding};
 
 /// 6.1.13 PURL
 ///
@@ -10,8 +10,8 @@ use crate::validation::{IntoValidationError, ValidationError};
 ///
 /// In this test, we just check if any purls are [CsafPurl::Invalid] and report the errors found.
 /// If a purl failed the respective regex, the schema validation failed already, so this test (currently) does not run.
-pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
@@ -22,7 +22,7 @@ pub fn test_6_1_13_purl(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>
                     if let CsafPurl::Invalid(e) = purl {
                         errors
                             .get_or_insert_default()
-                            .push(e.into_validation_error(&helper.get_purls_json_path(path, i_p)))
+                            .push(e.into_test_finding_error(&helper.get_purls_json_path(path, i_p)))
                     }
                 }
             }
@@ -44,6 +44,7 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_13 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validation::IntoTestFindingError;
     use crate::validations::test_6_1_13::tests::PurlPath::{Purl2_0, Purl2_1};
 
     enum PurlPath {
@@ -62,22 +63,22 @@ mod tests {
     #[test]
     fn test_test_6_1_13() {
         // Shared expected results (only "purl"/"purls" field name differs between 2.0 and 2.1)
-        let case_01_missing_name = |purl_path: PurlPath| -> Result<(), Vec<ValidationError>> {
+        let case_01_missing_name = |purl_path: PurlPath| -> Result<(), Vec<TestFinding>> {
             Err(vec![
                 PurlParseError::new_for_test("pkg:maven/@1.3.4", PurlParseErrorKind::MissingName)
-                    .into_validation_error(&format!(
+                    .into_test_finding_error(&format!(
                         "/product_tree/full_product_names/0/product_identification_helper/{purl_path}"
                     )),
             ])
         };
 
-        let case_02_or_s06_type_prohibits_namespace = |purl_path: PurlPath| -> Result<(), Vec<ValidationError>> {
+        let case_02_or_s06_type_prohibits_namespace = |purl_path: PurlPath| -> Result<(), Vec<TestFinding>> {
             Err(vec![
                 PurlParseError::new_for_test(
                     "pkg:oci/com.example/product-A@sha256%3Add134261219b2",
                     PurlParseErrorKind::TypeProhibitsNamespace("oci".to_string()),
                 )
-                .into_validation_error(&format!(
+                .into_test_finding_error(&format!(
                     "/product_tree/full_product_names/0/product_identification_helper/{purl_path}"
                 )),
             ])

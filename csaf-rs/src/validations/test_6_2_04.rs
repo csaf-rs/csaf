@@ -1,12 +1,12 @@
 use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.2.4 Build Metadata in Revision History
 ///
 /// The revision history must not contain build metadata in their `number` field
-pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (revision_index, revision) in doc
         .get_document()
@@ -31,11 +31,11 @@ pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result
     errors.map_or(Ok(()), Err)
 }
 
-fn create_build_metadata_in_rev_history_error(number: &SemVerVersion, revision_index: &usize) -> ValidationError {
-    ValidationError {
+fn create_build_metadata_in_rev_history_error(number: &SemVerVersion, revision_index: &usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("Revision history item with number '{number}' contains build metadata"),
         instance_path: format!("/document/tracking/revision_history/{revision_index}/number"),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_2_4, test_6_2_04_build_metadata_in_rev_history);

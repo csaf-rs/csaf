@@ -1,18 +1,18 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
-fn generate_duplicate_cve_error(cve: &str, path: usize) -> ValidationError {
-    ValidationError {
+fn generate_duplicate_cve_error(cve: &str, path: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Duplicate usage of same CVE identifier '{cve}'"),
         instance_path: format!("/vulnerabilities/{path}/cve"),
-    }
+    })
 }
 
 /// Test 6.1.23: Multiple Use of Same CVE
 ///
 /// Vulnerability items must not contain the same string in the `/vulnerabilities[]/cve` field.
-pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     // Check if there are any vulnerabilities, if there aren't, this test can be skipped
@@ -38,7 +38,7 @@ pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), 
     }
 
     // Generate errors for CVE identifiers with multiple occurrence paths indexes
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (cve, paths) in &cve_paths {
         if paths.len() > 1 {
             errors

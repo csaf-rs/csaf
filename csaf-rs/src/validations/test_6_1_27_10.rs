@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::resolve_product_groups;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductStatusTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 use std::collections::{HashMap, HashSet};
 
@@ -12,7 +12,7 @@ use std::collections::{HashMap, HashSet};
 /// Each item in `/vulnerabilities[]/product_status/known_affected` must have a corresponding
 /// action statement in `/vulnerabilities[]/remediations`
 ///
-pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
     let vulnerabilities = doc.get_vulnerabilities();
 
@@ -22,7 +22,7 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // for each vulnerability
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         // generate hashmap of all known_affected product or group ids with value of known_not_affected path index
@@ -81,15 +81,15 @@ fn test_6_1_27_10_err_generator(
     product_or_group_id: String,
     vuln_path_index: usize,
     known_affected_path_index: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "No action statement found for 'known_affected' product status entry '{product_or_group_id}'."
         ),
         instance_path: format!(
             "/vulnerabilities/{vuln_path_index}/product_status/known_affected/{known_affected_path_index}"
         ),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_10, test_6_1_27_10_action_statement);

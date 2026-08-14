@@ -1,13 +1,13 @@
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf_traits::{CsafTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.2.9 Use of SHA1 as the only Hash Algorithm
 ///
 /// When hashes are provided as product identification helpers for a product, another hash
 /// besides a SHA1 hash must be provided.
-pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // For each product and its product identification helpers, check if any hash uses SHA-1 as the only hash algorithm.
     if let Some(tree) = doc.get_product_tree() {
@@ -29,11 +29,11 @@ pub fn test_6_2_09_use_of_sha1_as_only_hash_algo(doc: &impl CsafTrait) -> Result
     errors.map_or(Ok(()), Err)
 }
 
-fn create_sha1_only_hash_error(path: &str, hash_index: usize) -> ValidationError {
-    ValidationError {
+fn create_sha1_only_hash_error(path: &str, hash_index: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: "Product identification helper uses hashes with `sha1` as the only hash algorithm".to_string(),
         instance_path: format!("{path}/product_identification_helper/hashes/{hash_index}/file_hashes",),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_2_9, test_6_2_09_use_of_sha1_as_only_hash_algo);

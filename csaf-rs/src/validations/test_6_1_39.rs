@@ -2,11 +2,14 @@ use std::sync::LazyLock;
 
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupTrait, TlpTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::{DocumentStatus, LabelOfTlp};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status.".to_string(),
-    instance_path: "/document/distribution/sharing_group/id".to_string(),
+static PUBLIC_SHARING_GROUP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: "Document with TLP CLEAR and sharing group must use max UUID or nil UUID plus draft status."
+            .to_string(),
+        instance_path: "/document/distribution/sharing_group/id".to_string(),
+    })
 });
 
 /// Validates that when a document is marked with TLP CLEAR, any associated sharing group
@@ -15,7 +18,7 @@ static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| 
 /// This function checks the following (if TLP CLEAR):
 /// - If the sharing group ID is `MAX_UUID`, the validation passes.
 /// - If the sharing group ID is `NIL_UUID` and the document status is "Draft", the validation passes.
-/// - Otherwise, the function returns a `ValidationError` with a relevant error message.
+/// - Otherwise, the function returns a `TestFinding` with a relevant error message.
 ///
 /// # Arguments
 ///
@@ -24,8 +27,8 @@ static PUBLIC_SHARING_GROUP_ERROR: LazyLock<ValidationError> = LazyLock::new(|| 
 /// # Returns
 ///
 /// - `Ok(())` if the validation passes.
-/// - `Err(vec![ValidationError])` if the requirements are not met.
-pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+/// - `Err(vec![TestFinding])` if the requirements are not met.
+pub fn test_6_1_39_public_sharing_group_with_no_max_uuid(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
 
     if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() == LabelOfTlp::Clear

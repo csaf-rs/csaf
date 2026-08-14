@@ -1,7 +1,7 @@
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
     cvss,
-    validation::ValidationError,
+    validation::TestFinding,
 };
 
 /// 6.1.10 Inconsistent CVSS
@@ -12,8 +12,8 @@ use crate::{
 /// Generates an error if a CVSS 2.0, 3.x, 4.0 metric differs in value between the JSON and vector or is
 /// missing in either the JSON or vector and present in the other. For the latter comparison, the "NotDefined"
 /// values are normalized to be "not present".
-pub fn test_6_1_10_inconsistent_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_10_inconsistent_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {

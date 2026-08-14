@@ -1,17 +1,17 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_missing_product_reference_error(vulnerability_index: usize, remediation_index: usize) -> ValidationError {
-    ValidationError {
+fn create_missing_product_reference_error(vulnerability_index: usize, remediation_index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: "A remediation needs to at least have one of the elements group_ids or product_ids".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/remediations/{remediation_index}"),
-    }
+    })
 }
 
 /// 6.1.29 Remediation without Product Reference
 ///
 /// Each item in `/vulnerabilities[]/remediations[]` must have at least one of the elements group_ids or product_ids.
-pub fn test_6_1_29_remediation_without_product_reference(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_29_remediation_without_product_reference(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     // Check if there are vulnerability, if not, this test can be skipped
@@ -20,7 +20,7 @@ pub fn test_6_1_29_remediation_without_product_reference(doc: &impl CsafTrait) -
         return Ok(());
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // Check vulnerabilities and each remediation in them
     for (vuln_i, vulnerability) in vulnerabilities.iter().enumerate() {

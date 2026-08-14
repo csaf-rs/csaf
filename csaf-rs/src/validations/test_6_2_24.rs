@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
 use crate::helpers::get_latest_cwe_version_for_date;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use semver::Version;
 use std::sync::LazyLock;
 
@@ -9,9 +9,11 @@ enum VersionMissmatch {
     Future,
 }
 
-static CWE_VERSION_UNAVAILABLE_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "CWE version information is not available for the current release date.".to_string(),
-    instance_path: "/document/tracking/current_release_date".to_string(),
+static CWE_VERSION_UNAVAILABLE_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "CWE version information is not available for the current release date.".to_string(),
+        instance_path: "/document/tracking/current_release_date".to_string(),
+    })
 });
 
 fn check_for_non_latest_cwe_version(
@@ -20,7 +22,7 @@ fn check_for_non_latest_cwe_version(
     latest: &str,
     i_r: usize,
     i_cwe: usize,
-) -> Option<ValidationError> {
+) -> Option<TestFinding> {
     // If the both version strings are already equal, we can return early
     if version == latest {
         return None;
@@ -64,7 +66,7 @@ fn create_non_latest_cwe_error(
     latest: &str,
     i_r: usize,
     i_cwe: usize,
-) -> ValidationError {
+) -> TestFinding {
     let error_message = match e_type {
         VersionMissmatch::NonLatest => {
             format!("Weakness '{cwe}' uses non-latest CWE version '{version}' (latest: '{latest}').")
@@ -74,10 +76,10 @@ fn create_non_latest_cwe_error(
         },
     };
 
-    ValidationError {
+    TestFinding::Warning(TestFindingData {
         message: error_message,
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}/version"),
-    }
+    })
 }
 
 ///CWE assets use two-part versions like "4.13". `semver::Version::parse` expects three parts
@@ -108,9 +110,9 @@ fn normalize_to_semver_str(s: &str) -> String {
 /// available at the time of the last revision was used. The test SHALL fail if
 /// a later CWE version was available (i.e. the CWE item does not reference the
 /// most recent CWE version as of the document's current_release_date).
-pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     let tracking = doc.get_document().get_tracking();
     let current_release_date = tracking.get_current_release_date();

@@ -1,13 +1,9 @@
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
-fn create_same_timestamp_error(
-    index: usize,
-    date: &ValidCsafDateTime,
-    conflicting_indices: &[usize],
-) -> ValidationError {
+fn create_same_timestamp_error(index: usize, date: &ValidCsafDateTime, conflicting_indices: &[usize]) -> TestFinding {
     // join the duplicate revision history date indices excluding the current one
     let conflicting_indices_not_current = conflicting_indices
         .iter()
@@ -16,26 +12,26 @@ fn create_same_timestamp_error(
         .collect::<Vec<String>>()
         .join(", ");
 
-    ValidationError {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "The timestamp '{date}' of this revision history item is also used by item at the position(s) {conflicting_indices_not_current}."
         ),
         instance_path: format!("/document/tracking/revision_history/{index}/date"),
-    }
+    })
 }
 
 /// 6.2.21 Same Timestamps in Revision History
 ///
 /// It MUST be tested that the timestamps of all items in the revision history are pairwise disjoint,
 /// taking timezones into account.
-pub fn test_6_2_21_same_timestamps_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_21_same_timestamps_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let revision_history = doc.get_document().get_tracking().aggregate_revision_history();
 
     // lookup of ValidCsafDateTime (hash function uses normalized utc)
     // to a vec containing each occurrence of that normalized utc
     // with its path index and "original" ValidCsafDateTime to preserve timezones etc.
     let mut datetime_path_lookup: HashMap<&ValidCsafDateTime, Vec<(usize, &ValidCsafDateTime)>> = HashMap::new();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // does the lookup already contain the datetime
     for item in &revision_history {

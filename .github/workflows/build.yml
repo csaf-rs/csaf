@@ -161,15 +161,9 @@ jobs:
           rustup toolchain install ${{ matrix.version }} --profile minimal --component clippy
           rustup default ${{ matrix.version }}
           rustup target add ${{ matrix.target.arch }}
-      - name: Cache cargo-auditable
-        id: auditable-cache
-        uses: actions/cache@v6
-        with:
-          path: ~/.cargo/bin/cargo-auditable
-          key: cargo-auditable-${{ runner.os }}-${{ runner.arch }}
       - name: Install cargo-auditable
-        if: steps.auditable-cache.outputs.cache-hit != 'true'
-        run: cargo install cargo-auditable --locked
+        shell: bash
+        run: command -v cargo-auditable || cargo install cargo-auditable --locked
       - name: Clippy check
         run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} --release -- -D warnings
       - name: Build

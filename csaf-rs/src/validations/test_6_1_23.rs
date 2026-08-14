@@ -55,7 +55,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_23, test_6_1_23_mult
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_23 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_23 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -86,15 +88,19 @@ mod tests {
         ]);
         // Case S11: Two vulnerabilities, different CVE identifiers (valid)
 
-        TESTS_2_0.test_6_1_23.expect(
-            case_01.clone(),
-            case_s01.clone(),
-            case_s02.clone(),
-            case_s03.clone(),
-            Ok(()),
-        );
-        TESTS_2_1
-            .test_6_1_23
-            .expect(case_01, case_s01, case_s02, case_s03, Ok(()));
+        TESTS_2_0.test_6_1_23.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_s01: case_s01.clone(),
+            case_s02: case_s02.clone(),
+            case_s03: case_s03.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_23.expect(ExpectedResults_2_1 {
+            case_01,
+            case_s01,
+            case_s02,
+            case_s03,
+            case_s11: Ok(()),
+        });
     }
 }

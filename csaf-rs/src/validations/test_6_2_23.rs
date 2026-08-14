@@ -50,6 +50,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_23, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_23 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -65,13 +66,13 @@ mod tests {
         let case_03_third_multi_vuln_with_deprecated_cwe =
             Err(vec![create_deprecated_cwe_error("CWE-365", "4.13", 2, 0)]);
 
-        TESTS_2_1.test_6_2_23.expect(
-            case_01_single_vuln_with_deprecated_cwe,
-            case_02_single_vuln_containing_deprecated_cwe,
-            case_03_third_multi_vuln_with_deprecated_cwe,
-            Ok(()), // case 11: valid version of 01, one vulnerability containing one cwe that is not deprecated
-            Ok(()), // case 12: valid version of 02, one vulnerability containing several cwes, non deprecated
-            Ok(()), // case 13: valid version of 03, multiple vulnerabilities with one cwe each, non deprecated
-        );
+        TESTS_2_1.test_6_2_23.expect(ExpectedResults {
+            case_01: case_01_single_vuln_with_deprecated_cwe,
+            case_02: case_02_single_vuln_containing_deprecated_cwe,
+            case_03: case_03_third_multi_vuln_with_deprecated_cwe,
+            case_11: Ok(()), // valid version of 01, one vulnerability containing one cwe that is not deprecated
+            case_12: Ok(()), // valid version of 02, one vulnerability containing several cwes, non deprecated
+            case_13: Ok(()), // valid version of 03, multiple vulnerabilities with one cwe each, non deprecated
+        });
     }
 }

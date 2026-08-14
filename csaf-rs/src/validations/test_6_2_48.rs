@@ -52,6 +52,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_48, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_48 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use rstest::rstest;
 
@@ -73,15 +74,15 @@ mod tests {
         // Case 11-13: Same as 01-03, but with appropriate values for the vendor branch name (ISDuBA Dev, curl, ...)
         // Case S11: product family branch with name "Open Source"
 
-        TESTS_2_1.test_6_2_48.expect(
-            case_01_open_source_isduba,
-            case_02_open_source_curl,
-            case_03_open_source_case_whitespace,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_48.expect(ExpectedResults {
+            case_01: case_01_open_source_isduba,
+            case_02: case_02_open_source_curl,
+            case_03: case_03_open_source_case_whitespace,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 
     #[rstest]

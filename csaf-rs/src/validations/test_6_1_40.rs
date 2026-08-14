@@ -56,24 +56,25 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_40, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_40 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_40() {
         // Only CSAF 2.1 has this test with 6 test cases (2 error cases, 4 success cases)
-        TESTS_2_1.test_6_1_40.expect(
-            // Case 01: Name "Public" with regular UUID
+        TESTS_2_1.test_6_1_40.expect(ExpectedResults {
+            case_01: // Name "Public" with regular UUID
             Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
-            // Case 02: Name "No sharing allowed" with regular UUID
+            case_02: // Name "No sharing allowed" with regular UUID
             Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]),
-            // Case 11: Name "Public" with Max UUID
+            case_11: // Name "Public" with Max UUID
             Ok(()),
-            // Case 12: Name "No sharing allowed" with Nil UUID
+            case_12: // Name "No sharing allowed" with Nil UUID
             Ok(()),
-            // Case 13: Regular UUID without name
+            case_13: // Regular UUID without name
             Ok(()),
-            // Case 14: Regular UUID with arbitrary name
+            case_14: // Regular UUID with arbitrary name
             Ok(()),
-        );
+        });
     }
 }

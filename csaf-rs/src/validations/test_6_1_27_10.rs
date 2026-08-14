@@ -97,7 +97,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_10, test_6_1_27_1
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_10 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_10 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -112,19 +114,19 @@ mod tests {
             test_6_1_27_10_err_generator("CSAFPID-9080702".to_string(), 0, 2),
         ]);
 
-        TESTS_2_0.test_6_1_27_10.expect(
-            case_one_product_missing_from_group.clone(),
-            case_missing_remediation.clone(),
-            case_one_product_missing_from_products.clone(),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_27_10.expect(
-            case_one_product_missing_from_group,
-            case_missing_remediation,
-            case_one_product_missing_from_products,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_27_10.expect(ExpectedResults_2_0 {
+            case_01: case_one_product_missing_from_group.clone(),
+            case_s01: case_missing_remediation.clone(),
+            case_s02: case_one_product_missing_from_products.clone(),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
+        TESTS_2_1.test_6_1_27_10.expect(ExpectedResults_2_1 {
+            case_01: case_one_product_missing_from_group,
+            case_s01: case_missing_remediation,
+            case_s02: case_one_product_missing_from_products,
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 }

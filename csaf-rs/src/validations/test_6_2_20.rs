@@ -141,29 +141,28 @@ crate::test_validation::impl_raw_json_validator!(csaf2_1, ValidatorForTest6_2_20
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_20 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_20 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_2_20() {
         // Both CSAF 2.0 and 2.1 have 1 test cases
-        TESTS_2_0
-            .test_6_2_20
-            .expect(Err(vec![create_additional_properties_error(
-                "custom_property",
-                "/document",
-            )]));
-        TESTS_2_1.test_6_2_20.expect(
-            Err(vec![create_additional_properties_error(
+        TESTS_2_0.test_6_2_20.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![create_additional_properties_error("custom_property", "/document")]),
+        });
+        TESTS_2_1.test_6_2_20.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![create_additional_properties_error(
                 "custom_property",
                 "/vulnerabilities/0/metrics/0/content/cvss_v3",
             )]),
-            Err(vec![create_additional_properties_error(
+            case_02: Err(vec![create_additional_properties_error(
                 "custom_property",
                 "/vulnerabilities/0/metrics/0/content/cvss_v4",
             )]),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

@@ -87,7 +87,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_17, test_6_1_17_docu
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_17 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_17 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::schema::csaf2_1::schema::DocumentStatus;
 
@@ -141,31 +143,31 @@ mod tests {
         // Case S13: document status is "draft", version has prerelease (should be skipped)
         // Case S14: document status is "final", version has metadata
 
-        TESTS_2_0.test_6_1_17.expect(
-            case_final_with_semver_0.clone(),
-            case_final_with_semver_0_ignored_metadata.clone(),
-            case_final_with_semver_prerelease.clone(),
-            case_final_with_semver_0_prerelease.clone(),
-            case_interim_with_semver_0.clone(),
-            case_final_with_intver_0.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_17.expect(
-            case_final_with_semver_0,
-            case_final_with_semver_0_ignored_metadata,
-            case_final_with_semver_prerelease,
-            case_final_with_semver_0_prerelease,
-            case_interim_with_semver_0,
-            case_final_with_intver_0,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_17.expect(ExpectedResults_2_0 {
+            case_01: case_final_with_semver_0.clone(),
+            case_s01: case_final_with_semver_0_ignored_metadata.clone(),
+            case_s02: case_final_with_semver_prerelease.clone(),
+            case_s03: case_final_with_semver_0_prerelease.clone(),
+            case_s04: case_interim_with_semver_0.clone(),
+            case_s05: case_final_with_intver_0.clone(),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+            case_s14: Ok(()),
+            case_s15: Ok(()),
+        });
+        TESTS_2_1.test_6_1_17.expect(ExpectedResults_2_1 {
+            case_01: case_final_with_semver_0,
+            case_s01: case_final_with_semver_0_ignored_metadata,
+            case_s02: case_final_with_semver_prerelease,
+            case_s03: case_final_with_semver_0_prerelease,
+            case_s04: case_interim_with_semver_0,
+            case_s05: case_final_with_intver_0,
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+            case_s14: Ok(()),
+            case_s15: Ok(()),
+        });
     }
 }

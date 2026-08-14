@@ -29,6 +29,7 @@ impl_validator!(csaf2_1, ValidatorForTest6_2_38, test_6_2_38_usage_of_deprecated
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_38 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -43,8 +44,13 @@ mod tests {
         // Case 12: with prefix ("Example Company csaf_deprecated_security_advisory")´
         // Case 13: casing ("CSAF_deprecated_security_advisory")
         // Case S11: leading whitespace (" csaf_deprecated_some_other_type")
-        TESTS_2_1
-            .test_6_2_38
-            .expect(case_01, case_02, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_38.expect(ExpectedResults {
+            case_01,
+            case_02,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

@@ -115,7 +115,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_9, test_6_1_27_09
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_9 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_9 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -134,35 +136,35 @@ mod tests {
         let case_one_not_covered_by_threat_with_wrong_category =
             Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080702".to_string(), 0, 2)]);
 
-        TESTS_2_0.test_6_1_27_9.expect(
-            case_group_covered_by_threats.clone(),
-            case_group_covered_by_flag.clone(),
-            case_products_covered_by_threats.clone(),
-            case_products_covered_by_flags.clone(),
-            case_products_covered_by_flags_or_threats.clone(),
-            case_one_not_covered_with_multiple_vulnerabilities.clone(),
-            case_one_not_covered_by_threat_with_wrong_category.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_27_9.expect(
-            case_group_covered_by_threats,
-            case_group_covered_by_flag,
-            case_products_covered_by_threats,
-            case_products_covered_by_flags,
-            case_products_covered_by_flags_or_threats,
-            case_one_not_covered_with_multiple_vulnerabilities,
-            case_one_not_covered_by_threat_with_wrong_category,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_27_9.expect(ExpectedResults_2_0 {
+            case_01: case_group_covered_by_threats.clone(),
+            case_02: case_group_covered_by_flag.clone(),
+            case_03: case_products_covered_by_threats.clone(),
+            case_04: case_products_covered_by_flags.clone(),
+            case_05: case_products_covered_by_flags_or_threats.clone(),
+            case_06: case_one_not_covered_with_multiple_vulnerabilities.clone(),
+            case_s01: case_one_not_covered_by_threat_with_wrong_category.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
+        TESTS_2_1.test_6_1_27_9.expect(ExpectedResults_2_1 {
+            case_01: case_group_covered_by_threats,
+            case_02: case_group_covered_by_flag,
+            case_03: case_products_covered_by_threats,
+            case_04: case_products_covered_by_flags,
+            case_05: case_products_covered_by_flags_or_threats,
+            case_06: case_one_not_covered_with_multiple_vulnerabilities,
+            case_s01: case_one_not_covered_by_threat_with_wrong_category,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
     }
 }

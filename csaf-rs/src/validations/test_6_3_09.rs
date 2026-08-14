@@ -85,7 +85,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_9, test_6_3_9_branch
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_9 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_9 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -233,36 +235,36 @@ mod tests {
         // Case 15: Deep tree, split after 2x after name
         // Case S11: Stacked categories vendor x2, product_name x2, product_version x2
 
-        TESTS_2_0.test_6_3_9.expect(
-            case_01_missing_product_version.clone(),
-            case_02_missing_vendor.clone(),
-            case_03_missing_vendor_wrong_order.clone(),
-            case_04_wrong_order.clone(),
-            case_05_wrong_order_deep_tree.clone(),
-            case_06_missing_vendor_name_version.clone(),
-            case_s01_stacked_wrong_order.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_3_9.expect(ExpectedResults_2_0 {
+            case_01: case_01_missing_product_version.clone(),
+            case_02: case_02_missing_vendor.clone(),
+            case_03: case_03_missing_vendor_wrong_order.clone(),
+            case_04: case_04_wrong_order.clone(),
+            case_05: case_05_wrong_order_deep_tree.clone(),
+            case_06: case_06_missing_vendor_name_version.clone(),
+            case_s01: case_s01_stacked_wrong_order.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_s11: Ok(()),
+        });
 
-        TESTS_2_1.test_6_3_9.expect(
-            case_01_missing_product_version,
-            case_02_missing_vendor,
-            case_03_missing_vendor_wrong_order,
-            case_04_wrong_order,
-            case_05_wrong_order_deep_tree,
-            case_06_missing_vendor_name_version,
-            case_s01_stacked_wrong_order,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_3_9.expect(ExpectedResults_2_1 {
+            case_01: case_01_missing_product_version,
+            case_02: case_02_missing_vendor,
+            case_03: case_03_missing_vendor_wrong_order,
+            case_04: case_04_wrong_order,
+            case_05: case_05_wrong_order_deep_tree,
+            case_06: case_06_missing_vendor_name_version,
+            case_s01: case_s01_stacked_wrong_order,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

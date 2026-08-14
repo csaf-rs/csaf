@@ -53,21 +53,22 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_39 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_39() {
         let err = Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
         // Only CSAF 2.1 has this test with 4 test cases (2 error cases, 2 success cases)
-        TESTS_2_1.test_6_1_39.expect(
-            // Case 01: TLP:CLEAR with regular UUID, status final
+        TESTS_2_1.test_6_1_39.expect(ExpectedResults {
+            case_01: // TLP:CLEAR with regular UUID, status final
             err.clone(),
-            // Case 02: TLP:CLEAR with Nil UUID, status final
+            case_02: // TLP:CLEAR with Nil UUID, status final
             err,
-            // Case 11: TLP:CLEAR with Max UUID, status final
+            case_11: // TLP:CLEAR with Max UUID, status final
             Ok(()),
-            // Case 12: TLP:CLEAR with Nil UUID, status draft
+            case_12: // TLP:CLEAR with Nil UUID, status draft
             Ok(()),
-        );
+        });
     }
 }

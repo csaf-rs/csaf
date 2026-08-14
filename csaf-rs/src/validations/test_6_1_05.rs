@@ -58,7 +58,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_5 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_5 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -75,7 +77,15 @@ mod tests {
             generate_multiple_group_id_definition_error("CSAFGID-1020300", "/product_tree/product_groups/2/group_id"),
         ]);
         // Case S11: Two product groups with different group_ids
-        TESTS_2_0.test_6_1_5.expect(case_01.clone(), case_s01.clone(), Ok(()));
-        TESTS_2_1.test_6_1_5.expect(case_01, case_s01, Ok(()));
+        TESTS_2_0.test_6_1_5.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_s01: case_s01.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_5.expect(ExpectedResults_2_1 {
+            case_01,
+            case_s01,
+            case_s11: Ok(()),
+        });
     }
 }

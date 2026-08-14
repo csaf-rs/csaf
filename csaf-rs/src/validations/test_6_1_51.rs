@@ -82,6 +82,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_51, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_51 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -110,13 +111,13 @@ mod tests {
         // Case 12: EPSS timestamp before newest rev history, with negative timezone offset
         // Case 13: EPSS timestamp before newest rev history, with positive timezone offset
 
-        TESTS_2_1.test_6_1_51.expect(
-            case_01_too_late_new_timezone,
-            case_02_too_new_neg_timezone_offset,
-            case_03_too_new_pos_timezone_offset,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_51.expect(ExpectedResults {
+            case_01: case_01_too_late_new_timezone,
+            case_02: case_02_too_new_neg_timezone_offset,
+            case_03: case_03_too_new_pos_timezone_offset,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

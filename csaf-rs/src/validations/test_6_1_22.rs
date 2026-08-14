@@ -48,7 +48,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_22 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_22 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -76,17 +78,17 @@ mod tests {
         ]);
 
         // Both CSAF 2.0 and 2.1 have 1 test case
-        TESTS_2_0.test_6_1_22.expect(
-            case_intver.clone(),
-            case_semver.clone(),
-            case_intver_double_duplicates.clone(),
-            case_semver_double_duplicates.clone(),
-        );
-        TESTS_2_1.test_6_1_22.expect(
-            case_intver,
-            case_semver,
-            case_intver_double_duplicates,
-            case_semver_double_duplicates,
-        );
+        TESTS_2_0.test_6_1_22.expect(ExpectedResults_2_0 {
+            case_01: case_intver.clone(),
+            case_s01: case_semver.clone(),
+            case_s02: case_intver_double_duplicates.clone(),
+            case_s03: case_semver_double_duplicates.clone(),
+        });
+        TESTS_2_1.test_6_1_22.expect(ExpectedResults_2_1 {
+            case_01: case_intver,
+            case_s01: case_semver,
+            case_s02: case_intver_double_duplicates,
+            case_s03: case_semver_double_duplicates,
+        });
     }
 }

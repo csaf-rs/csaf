@@ -69,7 +69,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_2, test_6_3_2_use_of
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_2 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_2 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -99,17 +101,17 @@ mod tests {
         // Case 11: 1 vuln with v3.1
         // Case 12: 3 vulns with v3.1
 
-        TESTS_2_0.test_6_3_2.expect(
-            case_01_v3_0_used_csaf_20,
-            case_02_mixed_some_with_v3_0_csaf_20,
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_3_2.expect(
-            case_01_v3_0_used_csaf_21,
-            case_02_mixed_some_with_v3_0_csaf_21,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_3_2.expect(ExpectedResults_2_0 {
+            case_01: case_01_v3_0_used_csaf_20,
+            case_02: case_02_mixed_some_with_v3_0_csaf_20,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_3_2.expect(ExpectedResults_2_1 {
+            case_01: case_01_v3_0_used_csaf_21,
+            case_02: case_02_mixed_some_with_v3_0_csaf_21,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

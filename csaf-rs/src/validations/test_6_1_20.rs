@@ -42,7 +42,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_20, test_6_1_20_non_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_20 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_20 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::schema::csaf2_1::schema::DocumentStatus;
     use semver::Version;
@@ -59,9 +61,15 @@ mod tests {
             &SemVerVersion::from(Version::from_str("1.0.0-alpha").unwrap()),
         )]);
 
-        TESTS_2_0
-            .test_6_1_20
-            .expect(case_interim.clone(), case_final.clone(), Ok(()));
-        TESTS_2_1.test_6_1_20.expect(case_interim, case_final, Ok(()));
+        TESTS_2_0.test_6_1_20.expect(ExpectedResults_2_0 {
+            case_01: case_interim.clone(),
+            case_s01: case_final.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_20.expect(ExpectedResults_2_1 {
+            case_01: case_interim,
+            case_s01: case_final,
+            case_s11: Ok(()),
+        });
     }
 }

@@ -98,7 +98,9 @@ fn create_validation_error(
 mod tests {
     use super::*;
     use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_7 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_7 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -289,25 +291,27 @@ mod tests {
         // Case 17: 1 vuln, CVSS v2, v3.0, v4, same product
         // Case 18: like 05, but valid
 
-        TESTS_2_0
-            .test_6_1_7
-            .expect(case_01_duplicate_cvss_v3_1_csaf_20, Ok(()), Ok(()));
+        TESTS_2_0.test_6_1_7.expect(ExpectedResults_2_0 {
+            case_01: case_01_duplicate_cvss_v3_1_csaf_20,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_7.expect(
-            case_01_duplicate_cvss_v3_1_csaf_21,
-            case_02_duplicate_cvss_v3_0_csaf_21,
-            case_03_duplicate_cvss_v2_csaf_21,
-            case_04_duplicate_cvss_v4_csaf_21,
-            case_05_duplicate_cvss_mixed_versions_with_sources,
-            case_06_duplicate_cvss_invalid_versions_with_sources,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_7.expect(ExpectedResults_2_1 {
+            case_01: case_01_duplicate_cvss_v3_1_csaf_21,
+            case_02: case_02_duplicate_cvss_v3_0_csaf_21,
+            case_03: case_03_duplicate_cvss_v2_csaf_21,
+            case_04: case_04_duplicate_cvss_v4_csaf_21,
+            case_05: case_05_duplicate_cvss_mixed_versions_with_sources,
+            case_06: case_06_duplicate_cvss_invalid_versions_with_sources,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+        });
     }
 }

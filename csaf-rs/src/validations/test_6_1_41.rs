@@ -54,6 +54,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_41, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_41 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -62,19 +63,19 @@ mod tests {
         let nil_uuid_err = Err(vec![NIL_UUID_SHARING_GROUP_ERROR.clone()]);
 
         // Only CSAF 2.1 has this test with 6 test cases (4 error cases, 2 success cases)
-        TESTS_2_1.test_6_1_41.expect(
-            // Case 01: Max UUID without name
+        TESTS_2_1.test_6_1_41.expect(ExpectedResults {
+            case_01: // Max UUID without name
             max_uuid_err.clone(),
-            // Case 02: NIL UUID without name
+            case_02: // NIL UUID without name
             nil_uuid_err.clone(),
-            // Case 03: Max UUID with wrong name
+            case_03: // Max UUID with wrong name
             max_uuid_err,
-            // Case 04: Nil UUID with wrong name
+            case_04: // Nil UUID with wrong name
             nil_uuid_err,
-            // Case 11: Max UUID with correct name "Public"
+            case_11: // Max UUID with correct name "Public"
             Ok(()),
-            // Case 12: Nil UUID with correct name "No sharing allowed"
+            case_12: // Nil UUID with correct name "No sharing allowed"
             Ok(()),
-        );
+        });
     }
 }

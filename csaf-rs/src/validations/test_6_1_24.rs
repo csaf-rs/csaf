@@ -92,7 +92,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_24, test_6_1_24_mult
 mod tests {
     use super::*;
     use crate::csaf::types::csaf_datetime::CsafDateTime::{self, Invalid};
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_24 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_24 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -136,68 +138,60 @@ mod tests {
             case_s02_err.into_validation_error("/vulnerabilities/0/involvements/0/date"),
         ]);
 
-        TESTS_2_0.test_6_1_24.expect(
-            // case_01
-            Err(vec![
+        TESTS_2_0.test_6_1_24.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![
                 generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 1),
             ]),
-            // case_02
-            Err(vec![
+            case_02: Err(vec![
                 generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 1),
             ]),
-            case_s01.clone(),
-            case_s02.clone(),
-            // case_s03
-            Err(vec![
+            case_s01: case_s01.clone(),
+            case_s02: case_s02.clone(),
+            case_s03: Err(vec![
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 1),
             ]),
-            // case_s04
-            Err(vec![
+            case_s04: Err(vec![
                 generate_duplicate_involvement_error(&default_date_csaf_20, &discoverer, 0, 1),
                 generate_duplicate_involvement_error(&default_date_csaf_20, &discoverer, 0, 3),
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 2),
             ]),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_s11
-            Ok(()), // case_s12
-            Ok(()), // case_s13
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_24.expect(
-            // case_01
-            Err(vec![
+        TESTS_2_1.test_6_1_24.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![
                 generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 1),
             ]),
-            // case_02
-            Err(vec![
+            case_02: Err(vec![
                 generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 1),
             ]),
             case_s01,
             case_s02,
-            // case_s03
-            Err(vec![
+            case_s03: Err(vec![
                 generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 1),
             ]),
-            // case_s04
-            Err(vec![
+            case_s04: Err(vec![
                 generate_duplicate_involvement_error(&default_date_csaf_21, &discoverer, 0, 1),
                 generate_duplicate_involvement_error(&default_date_csaf_21, &discoverer, 0, 3),
                 generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 2),
             ]),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_s11
-            Ok(()), // case_s12
-            Ok(()), // case_s13
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+        });
     }
 }

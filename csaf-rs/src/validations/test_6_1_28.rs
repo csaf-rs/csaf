@@ -33,7 +33,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_28, test_6_1_28_tran
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_28 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_28 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -47,11 +49,15 @@ mod tests {
 
         // Case 11: /document/lang and /document/source_lang are set to different values
 
-        TESTS_2_0
-            .test_6_1_28
-            .expect(case_01_same_value.clone(), case_s01_default_casing.clone(), Ok(()));
-        TESTS_2_1
-            .test_6_1_28
-            .expect(case_01_same_value, case_s01_default_casing, Ok(()));
+        TESTS_2_0.test_6_1_28.expect(ExpectedResults_2_0 {
+            case_01: case_01_same_value.clone(),
+            case_s01: case_s01_default_casing.clone(),
+            case_11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_28.expect(ExpectedResults_2_1 {
+            case_01: case_01_same_value,
+            case_s01: case_s01_default_casing,
+            case_11: Ok(()),
+        });
     }
 }

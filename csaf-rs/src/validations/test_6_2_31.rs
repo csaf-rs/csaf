@@ -46,6 +46,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_31, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_31 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -74,8 +75,12 @@ mod tests {
         // Case 13: Valid - Pure software components without model or serial signatures
 
         // Sequence matches macro definition: 01, s01, 11, 12, 13
-        TESTS_2_1
-            .test_6_2_31
-            .expect(Err(case_01), Err(s01_errors), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_31.expect(ExpectedResults {
+            case_01: Err(case_01),
+            case_s01: Err(s01_errors),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

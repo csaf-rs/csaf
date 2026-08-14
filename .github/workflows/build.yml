@@ -162,7 +162,8 @@ jobs:
           rustup default ${{ matrix.version }}
           rustup target add ${{ matrix.target.arch }}
       - name: Install cargo-auditable
-        run: test -x ~/.cargo/bin/cargo-auditable || cargo install cargo-auditable --locked
+        shell: bash
+        run: command -v cargo-auditable || cargo install cargo-auditable --locked
       - name: Clippy check
         run: cargo clippy --all-targets --locked --target=${{ matrix.target.arch }} --release -- -D warnings
       - name: Build

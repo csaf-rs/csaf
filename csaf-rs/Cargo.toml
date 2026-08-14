@@ -20,6 +20,7 @@ crate-type = ["rlib"]
 [features]
 default = []
 converter = []
+utoipa = ["dep:utoipa"]
 
 [dependencies]
 cvss-rs = "0.4.0"
@@ -37,6 +38,9 @@ spdx = "0.13.4"
 oxilangtag = "0.1.5"
 ssvc = "0.2.1"
 strum = { version = "0.28", features = ["derive"] }
+ssvc = "0.1.0"
+thiserror = { version = "2" }
+utoipa = { version = "5", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
@@ -53,4 +57,3 @@ tempfile = "3"
 [[bench]]
 name = "validation_benchmark"
 harness = false
-

@@ -215,19 +215,28 @@ macro_rules! define_test_cases_aggregate {
         /// Global constant instance of all test cases
         pub const $const_name: TestCases = TestCases::new();
 
+        /// All mandatory test IDs.
+        pub const MANDATORY_TESTS: &[&'static str] = &[$($m_struct::<$m_validator>::ID),*];
+
+        /// All recommended test IDs.
+        pub const RECOMMENDED_TESTS: &[&'static str] = &[$($r_struct::<$r_validator>::ID),*];
+
+        /// All informative test IDs.
+        pub const INFORMATIVE_TESTS: &[&'static str] = &[$($i_struct::<$i_validator>::ID),*];
+
         /// Get all mandatory tests as IDs
         pub fn mandatory_tests() -> Vec<&'static str> {
-            vec![$($const_name.$m_inst.id()),*]
+            MANDATORY_TESTS.to_vec()
         }
 
         /// Get all optional tests as IDs
         pub fn recommended_tests() -> Vec<&'static str> {
-            vec![$($const_name.$r_inst.id()),*]
+            RECOMMENDED_TESTS.to_vec()
         }
 
         /// Get all informative tests as IDs
         pub fn informative_tests() -> Vec<&'static str> {
-            vec![$($const_name.$i_inst.id()),*]
+            INFORMATIVE_TESTS.to_vec()
         }
     };
 }

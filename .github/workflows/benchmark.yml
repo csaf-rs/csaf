@@ -37,6 +37,14 @@ jobs:
       - name: Run benchmarks
         run: cargo bench --bench validation_benchmark -- --output-format bencher > output.txt
 
+      - name: Remove criterion output from cache
+        # target/criterion holds Criterion's own baseline comparison state, which is unused here
+        # (benchmark-action tracks trends itself via gh-pages) and can become stale/inconsistent
+        # across cached runs, breaking the bencher-format output. Exclude it from rust-cache by
+        # deleting it before the cache is saved in the action's post step.
+        if: always()
+        run: rm -rf target/criterion
+
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:

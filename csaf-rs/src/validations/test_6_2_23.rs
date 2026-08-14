@@ -70,9 +70,9 @@ mod tests {
             case_01: case_01_single_vuln_with_deprecated_cwe,
             case_02: case_02_single_vuln_containing_deprecated_cwe,
             case_03: case_03_third_multi_vuln_with_deprecated_cwe,
-            case_11: Ok(()), // case 11: valid version of 01, one vulnerability containing one cwe that is not deprecated
-            case_12: Ok(()), // case 12: valid version of 02, one vulnerability containing several cwes, non deprecated
-            case_13: Ok(()), // case 13: valid version of 03, multiple vulnerabilities with one cwe each, non deprecated
+            case_11: Ok(()), // valid version of 01, one vulnerability containing one cwe that is not deprecated
+            case_12: Ok(()), // valid version of 02, one vulnerability containing several cwes, non deprecated
+            case_13: Ok(()), // valid version of 03, multiple vulnerabilities with one cwe each, non deprecated
         });
     }
 }

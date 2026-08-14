@@ -68,17 +68,17 @@ mod tests {
 
         // Only CSAF 2.1 has this test with 6 test cases (4 error cases, 2 success cases)
         TESTS_2_1.test_6_1_41.expect(ExpectedResults {
-            case_01: // Case 01: Max UUID without name
+            case_01: // Max UUID without name
             max_uuid_err.clone(),
-            case_02: // Case 02: NIL UUID without name
+            case_02: // NIL UUID without name
             nil_uuid_err.clone(),
-            case_03: // Case 03: Max UUID with wrong name
+            case_03: // Max UUID with wrong name
             max_uuid_err,
-            case_04: // Case 04: Nil UUID with wrong name
+            case_04: // Nil UUID with wrong name
             nil_uuid_err,
-            case_11: // Case 11: Max UUID with correct name "Public"
+            case_11: // Max UUID with correct name "Public"
             Ok(()),
-            case_12: // Case 12: Nil UUID with correct name "No sharing allowed"
+            case_12: // Nil UUID with correct name "No sharing allowed"
             Ok(()),
         });
     }

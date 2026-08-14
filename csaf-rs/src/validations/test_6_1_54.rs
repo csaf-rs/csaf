@@ -86,14 +86,12 @@ mod tests {
 
     #[test]
     fn test_test_6_1_54() {
-        // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success case)
         TESTS_2_1.test_6_1_54.expect(ExpectedResults {
             case_01: Err(vec![create_invalid_license_expression_error(
                 "This is a license text that should not be here.",
                 r#"Error at position 5: expected one of `AND`, `OR`, `WITH`, `)`, `+` here"#,
             )]),
-            case_02: // Ok(()),
-            Err(vec![create_invalid_license_expression_error(
+            case_02: Err(vec![create_invalid_license_expression_error(
                 "DocumentRef-some-document-reference:LicenseRef-www.example.org-Example-CSAF-License-2.0",
                 r#"Error at position 0: expected a `LicenseRef` here"#,
             )]),

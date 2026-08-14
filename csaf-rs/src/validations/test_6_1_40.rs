@@ -67,17 +67,17 @@ mod tests {
     fn test_test_6_1_40() {
         // Only CSAF 2.1 has this test with 6 test cases (2 error cases, 4 success cases)
         TESTS_2_1.test_6_1_40.expect(ExpectedResults {
-            case_01: // Case 01: Name "Public" with regular UUID
+            case_01: // Name "Public" with regular UUID
             Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]),
-            case_02: // Case 02: Name "No sharing allowed" with regular UUID
+            case_02: // Name "No sharing allowed" with regular UUID
             Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]),
-            case_11: // Case 11: Name "Public" with Max UUID
+            case_11: // Name "Public" with Max UUID
             Ok(()),
-            case_12: // Case 12: Name "No sharing allowed" with Nil UUID
+            case_12: // Name "No sharing allowed" with Nil UUID
             Ok(()),
-            case_13: // Case 13: Regular UUID without name
+            case_13: // Regular UUID without name
             Ok(()),
-            case_14: // Case 14: Regular UUID with arbitrary name
+            case_14: // Regular UUID with arbitrary name
             Ok(()),
         });
     }

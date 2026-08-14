@@ -101,6 +101,8 @@ pub trait TrackingTrait {
     }
 
     fn get_version(&self) -> CsafVersionNumber;
+
+    fn get_aliases(&self) -> Option<Vec<&str>>;
 }
 
 impl TrackingTrait for Tracking20 {
@@ -113,6 +115,12 @@ impl TrackingTrait for Tracking20 {
 
     fn get_initial_release_date(&self) -> CsafDateTime {
         CsafDateTime::from(&self.initial_release_date)
+    }
+
+    fn get_aliases(&self) -> Option<Vec<&str>> {
+        self.aliases
+            .as_ref()
+            .map(|aliases| aliases.iter().map(|a| a.as_str()).collect())
     }
 
     fn get_generator(&self) -> Option<&Self::GeneratorType> {
@@ -166,6 +174,12 @@ impl TrackingTrait for Tracking21 {
 
     fn get_version(&self) -> CsafVersionNumber {
         CsafVersionNumber::from(&self.version)
+    }
+
+    fn get_aliases(&self) -> Option<Vec<&str>> {
+        self.aliases
+            .as_ref()
+            .map(|aliases| aliases.iter().map(|a| a.as_str()).collect())
     }
 }
 

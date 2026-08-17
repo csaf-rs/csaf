@@ -51,7 +51,7 @@ mod tests {
         // s03 - HTTP URL instead of HTTPS
         // s04 - no single reference satisfies all conditions
         // s05 - missing reference category
-        // s06 - references with URL parameter and fragment
+        // s06 - URLs with query parameter and fragment after the canonical filename
 
         // Valid test cases:
         // 11  - canonical URL

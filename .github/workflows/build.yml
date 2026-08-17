@@ -157,22 +157,12 @@ jobs:
             target/${{ matrix.target.arch }}/release/libcsaf_ffi.dylib
             target/${{ matrix.target.arch }}/release/csaf_ffi.dll
           if-no-files-found: ignore
-      - name: Generate CycloneDX SBOM
+      - name: Generate CycloneDX and SPDX SBOMs
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: anchore/sbom-action@v0.24.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@26b899215c3821326f12e8f28f87d9b5fe772d89 # v1.4.0
         with:
-          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
-          format: cyclonedx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.cdx.json
-          upload-release-assets: false
-      - name: Generate SPDX SBOM
-        if: matrix.version == needs.prepare.outputs.stable-version
-        uses: anchore/sbom-action@v0.24.0
-        with:
-          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
-          format: spdx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.spdx.json
-          upload-release-assets: false
+          file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          artifact-name-prefix: csaf-validator_${{ matrix.target.arch }}
 
   build-platforms:
     needs: build-matrix
@@ -266,20 +256,11 @@ jobs:
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
-      - name: Generate CycloneDX SBOM
-        uses: anchore/sbom-action@v0.24.0
+      - name: Generate CycloneDX and SPDX SBOMs
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@26b899215c3821326f12e8f28f87d9b5fe772d89 # v1.4.0
         with:
-          file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
-          format: cyclonedx-json
-          artifact-name: csaf-ffi-wasm_wasm32_sbom.cdx.json
-          upload-release-assets: false
-      - name: Generate SPDX SBOM
-        uses: anchore/sbom-action@v0.24.0
-        with:
-          file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
-          format: spdx-json
-          artifact-name: csaf-ffi-wasm_wasm32_sbom.spdx.json
-          upload-release-assets: false
+          file-to-scan: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
+          artifact-name-prefix: csaf-ffi-wasm_wasm32
 
   go-bindings:
     needs:

@@ -1,34 +1,9 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
-use crate::schema::csaf2_1::schema::NoteCategory;
-use crate::validation::{TestFinding, TestFindingData};
+use crate::csaf_traits::{CsafTrait, DocumentTrait};
+use crate::validation::TestFinding;
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
-
-fn create_missing_reasoning_error(document_category: &CsafDocumentCategory) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!(
-            "The document does not contain a note with title `Reasoning for Withdrawal` and category `description`  which is required for documents with category {document_category}"
-        ),
-        instance_path: "/document/notes".to_string(),
-    })
-}
-
-fn create_duplicated_reasoning_error(document_category: &CsafDocumentCategory, note_index: usize) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!(
-            "Duplicate note with title `Reasoning for Withdrawal` found while only one is allowed for documents with category {document_category}"
-        ),
-        instance_path: format!("/document/notes[{note_index}]"),
-    })
-}
-
-fn create_incorrect_category_error(note_index: usize) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: "The note has the correct title. However it uses the wrong category.".to_string(),
-        instance_path: format!("/document/notes[{note_index}]"),
-    })
-}
+use crate::validations::utils::document_notes_with_title_and_category::check_document_notes_with_title_and_category;
 
 /// 6.1.27.17 Reasoning for withdrawal
 ///
@@ -49,35 +24,11 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
         None => {},    // no language set
     }
 
-    let mut errors: Option<Vec<TestFinding>> = None;
-    let mut withdrawals = Vec::new();
-
-    if let Some(notes) = doc.get_document().get_notes() {
-        for (i_n, note) in notes.iter().enumerate() {
-            if let Some(title) = note.get_title()
-                && title == "Reasoning for Withdrawal"
-            {
-                if note.get_category() != NoteCategory::Description {
-                    errors
-                        .get_or_insert_default()
-                        .push(create_incorrect_category_error(i_n));
-                }
-                withdrawals.push(i_n);
-            }
-        }
-    }
-
-    // The fact that there is none or more than one note with the required title is the primary error and we ignore the category check, which is
-    // only relevant if there is exactly one occurrence.
-    if withdrawals.is_empty() {
-        return Err(vec![create_missing_reasoning_error(&doc_category)]);
-    } else if withdrawals.len() > 1 {
-        return Err(withdrawals
-            .iter()
-            .map(|f| create_duplicated_reasoning_error(&doc_category, *f))
-            .collect::<Vec<_>>());
-    }
-    errors.map_or(Ok(()), Err)
+    check_document_notes_with_title_and_category(
+        doc.get_document().get_notes().map(Vec::as_slice),
+        "Reasoning for Withdrawal",
+        &doc_category,
+    )
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
@@ -94,9 +45,18 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_27_17 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validations::utils::document_notes_with_title_and_category::{
+        create_duplicated_note_error, create_incorrect_category_error, create_missing_note_error,
+    };
 
     #[test]
     fn test_test_6_1_27_17() {
+        const TITLE: &str = "Reasoning for Withdrawal";
+        let create_missing_reasoning_error =
+            |doc_category: &CsafDocumentCategory| create_missing_note_error(TITLE, doc_category);
+        let create_duplicated_reasoning_error =
+            |doc_category: &CsafDocumentCategory, index| create_duplicated_note_error(TITLE, doc_category, index);
+
         let undefined_lang_wrong_category = Err(vec![create_incorrect_category_error(0)]);
         let undefined_lang_duplicate_title = Err(vec![
             create_duplicated_reasoning_error(&CsafDocumentCategory::CsafWithdrawn, 0),

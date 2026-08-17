@@ -33,25 +33,43 @@ mod tests {
         let err = Err(vec![MISSING_CANONICAL_URL.clone()]);
         let ok = Ok(());
 
-        // CSAF 2.0 has 2 test cases
         TESTS_2_0.test_6_2_11.expect(err.clone(), ok.clone());
 
-        // CSAF 2.1 has 6 OASIS and 8 supplementary test cases (14 in total).
+        // Failing test cases:
+        // 01  - URL does not end with the canonical filename
+        // 02  - invalid character in filename is not replaced
+        // 03  - filename is not converted to lowercase
+        // s01 - no references
+        // s02 - external reference category instead of self
+        // s03 - HTTP URL instead of HTTPS
+        // s04 - no single reference satisfies all conditions
+        // s05 - missing reference category
+        // s06 - references with URL parameter and fragment
+
+        // Valid test cases:
+        // 11  - canonical URL
+        // 12  - invalid character in URL path but outside the filename
+        // 13  - canonical URL in a different path
+        // s11 - one matching reference among non-matching references
+        // s12 - multiple invalid character sequences in the tracking ID
+        // s13 - multiple matching references
+
         TESTS_2_1.test_6_2_11.expect(
-            err.clone(), // 01
-            err.clone(), // 02
-            err.clone(), // 03
-            err.clone(), // s01 - no references
-            err.clone(), // s02 - external reference category instead of self
-            err.clone(), // s03 - HTTP URL instead of HTTPS
-            err.clone(), // s04 - no single reference satisfies all conditions
-            err,         // s05 - missing reference category
-            ok.clone(),  // 11
-            ok.clone(),  // 12
-            ok.clone(),  // 13
-            ok.clone(),  // s11 - one matching reference among non-matching references
-            ok.clone(),  // s12 - multiple invalid character sequences in tracking ID
-            ok,          // s13 - multiple matching references
+            err.clone(),
+            err.clone(),
+            err.clone(),
+            err.clone(),
+            err.clone(),
+            err.clone(),
+            err.clone(),
+            err.clone(),
+            err,
+            ok.clone(),
+            ok.clone(),
+            ok.clone(),
+            ok.clone(),
+            ok.clone(),
+            ok,
         );
     }
 }

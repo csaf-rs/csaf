@@ -673,6 +673,10 @@
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-11-s05.json",
           "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-11-s06.json",
+          "valid": true
         }
       ],
       "valid": [

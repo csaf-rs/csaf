@@ -1,23 +1,23 @@
 use crate::csaf::traits::vulnerabilities::product_ident_helper_trait::ProductIdentificationHelperTrait;
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn generate_hardware_software_mix_error(product_id: &str, base_path: &str) -> ValidationError {
-    ValidationError {
+fn generate_hardware_software_mix_error(product_id: &str, base_path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Product '{product_id}' contains serial_numbers or model_numbers but lacks a valid product path. This indicates a potential hardware and software mix in the product tree."
         ),
         instance_path: base_path.to_string(),
-    }
+    })
 }
 
 /// Test 6.2.31: Hardware and Software Mix
-pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
     };
-    let mut errors: Vec<ValidationError> = vec![];
+    let mut errors: Vec<TestFinding> = vec![];
 
     let mut valid_path_references: HashSet<String> = HashSet::new();
     for (id, _) in product_tree.get_relationships_product_references() {
@@ -46,6 +46,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_31, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_31 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -74,8 +75,12 @@ mod tests {
         // Case 13: Valid - Pure software components without model or serial signatures
 
         // Sequence matches macro definition: 01, s01, 11, 12, 13
-        TESTS_2_1
-            .test_6_2_31
-            .expect(Err(case_01), Err(s01_errors), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_31.expect(ExpectedResults {
+            case_01: Err(case_01),
+            case_s01: Err(s01_errors),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

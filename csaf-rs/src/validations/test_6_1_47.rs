@@ -1,36 +1,36 @@
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityIdTrait, VulnerabilityTrait,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 fn create_document_id_multiple_vulnerabilities_error(
     document_id: &str,
     i_v: usize,
     i_m: usize,
     i_t: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The SSVC target ID equals the document ID '{document_id}' and the document contains multiple vulnerabilities"
         ),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"),
-    }
+    })
 }
 
-fn create_target_id_mismatch_error(target_id: &str, i_v: usize, i_m: usize, i_t: usize) -> ValidationError {
-    ValidationError {
+fn create_target_id_mismatch_error(target_id: &str, i_v: usize, i_m: usize, i_t: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The SSVC target ID '{target_id}' does not match the document ID, the CVE ID or any ID in the IDs array of the vulnerability"
         ),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/target_ids/{i_t}"),
-    }
+    })
 }
 
-fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
-    ValidationError {
+fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid SSVC object: {error}"),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
-    }
+    })
 }
 
 /// 6.1.47 Inconsistent SSVC Target IDs
@@ -39,8 +39,8 @@ fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usi
 /// the CVE of the vulnerability given in cve or the text of an item in the ids array of the vulnerability.
 /// The test MUST fail, if the target ID equals the /document/tracking/id and the CSAF document
 /// contains more than one vulnerability.
-pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     let vulnerabilities = doc.get_vulnerabilities();
 
@@ -119,6 +119,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_47, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_47 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -157,18 +158,18 @@ mod tests {
         // Case 14: 2 vulns, target ID equals vuln ID, there is also a CVE in the second vuln
         // Case 15: target ID matches both document ID and vuln ID
 
-        TESTS_2_1.test_6_1_47.expect(
-            case_01_target_id_cve_mismatch,
-            case_02_target_id_vuln_id_mismatch,
-            case_03_target_id_vuln_id_partial_mismatch,
-            case_04_target_id_vuln_id_swapped_mismatch,
-            case_05_target_id_document_id_mismatch,
-            case_06_target_id_document_id_match_multi_vuln,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_47.expect(ExpectedResults {
+            case_01: case_01_target_id_cve_mismatch,
+            case_02: case_02_target_id_vuln_id_mismatch,
+            case_03: case_03_target_id_vuln_id_partial_mismatch,
+            case_04: case_04_target_id_vuln_id_swapped_mismatch,
+            case_05: case_05_target_id_document_id_mismatch,
+            case_06: case_06_target_id_document_id_match_multi_vuln,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+        });
     }
 }

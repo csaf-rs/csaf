@@ -1,12 +1,12 @@
 use crate::csaf::types::version_number::{CsafVersionNumber, SemVerVersion};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_prerelease_version_error(number: &SemVerVersion, index: usize) -> ValidationError {
-    ValidationError {
+fn create_prerelease_version_error(number: &SemVerVersion, index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("revision history item number '{number}' contains a pre-release part"),
         instance_path: format!("/document/tracking/revision_history/{index}/number"),
-    }
+    })
 }
 
 /// 6.1.19 Revision History Entries for Pre-release Versions
@@ -14,9 +14,9 @@ fn create_prerelease_version_error(number: &SemVerVersion, index: usize) -> Vali
 /// No item in `/document/tracking/revision_history[]` may have a version with a pre-release part (i.e. "1.0.0-rc1").
 pub fn test_6_1_19_revision_history_entries_for_prerelease_versions(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     // Check that no revision history item has a pre-release part
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     let revision_history = doc.get_document().get_tracking().get_revision_history();
     for (revision_index, revision) in revision_history.iter().enumerate() {
         match revision.get_number() {
@@ -43,7 +43,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_19 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_19 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use semver::Version;
     use std::str::FromStr;
@@ -58,7 +60,13 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_1_19.expect(has_pre.clone(), has_pre.clone());
-        TESTS_2_1.test_6_1_19.expect(has_pre.clone(), has_pre);
+        TESTS_2_0.test_6_1_19.expect(ExpectedResults_2_0 {
+            case_01: has_pre.clone(),
+            case_02: has_pre.clone(),
+        });
+        TESTS_2_1.test_6_1_19.expect(ExpectedResults_2_1 {
+            case_01: has_pre.clone(),
+            case_02: has_pre,
+        });
     }
 }

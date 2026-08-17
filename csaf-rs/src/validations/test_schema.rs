@@ -5,7 +5,7 @@ use serde_json::Value;
 
 use crate::{
     csaf::raw::RawDocument,
-    validation::ValidationError,
+    validation::{TestFinding, TestFindingData},
     validations::utils::{
         validation_schema_urls::{
             CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_SCHEMA_URL,
@@ -73,17 +73,17 @@ static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
         .unwrap()
 });
 
-fn create_schema_error(err: String, path: &str) -> ValidationError {
-    ValidationError {
+fn create_schema_error(err: String, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: err,
         instance_path: match path.len() {
             0 => "/".to_string(),
             _ => path.to_string(),
         },
-    }
+    })
 }
 
-fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Result<(), Vec<ValidationError>> {
+fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Result<(), Vec<TestFinding>> {
     let errors: Vec<_> = validator
         .iter_errors(document)
         .map(|error| create_schema_error(format!("{error}"), error.instance_path().as_str()))
@@ -96,13 +96,13 @@ fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Resul
 
 pub fn validate_schema_csaf_2_0(
     document: &RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     validate_schema(document.get_json(), &VALIDATOR_2_0)
 }
 
 pub fn validate_schema_csaf_2_1(
     document: &RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     validate_schema(document.get_json(), &VALIDATOR_2_1)
     // TODO: validate extensions
 }

@@ -5,16 +5,16 @@ use std::sync::LazyLock;
 
 fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
-        message: format!("Product version range {version_range} does not match vers syntax"),
+        message: format!("Product version range {version_range} does not match VERS syntax"),
         instance_path: format!("{path}/name"),
     })
 }
 
 static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^vers:[a-z.\-+][a-z0-9.\-+]*/.+").unwrap());
 
-/// 6.2.18 Product Version Range without vers
+/// 6.2.18 Product Version Range without VERS
 ///
-/// Tests that in the product tree, all branches with the category `product_version_range` use vers
+/// Tests that in the product tree, all branches with the category `product_version_range` use VERS
 /// in their `name` property.
 pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;

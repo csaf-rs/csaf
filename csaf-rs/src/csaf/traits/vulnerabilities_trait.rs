@@ -1,3 +1,4 @@
+use crate::csaf::traits::shared::references_trait;
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
@@ -146,6 +147,18 @@ pub trait VulnerabilityTrait {
 
     /// Returns the references associated with this vulnerability.
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
+
+    /// Returns only the self references of this vulnerability (filtered by category).
+    fn get_self_references(&self) -> Option<Vec<(usize, &Self::ReferenceType)>> {
+        self.get_references()
+            .map(|refs| references_trait::get_self_references(refs))
+    }
+
+    /// Returns only the external references of this vulnerability (filtered by category).
+    fn get_external_references(&self) -> Option<Vec<(usize, &Self::ReferenceType)>> {
+        self.get_references()
+            .map(|refs| references_trait::get_external_references(refs))
+    }
 
     define_reference_accessors! {
         both: [

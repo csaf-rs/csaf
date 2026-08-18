@@ -29,10 +29,11 @@ pub fn test_6_2_39_3_language_specific_reasoning_for_supersession(
     let primary_lang = match doc.get_document().get_lang() {
         None => return Ok(()), // language unspecified, test 6.1.27.18 covers this
         Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // wasSkipped in #407
-        Some(CsafLanguage::Valid(valid_lang)) if valid_lang.is_default() || valid_lang.is_english() => return Ok(()), // language is default or english, english is covered by 6.1.27.18
+        Some(CsafLanguage::Valid(valid_lang)) if valid_lang.is_english() => return Ok(()), // language is default or english, english is covered by 6.1.27.18
         Some(CsafLanguage::Valid(valid_lang)) => valid_lang.primary_language().to_string(),
     };
 
+    // get language-specific translation
     let Some(translated_title) = get_translation_for_term_reasoning_for_supersession(&primary_lang) else {
         return Err(vec![create_no_translation_known_info(
             "Reasoning for Supersession",

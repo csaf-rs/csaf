@@ -37,20 +37,45 @@ mod tests {
         let err = Err(vec![MISSING_CANONICAL_URL.clone()]);
         let ok = Ok(());
 
-        // CSAF 2.0 has 2 test cases
         TESTS_2_0.test_6_2_11.expect(ExpectedResults_2_0 {
             case_01: err.clone(),
             case_11: ok.clone(),
         });
 
-        // CSAF 2.1 has 6 test cases
+        // Failing test cases:
+        // 01  - URL does not end with the canonical filename
+        // 02  - invalid character in filename is not replaced
+        // 03  - filename is not converted to lowercase
+        // s01 - no references
+        // s02 - external reference category instead of self
+        // s03 - HTTP URL instead of HTTPS
+        // s04 - no single reference satisfies all conditions
+        // s05 - missing reference category
+        // s06 - URLs with query parameter and fragment after the canonical filename
+
+        // Valid test cases:
+        // 11  - canonical URL
+        // 12  - invalid character in URL path but outside the filename
+        // 13  - canonical URL in a different path
+        // s11 - one matching reference among non-matching references
+        // s12 - multiple invalid character sequences in the tracking ID
+        // s13 - multiple matching references
         TESTS_2_1.test_6_2_11.expect(ExpectedResults_2_1 {
             case_01: err.clone(),
             case_02: err.clone(),
-            case_03: err,
+            case_03: err.clone(),
+            case_s01: err.clone(),
+            case_s02: err.clone(),
+            case_s03: err.clone(),
+            case_s04: err.clone(),
+            case_s05: err.clone(),
+            case_s06: err,
             case_11: ok.clone(),
             case_12: ok.clone(),
-            case_13: ok,
+            case_13: ok.clone(),
+            case_s11: ok.clone(),
+            case_s12: ok.clone(),
+            case_s13: ok,
         });
     }
 }

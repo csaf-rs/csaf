@@ -67,12 +67,15 @@ mod tests {
     fn test_test_6_2_39_3() {
         let case_01_category_summary = Err(vec![create_incorrect_category_error(0)]);
         // Case 11: correct category description
-        let case_s11_esperanto_no_translation = Err(vec![create_no_translation_known_info("Reasoning for Supersession", "eo")]);
+        let case_s11_esperanto_no_translation = Err(vec![create_no_translation_known_info(
+            "Reasoning for Supersession",
+            "eo",
+        )]);
 
         TESTS_2_1.test_6_2_39_3.expect(ExpectedResults {
             case_01: case_01_category_summary,
             case_11: Ok(()),
-            case_s11: case_s11_esperanto_no_translation
+            case_s11: case_s11_esperanto_no_translation,
         });
     }
 }

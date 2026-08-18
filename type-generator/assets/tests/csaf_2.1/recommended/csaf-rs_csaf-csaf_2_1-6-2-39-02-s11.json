@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_withdrawn",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "lang": "eo",
+    "notes": [
+      {
+        "category": "description",
+        "text": "La CSAF dokumento enhavis ekzemplajn datumojn kaj estis retirita por generi testajn datumojn.",
+        "title": "Kialo por la Retiro"
+      }
+    ],
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Recommended Test: Language Specific Reasoning for Withdrawal (info supplementary example 1 - Esperanto language with no known translation)",
+    "tracking": {
+      "current_release_date": "2026-08-18T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-39-02-S11",
+      "initial_release_date": "2026-08-18T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2026-08-18T10:00:00.000Z",
+          "number": "1",
+          "summary": "Komenca versio."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  }
+}

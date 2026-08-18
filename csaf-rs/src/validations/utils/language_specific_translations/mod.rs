@@ -5,6 +5,8 @@ use generated::*;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
+use crate::validation::{TestFinding, TestFindingData};
+
 static LICENSE_MAP: LazyLock<HashMap<&'static str, &'static str>> =
     LazyLock::new(|| LICENSE_TRANSLATIONS.iter().copied().collect());
 static PRODUCT_DESCRIPTION_MAP: LazyLock<HashMap<&'static str, &'static str>> =
@@ -39,4 +41,13 @@ pub fn get_translation_for_term_reasoning_for_withdrawal(lang: &str) -> Option<&
 /// Returns the translation of the term `superseding_document` for the given lang tag, if available
 pub fn get_translation_for_term_superseding_document(lang: &str) -> Option<&'static str> {
     SUPERSEDING_DOCUMENT_MAP.get(lang).copied()
+}
+
+/// Creates a [`TestFinding::Information`] indicating that no translation for `term` is known for
+/// the given language tag, and that the test was therefore skipped.
+pub(crate) fn create_no_translation_known_info(term: &str, lang: &str) -> TestFinding {
+    TestFinding::Information(TestFindingData {
+        message: format!("No translation for '{term}' known for language '{lang}'. Test skipped."),
+        instance_path: "/document/notes".to_string(),
+    })
 }

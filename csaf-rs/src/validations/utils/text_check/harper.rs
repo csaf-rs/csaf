@@ -4,7 +4,7 @@ use harper_core::spell::FstDictionary;
 use harper_core::{Dialect, Document, Lrc};
 use std::sync::LazyLock;
 
-/// [`TextChecker`] implementation backed by [`harper-core`].
+/// [`TextChecker`] implementation backed by harper-core.
 pub struct HarperTextChecker;
 
 impl TextChecker for HarperTextChecker {

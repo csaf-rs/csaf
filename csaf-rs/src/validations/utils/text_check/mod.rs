@@ -44,7 +44,7 @@ pub struct TextCheckFinding {
 /// A backend capable of checking text for spelling / grammar issues.
 ///
 /// Implementations are free to use whatever underlying engine they like (e.g.
-/// [`harper-core`] as done by [`harper::HarperTextChecker`]). This trait exists so
+/// harper-core as done by [`harper::HarperTextChecker`]). This trait exists so
 /// that the engine can be swapped out without changing any callers.
 pub trait TextChecker {
     /// Checks a single text snippet for issues of the given [`TextCheckKind`].

@@ -25,23 +25,28 @@
       {
         "category": "external",
         "summary": "Anstataŭiga dokumento",
-        "url": "https://example.com/.well-known/csaf/clear/2026/esa-2026-1234.json"
+        "url": "https://example.com/.well-known/csaf/clear/2024/esa-2024-1234.json"
       }
     ],
     "title": "Recommended Test: Language Specific Reasoning for Supersession (info supplementary example 1 - Esperanto language with no known translation)",
     "tracking": {
-      "current_release_date": "2026-08-18T10:00:00.000Z",
+      "current_release_date": "2024-05-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-39-03-S11",
-      "initial_release_date": "2026-08-18T10:00:00.000Z",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {
-          "date": "2026-08-18T10:00:00.000Z",
+          "date": "2024-01-24T10:00:00.000Z",
           "number": "1",
           "summary": "Komenca versio."
+        },
+        {
+          "date": "2024-05-24T10:00:00.000Z",
+          "number": "2",
+          "summary": "Anstataŭigita."
         }
       ],
       "status": "final",
-      "version": "1"
+      "version": "2"
     }
   }
 }

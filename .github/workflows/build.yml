@@ -28,6 +28,7 @@ jobs:
       targets: ${{ steps.build-context.outputs.targets }}
       target-ref: ${{ steps.build-context.outputs.targetref }}
       go-targets: ${{ steps.get-go-targets.outputs.go-targets }}
+      ref-name: ${{ steps.build-context.outputs.ref-name }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -404,7 +405,7 @@ jobs:
         # Prevent direct interpolation of potentially untrusted Git ref values into the shell script:
         # https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
         env:
-          REF_NAME: ${{ github.ref_name }}
+          REF_NAME: ${{ needs.prepare.outputs.ref-name }}
           TARGET_REF: ${{ needs.prepare.outputs.target-ref }}
         run: |
           # Determine version segment for PURL

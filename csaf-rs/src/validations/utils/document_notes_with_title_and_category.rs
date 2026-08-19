@@ -3,10 +3,14 @@ use crate::csaf_traits::NoteTrait;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::{TestFinding, TestFindingData};
 
-pub(crate) fn create_missing_note_error(required_title: &str, document_category: &CsafDocumentCategory) -> TestFinding {
+pub(crate) fn create_missing_note_error(
+    required_title: &str,
+    required_category: &NoteCategory,
+    document_category: &CsafDocumentCategory,
+) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
-            "The document does not contain a note with title `{required_title}` and category `description` which is required for documents with category {document_category}"
+            "The document does not contain a note with title `{required_title}` and category `{required_category}` which is required for documents with category `{document_category}`"
         ),
         instance_path: "/document/notes".to_string(),
     })
@@ -19,40 +23,63 @@ pub(crate) fn create_duplicated_note_error(
 ) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
-            "Duplicate note with title `{required_title}` found while only one is allowed for documents with category {document_category}"
+            "Duplicate note with title `{required_title}` found while only one is allowed for documents with category `{document_category}`"
         ),
         instance_path: format!("/document/notes/{note_index}"),
     })
 }
 
-pub(crate) fn create_incorrect_category_error(note_index: usize) -> TestFinding {
+pub(crate) fn create_incorrect_category_error(
+    required_title: &str,
+    wrong_category: &NoteCategory,
+    required_category: &NoteCategory,
+    doc_category: &CsafDocumentCategory,
+    note_index: usize,
+) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: "The note has the correct title. However it uses the wrong category.".to_string(),
+        message: format!(
+            "The document contains a note with title `{required_title}`, but it uses the wrong note category `{wrong_category}` (required is: `{required_category}`) for documents with category `{doc_category}`."
+        ),
         instance_path: format!("/document/notes/{note_index}"),
     })
 }
 
-/// Checks that exactly one document note exists with the given `required_title` and that its
-/// category is `description`.
+/// Checks that exactly one document note exists with the given `required_title` and
+/// `required_category` among the provided `notes`, in the context of a document with
+/// `doc_category`. `doc_category` is forwarded to error generation functions and not
+/// used in the error detection logic.
+///
+/// The following findings are reported in that order / prioritization:
+/// - If no note with `required_title` is found: a single missing-note error.
+/// - If more than one note with `required_title` is found: one duplicate error per matching note.
+/// - If exactly one note with `required_title` is found but its category differs from
+///   `required_category`: a wrong-category error.
 ///
 /// Returns `Ok(())` if the check passes, or `Err` with a list of [`TestFinding`]s otherwise.
-pub(crate) fn check_document_notes_with_title_and_category<N: NoteTrait>(
-    notes: Option<&[N]>,
+pub(crate) fn check_notes_with_title_and_category<Note: NoteTrait>(
+    notes: Option<&[Note]>,
     required_title: &str,
+    required_category: &NoteCategory,
     doc_category: &CsafDocumentCategory,
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
     let mut matching_indices = Vec::new();
 
+    // filter notes for required title and category
+    // collect correct title, wrong category errors
     if let Some(notes) = notes {
         for (i_n, note) in notes.iter().enumerate() {
             if let Some(title) = note.get_title()
                 && title == required_title
             {
-                if note.get_category() != NoteCategory::Description {
-                    errors
-                        .get_or_insert_default()
-                        .push(create_incorrect_category_error(i_n));
+                if note.get_category() != *required_category {
+                    errors.get_or_insert_default().push(create_incorrect_category_error(
+                        required_title,
+                        &note.get_category(),
+                        required_category,
+                        doc_category,
+                        i_n,
+                    ));
                 }
                 matching_indices.push(i_n);
             }
@@ -63,7 +90,11 @@ pub(crate) fn check_document_notes_with_title_and_category<N: NoteTrait>(
     // error and we ignore the category check, which is only relevant if there is exactly one
     // occurrence.
     if matching_indices.is_empty() {
-        return Err(vec![create_missing_note_error(required_title, doc_category)]);
+        return Err(vec![create_missing_note_error(
+            required_title,
+            required_category,
+            doc_category,
+        )]);
     } else if matching_indices.len() > 1 {
         return Err(matching_indices
             .iter()

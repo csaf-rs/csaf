@@ -1,9 +1,10 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
+use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::TestFinding;
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
-use crate::validations::utils::document_notes_with_title_and_category::check_document_notes_with_title_and_category;
+use crate::validations::utils::document_notes_with_title_and_category::check_notes_with_title_and_category;
 
 /// 6.1.27.18 Reasoning for supersession
 ///
@@ -24,9 +25,10 @@ pub fn test_6_1_27_18_document_notes_for_supersession(doc: &impl CsafTrait) -> R
         None => {},    // no language set
     }
 
-    check_document_notes_with_title_and_category(
+    check_notes_with_title_and_category(
         doc.get_document().get_notes().map(Vec::as_slice),
         "Reasoning for Supersession",
+        &NoteCategory::Description,
         &doc_category,
     )
 }
@@ -45,35 +47,53 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_27_18 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::schema::csaf2_1::schema::NoteCategory;
     use crate::validations::utils::document_notes_with_title_and_category::{
         create_duplicated_note_error, create_incorrect_category_error, create_missing_note_error,
     };
 
     #[test]
     fn test_test_6_1_27_18() {
+        // Setup test functions / consts
         const TITLE: &str = "Reasoning for Supersession";
-        let create_missing_reasoning_error =
-            |doc_category: &CsafDocumentCategory| create_missing_note_error(TITLE, doc_category);
-        let create_duplicated_reasoning_error =
-            |doc_category: &CsafDocumentCategory, index| create_duplicated_note_error(TITLE, doc_category, index);
+        const DOC_CATEGORY: &CsafDocumentCategory = &CsafDocumentCategory::CsafSuperseded;
+        const NOTE_CATEGORY: &NoteCategory = &NoteCategory::Description;
+        let create_incorrect_category_error = |wrong_category: &NoteCategory, index| {
+            create_incorrect_category_error(TITLE, wrong_category, NOTE_CATEGORY, DOC_CATEGORY, index)
+        };
+        let create_missing_reasoning_error = || create_missing_note_error(TITLE, NOTE_CATEGORY, DOC_CATEGORY);
+        let create_duplicated_reasoning_error = |index| create_duplicated_note_error(TITLE, DOC_CATEGORY, index);
 
-        let undefined_lang_wrong_category = Err(vec![create_incorrect_category_error(0)]);
-        let undefined_lang_duplicate_title = Err(vec![
-            create_duplicated_reasoning_error(&CsafDocumentCategory::CsafSuperseded, 0),
-            create_duplicated_reasoning_error(&CsafDocumentCategory::CsafSuperseded, 1),
+        // Case 01: correct title, wrong category
+        let case_01_wrong_category_details = Err(vec![create_incorrect_category_error(&NoteCategory::Details, 0)]);
+        // Case 02: duplicate titles, different category
+        // Case 04: duplicate titles, same category
+        let duplicate_title = Err(vec![
+            create_duplicated_reasoning_error(0),
+            create_duplicated_reasoning_error(1),
         ]);
-        let lang_en_us_wrong_category = Err(vec![create_incorrect_category_error(0)]);
-        let lang_en_gb_missing_reasoning = Err(vec![create_missing_reasoning_error(
-            &CsafDocumentCategory::CsafSuperseded,
-        )]);
+        // Case 03: 2 notes, one with correct title, wrong category, one with wrong title, correct category
+        // We only report the correct title, wrong category note
+        let case_03_wrong_category = Err(vec![create_incorrect_category_error(&NoteCategory::Summary, 0)]);
+        // Case 05: 2 notes, one with correct title, wrong category, one with wrong title, correct category, also language is en-US
+        // We only report the correct title, wrong category note
+        let case_05_lang_en_us_wrong_category = Err(vec![create_incorrect_category_error(&NoteCategory::General, 0)]);
+        // Case S01: no notes at all
+        // Case S02: only one note, wrong category, wrong title, also en-GB
+        let missing_reasoning = Err(vec![create_missing_reasoning_error()]);
+
+        // Case 11: no lang, correct title / description
+        // Case 12: en-GB, correct title / description
+        // Case 13: de-DE, test does not apply
+
         TESTS_2_1.test_6_1_27_18.expect(ExpectedResults {
-            case_01: undefined_lang_wrong_category.clone(),
-            case_02: undefined_lang_duplicate_title.clone(),
-            case_03: undefined_lang_wrong_category,
-            case_04: undefined_lang_duplicate_title,
-            case_05: lang_en_us_wrong_category,
-            case_s01: lang_en_gb_missing_reasoning.clone(),
-            case_s02: lang_en_gb_missing_reasoning,
+            case_01: case_01_wrong_category_details,
+            case_02: duplicate_title.clone(),
+            case_03: case_03_wrong_category,
+            case_04: duplicate_title,
+            case_05: case_05_lang_en_us_wrong_category,
+            case_s01: missing_reasoning.clone(),
+            case_s02: missing_reasoning,
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

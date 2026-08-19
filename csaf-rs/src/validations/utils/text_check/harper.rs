@@ -27,8 +27,8 @@ impl TextChecker for HarperTextChecker {
                 continue;
             }
             let word = lint.get_str(source);
-            /// TODO: This will be replaced with an allow-list in the future. For now, this should ignore
-            /// OASIS, CSAF, ...
+            // TODO: This will be replaced with an allow-list in the future. For now, this should ignore
+            // OASIS, CSAF, ...
             if kind == TextCheckKind::Spell && is_probable_acronym(&word) {
                 continue;
             }

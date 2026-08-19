@@ -25,22 +25,30 @@ pub fn get_translation_for_term_license(primary_lang_tag: &str) -> Option<&'stat
 
 /// Returns the translation of the term `product_description` for the given lang tag, if available
 pub fn get_translation_for_term_product_description(primary_lang_tag: &str) -> Option<&'static str> {
-    PRODUCT_DESCRIPTION_MAP.get(primary_lang_tag.to_lowercase().as_str()).copied()
+    PRODUCT_DESCRIPTION_MAP
+        .get(primary_lang_tag.to_lowercase().as_str())
+        .copied()
 }
 
 /// Returns the translation of the term `reasoning_for_supersession` for the given lang tag, if available
 pub fn get_translation_for_term_reasoning_for_supersession(primary_lang_tag: &str) -> Option<&'static str> {
-    REASONING_FOR_SUPERSESSION_MAP.get(primary_lang_tag.to_lowercase().as_str()).copied()
+    REASONING_FOR_SUPERSESSION_MAP
+        .get(primary_lang_tag.to_lowercase().as_str())
+        .copied()
 }
 
 /// Returns the translation of the term `reasoning_for_withdrawal` for the given lang tag, if available
 pub fn get_translation_for_term_reasoning_for_withdrawal(primary_lang_tag: &str) -> Option<&'static str> {
-    REASONING_FOR_WITHDRAWAL_MAP.get(primary_lang_tag.to_lowercase().as_str()).copied()
+    REASONING_FOR_WITHDRAWAL_MAP
+        .get(primary_lang_tag.to_lowercase().as_str())
+        .copied()
 }
 
 /// Returns the translation of the term `superseding_document` for the given lang tag, if available
 pub fn get_translation_for_term_superseding_document(primary_lang_tag: &str) -> Option<&'static str> {
-    SUPERSEDING_DOCUMENT_MAP.get(primary_lang_tag.to_lowercase().as_str()).copied()
+    SUPERSEDING_DOCUMENT_MAP
+        .get(primary_lang_tag.to_lowercase().as_str())
+        .copied()
 }
 
 /// Creates a [`TestFinding::Information`] indicating that no translation for `term` is known for

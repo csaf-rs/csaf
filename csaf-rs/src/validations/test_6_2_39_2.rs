@@ -46,6 +46,8 @@ pub fn test_6_2_39_2_language_specific_reasoning_for_withdrawal(doc: &impl CsafT
         &NoteCategory::Description,
         &doc_category,
     )
+    .map(|v| v.into_iter().map(TestFinding::Warning).collect())
+    .map_or(Ok(()), Err)
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
@@ -62,19 +64,19 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_39_2 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validations::utils::document_notes_with_title_and_category::create_incorrect_category_error;
+    use crate::validations::utils::document_notes_with_title_and_category::create_incorrect_category_data;
 
     #[test]
     fn test_test_6_2_39_2() {
         let de_title = get_translation_for_term_reasoning_for_withdrawal("de").unwrap();
 
-        let case_01_category_summary = Err(vec![create_incorrect_category_error(
+        let case_01_category_summary = Err(vec![TestFinding::Warning(create_incorrect_category_data(
             de_title,
             &NoteCategory::Summary,
             &NoteCategory::Description,
             &CsafDocumentCategory::CsafWithdrawn,
             0,
-        )]);
+        ))]);
         // Case 11: correct category description
         let case_s11_esperanto_no_translation =
             Err(vec![create_no_translation_known_info("Reasoning for Withdrawal", "eo")]);

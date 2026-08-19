@@ -5,7 +5,7 @@
 //! document.
 //!
 //! The interface is intentionally small: callers provide the text to check and
-//! receive back [`TextCheckFinding`]s. 
+//! receive back [`TextCheckFinding`]s.
 //!
 //! The [`TextChecker`] trait abstracts over the concrete language-checking engine.
 //! TODO we currently only have harper-core, if more gets integrated, we'll have to implement some matching system
@@ -58,8 +58,8 @@ pub trait TextChecker {
 /// TODO: Provide some matching on which spellchecking / grammarchecking to use for which language
 pub fn check_text(kind: TextCheckKind, text: &str, lang: &ValidCsafLanguage) -> Vec<TextCheckFinding> {
     if lang.is_english() {
-        return harper::HarperTextChecker.check_text(kind, text)
-    } 
+        return harper::HarperTextChecker.check_text(kind, text);
+    }
     vec![]
 }
 
@@ -79,14 +79,25 @@ mod tests {
 
     #[test]
     fn does_not_flag_correct_spelling() {
-        let findings = check_text(TextCheckKind::Spell, "Security researchers", &ValidCsafLanguage::new_for_tests("en-US"));
+        let findings = check_text(
+            TextCheckKind::Spell,
+            "Security researchers",
+            &ValidCsafLanguage::new_for_tests("en-US"),
+        );
         assert!(findings.is_empty(), "expected no spell findings, got: {findings:?}");
     }
 
     #[test]
     fn ignores_acronyms() {
-        let findings = check_text(TextCheckKind::Spell, "OASIS CSAF TC", &ValidCsafLanguage::new_for_tests("en-US"));
-        assert!(findings.is_empty(), "expected acronyms to be ignored, got: {findings:?}");
+        let findings = check_text(
+            TextCheckKind::Spell,
+            "OASIS CSAF TC",
+            &ValidCsafLanguage::new_for_tests("en-US"),
+        );
+        assert!(
+            findings.is_empty(),
+            "expected acronyms to be ignored, got: {findings:?}"
+        );
     }
 
     #[test]
@@ -98,14 +109,28 @@ mod tests {
     #[test]
     fn spell_check_ignores_grammar_issues() {
         // "He are going" is a grammar issue, not a spelling issue.
-        let findings = check_text(TextCheckKind::Spell, "He are going", &ValidCsafLanguage::new_for_tests("en-US"));
-        assert!(findings.is_empty(), "spell check should not flag grammar issues, got: {findings:?}");
+        let findings = check_text(
+            TextCheckKind::Spell,
+            "He are going",
+            &ValidCsafLanguage::new_for_tests("en-US"),
+        );
+        assert!(
+            findings.is_empty(),
+            "spell check should not flag grammar issues, got: {findings:?}"
+        );
     }
 
     #[test]
     fn non_english_language_produces_no_findings() {
         // Not yet supported: harper-core only checks English text.
-        let findings = check_text(TextCheckKind::Spell, "Secruity researchers", &ValidCsafLanguage::new_for_tests("de-DE"));
-        assert!(findings.is_empty(), "expected no findings for non-English text, got: {findings:?}");
+        let findings = check_text(
+            TextCheckKind::Spell,
+            "Secruity researchers",
+            &ValidCsafLanguage::new_for_tests("de-DE"),
+        );
+        assert!(
+            findings.is_empty(),
+            "expected no findings for non-English text, got: {findings:?}"
+        );
     }
 }

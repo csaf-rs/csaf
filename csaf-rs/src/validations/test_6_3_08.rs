@@ -1,10 +1,10 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, AggregateSeverityTrait, BranchTrait, CsafTrait, CsafVersion, DistributionTrait,
-    DocumentTrait, EngineTrait, GeneratorTrait, InvolvementTrait, NoteTrait, ProductGroupTrait, ProductPathTrait,
-    ProductTrait, ProductTreeTrait, PublisherTrait, ReferenceTrait, RemediationTrait, RestartRequiredTrait,
-    RevisionTrait, ThreatTrait, TrackingTrait, VulnerabilityTrait,
+    AcknowledgmentTrait, AggregateSeverityTrait, BranchTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentTrait,
+    EngineTrait, GeneratorTrait, InvolvementTrait, NoteTrait, ProductGroupTrait, ProductPathTrait, ProductTrait,
+    ProductTreeTrait, PublisherTrait, ReferenceTrait, RemediationTrait, RestartRequiredTrait, RevisionTrait,
+    ThreatTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::text_check::{TextCheckKind, check_text};
@@ -70,7 +70,10 @@ pub fn test_6_3_8_spell_check(doc: &impl CsafTrait) -> Result<(), Vec<TestFindin
     }
 
     if let Some(aggregate_severity) = document.get_aggregate_severity() {
-        check(aggregate_severity.get_text(), "/document/aggregate_severity/text".to_string());
+        check(
+            aggregate_severity.get_text(),
+            "/document/aggregate_severity/text".to_string(),
+        );
     }
 
     // Only the "freeform" / "not matched to enum variant" category strings are natural-language text; the
@@ -169,7 +172,10 @@ pub fn test_6_3_8_spell_check(doc: &impl CsafTrait) -> Result<(), Vec<TestFindin
                     check(name, format!("{vuln_prefix}/acknowledgments/{a_i}/names/{n_i}"));
                 }
                 if let Some(organization) = ack.get_organization() {
-                    check(organization, format!("{vuln_prefix}/acknowledgments/{a_i}/organization"));
+                    check(
+                        organization,
+                        format!("{vuln_prefix}/acknowledgments/{a_i}/organization"),
+                    );
                 }
                 if let Some(summary) = ack.get_summary() {
                     check(summary, format!("{vuln_prefix}/acknowledgments/{a_i}/summary"));
@@ -197,12 +203,18 @@ pub fn test_6_3_8_spell_check(doc: &impl CsafTrait) -> Result<(), Vec<TestFindin
 
         if let Some(references) = vuln.get_references() {
             for (r_i, reference) in references.iter().enumerate() {
-                check(reference.get_summary(), format!("{vuln_prefix}/references/{r_i}/summary"));
+                check(
+                    reference.get_summary(),
+                    format!("{vuln_prefix}/references/{r_i}/summary"),
+                );
             }
         }
 
         for (r_i, remediation) in vuln.get_remediations().iter().enumerate() {
-            check(remediation.get_details(), format!("{vuln_prefix}/remediations/{r_i}/details"));
+            check(
+                remediation.get_details(),
+                format!("{vuln_prefix}/remediations/{r_i}/details"),
+            );
             for (e_i, entitlement) in remediation.get_entitlements().into_iter().enumerate() {
                 check(
                     entitlement,
@@ -240,16 +252,16 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_3_8 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    
+
     #[test]
     fn test_test_6_3_8() {
-        let case_01_single_error = Err(vec![create_misspelling_finding_info("Secruity", "/document/notes/0/text")]);
+        let case_01_single_error = Err(vec![create_misspelling_finding_info(
+            "Secruity",
+            "/document/notes/0/text",
+        )]);
         let case_02_multiple_csaf_20 = Err(vec![
             create_misspelling_finding_info("Pruduct", "/product_tree/branches/0/branches/0/name"),
-            create_misspelling_finding_info(
-                "Pruduct",
-                "/product_tree/branches/0/branches/0/branches/0/product/name",
-            ),
+            create_misspelling_finding_info("Pruduct", "/product_tree/branches/0/branches/0/branches/0/product/name"),
             create_misspelling_finding_info("vulnerapility", "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("undisclused", "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("addacker", "/vulnerabilities/0/notes/0/text"),
@@ -259,10 +271,7 @@ mod tests {
         ]);
         let case_02_multiple_csaf_21 = Err(vec![
             create_misspelling_finding_info("Produkt", "/product_tree/branches/0/branches/0/name"),
-            create_misspelling_finding_info(
-                "Produkt",
-                "/product_tree/branches/0/branches/0/branches/0/product/name",
-            ),
+            create_misspelling_finding_info("Produkt", "/product_tree/branches/0/branches/0/branches/0/product/name"),
             create_misspelling_finding_info("combonent", "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("renote", "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("Vuknerability", "/vulnerabilities/0/notes/0/title"),

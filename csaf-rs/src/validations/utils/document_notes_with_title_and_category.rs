@@ -38,7 +38,7 @@ pub(crate) fn create_incorrect_category_error(
 ) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
-            "The document contains a note with title `{required_title}`, but it uses the wrong note category `{wrong_category}` (required is: `{required_category}`) for documents with category `{doc_category}`."
+            "The document contains a note with title `{required_title}`, but it uses the wrong note category `{wrong_category}` for documents with category `{doc_category}` (should be `{required_category}`)."
         ),
         instance_path: format!("/document/notes/{note_index}"),
     })

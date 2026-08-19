@@ -57,7 +57,7 @@ jobs:
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Run shared format check
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@main
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@d86c333cc6d773ebd9694d090df9d222392f7281 # v1.1.0
         with:
           run-clippy: "false"
       - name: Doc check
@@ -80,7 +80,7 @@ jobs:
           fi
       - name: Compute Rust build context
         id: build-context
-        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@main
+        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@d86c333cc6d773ebd9694d090df9d222392f7281 # v1.1.0
       - name: Compute Go build targets
         id: get-go-targets
         run: |
@@ -131,7 +131,7 @@ jobs:
         shell: bash
         run: command -v cargo-auditable || cargo install cargo-auditable --locked
       - name: Run shared clippy check
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@main
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@d86c333cc6d773ebd9694d090df9d222392f7281 # v1.1.0
         with:
           run-format: "false"
           clippy-extra-args: "--target=${{ matrix.target.arch }}"

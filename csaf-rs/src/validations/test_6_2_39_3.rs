@@ -1,9 +1,10 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
+use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::TestFinding;
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
-use crate::validations::utils::document_notes_with_title_and_category::check_document_notes_with_title_and_category;
+use crate::validations::utils::document_notes_with_title_and_category::check_notes_with_title_and_category;
 use crate::validations::utils::language_specific_translations::{
     create_no_translation_known_info, get_translation_for_term_reasoning_for_supersession,
 };
@@ -41,9 +42,10 @@ pub fn test_6_2_39_3_language_specific_reasoning_for_supersession(
         )]);
     };
 
-    check_document_notes_with_title_and_category(
+    check_notes_with_title_and_category(
         doc.get_document().get_notes().map(Vec::as_slice),
         translated_title,
+        &NoteCategory::Description,
         &doc_category,
     )
 }
@@ -59,14 +61,22 @@ crate::test_validation::impl_validator!(
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_39_3 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::validations::utils::document_notes_with_title_and_category::create_incorrect_category_error;
-    use crate::validations::utils::language_specific_translations::create_no_translation_known_info;
 
     #[test]
     fn test_test_6_2_39_3() {
-        let case_01_category_summary = Err(vec![create_incorrect_category_error(0)]);
+        let de_title = get_translation_for_term_reasoning_for_supersession("de").unwrap();
+
+        let case_01_category_summary = Err(vec![create_incorrect_category_error(
+            de_title,
+            &NoteCategory::Summary,
+            &NoteCategory::Description,
+            &CsafDocumentCategory::CsafSuperseded,
+            0,
+        )]);
         // Case 11: correct category description
         let case_s11_esperanto_no_translation = Err(vec![create_no_translation_known_info(
             "Reasoning for Supersession",

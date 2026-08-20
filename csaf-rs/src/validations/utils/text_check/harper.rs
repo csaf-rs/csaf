@@ -56,7 +56,20 @@ impl TextCheckKind {
     fn matches(self, lint_kind: harper_core::linting::LintKind) -> bool {
         match self {
             TextCheckKind::Spell => lint_kind.is_spelling() || lint_kind.is_typo(),
-            TextCheckKind::Grammar => lint_kind.is_grammar(),
+            // Harper does not exclusively classify grammar issues under `LintKind::Grammar`.
+            // Missing words ("must followed" -> "must be followed") are reported as
+            // `Miscellaneous`. We ignore spelling and typos, and lints that are purely stilistic.
+            TextCheckKind::Grammar => {
+                !(lint_kind.is_spelling()
+                    || lint_kind.is_typo()
+                    || lint_kind.is_word_choice()
+                    || lint_kind.is_style()
+                    || lint_kind.is_regionalism()
+                    || lint_kind.is_readability()
+                    || lint_kind.is_nonstandard()
+                    || lint_kind.is_enhancement()
+                    || lint_kind.is_agreement())
+            },
         }
     }
 }

@@ -44,13 +44,15 @@ pub fn test_6_3_14_usage_of_unregistered_ssvc_decision_point_base_namespace_in_n
             Err(err)
                 if matches!(
                     err,
-                    NamespaceError::ReservedForbiddenNamespace { .. }
-                        | NamespaceError::ReservedTestNamespace { .. }
+                    NamespaceError::ReservedForbiddenNamespace { .. } | NamespaceError::ReservedTestNamespace { .. }
                 ) =>
             {
-                errors.get_or_insert_default().push(TestFinding::Information(
-                    create_other_namespace_error(&err, &instance_path),
-                ));
+                errors
+                    .get_or_insert_default()
+                    .push(TestFinding::Information(create_other_namespace_error(
+                        &err,
+                        &instance_path,
+                    )));
             },
             // it's registered / all other namespace errors
             Ok(_) | Err(_) => continue,

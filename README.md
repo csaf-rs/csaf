@@ -126,6 +126,18 @@ cargo install cargo-edit
 ./scripts/publish/bump_version.sh set 1.2.3    # explicit version
 ```
 
+## Commit Messages
+
+Please use commit messages and pull request titles following [Conventional Commits](https://www.conventionalcommits.org/) when contributing to this project.
+You can use a tool such as [commitlint](https://commitlint.js.org/) to check your commit locally, e.g., by running:
+
+```bash
+commitlint --default-config --last
+```
+
+to verify the latest commit. More options can be found with `--help`.
+The CI workflow `pre-checks` will also ensure that the commit messages and PR title conform to Conventional Commits.
+
 ## Build
 
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run

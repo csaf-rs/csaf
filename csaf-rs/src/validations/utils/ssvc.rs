@@ -1,15 +1,56 @@
-use crate::validation::{TestFindingData};
-use ssvc::NamespaceError;
+use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::validation::TestFindingData;
+use ssvc::{NamespaceError, ParsedNamespace};
 
-pub(crate) fn create_other_namespace_error(
-    err: &NamespaceError,
-    i_v: usize,
-    i_m: usize,
-    i_s: usize,
-) -> TestFindingData {
-    err.to_test_finding_data(format!(
-        "/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/selections/{i_s}/namespace"
-    ))
+/// Returns the JSON instance path to the `namespace` field of an SSVC v2 selection.
+pub(crate) fn ssvc_selection_namespace_path(vuln_index: usize, metric_index: usize, selection_index: usize) -> String {
+    format!(
+        "/vulnerabilities/{vuln_index}/metrics/{metric_index}/content/ssvc_v2/selections/{selection_index}/namespace"
+    )
+}
+
+/// A single SSVC v2 namespace result with the JSON path at which it was found.
+pub(crate) struct SsvcNamespaceResultAndPath {
+    pub result: Result<ParsedNamespace, NamespaceError>,
+    pub instance_path: String,
+}
+
+/// Returns an iterator over all SSVC v2 namespace parse results found in the document.
+///
+/// The iterator skips SSVC metric objects that fail to deserialize (those are reported by test
+/// 6.1.46). Every remaining selection yields exactly one [`SsvcNamespaceResultAndPath`] item.
+pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
+    doc: &D,
+    allow_test_namespaces: bool,
+) -> impl Iterator<Item = SsvcNamespaceResultAndPath> {
+    doc.get_vulnerabilities()
+        .iter()
+        .enumerate()
+        .flat_map(|(vuln_index, vuln)| {
+            vuln.get_metrics()
+                .into_iter()
+                .flatten()
+                .enumerate()
+                .map(move |(metric_index, metric)| (vuln_index, metric_index, metric))
+                .collect::<Vec<_>>()
+        })
+        .filter(|(_, _, metric)| metric.get_content().has_ssvc_v2())
+        .flat_map(move |(vuln_index, metric_index, metric)| {
+            metric
+                .get_content()
+                .get_ssvc_v2()
+                .into_iter()
+                .flat_map(|selection_list| selection_list.selections.into_iter().enumerate())
+                .map(move |(sl_item_index, sl_item)| SsvcNamespaceResultAndPath {
+                    result: ssvc::validate_namespace(sl_item.namespace.as_str(), allow_test_namespaces),
+                    instance_path: ssvc_selection_namespace_path(vuln_index, metric_index, sl_item_index),
+                })
+                .collect::<Vec<_>>()
+        })
+}
+
+pub(crate) fn create_other_namespace_error(err: &NamespaceError, instance_path: &str) -> TestFindingData {
+    err.to_test_finding_data(instance_path.to_owned())
 }
 
 /// Extension trait to convert a [`NamespaceError`] into a [`TestFindingData`], attaching the

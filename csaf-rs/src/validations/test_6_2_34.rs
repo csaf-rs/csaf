@@ -1,12 +1,12 @@
-use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::csaf_traits::CsafTrait;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::create_other_namespace_error;
+use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, create_other_namespace_error, iter_ssvc_namespaces};
 use ssvc::NamespaceError;
 
-fn create_unregistered_base_namespace_error(namespace: &str, i_v: usize, i_m: usize, i_s: usize) -> TestFinding {
+fn create_unregistered_base_namespace_error(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Usage of unregistered SSVC decision point base namespace: `{namespace}`"),
-        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/selections/{i_s}/namespace"),
+        instance_path: instance_path.to_owned(),
     })
 }
 
@@ -23,51 +23,34 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for (i_v, v) in doc.get_vulnerabilities().iter().enumerate() {
-        if let Some(metrics) = v.get_metrics() {
-            for (i_m, m) in metrics.iter().enumerate() {
-                let content = m.get_content();
-                if !content.has_ssvc_v2() {
-                    continue;
-                }
-                let Ok(selection_list) = content.get_ssvc_v2() else {
-                    // Invalid SSVC objects are reported by test 6.1.46
-                    continue;
-                };
-
-                // iterate all selection list items
-                for (i_s, selection) in selection_list.selections.iter().enumerate() {
-                    let namespace = selection.namespace.as_str();
-                    // validate the selection list item's namespace
-                    match ssvc::validate_namespace(namespace, false) {
-                        // its unregistered (prefixed with x_)
-                        Ok(parsed) if parsed.is_unregistered() => {
-                            errors
-                                .get_or_insert_default()
-                                .push(create_unregistered_base_namespace_error(namespace, i_v, i_m, i_s));
-                        },
-                        // its registered, all good
-                        Ok(_) => continue,
-                        // its:
-                        // * reserved namespaces "invalid" or "test"
-                        // * not a "known" registered namespace to SSVC
-                        Err(err)
-                            if matches!(
-                                err,
-                                NamespaceError::InvalidRegisteredNamespace { .. }
-                                    | NamespaceError::ReservedForbiddenNamespace { .. }
-                                    | NamespaceError::ReservedTestNamespace { .. }
-                            ) =>
-                        {
-                            errors
-                                .get_or_insert_default()
-                                .push(TestFinding::Warning(create_other_namespace_error(&err, i_v, i_m, i_s)));
-                        },
-                        // all other namespace errors
-                        Err(_) => continue,
-                    }
-                }
-            }
+    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, false) {
+        match result {
+            // its unregistered (prefixed with x_)
+            Ok(parsed) if parsed.is_unregistered() => {
+                errors
+                    .get_or_insert_default()
+                    .push(create_unregistered_base_namespace_error(
+                        &parsed.to_string(),
+                        &instance_path,
+                    ));
+            },
+            Err(err)
+                if matches!(
+                    err,
+                    // not a "known" registered namespace to SSVC
+                    NamespaceError::InvalidRegisteredNamespace { .. }
+                        //reserved namespaces "invalid"
+                        | NamespaceError::ReservedForbiddenNamespace { .. }
+                        //reserved namespaces "test"
+                        | NamespaceError::ReservedTestNamespace { .. }
+                ) =>
+            {
+                errors
+                    .get_or_insert_default()
+                    .push(TestFinding::Warning(create_other_namespace_error(&err, &instance_path)));
+            },
+            // its registered / all other namespace errors
+            Ok(_) | Err(_) => continue,
         }
     }
 
@@ -85,28 +68,23 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_34 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validations::utils::ssvc::ssvc_selection_namespace_path;
 
     #[test]
     fn test_test_6_2_34() {
         let case_01_unregistered_ns = Err(vec![create_unregistered_base_namespace_error(
             "x_example.unregistered#some-yet-unknown-or-maybe-private-namespace",
-            0,
-            0,
-            0,
+            &ssvc_selection_namespace_path(0, 0, 0),
         )]);
         let case_02_unregistered_ns_with_ext = Err(vec![create_unregistered_base_namespace_error(
             "x_example.test#also-unregistered-namespace//.example.other-test#some-extension",
-            0,
-            0,
-            0,
+            &ssvc_selection_namespace_path(0, 0, 0),
         )]);
         let case_03_reserved_forbidden_ns = Err(vec![TestFinding::Warning(create_other_namespace_error(
             &NamespaceError::ReservedForbiddenNamespace {
                 namespace: "invalid".to_string(),
             },
-            0,
-            0,
-            0,
+            &ssvc_selection_namespace_path(0, 0, 0),
         ))]);
 
         // Case 11: registered namespace ("ssvc")

@@ -7,7 +7,7 @@ use crate::validation::{TestFinding, TestFindingData};
 static NON_PUBLIC_SHARING_GROUP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
         message: "Document must be public (TLP:CLEAR) when using max UUID as sharing group ID.".to_string(),
-        instance_path: "/document/distribution/sharing_group/tlp/label".to_string(),
+        instance_path: "/document/distribution/tlp/label".to_string(),
     })
 });
 

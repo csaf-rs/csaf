@@ -1,16 +1,11 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
+use crate::validations::utils::ssvc::create_other_namespace_error;
+use ssvc::NamespaceError;
 
 fn create_unregistered_base_namespace_error(namespace: &str, i_v: usize, i_m: usize, i_s: usize) -> TestFinding {
-    TestFinding::Error(TestFindingData {
+    TestFinding::Warning(TestFindingData {
         message: format!("Usage of unregistered SSVC decision point base namespace: `{namespace}`"),
-        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/selections/{i_s}/namespace"),
-    })
-}
-
-fn create_unknown_invalid_base_namespace_error(reason: &str, i_v: usize, i_m: usize, i_s: usize) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("Usage of unknown or reserved registered SSVC decision point base namespace: {reason}"),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/selections/{i_s}/namespace"),
     })
 }
@@ -52,20 +47,24 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
                                 .push(create_unregistered_base_namespace_error(namespace, i_v, i_m, i_s));
                         },
                         // its registered, all good
-                        Ok(_) => {},
-                        // its otherwise malformed or invalid, e.g.:
+                        Ok(_) => continue,
+                        // its:
                         // * reserved namespaces "invalid" or "test"
                         // * not a "known" registered namespace to SSVC
-                        Err(err) => {
+                        Err(err)
+                            if matches!(
+                                err,
+                                NamespaceError::InvalidRegisteredNamespace { .. }
+                                    | NamespaceError::ReservedForbiddenNamespace { .. }
+                                    | NamespaceError::ReservedTestNamespace { .. }
+                            ) =>
+                        {
                             errors
                                 .get_or_insert_default()
-                                .push(create_unknown_invalid_base_namespace_error(
-                                    err.to_string().as_str(),
-                                    i_v,
-                                    i_m,
-                                    i_s,
-                                ));
+                                .push(TestFinding::Warning(create_other_namespace_error(&err, i_v, i_m, i_s)));
                         },
+                        // all other namespace errors
+                        Err(_) => continue,
                     }
                 }
             }
@@ -101,12 +100,14 @@ mod tests {
             0,
             0,
         )]);
-        let case_03_reserved_forbidden_ns = Err(vec![create_unknown_invalid_base_namespace_error(
-            "Reserved forbidden namespace 'invalid' must not be used",
+        let case_03_reserved_forbidden_ns = Err(vec![TestFinding::Warning(create_other_namespace_error(
+            &NamespaceError::ReservedForbiddenNamespace {
+                namespace: "invalid".to_string(),
+            },
             0,
             0,
             0,
-        )]);
+        ))]);
 
         // Case 11: registered namespace ("ssvc")
         // Case 12: registered namespace with an extension

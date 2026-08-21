@@ -1,47 +1,47 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::NoteTrait;
 use crate::schema::csaf2_1::schema::NoteCategory;
-use crate::validation::{TestFinding, TestFindingData};
+use crate::validation::TestFindingData;
 
-pub(crate) fn create_missing_note_error(
+pub(crate) fn create_missing_note_data(
     required_title: &str,
     required_category: &NoteCategory,
     document_category: &CsafDocumentCategory,
-) -> TestFinding {
-    TestFinding::Error(TestFindingData {
+) -> TestFindingData {
+    TestFindingData {
         message: format!(
             "The document does not contain a note with title `{required_title}` and category `{required_category}` which is required for documents with category `{document_category}`"
         ),
         instance_path: "/document/notes".to_string(),
-    })
+    }
 }
 
-pub(crate) fn create_duplicated_note_error(
+pub(crate) fn create_duplicated_note_data(
     required_title: &str,
     document_category: &CsafDocumentCategory,
     note_index: usize,
-) -> TestFinding {
-    TestFinding::Error(TestFindingData {
+) -> TestFindingData {
+    TestFindingData {
         message: format!(
             "Duplicate note with title `{required_title}` found while only one is allowed for documents with category `{document_category}`"
         ),
         instance_path: format!("/document/notes/{note_index}"),
-    })
+    }
 }
 
-pub(crate) fn create_incorrect_category_error(
+pub(crate) fn create_incorrect_category_data(
     required_title: &str,
     wrong_category: &NoteCategory,
     required_category: &NoteCategory,
     doc_category: &CsafDocumentCategory,
     note_index: usize,
-) -> TestFinding {
-    TestFinding::Error(TestFindingData {
+) -> TestFindingData {
+    TestFindingData {
         message: format!(
             "The document contains a note with title `{required_title}`, but it uses the wrong note category `{wrong_category}` for documents with category `{doc_category}` (should be `{required_category}`)."
         ),
         instance_path: format!("/document/notes/{note_index}"),
-    })
+    }
 }
 
 /// Checks that exactly one document note exists with the given `required_title` and
@@ -55,14 +55,14 @@ pub(crate) fn create_incorrect_category_error(
 /// - If exactly one note with `required_title` is found but its category differs from
 ///   `required_category`: a wrong-category error.
 ///
-/// Returns `Ok(())` if the check passes, or `Err` with a list of [`TestFinding`]s otherwise.
+/// Returns `None` if the check passes, or `Some` with a list of [`TestFindingData`]s otherwise.
 pub(crate) fn check_notes_with_title_and_category<Note: NoteTrait>(
     notes: Option<&[Note]>,
     required_title: &str,
     required_category: &NoteCategory,
     doc_category: &CsafDocumentCategory,
-) -> Result<(), Vec<TestFinding>> {
-    let mut errors: Option<Vec<TestFinding>> = None;
+) -> Option<Vec<TestFindingData>> {
+    let mut errors: Option<Vec<TestFindingData>> = None;
     let mut matching_indices = Vec::new();
 
     // filter notes for required title and category
@@ -73,7 +73,7 @@ pub(crate) fn check_notes_with_title_and_category<Note: NoteTrait>(
                 && title == required_title
             {
                 if note.get_category() != *required_category {
-                    errors.get_or_insert_default().push(create_incorrect_category_error(
+                    errors.get_or_insert_default().push(create_incorrect_category_data(
                         required_title,
                         &note.get_category(),
                         required_category,
@@ -90,16 +90,18 @@ pub(crate) fn check_notes_with_title_and_category<Note: NoteTrait>(
     // error and we ignore the category check, which is only relevant if there is exactly one
     // occurrence.
     if matching_indices.is_empty() {
-        return Err(vec![create_missing_note_error(
+        return Some(vec![create_missing_note_data(
             required_title,
             required_category,
             doc_category,
         )]);
     } else if matching_indices.len() > 1 {
-        return Err(matching_indices
-            .iter()
-            .map(|f| create_duplicated_note_error(required_title, doc_category, *f))
-            .collect::<Vec<_>>());
+        return Some(
+            matching_indices
+                .iter()
+                .map(|f| create_duplicated_note_data(required_title, doc_category, *f))
+                .collect(),
+        );
     }
-    errors.map_or(Ok(()), Err)
+    errors
 }

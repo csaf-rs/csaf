@@ -67,7 +67,7 @@ fn load_fixture_contents(files: &[PathBuf]) -> Vec<(String, String)> {
 }
 
 /// Tests to skip in individual benchmarks (e.g., too slow or not yet implemented).
-const SKIPPED_TESTS: &[&str] = &["6.1.14"];
+const SKIPPED_TESTS: &[&str] = &[];
 
 /// Benchmark each individual CSAF 2.0 test function across all fixtures.
 fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {

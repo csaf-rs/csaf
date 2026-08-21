@@ -11,7 +11,7 @@ fn create_missing_affected_products_error(
         message: format!(
             "Document with category '{document_category}' must have a '/vulnerabilities[]/product_status/known_affected' element"
         ),
-        instance_path: format!("/vulnerabilities[{vulnerability_index}]/product_status/known_affected"),
+        instance_path: format!("/vulnerabilities/{vulnerability_index}/product_status/known_affected"),
     })
 }
 

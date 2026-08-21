@@ -1,6 +1,8 @@
 use crate::csaf_traits::CsafTrait;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, create_other_namespace_error, iter_ssvc_namespaces};
+use crate::validations::utils::ssvc::{
+    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+};
 use ssvc::NamespaceError;
 
 fn create_unregistered_base_namespace_error(namespace: &str, instance_path: &str) -> TestFinding {
@@ -20,12 +22,13 @@ fn create_unregistered_base_namespace_error(namespace: &str, instance_path: &str
 /// registered-looking namespaces that are not (yet) registered/supported.
 pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
     doc: &impl CsafTrait,
+    allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, false) {
+    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
         match result {
-            // its unregistered (prefixed with x_)
+            // it's unregistered (prefixed with x_)
             Ok(parsed) if parsed.is_unregistered() => {
                 errors
                     .get_or_insert_default()
@@ -47,9 +50,12 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
             {
                 errors
                     .get_or_insert_default()
-                    .push(TestFinding::Warning(create_other_namespace_error(&err, &instance_path)));
+                    .push(TestFinding::Warning(create_generic_namespace_finding_data(
+                        &err,
+                        &instance_path,
+                    )));
             },
-            // its registered / all other namespace errors
+            // it's registered / all other namespace errors
             Ok(_) | Err(_) => continue,
         }
     }
@@ -57,11 +63,16 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_2_34,
-    test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace
-);
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_2_34
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<TestFinding>> {
+        test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(doc, false)
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -80,7 +91,7 @@ mod tests {
             "x_example.test#also-unregistered-namespace//.example.other-test#some-extension",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
-        let case_03_reserved_forbidden_ns = Err(vec![TestFinding::Warning(create_other_namespace_error(
+        let case_03_reserved_forbidden_ns = Err(vec![TestFinding::Warning(create_generic_namespace_finding_data(
             &NamespaceError::ReservedForbiddenNamespace {
                 namespace: "invalid".to_string(),
             },

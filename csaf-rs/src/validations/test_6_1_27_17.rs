@@ -31,6 +31,8 @@ pub fn test_6_1_27_17_document_notes_for_withdrawal(doc: &impl CsafTrait) -> Res
         &NoteCategory::Description,
         &doc_category,
     )
+    .map(|v| v.into_iter().map(TestFinding::Error).collect())
+    .map_or(Ok(()), Err)
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
@@ -49,7 +51,7 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::schema::csaf2_1::schema::NoteCategory;
     use crate::validations::utils::document_notes_with_title_and_category::{
-        create_duplicated_note_error, create_incorrect_category_error, create_missing_note_error,
+        create_duplicated_note_data, create_incorrect_category_data, create_missing_note_data,
     };
 
     #[test]
@@ -58,10 +60,18 @@ mod tests {
         const DOC_CATEGORY: &CsafDocumentCategory = &CsafDocumentCategory::CsafWithdrawn;
         const NOTE_CATEGORY: &NoteCategory = &NoteCategory::Description;
         let create_incorrect_category_error = |wrong_category: &NoteCategory, index| {
-            create_incorrect_category_error(TITLE, wrong_category, NOTE_CATEGORY, DOC_CATEGORY, index)
+            TestFinding::Error(create_incorrect_category_data(
+                TITLE,
+                wrong_category,
+                NOTE_CATEGORY,
+                DOC_CATEGORY,
+                index,
+            ))
         };
-        let create_missing_reasoning_error = create_missing_note_error(TITLE, NOTE_CATEGORY, DOC_CATEGORY);
-        let create_duplicated_reasoning_error = |index| create_duplicated_note_error(TITLE, DOC_CATEGORY, index);
+        let create_missing_reasoning_error =
+            TestFinding::Error(create_missing_note_data(TITLE, NOTE_CATEGORY, DOC_CATEGORY));
+        let create_duplicated_reasoning_error =
+            |index| TestFinding::Error(create_duplicated_note_data(TITLE, DOC_CATEGORY, index));
 
         let case_01_wrong_category_summary = Err(vec![create_incorrect_category_error(&NoteCategory::Summary, 0)]);
         // Case 02: duplicate titles, different category

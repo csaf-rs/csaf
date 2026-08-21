@@ -5,7 +5,7 @@ use crate::validations::utils::ssvc::{
 };
 use ssvc::NamespaceError;
 
-fn create_unregistered_base_namespace_error(namespace: &str, instance_path: &str) -> TestFinding {
+fn create_unregistered_base_namespace_warning(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Usage of unregistered SSVC decision point base namespace: `{namespace}`"),
         instance_path: instance_path.to_owned(),
@@ -32,7 +32,7 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
             Ok(parsed) if parsed.is_unregistered() => {
                 errors
                     .get_or_insert_default()
-                    .push(create_unregistered_base_namespace_error(
+                    .push(create_unregistered_base_namespace_warning(
                         &parsed.to_string(),
                         &instance_path,
                     ));
@@ -83,11 +83,11 @@ mod tests {
 
     #[test]
     fn test_test_6_2_34() {
-        let case_01_unregistered_ns = Err(vec![create_unregistered_base_namespace_error(
+        let case_01_unregistered_ns = Err(vec![create_unregistered_base_namespace_warning(
             "x_example.unregistered#some-yet-unknown-or-maybe-private-namespace",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
-        let case_02_unregistered_ns_with_ext = Err(vec![create_unregistered_base_namespace_error(
+        let case_02_unregistered_ns_with_ext = Err(vec![create_unregistered_base_namespace_warning(
             "x_example.test#also-unregistered-namespace//.example.other-test#some-extension",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);

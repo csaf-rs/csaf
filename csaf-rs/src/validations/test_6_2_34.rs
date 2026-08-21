@@ -5,7 +5,7 @@ use crate::validations::utils::ssvc::{
 };
 use ssvc::NamespaceError;
 
-fn create_unregistered_base_namespace_error(namespace: &str, instance_path: &str) -> TestFinding {{
+fn create_unregistered_base_namespace_error(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Usage of unregistered SSVC decision point base namespace: `{namespace}`"),
         instance_path: instance_path.to_owned(),

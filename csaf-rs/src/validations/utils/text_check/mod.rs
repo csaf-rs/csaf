@@ -26,9 +26,6 @@ pub enum TextCheckKind {
 }
 
 /// A single finding produced by a text check.
-///
-/// `word` is the misspelled / problematic text fragment and `start`/`end` mark its
-/// character span within the text that was checked (end-exclusive).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TextCheckFinding {
     /// The problematic text fragment (e.g. a misspelled word).
@@ -39,6 +36,7 @@ pub struct TextCheckFinding {
     /// The (character, not byte) index one past the last character of `fragment` within
     /// the checked text.
     pub end: usize,
+    /// The suggested replacement for `fragment`, if any is available.
     pub replacement: Option<String>,
 }
 

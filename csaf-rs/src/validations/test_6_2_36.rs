@@ -31,7 +31,7 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
     allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     // This test only applies to TLP:CLEAR documents
-    // We can hard-code CSAF 2.1 distributin here, SSVC does not exist on CSAF 2.0, so this
+    // We can hard-code CSAF 2.1 distribution here, SSVC does not exist on CSAF 2.0, so this
     // will not be back-ported.
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
     if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() != LabelOfTlp::Clear {

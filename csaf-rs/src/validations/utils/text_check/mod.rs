@@ -57,10 +57,8 @@ pub trait TextChecker {
 #[allow(dead_code)]
 pub fn check_text(kind: TextCheckKind, text: &str, lang: &ValidCsafLanguage) -> Vec<TextCheckFinding> {
     #[cfg(test)]
-    if lang.is_english() {
-        if mock_spell::MockSpellChecker.get_available_check_kinds().contains(&kind) {
-            return mock_spell::MockSpellChecker.check_text(kind, text);
-        }
+    if lang.is_english() && mock_spell::MockSpellChecker.get_available_check_kinds().contains(&kind) {
+        return mock_spell::MockSpellChecker.check_text(kind, text);
     }
     // happy linter
     let _ = lang;

@@ -96,8 +96,7 @@ jobs:
           fi
       - name: Publish dry-run
         if: github.ref_type != 'tag'
-        run: |
-          cargo publish --dry-run --verbose --no-verify --locked
+        uses: csaf-rs/shared-workflows/.github/actions/cargo-publish-dry-run@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
 
   build-matrix:
     needs: prepare

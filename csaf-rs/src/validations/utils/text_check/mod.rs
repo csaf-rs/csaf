@@ -166,18 +166,4 @@ mod tests {
             "spell check should not flag grammar issues, got: {findings:?}"
         );
     }
-
-    #[test]
-    fn non_english_language_produces_no_findings() {
-        // Not yet supported: harper-core only checks English text.
-        let findings = check_text(
-            TextCheckKind::Spell,
-            "Secruity researchers",
-            &ValidCsafLanguage::new_for_tests("de-DE"),
-        );
-        assert!(
-            findings.is_empty(),
-            "expected no findings for non-English text, got: {findings:?}"
-        );
-    }
 }

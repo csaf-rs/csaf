@@ -1,7 +1,9 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, iter_ssvc_namespaces, create_generic_namespace_finding_data};
+use crate::validations::utils::ssvc::{
+    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+};
 use ssvc::NamespaceError;
 
 fn create_namespace_extension_in_non_tlp_clear_info(namespace: &str, instance_path: &str) -> TestFinding {
@@ -33,23 +35,27 @@ pub fn test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_
     for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
         match result {
             // check if an extension exists on a valid namespace
-            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => errors
-                .get_or_insert_default()
-                .push(create_namespace_extension_in_non_tlp_clear_info(
-                    &parsed_namespace.to_string(),
-                    &instance_path,
-                )),
+            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => {
+                errors
+                    .get_or_insert_default()
+                    .push(create_namespace_extension_in_non_tlp_clear_info(
+                        &parsed_namespace.to_string(),
+                        &instance_path,
+                    ))
+            },
             // reserved forbidden namespaces "invalid" or "test" are used
             Err(err)
                 if matches!(
                     err,
-                    NamespaceError::ReservedForbiddenNamespace { .. }
-                        | NamespaceError::ReservedTestNamespace { .. }
+                    NamespaceError::ReservedForbiddenNamespace { .. } | NamespaceError::ReservedTestNamespace { .. }
                 ) =>
             {
-                errors.get_or_insert_default().push(TestFinding::Information(
-                    create_generic_namespace_finding_data(&err, &instance_path),
-                ));
+                errors
+                    .get_or_insert_default()
+                    .push(TestFinding::Information(create_generic_namespace_finding_data(
+                        &err,
+                        &instance_path,
+                    )));
             },
             // there is no extension / all other namespace errors
             Ok(_) | Err(_) => continue,
@@ -60,7 +66,7 @@ pub fn test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_3_15
+    for crate::csaf2_1::testcases::ValidatorForTest6_3_15
 {
     fn validate(
         &self,

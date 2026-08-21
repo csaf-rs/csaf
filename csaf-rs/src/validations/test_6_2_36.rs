@@ -90,10 +90,11 @@ mod tests {
             "ssvc//.example.test#refined-technical-impacts",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
-        let case_02_extension_in_tlp_clear_unregistered_ns = Err(vec![create_namespace_extension_in_tlp_clear_warning(
-            "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
-            &ssvc_selection_namespace_path(0, 0, 0),
-        )]);
+        let case_02_extension_in_tlp_clear_unregistered_ns =
+            Err(vec![create_namespace_extension_in_tlp_clear_warning(
+                "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
+                &ssvc_selection_namespace_path(0, 0, 0),
+            )]);
 
         // Case 11: TLP:CLEAR, namespace without extension
         // Case 12: TLP:GREEN, namespace with extension (test does not apply)

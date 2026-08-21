@@ -1,10 +1,12 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, create_other_namespace_error, iter_ssvc_namespaces};
+use crate::validations::utils::ssvc::{
+    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+};
 use ssvc::NamespaceError;
 
-fn create_namespace_extension_in_non_tlp_clear_error(namespace: &str, instance_path: &str) -> TestFinding {
+fn create_namespace_extension_in_non_tlp_clear_info(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!(
             "Usage of SSVC decision point namespace with an extension in a non-TLP:CLEAR document: `{namespace}`"
@@ -20,6 +22,7 @@ fn create_namespace_extension_in_non_tlp_clear_error(namespace: &str, instance_p
 /// special purpose MUST be treated as per their definition.
 pub fn test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_tlp_clear_document(
     doc: &impl CsafTrait,
+    allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     // This test only applies to non-TLP:CLEAR documents
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
@@ -29,26 +32,30 @@ pub fn test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_
 
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, false) {
+    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
         match result {
             // check if an extension exists on a valid namespace
-            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => errors
-                .get_or_insert_default()
-                .push(create_namespace_extension_in_non_tlp_clear_error(
-                    &parsed_namespace.to_string(),
-                    &instance_path,
-                )),
+            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => {
+                errors
+                    .get_or_insert_default()
+                    .push(create_namespace_extension_in_non_tlp_clear_info(
+                        &parsed_namespace.to_string(),
+                        &instance_path,
+                    ))
+            },
             // reserved forbidden namespaces "invalid" or "test" are used
             Err(err)
                 if matches!(
                     err,
-                    NamespaceError::ReservedForbiddenNamespace { .. }
-                        | NamespaceError::ReservedTestNamespace { .. }
+                    NamespaceError::ReservedForbiddenNamespace { .. } | NamespaceError::ReservedTestNamespace { .. }
                 ) =>
             {
-                errors.get_or_insert_default().push(TestFinding::Information(
-                    create_other_namespace_error(&err, &instance_path),
-                ));
+                errors
+                    .get_or_insert_default()
+                    .push(TestFinding::Information(create_generic_namespace_finding_data(
+                        &err,
+                        &instance_path,
+                    )));
             },
             // there is no extension / all other namespace errors
             Ok(_) | Err(_) => continue,
@@ -58,11 +65,16 @@ pub fn test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_3_15,
-    test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_tlp_clear_document
-);
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_3_15
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<TestFinding>> {
+        test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_tlp_clear_document(doc, false)
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -73,12 +85,12 @@ mod tests {
 
     #[test]
     fn test_test_6_3_15() {
-        let case_01_extension_in_tlp_green = Err(vec![create_namespace_extension_in_non_tlp_clear_error(
+        let case_01_extension_in_tlp_green = Err(vec![create_namespace_extension_in_non_tlp_clear_info(
             "ssvc//.example.test#refined-technical-impacts",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
         let case_02_extension_in_tlp_amber_unregistered_ns =
-            Err(vec![create_namespace_extension_in_non_tlp_clear_error(
+            Err(vec![create_namespace_extension_in_non_tlp_clear_info(
                 "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
                 &ssvc_selection_namespace_path(0, 0, 0),
             )]);

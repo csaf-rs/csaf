@@ -96,8 +96,7 @@ jobs:
           fi
       - name: Publish dry-run
         if: github.ref_type != 'tag'
-        run: |
-          cargo publish --dry-run --verbose --no-verify --locked
+        uses: csaf-rs/shared-workflows/.github/actions/cargo-publish-dry-run@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
 
   build-matrix:
     needs: prepare
@@ -157,22 +156,12 @@ jobs:
             target/${{ matrix.target.arch }}/release/libcsaf_ffi.dylib
             target/${{ matrix.target.arch }}/release/csaf_ffi.dll
           if-no-files-found: ignore
-      - name: Generate CycloneDX SBOM
+      - name: Generate CycloneDX and SPDX SBOMs
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: anchore/sbom-action@v0.24.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@26b899215c3821326f12e8f28f87d9b5fe772d89 # v1.4.0
         with:
-          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
-          format: cyclonedx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.cdx.json
-          upload-release-assets: false
-      - name: Generate SPDX SBOM
-        if: matrix.version == needs.prepare.outputs.stable-version
-        uses: anchore/sbom-action@v0.24.0
-        with:
-          file: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
-          format: spdx-json
-          artifact-name: csaf-validator_${{ matrix.target.arch }}_sbom.spdx.json
-          upload-release-assets: false
+          file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          artifact-name-prefix: csaf-validator_${{ matrix.target.arch }}
 
   build-platforms:
     needs: build-matrix
@@ -186,50 +175,7 @@ jobs:
   coverage:
     needs:
       - prepare
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: "true"
-
-      - name: Use cache
-        id: rust-cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: coverage
-
-      - name: Update rustup
-        if: steps.rust-cache.outputs.cache-hit != 'true'
-        run: rustup update stable --no-self-update
-
-      - name: Cache cargo-llvm-cov
-        id: llvm-cov-cache
-        uses: actions/cache@v6
-        with:
-          path: ~/.cargo/bin/cargo-llvm-cov
-          key: cargo-llvm-cov-${{ runner.os }}-${{ runner.arch }}
-      - name: Install cargo-llvm-cov
-        if: steps.llvm-cov-cache.outputs.cache-hit != 'true'
-        run: cargo install cargo-llvm-cov --locked
-
-      - name: Generate coverage
-        run: cargo llvm-cov --locked --workspace --json > /tmp/coverage.json
-
-      - name: Coverage summary
-        run: |
-          echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          ./scripts/coverage/coverage_summary.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>Per-file coverage</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          ./scripts/coverage/coverage_per_file.sh < /tmp/coverage.json >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-      - name: Cleanup coverage
-        if: always()
-        run: rm -f /tmp/coverage.json
+    uses: csaf-rs/shared-workflows/.github/workflows/rust-coverage.yml@400ee021e6bdeb7e2808264749e2fe20b25401e8 # v1.3.0
 
   wasm-bindings:
     needs:
@@ -266,20 +212,11 @@ jobs:
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
-      - name: Generate CycloneDX SBOM
-        uses: anchore/sbom-action@v0.24.0
+      - name: Generate CycloneDX and SPDX SBOMs
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@26b899215c3821326f12e8f28f87d9b5fe772d89 # v1.4.0
         with:
-          file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
-          format: cyclonedx-json
-          artifact-name: csaf-ffi-wasm_wasm32_sbom.cdx.json
-          upload-release-assets: false
-      - name: Generate SPDX SBOM
-        uses: anchore/sbom-action@v0.24.0
-        with:
-          file: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
-          format: spdx-json
-          artifact-name: csaf-ffi-wasm_wasm32_sbom.spdx.json
-          upload-release-assets: false
+          file-to-scan: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
+          artifact-name-prefix: csaf-ffi-wasm_wasm32
 
   go-bindings:
     needs:

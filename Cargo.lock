@@ -1819,8 +1819,9 @@ dependencies = [
 
 [[package]]
 name = "ssvc"
-version = "0.2.1"
-source = "git+https://github.com/csaf-rs/ssvc?branch=main#98ee0a15624399f1e0a77f954ff335647ae8dd74"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c9a244219da28fbef8c23d34e71eb66d263862252728e8c85eda19f6c392054"
 dependencies = [
  "anyhow",
  "chrono",

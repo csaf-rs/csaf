@@ -765,6 +765,26 @@
       ]
     },
     {
+      "id": "6.2.39.2",
+      "group": "recommended",
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-39-02-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.2.39.3",
+      "group": "recommended",
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-39-03-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.2.48",
       "group": "recommended",
       "valid": [

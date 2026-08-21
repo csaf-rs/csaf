@@ -20,7 +20,7 @@ fn create_unregistered_base_namespace_error(namespace: &str, instance_path: &str
 ///
 /// This test fails on unregistered namespaces (identified by the `x_` prefix) as well as on
 /// registered-looking namespaces that are not (yet) registered/supported.
-pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace_internal(
+pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
     doc: &impl CsafTrait,
     allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
@@ -70,7 +70,7 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
         &self,
         doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
     ) -> Result<(), Vec<TestFinding>> {
-        test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace_internal(doc, false)
+        test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(doc, false)
     }
 }
 

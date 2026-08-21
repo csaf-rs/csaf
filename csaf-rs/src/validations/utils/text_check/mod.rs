@@ -20,8 +20,7 @@ use crate::csaf::types::language::ValidCsafLanguage;
 pub enum TextCheckKind {
     /// Spell checking only.
     Spell,
-    /// Grammar checking only (TODO not yet implemented)
-    #[allow(dead_code)]
+    /// Grammar checking only.
     Grammar,
 }
 
@@ -131,6 +130,42 @@ mod tests {
         assert!(
             findings.is_empty(),
             "expected no findings for non-English text, got: {findings:?}"
+        );
+    }
+
+    #[test]
+    fn detects_grammar_mistake() {
+        let text = "The security hardening guide must followed for ensure secure operations of a products.";
+        let findings = check_text(TextCheckKind::Grammar, text, &ValidCsafLanguage::new_for_tests("en-US"));
+        assert_eq!(findings.len(), 1, "expected exactly one finding, got: {findings:?}");
+        let finding = findings.first().unwrap();
+        assert_eq!(
+            &text[finding.start..finding.end],
+            "must",
+            "expected a grammar finding for the missing 'be'"
+        );
+    }
+
+    #[test]
+    fn does_not_flag_correct_grammar() {
+        let findings = check_text(
+            TextCheckKind::Grammar,
+            "The security hardening guide must be followed to ensure secure operations of the products.",
+            &ValidCsafLanguage::new_for_tests("en-US"),
+        );
+        assert!(findings.is_empty(), "expected no grammar findings, got: {findings:?}");
+    }
+
+    #[test]
+    fn grammar_check_ignores_pure_spelling_issues() {
+        let findings = check_text(
+            TextCheckKind::Grammar,
+            "Secruity researchers",
+            &ValidCsafLanguage::new_for_tests("en-US"),
+        );
+        assert!(
+            findings.is_empty(),
+            "grammar check should not flag pure spelling issues, got: {findings:?}"
         );
     }
 }

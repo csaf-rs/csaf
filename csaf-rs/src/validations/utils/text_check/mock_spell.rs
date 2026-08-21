@@ -46,10 +46,11 @@ fn spell_check(text: &str) -> Vec<TextCheckFinding> {
         if trimmed.is_empty() {
             continue;
         }
-        // Byte offset of trimmed within the original token (and thus within the text).
+        // Byte offset of trimmed within the original token (and so within the text).
         let word_offset = trimmed.as_ptr() as usize - token.as_ptr() as usize;
-        let word_start = token_start + word_offset;
-        let word_end = word_start + trimmed.len();
+        // Convert to character counts so start/end
+        let word_start = text[..token_start + word_offset].chars().count();
+        let word_end = word_start + trimmed.chars().count();
 
         // All-uppercase tokens are treated as acronyms and are not spell-checked.
         if trimmed.chars().all(|c| c.is_uppercase()) {
@@ -58,7 +59,7 @@ fn spell_check(text: &str) -> Vec<TextCheckFinding> {
 
         if !dict.contains(trimmed.to_lowercase().as_str()) {
             findings.push(TextCheckFinding {
-                word: trimmed.to_string(),
+                fragment: trimmed.to_string(),
                 start: word_start,
                 end: word_end,
                 replacement: None,

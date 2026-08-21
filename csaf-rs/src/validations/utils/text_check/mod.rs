@@ -34,11 +34,11 @@ pub enum TextCheckKind {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TextCheckFinding {
     /// The problematic text fragment (e.g. a misspelled word).
-    pub word: String,
-    /// The (character, not byte) index of the first character of `word` within the
+    pub fragment: String,
+    /// The (character, not byte) index of the first character of `fragment` within the
     /// checked text.
     pub start: usize,
-    /// The (character, not byte) index one past the last character of `word` within
+    /// The (character, not byte) index one past the last character of `fragment` within
     /// the checked text.
     pub end: usize,
     pub replacement: Option<String>,
@@ -77,6 +77,12 @@ pub fn check_text(kind: TextCheckKind, text: &str, lang: &ValidCsafLanguage) -> 
     vec![]
 }
 
+/// Returns the substring of `text` identified by the character-index span `[start, end)`.
+#[cfg(test)]
+fn char_slice(text: &str, start: usize, end: usize) -> String {
+    text.chars().skip(start).take(end - start).collect()
+}
+
 /// TODO: ensure these tests run for all implementers
 #[cfg(test)]
 mod tests {
@@ -86,9 +92,36 @@ mod tests {
     fn detects_misspelling() {
         let text = "Secruity researchers";
         let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
-        let finding = findings.iter().find(|f| f.word.eq_ignore_ascii_case("secruity"));
+        let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
         let finding = finding.expect("expected a misspelling finding");
-        assert_eq!(&text[finding.start..finding.end], "Secruity");
+        assert_eq!(finding.start, 0);
+        assert_eq!(finding.end, 8);
+        assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
+    }
+
+    #[test]
+    fn detects_misspelling_not_at_start() {
+        let text = "A Secruity test";
+        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
+        let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
+        let finding = finding.expect("expected a misspelling finding");
+        assert_eq!(finding.start, 2);
+        assert_eq!(finding.end, 10);
+        assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
+    }
+
+    /// Validates that start/end are character indices, not byte offsets.
+    /// 'é' is a two-byte UTF-8 character; if bytes were used the start would be 3
+    /// instead of the correct character index 2.
+    #[test]
+    fn detects_misspelling_after_multibyte_char() {
+        let text = "é Secruity";
+        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
+        let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
+        let finding = finding.expect("expected a misspelling finding");
+        assert_eq!(finding.start, 2);
+        assert_eq!(finding.end, 10);
+        assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
     }
 
     #[test]

@@ -1,8 +1,6 @@
 //! Mock spell-checker implementation.
 //!
 //! This module provides a basic English spell-checker backed by a static word list.
-//! It is intended as a test-setup only placeholder until a fully-featured library (e.g., harper-core)
-//! is integrated.
 
 use super::{TextCheckFinding, TextCheckKind, TextChecker};
 use std::collections::HashSet;

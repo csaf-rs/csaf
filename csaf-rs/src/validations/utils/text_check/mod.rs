@@ -8,8 +8,6 @@
 //! receive back [`TextCheckFinding`]s.
 //!
 //! The [`TextChecker`] trait abstracts over the concrete language-checking engine.
-//! TODO we currently only have harper-core, if more gets integrated, we'll have to implement some matching system
-//! based on if spellchecking / grammar checking is requested on what setup this is run on.
 
 use crate::csaf::types::language::ValidCsafLanguage;
 
@@ -45,10 +43,6 @@ pub struct TextCheckFinding {
 }
 
 /// A backend capable of checking text for spelling / grammar issues.
-///
-/// Implementations are free to use whatever underlying engine they like (e.g.
-/// harper-core as done by [`mock_spell::MockSpellChecker`]). This trait exists so
-/// that the engine can be swapped out without changing any callers.
 #[allow(dead_code)]
 pub trait TextChecker {
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind>;

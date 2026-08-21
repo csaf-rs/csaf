@@ -28,7 +28,7 @@ fn test_6_1_48_ssvc_decision_points_internal(
                 if content.has_ssvc_v2() {
                     match content.get_ssvc_v2() {
                         Ok(ssvc) => {
-                            let result = ssvc::validation::validate_selection_list(&ssvc, allow_test_namespaces);
+                            let result = ssvc::validate_selection_list(&ssvc, allow_test_namespaces);
                             if !result.success {
                                 let validation_errors: Vec<TestFinding> = result
                                     .errors
@@ -134,7 +134,7 @@ mod tests {
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
         })]);
         let case_21 = Err(vec![TestFinding::Error(TestFindingData {
-            message: "Invalid SSVC namespace: Reserved namespace 'invalid' must not be used".to_string(),
+            message: "Invalid SSVC namespace: Reserved forbidden namespace 'invalid' must not be used".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/namespace".to_string(),
         })]);
         let case_16 = case_06.clone();

@@ -1819,17 +1819,20 @@ dependencies = [
 
 [[package]]
 name = "ssvc"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "591d8eb7f7ab8f67baa6250ede8c342b3022528020e360055528afbadae69042"
+checksum = "5c9a244219da28fbef8c23d34e71eb66d263862252728e8c85eda19f6c392054"
 dependencies = [
+ "anyhow",
  "chrono",
- "prettyplease 0.2.37",
+ "jsonschema",
+ "prettyplease 0.3.0",
  "regress",
  "rust-embed",
  "serde",
  "serde_json",
- "syn 2.0.117",
+ "syn 3.0.3",
+ "thiserror 2.0.20",
  "typify",
 ]
 

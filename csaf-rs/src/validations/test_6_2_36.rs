@@ -1,7 +1,9 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, create_other_namespace_error, iter_ssvc_namespaces};
+use crate::validations::utils::ssvc::{
+    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+};
 use ssvc::NamespaceError;
 
 fn create_namespace_extension_in_tlp_clear_error(namespace: &str, instance_path: &str) -> TestFinding {
@@ -40,20 +42,27 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
     for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, false) {
         match result {
             // check if an extension exists on a valid namespace
-            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => errors
-                .get_or_insert_default()
-                .push(create_namespace_extension_in_tlp_clear_error(&parsed_namespace.to_string(), &instance_path)),
+            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => {
+                errors
+                    .get_or_insert_default()
+                    .push(create_namespace_extension_in_tlp_clear_error(
+                        &parsed_namespace.to_string(),
+                        &instance_path,
+                    ))
+            },
             // reserved forbidden namespaces "invalid" or "test" are used
             Err(err)
                 if matches!(
                     err,
-                    NamespaceError::ReservedForbiddenNamespace { .. }
-                        | NamespaceError::ReservedTestNamespace { .. }
+                    NamespaceError::ReservedForbiddenNamespace { .. } | NamespaceError::ReservedTestNamespace { .. }
                 ) =>
             {
                 errors
                     .get_or_insert_default()
-                    .push(TestFinding::Warning(create_other_namespace_error(&err, &instance_path)));
+                    .push(TestFinding::Warning(create_generic_namespace_finding_data(
+                        &err,
+                        &instance_path,
+                    )));
             },
             // there is no extension / all other namespace errors
             Ok(_) | Err(_) => continue,

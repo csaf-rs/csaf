@@ -32,7 +32,6 @@ pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
                 .flatten()
                 .enumerate()
                 .map(move |(metric_index, metric)| (vuln_index, metric_index, metric))
-                .collect::<Vec<_>>()
         })
         .filter(|(_, _, metric)| metric.get_content().has_ssvc_v2())
         .flat_map(move |(vuln_index, metric_index, metric)| {
@@ -45,7 +44,6 @@ pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
                     result: ssvc::validate_namespace(sl_item.namespace.as_str(), allow_test_namespaces),
                     instance_path: ssvc_selection_namespace_path(vuln_index, metric_index, sl_item_index),
                 })
-                .collect::<Vec<_>>()
         })
 }
 

@@ -6,7 +6,7 @@ use crate::validations::utils::ssvc::{
 };
 use ssvc::NamespaceError;
 
-fn create_namespace_extension_in_tlp_clear_error(namespace: &str, instance_path: &str) -> TestFinding {
+fn create_namespace_extension_in_tlp_clear_warning(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "Usage of SSVC decision point namespace with an extension in a TLP:CLEAR document: `{namespace}`"
@@ -46,7 +46,7 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
             Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => {
                 errors
                     .get_or_insert_default()
-                    .push(create_namespace_extension_in_tlp_clear_error(
+                    .push(create_namespace_extension_in_tlp_clear_warning(
                         &parsed_namespace.to_string(),
                         &instance_path,
                     ))
@@ -92,11 +92,11 @@ mod tests {
 
     #[test]
     fn test_test_6_2_36() {
-        let case_01_extension_in_tlp_clear = Err(vec![create_namespace_extension_in_tlp_clear_error(
+        let case_01_extension_in_tlp_clear = Err(vec![create_namespace_extension_in_tlp_clear_warning(
             "ssvc//.example.test#refined-technical-impacts",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
-        let case_02_extension_in_tlp_clear_unregistered_ns = Err(vec![create_namespace_extension_in_tlp_clear_error(
+        let case_02_extension_in_tlp_clear_unregistered_ns = Err(vec![create_namespace_extension_in_tlp_clear_warning(
             "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);

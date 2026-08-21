@@ -16,12 +16,12 @@ crate-type = ["cdylib", "staticlib", "lib"]
 
 [dependencies]
 csaf = { package = "csaf-rs", path = "../csaf-rs", default-features = false }
-uniffi = { version = "0.31.0", features = ["scaffolding-ffi-buffer-fns"] }
+uniffi = { version = "0.32.0", features = ["scaffolding-ffi-buffer-fns"] }
 serde_json = "1"
 thiserror = "2"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-uniffi = { version = "0.31.0", features = ["scaffolding-ffi-buffer-fns", "wasm-unstable-single-threaded"] }
+uniffi = { version = "0.32.0", features = ["scaffolding-ffi-buffer-fns", "wasm-unstable-single-threaded"] }
 
 [build-dependencies]
-uniffi = { version = "0.31.0", features = ["build"] }
+uniffi = { version = "0.32.0", features = ["build"] }

@@ -7,7 +7,7 @@ use crate::validations::utils::ssvc::{
 use ssvc::NamespaceError;
 
 fn create_namespace_extension_in_tlp_clear_error(namespace: &str, instance_path: &str) -> TestFinding {
-    TestFinding::Error(TestFindingData {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Usage of SSVC decision point namespace with an extension in a TLP:CLEAR document: `{namespace}`"
         ),

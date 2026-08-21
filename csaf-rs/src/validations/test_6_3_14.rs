@@ -1,10 +1,12 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, create_other_namespace_error, iter_ssvc_namespaces};
+use crate::validations::utils::ssvc::{
+    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+};
 use ssvc::NamespaceError;
 
-fn create_unregistered_base_namespace_in_non_tlp_clear_error(namespace: &str, instance_path: &str) -> TestFinding {
+fn create_unregistered_base_namespace_in_non_tlp_clear_info(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!(
             "Usage of unregistered SSVC decision point base namespace in a non-TLP:CLEAR document: `{namespace}`"
@@ -20,6 +22,7 @@ fn create_unregistered_base_namespace_in_non_tlp_clear_error(namespace: &str, in
 /// reserved for special purpose MUST be treated as per their definition.
 pub fn test_6_3_14_usage_of_unregistered_ssvc_decision_point_base_namespace_in_non_tlp_clear_document(
     doc: &impl CsafTrait,
+    allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     // This test only applies to non-TLP:CLEAR documents
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
@@ -29,13 +32,13 @@ pub fn test_6_3_14_usage_of_unregistered_ssvc_decision_point_base_namespace_in_n
 
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, false) {
+    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
         match result {
             // it's unregistered (prefixed with x_)
             Ok(parsed) if parsed.is_unregistered() => {
                 errors
                     .get_or_insert_default()
-                    .push(create_unregistered_base_namespace_in_non_tlp_clear_error(
+                    .push(create_unregistered_base_namespace_in_non_tlp_clear_info(
                         &parsed.to_string(),
                         &instance_path,
                     ));
@@ -49,7 +52,7 @@ pub fn test_6_3_14_usage_of_unregistered_ssvc_decision_point_base_namespace_in_n
             {
                 errors
                     .get_or_insert_default()
-                    .push(TestFinding::Information(create_other_namespace_error(
+                    .push(TestFinding::Information(create_generic_namespace_finding_data(
                         &err,
                         &instance_path,
                     )));
@@ -62,12 +65,16 @@ pub fn test_6_3_14_usage_of_unregistered_ssvc_decision_point_base_namespace_in_n
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_3_14,
-    test_6_3_14_usage_of_unregistered_ssvc_decision_point_base_namespace_in_non_tlp_clear_document
-);
-
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_3_14
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<TestFinding>> {
+        test_6_3_14_usage_of_unregistered_ssvc_decision_point_base_namespace_in_non_tlp_clear_document(doc, false)
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,12 +85,12 @@ mod tests {
     #[test]
     fn test_test_6_3_14() {
         let case_01_unregistered_ns_in_non_tlp_clear =
-            Err(vec![create_unregistered_base_namespace_in_non_tlp_clear_error(
+            Err(vec![create_unregistered_base_namespace_in_non_tlp_clear_info(
                 "x_example.unregistered#namespace",
                 &ssvc_selection_namespace_path(0, 0, 0),
             )]);
 
-        // Case 11: TLP:GREEN, registered namespace ("ssvc") — test passes
+        // Case 11: TLP:GREEN, registered namespace ("ssvc")
 
         TESTS_2_1.test_6_3_14.expect(ExpectedResults {
             case_01: case_01_unregistered_ns_in_non_tlp_clear,

@@ -28,6 +28,7 @@ fn create_namespace_extension_in_tlp_clear_error(namespace: &str, instance_path:
 /// (this is covered by other tests, e.g. 6.2.34).
 pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document(
     doc: &impl CsafTrait,
+    allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     // This test only applies to TLP:CLEAR documents
     // We can hard-code CSAF 2.1 distributin here, SSVC does not exist on CSAF 2.0, so this
@@ -39,7 +40,7 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
 
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, false) {
+    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
         match result {
             // check if an extension exists on a valid namespace
             Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => {
@@ -72,12 +73,16 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_2_36,
-    test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document
-);
-
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_2_36
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<TestFinding>> {
+        test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document(doc, false)
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;

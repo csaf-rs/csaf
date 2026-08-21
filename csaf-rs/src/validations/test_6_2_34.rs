@@ -28,7 +28,7 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
 
     for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
         match result {
-            // its unregistered (prefixed with x_)
+            // it's unregistered (prefixed with x_)
             Ok(parsed) if parsed.is_unregistered() => {
                 errors
                     .get_or_insert_default()
@@ -55,7 +55,7 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
                         &instance_path,
                     )));
             },
-            // its registered / all other namespace errors
+            // it's registered / all other namespace errors
             Ok(_) | Err(_) => continue,
         }
     }

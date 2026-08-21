@@ -20,12 +20,6 @@ fn create_namespace_extension_in_tlp_clear_warning(namespace: &str, instance_pat
 /// For each SSVC decision point given under `selections`, it MUST be tested that the namespace
 /// does not use an extension if the document is labeled TLP:CLEAR. Namespaces reserved for
 /// special purpose MUST be treated as per their definition.
-///
-/// As extensions cannot extend an existing decision point with new values, an extension whose
-/// definition is unknown to the reader can still be treated as the decision point from the base
-/// namespace. This test therefore only fails on the presence of an extension in a TLP:CLEAR
-/// document, regardless of whether the base namespace or extension itself is otherwise valid
-/// (this is covered by other tests, e.g. 6.2.34).
 pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document(
     doc: &impl CsafTrait,
     allow_test_namespaces: bool,

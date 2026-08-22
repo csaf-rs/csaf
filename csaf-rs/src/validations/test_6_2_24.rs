@@ -4,7 +4,7 @@ use crate::validation::{TestFinding, TestFindingData};
 use semver::Version;
 use std::sync::LazyLock;
 
-enum VersionMissmatch {
+enum VersionMismatch {
     NonLatest,
     Future,
 }
@@ -34,12 +34,12 @@ fn check_for_non_latest_cwe_version(
     let parsed_version = Version::parse(norm_version.as_str());
     let parsed_latest = Version::parse(norm_latest.as_str());
 
-    let version_missmatch = match (parsed_version, parsed_latest) {
+    let version_mismatch = match (parsed_version, parsed_latest) {
         (Ok(v), Ok(l)) => {
             if v < l {
-                Some(VersionMissmatch::NonLatest)
+                Some(VersionMismatch::NonLatest)
             } else if v > l {
-                Some(VersionMissmatch::Future)
+                Some(VersionMismatch::Future)
             } else {
                 None
             }
@@ -47,20 +47,20 @@ fn check_for_non_latest_cwe_version(
         // If parsing fails for either side, fall back to string comparison to avoid panics.
         _ => {
             if version < latest {
-                Some(VersionMissmatch::NonLatest)
+                Some(VersionMismatch::NonLatest)
             } else if version > latest {
-                Some(VersionMissmatch::Future)
+                Some(VersionMismatch::Future)
             } else {
                 None
             }
         },
     };
 
-    version_missmatch.map(|e_type| create_non_latest_cwe_error(e_type, cwe, version, latest, i_r, i_cwe))
+    version_mismatch.map(|e_type| create_non_latest_cwe_error(e_type, cwe, version, latest, i_r, i_cwe))
 }
 
 fn create_non_latest_cwe_error(
-    e_type: VersionMissmatch,
+    e_type: VersionMismatch,
     cwe: &str,
     version: &str,
     latest: &str,
@@ -68,10 +68,10 @@ fn create_non_latest_cwe_error(
     i_cwe: usize,
 ) -> TestFinding {
     let error_message = match e_type {
-        VersionMissmatch::NonLatest => {
+        VersionMismatch::NonLatest => {
             format!("Weakness '{cwe}' uses non-latest CWE version '{version}' (latest: '{latest}').")
         },
-        VersionMissmatch::Future => {
+        VersionMismatch::Future => {
             format!("Weakness '{cwe}' uses a future CWE version '{version}' (latest: '{latest}').")
         },
     };
@@ -163,7 +163,7 @@ mod tests {
     #[test]
     fn test_test_6_2_24() {
         let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_error(
-            VersionMissmatch::NonLatest,
+            VersionMismatch::NonLatest,
             "CWE-256",
             "4.12",
             "4.13",
@@ -172,7 +172,7 @@ mod tests {
         )]);
 
         let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_error(
-            VersionMissmatch::Future,
+            VersionMismatch::Future,
             "CWE-143",
             "4.15",
             "4.13",
@@ -181,15 +181,15 @@ mod tests {
         )]);
 
         let case_03_cwe_version_mismatch = Err(vec![
-            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-262", "1.8.1", "4.13", 0, 0),
-            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-287", "1.0", "4.13", 0, 2),
+            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-262", "1.8.1", "4.13", 0, 0),
+            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-287", "1.0", "4.13", 0, 2),
         ]);
 
         let case_04_cwe_version_mismatch_multi_vulnerabilities = Err(vec![
-            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-158", "1.3", "4.13", 0, 0),
-            create_non_latest_cwe_error(VersionMissmatch::NonLatest, "CWE-138", "2.1", "4.13", 0, 1),
-            create_non_latest_cwe_error(VersionMissmatch::Future, "CWE-318", "4.14", "4.13", 1, 0),
-            create_non_latest_cwe_error(VersionMissmatch::Future, "CWE-61", "4.15", "4.13", 2, 0),
+            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-158", "1.3", "4.13", 0, 0),
+            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-138", "2.1", "4.13", 0, 1),
+            create_non_latest_cwe_error(VersionMismatch::Future, "CWE-318", "4.14", "4.13", 1, 0),
+            create_non_latest_cwe_error(VersionMismatch::Future, "CWE-61", "4.15", "4.13", 2, 0),
         ]);
 
         TESTS_2_1.test_6_2_24.expect(ExpectedResults {

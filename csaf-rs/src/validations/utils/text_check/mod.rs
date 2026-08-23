@@ -13,7 +13,7 @@ use crate::csaf::types::language::ValidCsafLanguage;
 
 #[cfg(test)]
 mod mock_spell;
-mod symspell_checker;
+mod symspell_spell;
 mod utils;
 
 /// The kind of text check to perform.
@@ -64,7 +64,7 @@ pub fn check_text(kind: TextCheckKind, text: &str, lang: &ValidCsafLanguage) -> 
     }
 
     if lang.is_english() {
-        let checker = symspell_checker::EnglishSpellChecker;
+        let checker = symspell_spell::EnglishSymspellChecker;
         if checker.get_available_check_kinds().contains(&kind) {
             return checker.check_text(kind, text);
         }

@@ -39,9 +39,9 @@ static SYMSPELL: LazyLock<SymSpell<UnicodeStringStrategy>> = LazyLock::new(|| {
 /// - Words not found are looked up via SymSpell: if a close match is found within
 ///   [`MAX_EDIT_DISTANCE`] edits it is offered as `replacement`. Otherwise the word is
 ///   reported as misspelled without a suggested fix.
-pub struct EnglishSpellChecker;
+pub struct EnglishSymspellChecker;
 
-impl TextChecker for EnglishSpellChecker {
+impl TextChecker for EnglishSymspellChecker {
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
         vec![TextCheckKind::Spell]
     }
@@ -96,13 +96,13 @@ mod tests {
 
     #[test]
     fn does_not_flag_dictionary_words() {
-        let findings = EnglishSpellChecker.check_text(TextCheckKind::Spell, "security research");
+        let findings = EnglishSymspellChecker.check_text(TextCheckKind::Spell, "security research");
         assert!(findings.is_empty(), "expected no findings, got: {findings:?}");
     }
 
     #[test]
     fn flags_misspelled_word_with_suggestion() {
-        let findings = EnglishSpellChecker.check_text(TextCheckKind::Spell, "Secruity researchers");
+        let findings = EnglishSymspellChecker.check_text(TextCheckKind::Spell, "Secruity researchers");
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].fragment, "Secruity");
         assert_eq!(findings[0].start, 0);
@@ -112,7 +112,7 @@ mod tests {
 
     #[test]
     fn flags_unknown_word_without_close_match() {
-        let findings = EnglishSpellChecker.check_text(TextCheckKind::Spell, "xyzabc");
+        let findings = EnglishSymspellChecker.check_text(TextCheckKind::Spell, "xyzabc");
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].fragment, "xyzabc");
         assert_eq!(findings[0].start, 0);
@@ -122,7 +122,7 @@ mod tests {
 
     #[test]
     fn non_spell_kind_produces_no_findings() {
-        let findings = EnglishSpellChecker.check_text(TextCheckKind::Grammar, "Secruity");
+        let findings = EnglishSymspellChecker.check_text(TextCheckKind::Grammar, "Secruity");
         assert!(findings.is_empty());
     }
 }

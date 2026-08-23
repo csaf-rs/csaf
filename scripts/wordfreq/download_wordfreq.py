@@ -8,7 +8,7 @@ import sys
 import urllib.request
 from pathlib import Path
 
-def download_and_process(url, top_n, gzip_output=False):
+def download_and_process(url, top_n, output_file):
     """Download gzipped JSON, process, and save top N words by frequency."""
     print(f"Downloading from {url}...")
     
@@ -35,26 +35,17 @@ def download_and_process(url, top_n, gzip_output=False):
     # Get top N
     top_words = sorted_words[:top_n]
 
-    # Extract language code from URL (e.g., "en.json.gz" -> "en")
-    filename = url.split('/')[-1]
-    lang_code = filename.split('.')[0]
-
-    # Determine output filename based on language code and top_n
-    output_file = Path(__file__).parent / f"{lang_code}_{top_n}.txt"
+    output_file = Path(output_file)
+    if output_file.is_dir():
+        print(f"Error: output path '{output_file}' is a directory, not a file.", file=sys.stderr)
+        return False
+    output_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Write to file
     print(f"Writing top {len(top_words)} words to {output_file}...")
     with open(output_file, 'w', encoding='utf-8') as f:
         for word, frequency in top_words:
             f.write(f"{word} {frequency}\n")
-    
-    # Optionally gzip the output file
-    if gzip_output:
-        gzipped_output = Path(str(output_file) + ".gzip")
-        print(f"Compressing output to {gzipped_output}...")
-        with open(output_file, 'rb') as f_in:
-            with gzip.open(gzipped_output, 'wb') as f_out:
-                f_out.writelines(f_in)
 
     return True
 
@@ -75,14 +66,14 @@ def main():
         help="Number of top words to extract"
     )
     parser.add_argument(
-        "-c", "--compress",
-        action="store_true",
-        help="Gzip the output file"
+        "-o", "--output",
+        required=True,
+        help="Full path to write the output file to"
     )
     
     args = parser.parse_args()
     
-    success = download_and_process(args.url, args.top_n, args.compress)
+    success = download_and_process(args.url, args.top_n, args.output)
     sys.exit(0 if success else 1)
 
 

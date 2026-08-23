@@ -14,6 +14,39 @@ These assets are described within this `README.md`.
 See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
 They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
+### Word Frequency Dictionary 
+
+- `wordfreq/*`
+
+These dictionaries contain word frequency data used for basic spell checking. The frequency dictionaries are downloaded
+from [pyspellchcker](https://github.com/barrust/pyspellchecker), licensed under the MIT License (see below).
+pyspellchecker derives the word frequency data from the OpenSubtitles project, as described 
+here: [pyspellchecker - Dictionary Creation and Updating](https://github.com/barrust/pyspellchecker#dictionary-creation-and-updating)
+We use scripts (`scripts/wordfreq/*`) to derive the top-N most frequent words from pyspellchecker's dictionaries.
+
+> MIT License
+>
+> Copyright (c) 2018-2021 Tyler Barrus
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
 ## External Assets
 
 - `scancode-licensedb.json`

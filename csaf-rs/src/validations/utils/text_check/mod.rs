@@ -83,15 +83,18 @@ fn char_slice(text: &str, start: usize, end: usize) -> String {
     text.chars().skip(start).take(end - start).collect()
 }
 
-/// TODO: ensure these tests run for all implementers
+/// Tests that verify the behavior shared by every [`TextChecker`] implementation
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
-    #[test]
-    fn detects_misspelling() {
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn detects_misspelling(#[case] checker: Box<dyn TextChecker>) {
         let text = "Secruity researchers";
-        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
+        let findings = checker.check_text(TextCheckKind::Spell, text);
         let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
         let finding = finding.expect("expected a misspelling finding");
         assert_eq!(finding.start, 0);
@@ -99,10 +102,12 @@ mod tests {
         assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
     }
 
-    #[test]
-    fn detects_misspelling_not_at_start() {
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn detects_misspelling_not_at_start(#[case] checker: Box<dyn TextChecker>) {
         let text = "A Secruity test";
-        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
+        let findings = checker.check_text(TextCheckKind::Spell, text);
         let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
         let finding = finding.expect("expected a misspelling finding");
         assert_eq!(finding.start, 2);
@@ -113,10 +118,12 @@ mod tests {
     /// Validates that start/end are character indices, not byte offsets.
     /// 'é' is a two-byte UTF-8 character; if bytes were used the start would be 3
     /// instead of the correct character index 2.
-    #[test]
-    fn detects_misspelling_after_multibyte_char() {
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn detects_misspelling_after_multibyte_char(#[case] checker: Box<dyn TextChecker>) {
         let text = "é Secruity";
-        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
+        let findings = checker.check_text(TextCheckKind::Spell, text);
         let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
         let finding = finding.expect("expected a misspelling finding");
         assert_eq!(finding.start, 2);
@@ -124,43 +131,39 @@ mod tests {
         assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
     }
 
-    #[test]
-    fn does_not_flag_correct_spelling() {
-        let findings = check_text(
-            TextCheckKind::Spell,
-            "Security researchers",
-            &ValidCsafLanguage::new_for_tests("en-US"),
-        );
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn does_not_flag_correct_spelling(#[case] checker: Box<dyn TextChecker>) {
+        let findings = checker.check_text(TextCheckKind::Spell, "Security researchers");
         assert!(findings.is_empty(), "expected no spell findings, got: {findings:?}");
     }
 
-    #[test]
-    fn handles_known_acronyms() {
-        let findings = check_text(
-            TextCheckKind::Spell,
-            "OASIS CSAF TC",
-            &ValidCsafLanguage::new_for_tests("en-US"),
-        );
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn handles_known_acronyms(#[case] checker: Box<dyn TextChecker>) {
+        let findings = checker.check_text(TextCheckKind::Spell, "OASIS CSAF TC");
         assert!(
             findings.is_empty(),
             "expected acronyms to be ignored, got: {findings:?}"
         );
     }
 
-    #[test]
-    fn empty_text_produces_no_findings() {
-        let findings = check_text(TextCheckKind::Spell, "", &ValidCsafLanguage::new_for_tests("en-US"));
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn empty_text_produces_no_findings(#[case] checker: Box<dyn TextChecker>) {
+        let findings = checker.check_text(TextCheckKind::Spell, "");
         assert!(findings.is_empty());
     }
 
-    #[test]
-    fn spell_check_ignores_grammar_issues() {
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn spell_check_ignores_grammar_issues(#[case] checker: Box<dyn TextChecker>) {
         // "He are going" is a grammar issue, not a spelling issue.
-        let findings = check_text(
-            TextCheckKind::Spell,
-            "He are going",
-            &ValidCsafLanguage::new_for_tests("en-US"),
-        );
+        let findings = checker.check_text(TextCheckKind::Spell, "He are going");
         assert!(
             findings.is_empty(),
             "spell check should not flag grammar issues, got: {findings:?}"

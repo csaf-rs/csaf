@@ -13,6 +13,8 @@ use crate::csaf::types::language::ValidCsafLanguage;
 
 #[cfg(test)]
 mod mock_spell;
+mod symspell_checker;
+mod utils;
 
 /// The kind of text check to perform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,6 +62,14 @@ pub fn check_text(kind: TextCheckKind, text: &str, lang: &ValidCsafLanguage) -> 
     if lang.is_english() && mock_spell::MockSpellChecker.get_available_check_kinds().contains(&kind) {
         return mock_spell::MockSpellChecker.check_text(kind, text);
     }
+
+    if lang.is_english() {
+        let checker = symspell_checker::EnglishSpellChecker;
+        if checker.get_available_check_kinds().contains(&kind) {
+            return checker.check_text(kind, text);
+        }
+    }
+
     // happy linter
     let _ = lang;
     let _ = kind;
@@ -125,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn ignores_acronyms() {
+    fn handles_known_acronyms() {
         let findings = check_text(
             TextCheckKind::Spell,
             "OASIS CSAF TC",

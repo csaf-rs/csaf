@@ -37,6 +37,7 @@ spdx = "0.13.4"
 oxilangtag = "0.1.5"
 ssvc = "0.2.1"
 strum = { version = "0.28", features = ["derive"] }
+symspell = "0.5.2"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }

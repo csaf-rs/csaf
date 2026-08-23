@@ -113,7 +113,7 @@ mod tests {
     #[test]
     fn does_flag_unknown_word() {
         let findings = MockSpellChecker.check_text(TextCheckKind::Spell, "Secruity");
-        assert_eq!(findings.len(),1);
+        assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].fragment, "Secruity");
     }
 

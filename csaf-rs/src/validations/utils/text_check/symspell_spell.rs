@@ -55,7 +55,6 @@ impl TextChecker for EnglishSymspellChecker {
         let mut findings = Vec::new();
 
         for (word, start, end) in tokenize_words(text) {
-
             // TODO: Until custom dictionaries are implemented, all-uppercase chars are treated
             // as "known" acronyms.
             if word.chars().all(|c| c.is_uppercase()) {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euox pipefail
+set -euo pipefail
 
 # Always run from the repository root
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {

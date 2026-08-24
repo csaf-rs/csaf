@@ -1,7 +1,9 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, iter_ssvc_namespaces, create_generic_namespace_finding_data};
+use crate::validations::utils::ssvc::{
+    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+};
 use ssvc::NamespaceError;
 
 fn create_unregistered_base_namespace_in_tlp_clear_warning(namespace: &str, instance_path: &str) -> TestFinding {
@@ -50,7 +52,10 @@ pub fn test_6_2_35_usage_of_unregistered_ssvc_decision_point_base_namespace_in_t
             {
                 errors
                     .get_or_insert_default()
-                    .push(TestFinding::Warning(create_generic_namespace_finding_data(&err, &instance_path)));
+                    .push(TestFinding::Warning(create_generic_namespace_finding_data(
+                        &err,
+                        &instance_path,
+                    )));
             },
             // it's registered / all other namespace errors
             Ok(_) | Err(_) => continue,
@@ -61,7 +66,7 @@ pub fn test_6_2_35_usage_of_unregistered_ssvc_decision_point_base_namespace_in_t
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-for crate::csaf2_1::testcases::ValidatorForTest6_2_35
+    for crate::csaf2_1::testcases::ValidatorForTest6_2_35
 {
     fn validate(
         &self,

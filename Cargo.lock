@@ -1819,17 +1819,20 @@ dependencies = [
 
 [[package]]
 name = "ssvc"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "591d8eb7f7ab8f67baa6250ede8c342b3022528020e360055528afbadae69042"
+checksum = "5c9a244219da28fbef8c23d34e71eb66d263862252728e8c85eda19f6c392054"
 dependencies = [
+ "anyhow",
  "chrono",
- "prettyplease 0.2.37",
+ "jsonschema",
+ "prettyplease 0.3.0",
  "regress",
  "rust-embed",
  "serde",
  "serde_json",
- "syn 2.0.117",
+ "syn 3.0.3",
+ "thiserror 2.0.20",
  "typify",
 ]
 
@@ -2283,9 +2286,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-version = "1.24.0"
+version = "1.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf3923a6f5c4c6382e0b653c4117f48d631ea17f38ed86e2a828e6f7412f5239"
+checksum = "2cefc03fd367c0c6d4305de1b312cf00248c4114f4a0418ce6a6af769e3b0bd9"
 dependencies = [
  "getrandom 0.4.2",
  "js-sys",

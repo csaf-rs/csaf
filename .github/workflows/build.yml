@@ -76,7 +76,7 @@ jobs:
           fi
       - name: Compute Rust build context
         id: build-context
-        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@8d7fd6241752c334d1c60e80a355722f44d9b99e # v1.2.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
       - name: Compute Go build targets
         id: get-go-targets
         run: |

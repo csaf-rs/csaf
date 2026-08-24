@@ -80,7 +80,7 @@ pub enum TestResult {
 pub enum TestFinding {
     /// An information indicates a failure in an informative test, which does not necessarily mean the document is invalid,
     /// but may provide insights into common mistakes or bad practices.
-    Infomation(TestFindingData),
+    Information(TestFindingData),
     /// A warning indicates a failure in a recommended test, which does not necessarily mean the document is invalid.
     /// However, it may indicate potential issues or areas for improvement in the document.
     Warning(TestFindingData),

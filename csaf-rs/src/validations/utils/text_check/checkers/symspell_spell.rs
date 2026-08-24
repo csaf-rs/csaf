@@ -1,14 +1,16 @@
 //! English spell-checker backed by the SymSpell algorithm and static word-frequency
 //! dictionaries (TODO: only english for now)
 
-use super::utils::tokenize_words;
-use super::{TextCheckFinding, TextCheckKind, TextChecker};
+
 use std::sync::LazyLock;
 use symspell::{SymSpell, SymSpellBuilder, UnicodeStringStrategy, Verbosity};
+use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
+use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
+use crate::validations::utils::text_check::checkers::utils::tokenize_words;
 
 /// Word/frequency dictionary of the 10,000 most common English words, used to seed the
 /// SymSpell spell-checker. Each line has the form `<word> <frequency>`.
-const EN_10000_DICTIONARY: &str = include_str!("../../../../assets/wordfreq/en_10000.txt");
+const EN_10000_DICTIONARY: &str = include_str!("../../../../../assets/wordfreq/en_10000.txt");
 
 /// Maximum edit distance considered when looking up suggestions for a word that is not
 /// found verbatim in the dictionary.
@@ -42,8 +44,16 @@ static SYMSPELL: LazyLock<SymSpell<UnicodeStringStrategy>> = LazyLock::new(|| {
 pub struct EnglishSymspellChecker;
 
 impl TextChecker for EnglishSymspellChecker {
+    fn get_quality(&self) -> TemporaryTextCheckQuality {
+        TemporaryTextCheckQuality::Medium
+    }
+
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
         vec![TextCheckKind::Spell]
+    }
+    
+    fn get_available_languages(&self) -> Vec<&str> {
+        vec!["en"]
     }
 
     fn check_text(&self, kind: TextCheckKind, text: &str) -> Vec<TextCheckFinding> {
@@ -91,6 +101,7 @@ impl TextChecker for EnglishSymspellChecker {
 
 #[cfg(test)]
 mod tests {
+    use crate::validations::utils::text_check::TextCheckKind;
     use super::*;
 
     #[test]

@@ -1,11 +1,11 @@
-//! Shared helpers for [`super::TextChecker`] implementations.
+//! Shared helpers for [`TextChecker`] implementations.
 
 /// Splits `text` into alphanumeric word tokens suitable for spell-checking.
 ///
 /// Returns `(word, start, end)` triples where `start`/`end` are character (not byte!)
 /// offsets of `word` within `text`. Each whitespace-separated token has its
 /// leading/trailing non-alphabetic characters stripped. Empty tokens are removed.
-pub(super) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
+pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
     let mut tokens = Vec::new();
     let mut search_from = 0;
 

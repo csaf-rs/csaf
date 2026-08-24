@@ -2,9 +2,10 @@
 //!
 //! This module provides a basic English spell-checker backed by a static word list.
 
-use super::utils::tokenize_words;
-use super::{TextCheckFinding, TextCheckKind, TextChecker};
 use std::collections::HashSet;
+use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
+use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
+use crate::validations::utils::text_check::checkers::utils::tokenize_words;
 
 /// A mock spell-checker for English text.
 ///
@@ -17,8 +18,16 @@ use std::collections::HashSet;
 pub struct MockSpellChecker;
 
 impl TextChecker for MockSpellChecker {
+    fn get_quality(&self) -> TemporaryTextCheckQuality {
+        TemporaryTextCheckQuality::Poor
+    }
+
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
         vec![TextCheckKind::Spell]
+    }
+
+    fn get_available_languages(&self) -> Vec<&str> {
+        vec!["en"]
     }
 
     fn check_text(&self, kind: TextCheckKind, text: &str) -> Vec<TextCheckFinding> {

@@ -57,7 +57,7 @@ jobs:
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Run shared format and doc checks
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@8d7fd6241752c334d1c60e80a355722f44d9b99e # v1.2.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
         with:
           run-clippy: "false"
       - name: Run type-generator
@@ -126,7 +126,7 @@ jobs:
         shell: bash
         run: command -v cargo-auditable || cargo install cargo-auditable --locked
       - name: Run shared clippy check
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@8d7fd6241752c334d1c60e80a355722f44d9b99e # v1.2.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
         with:
           run-format: "false"
           run-doc: "false"

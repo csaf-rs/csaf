@@ -21,7 +21,8 @@ OUTPUT_DIR="$REPO_ROOT/csaf-rs/assets/wordfreq"
 
 # source url for the word frequency files (from pyspellchecker)
 # currently, we only have one source, so this is hard-coupled down below
-RAW_PY_SPELLCHECKER_GITHUB_URL="https://raw.githubusercontent.com/barrust/pyspellchecker/master/spellchecker/resources"
+# also, pinned to the last commit that added a language for stability and security
+RAW_PY_SPELLCHECKER_GITHUB_URL="https://raw.githubusercontent.com/barrust/pyspellchecker/0c64c0dd9f926673584e26133ce2edc2c9dea00a/spellchecker/resources"
 PY_SPELLCHECKER_LANGUAGES=(ar de en es eu fa fr it lv nl pt ru)
 
 # top N words to boil down to

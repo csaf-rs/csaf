@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
 use crate::helpers::get_latest_cwe_version_for_date;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use semver::Version;
 use std::sync::LazyLock;
 
@@ -9,9 +9,11 @@ enum VersionMissmatch {
     Future,
 }
 
-static CWE_VERSION_UNAVAILABLE_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "CWE version information is not available for the current release date.".to_string(),
-    instance_path: "/document/tracking/current_release_date".to_string(),
+static CWE_VERSION_UNAVAILABLE_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "CWE version information is not available for the current release date.".to_string(),
+        instance_path: "/document/tracking/current_release_date".to_string(),
+    })
 });
 
 fn check_for_non_latest_cwe_version(
@@ -20,7 +22,7 @@ fn check_for_non_latest_cwe_version(
     latest: &str,
     i_r: usize,
     i_cwe: usize,
-) -> Option<ValidationError> {
+) -> Option<TestFinding> {
     // If the both version strings are already equal, we can return early
     if version == latest {
         return None;
@@ -64,7 +66,7 @@ fn create_non_latest_cwe_error(
     latest: &str,
     i_r: usize,
     i_cwe: usize,
-) -> ValidationError {
+) -> TestFinding {
     let error_message = match e_type {
         VersionMissmatch::NonLatest => {
             format!("Weakness '{cwe}' uses non-latest CWE version '{version}' (latest: '{latest}').")
@@ -74,10 +76,10 @@ fn create_non_latest_cwe_error(
         },
     };
 
-    ValidationError {
+    TestFinding::Warning(TestFindingData {
         message: error_message,
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}/version"),
-    }
+    })
 }
 
 ///CWE assets use two-part versions like "4.13". `semver::Version::parse` expects three parts
@@ -108,9 +110,9 @@ fn normalize_to_semver_str(s: &str) -> String {
 /// available at the time of the last revision was used. The test SHALL fail if
 /// a later CWE version was available (i.e. the CWE item does not reference the
 /// most recent CWE version as of the document's current_release_date).
-pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_24_usage_of_non_latest_cwe_version(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     let tracking = doc.get_document().get_tracking();
     let current_release_date = tracking.get_current_release_date();
@@ -154,6 +156,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_24 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use rstest::rstest;
 
@@ -189,16 +192,16 @@ mod tests {
             create_non_latest_cwe_error(VersionMissmatch::Future, "CWE-61", "4.15", "4.13", 2, 0),
         ]);
 
-        TESTS_2_1.test_6_2_24.expect(
-            case_01_cwe_version_before_latest,
-            case_02_cwe_version_after_latest,
-            case_03_cwe_version_mismatch,
-            case_04_cwe_version_mismatch_multi_vulnerabilities,
-            Ok(()), // Case 11: 1 vuln, 1 correct cwe version, correction of case 01 with version 4.12 -> 4.13
-            Ok(()), // Case 12: 1 vuln, 1 correct cwe version, correction of case 02 where version 4.15 was newer than latest 4.13
-            Ok(()), // Case 13: 1 vuln, 3 correct cwe versions, correction of case 03 with versions 1.8.1 -> 4.13, 1.0 -> 4.13
-            Ok(()), // Case 14: 3 vulns, 4 correct cwe versions, correction of case 04 with versions 1.3 -> 4.13, 2.1 -> 4.13, 4.14 -> 4.13, 4.15 -> 4.13
-        );
+        TESTS_2_1.test_6_2_24.expect(ExpectedResults {
+            case_01: case_01_cwe_version_before_latest,
+            case_02: case_02_cwe_version_after_latest,
+            case_03: case_03_cwe_version_mismatch,
+            case_04: case_04_cwe_version_mismatch_multi_vulnerabilities,
+            case_11: Ok(()), // 1 vuln, 1 correct cwe version, correction of case 01 with version 4.12 -> 4.13
+            case_12: Ok(()), // 1 vuln, 1 correct cwe version, correction of case 02 where version 4.15 was newer than latest 4.13
+            case_13: Ok(()), // 1 vuln, 3 correct cwe versions, correction of case 03 with versions 1.8.1 -> 4.13, 1.0 -> 4.13
+            case_14: Ok(()), // 3 vulns, 4 correct cwe versions, correction of case 04 with versions 1.3 -> 4.13, 2.1 -> 4.13, 4.14 -> 4.13, 4.15 -> 4.13
+        });
     }
 
     #[rstest]

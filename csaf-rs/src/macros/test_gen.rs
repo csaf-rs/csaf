@@ -11,7 +11,7 @@
 /// # Usage
 /// ```ignore
 /// define_csaf_test!(
-///     Test6_1_1, ValidatorForTest6_1_1,
+///     Test6_1_1, ValidatorForTest6_1_1, ExpectedResults_6_1_1,
 ///     id: "6.1.1",
 ///     doc_type: crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
 ///     version: "V2_0",
@@ -23,7 +23,7 @@
 /// ```
 macro_rules! define_csaf_test {
     (
-        $struct_name:ident, $validator_name:ident,
+        $struct_name:ident, $validator_name:ident, $expect_name:ident,
         id: $id:literal,
         doc_type: $doc_type:ty,
         version: $version:literal,
@@ -59,14 +59,22 @@ macro_rules! define_csaf_test {
             ///
             /// # Returns
             /// * `Ok(())` if validation passes
-            /// * `Err(Vec<ValidationError>)` if validation fails
+            /// * `Err(Vec<TestFinding>)` if validation fails
             pub fn validate(
                 &self,
                 doc: &crate::csaf::raw::RawDocument<$doc_type>,
-            ) -> Result<(), Vec<crate::validation::ValidationError>> {
+            ) -> Result<(), Vec<crate::validation::TestFinding>> {
                 let validator = V::default();
                 validator.validate(doc)
             }
+        }
+
+        /// Expected results for each test case of this test, keyed by case name.
+        #[cfg(test)]
+        #[derive(Debug)]
+        #[allow(non_camel_case_types)]
+        pub struct $expect_name {
+            $(pub $case_name: Result<(), Vec<crate::validation::TestFinding>>,)*
         }
 
         #[cfg(test)]
@@ -81,14 +89,12 @@ macro_rules! define_csaf_test {
             /// the validation function on each one, comparing actual vs expected results.
             ///
             /// # Arguments
-            /// * One parameter per test case document with the expected result
+            /// * `expected` - The expected result for each test case, one field per case
             ///
             /// # Panics
             /// Panics if any test case fails to load, parse, or doesn't match the expected result
-            pub fn expect(
-                &self,
-                $($case_name: Result<(), Vec<crate::validation::ValidationError>>),*
-            ) {
+            pub fn expect(&self, expected: $expect_name) {
+                let $expect_name { $($case_name),* } = expected;
                 let test_cases = vec![
                     $({
                         let content = std::fs::read_to_string($path)

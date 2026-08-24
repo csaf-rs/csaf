@@ -5,7 +5,7 @@ use crate::csaf_traits::{
     CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use strum::{AsRefStr, Display};
 
 #[derive(Display, AsRefStr)]
@@ -23,13 +23,13 @@ fn create_date_too_new_error(
     v_i: usize,
     f_i: usize,
     property: DateProperty,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The {property} '{date}' of the first known exploitation date is newer than the newest revision date ({newest_revision_date}) on a document with status {doc_status}"
         ),
         instance_path: format!("/vulnerabilities/{v_i}/first_known_exploitation_dates/{f_i}/{property}"),
-    }
+    })
 }
 
 /// 6.1.52 Inconsistent First Known Exploitation Dates
@@ -38,9 +38,7 @@ fn create_date_too_new_error(
 /// `exploitation_date` properties are both earlier than or equal to the `date` of the newest item
 /// of the `revision_history` (taking timezones into consideration) if the document
 /// status is `final` or `interim`.
-pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
     let status = tracking.get_status();
@@ -60,7 +58,7 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(
     };
 
     // Check each vulnerability's first known exploitation dates
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // TODO: #409 no data
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(first_known_exploitation_dates) = vulnerability.get_first_known_exploitation_dates() {
@@ -110,6 +108,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_52 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -174,11 +173,11 @@ mod tests {
         // Case 11: dates are before or equal to newest revision date
         // Case 12: dates with timezones are to before or equal to newest revision date
 
-        TESTS_2_1.test_6_1_52.expect(
-            case_01_date_and_exploit_date_after_newest_rev_date,
-            case_02_multiple_vulns_multiple_first_exploit_dates_also_timezones,
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_52.expect(ExpectedResults {
+            case_01: case_01_date_and_exploit_date_after_newest_rev_date,
+            case_02: case_02_multiple_vulns_multiple_first_exploit_dates_also_timezones,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

@@ -4,23 +4,23 @@ use crate::csaf::traits::vulnerabilities::{
 };
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::{HashMap, HashSet};
 
-fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str, base_path: &str) -> ValidationError {
-    ValidationError {
+fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str, base_path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "The Product Identification Helper property '{category}' contains a duplicate value '{value}' for product '{product_id}'. Helper properties must be pairwise disjoint across all distinct products."
         ),
         instance_path: format!("{base_path}/product_identification_helper/{category}"),
-    }
+    })
 }
 
 // Private helper function instead of a capturing closure
 fn process_violations(
     groups: HashMap<String, Vec<(String, String)>>,
     category: &str,
-    errors: &mut HashSet<ValidationError>,
+    errors: &mut HashSet<TestFinding>,
 ) {
     for (value, occurrences) in groups {
         // Count how many UNIQUE products share this helper value
@@ -36,12 +36,12 @@ fn process_violations(
 }
 
 /// Test 6.2.32: Use of Same Product Identification Helper for Different Products
-pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
     };
 
-    let mut errors: HashSet<ValidationError> = HashSet::new();
+    let mut errors: HashSet<TestFinding> = HashSet::new();
 
     // Grouping tracking maps: map a unique token to a list of (product_id, base_instance_path)
     let mut purl_groups: HashMap<String, Vec<(String, String)>> = HashMap::new();
@@ -160,7 +160,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
     process_violations(x_uri_groups, "x_generic_uris", &mut errors);
 
     // Convert error HashSet back to Vec at the very end
-    let error_vec: Vec<ValidationError> = errors.into_iter().collect();
+    let error_vec: Vec<TestFinding> = errors.into_iter().collect();
 
     if error_vec.is_empty() { Ok(()) } else { Err(error_vec) }
 }
@@ -174,6 +174,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_32 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -359,14 +360,14 @@ mod tests {
         // Case 04: Disjoint product identification helpers (no collisions, expects pass)
         // Case 05: Products without identification helpers (no helpers to collide, expects pass)
         // Case S11: Verifies that duplicate helper values inside the *same* product are correctly ignored (expects pass)
-        TESTS_2_1.test_6_2_32.expect(
-            Err(case_01_errors),  // index 0: case_01
-            Err(case_02_errors),  // index 1: case_02
-            Err(case_03_errors),  // index 2: case_03
-            Err(case_s01_errors), // index 3: case_s01 (Yields 24 errors)
-            Ok(()),               // index 4: case_11
-            Ok(()),               // index 5: case_12
-            Ok(()),               // index 6: case_s11 (Yields Ok)
-        );
+        TESTS_2_1.test_6_2_32.expect(ExpectedResults {
+            case_01: Err(case_01_errors),
+            case_02: Err(case_02_errors),
+            case_03: Err(case_03_errors),
+            case_s01: Err(case_s01_errors),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, ProductStatusTrait, RemediationTrait, VulnerabilityTrait, WithOptionalProductIds};
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
 fn create_missing_remediation_error(
@@ -8,19 +8,19 @@ fn create_missing_remediation_error(
     status_group_name: &str,
     status_group_product_index: usize,
     product_id: &str,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Missing at least a remediation of category 'none_available' or 'no_fix_planned' for product ID '{product_id}' in product status group '{status_group_name}'",
         ),
         instance_path: format!(
             "/vulnerabilities/{vulnerability_index}/product_status/{status_group_name}/{status_group_product_index}"
         ),
-    }
+    })
 }
 
 fn check_product_status_group_for_missing_remediations<'a>(
-    errors: &mut Option<Vec<ValidationError>>,
+    errors: &mut Option<Vec<TestFinding>>,
     status_group_product_ids: impl Iterator<Item = &'a str>,
     remediation_product_ids: &HashSet<String>,
     vulnerability_index: usize,
@@ -44,8 +44,8 @@ fn check_product_status_group_for_missing_remediations<'a>(
 ///
 /// For each product in status groups "affected" or "under investigation", a remediation of category
 /// `none_available` or `no_fix_planned` must exist.
-pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // for each vulnerability
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
@@ -121,7 +121,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_2, test_6_2_02_missi
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_2 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_2 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -134,7 +136,9 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_2_2.expect(case_01.clone());
-        TESTS_2_1.test_6_2_2.expect(case_01);
+        TESTS_2_0.test_6_2_2.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+        });
+        TESTS_2_1.test_6_2_2.expect(ExpectedResults_2_1 { case_01 });
     }
 }

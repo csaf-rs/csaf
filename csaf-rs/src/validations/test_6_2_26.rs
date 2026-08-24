@@ -1,14 +1,14 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_allowed_with_review_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> ValidationError {
-    ValidationError {
+fn create_allowed_with_review_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Weakness '{cwe}' has usage 'Allowed-with-Review' in version {version}, which requires a thorough review."
         ),
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}"),
-    }
+    })
 }
 
 /// 6.2.26 Usage of CWE Allowed with Review for Vulnerability Mapping
@@ -21,9 +21,9 @@ fn create_allowed_with_review_error(cwe: &str, version: &str, i_r: usize, i_cwe:
 /// CWE version 4.12.
 pub fn test_6_2_26_usage_of_cwe_allowed_with_review_for_vulnerability_mapping(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwes) = vulnerability.get_cwes() {
@@ -72,6 +72,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_26 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -82,13 +83,13 @@ mod tests {
 
         let case_03_multiple_vulns = Err(vec![create_allowed_with_review_error("CWE-1039", "4.13", 3, 0)]);
 
-        TESTS_2_1.test_6_2_26.expect(
-            case_01_allowed_with_review,
-            case_02_multiple_cwes,
-            case_03_multiple_vulns,
-            Ok(()), // case_11: CWE-184 (Allowed)
-            Ok(()), // case_12: CWE-14 + CWE-733 (both Allowed)
-            Ok(()), // case_13: all Allowed
-        );
+        TESTS_2_1.test_6_2_26.expect(ExpectedResults {
+            case_01: case_01_allowed_with_review,
+            case_02: case_02_multiple_cwes,
+            case_03: case_03_multiple_vulns,
+            case_11: Ok(()), // CWE-184 (Allowed)
+            case_12: Ok(()), // CWE-14 + CWE-733 (both Allowed)
+            case_13: Ok(()), // all Allowed
+        });
     }
 }

@@ -5,18 +5,22 @@ use crate::csaf::traits::util::extract_references::{
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
-use crate::csaf_traits::{DistributionTrait, NoteTrait, PublisherTrait, ReferenceTrait, TrackingTrait};
+use crate::csaf_traits::{
+    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, NoteTrait, PublisherTrait, ReferenceTrait,
+    TrackingTrait,
+};
 use crate::schema::csaf2_0::schema::{
-    CsafVersion as CsafVersion20, DocumentLevelMetaData as DocumentLevelMetaData20, Note as Note20,
-    Publisher as Publisher20, Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20,
-    Tracking as Tracking20,
+    Acknowledgment as Acknowledgment20, AggregateSeverity as AggregateSeverity20, CsafVersion as CsafVersion20,
+    DocumentLevelMetaData as DocumentLevelMetaData20, Note as Note20, Publisher as Publisher20,
+    Reference as Reference20, RulesForSharingDocument as RulesForSharingDocument20, Tracking as Tracking20,
 };
 use crate::schema::csaf2_1::schema::{
+    Acknowledgment as Acknowledgment21, AggregateSeverity as AggregateSeverity21,
     CategoryOfReference as CategoryOfReference21, CsafVersion as CsafVersion21,
     DocumentLevelMetaData as DocumentLevelMetaData21, Note as Note21, Publisher as Publisher21,
     Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// Returns an iterator over the reference URLs that satisfy the canonical URL requirements:
 /// `category = "self"`, starts with `https://`, ends with the tracking-ID-derived filename.
@@ -35,6 +39,9 @@ fn canonical_url_candidates<'a, R: ReferenceTrait>(
 
 /// Trait representing document meta-level information
 pub trait DocumentTrait {
+    type AcknowledgmentType: AcknowledgmentTrait;
+
+    type AggregateSeverityType: AggregateSeverityTrait;
     /// Type representing document tracking information
     type TrackingType: TrackingTrait;
 
@@ -49,11 +56,15 @@ pub trait DocumentTrait {
 
     type ReferenceType: ReferenceTrait;
 
+    fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
+
+    fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType>;
+
     /// Returns the tracking information for this document
     fn get_tracking(&self) -> &Self::TrackingType;
 
     /// Returns the distribution information for this document with CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError>;
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, TestFinding>;
 
     /// Returns the distribution information for this document with CSAF 2.0 semantics
     fn get_distribution_20(&self) -> Option<&Self::DistributionType>;
@@ -105,11 +116,21 @@ pub trait DocumentTrait {
 }
 
 impl DocumentTrait for DocumentLevelMetaData20 {
+    type AcknowledgmentType = Acknowledgment20;
+    type AggregateSeverityType = AggregateSeverity20;
     type TrackingType = Tracking20;
     type DistributionType = RulesForSharingDocument20;
     type NoteType = Note20;
     type PublisherType = Publisher20;
     type ReferenceType = Reference20;
+
+    fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
+        self.acknowledgments.as_deref()
+    }
+
+    fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType> {
+        self.aggregate_severity.as_ref()
+    }
 
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
@@ -121,12 +142,12 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     }
 
     /// Return distribution or a Validation error to satisfy CSAF 2.1 semantics
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, TestFinding> {
         match self.distribution.as_ref() {
-            None => Err(ValidationError {
+            None => Err(TestFinding::Error(TestFindingData {
                 message: "CSAF 2.1 requires the distribution property, but it is not set.".to_string(),
                 instance_path: "/document/distribution".to_string(),
-            }),
+            })),
             Some(distribution) => Ok(distribution),
         }
     }
@@ -165,18 +186,28 @@ impl DocumentTrait for DocumentLevelMetaData20 {
 }
 
 impl DocumentTrait for DocumentLevelMetaData21 {
+    type AcknowledgmentType = Acknowledgment21;
+    type AggregateSeverityType = AggregateSeverity21;
     type TrackingType = Tracking21;
     type DistributionType = RulesForDocumentSharing21;
     type NoteType = Note21;
     type PublisherType = Publisher21;
     type ReferenceType = Reference21;
 
+    fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
+        self.acknowledgments.as_deref()
+    }
+
+    fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType> {
+        self.aggregate_severity.as_ref()
+    }
+
     fn get_tracking(&self) -> &Self::TrackingType {
         &self.tracking
     }
 
     /// We normalize to Option here because property was optional in CSAF 2.0
-    fn get_distribution_21(&self) -> Result<&Self::DistributionType, ValidationError> {
+    fn get_distribution_21(&self) -> Result<&Self::DistributionType, TestFinding> {
         Ok(&self.distribution)
     }
 

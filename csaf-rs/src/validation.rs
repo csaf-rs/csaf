@@ -5,9 +5,44 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct TestFindingData {
+    pub message: String,
+    pub instance_path: String,
+}
+
+#[derive(Serialize, Debug, PartialEq, Eq, Hash, Clone, Deserialize)]
+#[serde(tag = "severity", rename_all = "camelCase")]
+pub enum TestFinding {
+    Information(TestFindingData),
+    Warning(TestFindingData),
+    Error(TestFindingData),
+}
+
+impl TestFinding {
+    pub fn get_data(&self) -> &TestFindingData {
+        match self {
+            TestFinding::Information(data) => data,
+            TestFinding::Warning(data) => data,
+            TestFinding::Error(data) => data,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ValidationError {
     pub message: String,
     pub instance_path: String,
+}
+
+impl From<&TestFinding> for ValidationError {
+    fn from(finding: &TestFinding) -> Self {
+        let data = finding.get_data();
+        ValidationError {
+            message: data.message.clone(),
+            instance_path: data.instance_path.clone(),
+        }
+    }
 }
 
 impl std::fmt::Display for ValidationError {
@@ -16,9 +51,8 @@ impl std::fmt::Display for ValidationError {
     }
 }
 
-/// Trait for types that can be converted into a [`ValidationError`] by providing an instance path.
-pub trait IntoValidationError {
-    fn into_validation_error(self, instance_path: &str) -> ValidationError;
+pub trait IntoTestFindingError {
+    fn into_test_finding_error(self, instance_path: &str) -> TestFinding;
 }
 
 /// Result of executing a single test

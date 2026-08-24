@@ -72,6 +72,9 @@ def main():
     )
     
     args = parser.parse_args()
+
+    if args.top_n <= 0:
+        parser.error("--top-n must be greater than zero")
     
     success = download_and_process(args.url, args.top_n, args.output)
     sys.exit(0 if success else 1)

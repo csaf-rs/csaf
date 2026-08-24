@@ -175,7 +175,7 @@ jobs:
   coverage:
     needs:
       - prepare
-    uses: csaf-rs/shared-workflows/.github/workflows/rust-coverage.yml@400ee021e6bdeb7e2808264749e2fe20b25401e8 # v1.3.0
+    uses: csaf-rs/shared-workflows/.github/workflows/rust-coverage.yml@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
 
   wasm-bindings:
     needs:

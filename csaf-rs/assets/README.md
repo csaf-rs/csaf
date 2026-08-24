@@ -19,7 +19,7 @@ They are 1:1 copies from the respective repository (i.e., git submodule), cloned
 - `wordfreq/*`
 
 These dictionaries contain word frequency data used for basic spell checking. The frequency dictionaries are downloaded
-from [pyspellchcker](https://github.com/barrust/pyspellchecker), licensed under the MIT License (see below).
+from [pyspellchecker](https://github.com/barrust/pyspellchecker), licensed under the MIT License (see below).
 pyspellchecker derives the word frequency data from the OpenSubtitles project, as described 
 here: [pyspellchecker - Dictionary Creation and Updating](https://github.com/barrust/pyspellchecker#dictionary-creation-and-updating)
 We use scripts (`scripts/wordfreq/*`) to derive the top-N most frequent words from pyspellchecker's dictionaries.

@@ -6,3 +6,4 @@ pub mod valid_language;
 mod language_subtags;
 
 pub use csaf_language::CsafLanguage;
+pub use valid_language::ValidCsafLanguage;

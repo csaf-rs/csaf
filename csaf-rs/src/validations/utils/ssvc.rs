@@ -9,6 +9,11 @@ pub(crate) fn ssvc_selection_namespace_path(vuln_index: usize, metric_index: usi
     )
 }
 
+/// Returns the JSON instance path to the `decision_point_resources` field of an SSVC v2 metric.
+pub(crate) fn ssvc_decision_point_resources_path(vuln_index: usize, metric_index: usize) -> String {
+    format!("/vulnerabilities/{vuln_index}/metrics/{metric_index}/content/ssvc_v2/decision_point_resources")
+}
+
 /// A single SSVC v2 namespace result with the JSON path at which it was found.
 pub(crate) struct SsvcNamespaceResultAndPath {
     pub result: Result<ParsedNamespace, NamespaceError>,

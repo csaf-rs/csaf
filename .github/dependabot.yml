@@ -12,3 +12,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      shared-workflows:
+        patterns:
+          - "csaf-rs/shared-workflows*"

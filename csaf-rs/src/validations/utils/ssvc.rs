@@ -32,7 +32,6 @@ pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
                 .flatten()
                 .enumerate()
                 .map(move |(metric_index, metric)| (vuln_index, metric_index, metric))
-                .collect::<Vec<_>>()
         })
         .filter(|(_, _, metric)| metric.get_content().has_ssvc_v2())
         .flat_map(move |(vuln_index, metric_index, metric)| {
@@ -45,12 +44,12 @@ pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
                     result: ssvc::validate_namespace(sl_item.namespace.as_str(), allow_test_namespaces),
                     instance_path: ssvc_selection_namespace_path(vuln_index, metric_index, sl_item_index),
                 })
-                .collect::<Vec<_>>()
         })
 }
 
-pub(crate) fn create_other_namespace_error(err: &NamespaceError, instance_path: &str) -> TestFindingData {
-    err.to_test_finding_data(instance_path.to_owned())
+/// Returns a [`TestFindingData`] for a generic SSVC namespace error, using the given JSON instance path.
+pub(crate) fn create_generic_namespace_finding_data(err: &NamespaceError, instance_path: &str) -> TestFindingData {
+    err.to_finding_data(instance_path.to_owned())
 }
 
 /// Extension trait to convert a [`NamespaceError`] into a [`TestFindingData`], attaching the
@@ -58,11 +57,11 @@ pub(crate) fn create_other_namespace_error(err: &NamespaceError, instance_path: 
 trait NamespaceErrorExt {
     /// Builds a [`TestFindingData`] from this error, using the error's `Display` message and the
     /// given `instance_path`.
-    fn to_test_finding_data(&self, instance_path: String) -> TestFindingData;
+    fn to_finding_data(&self, instance_path: String) -> TestFindingData;
 }
 
 impl NamespaceErrorExt for NamespaceError {
-    fn to_test_finding_data(&self, instance_path: String) -> TestFindingData {
+    fn to_finding_data(&self, instance_path: String) -> TestFindingData {
         TestFindingData {
             message: self.to_string(),
             instance_path,
@@ -80,7 +79,7 @@ mod tests {
             namespace: "invalid".to_string(),
         };
         let data =
-            err.to_test_finding_data("/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/namespace".to_string());
+            err.to_finding_data("/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/namespace".to_string());
 
         assert_eq!(data.message, "Reserved forbidden namespace 'invalid' must not be used");
         assert_eq!(

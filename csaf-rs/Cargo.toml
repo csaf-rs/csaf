@@ -35,14 +35,14 @@ semver = { version = "1" }
 jsonschema = { version = "0.49.1", default-features = false }
 spdx = "0.13.4"
 oxilangtag = "0.1.5"
-ssvc = { git = "https://github.com/csaf-rs/ssvc", branch = "main" }
+ssvc = "0.3.0"
 strum = { version = "0.28", features = ["derive"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }
 
 [build-dependencies]
-ssvc = { git = "https://github.com/csaf-rs/ssvc", branch = "main" }
+ssvc = "0.3.0"
 serde_json = { version = "1", features = ["preserve_order"] }
 
 [dev-dependencies]

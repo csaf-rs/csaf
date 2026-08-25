@@ -1,11 +1,13 @@
 use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{SsvcNamespaceResultAndPath, create_other_namespace_error, iter_ssvc_namespaces};
+use crate::validations::utils::ssvc::{
+    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+};
 use ssvc::NamespaceError;
 
-fn create_namespace_extension_in_tlp_clear_error(namespace: &str, instance_path: &str) -> TestFinding {
-    TestFinding::Error(TestFindingData {
+fn create_namespace_extension_in_tlp_clear_warning(namespace: &str, instance_path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Usage of SSVC decision point namespace with an extension in a TLP:CLEAR document: `{namespace}`"
         ),
@@ -18,17 +20,12 @@ fn create_namespace_extension_in_tlp_clear_error(namespace: &str, instance_path:
 /// For each SSVC decision point given under `selections`, it MUST be tested that the namespace
 /// does not use an extension if the document is labeled TLP:CLEAR. Namespaces reserved for
 /// special purpose MUST be treated as per their definition.
-///
-/// As extensions cannot extend an existing decision point with new values, an extension whose
-/// definition is unknown to the reader can still be treated as the decision point from the base
-/// namespace. This test therefore only fails on the presence of an extension in a TLP:CLEAR
-/// document, regardless of whether the base namespace or extension itself is otherwise valid
-/// (this is covered by other tests, e.g. 6.2.34).
 pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document(
     doc: &impl CsafTrait,
+    allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     // This test only applies to TLP:CLEAR documents
-    // We can hard-code CSAF 2.1 distributin here, SSVC does not exist on CSAF 2.0, so this
+    // We can hard-code CSAF 2.1 distribution here, SSVC does not exist on CSAF 2.0, so this
     // will not be back-ported.
     let distribution = doc.get_document().get_distribution_21().map_err(|e| vec![e])?;
     if distribution.get_tlp_21().map_err(|e| vec![e])?.get_label() != LabelOfTlp::Clear {
@@ -37,23 +34,30 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
 
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, false) {
+    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
         match result {
             // check if an extension exists on a valid namespace
-            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => errors
-                .get_or_insert_default()
-                .push(create_namespace_extension_in_tlp_clear_error(&parsed_namespace.to_string(), &instance_path)),
+            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => {
+                errors
+                    .get_or_insert_default()
+                    .push(create_namespace_extension_in_tlp_clear_warning(
+                        &parsed_namespace.to_string(),
+                        &instance_path,
+                    ))
+            },
             // reserved forbidden namespaces "invalid" or "test" are used
             Err(err)
                 if matches!(
                     err,
-                    NamespaceError::ReservedForbiddenNamespace { .. }
-                        | NamespaceError::ReservedTestNamespace { .. }
+                    NamespaceError::ReservedForbiddenNamespace { .. } | NamespaceError::ReservedTestNamespace { .. }
                 ) =>
             {
                 errors
                     .get_or_insert_default()
-                    .push(TestFinding::Warning(create_other_namespace_error(&err, &instance_path)));
+                    .push(TestFinding::Warning(create_generic_namespace_finding_data(
+                        &err,
+                        &instance_path,
+                    )));
             },
             // there is no extension / all other namespace errors
             Ok(_) | Err(_) => continue,
@@ -63,12 +67,16 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_2_36,
-    test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document
-);
-
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_2_36
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<TestFinding>> {
+        test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document(doc, false)
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,14 +86,15 @@ mod tests {
 
     #[test]
     fn test_test_6_2_36() {
-        let case_01_extension_in_tlp_clear = Err(vec![create_namespace_extension_in_tlp_clear_error(
+        let case_01_extension_in_tlp_clear = Err(vec![create_namespace_extension_in_tlp_clear_warning(
             "ssvc//.example.test#refined-technical-impacts",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
-        let case_02_extension_in_tlp_clear_unregistered_ns = Err(vec![create_namespace_extension_in_tlp_clear_error(
-            "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
-            &ssvc_selection_namespace_path(0, 0, 0),
-        )]);
+        let case_02_extension_in_tlp_clear_unregistered_ns =
+            Err(vec![create_namespace_extension_in_tlp_clear_warning(
+                "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
+                &ssvc_selection_namespace_path(0, 0, 0),
+            )]);
 
         // Case 11: TLP:CLEAR, namespace without extension
         // Case 12: TLP:GREEN, namespace with extension (test does not apply)

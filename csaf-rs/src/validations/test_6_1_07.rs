@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
 /// Maps product ids to a per-metric-type, per-source list of JSON paths.
@@ -50,8 +50,8 @@ fn aggregate_product_cvss_metrics(
 ///
 /// For each item in `/vulnerabilities` it MUST be tested that the same Product ID
 /// is not a member of more than one CVSS vector with the same version and same source.
-pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_07_multiple_same_scores_per_product(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         let product_metrics = aggregate_product_cvss_metrics(vulnerability, vulnerability_index);
         // if there are any cvss metrics
@@ -86,19 +86,21 @@ fn create_validation_error(
     product_id: &str,
     path: String,
     source: Option<String>,
-) -> ValidationError {
+) -> TestFinding {
     let source_info = source.map_or("by author".to_string(), |s| format!("for source: {s}"));
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!("Multiple {score_type} scores are given for {product_id} {source_info}."),
         instance_path: format!("{}/{}", path, score_type.get_metric_prop_name()),
-    }
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_7 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_7 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -289,25 +291,27 @@ mod tests {
         // Case 17: 1 vuln, CVSS v2, v3.0, v4, same product
         // Case 18: like 05, but valid
 
-        TESTS_2_0
-            .test_6_1_7
-            .expect(case_01_duplicate_cvss_v3_1_csaf_20, Ok(()), Ok(()));
+        TESTS_2_0.test_6_1_7.expect(ExpectedResults_2_0 {
+            case_01: case_01_duplicate_cvss_v3_1_csaf_20,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_7.expect(
-            case_01_duplicate_cvss_v3_1_csaf_21,
-            case_02_duplicate_cvss_v3_0_csaf_21,
-            case_03_duplicate_cvss_v2_csaf_21,
-            case_04_duplicate_cvss_v4_csaf_21,
-            case_05_duplicate_cvss_mixed_versions_with_sources,
-            case_06_duplicate_cvss_invalid_versions_with_sources,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_7.expect(ExpectedResults_2_1 {
+            case_01: case_01_duplicate_cvss_v3_1_csaf_21,
+            case_02: case_02_duplicate_cvss_v3_0_csaf_21,
+            case_03: case_03_duplicate_cvss_v2_csaf_21,
+            case_04: case_04_duplicate_cvss_v4_csaf_21,
+            case_05: case_05_duplicate_cvss_mixed_versions_with_sources,
+            case_06: case_06_duplicate_cvss_invalid_versions_with_sources,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+        });
     }
 }

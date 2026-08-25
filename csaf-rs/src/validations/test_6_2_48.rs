@@ -1,16 +1,16 @@
 use crate::csaf::consts::chars::is_invisible_char;
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_misuse_at_vendor_name_error(vendor_name: &str, path: &str) -> ValidationError {
+fn create_misuse_at_vendor_name_error(vendor_name: &str, path: &str) -> TestFinding {
     let message: String  = match vendor_name == "Open Source" {
         true => "For vendor branches, the branch name 'Open Source' is banned due to misuse. Please use a more appropriate vendor name for the open source project.".to_string(),
         false => format!("For vendor branches, the branch name 'Open Source' (and similar, provided: '{vendor_name}') is banned due to misuse. Please use a more appropriate vendor name for the open source project."),
     };
-    ValidationError {
+    TestFinding::Warning(TestFindingData {
         message,
         instance_path: format!("{path}/name"),
-    }
+    })
 }
 
 /// Checks if a name is `Open Source` (case-insensitive, white space insensitive).
@@ -20,7 +20,7 @@ fn create_misuse_at_vendor_name_error(vendor_name: &str, path: &str) -> Validati
 fn is_open_source(name: &str) -> bool {
     let normalized: String = name
         .chars()
-        .filter(|c| !c.is_whitespace() && !is_invisible_char(c))
+        .filter(|&c| !c.is_whitespace() && !is_invisible_char(c))
         .collect::<String>()
         .to_lowercase();
     normalized == "opensource"
@@ -29,12 +29,12 @@ fn is_open_source(name: &str) -> bool {
 ///
 /// For each item in branches with category `vendor` it MUST be tested that the name is not
 /// `Open Source` (case-insensitive, white space insensitive).
-pub fn test_6_2_48_misuse_at_vendor_name(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_48_misuse_at_vendor_name(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(()); // TODO #409
     };
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     product_tree.visit_all_branches(&mut |branch, path| {
         if branch.get_category() == CategoryOfTheBranch::Vendor && is_open_source(branch.get_name()) {
@@ -52,6 +52,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_48, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_48 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use rstest::rstest;
 
@@ -73,15 +74,15 @@ mod tests {
         // Case 11-13: Same as 01-03, but with appropriate values for the vendor branch name (ISDuBA Dev, curl, ...)
         // Case S11: product family branch with name "Open Source"
 
-        TESTS_2_1.test_6_2_48.expect(
-            case_01_open_source_isduba,
-            case_02_open_source_curl,
-            case_03_open_source_case_whitespace,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_48.expect(ExpectedResults {
+            case_01: case_01_open_source_isduba,
+            case_02: case_02_open_source_curl,
+            case_03: case_03_open_source_case_whitespace,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 
     #[rstest]

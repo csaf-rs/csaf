@@ -1,16 +1,16 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf_traits::{CsafTrait, DocumentReferenceTrait, DocumentTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document with category '{doc_category}' must have at least one reference with category 'external'"
         ),
         instance_path: "/document/references".to_string(),
-    }
+    })
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
@@ -24,7 +24,7 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
 /// or `csaf_security_incident_response`.
 ///
 /// Documents with these categories must have at least one entry in `/document/references` with an external reference.
-pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -55,7 +55,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_2, test_6_1_27_02
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_2 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_2 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -64,7 +66,11 @@ mod tests {
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
 
-        TESTS_2_0.test_6_1_27_2.expect(case_informational_advisory.clone());
-        TESTS_2_1.test_6_1_27_2.expect(case_informational_advisory);
+        TESTS_2_0.test_6_1_27_2.expect(ExpectedResults_2_0 {
+            case_01: case_informational_advisory.clone(),
+        });
+        TESTS_2_1.test_6_1_27_2.expect(ExpectedResults_2_1 {
+            case_01: case_informational_advisory,
+        });
     }
 }

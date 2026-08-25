@@ -1,7 +1,7 @@
 use std::sync::LazyLock;
 
 use crate::{
-    validation::ValidationError,
+    validation::{TestFinding, TestFindingData},
     validations::utils::{
         validation_schema_urls::{
             CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_SCHEMA_URL,
@@ -104,33 +104,34 @@ static STRICT_VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| 
 pub fn test_6_2_20_additional_properties(
     json: &Value,
     validator: &jsonschema::Validator,
-) -> Result<(), Vec<ValidationError>> {
-    let results: Vec<_> = validator
-        .iter_errors(json)
-        .flat_map(|error| match error.kind() {
-            ValidationErrorKind::UnevaluatedProperties { unexpected } => unexpected
-                .iter()
-                .map(|property| create_additional_properties_error(property, error.instance_path().as_str()))
-                .collect(),
-            _ => vec![],
-        })
-        .collect();
+) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
+    for error in validator.iter_errors(json) {
+        if let ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind() {
+            for property in unexpected {
+                errors.get_or_insert_default().push(create_additional_properties_error(
+                    property,
+                    error.instance_path().as_str(),
+                ));
+            }
+        }
+    }
 
-    if results.is_empty() { Ok(()) } else { Err(results) }
+    errors.map_or(Ok(()), Err)
 }
 
-fn create_additional_properties_error(key: &str, path: &str) -> ValidationError {
-    ValidationError {
+fn create_additional_properties_error(key: &str, path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("The key '{key}' is not defined in the JSON schema."),
         instance_path: path.to_string(),
-    }
+    })
 }
 
-fn test_6_2_20_validate_2_0(json: &Value) -> Result<(), Vec<ValidationError>> {
+fn test_6_2_20_validate_2_0(json: &Value) -> Result<(), Vec<TestFinding>> {
     test_6_2_20_additional_properties(json, &STRICT_VALIDATOR_2_0)
 }
 
-fn test_6_2_20_validate_2_1(json: &Value) -> Result<(), Vec<ValidationError>> {
+fn test_6_2_20_validate_2_1(json: &Value) -> Result<(), Vec<TestFinding>> {
     test_6_2_20_additional_properties(json, &STRICT_VALIDATOR_2_1)
 }
 
@@ -140,29 +141,28 @@ crate::test_validation::impl_raw_json_validator!(csaf2_1, ValidatorForTest6_2_20
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_20 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_20 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_2_20() {
         // Both CSAF 2.0 and 2.1 have 1 test cases
-        TESTS_2_0
-            .test_6_2_20
-            .expect(Err(vec![create_additional_properties_error(
-                "custom_property",
-                "/document",
-            )]));
-        TESTS_2_1.test_6_2_20.expect(
-            Err(vec![create_additional_properties_error(
+        TESTS_2_0.test_6_2_20.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![create_additional_properties_error("custom_property", "/document")]),
+        });
+        TESTS_2_1.test_6_2_20.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![create_additional_properties_error(
                 "custom_property",
                 "/vulnerabilities/0/metrics/0/content/cvss_v3",
             )]),
-            Err(vec![create_additional_properties_error(
+            case_02: Err(vec![create_additional_properties_error(
                 "custom_property",
                 "/vulnerabilities/0/metrics/0/content/cvss_v4",
             )]),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

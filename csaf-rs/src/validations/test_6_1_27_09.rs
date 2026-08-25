@@ -5,7 +5,7 @@ use crate::csaf_traits::{
     WithOptionalProductIds,
 };
 use crate::schema::csaf2_1::schema::CategoryOfTheThreat;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 use std::collections::{HashMap, HashSet};
 
@@ -16,7 +16,7 @@ use std::collections::{HashMap, HashSet};
 /// Each item in `/vulnerabilities[]/product_status/known_not_affected` must have a corresponding
 /// impact statement in `/vulnerabilities[]/flags` or `/vulnerabilities[]/threats`. For impact statements under
 /// `threats`, the category must be `impact`.
-pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
     let vulnerabilities = doc.get_vulnerabilities();
 
@@ -26,7 +26,7 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<V
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // for each vulnerability
     for (v_i, vulnerability) in vulnerabilities.iter().enumerate() {
         // generate hashmap of all known_not_affected product or group ids with value of known_not_affected path index
@@ -99,15 +99,15 @@ fn test_6_1_27_09_err_generator(
     product_or_group_id: String,
     vuln_path_index: usize,
     known_not_affected_path_index: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "No impact statement found for 'known_not_affected' product status entry '{product_or_group_id}'."
         ),
         instance_path: format!(
             "/vulnerabilities/{vuln_path_index}/product_status/known_not_affected/{known_not_affected_path_index}"
         ),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_9, test_6_1_27_09_impact_statement);
@@ -115,7 +115,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_9, test_6_1_27_09
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_9 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_9 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -134,35 +136,35 @@ mod tests {
         let case_one_not_covered_by_threat_with_wrong_category =
             Err(vec![test_6_1_27_09_err_generator("CSAFPID-9080702".to_string(), 0, 2)]);
 
-        TESTS_2_0.test_6_1_27_9.expect(
-            case_group_covered_by_threats.clone(),
-            case_group_covered_by_flag.clone(),
-            case_products_covered_by_threats.clone(),
-            case_products_covered_by_flags.clone(),
-            case_products_covered_by_flags_or_threats.clone(),
-            case_one_not_covered_with_multiple_vulnerabilities.clone(),
-            case_one_not_covered_by_threat_with_wrong_category.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_27_9.expect(
-            case_group_covered_by_threats,
-            case_group_covered_by_flag,
-            case_products_covered_by_threats,
-            case_products_covered_by_flags,
-            case_products_covered_by_flags_or_threats,
-            case_one_not_covered_with_multiple_vulnerabilities,
-            case_one_not_covered_by_threat_with_wrong_category,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_27_9.expect(ExpectedResults_2_0 {
+            case_01: case_group_covered_by_threats.clone(),
+            case_02: case_group_covered_by_flag.clone(),
+            case_03: case_products_covered_by_threats.clone(),
+            case_04: case_products_covered_by_flags.clone(),
+            case_05: case_products_covered_by_flags_or_threats.clone(),
+            case_06: case_one_not_covered_with_multiple_vulnerabilities.clone(),
+            case_s01: case_one_not_covered_by_threat_with_wrong_category.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
+        TESTS_2_1.test_6_1_27_9.expect(ExpectedResults_2_1 {
+            case_01: case_group_covered_by_threats,
+            case_02: case_group_covered_by_flag,
+            case_03: case_products_covered_by_threats,
+            case_04: case_products_covered_by_flags,
+            case_05: case_products_covered_by_flags_or_threats,
+            case_06: case_one_not_covered_with_multiple_vulnerabilities,
+            case_s01: case_one_not_covered_by_threat_with_wrong_category,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
     }
 }

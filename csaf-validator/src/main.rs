@@ -1,9 +1,10 @@
 use anstream::println;
 use anyhow::{Result, bail};
 use clap::{CommandFactory, Parser};
-use csaf::csaf::loader::detect_version;
+use csaf::csaf::loader::detect_version_with;
 use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
+use csaf::json::JsonSource;
 use csaf::validation::ValidationError;
 use csaf::validation::{
     TestResult,
@@ -16,7 +17,7 @@ use std::path::Path;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Path to the CSAF document(s) to validate
+    /// Path(s) to CSAF document(s) to validate, specify multiple files as: `PATH`... (e.g. `doc1.json doc2.json`)
     #[arg(action = clap::ArgAction::Append)]
     path: Vec<String>,
 
@@ -63,20 +64,27 @@ fn main() -> Result<(), anyhow::Error> {
 fn validate_file(path: &Path, args: &Args) -> Result<ValidationResult> {
     let file_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Cyan.into()));
     println!("Validating file: {file_color}{}{file_color:#}", path.display());
-    let version = match args.csaf_version.as_str() {
-        "auto" => detect_version(path)?,
-        other => other.to_string(),
-    };
-    match version.as_str() {
+    match args.csaf_version.as_str() {
+        "auto" => {
+            let detected = detect_version_with(path)?;
+            load_and_validate(detected.data, &detected.version, args)
+        },
+        other => load_and_validate(path, other, args),
+    }
+}
+
+/// Load a document of the given version from any JSON source and validate it.
+fn load_and_validate<S: JsonSource>(source: S, version: &str, args: &Args) -> Result<ValidationResult> {
+    match version {
         "2.0" => {
-            let document = load_document_2_0(path)?;
+            let document = load_document_2_0(source)?;
             Ok(validate_document(document, "2.0", args))
         },
         "2.1" => {
-            let document = load_document_2_1(path)?;
+            let document = load_document_2_1(source)?;
             Ok(validate_document(document, "2.1", args))
         },
-        _ => bail!(format!("Invalid CSAF version: {version}")),
+        _ => bail!("Invalid CSAF version: {version}"),
     }
 }
 

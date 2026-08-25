@@ -1,26 +1,24 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
-use ssvc::selection_list::SelectionList;
-use ssvc::validation::SsvcError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
-    ValidationError {
+fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid SSVC object: {error}"),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
-    }
+    })
 }
 
 /// Test function for invocation by users, does not permit usage of the "test" namespace.
-pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    test_6_1_48_ssvc_decision_points_internal(doc, ssvc::validation::validate_selection_list)
+pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    test_6_1_48_ssvc_decision_points_internal(doc, false)
 }
 
-/// Internal, actual test function allowing usage of a custom validation function, i.e.,
-/// a function permitting the reserved "test" namespace for testing.
+/// Internal, actual test function. Set `allow_test_namespaces` to `true` to permit the reserved
+/// "test" namespace, which is used in test fixtures but disallowed in production.
 fn test_6_1_48_ssvc_decision_points_internal(
     doc: &impl CsafTrait,
-    validation_fn: fn(&SelectionList) -> Result<(), Vec<SsvcError>>,
-) -> Result<(), Vec<ValidationError>> {
+    allow_test_namespaces: bool,
+) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     for (i_v, v) in vulnerabilities.iter().enumerate() {
@@ -30,17 +28,19 @@ fn test_6_1_48_ssvc_decision_points_internal(
                 if content.has_ssvc_v2() {
                     match content.get_ssvc_v2() {
                         Ok(ssvc) => {
-                            if let Err(ssvc_errors) = validation_fn(&ssvc) {
-                                let validation_errors: Vec<ValidationError> = ssvc_errors
+                            let result = ssvc::validate_selection_list(&ssvc, allow_test_namespaces);
+                            if !result.success {
+                                let validation_errors: Vec<TestFinding> = result
+                                    .errors
                                     .into_iter()
                                     .map(|ssvc_error| {
                                         let path_suffix = ssvc_error.instance_path.join("/");
-                                        ValidationError {
+                                        TestFinding::Error(TestFindingData {
                                             message: ssvc_error.message,
                                             instance_path: format!(
                                                 "/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/{path_suffix}"
                                             ),
-                                        }
+                                        })
                                     })
                                     .collect();
                                 return Err(validation_errors);
@@ -64,72 +64,87 @@ impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::Commo
     fn validate(
         &self,
         doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<ValidationError>> {
+    ) -> Result<(), Vec<TestFinding>> {
         // Use the internal validation function allowing usage of the "test" namespace.
-        test_6_1_48_ssvc_decision_points_internal(doc, ssvc::validation::validate_selection_list_allow_test)
+        test_6_1_48_ssvc_decision_points_internal(doc, true)
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_48 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validation::ValidationError;
+    use crate::validation::{TestFinding, TestFindingData};
 
     #[test]
     fn test_test_6_1_48() {
-        let case_01 = Err(vec![ValidationError {
+        let case_01 = Err(vec![TestFinding::Error(TestFindingData {
             message: "The SSVC decision point 'ssvc::Mission Impact' (version 1.0.0) doesn't have a value with key 'D'"
                 .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
-        }]);
-        let case_02 = Err(vec![ValidationError {
+        })]);
+        let case_02 = Err(vec![TestFinding::Error(TestFindingData {
             message: "Unknown SSVC decision point 'ssvc::SIs' with version '2.0.0'".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
-        }]);
-        let case_03 = Err(vec![ValidationError {
-            message:
-                "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
-                    .to_string(),
-            instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
-        }]);
-        let case_04 = Err(vec![ValidationError {
+        })]);
+        let case_03 = Err(vec![
+            TestFinding::Error(TestFindingData {
+                message:
+                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
+                        .to_string(),
+                instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
+            }),
+            TestFinding::Error(TestFindingData {
+                message:
+                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
+                        .to_string(),
+                instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
+            }),
+            TestFinding::Error(TestFindingData {
+                message:
+                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
+                        .to_string(),
+                instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/3".to_string(),
+            }),
+        ]);
+        let case_04 = Err(vec![TestFinding::Error(TestFindingData {
             message: "Unknown SSVC decision point 'ssvc::SI' with version '1.9.7'".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
-        }]);
-        let case_05 = Err(vec![ValidationError {
+        })]);
+        let case_05 = Err(vec![TestFinding::Error(TestFindingData {
             message:
                 "The SSVC decision point 'cvss::Attack Complexity' (version 3.0.1) doesn't have a value with key 'E'"
                     .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
-        }]);
-        let case_06 = Err(vec![ValidationError {
+        })]);
+        let case_06 = Err(vec![TestFinding::Error(TestFindingData {
             message: "Unknown SSVC decision point 'cvss::E' with version '3.0.1'".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
-        }]);
-        let case_07 = Err(vec![ValidationError {
+        })]);
+        let case_07 = Err(vec![TestFinding::Error ( TestFindingData {
             message: "The SSVC decision point 'ssvc//.example.test#some-private-decision-point-collection::Safety Impact' (version 2.0.0) doesn't have a value with key 'S'".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
-        }]);
-        let case_08 = Err(vec![ValidationError {
+        })]);
+        let case_08 = Err(vec![TestFinding::Error ( TestFindingData {
             message: "The values for SSVC decision point 'ssvc//.example.test$en-GB::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
-        }]);
-        let case_09 = Err(vec![ValidationError {
+        })]);
+        let case_09 = Err(vec![TestFinding::Error ( TestFindingData {
             message: "The values for SSVC decision point 'ssvc//.example.test$en-CA::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
-        }]);
-        let case_21 = Err(vec![ValidationError {
-            message: "Invalid SSVC namespace: Reserved namespace 'invalid' must not be used".to_string(),
+        })]);
+        let case_21 = Err(vec![TestFinding::Error(TestFindingData {
+            message: "Invalid SSVC namespace: Reserved forbidden namespace 'invalid' must not be used".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/namespace".to_string(),
-        }]);
+        })]);
         let case_16 = case_06.clone();
-        let case_19 = Err(vec![ValidationError {
+        let case_19 = Err(vec![TestFinding::Error ( TestFindingData {
             message: "The values for SSVC decision point 'ssvc//.example.test$de-DE::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
-        }]);
+        })]);
 
         // Only CSAF 2.1 has this test, with 20 test cases (6 error cases, 14 success cases)
-        TESTS_2_1.test_6_1_48.expect(
+        TESTS_2_1.test_6_1_48.expect(ExpectedResults {
             case_01,
             case_02,
             case_03,
@@ -140,16 +155,16 @@ mod tests {
             case_08,
             case_09,
             case_21,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
             case_16, // no Exploit Maturity E v3.0.1
-            Ok(()),
-            Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
             case_19, // wrong order of translated keys "R" and "C"
-            Ok(()),
-        );
+            case_31: Ok(()),
+        });
     }
 }

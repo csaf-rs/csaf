@@ -1,20 +1,20 @@
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::{HashMap, HashSet};
 
-fn create_cvss_v2_only_error(instance_path: String) -> ValidationError {
-    ValidationError {
+fn create_cvss_v2_only_error(instance_path: String) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: "Vulnerability uses CVSS v2 as the only scoring system".to_string(),
         instance_path,
-    }
+    })
 }
 
 /// 6.3.1 Use of CVSS v2 as the only Scoring System
 ///
 /// For each vulnerability, tests if in the scores / metrics, CVSS v2 is not the only scoring system used.
-pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // for each vuln
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
@@ -66,42 +66,44 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_1, test_6_3_1_use_of
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_1 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_1 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_3_1() {
         // CSAF 2.0 has 4 test cases and CSAF 2.1 has 8 test cases
-        TESTS_2_0.test_6_3_1.expect(
-            Err(vec![create_cvss_v2_only_error(
+        TESTS_2_0.test_6_3_1.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![create_cvss_v2_only_error(
                 "/vulnerabilities/0/scores/0".to_string(),
             )]),
-            Err(vec![
+            case_02: Err(vec![
                 create_cvss_v2_only_error("/vulnerabilities/0/scores/0".to_string()),
                 create_cvss_v2_only_error("/vulnerabilities/2/scores/0".to_string()),
             ]),
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_3_1.expect(
-            Err(vec![create_cvss_v2_only_error(
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_3_1.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![create_cvss_v2_only_error(
                 "/vulnerabilities/0/metrics/0/content".to_string(),
             )]),
-            Err(vec![
+            case_02: Err(vec![
                 create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
                 create_cvss_v2_only_error("/vulnerabilities/2/metrics/0/content".to_string()),
             ]),
-            Err(vec![
+            case_03: Err(vec![
                 create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
                 create_cvss_v2_only_error("/vulnerabilities/3/metrics/0/content".to_string()),
             ]),
-            Err(vec![create_cvss_v2_only_error(
+            case_04: Err(vec![create_cvss_v2_only_error(
                 "/vulnerabilities/2/metrics/0/content".to_string(),
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

@@ -2,26 +2,26 @@ use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, MetricTrait, ProductStatusGroup, ProductStatusGroupMap, VulnerabilityTrait,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn create_missing_cvss_v4_error(instance_path: String, cvss_versions: &[CsafVulnerabilityMetric]) -> ValidationError {
+fn create_missing_cvss_v4_error(instance_path: String, cvss_versions: &[CsafVulnerabilityMetric]) -> TestFinding {
     let versions_str = cvss_versions
         .iter()
         .map(|v| v.to_string())
         .collect::<Vec<String>>()
         .join(", ");
-    ValidationError {
+    TestFinding::Information(TestFindingData {
         message: format!("The metric contains {versions_str} but does not include a CVSS v4.0 score."),
         instance_path,
-    }
+    })
 }
 
-fn create_affected_product_not_covered_error(product_id: &str, instance_path: String) -> ValidationError {
-    ValidationError {
+fn create_affected_product_not_covered_error(product_id: &str, instance_path: String) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: format!("Affected product {product_id} is not covered by any CVSS score."),
         instance_path,
-    }
+    })
 }
 
 /// 6.3.12 Missing CVSS v4.0
@@ -33,8 +33,8 @@ fn create_affected_product_not_covered_error(product_id: &str, instance_path: St
 /// Affected is not covered by any CVSS object.
 ///
 /// This is essentially two tests at once for each vulnerability. We generate separate error messages for both.
-pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         // collect product IDs covered by any CVSS object across all metrics of this vulnerability
@@ -89,6 +89,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_3_12, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_12 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -161,19 +162,19 @@ mod tests {
         // Vuln 1: with both products covered
         // Vuln 2: with 2 metrics, the second one covering both products
 
-        TESTS_2_1.test_6_3_12.expect(
-            case_01_cvss_v3_1_only,
-            case_02_cvss_v3_0_only,
-            case_03_cvss_v2_only,
-            case_04_multiple_vulns_two_without_cvss_v4,
-            case_05_uncovered_affected,
-            case_s01_last_affected_not_covered,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_3_12.expect(ExpectedResults {
+            case_01: case_01_cvss_v3_1_only,
+            case_02: case_02_cvss_v3_0_only,
+            case_03: case_03_cvss_v2_only,
+            case_04: case_04_multiple_vulns_two_without_cvss_v4,
+            case_05: case_05_uncovered_affected,
+            case_s01: case_s01_last_affected_not_covered,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
     }
 }

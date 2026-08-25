@@ -1,19 +1,19 @@
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use chrono::Utc;
 
 fn create_disclosure_date_newer_than_revision_error(
     disclosure_date: &ValidCsafDateTime,
     newest_revision_date: &ValidCsafDateTime,
     i_v: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Disclosure date ({disclosure_date}) is in the past and newer than the newest revision date ({newest_revision_date})"
         ),
         instance_path: format!("/vulnerabilities/{i_v}/disclosure_date"),
-    }
+    })
 }
 
 /// 6.2.33 Disclosure Date Newer than Revision History
@@ -29,7 +29,7 @@ fn create_disclosure_date_newer_than_revision_error(
 ///
 /// Unlike test 6.1.45, this test applies regardless of TLP/status, and additionally takes the datetime of test
 /// execution into consideration.
-pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // Get sorted revision history and find the newest entry
     let mut revision_history = doc.get_document().get_tracking().aggregate_revision_history();
     revision_history.inplace_sort_by_date_then_number();
@@ -45,7 +45,7 @@ pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> 
     let now = Utc::now();
 
     // Check each vulnerability's disclosure date
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         // If there is a disclosure date
         if let Some(disclosure_date) = vulnerability.get_disclosure_date() {
@@ -84,6 +84,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_33 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -114,13 +115,13 @@ mod tests {
         // Case 12: disclosure_date is definitely not in the past (9999-12-31)
         // Case 13: disclosure_date is earlier than newest revision, with timezones
 
-        TESTS_2_1.test_6_2_33.expect(
-            case_01_disclosure_date_newer_than_newest_rev,
-            case_02_disclosure_date_newer_than_newest_rev_with_timezone,
-            case_03_disclosure_date_newer_than_newest_rev_with_timezone,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_33.expect(ExpectedResults {
+            case_01: case_01_disclosure_date_newer_than_newest_rev,
+            case_02: case_02_disclosure_date_newer_than_newest_rev_with_timezone,
+            case_03: case_03_disclosure_date_newer_than_newest_rev_with_timezone,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

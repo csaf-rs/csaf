@@ -1,0 +1,165 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_security_advisory",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Comprehensive Product Identification Helper Collision Test (6.2.32)",
+    "tracking": {
+      "current_release_date": "2026-07-08T12:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-32-S01",
+      "initial_release_date": "2026-07-08T12:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2026-07-08T12:00:00.000Z",
+          "number": "1",
+          "summary": "Initial"
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "Product X",
+            "product": {
+              "name": "P3 (Branch Collision)",
+              "product_id": "P3",
+              "product_identification_helper": {
+                "cpe": "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+                "hashes": [
+                  {
+                    "file_hashes": [
+                      {
+                        "algorithm": "sha256",
+                        "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                      }
+                    ],
+                    "filename": "f.bin"
+                  }
+                ],
+                "model_numbers": [
+                  "MN-888"
+                ],
+                "purls": [
+                  "pkg:npm/csaf-validator@0.5.1"
+                ],
+                "sbom_urls": [
+                  "https://example.com/sbom.json"
+                ],
+                "serial_numbers": [
+                  "SN-999"
+                ],
+                "skus": [
+                  "SKU-777"
+                ],
+                "x_generic_uris": [
+                  {
+                    "namespace": "https://example.com/ns",
+                    "uri": "urn:test:id"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "category": "vendor",
+        "name": "Vendor A"
+      }
+    ],
+    "full_product_names": [
+      {
+        "name": "P1",
+        "product_id": "P1",
+        "product_identification_helper": {
+          "cpe": "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+          "hashes": [
+            {
+              "file_hashes": [
+                {
+                  "algorithm": "sha256",
+                  "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              ],
+              "filename": "f.bin"
+            }
+          ],
+          "model_numbers": [
+            "MN-888"
+          ],
+          "purls": [
+            "pkg:npm/csaf-validator@0.5.1"
+          ],
+          "sbom_urls": [
+            "https://example.com/sbom.json"
+          ],
+          "serial_numbers": [
+            "SN-999"
+          ],
+          "skus": [
+            "SKU-777"
+          ],
+          "x_generic_uris": [
+            {
+              "namespace": "https://example.com/ns",
+              "uri": "urn:test:id"
+            }
+          ]
+        }
+      },
+      {
+        "name": "P2",
+        "product_id": "P2",
+        "product_identification_helper": {
+          "cpe": "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
+          "hashes": [
+            {
+              "file_hashes": [
+                {
+                  "algorithm": "sha256",
+                  "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              ],
+              "filename": "f.bin"
+            }
+          ],
+          "model_numbers": [
+            "MN-888"
+          ],
+          "purls": [
+            "pkg:npm/csaf-validator@0.5.1"
+          ],
+          "sbom_urls": [
+            "https://example.com/sbom.json"
+          ],
+          "serial_numbers": [
+            "SN-999"
+          ],
+          "skus": [
+            "SKU-777"
+          ],
+          "x_generic_uris": [
+            {
+              "namespace": "https://example.com/ns",
+              "uri": "urn:test:id"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

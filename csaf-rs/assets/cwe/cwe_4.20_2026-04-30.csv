@@ -1,0 +1,969 @@
+5	Draft	J2EE Misconfiguration: Data Transmission Without Encryption	1	Allowed
+6	Incomplete	J2EE Misconfiguration: Insufficient Session-ID Length	1	Allowed
+7	Incomplete	J2EE Misconfiguration: Missing Custom Error Page	1	Allowed
+8	Incomplete	J2EE Misconfiguration: Entity Bean Declared Remote	1	Allowed
+9	Draft	J2EE Misconfiguration: Weak Access Permissions for EJB Methods	1	Allowed
+11	Draft	ASP.NET Misconfiguration: Creating Debug Binary	1	Allowed
+12	Draft	ASP.NET Misconfiguration: Missing Custom Error Page	1	Allowed
+13	Draft	ASP.NET Misconfiguration: Password in Configuration File	1	Allowed
+14	Draft	Compiler Removal of Code to Clear Buffers	1	Allowed
+15	Incomplete	External Control of System or Configuration Setting	1	Allowed
+20	Stable	Improper Input Validation	1	Discouraged
+22	Stable	Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')	1	Allowed-with-Review
+23	Draft	Relative Path Traversal	1	Allowed
+24	Incomplete	Path Traversal: '../filedir'	1	Allowed
+25	Incomplete	Path Traversal: '/../filedir'	1	Allowed
+26	Draft	Path Traversal: '/dir/../filename'	1	Allowed
+27	Draft	Path Traversal: 'dir/../../filename'	1	Allowed
+28	Incomplete	Path Traversal: '..\filedir'	1	Allowed
+29	Incomplete	Path Traversal: '\..\filename'	1	Allowed
+30	Draft	Path Traversal: '\dir\..\filename'	1	Allowed
+31	Draft	Path Traversal: 'dir\..\..\filename'	1	Allowed
+32	Incomplete	Path Traversal: '...' (Triple Dot)	1	Allowed
+33	Incomplete	Path Traversal: '....' (Multiple Dot)	1	Allowed
+34	Incomplete	Path Traversal: '....//'	1	Allowed
+35	Incomplete	Path Traversal: '.../...//'	1	Allowed
+36	Draft	Absolute Path Traversal	1	Allowed
+37	Draft	Path Traversal: '/absolute/pathname/here'	1	Allowed
+38	Draft	Path Traversal: '\absolute\pathname\here'	1	Allowed
+39	Draft	Path Traversal: 'C:dirname'	1	Allowed
+40	Draft	Path Traversal: '\\UNC\share\name\' (Windows UNC Share)	1	Allowed
+41	Incomplete	Improper Resolution of Path Equivalence	1	Allowed
+42	Incomplete	Path Equivalence: 'filename.' (Trailing Dot)	1	Allowed
+43	Incomplete	Path Equivalence: 'filename....' (Multiple Trailing Dot)	1	Allowed
+44	Incomplete	Path Equivalence: 'file.name' (Internal Dot)	1	Allowed
+45	Incomplete	Path Equivalence: 'file...name' (Multiple Internal Dot)	1	Allowed
+46	Incomplete	Path Equivalence: 'filename ' (Trailing Space)	1	Allowed
+47	Incomplete	Path Equivalence: ' filename' (Leading Space)	1	Allowed
+48	Incomplete	Path Equivalence: 'file name' (Internal Whitespace)	1	Allowed
+49	Incomplete	Path Equivalence: 'filename/' (Trailing Slash)	1	Allowed
+50	Incomplete	Path Equivalence: '//multiple/leading/slash'	1	Allowed
+51	Incomplete	Path Equivalence: '/multiple//internal/slash'	1	Allowed
+52	Incomplete	Path Equivalence: '/multiple/trailing/slash//'	1	Allowed
+53	Incomplete	Path Equivalence: '\multiple\\internal\backslash'	1	Allowed
+54	Incomplete	Path Equivalence: 'filedir\' (Trailing Backslash)	1	Allowed
+55	Incomplete	Path Equivalence: '/./' (Single Dot Directory)	1	Allowed
+56	Incomplete	Path Equivalence: 'filedir*' (Wildcard)	1	Allowed
+57	Incomplete	Path Equivalence: 'fakedir/../realdir/filename'	1	Allowed
+58	Incomplete	Path Equivalence: Windows 8.3 Filename	1	Allowed
+59	Draft	Improper Link Resolution Before File Access ('Link Following')	1	Allowed
+61	Incomplete	UNIX Symbolic Link (Symlink) Following	1	Allowed
+62	Incomplete	UNIX Hard Link	1	Allowed
+64	Incomplete	Windows Shortcut Following (.LNK)	1	Allowed
+65	Incomplete	Windows Hard Link	1	Allowed
+66	Draft	Improper Handling of File Names that Identify Virtual Resources	1	Allowed
+67	Incomplete	Improper Handling of Windows Device Names	1	Allowed
+69	Incomplete	Improper Handling of Windows ::DATA Alternate Data Stream	1	Allowed
+71	Deprecated	DEPRECATED: Apple '.DS_Store'	1	Prohibited
+72	Incomplete	Improper Handling of Apple HFS+ Alternate Data Stream Path	1	Allowed
+73	Draft	External Control of File Name or Path	1	Allowed
+74	Incomplete	Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')	1	Discouraged
+75	Draft	Failure to Sanitize Special Elements into a Different Plane (Special Element Injection)	1	Discouraged
+76	Draft	Improper Neutralization of Equivalent Special Elements	1	Allowed
+77	Draft	Improper Neutralization of Special Elements used in a Command ('Command Injection')	1	Allowed-with-Review
+78	Stable	Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')	1	Allowed
+79	Stable	Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')	1	Allowed
+80	Incomplete	Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)	1	Allowed
+81	Incomplete	Improper Neutralization of Script in an Error Message Web Page	1	Allowed
+82	Incomplete	Improper Neutralization of Script in Attributes of IMG Tags in a Web Page	1	Allowed
+83	Draft	Improper Neutralization of Script in Attributes in a Web Page	1	Allowed
+84	Draft	Improper Neutralization of Encoded URI Schemes in a Web Page	1	Allowed
+85	Draft	Doubled Character XSS Manipulations	1	Allowed
+86	Draft	Improper Neutralization of Invalid Characters in Identifiers in Web Pages	1	Allowed
+87	Draft	Improper Neutralization of Alternate XSS Syntax	1	Allowed
+88	Draft	Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')	1	Allowed
+89	Stable	Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')	1	Allowed
+90	Draft	Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')	1	Allowed
+91	Draft	XML Injection (aka Blind XPath Injection)	1	Allowed-with-Review
+92	Deprecated	DEPRECATED: Improper Sanitization of Custom Special Characters	1	Prohibited
+93	Draft	Improper Neutralization of CRLF Sequences ('CRLF Injection')	1	Allowed
+94	Draft	Improper Control of Generation of Code ('Code Injection')	1	Allowed-with-Review
+95	Incomplete	Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')	1	Allowed
+96	Draft	Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')	1	Allowed
+97	Draft	Improper Neutralization of Server-Side Includes (SSI) Within a Web Page	1	Allowed
+98	Draft	Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')	1	Allowed
+99	Draft	Improper Control of Resource Identifiers ('Resource Injection')	1	Allowed-with-Review
+102	Incomplete	Struts: Duplicate Validation Forms	1	Allowed
+103	Draft	Struts: Incomplete validate() Method Definition	1	Allowed
+104	Draft	Struts: Form Bean Does Not Extend Validation Class	1	Allowed
+105	Draft	Struts: Form Field Without Validator	1	Allowed
+106	Draft	Struts: Plug-in Framework not in Use	1	Allowed
+107	Draft	Struts: Unused Validation Form	1	Allowed
+108	Incomplete	Struts: Unvalidated Action Form	1	Allowed
+109	Draft	Struts: Validator Turned Off	1	Allowed
+110	Draft	Struts: Validator Without Form Field	1	Allowed
+111	Draft	Direct Use of Unsafe JNI	1	Allowed
+112	Draft	Missing XML Validation	1	Allowed
+113	Incomplete	Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')	1	Allowed
+114	Incomplete	Process Control	1	Discouraged
+115	Incomplete	Misinterpretation of Input	1	Allowed
+116	Draft	Improper Encoding or Escaping of Output	1	Allowed-with-Review
+117	Draft	Improper Output Neutralization for Logs	1	Allowed
+118	Incomplete	Incorrect Access of Indexable Resource ('Range Error')	1	Discouraged
+119	Stable	Improper Restriction of Operations within the Bounds of a Memory Buffer	1	Discouraged
+120	Incomplete	Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')	1	Allowed-with-Review
+121	Draft	Stack-based Buffer Overflow	1	Allowed
+122	Draft	Heap-based Buffer Overflow	1	Allowed
+123	Draft	Write-what-where Condition	1	Allowed
+124	Incomplete	Buffer Underwrite ('Buffer Underflow')	1	Allowed
+125	Draft	Out-of-bounds Read	1	Allowed
+126	Draft	Buffer Over-read	1	Allowed
+127	Draft	Buffer Under-read	1	Allowed
+128	Incomplete	Wrap-around Error	1	Allowed
+129	Draft	Improper Validation of Array Index	1	Allowed
+130	Incomplete	Improper Handling of Length Parameter Inconsistency	1	Allowed
+131	Draft	Incorrect Calculation of Buffer Size	1	Allowed
+132	Deprecated	DEPRECATED: Miscalculated Null Termination	1	Prohibited
+134	Draft	Use of Externally-Controlled Format String	1	Allowed
+135	Draft	Incorrect Calculation of Multi-Byte String Length	1	Allowed
+138	Draft	Improper Neutralization of Special Elements	1	Discouraged
+140	Draft	Improper Neutralization of Delimiters	1	Allowed
+141	Draft	Improper Neutralization of Parameter/Argument Delimiters	1	Allowed
+142	Draft	Improper Neutralization of Value Delimiters	1	Allowed
+143	Draft	Improper Neutralization of Record Delimiters	1	Allowed
+144	Draft	Improper Neutralization of Line Delimiters	1	Allowed
+145	Incomplete	Improper Neutralization of Section Delimiters	1	Allowed
+146	Incomplete	Improper Neutralization of Expression/Command Delimiters	1	Allowed
+147	Draft	Improper Neutralization of Input Terminators	1	Allowed
+148	Draft	Improper Neutralization of Input Leaders	1	Allowed
+149	Draft	Improper Neutralization of Quoting Syntax	1	Allowed
+150	Incomplete	Improper Neutralization of Escape, Meta, or Control Sequences	1	Allowed
+151	Draft	Improper Neutralization of Comment Delimiters	1	Allowed
+152	Draft	Improper Neutralization of Macro Symbols	1	Allowed
+153	Draft	Improper Neutralization of Substitution Characters	1	Allowed
+154	Incomplete	Improper Neutralization of Variable Name Delimiters	1	Allowed
+155	Draft	Improper Neutralization of Wildcards or Matching Symbols	1	Allowed
+156	Draft	Improper Neutralization of Whitespace	1	Allowed
+157	Draft	Failure to Sanitize Paired Delimiters	1	Allowed
+158	Incomplete	Improper Neutralization of Null Byte or NUL Character	1	Allowed
+159	Draft	Improper Handling of Invalid Use of Special Elements	1	Allowed-with-Review
+160	Incomplete	Improper Neutralization of Leading Special Elements	1	Allowed
+161	Incomplete	Improper Neutralization of Multiple Leading Special Elements	1	Allowed
+162	Incomplete	Improper Neutralization of Trailing Special Elements	1	Allowed
+163	Incomplete	Improper Neutralization of Multiple Trailing Special Elements	1	Allowed
+164	Incomplete	Improper Neutralization of Internal Special Elements	1	Allowed
+165	Incomplete	Improper Neutralization of Multiple Internal Special Elements	1	Allowed
+166	Draft	Improper Handling of Missing Special Element	1	Allowed
+167	Draft	Improper Handling of Additional Special Element	1	Allowed
+168	Draft	Improper Handling of Inconsistent Special Elements	1	Allowed
+170	Incomplete	Improper Null Termination	1	Allowed
+172	Draft	Encoding Error	1	Allowed-with-Review
+173	Draft	Improper Handling of Alternate Encoding	1	Allowed
+174	Draft	Double Decoding of the Same Data	1	Allowed
+175	Draft	Improper Handling of Mixed Encoding	1	Allowed
+176	Draft	Improper Handling of Unicode Encoding	1	Allowed
+177	Draft	Improper Handling of URL Encoding (Hex Encoding)	1	Allowed
+178	Incomplete	Improper Handling of Case Sensitivity	1	Allowed
+179	Incomplete	Incorrect Behavior Order: Early Validation	1	Allowed
+180	Draft	Incorrect Behavior Order: Validate Before Canonicalize	1	Allowed
+181	Draft	Incorrect Behavior Order: Validate Before Filter	1	Allowed
+182	Draft	Collapse of Data into Unsafe Value	1	Allowed
+183	Draft	Permissive List of Allowed Inputs	1	Allowed
+184	Draft	Incomplete List of Disallowed Inputs	1	Allowed
+185	Draft	Incorrect Regular Expression	1	Allowed-with-Review
+186	Draft	Overly Restrictive Regular Expression	1	Allowed
+187	Incomplete	Partial String Comparison	1	Allowed
+188	Draft	Reliance on Data/Memory Layout	1	Allowed
+190	Stable	Integer Overflow or Wraparound	1	Allowed
+191	Draft	Integer Underflow (Wrap or Wraparound)	1	Allowed
+192	Incomplete	Integer Coercion Error	1	Allowed
+193	Draft	Off-by-one Error	1	Allowed
+194	Incomplete	Unexpected Sign Extension	1	Allowed
+195	Draft	Signed to Unsigned Conversion Error	1	Allowed
+196	Draft	Unsigned to Signed Conversion Error	1	Allowed
+197	Incomplete	Numeric Truncation Error	1	Allowed
+198	Draft	Use of Incorrect Byte Ordering	1	Allowed
+200	Draft	Exposure of Sensitive Information to an Unauthorized Actor	1	Discouraged
+201	Draft	Insertion of Sensitive Information Into Sent Data	1	Allowed
+202	Draft	Exposure of Sensitive Information Through Data Queries	1	Allowed
+203	Incomplete	Observable Discrepancy	1	Allowed
+204	Incomplete	Observable Response Discrepancy	1	Allowed
+205	Incomplete	Observable Behavioral Discrepancy	1	Allowed
+206	Incomplete	Observable Internal Behavioral Discrepancy	1	Allowed
+207	Draft	Observable Behavioral Discrepancy With Equivalent Products	1	Allowed
+208	Incomplete	Observable Timing Discrepancy	1	Allowed
+209	Draft	Generation of Error Message Containing Sensitive Information	1	Allowed
+210	Draft	Self-generated Error Message Containing Sensitive Information	1	Allowed
+211	Incomplete	Externally-Generated Error Message Containing Sensitive Information	1	Allowed
+212	Incomplete	Improper Removal of Sensitive Information Before Storage or Transfer	1	Allowed
+213	Draft	Exposure of Sensitive Information Due to Incompatible Policies	1	Allowed
+214	Incomplete	Invocation of Process Using Visible Sensitive Information	1	Allowed
+215	Draft	Insertion of Sensitive Information Into Debugging Code	1	Allowed
+216	Deprecated	DEPRECATED: Containment Errors (Container Errors)	1	Prohibited
+217	Deprecated	DEPRECATED: Failure to Protect Stored Data from Modification	1	Prohibited
+218	Deprecated	DEPRECATED: Failure to provide confidentiality for stored data	1	Prohibited
+219	Draft	Storage of File with Sensitive Data Under Web Root	1	Allowed
+220	Draft	Storage of File With Sensitive Data Under FTP Root	1	Allowed
+221	Incomplete	Information Loss or Omission	1	Allowed-with-Review
+222	Draft	Truncation of Security-relevant Information	1	Allowed
+223	Draft	Omission of Security-relevant Information	1	Allowed
+224	Incomplete	Obscured Security-relevant Information by Alternate Name	1	Allowed
+225	Deprecated	DEPRECATED: General Information Management Problems	1	Prohibited
+226	Draft	Sensitive Information in Resource Not Removed Before Reuse	1	Allowed
+228	Incomplete	Improper Handling of Syntactically Invalid Structure	1	Allowed-with-Review
+229	Incomplete	Improper Handling of Values	1	Allowed
+230	Draft	Improper Handling of Missing Values	1	Allowed
+231	Draft	Improper Handling of Extra Values	1	Allowed
+232	Draft	Improper Handling of Undefined Values	1	Allowed
+233	Incomplete	Improper Handling of Parameters	1	Allowed
+234	Incomplete	Failure to Handle Missing Parameter	1	Discouraged
+235	Draft	Improper Handling of Extra Parameters	1	Allowed
+236	Draft	Improper Handling of Undefined Parameters	1	Allowed
+237	Incomplete	Improper Handling of Structural Elements	1	Allowed
+238	Draft	Improper Handling of Incomplete Structural Elements	1	Allowed
+239	Draft	Failure to Handle Incomplete Element	1	Allowed
+240	Draft	Improper Handling of Inconsistent Structural Elements	1	Allowed
+241	Draft	Improper Handling of Unexpected Data Type	1	Allowed
+242	Draft	Use of Inherently Dangerous Function	1	Allowed
+243	Draft	Creation of chroot Jail Without Changing Working Directory	1	Allowed
+244	Draft	Improper Clearing of Heap Memory Before Release ('Heap Inspection')	1	Allowed
+245	Draft	J2EE Bad Practices: Direct Management of Connections	1	Allowed
+246	Draft	J2EE Bad Practices: Direct Use of Sockets	1	Allowed
+247	Deprecated	DEPRECATED: Reliance on DNS Lookups in a Security Decision	1	Prohibited
+248	Draft	Uncaught Exception	1	Allowed
+249	Deprecated	DEPRECATED: Often Misused: Path Manipulation	1	Prohibited
+250	Draft	Execution with Unnecessary Privileges	1	Allowed
+252	Draft	Unchecked Return Value	1	Allowed
+253	Incomplete	Incorrect Check of Function Return Value	1	Allowed
+256	Incomplete	Plaintext Storage of a Password	1	Allowed
+257	Incomplete	Storing Passwords in a Recoverable Format	1	Allowed
+258	Incomplete	Empty Password in Configuration File	1	Allowed
+259	Draft	Use of Hard-coded Password	1	Allowed
+260	Incomplete	Password in Configuration File	1	Allowed
+261	Incomplete	Weak Encoding for Password	1	Allowed
+262	Draft	Not Using Password Aging	1	Allowed
+263	Draft	Password Aging with Long Expiration	1	Discouraged
+266	Draft	Incorrect Privilege Assignment	1	Allowed
+267	Incomplete	Privilege Defined With Unsafe Actions	1	Allowed
+268	Draft	Privilege Chaining	1	Allowed
+269	Draft	Improper Privilege Management	1	Discouraged
+270	Draft	Privilege Context Switching Error	1	Allowed
+271	Incomplete	Privilege Dropping / Lowering Errors	1	Allowed-with-Review
+272	Incomplete	Least Privilege Violation	1	Allowed
+273	Incomplete	Improper Check for Dropped Privileges	1	Allowed
+274	Draft	Improper Handling of Insufficient Privileges	1	Discouraged
+276	Draft	Incorrect Default Permissions	1	Allowed
+277	Draft	Insecure Inherited Permissions	1	Allowed
+278	Incomplete	Insecure Preserved Inherited Permissions	1	Allowed
+279	Draft	Incorrect Execution-Assigned Permissions	1	Allowed
+280	Draft	Improper Handling of Insufficient Permissions or Privileges	1	Allowed
+281	Draft	Improper Preservation of Permissions	1	Allowed
+282	Draft	Improper Ownership Management	1	Allowed-with-Review
+283	Draft	Unverified Ownership	1	Allowed
+284	Incomplete	Improper Access Control	1	Discouraged
+285	Draft	Improper Authorization	1	Discouraged
+286	Incomplete	Incorrect User Management	1	Allowed-with-Review
+287	Draft	Improper Authentication	1	Discouraged
+288	Incomplete	Authentication Bypass Using an Alternate Path or Channel	1	Allowed
+289	Incomplete	Authentication Bypass by Alternate Name	1	Allowed
+290	Incomplete	Authentication Bypass by Spoofing	1	Allowed
+291	Incomplete	Reliance on IP Address for Authentication	1	Allowed
+292	Deprecated	DEPRECATED: Trusting Self-reported DNS Name	1	Prohibited
+293	Draft	Using Referer Field for Authentication	1	Allowed
+294	Incomplete	Authentication Bypass by Capture-replay	1	Allowed
+295	Draft	Improper Certificate Validation	1	Allowed
+296	Draft	Improper Following of a Certificate's Chain of Trust	1	Allowed
+297	Incomplete	Improper Validation of Certificate with Host Mismatch	1	Allowed
+298	Draft	Improper Validation of Certificate Expiration	1	Allowed
+299	Draft	Improper Check for Certificate Revocation	1	Allowed
+300	Draft	Channel Accessible by Non-Endpoint	1	Discouraged
+301	Draft	Reflection Attack in an Authentication Protocol	1	Allowed
+302	Incomplete	Authentication Bypass by Assumed-Immutable Data	1	Allowed
+303	Draft	Incorrect Implementation of Authentication Algorithm	1	Allowed
+304	Draft	Missing Critical Step in Authentication	1	Allowed
+305	Draft	Authentication Bypass by Primary Weakness	1	Allowed
+306	Draft	Missing Authentication for Critical Function	1	Allowed
+307	Draft	Improper Restriction of Excessive Authentication Attempts	1	Allowed
+308	Draft	Use of Single-factor Authentication	1	Allowed
+309	Draft	Use of Password System for Primary Authentication	1	Allowed
+311	Draft	Missing Encryption of Sensitive Data	1	Discouraged
+312	Draft	Cleartext Storage of Sensitive Information	1	Allowed
+313	Draft	Cleartext Storage in a File or on Disk	1	Allowed
+314	Draft	Cleartext Storage in the Registry	1	Allowed
+315	Draft	Cleartext Storage of Sensitive Information in a Cookie	1	Allowed
+316	Draft	Cleartext Storage of Sensitive Information in Memory	1	Allowed
+317	Draft	Cleartext Storage of Sensitive Information in GUI	1	Allowed
+318	Draft	Cleartext Storage of Sensitive Information in Executable	1	Allowed
+319	Draft	Cleartext Transmission of Sensitive Information	1	Allowed
+321	Draft	Use of Hard-coded Cryptographic Key	1	Allowed
+322	Draft	Key Exchange without Entity Authentication	1	Allowed
+323	Incomplete	Reusing a Nonce, Key Pair in Encryption	1	Allowed
+324	Draft	Use of a Key Past its Expiration Date	1	Allowed
+325	Draft	Missing Cryptographic Step	1	Allowed
+326	Draft	Inadequate Encryption Strength	1	Allowed-with-Review
+327	Draft	Use of a Broken or Risky Cryptographic Algorithm	1	Allowed-with-Review
+328	Draft	Use of Weak Hash	1	Allowed
+329	Draft	Generation of Predictable IV with CBC Mode	1	Allowed
+330	Stable	Use of Insufficiently Random Values	1	Discouraged
+331	Draft	Insufficient Entropy	1	Allowed
+332	Draft	Insufficient Entropy in PRNG	1	Allowed
+333	Draft	Improper Handling of Insufficient Entropy in TRNG	1	Allowed
+334	Draft	Small Space of Random Values	1	Allowed
+335	Draft	Incorrect Usage of Seeds in Pseudo-Random Number Generator (PRNG)	1	Allowed
+336	Draft	Same Seed in Pseudo-Random Number Generator (PRNG)	1	Allowed
+337	Draft	Predictable Seed in Pseudo-Random Number Generator (PRNG)	1	Allowed
+338	Draft	Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)	1	Allowed
+339	Draft	Small Seed Space in PRNG	1	Allowed
+340	Incomplete	Generation of Predictable Numbers or Identifiers	1	Allowed-with-Review
+341	Draft	Predictable from Observable State	1	Allowed
+342	Draft	Predictable Exact Value from Previous Values	1	Allowed
+343	Draft	Predictable Value Range from Previous Values	1	Allowed
+344	Draft	Use of Invariant Value in Dynamically Changing Context	1	Allowed
+345	Draft	Insufficient Verification of Data Authenticity	1	Discouraged
+346	Draft	Origin Validation Error	1	Allowed-with-Review
+347	Draft	Improper Verification of Cryptographic Signature	1	Allowed
+348	Draft	Use of Less Trusted Source	1	Allowed
+349	Draft	Acceptance of Extraneous Untrusted Data With Trusted Data	1	Allowed
+350	Draft	Reliance on Reverse DNS Resolution for a Security-Critical Action	1	Allowed
+351	Draft	Insufficient Type Distinction	1	Allowed
+352	Stable	Cross-Site Request Forgery (CSRF)	1	Allowed
+353	Draft	Missing Support for Integrity Check	1	Allowed
+354	Draft	Improper Validation of Integrity Check Value	1	Allowed
+356	Incomplete	Product UI does not Warn User of Unsafe Actions	1	Allowed
+357	Draft	Insufficient UI Warning of Dangerous Operations	1	Allowed
+358	Draft	Improperly Implemented Security Check for Standard	1	Allowed
+359	Incomplete	Exposure of Private Personal Information to an Unauthorized Actor	1	Allowed
+360	Incomplete	Trust of System Event Data	1	Allowed
+362	Draft	Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')	1	Allowed-with-Review
+363	Draft	Race Condition Enabling Link Following	1	Allowed
+364	Incomplete	Signal Handler Race Condition	1	Allowed
+365	Deprecated	DEPRECATED: Race Condition in Switch	1	Prohibited
+366	Draft	Race Condition within a Thread	1	Allowed
+367	Incomplete	Time-of-check Time-of-use (TOCTOU) Race Condition	1	Allowed
+368	Draft	Context Switching Race Condition	1	Allowed
+369	Draft	Divide By Zero	1	Allowed
+370	Draft	Missing Check for Certificate Revocation after Initial Check	1	Allowed
+372	Draft	Incomplete Internal State Distinction	1	Discouraged
+373	Deprecated	DEPRECATED: State Synchronization Error	1	Prohibited
+374	Draft	Passing Mutable Objects to an Untrusted Method	1	Allowed
+375	Draft	Returning a Mutable Object to an Untrusted Caller	1	Allowed
+377	Incomplete	Insecure Temporary File	1	Allowed-with-Review
+378	Draft	Creation of Temporary File With Insecure Permissions	1	Allowed
+379	Incomplete	Creation of Temporary File in Directory with Insecure Permissions	1	Allowed
+382	Draft	J2EE Bad Practices: Use of System.exit()	1	Allowed
+383	Draft	J2EE Bad Practices: Direct Use of Threads	1	Allowed
+384	Incomplete	Session Fixation	1	Allowed
+385	Incomplete	Covert Timing Channel	1	Allowed
+386	Draft	Symbolic Name not Mapping to Correct Object	1	Allowed
+390	Draft	Detection of Error Condition Without Action	1	Allowed
+391	Incomplete	Unchecked Error Condition	1	Prohibited
+392	Draft	Missing Report of Error Condition	1	Allowed
+393	Draft	Return of Wrong Status Code	1	Allowed
+394	Draft	Unexpected Status Code or Return Value	1	Allowed
+395	Draft	Use of NullPointerException Catch to Detect NULL Pointer Dereference	1	Allowed
+396	Draft	Declaration of Catch for Generic Exception	1	Allowed
+397	Draft	Declaration of Throws for Generic Exception	1	Allowed
+400	Draft	Uncontrolled Resource Consumption	1	Discouraged
+401	Draft	Missing Release of Memory after Effective Lifetime	1	Allowed
+402	Draft	Transmission of Private Resources into a New Sphere ('Resource Leak')	1	Allowed-with-Review
+403	Draft	Exposure of File Descriptor to Unintended Control Sphere ('File Descriptor Leak')	1	Allowed
+404	Draft	Improper Resource Shutdown or Release	1	Allowed-with-Review
+405	Incomplete	Asymmetric Resource Consumption (Amplification)	1	Allowed-with-Review
+406	Incomplete	Insufficient Control of Network Message Volume (Network Amplification)	1	Allowed-with-Review
+407	Incomplete	Inefficient Algorithmic Complexity	1	Allowed-with-Review
+408	Draft	Incorrect Behavior Order: Early Amplification	1	Allowed
+409	Incomplete	Improper Handling of Highly Compressed Data (Data Amplification)	1	Allowed
+410	Incomplete	Insufficient Resource Pool	1	Allowed
+412	Incomplete	Unrestricted Externally Accessible Lock	1	Allowed
+413	Draft	Improper Resource Locking	1	Allowed
+414	Draft	Missing Lock Check	1	Allowed
+415	Draft	Double Free	1	Allowed
+416	Stable	Use After Free	1	Allowed
+419	Draft	Unprotected Primary Channel	1	Allowed
+420	Draft	Unprotected Alternate Channel	1	Allowed
+421	Draft	Race Condition During Access to Alternate Channel	1	Allowed
+422	Draft	Unprotected Windows Messaging Channel ('Shatter')	1	Allowed
+423	Deprecated	DEPRECATED: Proxied Trusted Channel	1	Prohibited
+424	Draft	Improper Protection of Alternate Path	1	Allowed-with-Review
+425	Incomplete	Direct Request ('Forced Browsing')	1	Allowed
+426	Stable	Untrusted Search Path	1	Allowed-with-Review
+427	Draft	Uncontrolled Search Path Element	1	Allowed-with-Review
+428	Draft	Unquoted Search Path or Element	1	Allowed
+430	Incomplete	Deployment of Wrong Handler	1	Allowed
+431	Draft	Missing Handler	1	Allowed
+432	Draft	Dangerous Signal Handler not Disabled During Sensitive Operations	1	Allowed
+433	Incomplete	Unparsed Raw Web Content Delivery	1	Allowed
+434	Draft	Unrestricted Upload of File with Dangerous Type	1	Allowed
+435	Draft	Improper Interaction Between Multiple Correctly-Behaving Entities	1	Discouraged
+436	Incomplete	Interpretation Conflict	1	Allowed-with-Review
+437	Incomplete	Incomplete Model of Endpoint Features	1	Allowed
+439	Draft	Behavioral Change in New Version or Environment	1	Allowed
+440	Draft	Expected Behavior Violation	1	Allowed
+441	Draft	Unintended Proxy or Intermediary ('Confused Deputy')	1	Allowed-with-Review
+443	Deprecated	DEPRECATED: HTTP response splitting	1	Prohibited
+444	Incomplete	Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')	1	Allowed
+446	Incomplete	UI Discrepancy for Security Feature	1	Allowed-with-Review
+447	Draft	Unimplemented or Unsupported Feature in UI	1	Allowed
+448	Draft	Obsolete Feature in UI	1	Allowed
+449	Incomplete	The UI Performs the Wrong Action	1	Allowed
+450	Draft	Multiple Interpretations of UI Input	1	Allowed
+451	Draft	User Interface (UI) Misrepresentation of Critical Information	1	Allowed-with-Review
+453	Draft	Insecure Default Variable Initialization	1	Allowed
+454	Draft	External Initialization of Trusted Variables or Data Stores	1	Allowed
+455	Draft	Non-exit on Failed Initialization	1	Allowed
+456	Draft	Missing Initialization of a Variable	1	Allowed
+457	Draft	Use of Uninitialized Variable	1	Allowed
+458	Deprecated	DEPRECATED: Incorrect Initialization	1	Prohibited
+459	Draft	Incomplete Cleanup	1	Allowed
+460	Draft	Improper Cleanup on Thrown Exception	1	Allowed
+462	Incomplete	Duplicate Key in Associative List (Alist)	1	Allowed
+463	Incomplete	Deletion of Data Structure Sentinel	1	Allowed
+464	Incomplete	Addition of Data Structure Sentinel	1	Allowed
+466	Draft	Return of Pointer Value Outside of Expected Range	1	Allowed
+467	Draft	Use of sizeof() on a Pointer Type	1	Allowed
+468	Incomplete	Incorrect Pointer Scaling	1	Allowed
+469	Draft	Use of Pointer Subtraction to Determine Size	1	Allowed
+470	Draft	Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')	1	Allowed
+471	Draft	Modification of Assumed-Immutable Data (MAID)	1	Allowed
+472	Draft	External Control of Assumed-Immutable Web Parameter	1	Allowed
+473	Draft	PHP External Variable Modification	1	Allowed
+474	Draft	Use of Function with Inconsistent Implementations	1	Allowed
+475	Incomplete	Undefined Behavior for Input to API	1	Allowed
+476	Stable	NULL Pointer Dereference	1	Allowed
+477	Draft	Use of Obsolete Function	1	Allowed
+478	Draft	Missing Default Case in Multiple Condition Expression	1	Allowed
+479	Draft	Signal Handler Use of a Non-reentrant Function	1	Allowed
+480	Draft	Use of Incorrect Operator	1	Allowed
+481	Draft	Assigning instead of Comparing	1	Allowed
+482	Draft	Comparing instead of Assigning	1	Allowed
+483	Draft	Incorrect Block Delimitation	1	Allowed
+484	Draft	Omitted Break Statement in Switch	1	Allowed
+486	Draft	Comparison of Classes by Name	1	Allowed
+487	Incomplete	Reliance on Package-level Scope	1	Allowed
+488	Draft	Exposure of Data Element to Wrong Session	1	Allowed
+489	Draft	Active Debug Code	1	Allowed
+491	Draft	Public cloneable() Method Without Final ('Object Hijack')	1	Allowed
+492	Draft	Use of Inner Class Containing Sensitive Data	1	Allowed
+493	Draft	Critical Public Variable Without Final Modifier	1	Allowed
+494	Draft	Download of Code Without Integrity Check	1	Allowed
+495	Draft	Private Data Structure Returned From A Public Method	1	Allowed
+496	Incomplete	Public Data Assigned to Private Array-Typed Field	1	Allowed
+497	Incomplete	Exposure of Sensitive System Information to an Unauthorized Control Sphere	1	Allowed
+498	Draft	Cloneable Class Containing Sensitive Information	1	Allowed
+499	Draft	Serializable Class Containing Sensitive Data	1	Allowed
+500	Draft	Public Static Field Not Marked Final	1	Allowed
+501	Draft	Trust Boundary Violation	1	Allowed
+502	Draft	Deserialization of Untrusted Data	1	Allowed
+506	Incomplete	Embedded Malicious Code	1	Allowed-with-Review
+507	Incomplete	Trojan Horse	1	Allowed
+508	Incomplete	Non-Replicating Malicious Code	1	Allowed
+509	Incomplete	Replicating Malicious Code (Virus or Worm)	1	Allowed
+510	Incomplete	Trapdoor	1	Allowed
+511	Incomplete	Logic/Time Bomb	1	Allowed
+512	Incomplete	Spyware	1	Allowed
+514	Incomplete	Covert Channel	1	Allowed-with-Review
+515	Incomplete	Covert Storage Channel	1	Allowed
+516	Deprecated	DEPRECATED: Covert Timing Channel	1	Prohibited
+520	Incomplete	.NET Misconfiguration: Use of Impersonation	1	Allowed
+521	Draft	Weak Password Requirements	1	Allowed
+522	Incomplete	Insufficiently Protected Credentials	1	Allowed-with-Review
+523	Incomplete	Unprotected Transport of Credentials	1	Allowed
+524	Incomplete	Use of Cache Containing Sensitive Information	1	Allowed
+525	Incomplete	Use of Web Browser Cache Containing Sensitive Information	1	Allowed
+526	Incomplete	Cleartext Storage of Sensitive Information in an Environment Variable	1	Allowed
+527	Incomplete	Exposure of Version-Control Repository to an Unauthorized Control Sphere	1	Allowed
+528	Draft	Exposure of Core Dump File to an Unauthorized Control Sphere	1	Allowed
+529	Incomplete	Exposure of Access Control List Files to an Unauthorized Control Sphere	1	Allowed
+530	Incomplete	Exposure of Backup File to an Unauthorized Control Sphere	1	Allowed
+531	Incomplete	Inclusion of Sensitive Information in Test Code	1	Allowed
+532	Incomplete	Insertion of Sensitive Information into Log File	1	Allowed
+533	Deprecated	DEPRECATED: Information Exposure Through Server Log Files	1	Prohibited
+534	Deprecated	DEPRECATED: Information Exposure Through Debug Log Files	1	Prohibited
+535	Incomplete	Exposure of Information Through Shell Error Message	1	Allowed
+536	Incomplete	Servlet Runtime Error Message Containing Sensitive Information	1	Allowed
+537	Incomplete	Java Runtime Error Message Containing Sensitive Information	1	Allowed
+538	Draft	Insertion of Sensitive Information into Externally-Accessible File or Directory	1	Allowed
+539	Incomplete	Use of Persistent Cookies Containing Sensitive Information	1	Allowed
+540	Incomplete	Inclusion of Sensitive Information in Source Code	1	Allowed
+541	Incomplete	Inclusion of Sensitive Information in an Include File	1	Allowed
+542	Deprecated	DEPRECATED: Information Exposure Through Cleanup Log Files	1	Prohibited
+543	Incomplete	Use of Singleton Pattern Without Synchronization in a Multithreaded Context	1	Allowed
+544	Draft	Missing Standardized Error Handling Mechanism	1	Allowed
+545	Deprecated	DEPRECATED: Use of Dynamic Class Loading	1	Prohibited
+546	Draft	Suspicious Comment	1	Allowed
+547	Draft	Use of Hard-coded, Security-relevant Constants	1	Allowed
+548	Draft	Exposure of Information Through Directory Listing	1	Allowed
+549	Draft	Missing Password Field Masking	1	Allowed
+550	Incomplete	Server-generated Error Message Containing Sensitive Information	1	Allowed
+551	Incomplete	Incorrect Behavior Order: Authorization Before Parsing and Canonicalization	1	Allowed
+552	Draft	Files or Directories Accessible to External Parties	1	Allowed
+553	Incomplete	Command Shell in Externally Accessible Directory	1	Allowed
+554	Draft	ASP.NET Misconfiguration: Not Using Input Validation Framework	1	Allowed
+555	Draft	J2EE Misconfiguration: Plaintext Password in Configuration File	1	Allowed
+556	Incomplete	ASP.NET Misconfiguration: Use of Identity Impersonation	1	Allowed
+558	Draft	Use of getlogin() in Multithreaded Application	1	Allowed
+560	Draft	Use of umask() with chmod-style Argument	1	Allowed
+561	Draft	Dead Code	1	Allowed
+562	Draft	Return of Stack Variable Address	1	Allowed
+563	Draft	Assignment to Variable without Use	1	Allowed
+564	Incomplete	SQL Injection: Hibernate	1	Allowed
+565	Incomplete	Reliance on Cookies without Validation and Integrity Checking	1	Allowed
+566	Incomplete	Authorization Bypass Through User-Controlled SQL Primary Key	1	Allowed
+567	Draft	Unsynchronized Access to Shared Data in a Multithreaded Context	1	Allowed
+568	Draft	finalize() Method Without super.finalize()	1	Allowed
+570	Draft	Expression is Always False	1	Allowed
+571	Draft	Expression is Always True	1	Allowed
+572	Draft	Call to Thread run() instead of start()	1	Allowed
+573	Draft	Improper Following of Specification by Caller	1	Allowed-with-Review
+574	Draft	EJB Bad Practices: Use of Synchronization Primitives	1	Allowed
+575	Draft	EJB Bad Practices: Use of AWT Swing	1	Allowed
+576	Draft	EJB Bad Practices: Use of Java I/O	1	Allowed
+577	Draft	EJB Bad Practices: Use of Sockets	1	Allowed
+578	Draft	EJB Bad Practices: Use of Class Loader	1	Allowed
+579	Draft	J2EE Bad Practices: Non-serializable Object Stored in Session	1	Allowed
+580	Draft	clone() Method Without super.clone()	1	Allowed
+581	Draft	Object Model Violation: Just One of Equals and Hashcode Defined	1	Allowed
+582	Draft	Array Declared Public, Final, and Static	1	Allowed
+583	Incomplete	finalize() Method Declared Public	1	Allowed
+584	Draft	Return Inside Finally Block	1	Allowed
+585	Draft	Empty Synchronized Block	1	Allowed
+586	Draft	Explicit Call to Finalize()	1	Allowed
+587	Draft	Assignment of a Fixed Address to a Pointer	1	Allowed
+588	Incomplete	Attempt to Access Child of a Non-structure Pointer	1	Allowed
+589	Incomplete	Call to Non-ubiquitous API	1	Allowed
+590	Incomplete	Free of Memory not on the Heap	1	Allowed
+591	Draft	Sensitive Data Storage in Improperly Locked Memory	1	Allowed
+592	Deprecated	DEPRECATED: Authentication Bypass Issues	1	Prohibited
+593	Draft	Authentication Bypass: OpenSSL CTX Object Modified after SSL Objects are Created	1	Allowed
+594	Incomplete	J2EE Framework: Saving Unserializable Objects to Disk	1	Allowed
+595	Incomplete	Comparison of Object References Instead of Object Contents	1	Allowed
+596	Deprecated	DEPRECATED: Incorrect Semantic Object Comparison	1	Prohibited
+597	Draft	Use of Wrong Operator in String Comparison	1	Allowed
+598	Draft	Use of HTTP Request With Sensitive Query String	1	Allowed
+599	Incomplete	Missing Validation of OpenSSL Certificate	1	Allowed
+600	Draft	Uncaught Exception in Servlet	1	Allowed
+601	Draft	URL Redirection to Untrusted Site ('Open Redirect')	1	Allowed
+602	Draft	Client-Side Enforcement of Server-Side Security	1	Allowed-with-Review
+603	Draft	Use of Client-Side Authentication	1	Allowed
+605	Draft	Multiple Binds to the Same Port	1	Allowed
+606	Draft	Unchecked Input for Loop Condition	1	Allowed
+607	Draft	Public Static Final Field References Mutable Object	1	Allowed
+608	Draft	Struts: Non-private Field in ActionForm Class	1	Allowed
+609	Draft	Double-Checked Locking	1	Allowed
+610	Draft	Externally Controlled Reference to a Resource in Another Sphere	1	Discouraged
+611	Draft	Improper Restriction of XML External Entity Reference	1	Allowed
+612	Draft	Improper Authorization of Index Containing Sensitive Information	1	Allowed
+613	Incomplete	Insufficient Session Expiration	1	Allowed-with-Review
+614	Draft	Sensitive Cookie in HTTPS Session Without 'Secure' Attribute	1	Allowed
+615	Incomplete	Inclusion of Sensitive Information in Source Code Comments	1	Allowed
+616	Incomplete	Incomplete Identification of Uploaded File Variables (PHP)	1	Allowed
+617	Draft	Reachable Assertion	1	Allowed
+618	Incomplete	Exposed Unsafe ActiveX Method	1	Allowed
+619	Incomplete	Dangling Database Cursor ('Cursor Injection')	1	Allowed
+620	Draft	Unverified Password Change	1	Allowed
+621	Incomplete	Variable Extraction Error	1	Allowed
+622	Draft	Improper Validation of Function Hook Arguments	1	Allowed
+623	Draft	Unsafe ActiveX Control Marked Safe For Scripting	1	Allowed
+624	Incomplete	Executable Regular Expression Error	1	Allowed
+625	Draft	Permissive Regular Expression	1	Allowed
+626	Draft	Null Byte Interaction Error (Poison Null Byte)	1	Allowed
+627	Incomplete	Dynamic Variable Evaluation	1	Allowed
+628	Draft	Function Call with Incorrectly Specified Arguments	1	Allowed
+636	Draft	Not Failing Securely ('Failing Open')	1	Allowed-with-Review
+637	Draft	Unnecessary Complexity in Protection Mechanism (Not Using 'Economy of Mechanism')	1	Allowed-with-Review
+638	Draft	Not Using Complete Mediation	1	Allowed-with-Review
+639	Incomplete	Authorization Bypass Through User-Controlled Key	1	Allowed
+640	Incomplete	Weak Password Recovery Mechanism for Forgotten Password	1	Allowed-with-Review
+641	Incomplete	Improper Restriction of Names for Files and Other Resources	1	Allowed
+642	Draft	External Control of Critical State Data	1	Allowed-with-Review
+643	Incomplete	Improper Neutralization of Data within XPath Expressions ('XPath Injection')	1	Allowed
+644	Incomplete	Improper Neutralization of HTTP Headers for Scripting Syntax	1	Allowed
+645	Incomplete	Overly Restrictive Account Lockout Mechanism	1	Allowed
+646	Incomplete	Reliance on File Name or Extension of Externally-Supplied File	1	Allowed
+647	Incomplete	Use of Non-Canonical URL Paths for Authorization Decisions	1	Allowed
+648	Incomplete	Incorrect Use of Privileged APIs	1	Allowed
+649	Incomplete	Reliance on Obfuscation or Encryption of Security-Relevant Inputs without Integrity Checking	1	Allowed
+650	Incomplete	Trusting HTTP Permission Methods on the Server Side	1	Allowed
+651	Incomplete	Exposure of WSDL File Containing Sensitive Information	1	Allowed
+652	Incomplete	Improper Neutralization of Data within XQuery Expressions ('XQuery Injection')	1	Allowed
+653	Draft	Improper Isolation or Compartmentalization	1	Allowed
+654	Draft	Reliance on a Single Factor in a Security Decision	1	Allowed
+655	Draft	Insufficient Psychological Acceptability	1	Allowed-with-Review
+656	Draft	Reliance on Security Through Obscurity	1	Allowed-with-Review
+657	Draft	Violation of Secure Design Principles	1	Discouraged
+662	Draft	Improper Synchronization	1	Discouraged
+663	Draft	Use of a Non-reentrant Function in a Concurrent Context	1	Allowed
+664	Draft	Improper Control of a Resource Through its Lifetime	1	Discouraged
+665	Draft	Improper Initialization	1	Discouraged
+666	Draft	Operation on Resource in Wrong Phase of Lifetime	1	Discouraged
+667	Draft	Improper Locking	1	Allowed-with-Review
+668	Draft	Exposure of Resource to Wrong Sphere	1	Discouraged
+669	Draft	Incorrect Resource Transfer Between Spheres	1	Allowed-with-Review
+670	Draft	Always-Incorrect Control Flow Implementation	1	Allowed-with-Review
+671	Draft	Lack of Administrator Control over Security	1	Allowed-with-Review
+672	Draft	Operation on a Resource after Expiration or Release	1	Allowed-with-Review
+673	Draft	External Influence of Sphere Definition	1	Allowed-with-Review
+674	Draft	Uncontrolled Recursion	1	Allowed-with-Review
+675	Draft	Multiple Operations on Resource in Single-Operation Context	1	Allowed-with-Review
+676	Draft	Use of Potentially Dangerous Function	1	Allowed
+680	Draft	Integer Overflow to Buffer Overflow	1	Discouraged
+681	Draft	Incorrect Conversion between Numeric Types	1	Allowed
+682	Draft	Incorrect Calculation	1	Discouraged
+683	Draft	Function Call With Incorrect Order of Arguments	1	Allowed
+684	Draft	Incorrect Provision of Specified Functionality	1	Allowed-with-Review
+685	Draft	Function Call With Incorrect Number of Arguments	1	Allowed
+686	Draft	Function Call With Incorrect Argument Type	1	Allowed
+687	Draft	Function Call With Incorrectly Specified Argument Value	1	Allowed
+688	Draft	Function Call With Incorrect Variable or Reference as Argument	1	Allowed
+689	Draft	Permission Race Condition During Resource Copy	1	Allowed
+690	Draft	Unchecked Return Value to NULL Pointer Dereference	1	Discouraged
+691	Draft	Insufficient Control Flow Management	1	Discouraged
+692	Draft	Incomplete Denylist to Cross-Site Scripting	1	Discouraged
+693	Draft	Protection Mechanism Failure	1	Discouraged
+694	Incomplete	Use of Multiple Resources with Duplicate Identifier	1	Allowed
+695	Incomplete	Use of Low-Level Functionality	1	Allowed
+696	Incomplete	Incorrect Behavior Order	1	Allowed-with-Review
+697	Incomplete	Incorrect Comparison	1	Discouraged
+698	Incomplete	Execution After Redirect (EAR)	1	Allowed
+703	Incomplete	Improper Check or Handling of Exceptional Conditions	1	Discouraged
+704	Incomplete	Incorrect Type Conversion or Cast	1	Allowed-with-Review
+705	Incomplete	Incorrect Control Flow Scoping	1	Allowed-with-Review
+706	Incomplete	Use of Incorrectly-Resolved Name or Reference	1	Allowed-with-Review
+707	Incomplete	Improper Neutralization	1	Discouraged
+708	Incomplete	Incorrect Ownership Assignment	1	Allowed
+710	Incomplete	Improper Adherence to Coding Standards	1	Discouraged
+732	Draft	Incorrect Permission Assignment for Critical Resource	1	Allowed-with-Review
+733	Incomplete	Compiler Optimization Removal or Modification of Security-critical Code	1	Allowed
+749	Incomplete	Exposed Dangerous Method or Function	1	Allowed
+754	Incomplete	Improper Check for Unusual or Exceptional Conditions	1	Allowed-with-Review
+755	Incomplete	Improper Handling of Exceptional Conditions	1	Discouraged
+756	Incomplete	Missing Custom Error Page	1	Allowed
+757	Incomplete	Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')	1	Allowed
+758	Incomplete	Reliance on Undefined, Unspecified, or Implementation-Defined Behavior	1	Allowed-with-Review
+759	Incomplete	Use of a One-Way Hash without a Salt	1	Allowed
+760	Incomplete	Use of a One-Way Hash with a Predictable Salt	1	Allowed
+761	Incomplete	Free of Pointer not at Start of Buffer	1	Allowed
+762	Incomplete	Mismatched Memory Management Routines	1	Allowed
+763	Incomplete	Release of Invalid Pointer or Reference	1	Allowed
+764	Incomplete	Multiple Locks of a Critical Resource	1	Allowed
+765	Incomplete	Multiple Unlocks of a Critical Resource	1	Allowed
+766	Incomplete	Critical Data Element Declared Public	1	Allowed
+767	Incomplete	Access to Critical Private Variable via Public Method	1	Allowed
+768	Incomplete	Incorrect Short Circuit Evaluation	1	Allowed
+769	Deprecated	DEPRECATED: Uncontrolled File Descriptor Consumption	1	Prohibited
+770	Incomplete	Allocation of Resources Without Limits or Throttling	1	Allowed
+771	Incomplete	Missing Reference to Active Allocated Resource	1	Allowed
+772	Draft	Missing Release of Resource after Effective Lifetime	1	Allowed
+773	Incomplete	Missing Reference to Active File Descriptor or Handle	1	Allowed
+774	Incomplete	Allocation of File Descriptors or Handles Without Limits or Throttling	1	Allowed
+775	Incomplete	Missing Release of File Descriptor or Handle after Effective Lifetime	1	Allowed
+776	Draft	Improper Restriction of Recursive Entity References in DTDs ('XML Entity Expansion')	1	Allowed
+777	Incomplete	Regular Expression without Anchors	1	Allowed
+778	Draft	Insufficient Logging	1	Allowed
+779	Draft	Logging of Excessive Data	1	Allowed
+780	Incomplete	Use of RSA Algorithm without OAEP	1	Allowed
+781	Draft	Improper Address Validation in IOCTL with METHOD_NEITHER I/O Control Code	1	Allowed
+782	Draft	Exposed IOCTL with Insufficient Access Control	1	Allowed
+783	Draft	Operator Precedence Logic Error	1	Allowed
+784	Draft	Reliance on Cookies without Validation and Integrity Checking in a Security Decision	1	Allowed
+785	Incomplete	Use of Path Manipulation Function without Maximum-sized Buffer	1	Allowed
+786	Incomplete	Access of Memory Location Before Start of Buffer	1	Discouraged
+787	Draft	Out-of-bounds Write	1	Allowed-with-Review
+788	Incomplete	Access of Memory Location After End of Buffer	1	Discouraged
+789	Draft	Memory Allocation with Excessive Size Value	1	Allowed
+790	Incomplete	Improper Filtering of Special Elements	1	Allowed-with-Review
+791	Incomplete	Incomplete Filtering of Special Elements	1	Allowed
+792	Incomplete	Incomplete Filtering of One or More Instances of Special Elements	1	Allowed
+793	Incomplete	Only Filtering One Instance of a Special Element	1	Allowed
+794	Incomplete	Incomplete Filtering of Multiple Instances of Special Elements	1	Allowed
+795	Incomplete	Only Filtering Special Elements at a Specified Location	1	Allowed
+796	Incomplete	Only Filtering Special Elements Relative to a Marker	1	Allowed
+797	Incomplete	Only Filtering Special Elements at an Absolute Position	1	Allowed
+798	Draft	Use of Hard-coded Credentials	1	Allowed-with-Review
+799	Incomplete	Improper Control of Interaction Frequency	1	Allowed-with-Review
+804	Incomplete	Guessable CAPTCHA	1	Allowed
+805	Incomplete	Buffer Access with Incorrect Length Value	1	Allowed
+806	Incomplete	Buffer Access Using Size of Source Buffer	1	Allowed
+807	Incomplete	Reliance on Untrusted Inputs in a Security Decision	1	Allowed
+820	Incomplete	Missing Synchronization	1	Allowed
+821	Incomplete	Incorrect Synchronization	1	Allowed
+822	Incomplete	Untrusted Pointer Dereference	1	Allowed
+823	Incomplete	Use of Out-of-range Pointer Offset	1	Allowed
+824	Incomplete	Access of Uninitialized Pointer	1	Allowed
+825	Incomplete	Expired Pointer Dereference	1	Allowed
+826	Incomplete	Premature Release of Resource During Expected Lifetime	1	Allowed
+827	Incomplete	Improper Control of Document Type Definition	1	Allowed
+828	Incomplete	Signal Handler with Functionality that is not Asynchronous-Safe	1	Allowed
+829	Incomplete	Inclusion of Functionality from Untrusted Control Sphere	1	Allowed
+830	Incomplete	Inclusion of Web Functionality from an Untrusted Source	1	Allowed
+831	Incomplete	Signal Handler Function Associated with Multiple Signals	1	Allowed
+832	Incomplete	Unlock of a Resource that is not Locked	1	Allowed
+833	Incomplete	Deadlock	1	Allowed
+834	Incomplete	Excessive Iteration	1	Discouraged
+835	Incomplete	Loop with Unreachable Exit Condition ('Infinite Loop')	1	Allowed
+836	Incomplete	Use of Password Hash Instead of Password for Authentication	1	Allowed
+837	Incomplete	Improper Enforcement of a Single, Unique Action	1	Allowed
+838	Incomplete	Inappropriate Encoding for Output Context	1	Allowed
+839	Incomplete	Numeric Range Comparison Without Minimum Check	1	Allowed
+841	Incomplete	Improper Enforcement of Behavioral Workflow	1	Allowed
+842	Incomplete	Placement of User into Incorrect Group	1	Allowed
+843	Incomplete	Access of Resource Using Incompatible Type ('Type Confusion')	1	Allowed
+862	Incomplete	Missing Authorization	1	Allowed-with-Review
+863	Incomplete	Incorrect Authorization	1	Allowed-with-Review
+908	Incomplete	Use of Uninitialized Resource	1	Allowed
+909	Incomplete	Missing Initialization of Resource	1	Allowed-with-Review
+910	Incomplete	Use of Expired File Descriptor	1	Allowed
+911	Incomplete	Improper Update of Reference Count	1	Allowed
+912	Incomplete	Hidden Functionality	1	Allowed-with-Review
+913	Incomplete	Improper Control of Dynamically-Managed Code Resources	1	Allowed-with-Review
+914	Incomplete	Improper Control of Dynamically-Identified Variables	1	Allowed
+915	Incomplete	Improperly Controlled Modification of Dynamically-Determined Object Attributes	1	Allowed
+916	Incomplete	Use of Password Hash With Insufficient Computational Effort	1	Allowed
+917	Incomplete	Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')	1	Allowed
+918	Incomplete	Server-Side Request Forgery (SSRF)	1	Allowed
+920	Incomplete	Improper Restriction of Power Consumption	1	Allowed
+921	Incomplete	Storage of Sensitive Data in a Mechanism without Access Control	1	Allowed
+922	Incomplete	Insecure Storage of Sensitive Information	1	Allowed-with-Review
+923	Incomplete	Improper Restriction of Communication Channel to Intended Endpoints	1	Allowed-with-Review
+924	Incomplete	Improper Enforcement of Message Integrity During Transmission in a Communication Channel	1	Allowed
+925	Incomplete	Improper Verification of Intent by Broadcast Receiver	1	Allowed
+926	Incomplete	Improper Export of Android Application Components	1	Allowed
+927	Incomplete	Use of Implicit Intent for Sensitive Communication	1	Allowed
+939	Incomplete	Improper Authorization in Handler for Custom URL Scheme	1	Allowed
+940	Incomplete	Improper Verification of Source of a Communication Channel	1	Allowed
+941	Incomplete	Incorrectly Specified Destination in a Communication Channel	1	Allowed
+942	Incomplete	Permissive Cross-domain Security Policy with Untrusted Domains	1	Allowed
+943	Incomplete	Improper Neutralization of Special Elements in Data Query Logic	1	Allowed-with-Review
+1004	Incomplete	Sensitive Cookie Without 'HttpOnly' Flag	1	Allowed
+1007	Incomplete	Insufficient Visual Distinction of Homoglyphs Presented to User	1	Allowed
+1021	Incomplete	Improper Restriction of Rendered UI Layers or Frames	1	Allowed
+1022	Incomplete	Use of Web Link to Untrusted Target with window.opener Access	1	Allowed
+1023	Incomplete	Incomplete Comparison with Missing Factors	1	Allowed-with-Review
+1024	Incomplete	Comparison of Incompatible Types	1	Allowed
+1025	Incomplete	Comparison Using Wrong Factors	1	Allowed
+1037	Incomplete	Processor Optimization Removal or Modification of Security-critical Code	1	Allowed
+1038	Draft	Insecure Automated Optimizations	1	Allowed-with-Review
+1039	Incomplete	Inadequate Detection or Handling of Adversarial Input Perturbations in Automated Recognition Mechanism	1	Allowed-with-Review
+1041	Incomplete	Use of Redundant Code	1	Prohibited
+1042	Incomplete	Static Member Data Element outside of a Singleton Class Element	1	Prohibited
+1043	Incomplete	Data Element Aggregating an Excessively Large Number of Non-Primitive Elements	1	Prohibited
+1044	Incomplete	Architecture with Number of Horizontal Layers Outside of Expected Range	1	Prohibited
+1045	Incomplete	Parent Class with a Virtual Destructor and a Child Class without a Virtual Destructor	1	Allowed
+1046	Incomplete	Creation of Immutable Text Using String Concatenation	1	Allowed
+1047	Incomplete	Modules with Circular Dependencies	1	Prohibited
+1048	Incomplete	Invokable Control Element with Large Number of Outward Calls	1	Prohibited
+1049	Incomplete	Excessive Data Query Operations in a Large Data Table	1	Allowed
+1050	Incomplete	Excessive Platform Resource Consumption within a Loop	1	Allowed
+1051	Incomplete	Initialization with Hard-Coded Network Resource Configuration Data	1	Prohibited
+1052	Incomplete	Excessive Use of Hard-Coded Literals in Initialization	1	Allowed
+1053	Incomplete	Missing Documentation for Design	1	Prohibited
+1054	Incomplete	Invocation of a Control Element at an Unnecessarily Deep Horizontal Layer	1	Prohibited
+1055	Incomplete	Multiple Inheritance from Concrete Classes	1	Prohibited
+1056	Incomplete	Invokable Control Element with Variadic Parameters	1	Prohibited
+1057	Incomplete	Data Access Operations Outside of Expected Data Manager Component	1	Prohibited
+1058	Incomplete	Invokable Control Element in Multi-Thread Context with non-Final Static Storable or Member Element	1	Allowed
+1059	Incomplete	Insufficient Technical Documentation	1	Prohibited
+1060	Incomplete	Excessive Number of Inefficient Server-Side Data Accesses	1	Prohibited
+1061	Incomplete	Insufficient Encapsulation	1	Allowed-with-Review
+1062	Incomplete	Parent Class with References to Child Class	1	Prohibited
+1063	Incomplete	Creation of Class Instance within a Static Code Block	1	Prohibited
+1064	Incomplete	Invokable Control Element with Signature Containing an Excessive Number of Parameters	1	Prohibited
+1065	Incomplete	Runtime Resource Management Control Element in a Component Built to Run on Application Servers	1	Prohibited
+1066	Incomplete	Missing Serialization Control Element	1	Prohibited
+1067	Incomplete	Excessive Execution of Sequential Searches of Data Resource	1	Allowed
+1068	Incomplete	Inconsistency Between Implementation and Documented Design	1	Prohibited
+1069	Incomplete	Empty Exception Block	1	Allowed
+1070	Incomplete	Serializable Data Element Containing non-Serializable Item Elements	1	Prohibited
+1071	Incomplete	Empty Code Block	1	Allowed
+1072	Incomplete	Data Resource Access without Use of Connection Pooling	1	Prohibited
+1073	Incomplete	Non-SQL Invokable Control Element with Excessive Number of Data Resource Accesses	1	Prohibited
+1074	Incomplete	Class with Excessively Deep Inheritance	1	Prohibited
+1075	Incomplete	Unconditional Control Flow Transfer outside of Switch Block	1	Allowed
+1076	Incomplete	Insufficient Adherence to Expected Conventions	1	Prohibited
+1077	Incomplete	Floating Point Comparison with Incorrect Operator	1	Allowed
+1078	Incomplete	Inappropriate Source Code Style or Formatting	1	Prohibited
+1079	Incomplete	Parent Class without Virtual Destructor Method	1	Allowed
+1080	Incomplete	Source Code File with Excessive Number of Lines of Code	1	Prohibited
+1082	Incomplete	Class Instance Self Destruction Control Element	1	Prohibited
+1083	Incomplete	Data Access from Outside Expected Data Manager Component	1	Prohibited
+1084	Incomplete	Invokable Control Element with Excessive File or Data Access Operations	1	Prohibited
+1085	Incomplete	Invokable Control Element with Excessive Volume of Commented-out Code	1	Prohibited
+1086	Incomplete	Class with Excessive Number of Child Classes	1	Prohibited
+1087	Incomplete	Class with Virtual Method without a Virtual Destructor	1	Allowed
+1088	Incomplete	Synchronous Access of Remote Resource without Timeout	1	Allowed
+1089	Incomplete	Large Data Table with Excessive Number of Indices	1	Allowed
+1090	Incomplete	Method Containing Access of a Member Element from Another Class	1	Prohibited
+1091	Incomplete	Use of Object without Invoking Destructor Method	1	Allowed
+1092	Incomplete	Use of Same Invokable Control Element in Multiple Architectural Layers	1	Prohibited
+1093	Incomplete	Excessively Complex Data Representation	1	Allowed-with-Review
+1094	Incomplete	Excessive Index Range Scan for a Data Resource	1	Prohibited
+1095	Incomplete	Loop Condition Value Update within the Loop	1	Prohibited
+1096	Incomplete	Singleton Class Instance Creation without Proper Locking or Synchronization	1	Allowed
+1097	Incomplete	Persistent Storable Data Element without Associated Comparison Control Element	1	Prohibited
+1098	Incomplete	Data Element containing Pointer Item without Proper Copy Control Element	1	Allowed
+1099	Incomplete	Inconsistent Naming Conventions for Identifiers	1	Prohibited
+1100	Incomplete	Insufficient Isolation of System-Dependent Functions	1	Allowed
+1101	Incomplete	Reliance on Runtime Component in Generated Code	1	Prohibited
+1102	Incomplete	Reliance on Machine-Dependent Data Representation	1	Allowed
+1103	Incomplete	Use of Platform-Dependent Third Party Components	1	Prohibited
+1104	Incomplete	Use of Unmaintained Third Party Components	1	Allowed
+1105	Incomplete	Insufficient Encapsulation of Machine-Dependent Functionality	1	Prohibited
+1106	Incomplete	Insufficient Use of Symbolic Constants	1	Prohibited
+1107	Incomplete	Insufficient Isolation of Symbolic Constant Definitions	1	Prohibited
+1108	Incomplete	Excessive Reliance on Global Variables	1	Allowed
+1109	Incomplete	Use of Same Variable for Multiple Purposes	1	Prohibited
+1110	Incomplete	Incomplete Design Documentation	1	Prohibited
+1111	Incomplete	Incomplete I/O Documentation	1	Prohibited
+1112	Incomplete	Incomplete Documentation of Program Execution	1	Prohibited
+1113	Incomplete	Inappropriate Comment Style	1	Prohibited
+1114	Incomplete	Inappropriate Whitespace Style	1	Prohibited
+1115	Incomplete	Source Code Element without Standard Prologue	1	Prohibited
+1116	Incomplete	Inaccurate Source Code Comments	1	Allowed
+1117	Incomplete	Callable with Insufficient Behavioral Summary	1	Prohibited
+1118	Incomplete	Insufficient Documentation of Error Handling Techniques	1	Prohibited
+1119	Incomplete	Excessive Use of Unconditional Branching	1	Prohibited
+1120	Incomplete	Excessive Code Complexity	1	Allowed-with-Review
+1121	Incomplete	Excessive McCabe Cyclomatic Complexity	1	Prohibited
+1122	Incomplete	Excessive Halstead Complexity	1	Prohibited
+1123	Incomplete	Excessive Use of Self-Modifying Code	1	Allowed
+1124	Incomplete	Excessively Deep Nesting	1	Prohibited
+1125	Incomplete	Excessive Attack Surface	1	Prohibited
+1126	Incomplete	Declaration of Variable with Unnecessarily Wide Scope	1	Allowed
+1127	Incomplete	Compilation with Insufficient Warnings or Errors	1	Allowed
+1164	Incomplete	Irrelevant Code	1	Allowed-with-Review
+1173	Draft	Improper Use of Validation Framework	1	Allowed
+1174	Draft	ASP.NET Misconfiguration: Improper Model Validation	1	Allowed
+1176	Incomplete	Inefficient CPU Computation	1	Allowed-with-Review
+1177	Incomplete	Use of Prohibited Code	1	Allowed-with-Review
+1187	Deprecated	DEPRECATED: Use of Uninitialized Resource	1	Prohibited
+1188	Incomplete	Initialization of a Resource with an Insecure Default	1	Allowed
+1189	Stable	Improper Isolation of Shared Resources on System-on-a-Chip (SoC)	1	Allowed
+1190	Draft	DMA Device Enabled Too Early in Boot Phase	1	Allowed
+1191	Stable	On-Chip Debug and Test Interface With Improper Access Control	1	Allowed
+1192	Draft	Improper Identifier for IP Block used in System-On-Chip (SOC)	1	Allowed
+1193	Draft	Power-On of Untrusted Execution Core Before Enabling Fabric Access Control	1	Allowed
+1204	Incomplete	Generation of Weak Initialization Vector (IV)	1	Allowed
+1209	Incomplete	Failure to Disable Reserved Bits	1	Allowed
+1220	Incomplete	Insufficient Granularity of Access Control	1	Allowed
+1221	Incomplete	Incorrect Register Defaults or Module Parameters	1	Allowed
+1222	Incomplete	Insufficient Granularity of Address Regions Protected by Register Locks	1	Allowed
+1223	Incomplete	Race Condition for Write-Once Attributes	1	Allowed
+1224	Incomplete	Improper Restriction of Write-Once Bit Fields	1	Allowed
+1229	Incomplete	Creation of Emergent Resource	1	Allowed-with-Review
+1230	Incomplete	Exposure of Sensitive Information Through Metadata	1	Allowed
+1231	Stable	Improper Prevention of Lock Bit Modification	1	Allowed
+1232	Incomplete	Improper Lock Behavior After Power State Transition	1	Allowed
+1233	Stable	Security-Sensitive Hardware Controls with Missing Lock Bit Protection	1	Allowed
+1234	Incomplete	Hardware Internal or Debug Modes Allow Override of Locks	1	Allowed
+1235	Incomplete	Incorrect Use of Autoboxing and Unboxing for Performance Critical Operations	1	Allowed
+1236	Incomplete	Improper Neutralization of Formula Elements in a CSV File	1	Allowed
+1239	Draft	Improper Zeroization of Hardware Register	1	Allowed
+1240	Draft	Use of a Cryptographic Primitive with a Risky Implementation	1	Allowed
+1241	Draft	Use of Predictable Algorithm in Random Number Generator	1	Allowed
+1242	Incomplete	Inclusion of Undocumented Features or Chicken Bits	1	Allowed
+1243	Incomplete	Sensitive Non-Volatile Information Not Protected During Debug	1	Allowed
+1244	Stable	Internal Asset Exposed to Unsafe Debug Access Level or State	1	Allowed
+1245	Incomplete	Improper Finite State Machines (FSMs) in Hardware Logic	1	Allowed
+1246	Incomplete	Improper Write Handling in Limited-write Non-Volatile Memories	1	Allowed
+1247	Stable	Improper Protection Against Voltage and Clock Glitches	1	Allowed
+1248	Incomplete	Semiconductor Defects in Hardware Logic with Security-Sensitive Implications	1	Allowed
+1249	Incomplete	Application-Level Admin Tool with Inconsistent View of Underlying Operating System	1	Allowed
+1250	Incomplete	Improper Preservation of Consistency Between Independent Representations of Shared State	1	Allowed
+1251	Incomplete	Mirrored Regions with Different Values	1	Allowed
+1252	Incomplete	CPU Hardware Not Configured to Support Exclusivity of Write and Execute Operations	1	Allowed
+1253	Draft	Incorrect Selection of Fuse Values	1	Allowed
+1254	Draft	Incorrect Comparison Logic Granularity	1	Allowed
+1255	Draft	Comparison Logic is Vulnerable to Power Side-Channel Attacks	1	Allowed
+1256	Stable	Improper Restriction of Software Interfaces to Hardware Features	1	Allowed
+1257	Incomplete	Improper Access Control Applied to Mirrored or Aliased Memory Regions	1	Allowed
+1258	Draft	Exposure of Sensitive System Information Due to Uncleared Debug Information	1	Allowed
+1259	Incomplete	Improper Restriction of Security Token Assignment	1	Allowed
+1260	Stable	Improper Handling of Overlap Between Protected Memory Ranges	1	Allowed
+1261	Draft	Improper Handling of Single Event Upsets	1	Allowed
+1262	Stable	Improper Access Control for Register Interface	1	Allowed
+1263	Incomplete	Improper Physical Access Control	1	Allowed-with-Review
+1264	Incomplete	Hardware Logic with Insecure De-Synchronization between Control and Data Channels	1	Allowed
+1265	Draft	Unintended Reentrant Invocation of Non-reentrant Code Via Nested Calls	1	Allowed
+1266	Incomplete	Improper Scrubbing of Sensitive Data from Decommissioned Device	1	Allowed
+1267	Draft	Policy Uses Obsolete Encoding	1	Allowed
+1268	Draft	Policy Privileges are not Assigned Consistently Between Control and Data Agents	1	Allowed
+1269	Incomplete	Product Released in Non-Release Configuration	1	Allowed
+1270	Incomplete	Generation of Incorrect Security Tokens	1	Allowed
+1271	Incomplete	Uninitialized Value on Reset for Registers Holding Security Settings	1	Allowed
+1272	Stable	Sensitive Information Uncleared Before Debug/Power State Transition	1	Allowed
+1273	Incomplete	Device Unlock Credential Sharing	1	Allowed
+1274	Stable	Improper Access Control for Volatile Memory Containing Boot Code	1	Allowed
+1275	Incomplete	Sensitive Cookie with Improper SameSite Attribute	1	Allowed
+1276	Incomplete	Hardware Child Block Incorrectly Connected to Parent System	1	Allowed
+1277	Draft	Firmware Not Updateable	1	Allowed
+1278	Incomplete	Missing Protection Against Hardware Reverse Engineering Using Integrated Circuit (IC) Imaging Techniques	1	Allowed
+1279	Incomplete	Cryptographic Operations are run Before Supporting Units are Ready	1	Allowed
+1280	Incomplete	Access Control Check Implemented After Asset is Accessed	1	Allowed
+1281	Incomplete	Sequence of Processor Instructions Leads to Unexpected Behavior	1	Allowed
+1282	Incomplete	Assumed-Immutable Data is Stored in Writable Memory	1	Allowed
+1283	Incomplete	Mutable Attestation or Measurement Reporting Data	1	Allowed
+1284	Incomplete	Improper Validation of Specified Quantity in Input	1	Allowed
+1285	Incomplete	Improper Validation of Specified Index, Position, or Offset in Input	1	Allowed
+1286	Incomplete	Improper Validation of Syntactic Correctness of Input	1	Allowed
+1287	Incomplete	Improper Validation of Specified Type of Input	1	Allowed
+1288	Incomplete	Improper Validation of Consistency within Input	1	Allowed
+1289	Incomplete	Improper Validation of Unsafe Equivalence in Input	1	Allowed
+1290	Incomplete	Incorrect Decoding of Security Identifiers	1	Allowed
+1291	Draft	Public Key Re-Use for Signing both Debug and Production Code	1	Allowed
+1292	Draft	Incorrect Conversion of Security Identifiers	1	Allowed
+1293	Draft	Missing Source Correlation of Multiple Independent Data	1	Allowed
+1294	Incomplete	Insecure Security Identifier Mechanism	1	Allowed-with-Review
+1295	Incomplete	Debug Messages Revealing Unnecessary Information	1	Allowed
+1296	Incomplete	Incorrect Chaining or Granularity of Debug Components	1	Allowed
+1297	Incomplete	Unprotected Confidential Information on Device is Accessible by OSAT Vendors	1	Allowed
+1298	Draft	Hardware Logic Contains Race Conditions	1	Allowed
+1299	Draft	Missing Protection Mechanism for Alternate Hardware Interface	1	Allowed
+1300	Stable	Improper Protection of Physical Side Channels	1	Allowed
+1301	Incomplete	Insufficient or Incomplete Data Removal within Hardware Component	1	Allowed
+1302	Incomplete	Missing Source Identifier in Entity Transactions on a System-On-Chip (SOC)	1	Allowed
+1303	Draft	Non-Transparent Sharing of Microarchitectural Resources	1	Allowed
+1304	Draft	Improperly Preserved Integrity of Hardware Configuration State During a Power Save/Restore Operation	1	Allowed
+1310	Draft	Missing Ability to Patch ROM Code	1	Allowed
+1311	Draft	Improper Translation of Security Attributes by Fabric Bridge	1	Allowed
+1312	Draft	Missing Protection for Mirrored Regions in On-Chip Fabric Firewall	1	Allowed
+1313	Draft	Hardware Allows Activation of Test or Debug Logic at Runtime	1	Allowed
+1314	Draft	Missing Write Protection for Parametric Data Values	1	Allowed
+1315	Incomplete	Improper Setting of Bus Controlling Capability in Fabric End-point	1	Allowed
+1316	Draft	Fabric-Address Map Allows Programming of Unwarranted Overlaps of Protected and Unprotected Ranges	1	Allowed
+1317	Draft	Improper Access Control in Fabric Bridge	1	Allowed
+1318	Incomplete	Missing Support for Security Features in On-chip Fabrics or Buses	1	Allowed
+1319	Incomplete	Improper Protection against Electromagnetic Fault Injection (EM-FI)	1	Allowed
+1320	Draft	Improper Protection for Outbound Error Messages and Alert Signals	1	Allowed
+1321	Incomplete	Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution')	1	Allowed
+1322	Incomplete	Use of Blocking Code in Single-threaded, Non-blocking Context	1	Allowed
+1323	Draft	Improper Management of Sensitive Trace Data	1	Allowed
+1324	Deprecated	DEPRECATED: Sensitive Information Accessible by Physical Probing of JTAG Interface	1	Prohibited
+1325	Incomplete	Improperly Controlled Sequential Memory Allocation	1	Allowed
+1326	Draft	Missing Immutable Root of Trust in Hardware	1	Allowed
+1327	Incomplete	Binding to an Unrestricted IP Address	1	Allowed
+1328	Draft	Security Version Number Mutable to Older Versions	1	Allowed
+1329	Incomplete	Reliance on Component That is Not Updateable	1	Allowed
+1330	Draft	Remanent Data Readable after Memory Erase	1	Allowed
+1331	Stable	Improper Isolation of Shared Resources in Network On Chip (NoC)	1	Allowed
+1332	Stable	Improper Handling of Faults that Lead to Instruction Skips	1	Allowed
+1333	Draft	Inefficient Regular Expression Complexity	1	Allowed
+1334	Draft	Unauthorized Error Injection Can Degrade Hardware Redundancy	1	Allowed
+1335	Draft	Incorrect Bitwise Shift of Integer	1	Allowed
+1336	Incomplete	Improper Neutralization of Special Elements Used in a Template Engine	1	Allowed
+1338	Draft	Improper Protections Against Hardware Overheating	1	Allowed
+1339	Draft	Insufficient Precision or Accuracy of a Real Number	1	Allowed
+1341	Incomplete	Multiple Releases of Same Resource or Handle	1	Allowed
+1342	Incomplete	Information Exposure through Microarchitectural State after Transient Execution	1	Allowed
+1351	Incomplete	Improper Handling of Hardware Behavior in Exceptionally Cold Environments	1	Allowed
+1357	Incomplete	Reliance on Insufficiently Trustworthy Component	1	Allowed-with-Review
+1384	Incomplete	Improper Handling of Physical or Environmental Conditions	1	Allowed-with-Review
+1385	Incomplete	Missing Origin Validation in WebSockets	1	Allowed
+1386	Incomplete	Insecure Operation on Windows Junction / Mount Point	1	Allowed
+1389	Incomplete	Incorrect Parsing of Numbers with Different Radices	1	Allowed
+1390	Incomplete	Weak Authentication	1	Allowed-with-Review
+1391	Incomplete	Use of Weak Credentials	1	Allowed-with-Review
+1392	Incomplete	Use of Default Credentials	1	Allowed
+1393	Incomplete	Use of Default Password	1	Allowed
+1394	Incomplete	Use of Default Cryptographic Key	1	Allowed
+1395	Incomplete	Dependency on Vulnerable Third-Party Component	1	Allowed-with-Review
+1419	Incomplete	Incorrect Initialization of Resource	1	Allowed-with-Review
+1420	Incomplete	Exposure of Sensitive Information during Transient Execution	1	Allowed-with-Review
+1421	Incomplete	Exposure of Sensitive Information in Shared Microarchitectural Structures during Transient Execution	1	Allowed
+1422	Incomplete	Exposure of Sensitive Information caused by Incorrect Data Forwarding during Transient Execution	1	Allowed
+1423	Incomplete	Exposure of Sensitive Information caused by Shared Microarchitectural Predictor State that Influences Transient Execution	1	Allowed
+1426	Incomplete	Improper Validation of Generative AI Output	1	Discouraged
+1427	Incomplete	Improper Neutralization of Input Used for LLM Prompting	1	Allowed
+1428	Incomplete	Reliance on HTTP instead of HTTPS	1	Allowed
+1429	Incomplete	Missing Security-Relevant Feedback for Unexecuted Operations in Hardware Interface	1	Allowed
+1431	Incomplete	Driving Intermediate Cryptographic State/Results to Hardware Module Outputs	1	Allowed
+1434	Draft	Insecure Setting of Generative AI/ML Model Inference Parameters	1	Allowed

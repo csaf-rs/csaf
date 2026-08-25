@@ -3,20 +3,20 @@ use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, TrackingTrait, VulnerabilityTrait,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use chrono::TimeDelta;
 
 fn create_old_epss_timestamp_error(
     epss_timestamp: &ValidCsafDateTime,
     newest_revision_date: &ValidCsafDateTime,
     content_json_path: &str,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "EPSS timestamp ({epss_timestamp}) is more than 15 days older than the newest revision date ({newest_revision_date}).",
         ),
         instance_path: format!("{content_json_path}/epss/timestamp"),
-    }
+    })
 }
 
 /// 6.2.41 Old EPSS Timestamp
@@ -24,7 +24,7 @@ fn create_old_epss_timestamp_error(
 /// For each vulnerability, it MUST be tested that the youngest EPSS timestamp is not more than
 /// 15 days older than the date of the newest item of the revision_history (taking timezones into account),
 /// if the document status is `final` or `interim`.
-pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
 
@@ -46,7 +46,7 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Va
         return Ok(());
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     let fifteen_days = TimeDelta::days(15);
 
     for (i_v, vulnerability) in vulnerabilities.iter().enumerate() {
@@ -100,6 +100,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_41, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_41 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -119,8 +120,11 @@ mod tests {
         // Case 11: EPSS timestamp is same as newest revision history date
         // Case 12: Newest EPSS timestamp (with timezone) is within 15 days of newest revision
 
-        TESTS_2_1
-            .test_6_2_41
-            .expect(case_01_old_epss, case_02_old_epss_with_timezone, Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_41.expect(ExpectedResults {
+            case_01: case_01_old_epss,
+            case_02: case_02_old_epss_with_timezone,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

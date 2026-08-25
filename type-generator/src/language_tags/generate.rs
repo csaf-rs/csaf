@@ -9,9 +9,9 @@ pub(crate) fn generate_kind_section(kind: &SubtagKind, subtags: &[SubtagEntry]) 
     let is_private_fn = format_ident!("is_{}_private_use", kind_str);
 
     let is_valid_doc =
-        format!("Checks if a given subtag is a valid {kind_str} subtag. Lower cases the input before checking.");
+        format!(" Checks if a given subtag is a valid {kind_str} subtag. Lowercases the input before checking.");
     let is_private_doc = format!(
-        "Checks if a given {kind_str} subtag is registered as private use. Lower cases the input before checking."
+        " Checks if a given {kind_str} subtag is registered as private use. Lowercases the input before checking."
     );
 
     let entries = subtags.iter().map(|e| {

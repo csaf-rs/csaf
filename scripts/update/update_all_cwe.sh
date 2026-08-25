@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 # Always run from the repository root so paths are deterministic
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {

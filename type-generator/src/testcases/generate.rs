@@ -33,6 +33,7 @@ pub(crate) fn generate_test_cases_from_entries(
         let struct_ident = Ident::new(&format!("Test{id_formatted}"), Span::call_site());
         let validator_ident = Ident::new(&format!("ValidatorForTest{id_formatted}"), Span::call_site());
         let instance_ident = Ident::new(&format!("test_{id_formatted}"), Span::call_site());
+        let expect_ident = Ident::new(&format!("ExpectedResults_{id_formatted}"), Span::call_site());
         let test_id = &test.id;
 
         let csaf_version = match csaf_version {
@@ -45,6 +46,7 @@ pub(crate) fn generate_test_cases_from_entries(
             crate::macros::define_csaf_test!(
                 #struct_ident,
                 #validator_ident,
+                #expect_ident,
                 id: #test_id,
                 doc_type: #csaf_doc_type,
                 version: #csaf_version,

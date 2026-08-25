@@ -1,19 +1,19 @@
 use crate::csaf::types::purl::csaf_purl::CsafPurl::{Invalid, Valid};
 use crate::csaf_traits::{CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
-fn create_purl_consistency_error(path: &str, index: usize) -> ValidationError {
-    ValidationError {
+fn create_purl_consistency_error(path: &str, index: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: String::from("PURLs within the same product_identification_helper must only differ in qualifiers"),
         instance_path: format!("{path}/product_identification_helper/purls/{index}"),
-    }
+    })
 }
 
 /// 6.1.42 PURL Consistency
 /// Checks the consistency of PURLs within the same product_identification_helper. PURLs must only differ in qualifiers.
-pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_42_purl_consistency(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_products(&mut |product, path| {
@@ -77,25 +77,26 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_42, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_42 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_42() {
-        TESTS_2_1.test_6_1_42.expect(
-            Err(vec![create_purl_consistency_error(
+        TESTS_2_1.test_6_1_42.expect(ExpectedResults {
+            case_01: Err(vec![create_purl_consistency_error(
                 "/product_tree/full_product_names/0",
                 1,
             )]),
-            Err(vec![create_purl_consistency_error(
+            case_02: Err(vec![create_purl_consistency_error(
                 "/product_tree/branches/0/branches/0/branches/0/product",
                 2,
             )]),
-            Err(vec![create_purl_consistency_error(
+            case_s01: Err(vec![create_purl_consistency_error(
                 "/product_tree/full_product_names/0",
                 1,
             )]),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

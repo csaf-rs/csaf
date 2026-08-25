@@ -1,0 +1,49 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "references": [
+      {
+        "category": "external",
+        "summary": "URL correctly uses HTTPS and the filename is correct but the reference category is external instead of self.",
+        "url": "https://example.com/security/data/csaf/2024/csaf-rs_csaf-csaf_2_1-6-2-11-s11.json"
+      },
+      {
+        "category": "self",
+        "summary": "Reference category and filename are correct but the URL does not use HTTPS.",
+        "url": "http://example.com/security/data/csaf/2024/csaf-rs_csaf-csaf_2_1-6-2-11-s11.json"
+      },
+      {
+        "category": "self",
+        "summary": "A canonical URL.",
+        "url": "https://example.com/security/data/csaf/2024/csaf-rs_csaf-csaf_2_1-6-2-11-s11.json"
+      }
+    ],
+    "title": "Recommended Test: Missing Canonical URL (valid supplementary example 1 - one matching reference among non-matching references)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-11-S11",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  }
+}

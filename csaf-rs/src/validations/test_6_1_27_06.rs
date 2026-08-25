@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 /// 6.1.27.6 Product Status
@@ -10,14 +10,14 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 /// value `csaf_deprecated_security_advisory` for `/document/csaf_version` `2.1`.
 ///
 /// Documents with these categories must have a `/vulnerabilities[]/product_status` element.
-pub fn test_6_1_27_06_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_06_product_status(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // return error if there are vulnerabilities without product_status
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_product_status().is_none() {
@@ -34,13 +34,13 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
     .shared(&[CsafDocumentCategory::CsafSecurityAdvisory])
     .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
 
-fn test_6_1_27_06_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> ValidationError {
-    ValidationError {
+fn test_6_1_27_06_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document with category '{document_category}' must have a product_status element in each vulnerability"
         ),
         instance_path: format!("/vulnerabilities/{vuln_path_index}/product_status"),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_6, test_6_1_27_06_product_status);
@@ -48,7 +48,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_6, test_6_1_27_06
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_6 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_6 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -62,11 +64,13 @@ mod tests {
             &0,
         )]);
 
-        TESTS_2_0.test_6_1_27_6.expect(case_security_advisory.clone());
-        TESTS_2_1.test_6_1_27_6.expect(
-            case_security_advisory.clone(),
-            case_security_advisory,
-            case_deprecated_security_advisory,
-        );
+        TESTS_2_0.test_6_1_27_6.expect(ExpectedResults_2_0 {
+            case_01: case_security_advisory.clone(),
+        });
+        TESTS_2_1.test_6_1_27_6.expect(ExpectedResults_2_1 {
+            case_01: case_security_advisory.clone(),
+            case_02: case_security_advisory,
+            case_03: case_deprecated_security_advisory,
+        });
     }
 }

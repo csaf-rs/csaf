@@ -17,8 +17,8 @@ pub enum CsafLanguage {
 impl Display for CsafLanguage {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            CsafLanguage::Valid(lang) => write!(f, "{lang}"),
-            CsafLanguage::Invalid(lang, _) => write!(f, "{lang}"),
+            Self::Valid(lang) => write!(f, "{lang}"),
+            Self::Invalid(lang, _) => write!(f, "{lang}"),
         }
     }
 }
@@ -26,8 +26,8 @@ impl Display for CsafLanguage {
 impl PartialEq for CsafLanguage {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (CsafLanguage::Valid(a), CsafLanguage::Valid(b)) => a == b,
-            (CsafLanguage::Invalid(a, _), CsafLanguage::Invalid(b, _)) => a.eq_ignore_ascii_case(b),
+            (Self::Valid(a), Self::Valid(b)) => a == b,
+            (Self::Invalid(a, _), Self::Invalid(b, _)) => a.eq_ignore_ascii_case(b),
             _ => false,
         }
     }
@@ -35,13 +35,13 @@ impl PartialEq for CsafLanguage {
 
 impl From<&LangT20> for CsafLanguage {
     fn from(lang_code: &LangT20) -> Self {
-        CsafLanguage::from(&lang_code.to_string())
+        Self::from(&lang_code.to_string())
     }
 }
 
 impl From<&LangT21> for CsafLanguage {
     fn from(lang_code: &LangT21) -> Self {
-        CsafLanguage::from(&lang_code.to_string())
+        Self::from(&lang_code.to_string())
     }
 }
 
@@ -51,7 +51,7 @@ impl From<&String> for CsafLanguage {
         let parsed_lang_tag: LanguageTag<String> = match LanguageTag::parse(input_lang_tag.clone()) {
             Ok(lang_tag) => lang_tag,
             Err(err) => {
-                return CsafLanguage::Invalid(
+                return Self::Invalid(
                     input_lang_tag.clone(),
                     CsafLanguageError::ParserError(input_lang_tag.clone(), err.to_string()),
                 );
@@ -61,7 +61,7 @@ impl From<&String> for CsafLanguage {
         // Grandfathered tags are valid and skip further validation
         // This includes the default language (i-default) tags
         if is_valid_grandfathered_subtag(parsed_lang_tag.as_str()) {
-            return CsafLanguage::Valid(ValidCsafLanguage::new(parsed_lang_tag));
+            return Self::Valid(ValidCsafLanguage::new(parsed_lang_tag));
         }
 
         // A bit of a wonky workaround: If the language code is just a private use tag ("x-private"),
@@ -69,14 +69,14 @@ impl From<&String> for CsafLanguage {
         // So "is private use" + primary lang tag == full tag -> full tag is only private use,
         // so we can skip the validation
         if parsed_lang_tag.private_use().is_some() && input_lang_tag == parsed_lang_tag.primary_language() {
-            return CsafLanguage::Valid(ValidCsafLanguage::new(parsed_lang_tag));
+            return Self::Valid(ValidCsafLanguage::new(parsed_lang_tag));
         }
 
         // TODO: Also discuss if we want this precedence of primary -> script -> region,
         // or if we want to expose everything "wrong" with the tag to the consumers.
         // Validate primary language subtag
         if !is_valid_language_subtag(parsed_lang_tag.primary_language()) {
-            return CsafLanguage::Invalid(
+            return Self::Invalid(
                 input_lang_tag.clone(),
                 CsafLanguageError::InvalidPrimaryLanguageSubtag(
                     input_lang_tag.clone(),
@@ -89,7 +89,7 @@ impl From<&String> for CsafLanguage {
         if let Some(script) = parsed_lang_tag.script()
             && !is_valid_script_subtag(script)
         {
-            return CsafLanguage::Invalid(
+            return Self::Invalid(
                 input_lang_tag.clone(),
                 CsafLanguageError::InvalidScriptSubtag(input_lang_tag.clone(), script.to_string()),
             );
@@ -99,13 +99,13 @@ impl From<&String> for CsafLanguage {
         if let Some(region) = parsed_lang_tag.region()
             && !is_valid_region_subtag(region)
         {
-            return CsafLanguage::Invalid(
+            return Self::Invalid(
                 input_lang_tag.clone(),
                 CsafLanguageError::InvalidRegionSubtag(input_lang_tag.clone(), region.to_string()),
             );
         }
 
-        CsafLanguage::Valid(ValidCsafLanguage::new(parsed_lang_tag))
+        Self::Valid(ValidCsafLanguage::new(parsed_lang_tag))
     }
 }
 

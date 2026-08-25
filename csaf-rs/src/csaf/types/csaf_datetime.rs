@@ -1,4 +1,4 @@
-use crate::validation::{IntoValidationError, ValidationError};
+use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 use chrono::{DateTime, FixedOffset, ParseError, Utc};
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter, Result as FmtResult};
@@ -17,22 +17,30 @@ pub enum CsafDateTime {
 impl CsafDateTime {
     /// Returns `true` if the date was successfully parsed.
     pub fn is_valid(&self) -> bool {
-        matches!(self, CsafDateTime::Valid(_))
+        matches!(self, Self::Valid(_))
+    }
+
+    /// Returns the raw string representation of the date, regardless of whether it was valid or invalid.
+    pub fn get_raw_string(&self) -> &str {
+        match self {
+            CsafDateTime::Valid(valid) => valid.get_raw_string(),
+            CsafDateTime::Invalid(err) => err.get_raw_string(),
+        }
     }
 }
 
 impl From<&str> for CsafDateTime {
     fn from(s: &str) -> Self {
         match s.parse() {
-            Ok(valid) => CsafDateTime::Valid(valid),
-            Err(err) => CsafDateTime::Invalid(err),
+            Ok(valid) => Self::Valid(valid),
+            Err(err) => Self::Invalid(err),
         }
     }
 }
 
 impl From<&String> for CsafDateTime {
     fn from(s: &String) -> Self {
-        CsafDateTime::from(s.as_str())
+        Self::from(s.as_str())
     }
 }
 
@@ -46,7 +54,7 @@ impl From<&String> for CsafDateTime {
 impl PartialEq for CsafDateTime {
     fn eq(&self, other: &Self) -> bool {
         match (&self, &other) {
-            (CsafDateTime::Valid(a), CsafDateTime::Valid(b)) => a == b,
+            (Self::Valid(a), Self::Valid(b)) => a == b,
             _ => false,
         }
     }
@@ -65,7 +73,7 @@ impl PartialOrd for CsafDateTime {
 impl Ord for CsafDateTime {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (&self, &other) {
-            (CsafDateTime::Valid(a), CsafDateTime::Valid(b)) => a.cmp(b),
+            (Self::Valid(a), Self::Valid(b)) => a.cmp(b),
             // Invalid cannot be ordered; comparing them is treated as a developer error and panics.
             _ => {
                 panic!("Cannot compare CsafDateTime values if either or both are invalid. This looks like a dev error.")
@@ -104,7 +112,7 @@ pub struct CsafDateTimeParseError {
 impl CsafDateTimeParseError {
     /// Creates a new CsafDateTimeParseError.
     pub fn new(raw_string: &str, source: ParseError) -> Self {
-        CsafDateTimeParseError {
+        Self {
             raw_string: raw_string.to_owned(),
             source,
         }
@@ -115,12 +123,12 @@ impl CsafDateTimeParseError {
     }
 }
 
-impl IntoValidationError for CsafDateTimeParseError {
-    fn into_validation_error(self, instance_path: &str) -> ValidationError {
-        ValidationError {
+impl IntoTestFindingError for CsafDateTimeParseError {
+    fn into_test_finding_error(self, instance_path: &str) -> TestFinding {
+        TestFinding::Error(TestFindingData {
             message: self.to_string(),
             instance_path: instance_path.to_string(),
-        }
+        })
     }
 }
 
@@ -149,7 +157,7 @@ pub struct ValidCsafDateTime {
 impl ValidCsafDateTime {
     /// Creates a new ValidCsafDateTime from a parsed DateTime.
     fn new(raw_string: &str, parsed: DateTime<FixedOffset>) -> Self {
-        ValidCsafDateTime {
+        Self {
             raw_string: raw_string.to_owned(),
             parsed,
         }
@@ -175,7 +183,7 @@ impl FromStr for ValidCsafDateTime {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parsed = DateTime::parse_from_rfc3339(s).map_err(|e| CsafDateTimeParseError::new(s, e))?;
-        Ok(ValidCsafDateTime::new(s, parsed))
+        Ok(Self::new(s, parsed))
     }
 }
 

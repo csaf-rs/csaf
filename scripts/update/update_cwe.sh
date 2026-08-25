@@ -19,5 +19,5 @@ funzip |
 # convert it to CSV via XSLT
 xsltproc scripts/update/convert-cwe-to-csv.xslt - |
 # sort by CWE ID (skipping the header row)
-# and write the result to a CSV file named with the CWE version from the header
+# and write the result to a CSV file named with the CWE version and CWE date from the header
 (read -r header; sort -n > "csaf-rs/assets/cwe/cwe_${header}.csv" )

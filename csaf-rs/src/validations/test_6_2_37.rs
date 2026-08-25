@@ -1,6 +1,8 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::{create_generic_namespace_finding_data, ssvc_decision_point_resources_path};
+use crate::validations::utils::ssvc::{
+    create_generic_namespace_finding_data, ssvc_decision_point_resources_path, ssvc_selection_namespace_path,
+};
 
 fn create_missing_ssvc_resource_warning(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
@@ -37,7 +39,7 @@ pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resour
             let instance_path = ssvc_decision_point_resources_path(vuln_index, metric_index);
             let resources = &selection_list.decision_point_resources;
 
-            for selection in &selection_list.selections {
+            for (sl_item_index, selection) in selection_list.selections.iter().enumerate() {
                 let namespace = selection.namespace.as_str();
                 let parsed = ssvc::validate_namespace(namespace, allow_test_namespaces);
                 match parsed {
@@ -64,7 +66,10 @@ pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resour
                                 | ssvc::NamespaceError::ReservedTestNamespace { .. }
                         ) {
                             errors.get_or_insert_default().push(TestFinding::Warning(
-                                create_generic_namespace_finding_data(&err, &instance_path),
+                                create_generic_namespace_finding_data(
+                                    &err,
+                                    &ssvc_selection_namespace_path(vuln_index, metric_index, sl_item_index),
+                                ),
                             ));
                         }
                     },

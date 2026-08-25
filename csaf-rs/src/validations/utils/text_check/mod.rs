@@ -10,12 +10,16 @@
 //! The [`TextChecker`] trait abstracts over the concrete language-checking engine.
 
 use crate::csaf::types::language::ValidCsafLanguage;
-use crate::validations::utils::text_check::checkers::{filter_checkers, TextCheckerMatchingError};
+use crate::validations::utils::text_check::checkers::{filter_checkers};
 
 pub(crate) mod checkers;
-mod tests;
+mod unit_tests;
+mod integration_tests;
 
 pub use checkers::TextChecker;
+use crate::validation::TestFindingData;
+#[cfg(test)]
+use crate::validations::utils::text_check::checkers::mock_spell::MockSpellChecker;
 
 /// The kind of text check to perform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -43,9 +47,40 @@ pub struct TextCheckFinding {
     pub replacement: Option<String>,
 }
 
-/// Checks a single text snippet for issues of the given [`TextCheckKind`] for the given [`ValidCsafLanguage`].
-#[allow(dead_code)]
-pub fn check_text(kind: TextCheckKind, lang: &ValidCsafLanguage, text: &str) -> Result<Vec<TextCheckFinding>, TextCheckerMatchingError> {
+pub enum TextCheckerMatchingError {
+    #[allow(unused)]
+    UnsupportedLanguage(String),
+    #[allow(unused)]
+    NoCheckerAvailable(TextCheckKind),
+}
+
+impl From<TextCheckerMatchingError> for TestFindingData {
+    fn from(err: TextCheckerMatchingError) -> Self {
+        match err {
+            TextCheckerMatchingError::UnsupportedLanguage(lang) => TestFindingData {
+                message: format!("No text checker available for language '{lang}'"),
+                instance_path: "".to_string(),
+            },
+            TextCheckerMatchingError::NoCheckerAvailable(kind) => TestFindingData {
+                message: format!("No text checker available for check kind '{kind:?}'"),
+                instance_path: "".to_string(),
+            },
+        }
+    }
+}
+
+/// Selects the single best-quality [`TextChecker`] able to handle the given [`TextCheckKind`]
+/// and [`ValidCsafLanguage`].
+///
+/// Matching only depends on `kind`/`lang`, not on any particular text.
+pub fn select_checker(kind: TextCheckKind, lang: &ValidCsafLanguage) -> Result<Box<dyn TextChecker>, TextCheckerMatchingError> {
+    // Unit tests get the mock checkers
+    #[cfg(test)]
+    if kind == TextCheckKind::Spell {
+        return Ok(Box::new(MockSpellChecker));
+    }
+    
+    // Prod code gets matching
     let checkers = filter_checkers(kind, lang)?;
 
     // pick the best quality among the available checkers
@@ -61,6 +96,5 @@ pub fn check_text(kind: TextCheckKind, lang: &ValidCsafLanguage, text: &str) -> 
         .find(|checker| checker.get_quality() == best_quality)
         .expect("a checker with this quality should exist");
 
-    Ok(checker.check_text(kind, text))
+    Ok(checker)
 }
-

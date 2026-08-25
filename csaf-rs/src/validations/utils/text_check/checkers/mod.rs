@@ -1,6 +1,6 @@
 use std::cmp::PartialEq;
 use crate::csaf::types::language::ValidCsafLanguage;
-use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
+use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind, TextCheckerMatchingError};
 use crate::validations::utils::text_check::checkers::TextCheckerMatchingError::{NoCheckerAvailable, UnsupportedLanguage};
 
 #[cfg(test)]
@@ -48,12 +48,6 @@ pub enum TemporaryTextCheckQuality {
     Poor,
 }
 
-pub enum TextCheckerMatchingError {
-    #[allow(unused)]
-    UnsupportedLanguage(String),
-    #[allow(unused)]
-    NoCheckerAvailable(TextCheckKind),
-}
 
 pub(crate) fn filter_checkers(kind: TextCheckKind, lang: &ValidCsafLanguage) -> Result<Vec<Box<dyn TextChecker>>, TextCheckerMatchingError> {
     let mut matches: Option<Vec<Box<dyn TextChecker>>> = None;

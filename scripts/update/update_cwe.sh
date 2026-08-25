@@ -8,5 +8,16 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 }
 cd "$REPO_ROOT"
 
+# CWE version to fetch, e.g. v4.20 (defaults to "latest")
 VERSION=${1:-latest}
-curl -fS https://cwe.mitre.org/data/xml/cwec_${VERSION}.xml.zip | funzip | xsltproc scripts/update/convert-cwe-to-csv.xslt - | (read -r header; sort -n > csaf-rs/assets/cwe/cwe_${header}.csv )
+echo "Updating $VERSION"
+
+# download the CWE XML archive for the given version
+curl -fS https://cwe.mitre.org/data/xml/cwec_${VERSION}.xml.zip |
+# unzip it
+funzip |
+# convert it to CSV via XSLT
+xsltproc scripts/update/convert-cwe-to-csv.xslt - |
+# sort by CWE ID (skipping the header row)
+# and write the result to a CSV file named with the CWE version from the header
+(read -r header; sort -n > csaf-rs/assets/cwe/cwe_${header}.csv )

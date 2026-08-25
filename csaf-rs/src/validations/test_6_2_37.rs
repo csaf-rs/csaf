@@ -110,7 +110,7 @@ mod tests {
             "x_example.test#without-resource/de-DE",
             &resources_path,
         )]);
-        // Case 12: two unregistered ns, one with resource, one without, one with reserved "test" namespace
+        // Case 02: two unregistered ns, one with resource, one without, one with reserved "test" namespace
         let case_02_multiple_including_test = Err(vec![create_missing_ssvc_resource_warning(
             "x_example.test#without-resource/en-AU",
             &resources_path,

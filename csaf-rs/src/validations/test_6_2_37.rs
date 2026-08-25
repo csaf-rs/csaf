@@ -1,12 +1,8 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::ssvc::create_other_namespace_error;
+use crate::validations::utils::ssvc::{create_generic_namespace_finding_data, ssvc_decision_point_resources_path};
 
-fn ssvc_decision_point_resources_path(vuln_index: usize, metric_index: usize) -> String {
-    format!("/vulnerabilities/{vuln_index}/metrics/{metric_index}/content/ssvc_v2/decision_point_resources")
-}
-
-fn create_missing_resource_error(namespace: &str, instance_path: &str) -> TestFinding {
+fn create_missing_ssvc_resource_warning(namespace: &str, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "Missing decision point resource for SSVC decision point with unregistered namespace: `{namespace}`"
@@ -23,6 +19,7 @@ fn create_missing_resource_error(namespace: &str, instance_path: &str) -> TestFi
 /// MUST be treated as per their definition.
 pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resource(
     doc: &impl CsafTrait,
+    allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 
@@ -31,6 +28,7 @@ pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resour
             if !metric.get_content().has_ssvc_v2() {
                 continue;
             }
+
             // Parse failures are reported by test 6.1.46
             let Ok(selection_list) = metric.get_content().get_ssvc_v2() else {
                 continue;
@@ -41,18 +39,21 @@ pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resour
 
             for selection in &selection_list.selections {
                 let namespace = selection.namespace.as_str();
-                let parsed = ssvc::validate_namespace(namespace, false);
+                let parsed = ssvc::validate_namespace(namespace, allow_test_namespaces);
                 match parsed {
                     Ok(parsed_namespace) => {
-                        if !parsed_namespace.is_unregistered() {
+                        // skip registered namespaces
+                        if parsed_namespace.is_registered() {
                             continue;
                         }
 
-                        let has_resource = resources.iter().any(|r| r.summary.contains(namespace));
-                        if !has_resource {
+                        // check if there is a resource containing the full namespace
+                        let has_resource_with_full_namespace = resources.iter().any(|r| r.summary.contains(namespace));
+                        // there should be at least one, push a finding if not
+                        if !has_resource_with_full_namespace {
                             errors
                                 .get_or_insert_default()
-                                .push(create_missing_resource_error(namespace, &instance_path));
+                                .push(create_missing_ssvc_resource_warning(namespace, &instance_path));
                         }
                     },
                     Err(err) => {
@@ -62,9 +63,9 @@ pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resour
                             ssvc::NamespaceError::ReservedForbiddenNamespace { .. }
                                 | ssvc::NamespaceError::ReservedTestNamespace { .. }
                         ) {
-                            errors
-                                .get_or_insert_default()
-                                .push(TestFinding::Warning(create_other_namespace_error(&err, &instance_path)));
+                            errors.get_or_insert_default().push(TestFinding::Warning(
+                                create_generic_namespace_finding_data(&err, &instance_path),
+                            ));
                         }
                     },
                 }
@@ -75,41 +76,42 @@ pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resour
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(
-    csaf2_1,
-    ValidatorForTest6_2_37,
-    test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resource
-);
+impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
+    for crate::csaf2_1::testcases::ValidatorForTest6_2_37
+{
+    fn validate(
+        &self,
+        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) -> Result<(), Vec<TestFinding>> {
+        #[cfg(test)]
+        let allow_test_namespaces = true;
+        #[cfg(not(test))]
+        let allow_test_namespaces = false;
+        test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resource(doc, allow_test_namespaces)
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_37 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use ssvc::NamespaceError;
-
-    fn resources_path() -> String {
-        ssvc_decision_point_resources_path(0, 0)
-    }
 
     #[test]
     fn test_test_6_2_37() {
-        let case_01_resource_for_different_ns = Err(vec![create_missing_resource_error(
+        let resources_path = ssvc_decision_point_resources_path(0, 0);
+
+        let case_01_resource_for_different_ns = Err(vec![create_missing_ssvc_resource_warning(
             "x_example.test#without-resource/de-DE",
-            &resources_path(),
+            &resources_path,
         )]);
+        // Case 12: two unregistered ns, one with resource, one without, one with reserved "test" namespace
         let case_02_multiple_including_test = Err(vec![
-            create_missing_resource_error("x_example.test#without-resource/en-AU", &resources_path()),
-            TestFinding::Warning(create_other_namespace_error(
-                &NamespaceError::ReservedTestNamespace {
-                    namespace: "test".to_string(),
-                },
-                &resources_path(),
-            )),
+            create_missing_ssvc_resource_warning("x_example.test#without-resource/en-AU", &resources_path),
         ]);
-        let case_03_no_resource = Err(vec![create_missing_resource_error(
+        let case_03_no_resource = Err(vec![create_missing_ssvc_resource_warning(
             "x_example.test#without-resource/de-AT",
-            &resources_path(),
+            &resources_path,
         )]);
 
         // Case 11: resource summary contains the full namespace

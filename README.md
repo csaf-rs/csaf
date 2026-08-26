@@ -126,6 +126,19 @@ cargo install cargo-edit
 ./scripts/publish/bump_version.sh set 1.2.3    # explicit version
 ```
 
+## Commit Messages
+
+Please use commit messages and pull request titles following [Conventional Commits](https://www.conventionalcommits.org/) when contributing to this project.
+You can use a tool such as [commitlint](https://commitlint.js.org/) to check your commit locally, e.g., by running:
+
+```bash
+commitlint --default-config --last
+```
+
+to verify the latest commit. More options can be found with `--help`.
+The CI workflow `pre-checks` will also ensure that PR titles and commit messages in pushes to `main` conform to Conventional Commits.
+In addition, warnings in the pipeline are emitted if the commits contained within a PR do not adhere to Conventional Commits; these warnings do not fail the pipeline.
+
 ## Build
 
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run
@@ -333,6 +346,10 @@ This creates TypeScript + WASM output in `wasm/`.
 | 6.2.24   | ⭕ | ✅ |
 | 6.2.25   | ⭕ | ✅ |
 | 6.2.26   | ⭕ | ✅ |
+| 6.2.34   | ⭕ | ✅ |
+| 6.2.35   | ⭕ | ✅ |
+| 6.2.36   | ⭕ | ✅ |
+| 6.2.37   | ⭕ | ✅ |
 | 6.2.39.2 | ⭕ | ✅ |
 | 6.2.39.3 | ⭕ | ✅ |
 | 6.2.47   | ⭕ | ✅ |
@@ -340,6 +357,8 @@ This creates TypeScript + WASM output in `wasm/`.
 ### Informative Tests
 
 | Test specification | 2.0               | 2.1 (experimental) |
-| --- |-------------------|--------------------|
-| 6.3.1 |  |  |
+|--------|-------------------|--------------------|
+| 6.3.1  |  |  |
+| 6.3.14 | ⭕ | ✅ |
+| 6.3.15 | ⭕ | ✅ |
 

@@ -15,6 +15,7 @@ use crate::validations::utils::text_check::checkers::utils::tokenize_words;
 /// - Tokens that are entirely uppercase are treated as acronyms and skipped.
 /// - Tokens that appear (case-insensitively) in the built-in minimal word list are considered correctly spelled.
 /// - All other tokens are reported as misspellings without providing a replacement.
+#[derive(Default, Clone, Copy)]
 pub struct MockSpellChecker;
 
 impl TextChecker for MockSpellChecker {

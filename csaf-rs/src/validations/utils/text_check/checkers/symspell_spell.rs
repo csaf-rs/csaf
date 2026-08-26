@@ -41,6 +41,7 @@ static SYMSPELL: LazyLock<SymSpell<UnicodeStringStrategy>> = LazyLock::new(|| {
 /// - Words not found are looked up via SymSpell: if a close match is found within
 ///   [`MAX_EDIT_DISTANCE`] edits it is offered as `replacement`. Otherwise the word is
 ///   reported as misspelled without a suggested fix.
+#[derive(Default, Clone, Copy)]
 pub struct EnglishSymspellChecker;
 
 impl TextChecker for EnglishSymspellChecker {

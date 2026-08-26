@@ -298,6 +298,7 @@ pub(crate) static EXPECTED_RESULTS_2_0: std::sync::LazyLock<crate::csaf2_0::test
             create_misspelling_finding_info("undisclused", 29, 40, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("addacker", 89, 97, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("x-cute", 101, 107, &None, "/vulnerabilities/0/notes/0/text"),
+            // this is debatable, "root" is what should be here, but "rood" is a legitimate (although older) english word: https://dictionary.cambridge.org/dictionary/english/rood
             create_misspelling_finding_info("rood", 128, 132, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("priviledges", 133, 144, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("Vu1nerability", 0, 13, &None, "/vulnerabilities/0/notes/0/title"),

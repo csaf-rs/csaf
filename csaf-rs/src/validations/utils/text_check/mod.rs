@@ -13,8 +13,8 @@ use crate::csaf::types::language::ValidCsafLanguage;
 use crate::validations::utils::text_check::checkers::filter_checkers;
 
 pub(crate) mod checkers;
-mod integration_tests;
-mod unit_tests;
+#[cfg(test)]
+mod tests;
 
 use crate::validation::TestFindingData;
 #[cfg(test)]

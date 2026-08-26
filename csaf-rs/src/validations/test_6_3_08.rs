@@ -9,7 +9,6 @@ use crate::csaf_traits::{
 };
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::text_check::{TextCheckKind, TextChecker, TextCheckerMatchingError, select_checker};
-use std::sync::LazyLock;
 
 /// Finding generation, also used by the text_check/integration tests
 pub(crate) fn create_misspelling_finding_info(
@@ -279,8 +278,8 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_8, test_6_3_8_spell_
 
 #[cfg(test)]
 /// Expected results, also used by the text_check/integration tests
-pub(crate) static EXPECTED_RESULTS_2_0: LazyLock<crate::csaf2_0::testcases::ExpectedResults_6_3_8> =
-    LazyLock::new(|| crate::csaf2_0::testcases::ExpectedResults_6_3_8 {
+pub(crate) static EXPECTED_RESULTS_2_0: std::sync::LazyLock<crate::csaf2_0::testcases::ExpectedResults_6_3_8> =
+    std::sync::LazyLock::new(|| crate::csaf2_0::testcases::ExpectedResults_6_3_8 {
         case_01: Err(vec![create_misspelling_finding_info(
             "Secruity",
             0,
@@ -312,8 +311,8 @@ pub(crate) static EXPECTED_RESULTS_2_0: LazyLock<crate::csaf2_0::testcases::Expe
 
 #[cfg(test)]
 /// Expected results, also used by the text_check/integration tests
-pub(crate) static EXPECTED_RESULTS_2_1: LazyLock<crate::csaf2_1::testcases::ExpectedResults_6_3_8> =
-    LazyLock::new(|| crate::csaf2_1::testcases::ExpectedResults_6_3_8 {
+pub(crate) static EXPECTED_RESULTS_2_1: std::sync::LazyLock<crate::csaf2_1::testcases::ExpectedResults_6_3_8> =
+    std::sync::LazyLock::new(|| crate::csaf2_1::testcases::ExpectedResults_6_3_8 {
         case_01: Err(vec![create_misspelling_finding_info(
             "Secruity",
             0,

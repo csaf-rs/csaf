@@ -1,0 +1,115 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Informative Test: Use of Short Hash (failing supplementary example 3 - multiple product paths and findings)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-05-S03",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-0001"
+      },
+      {
+        "name": "Product B",
+        "product_id": "CSAFPID-0002"
+      },
+      {
+        "name": "Product C",
+        "product_id": "CSAFPID-0003"
+      }
+    ],
+    "product_paths": [
+      {
+        "beginning_product_reference": "CSAFPID-0001",
+        "full_product_name": {
+          "name": "Product A installed on Product B",
+          "product_id": "CSAFPID-0101",
+          "product_identification_helper": {
+            "hashes": [
+              {
+                "file_hashes": [
+                  {
+                    "algorithm": "sha256",
+                    "value": "13ef03ded9c5faac78d438399a976aec9fecb50f811380a08a8752ce27fd463f"
+                  },
+                  {
+                    "algorithm": "md5",
+                    "value": "d3eb6b243389b8a84295f20010e095be"
+                  }
+                ],
+                "filename": "product-ab.so"
+              }
+            ]
+          }
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-0002"
+          }
+        ]
+      },
+      {
+        "beginning_product_reference": "CSAFPID-0001",
+        "full_product_name": {
+          "name": "Product A installed on Product C",
+          "product_id": "CSAFPID-0102",
+          "product_identification_helper": {
+            "hashes": [
+              {
+                "file_hashes": [
+                  {
+                    "algorithm": "sha512",
+                    "value": "cd7584ed240b4e05b55c85be0ee1dd7815327b36f009577da5752700ef6d60717de2e06b33c7e8dc2dfe9c366f97426b8c2b4c6e19b887b08797b887b0ea0cd6"
+                  }
+                ],
+                "filename": "product-ac-valid.so"
+              },
+              {
+                "file_hashes": [
+                  {
+                    "algorithm": "sha1",
+                    "value": "9cff6ee97dca39bfb114d278c997324a8609ebec"
+                  }
+                ],
+                "filename": "product-ac-short.so"
+              }
+            ]
+          }
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-0003"
+          }
+        ]
+      }
+    ]
+  }
+}

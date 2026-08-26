@@ -286,7 +286,7 @@ fn cvss_v4_has_score_zero(cvss_v4: CvssV4) -> Vec<CvssScoreNonZeroCheckResult> {
     // inherited from their base counterpart when not explicitly defined
     if let Some((calced_score, _)) = effective.calculated_score() {
         if is_zero_score(calced_score) {
-            results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero);
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero);
         } else {
             results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_score));
         }

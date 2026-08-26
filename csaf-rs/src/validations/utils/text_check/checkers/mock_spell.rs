@@ -2,10 +2,10 @@
 //!
 //! This module provides a basic English spell-checker backed by a static word list.
 
-use std::collections::HashSet;
-use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
-use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
 use crate::validations::utils::text_check::checkers::utils::tokenize_words;
+use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
+use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
+use std::collections::HashSet;
 
 /// A mock spell-checker for English text.
 ///

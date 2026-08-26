@@ -1,15 +1,15 @@
-use std::sync::LazyLock;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
+use crate::csaf::types::language::ValidCsafLanguage;
 use crate::csaf_traits::{
     AcknowledgmentTrait, AggregateSeverityTrait, BranchTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentTrait,
     EngineTrait, GeneratorTrait, InvolvementTrait, NoteTrait, ProductGroupTrait, ProductPathTrait, ProductTrait,
     ProductTreeTrait, PublisherTrait, ReferenceTrait, RemediationTrait, RestartRequiredTrait, RevisionTrait,
     ThreatTrait, TrackingTrait, VulnerabilityTrait,
 };
-use crate::csaf::types::language::ValidCsafLanguage;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::text_check::{TextCheckKind, TextChecker, select_checker, TextCheckerMatchingError};
+use crate::validations::utils::text_check::{TextCheckKind, TextChecker, TextCheckerMatchingError, select_checker};
+use std::sync::LazyLock;
 
 /// Finding generation, also used by the text_check/integration tests
 pub(crate) fn create_misspelling_finding_info(
@@ -279,65 +279,66 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_8, test_6_3_8_spell_
 
 #[cfg(test)]
 /// Expected results, also used by the text_check/integration tests
-pub(crate) static EXPECTED_RESULTS_2_0: LazyLock<crate::csaf2_0::testcases::ExpectedResults_6_3_8> = LazyLock::new(|| crate::csaf2_0::testcases::ExpectedResults_6_3_8 {
-    case_01: Err(vec![create_misspelling_finding_info(
-        "Secruity",
-        0,
-        8,
-        &None,
-        "/document/notes/0/text",
-    )]),
-    case_02: Err(vec![
-        create_misspelling_finding_info("Pruduct", 0, 7, &None, "/product_tree/branches/0/branches/0/name"),
-        create_misspelling_finding_info(
-            "Pruduct",
-            16,
-            23,
+pub(crate) static EXPECTED_RESULTS_2_0: LazyLock<crate::csaf2_0::testcases::ExpectedResults_6_3_8> =
+    LazyLock::new(|| crate::csaf2_0::testcases::ExpectedResults_6_3_8 {
+        case_01: Err(vec![create_misspelling_finding_info(
+            "Secruity",
+            0,
+            8,
             &None,
-            "/product_tree/branches/0/branches/0/branches/0/product/name",
-        ),
-        create_misspelling_finding_info("vulnerapility", 2, 15, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("undisclused", 29, 40, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("addacker", 89, 97, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("x-cute", 101, 107, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("rood", 128, 132, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("priviledges", 133, 144, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("Vu1nerability", 0, 13, &None, "/vulnerabilities/0/notes/0/title"),
-        create_misspelling_finding_info("sommary", 14, 21, &None, "/vulnerabilities/0/notes/0/title"),
-    ]),
-    case_11: Ok(()),
-    case_12: Ok(()),
-});
+            "/document/notes/0/text",
+        )]),
+        case_02: Err(vec![
+            create_misspelling_finding_info("Pruduct", 0, 7, &None, "/product_tree/branches/0/branches/0/name"),
+            create_misspelling_finding_info(
+                "Pruduct",
+                16,
+                23,
+                &None,
+                "/product_tree/branches/0/branches/0/branches/0/product/name",
+            ),
+            create_misspelling_finding_info("vulnerapility", 2, 15, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("undisclused", 29, 40, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("addacker", 89, 97, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("x-cute", 101, 107, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("rood", 128, 132, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("priviledges", 133, 144, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("Vu1nerability", 0, 13, &None, "/vulnerabilities/0/notes/0/title"),
+            create_misspelling_finding_info("sommary", 14, 21, &None, "/vulnerabilities/0/notes/0/title"),
+        ]),
+        case_11: Ok(()),
+        case_12: Ok(()),
+    });
 
 #[cfg(test)]
 /// Expected results, also used by the text_check/integration tests
-pub(crate) static EXPECTED_RESULTS_2_1: LazyLock<crate::csaf2_1::testcases::ExpectedResults_6_3_8> = LazyLock::new(|| crate::csaf2_1::testcases::ExpectedResults_6_3_8 {
-    case_01: Err(vec![create_misspelling_finding_info(
-        "Secruity",
-        0,
-        8,
-        &None,
-        "/document/notes/0/text",
-    )]),
-    case_02: Err(vec![
-        create_misspelling_finding_info("Produkt", 0, 7, &None, "/product_tree/branches/0/branches/0/name"),
-        create_misspelling_finding_info(
-            "Produkt",
-            16,
-            23,
+pub(crate) static EXPECTED_RESULTS_2_1: LazyLock<crate::csaf2_1::testcases::ExpectedResults_6_3_8> =
+    LazyLock::new(|| crate::csaf2_1::testcases::ExpectedResults_6_3_8 {
+        case_01: Err(vec![create_misspelling_finding_info(
+            "Secruity",
+            0,
+            8,
             &None,
-            "/product_tree/branches/0/branches/0/branches/0/product/name",
-        ),
-        create_misspelling_finding_info("combonent", 41, 50, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("renote", 82, 88, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("x-cute", 101, 107, &None, "/vulnerabilities/0/notes/0/text"),
-        create_misspelling_finding_info("Vuknerability", 0, 13, &None, "/vulnerabilities/0/notes/0/title"),
-        create_misspelling_finding_info("sumsary", 14, 21, &None, "/vulnerabilities/0/notes/0/title"),
-    ]),
-    case_11: Ok(()),
-    case_12: Ok(()),
-});
-
+            "/document/notes/0/text",
+        )]),
+        case_02: Err(vec![
+            create_misspelling_finding_info("Produkt", 0, 7, &None, "/product_tree/branches/0/branches/0/name"),
+            create_misspelling_finding_info(
+                "Produkt",
+                16,
+                23,
+                &None,
+                "/product_tree/branches/0/branches/0/branches/0/product/name",
+            ),
+            create_misspelling_finding_info("combonent", 41, 50, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("renote", 82, 88, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("x-cute", 101, 107, &None, "/vulnerabilities/0/notes/0/text"),
+            create_misspelling_finding_info("Vuknerability", 0, 13, &None, "/vulnerabilities/0/notes/0/title"),
+            create_misspelling_finding_info("sumsary", 14, 21, &None, "/vulnerabilities/0/notes/0/title"),
+        ]),
+        case_11: Ok(()),
+        case_12: Ok(()),
+    });
 
 #[cfg(test)]
 mod tests {
@@ -346,7 +347,7 @@ mod tests {
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
-    fn test_test_6_3_08(){
+    fn test_test_6_3_08() {
         TESTS_2_0.test_6_3_8.expect(EXPECTED_RESULTS_2_0.to_owned());
         TESTS_2_1.test_6_3_8.expect(EXPECTED_RESULTS_2_1.to_owned());
     }

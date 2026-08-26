@@ -1,7 +1,9 @@
-use std::cmp::PartialEq;
 use crate::csaf::types::language::ValidCsafLanguage;
+use crate::validations::utils::text_check::checkers::TextCheckerMatchingError::{
+    NoCheckerAvailable, UnsupportedLanguage,
+};
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind, TextCheckerMatchingError};
-use crate::validations::utils::text_check::checkers::TextCheckerMatchingError::{NoCheckerAvailable, UnsupportedLanguage};
+use std::cmp::PartialEq;
 
 #[cfg(test)]
 pub(crate) mod mock_spell;
@@ -12,7 +14,7 @@ mod utils;
 pub trait TextChecker {
     /// Temporary measure of quality, will be replaced later.
     fn get_quality(&self) -> TemporaryTextCheckQuality;
-    
+
     /// Get the [`TextCheckKind`]s supported by this checker
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind>;
 
@@ -48,8 +50,10 @@ pub enum TemporaryTextCheckQuality {
     Poor,
 }
 
-
-pub(crate) fn filter_checkers(kind: TextCheckKind, lang: &ValidCsafLanguage) -> Result<Vec<Box<dyn TextChecker>>, TextCheckerMatchingError> {
+pub(crate) fn filter_checkers(
+    kind: TextCheckKind,
+    lang: &ValidCsafLanguage,
+) -> Result<Vec<Box<dyn TextChecker>>, TextCheckerMatchingError> {
     let mut matches: Option<Vec<Box<dyn TextChecker>>> = None;
     let mut no_checker_match = true;
     for checker in all_checkers() {

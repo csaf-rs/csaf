@@ -3,14 +3,14 @@
 
 #[cfg(test)]
 mod tests {
+    use crate::csaf_traits::CsafTrait;
     use crate::csaf2_0::testcases::Test6_3_8 as Test6_3_8_2_0;
     use crate::csaf2_1::testcases::Test6_3_8 as Test6_3_8_2_1;
-    use crate::csaf_traits::CsafTrait;
     use crate::validation::TestFinding;
-    use crate::validations::test_6_3_08::{test_6_3_8_spell_check_impl, EXPECTED_RESULTS_2_0, EXPECTED_RESULTS_2_1};
+    use crate::validations::test_6_3_08::{EXPECTED_RESULTS_2_0, EXPECTED_RESULTS_2_1, test_6_3_8_spell_check_impl};
+    use crate::validations::utils::text_check::TextChecker;
     use crate::validations::utils::text_check::checkers::mock_spell::MockSpellChecker;
     use crate::validations::utils::text_check::checkers::symspell_spell::EnglishSymspellChecker;
-    use crate::validations::utils::text_check::TextChecker;
     use rstest::rstest;
 
     /// Test-only entry point that forces the given checker instead of `select_checker`'s matching.

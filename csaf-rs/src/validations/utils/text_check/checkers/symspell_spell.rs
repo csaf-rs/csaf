@@ -1,12 +1,11 @@
 //! English spell-checker backed by the SymSpell algorithm and static word-frequency
 //! dictionaries (TODO: only english for now)
 
-
+use crate::validations::utils::text_check::checkers::utils::tokenize_words;
+use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
+use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::sync::LazyLock;
 use symspell::{SymSpell, SymSpellBuilder, UnicodeStringStrategy, Verbosity};
-use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
-use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
-use crate::validations::utils::text_check::checkers::utils::tokenize_words;
 
 /// Word/frequency dictionary of the 10,000 most common English words, used to seed the
 /// SymSpell spell-checker. Each line has the form `<word> <frequency>`.
@@ -52,7 +51,7 @@ impl TextChecker for EnglishSymspellChecker {
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
         vec![TextCheckKind::Spell]
     }
-    
+
     fn get_available_languages(&self) -> Vec<&str> {
         vec!["en"]
     }
@@ -102,8 +101,8 @@ impl TextChecker for EnglishSymspellChecker {
 
 #[cfg(test)]
 mod tests {
-    use crate::validations::utils::text_check::TextCheckKind;
     use super::*;
+    use crate::validations::utils::text_check::TextCheckKind;
 
     #[test]
     fn does_not_flag_dictionary_words() {

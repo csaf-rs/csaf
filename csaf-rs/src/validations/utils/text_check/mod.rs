@@ -10,16 +10,16 @@
 //! The [`TextChecker`] trait abstracts over the concrete language-checking engine.
 
 use crate::csaf::types::language::ValidCsafLanguage;
-use crate::validations::utils::text_check::checkers::{filter_checkers};
+use crate::validations::utils::text_check::checkers::filter_checkers;
 
 pub(crate) mod checkers;
-mod unit_tests;
 mod integration_tests;
+mod unit_tests;
 
-pub use checkers::TextChecker;
 use crate::validation::TestFindingData;
 #[cfg(test)]
 use crate::validations::utils::text_check::checkers::mock_spell::MockSpellChecker;
+pub use checkers::TextChecker;
 
 /// The kind of text check to perform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -73,13 +73,16 @@ impl From<TextCheckerMatchingError> for TestFindingData {
 /// and [`ValidCsafLanguage`].
 ///
 /// Matching only depends on `kind`/`lang`, not on any particular text.
-pub fn select_checker(kind: TextCheckKind, lang: &ValidCsafLanguage) -> Result<Box<dyn TextChecker>, TextCheckerMatchingError> {
+pub fn select_checker(
+    kind: TextCheckKind,
+    lang: &ValidCsafLanguage,
+) -> Result<Box<dyn TextChecker>, TextCheckerMatchingError> {
     // Unit tests get the mock checkers
     #[cfg(test)]
     if kind == TextCheckKind::Spell {
         return Ok(Box::new(MockSpellChecker));
     }
-    
+
     // Prod code gets matching
     let checkers = filter_checkers(kind, lang)?;
 

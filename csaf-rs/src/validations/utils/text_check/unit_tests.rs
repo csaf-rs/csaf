@@ -1,10 +1,10 @@
 /// Tests that verify the behavior shared by every [`TextChecker`] implementation
 #[cfg(test)]
 mod tests {
-    use rstest::rstest;
-    use crate::validations::utils::text_check::{TextCheckKind, TextChecker};
     use crate::validations::utils::text_check::checkers::mock_spell;
     use crate::validations::utils::text_check::checkers::symspell_spell;
+    use crate::validations::utils::text_check::{TextCheckKind, TextChecker};
+    use rstest::rstest;
 
     /// Returns the substring of `text` identified by the character-index span `[start, end)`.
     fn char_slice(text: &str, start: usize, end: usize) -> String {

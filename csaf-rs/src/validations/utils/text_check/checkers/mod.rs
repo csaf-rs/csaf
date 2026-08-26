@@ -56,7 +56,11 @@ pub(crate) fn filter_checkers(
     for checker in all_checkers() {
         if checker.get_available_check_kinds().contains(&kind) {
             no_checker_match = false;
-            if checker.get_available_languages().iter().any(|avail_lang| avail_lang.eq_ignore_ascii_case(lang.primary_language())) {
+            if checker
+                .get_available_languages()
+                .iter()
+                .any(|avail_lang| avail_lang.eq_ignore_ascii_case(lang.primary_language()))
+            {
                 matches.get_or_insert_default().push(checker);
             }
         }

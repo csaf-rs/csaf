@@ -7,6 +7,11 @@ use crate::validations::test_6_3_08::test_6_3_8_spell_check_impl;
 use crate::validations::utils::text_check::checkers::TemporaryTextCheckQuality;
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind, TextChecker};
 
+/// Returns the substring of `text` identified by the character-index span `[start, end)`.
+pub(crate) fn char_slice(text: &str, start: usize, end: usize) -> String {
+    text.chars().skip(start).take(end - start).collect()
+}
+
 /// Extension trait to build checker-specific expected results `EXPECTED_RESULTS_*`.
 pub(crate) trait ExpectedResultExt {
     /// Returns `self` with `finding` added to it, turning `Ok` into a `Err`

@@ -1844,7 +1844,13 @@ crate::macros::define_csaf_test!(
     "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s03.json",
     "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s03.json"), (case_s04, "s04",
     "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s04.json",
-    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s04.json"), (case_11, "11",
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s04.json"), (case_s12, "s12",
+    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s12.json",
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s12.json"), (case_s13, "s13",
+    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s13.json",
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s13.json"), (case_s14, "s14",
+    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s14.json",
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s14.json"), (case_11, "11",
     "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-19-11.json",
     "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-19-11.json"), (case_12, "12",
     "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-19-12.json",
@@ -1864,13 +1870,7 @@ crate::macros::define_csaf_test!(
     "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-19-19.json",
     "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-19-19.json"), (case_s11, "s11",
     "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s11.json",
-    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s11.json"), (case_s12, "s12",
-    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s12.json",
-    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s12.json"), (case_s13, "s13",
-    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s13.json",
-    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s13.json"), (case_s14, "s14",
-    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s14.json",
-    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s14.json")]
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-19-s11.json")]
 );
 crate::macros::define_csaf_test!(
     Test6_2_20, ValidatorForTest6_2_20, ExpectedResults_6_2_20, id : "6.2.20", doc_type :

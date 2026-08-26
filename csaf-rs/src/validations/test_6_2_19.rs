@@ -28,6 +28,7 @@ fn create_cvss_calced_score_nonzero_for_fixed_products_warning(product_id: &str,
 
 /// 6.2.19 test specific marker enum for CVSS versions.
 /// Not using `CsafVulnerabilityMetric` as we don't care about / don't need the inner CVSS version string
+#[cfg_attr(test, derive(Clone, Copy))]
 enum TestSpecificCvssKind {
     CvssV2,
     CvssV3,
@@ -45,8 +46,9 @@ impl TestSpecificCvssKind {
 }
 
 enum CvssScoreNonZeroCheckResult {
-    CvssScoreIsZero,
+    PropertyCvssScoreIsZero,
     PropertyCvssScoreNonZero(f64),
+    CalculatedCvssScoreIsZero,
     CalculatedCvssScoreNonZero(f64),
     ParsingFailed,
     CalculationFailed
@@ -62,19 +64,21 @@ enum CvssScoreNonZeroCheckResult {
 /// from `vectorString`, with any environmental metric given explicitly in JSON overlaid on top
 /// (JSON properties take precedence over the vector string, mirroring how CSAF documents are
 /// allowed to convey them either way).
-fn cvss_v2_has_env_score_zero(cvss_v2: CvssV2) -> CvssScoreNonZeroCheckResult {
+fn cvss_v2_has_env_score_zero(cvss_v2: CvssV2) -> Vec<CvssScoreNonZeroCheckResult> {
+    let mut results: Vec<CvssScoreNonZeroCheckResult> = Vec::new();
     // an explicitly reported environmental score is authoritative
     if let Some(env_score) = cvss_v2.environmental_score {
-        return if is_zero_score(env_score) {
-            CvssScoreNonZeroCheckResult::CvssScoreIsZero
+        if is_zero_score(env_score) {
+            results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero)
         } else {
-            CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(env_score)
+            results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(env_score))
         };
     }
 
     // seed the effective CVSS object with the base (and any vector-encoded environmental) metrics
     let Ok(mut effective) = CvssV2::from_str(&cvss_v2.vector_string) else {
-        return CvssScoreNonZeroCheckResult::ParsingFailed;
+        results.push(CvssScoreNonZeroCheckResult::ParsingFailed);
+        return results;
     };
 
     // JSON-provided environmental properties supplement the vector, if the vector does not have
@@ -88,13 +92,14 @@ fn cvss_v2_has_env_score_zero(cvss_v2: CvssV2) -> CvssScoreNonZeroCheckResult {
     // calculate the environmental score based on merged vector and JSON
     if let Some(calced_env_score) = effective.calculated_environmental_score() {
         if is_zero_score(calced_env_score) {
-            CvssScoreNonZeroCheckResult::CvssScoreIsZero
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero);
         } else {
-            CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_env_score)
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_env_score));
         }
     } else {
-        CvssScoreNonZeroCheckResult::CalculationFailed
+        results.push(CvssScoreNonZeroCheckResult::CalculationFailed);
     }
+    results
 }
 
 /// Checks if a CVSS v3 score has an environmental score of 0.
@@ -103,19 +108,21 @@ fn cvss_v2_has_env_score_zero(cvss_v2: CvssV2) -> CvssScoreNonZeroCheckResult {
 /// only checking whether the modified impact metrics are explicitly `NONE`: an undefined modified
 /// impact metric inherits the value of its corresponding base impact metric, which can also
 /// result in an environmental score of 0 (e.g. `.../A:N/MC:N/MI:N` with no `MA` at all).
-fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> CvssScoreNonZeroCheckResult {
+fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> Vec<CvssScoreNonZeroCheckResult> {
+    let mut results = Vec::new();
     // an explicitly reported environmental score is authoritative
     if let Some(env_score) = cvss_v3.environmental_score {
-        return if is_zero_score(env_score) {
-            CvssScoreNonZeroCheckResult::CvssScoreIsZero
+        if is_zero_score(env_score) {
+            results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero);
         } else {
-            CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(env_score)
-        };
+            results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(env_score));
+        }
     }
 
     // seed the effective CVSS object with the base (and any vector-encoded environmental) metrics
     let Ok(mut effective) = CvssV3::from_str(&cvss_v3.vector_string) else {
-        return CvssScoreNonZeroCheckResult::ParsingFailed;
+        results.push(CvssScoreNonZeroCheckResult::ParsingFailed);
+        return results;
     };
 
     // JSON-provided environmental properties supplement the vector, if the vector does not have
@@ -140,13 +147,14 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> CvssScoreNonZeroCheckResult {
     // that are inherited from their base counterpart when not explicitly defined
     if let Some(calced_env_score) = effective.calculated_environmental_score() {
         if is_zero_score(calced_env_score) {
-            CvssScoreNonZeroCheckResult::CvssScoreIsZero
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero);
         } else {
-            CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_env_score)
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_env_score));
         }
     } else {
-        CvssScoreNonZeroCheckResult::CalculationFailed
+        results.push(CvssScoreNonZeroCheckResult::CalculationFailed);
     }
+    results
 }
 
 /// Checks if a CVSS v4 score has an overall score of 0.
@@ -156,15 +164,20 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> CvssScoreNonZeroCheckResult {
 /// score is (re)calculated instead of only checking whether the modified impact metrics are
 /// explicitly set: an undefined modified impact metric inherits the value of its corresponding
 /// base impact metric.
-fn cvss_v4_has_score_zero(cvss_v4: CvssV4) -> CvssScoreNonZeroCheckResult {
+fn cvss_v4_has_score_zero(cvss_v4: CvssV4) -> Vec<CvssScoreNonZeroCheckResult> {
+    let mut results = Vec::new();
+
     // an explicitly reported overall score is authoritative
     if is_zero_score(cvss_v4.base_score) {
-        return CvssScoreNonZeroCheckResult::CvssScoreIsZero;
+        results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero);
+    } else {
+        results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(cvss_v4.base_score));
     }
 
     // seed the effective CVSS object with the base (and any vector-encoded environmental) metrics
     let Ok(mut effective) = CvssV4::from_str(&cvss_v4.vector_string) else {
-        return CvssScoreNonZeroCheckResult::ParsingFailed;
+        results.push(CvssScoreNonZeroCheckResult::ParsingFailed);
+        return results;
     };
 
     // JSON-provided environmental properties supplement the vector, if the vector does not have
@@ -204,14 +217,14 @@ fn cvss_v4_has_score_zero(cvss_v4: CvssV4) -> CvssScoreNonZeroCheckResult {
     // inherited from their base counterpart when not explicitly defined
     if let Some((calced_score, _)) = effective.calculated_score() {
         if is_zero_score(calced_score) {
-            CvssScoreNonZeroCheckResult::CvssScoreIsZero
+            results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero);
         } else {
-            CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_score)
-
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_score));
         }
     } else {
-        CvssScoreNonZeroCheckResult::CalculationFailed
+        results.push(CvssScoreNonZeroCheckResult::CalculationFailed);
     }
+    results
 }
 
 /// Returns the JSON keys (`cvss_v2`, `cvss_v3`, and/or `cvss_v4`) of the CVSS objects in this
@@ -226,12 +239,14 @@ fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<(TestSpecificCvssKind, 
         let v2_result = match deserialize_cvss(cvss_v2, "", &mut None) {
             Some(Cvss::V2(v2)) => cvss_v2_has_env_score_zero(v2),
             // TODO: Nondeterminable #409 - deserialized into wrong version
-            Some(_) => CvssScoreNonZeroCheckResult::ParsingFailed,
+            Some(_) => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
             // TODO: Nondeterminable #409, could not deserialize
-            None => CvssScoreNonZeroCheckResult::ParsingFailed,
+            None => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
         };
-        if matches!(v2_result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
-            failing_check_results.push((TestSpecificCvssKind::CvssV2, v2_result));
+        for result in v2_result {
+            if matches!(result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
+                failing_check_results.push((TestSpecificCvssKind::CvssV2, result));
+            }
         }
     }
 
@@ -241,12 +256,14 @@ fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<(TestSpecificCvssKind, 
         let v3_result = match deserialize_cvss(cvss_v3, "", &mut None) {
             Some(Cvss::V3_0(v3)) | Some(Cvss::V3_1(v3)) => cvss_v3_has_env_score_zero(v3),
             // TODO: Nondeterminable #409, could not deserialize
-            None => CvssScoreNonZeroCheckResult::ParsingFailed,
+            None => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
             // TODO: Nondeterminable #409 - deserialized into wrong version
-            Some(_) => CvssScoreNonZeroCheckResult::ParsingFailed,
+            Some(_) => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
         };
-        if matches!(v3_result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
-            failing_check_results.push((TestSpecificCvssKind::CvssV3, v3_result));
+        for result in v3_result {
+            if matches!(result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
+                failing_check_results.push((TestSpecificCvssKind::CvssV3, result));
+            }
         }
     }
 
@@ -256,12 +273,14 @@ fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<(TestSpecificCvssKind, 
         let v4_result = match deserialize_cvss(cvss_v4, "", &mut None) {
             Some(Cvss::V4(v4)) => cvss_v4_has_score_zero(v4),
             // TODO: Nondeterminable #409, could not deserialize
-            None => CvssScoreNonZeroCheckResult::ParsingFailed,
+            None => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
             // TODO: Nondeterminable #409 - deserialized into wrong version
-            Some(_) => CvssScoreNonZeroCheckResult::ParsingFailed,
+            Some(_) => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
         };
-        if matches!(v4_result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
-            failing_check_results.push((TestSpecificCvssKind::CvssV4, v4_result));
+        for result in v4_result {
+            if matches!(result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
+                failing_check_results.push((TestSpecificCvssKind::CvssV4, result));
+            }
         }
     }
 
@@ -306,7 +325,7 @@ pub fn test_6_2_19_cvss_for_fixed_products(doc: &impl CsafTrait) -> Result<(), V
                     if fixed_products.contains_key(product_id) {
                         for (metric_type, failed_check_result) in &failing_check_results {
                             match failed_check_result {
-                                CvssScoreNonZeroCheckResult::CvssScoreIsZero | CvssScoreNonZeroCheckResult::ParsingFailed | CvssScoreNonZeroCheckResult::CalculationFailed => {
+                                CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero | CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero | CvssScoreNonZeroCheckResult::ParsingFailed | CvssScoreNonZeroCheckResult::CalculationFailed => {
                                     // TODO #409
                                 }
                                 CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(score) => {
@@ -336,26 +355,49 @@ mod tests {
     use crate::csaf2_1::testcases::ExpectedResults_6_2_19 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
+    // helper to build the "calculated" warning for a given metric/score/path combination
+    fn calc_error(metric_type: TestSpecificCvssKind, score: f64, content_path: &str) -> Result<(), Vec<TestFinding>> {
+        Err(vec![create_cvss_calced_score_nonzero_for_fixed_products_warning(
+            "CSAFPID-9080700",
+            &metric_type,
+            &score,
+            content_path,
+        )])
+    }
+    // helper to build the "property" warning for a given metric/score/path combination
+    fn prop_error(metric_type: TestSpecificCvssKind, score: f64, content_path: &str) -> Result<(), Vec<TestFinding>> {
+        Err(vec![create_cvss_property_score_nonzero_for_fixed_products_warning(
+            "CSAFPID-9080700",
+            &metric_type,
+            &score,
+            content_path,
+        )])
+    }
+    // helper to build both the "property" and "calculated" warnings, in that order, for a
+    // given metric/score/path combination
+    fn calc_and_prop_errors(
+        metric_type: TestSpecificCvssKind,
+        prop_score: f64,
+        calc_score: f64,
+        content_path: &str,
+    ) -> Result<(), Vec<TestFinding>> {
+        let Err(mut findings) = prop_error(metric_type, prop_score, content_path) else {
+            unreachable!()
+        };
+        let Err(calc_findings) = calc_error(metric_type, calc_score, content_path) else {
+            unreachable!()
+        };
+        findings.extend(calc_findings);
+        Err(findings)
+    }
+
     #[test]
     fn test_test_6_2_19() {
-        // helper to build the "calculated" warning for a given metric/score/path combination
-        let calc = |metric_type: TestSpecificCvssKind, score: f64| {
-            Err(vec![create_cvss_calced_score_nonzero_for_fixed_products_warning(
-                "CSAFPID-9080700",
-                &metric_type,
-                &score,
-                "/vulnerabilities/0/scores/0",
-            )])
+        let calc = |metric_type: TestSpecificCvssKind, score: f64| calc_error(metric_type, score, "/vulnerabilities/0/scores/0");
+        let both = |metric_type: TestSpecificCvssKind, prop_score: f64, calc_score: f64| {
+            calc_and_prop_errors(metric_type, prop_score, calc_score, "/vulnerabilities/0/scores/0")
         };
-        // helper to build the "property"  warning for a given metric/score/path combination
-        let prop = |metric_type: TestSpecificCvssKind, score: f64| {
-            Err(vec![create_cvss_property_score_nonzero_for_fixed_products_warning(
-                "CSAFPID-9080700",
-                &metric_type,
-                &score,
-                "/vulnerabilities/0/scores/0",
-            )])
-        };
+
 
         // Case 01: CVSS v3.1, no metric that sets to 0, status fixed
         // Case 02: CVSS v3.1, JSON modifiedAvailabilityImpact is not set to None, status fixed
@@ -368,10 +410,22 @@ mod tests {
         //           (MA inherits the non-zero base value, so the score is not zero), status fixed
         // Case s02: same as case_01 (CVSS v3.1, no metric that sets to 0), but with an explicit
         //           environmentalScore matching the vector's calculated non-zero score, status fixed
+        //           (both the explicit property and the recalculated score are reported)
         // Case s03: same as case_04 (CVSS v2, no metric that sets to 0), but with an explicit
         //           environmentalScore matching the vector's calculated non-zero score, status fixed
+        //           (both the explicit property and the recalculated score are reported)
         // Case s04: same as case_05 (CVSS v3.0, no metric that sets to 0), but with an explicit
         //           environmentalScore matching the vector's calculated non-zero score, status first_fixed
+        //           (both the explicit property and the recalculated score are reported)
+        // Case s05: CVSS v2, explicit environmentalScore of 0 without targetDistribution NONE, status fixed
+        //           (the explicit 0 is not reported, but the recalculated score using the
+        //           JSON-provided targetDistribution is non-zero, so it is still reported)
+        // Case s06: CVSS v3.1, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
+        //           (the explicit 0 is not reported, but the recalculated score is non-zero,
+        //           so it is still reported)
+        // Case s07: CVSS v3.0, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
+        //           (the explicit 0 is not reported, but the recalculated score is non-zero,
+        //           so it is still reported)
 
         // Case 11: CVSS v3.1, all modifiedImpact metrics are None in vector, status fixed
         // Case 12: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
@@ -382,8 +436,7 @@ mod tests {
         // Case 17: product status known_affected
         // Case s11: CVSS v3.1, MC/MI set to None in vector, MA omitted while base A:N
         //           (MA inherits the zero-valued base, so the score is zero), status fixed
-        // Case s12: CVSS v2, explicit environmentalScore of 0 without targetDistribution NONE, status fixed
-        // Case s13: CVSS v3.1, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
+
 
         TESTS_2_0.test_6_2_19.expect(ExpectedResults_2_0 {
             case_01: calc(TestSpecificCvssKind::CvssV3, 6.5),
@@ -393,9 +446,12 @@ mod tests {
             case_05: calc(TestSpecificCvssKind::CvssV3, 6.5),
             case_06: calc(TestSpecificCvssKind::CvssV3, 4.2),
             case_s01: calc(TestSpecificCvssKind::CvssV3, 4.2),
-            case_s02: prop(TestSpecificCvssKind::CvssV3, 6.5),
-            case_s03: prop(TestSpecificCvssKind::CvssV2, 6.8),
-            case_s04: prop(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s02: both(TestSpecificCvssKind::CvssV3, 6.5, 6.5),
+            case_s03: both(TestSpecificCvssKind::CvssV2, 6.8, 6.8),
+            case_s04: both(TestSpecificCvssKind::CvssV3, 6.5, 6.5),
+            case_s05: calc(TestSpecificCvssKind::CvssV2, 1.7),
+            case_s06: calc(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s07: calc(TestSpecificCvssKind::CvssV3, 6.5),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
@@ -404,8 +460,7 @@ mod tests {
             case_16: Ok(()),
             case_17: Ok(()),
             case_s11: Ok(()),
-            case_s12: Ok(()),
-            case_s13: Ok(()),
+
         });
     }
 

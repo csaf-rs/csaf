@@ -47,15 +47,13 @@ pub(crate) fn test_6_3_8_spell_check_impl(
 ) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
-    // Skip this test if language is not set
+    // skip this test if language is not set
     let lang = match document.get_lang() {
         None => return Ok(()), // #409 skipped
         Some(lang) => lang,
     };
 
-    // Check if the language is supported
-    // TODO: currently, only english is supported, this will be delegated to the text_check module
-    // matching in the future
+    // check if the language is valid
     let lang = match &lang {
         CsafLanguage::Valid(valid_lang) => valid_lang,
         _ => {

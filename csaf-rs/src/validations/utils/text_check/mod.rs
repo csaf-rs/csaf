@@ -55,12 +55,18 @@ impl From<TextCheckerMatchingError> for TestFindingData {
     fn from(err: TextCheckerMatchingError) -> Self {
         match err {
             TextCheckerMatchingError::UnsupportedLanguage(lang) => TestFindingData {
-                message: format!("No text checker available for language '{lang}'"),
+                message: format!("No text checker available for valid language '{lang}'"),
                 instance_path: "".to_string(),
             },
-            TextCheckerMatchingError::NoCheckerAvailable(kind) => TestFindingData {
-                message: format!("No text checker available for check kind '{kind:?}'"),
-                instance_path: "".to_string(),
+            TextCheckerMatchingError::NoCheckerAvailable(kind) => {
+                let message = match kind {
+                    TextCheckKind::Spell => "There are no spell checkers available on your setup".to_string(),
+                    TextCheckKind::Grammar => "There are no grammar checkers available on your setup".to_string(),
+                };
+                TestFindingData {
+                    message,
+                    instance_path: "".to_string(),
+                }
             },
         }
     }

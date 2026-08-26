@@ -4,7 +4,7 @@
 ///
 /// Returns `(word, start, end)` triples where `start`/`end` are character (not byte!)
 /// offsets of `word` within `text`. Each whitespace-separated token has its
-/// leading/trailing non-alphabetic characters stripped. Empty tokens are removed.
+/// leading/trailing non-alphanumeric characters stripped. Empty tokens are removed.
 pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
     let mut tokens = Vec::new();
     let mut search_from = 0;
@@ -18,7 +18,7 @@ pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
         search_from = token_start + token.len();
 
         // Strip leading/trailing non-alphanumeric characters to get the bare word.
-        let trimmed = token.trim_matches(|c: char| !c.is_alphabetic());
+        let trimmed = token.trim_matches(|c: char| !c.is_alphanumeric());
         if trimmed.is_empty() {
             continue;
         }

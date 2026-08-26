@@ -28,10 +28,7 @@ pub trait TextChecker {
     fn check_text(&self, kind: TextCheckKind, text: &str) -> Vec<TextCheckFinding>;
 }
 
-/// Returns all known [`TextChecker`] implementations, in priority order.
-///
-/// This is the single place to register a new checker: add it here and it will
-/// automatically be picked up by [`check_text`] / [`match_checker`].
+/// Returns all known [`TextChecker`] implementations.
 pub(crate) fn all_checkers() -> Vec<Box<dyn TextChecker>> {
     vec![
         #[cfg(test)]
@@ -46,10 +43,10 @@ pub enum TemporaryTextCheckQuality {
     Good,
     #[allow(unused)]
     Medium,
-    #[allow(unused)]
     Poor,
 }
 
+/// TODO: Add unit tests once grammar checkers are implemented
 pub(crate) fn filter_checkers(
     kind: TextCheckKind,
     lang: &ValidCsafLanguage,
@@ -59,7 +56,7 @@ pub(crate) fn filter_checkers(
     for checker in all_checkers() {
         if checker.get_available_check_kinds().contains(&kind) {
             no_checker_match = false;
-            if checker.get_available_languages().contains(&lang.primary_language()) {
+            if checker.get_available_languages().iter().any(|avail_lang| avail_lang.eq_ignore_ascii_case(lang.primary_language())) {
                 matches.get_or_insert_default().push(checker);
             }
         }

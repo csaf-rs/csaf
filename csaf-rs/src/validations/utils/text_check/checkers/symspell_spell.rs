@@ -45,7 +45,7 @@ pub struct EnglishSymspellChecker;
 
 impl TextChecker for EnglishSymspellChecker {
     fn get_quality(&self) -> TemporaryTextCheckQuality {
-        TemporaryTextCheckQuality::Medium
+        TemporaryTextCheckQuality::Poor
     }
 
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {

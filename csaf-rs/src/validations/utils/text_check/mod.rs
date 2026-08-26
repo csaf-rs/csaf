@@ -24,7 +24,6 @@ pub use checkers::TextChecker;
 /// The kind of text check to perform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TextCheckKind {
-    #[allow(dead_code)]
     /// Spell checking only.
     Spell,
     /// Grammar checking only (TODO not yet implemented)
@@ -48,9 +47,7 @@ pub struct TextCheckFinding {
 }
 
 pub enum TextCheckerMatchingError {
-    #[allow(unused)]
     UnsupportedLanguage(String),
-    #[allow(unused)]
     NoCheckerAvailable(TextCheckKind),
 }
 

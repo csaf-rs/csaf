@@ -1,5 +1,5 @@
 //! Tests that run the full 6.3.8 spell-check validation while forcing a single, specific
-//! [`TextChecker`] implementation instead of letting [`check_text`] select one.
+//! [`TextChecker`] implementation.
 
 #[cfg(test)]
 mod tests {

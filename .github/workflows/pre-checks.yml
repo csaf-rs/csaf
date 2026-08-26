@@ -1,0 +1,27 @@
+name: pre-checks
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*.**
+  merge_group:
+    types: [checks_requested]
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Lint commit message
+        uses: csaf-rs/shared-workflows/.github/actions/commitlint@0f1baefb56f7d6fe420e60824a89e3f81abd8fd4 # v1.8.0 

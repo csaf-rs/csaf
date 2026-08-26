@@ -18,7 +18,7 @@ pub trait TextChecker {
     /// Get the [`TextCheckKind`]s supported by this checker
     fn get_available_check_kinds(&self) -> Vec<TextCheckKind>;
 
-    /// Get the [`TextCheckLanguage`]s supported by this checker
+    /// Get the lowercases primary language tags
     fn get_available_languages(&self) -> Vec<&str>;
 
     /// Checks a single text snippet for issues of the given [`TextCheckKind`].

@@ -13,10 +13,10 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Recommended Test: CVSS for Fixed Products (valid supplementary example 3 - explicit environmentalScore of 0 for CVSS v3 without all modified impacts set to NONE)",
+    "title": "Recommended Test: CVSS for Fixed Products (failing supplementary example 7 - explicit environmentalScore of 0 for CVSS v3 without all modified impacts set to NONE, but the recalculated score is non-zero)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-19-S13",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-19-S07",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {
@@ -47,8 +47,8 @@
               "baseSeverity": "MEDIUM",
               "environmentalScore": 0.0,
               "environmentalSeverity": "NONE",
-              "vectorString": "CVSS:3.1/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
-              "version": "3.1"
+              "vectorString": "CVSS:3.0/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
+              "version": "3.0"
             }
           },
           "products": [

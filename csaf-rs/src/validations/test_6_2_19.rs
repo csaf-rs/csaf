@@ -579,21 +579,18 @@ mod tests {
     fn test_test_6_2_19_2_1() {
         // CSAF 2.1 uses /metrics/{m}/content instead of /scores/{m}
         let calc = |metric_type: TestSpecificCvssKind, score: f64| {
-            Err(vec![create_cvss_calced_score_nonzero_for_fixed_products_warning(
-                "CSAFPID-9080700",
-                &metric_type,
-                &score,
-                "/vulnerabilities/0/metrics/0/content",
-            )])
+            calc_error(metric_type, score, "/vulnerabilities/0/metrics/0/content")
         };
-        // helper to build the "property" warning for a given metric/score/path combination
         let prop = |metric_type: TestSpecificCvssKind, score: f64| {
-            Err(vec![create_cvss_property_score_nonzero_for_fixed_products_warning(
-                "CSAFPID-9080700",
-                &metric_type,
-                &score,
+            prop_error(metric_type, score, "/vulnerabilities/0/metrics/0/content")
+        };
+        let both = |metric_type: TestSpecificCvssKind, prop_score: f64, calc_score: f64| {
+            calc_and_prop_errors(
+                metric_type,
+                prop_score,
+                calc_score,
                 "/vulnerabilities/0/metrics/0/content",
-            )])
+            )
         };
 
         // Case 01: CVSS v3.1, no metric that sets to 0, status fixed
@@ -608,10 +605,36 @@ mod tests {
         //           (MA inherits the non-zero base value, so the score is not zero), status fixed
         // Case s02: same as case_01 (CVSS v3.1, no metric that sets to 0), but with an explicit
         //           environmentalScore matching the vector's calculated non-zero score, status fixed
+        //           (both the explicit property and the recalculated score are reported)
         // Case s03: same as case_04 (CVSS v2, no metric that sets to 0), but with an explicit
         //           environmentalScore matching the vector's calculated non-zero score, status fixed
+        //           (both the explicit property and the recalculated score are reported)
         // Case s04: same as case_05 (CVSS v3.0, no metric that sets to 0), but with an explicit
         //           environmentalScore matching the vector's calculated non-zero score, status first_fixed
+        //           (both the explicit property and the recalculated score are reported)
+        // Case s05: CVSS v2, explicit environmentalScore of 0 without targetDistribution NONE, status fixed
+        //           (the explicit 0 is not reported, but the recalculated score using the
+        //           JSON-provided targetDistribution is non-zero, so it is still reported)
+        // Case s06: CVSS v3.1, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
+        //           (the explicit 0 is not reported, but the recalculated score is non-zero,
+        //           so it is still reported)
+        // Case s07: CVSS v3.0, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
+        //           (the explicit 0 is not reported, but the recalculated score is non-zero,
+        //           so it is still reported)
+        // Case s08: CVSS v3.1, all modifiedImpact metrics NONE in JSON, so the
+        //           recalculated score is correctly 0, but with an explicit environmentalScore
+        //           that does not match, status fixed
+        // Case s09: CVSS v2, targetDistribution NONE in JSON, so the
+        //           recalculated score is correctly 0, but with an explicit environmentalScore
+        //           that does not match, status fixed
+        // Case s21: CVSS v3.0, all modifiedImpact metrics NONE in JSON, so the
+        //           recalculated score is correctly 0, but with an explicit environmentalScore
+        //           that does not match, status fixed
+        // Case s22: CVSS v4.0, explicit baseScore of 0 without all six modified impacts set, status fixed
+        //           (the explicit 0 is not a violation, but the recalculated score is non-zero,
+        //           so it is still reported)
+        // Case s23: CVSS v4.0, all six modified impacts set in JSON, so the recalculated score is
+        //           correctly 0, but with an explicit baseScore that does not match, status fixed
 
         // Case 11: CVSS v3.1, all modifiedImpact metrics are None in vector, status fixed
         // Case 12: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
@@ -624,9 +647,6 @@ mod tests {
         // Case 19: CVSS v4.0, all modified* metrics are None/NEGLIGIBLE in JSON, status first_fixed
         // Case s11: CVSS v3.1, MC/MI set to None in vector, MA omitted while base A:N
         //           (MA inherits the zero-valued base, so the score is zero), status fixed
-        // Case s12: CVSS v2, explicit environmentalScore of 0 without targetDistribution NONE, status fixed
-        // Case s13: CVSS v3.1, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
-        // Case s14: CVSS v4.0, explicit baseScore of 0 without all six modified impacts set, status fixed
 
         TESTS_2_1.test_6_2_19.expect(ExpectedResults_2_1 {
             case_01: calc(TestSpecificCvssKind::CvssV3, 6.5),
@@ -635,12 +655,20 @@ mod tests {
             case_04: calc(TestSpecificCvssKind::CvssV2, 6.8),
             case_05: calc(TestSpecificCvssKind::CvssV3, 6.5),
             case_06: calc(TestSpecificCvssKind::CvssV3, 4.2),
-            case_07: calc(TestSpecificCvssKind::CvssV4, 7.3),
-            case_08: calc(TestSpecificCvssKind::CvssV4, 1.8),
+            case_07: both(TestSpecificCvssKind::CvssV4, 7.3, 7.3),
+            case_08: both(TestSpecificCvssKind::CvssV4, 7.3, 1.8),
             case_s01: calc(TestSpecificCvssKind::CvssV3, 4.2),
-            case_s02: prop(TestSpecificCvssKind::CvssV3, 6.5),
-            case_s03: prop(TestSpecificCvssKind::CvssV2, 6.8),
-            case_s04: prop(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s02: both(TestSpecificCvssKind::CvssV3, 6.5, 6.5),
+            case_s03: both(TestSpecificCvssKind::CvssV2, 6.8, 6.8),
+            case_s04: both(TestSpecificCvssKind::CvssV3, 6.5, 6.5),
+            case_s05: calc(TestSpecificCvssKind::CvssV2, 1.7),
+            case_s06: calc(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s07: calc(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s08: prop(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s09: prop(TestSpecificCvssKind::CvssV2, 6.8),
+            case_s21: prop(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s22: calc(TestSpecificCvssKind::CvssV4, 7.3),
+            case_s23: prop(TestSpecificCvssKind::CvssV4, 7.3),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
@@ -651,9 +679,6 @@ mod tests {
             case_18: Ok(()),
             case_19: Ok(()),
             case_s11: Ok(()),
-            case_s12: Ok(()),
-            case_s13: Ok(()),
-            case_s14: Ok(()),
         });
     }
 }

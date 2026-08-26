@@ -13,10 +13,10 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Recommended Test: CVSS for Fixed Products (valid supplementary example 4 - explicit baseScore of 0 for CVSS v4 without all six modified impacts set)",
+    "title": "Recommended Test: CVSS for Fixed Products (failing supplementary example 22 - explicit baseScore of 0 for CVSS v4 without all six modified impacts set, but the recalculated score is non-zero)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-19-S14",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-19-S22",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {

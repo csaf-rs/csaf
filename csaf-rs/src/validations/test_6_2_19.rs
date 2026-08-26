@@ -10,7 +10,12 @@ use cvss_rs::v2_0::CvssV2;
 use cvss_rs::v3::CvssV3;
 use cvss_rs::v4_0::CvssV4;
 
-fn create_cvss_property_score_nonzero_for_fixed_products_warning(product_id: &str, metric_type: &TestSpecificCvssKind, score: &f64, content_path: &str) -> TestFinding {
+fn create_cvss_property_score_nonzero_for_fixed_products_warning(
+    product_id: &str,
+    metric_type: &TestSpecificCvssKind,
+    score: &f64,
+    content_path: &str,
+) -> TestFinding {
     let (metric_key, score_key, score_name) = metric_type.get_version_specific_finding_strings();
     TestFinding::Warning(TestFindingData {
         message: format!("{score_name} should be 0.0 since {product_id} is listed as fixed (it is {score})"),
@@ -18,10 +23,17 @@ fn create_cvss_property_score_nonzero_for_fixed_products_warning(product_id: &st
     })
 }
 
-fn create_cvss_calced_score_nonzero_for_fixed_products_warning(product_id: &str, metric_type: &TestSpecificCvssKind, score: &f64, content_path: &str) -> TestFinding {
+fn create_cvss_calced_score_nonzero_for_fixed_products_warning(
+    product_id: &str,
+    metric_type: &TestSpecificCvssKind,
+    score: &f64,
+    content_path: &str,
+) -> TestFinding {
     let (metric_key, _, score_name) = metric_type.get_version_specific_finding_strings();
     TestFinding::Warning(TestFindingData {
-        message: format!("{score_name} should be 0.0 since {product_id} is listed as fixed (it is calculated to be {score})"),
+        message: format!(
+            "{score_name} should be 0.0 since {product_id} is listed as fixed (it is calculated to be {score})"
+        ),
         instance_path: format!("{content_path}/{metric_key}"),
     })
 }
@@ -38,7 +50,7 @@ enum TestSpecificCvssKind {
 impl TestSpecificCvssKind {
     fn get_version_specific_finding_strings(&self) -> (&'static str, &'static str, &'static str) {
         match self {
-             Self::CvssV2 => ("cvss_v2", "environmentalScore", "Environmental score"),
+            Self::CvssV2 => ("cvss_v2", "environmentalScore", "Environmental score"),
             Self::CvssV3 => ("cvss_v3", "environmentalScore", "Environmental score"),
             Self::CvssV4 => ("cvss_v4", "baseScore", "Score"),
         }
@@ -51,7 +63,7 @@ enum CvssScoreNonZeroCheckResult {
     CalculatedCvssScoreIsZero,
     CalculatedCvssScoreNonZero(f64),
     ParsingFailed,
-    CalculationFailed
+    CalculationFailed,
 }
 
 /// Checks if a CVSS v2 score has an environmental score of 0.
@@ -94,7 +106,9 @@ fn cvss_v2_has_env_score_zero(cvss_v2: CvssV2) -> Vec<CvssScoreNonZeroCheckResul
         if is_zero_score(calced_env_score) {
             results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero);
         } else {
-            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_env_score));
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(
+                calced_env_score,
+            ));
         }
     } else {
         results.push(CvssScoreNonZeroCheckResult::CalculationFailed);
@@ -127,18 +141,33 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> Vec<CvssScoreNonZeroCheckResul
 
     // JSON-provided environmental properties supplement the vector, if the vector does not have
     // the value or has it as NotDefined, and the JSON has the value defined (i.e. not NotDefined)
-    if effective.modified_confidentiality_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v3.modified_confidentiality_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_confidentiality_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v3
+            .modified_confidentiality_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_confidentiality_impact = cvss_v3.modified_confidentiality_impact;
     }
     if effective.modified_integrity_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v3.modified_integrity_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+        && cvss_v3
+            .modified_integrity_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_integrity_impact = cvss_v3.modified_integrity_impact;
     }
-    if effective.modified_availability_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v3.modified_availability_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_availability_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v3
+            .modified_availability_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_availability_impact = cvss_v3.modified_availability_impact;
     }
@@ -149,7 +178,9 @@ fn cvss_v3_has_env_score_zero(cvss_v3: CvssV3) -> Vec<CvssScoreNonZeroCheckResul
         if is_zero_score(calced_env_score) {
             results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero);
         } else {
-            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(calced_env_score));
+            results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(
+                calced_env_score,
+            ));
         }
     } else {
         results.push(CvssScoreNonZeroCheckResult::CalculationFailed);
@@ -171,7 +202,9 @@ fn cvss_v4_has_score_zero(cvss_v4: CvssV4) -> Vec<CvssScoreNonZeroCheckResult> {
     if is_zero_score(cvss_v4.base_score) {
         results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero);
     } else {
-        results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(cvss_v4.base_score));
+        results.push(CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(
+            cvss_v4.base_score,
+        ));
     }
 
     // seed the effective CVSS object with the base (and any vector-encoded environmental) metrics
@@ -182,33 +215,69 @@ fn cvss_v4_has_score_zero(cvss_v4: CvssV4) -> Vec<CvssScoreNonZeroCheckResult> {
 
     // JSON-provided environmental properties supplement the vector, if the vector does not have
     // the value or has it as NotDefined, and the JSON has the value defined (i.e. not NotDefined)
-    if effective.modified_vuln_confidentiality_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v4.modified_vuln_confidentiality_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_vuln_confidentiality_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v4
+            .modified_vuln_confidentiality_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_vuln_confidentiality_impact = cvss_v4.modified_vuln_confidentiality_impact;
     }
-    if effective.modified_vuln_integrity_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v4.modified_vuln_integrity_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_vuln_integrity_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v4
+            .modified_vuln_integrity_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_vuln_integrity_impact = cvss_v4.modified_vuln_integrity_impact;
     }
-    if effective.modified_vuln_availability_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v4.modified_vuln_availability_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_vuln_availability_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v4
+            .modified_vuln_availability_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_vuln_availability_impact = cvss_v4.modified_vuln_availability_impact;
     }
-    if effective.modified_sub_confidentiality_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v4.modified_sub_confidentiality_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_sub_confidentiality_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v4
+            .modified_sub_confidentiality_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_sub_confidentiality_impact = cvss_v4.modified_sub_confidentiality_impact;
     }
-    if effective.modified_sub_integrity_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v4.modified_sub_integrity_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_sub_integrity_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v4
+            .modified_sub_integrity_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_sub_integrity_impact = cvss_v4.modified_sub_integrity_impact;
     }
-    if effective.modified_sub_availability_impact.as_ref().is_none_or(is_not_defined)
-        && cvss_v4.modified_sub_availability_impact.as_ref().is_some_and(|v| !is_not_defined(v))
+    if effective
+        .modified_sub_availability_impact
+        .as_ref()
+        .is_none_or(is_not_defined)
+        && cvss_v4
+            .modified_sub_availability_impact
+            .as_ref()
+            .is_some_and(|v| !is_not_defined(v))
     {
         effective.modified_sub_availability_impact = cvss_v4.modified_sub_availability_impact;
     }
@@ -244,7 +313,11 @@ fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<(TestSpecificCvssKind, 
             None => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
         };
         for result in v2_result {
-            if matches!(result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
+            if matches!(
+                result,
+                CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_)
+                    | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)
+            ) {
                 failing_check_results.push((TestSpecificCvssKind::CvssV2, result));
             }
         }
@@ -261,7 +334,11 @@ fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<(TestSpecificCvssKind, 
             Some(_) => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
         };
         for result in v3_result {
-            if matches!(result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
+            if matches!(
+                result,
+                CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_)
+                    | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)
+            ) {
                 failing_check_results.push((TestSpecificCvssKind::CvssV3, result));
             }
         }
@@ -278,7 +355,11 @@ fn failing_cvss_keys(content: &impl ContentTrait) -> Vec<(TestSpecificCvssKind, 
             Some(_) => vec![CvssScoreNonZeroCheckResult::ParsingFailed],
         };
         for result in v4_result {
-            if matches!(result, CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_) | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)) {
+            if matches!(
+                result,
+                CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(_)
+                    | CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(_)
+            ) {
                 failing_check_results.push((TestSpecificCvssKind::CvssV4, result));
             }
         }
@@ -325,15 +406,32 @@ pub fn test_6_2_19_cvss_for_fixed_products(doc: &impl CsafTrait) -> Result<(), V
                     if fixed_products.contains_key(product_id) {
                         for (metric_type, failed_check_result) in &failing_check_results {
                             match failed_check_result {
-                                CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero | CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero | CvssScoreNonZeroCheckResult::ParsingFailed | CvssScoreNonZeroCheckResult::CalculationFailed => {
+                                CvssScoreNonZeroCheckResult::PropertyCvssScoreIsZero
+                                | CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero
+                                | CvssScoreNonZeroCheckResult::ParsingFailed
+                                | CvssScoreNonZeroCheckResult::CalculationFailed => {
                                     // TODO #409
-                                }
+                                },
                                 CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(score) => {
-                                    errors.get_or_insert_default().push(create_cvss_property_score_nonzero_for_fixed_products_warning(product_id, metric_type, score, content_path.as_str()));
-                                }
+                                    errors.get_or_insert_default().push(
+                                        create_cvss_property_score_nonzero_for_fixed_products_warning(
+                                            product_id,
+                                            metric_type,
+                                            score,
+                                            content_path.as_str(),
+                                        ),
+                                    );
+                                },
                                 CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(score) => {
-                                    errors.get_or_insert_default().push(create_cvss_calced_score_nonzero_for_fixed_products_warning(product_id, metric_type, score, content_path.as_str()));
-                                }
+                                    errors.get_or_insert_default().push(
+                                        create_cvss_calced_score_nonzero_for_fixed_products_warning(
+                                            product_id,
+                                            metric_type,
+                                            score,
+                                            content_path.as_str(),
+                                        ),
+                                    );
+                                },
                             }
                         }
                     }
@@ -393,11 +491,15 @@ mod tests {
 
     #[test]
     fn test_test_6_2_19() {
-        let calc = |metric_type: TestSpecificCvssKind, score: f64| calc_error(metric_type, score, "/vulnerabilities/0/scores/0");
+        let calc = |metric_type: TestSpecificCvssKind, score: f64| {
+            calc_error(metric_type, score, "/vulnerabilities/0/scores/0")
+        };
+        let prop = |metric_type: TestSpecificCvssKind, score: f64| {
+            prop_error(metric_type, score, "/vulnerabilities/0/scores/0")
+        };
         let both = |metric_type: TestSpecificCvssKind, prop_score: f64, calc_score: f64| {
             calc_and_prop_errors(metric_type, prop_score, calc_score, "/vulnerabilities/0/scores/0")
         };
-
 
         // Case 01: CVSS v3.1, no metric that sets to 0, status fixed
         // Case 02: CVSS v3.1, JSON modifiedAvailabilityImpact is not set to None, status fixed
@@ -426,7 +528,15 @@ mod tests {
         // Case s07: CVSS v3.0, explicit environmentalScore of 0 without all modified impacts NONE, status fixed
         //           (the explicit 0 is not reported, but the recalculated score is non-zero,
         //           so it is still reported)
-
+        // Case s08: CVSS v3.1, all modifiedImpact metrics NONE in JSON, so the
+        //           recalculated score is correctly 0, but with an explicit environmentalScore
+        //           that does not match, status fixed
+        // Case s09: CVSS v2, targetDistribution NONE in JSON, so the
+        //           recalculated score is correctly 0, but with an explicit environmentalScore
+        //           that does not match, status fixed
+        // Case s21: CVSS v3.0, all modifiedImpact metrics NONE in JSON, so the
+        //           recalculated score is correctly 0, but with an explicit environmentalScore
+        //           that does not match, status fixed
         // Case 11: CVSS v3.1, all modifiedImpact metrics are None in vector, status fixed
         // Case 12: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
         // Case 13: CVSS v2, targetDistribution is None in JSON, status fixed
@@ -436,7 +546,6 @@ mod tests {
         // Case 17: product status known_affected
         // Case s11: CVSS v3.1, MC/MI set to None in vector, MA omitted while base A:N
         //           (MA inherits the zero-valued base, so the score is zero), status fixed
-
 
         TESTS_2_0.test_6_2_19.expect(ExpectedResults_2_0 {
             case_01: calc(TestSpecificCvssKind::CvssV3, 6.5),
@@ -452,6 +561,9 @@ mod tests {
             case_s05: calc(TestSpecificCvssKind::CvssV2, 1.7),
             case_s06: calc(TestSpecificCvssKind::CvssV3, 6.5),
             case_s07: calc(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s08: prop(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s09: prop(TestSpecificCvssKind::CvssV2, 6.8),
+            case_s21: prop(TestSpecificCvssKind::CvssV3, 6.5),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
@@ -460,7 +572,6 @@ mod tests {
             case_16: Ok(()),
             case_17: Ok(()),
             case_s11: Ok(()),
-
         });
     }
 

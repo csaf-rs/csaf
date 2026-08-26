@@ -7,9 +7,9 @@ use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::sync::LazyLock;
 use symspell::{SymSpell, SymSpellBuilder, UnicodeStringStrategy, Verbosity};
 
-/// Word/frequency dictionary of the 10,000 most common English words, used to seed the
+/// Word/frequency dictionary of the 50,000 most common English words, used to seed the
 /// SymSpell spell-checker. Each line has the form `<word> <frequency>`.
-const EN_10000_DICTIONARY: &str = include_str!("../../../../../assets/wordfreq/en_10000.txt");
+const EN_50000_DICTIONARY: &str = include_str!("../../../../../assets/wordfreq/en_50000.txt");
 
 /// Maximum edit distance considered when looking up suggestions for a word that is not
 /// found verbatim in the dictionary.
@@ -23,14 +23,14 @@ static SYMSPELL: LazyLock<SymSpell<UnicodeStringStrategy>> = LazyLock::new(|| {
         .build()
         .expect("SymSpell builder configuration should be valid");
 
-    for line in EN_10000_DICTIONARY.lines() {
+    for line in EN_50000_DICTIONARY.lines() {
         symspell.load_dictionary_line(line, 0, 1, " ");
     }
 
     symspell
 });
 
-/// A SymSpell-backed spell-checker for English text, seeded with the 10,000 most common
+/// A SymSpell-backed spell-checker for English text, seeded with the 50,000 most common
 /// English words and their usage frequencies. (TODO: Only english for now)
 ///
 /// Behavior:

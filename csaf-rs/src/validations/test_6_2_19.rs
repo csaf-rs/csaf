@@ -310,10 +310,10 @@ pub fn test_6_2_19_cvss_for_fixed_products(doc: &impl CsafTrait) -> Result<(), V
                                     // TODO #409
                                 }
                                 CvssScoreNonZeroCheckResult::PropertyCvssScoreNonZero(score) => {
-                                    errors.get_or_insert_default().push(create_cvss_property_score_nonzero_for_fixed_products_warning(product_id, metric_type, &score, content_path.as_str()));
+                                    errors.get_or_insert_default().push(create_cvss_property_score_nonzero_for_fixed_products_warning(product_id, metric_type, score, content_path.as_str()));
                                 }
                                 CvssScoreNonZeroCheckResult::CalculatedCvssScoreNonZero(score) => {
-                                    errors.get_or_insert_default().push(create_cvss_calced_score_nonzero_for_fixed_products_warning(product_id, metric_type, &score, content_path.as_str()));
+                                    errors.get_or_insert_default().push(create_cvss_calced_score_nonzero_for_fixed_products_warning(product_id, metric_type, score, content_path.as_str()));
                                 }
                             }
                         }
@@ -347,6 +347,15 @@ mod tests {
                 "/vulnerabilities/0/scores/0",
             )])
         };
+        // helper to build the "property"  warning for a given metric/score/path combination
+        let prop = |metric_type: TestSpecificCvssKind, score: f64| {
+            Err(vec![create_cvss_property_score_nonzero_for_fixed_products_warning(
+                "CSAFPID-9080700",
+                &metric_type,
+                &score,
+                "/vulnerabilities/0/scores/0",
+            )])
+        };
 
         // Case 01: CVSS v3.1, no metric that sets to 0, status fixed
         // Case 02: CVSS v3.1, JSON modifiedAvailabilityImpact is not set to None, status fixed
@@ -357,6 +366,12 @@ mod tests {
 
         // Case s01: CVSS v3.1, MC/MI set to None in vector but MA omitted while base A:H
         //           (MA inherits the non-zero base value, so the score is not zero), status fixed
+        // Case s02: same as case_01 (CVSS v3.1, no metric that sets to 0), but with an explicit
+        //           environmentalScore matching the vector's calculated non-zero score, status fixed
+        // Case s03: same as case_04 (CVSS v2, no metric that sets to 0), but with an explicit
+        //           environmentalScore matching the vector's calculated non-zero score, status fixed
+        // Case s04: same as case_05 (CVSS v3.0, no metric that sets to 0), but with an explicit
+        //           environmentalScore matching the vector's calculated non-zero score, status first_fixed
 
         // Case 11: CVSS v3.1, all modifiedImpact metrics are None in vector, status fixed
         // Case 12: CVSS v3.1, all modifiedImpact metrics are None in JSON, status fixed
@@ -378,6 +393,9 @@ mod tests {
             case_05: calc(TestSpecificCvssKind::CvssV3, 6.5),
             case_06: calc(TestSpecificCvssKind::CvssV3, 4.2),
             case_s01: calc(TestSpecificCvssKind::CvssV3, 4.2),
+            case_s02: prop(TestSpecificCvssKind::CvssV3, 6.5),
+            case_s03: prop(TestSpecificCvssKind::CvssV2, 6.8),
+            case_s04: prop(TestSpecificCvssKind::CvssV3, 6.5),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

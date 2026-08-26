@@ -655,6 +655,18 @@
         {
           "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s01.json",
           "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s02.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s03.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s04.json",
+          "valid": false
         }
       ],
       "valid": [

@@ -795,6 +795,38 @@
       ]
     },
     {
+      "id": "6.3.5",
+      "group": "informative",
+      "failures": [
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s01.json",
+          "valid": true
+        },
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s02.json",
+          "valid": true
+        },
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s03.json",
+          "valid": true
+        },
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s04.json",
+          "valid": true
+        },
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s05.json",
+          "valid": true
+        }
+      ],
+      "valid": [
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.3.9",
       "group": "informative",
       "failures": [

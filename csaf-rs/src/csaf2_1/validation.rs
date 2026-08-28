@@ -6,7 +6,7 @@ use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestFinding, CsafError, TestResult, TestResultStatus, Validatable, ValidationError};
+use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Validatable, ValidationError};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
 
 fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation::TestFinding>>>) -> TestResult {
@@ -403,7 +403,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
         to_test_result(
             test_id,
             match test_id {
-                Preset::Schema.as_str() => Some(validate_schema_csaf_2_1(self)),
+                PRESET_NAME_SCHEMA => Some(validate_schema_csaf_2_1(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

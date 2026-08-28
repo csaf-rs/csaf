@@ -2,7 +2,7 @@ use std::cell::OnceCell;
 
 use serde::de::DeserializeOwned;
 
-use crate::validation::{TestFinding, CsafError, TestResult, TestResultStatus, Validatable};
+use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Validatable};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawDocument<T> {

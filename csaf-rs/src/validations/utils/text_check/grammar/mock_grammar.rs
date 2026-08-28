@@ -43,35 +43,17 @@ impl GrammarTextChecker for MockGrammarChecker {}
 fn grammar_check(text: &str) -> Vec<TextCheckFinding> {
     let known_bad_sequences = known_bad_sequences();
     let mut findings = Vec::new();
-    let mut search_from = 0;
 
-    // Collect (lowercase, original, char_start, char_end) for each token
-    let mut tokens: Vec<(String, String, usize, usize)> = Vec::new();
-
-    for token in text.split_whitespace() {
-        let offset = text[search_from..].find(token).unwrap_or(0);
-        let token_start = search_from + offset;
-        search_from = token_start + token.len();
-
-        let trimmed = token.trim_matches(|c: char| !c.is_alphabetic());
-        if trimmed.is_empty() {
-            continue;
-        }
-        let word_offset = trimmed.as_ptr() as usize - token.as_ptr() as usize;
-        let word_start = text[..token_start + word_offset].chars().count();
-        let word_end = word_start + trimmed.chars().count();
-
-        tokens.push((trimmed.to_lowercase(), trimmed.to_string(), word_start, word_end));
-    }
+    let tokens = tokenize_words(text);
 
     // Check each consecutive pair against the bad-sequence list.
     for window in tokens.windows(2) {
-        let (lower1, original1, start, _) = &window[0];
-        let (lower2, original2, _, end) = &window[1];
-        let key = format!("{lower1} {lower2}");
+        let (word1, start, _) = &window[0];
+        let (word2, _, end) = &window[1];
+        let key = format!("{} {}", word1.to_lowercase(), word2.to_lowercase());
         if known_bad_sequences.contains(key.as_str()) {
             findings.push(TextCheckFinding {
-                fragment: format!("{original1} {original2}"),
+                fragment: format!("{word1} {word2}"),
                 start: *start,
                 end: *end,
                 replacement: None,

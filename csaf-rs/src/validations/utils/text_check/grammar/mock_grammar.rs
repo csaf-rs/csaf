@@ -4,7 +4,7 @@
 //! known incorrect two-word sequences.
 
 use super::{GrammarTextChecker, TextChecker};
-use crate::validations::utils::text_check::utils::TemporaryTextCheckQuality;
+use crate::validations::utils::text_check::utils::{tokenize_words, TemporaryTextCheckQuality};
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::collections::HashSet;
 
@@ -12,7 +12,7 @@ use std::collections::HashSet;
 ///
 /// Behavior:
 /// - Only [`TextCheckKind::Grammar`] findings are produced; spell checking is not implemented.
-/// - Text is tokenized by whitespace, punctuation is stripped.
+/// - Strings are tokenized, see [`tokenize_words`].
 /// - Consecutive word pairs are matched against a built-in list of known incorrect sequences.
 /// - When a bad sequence is detected, the first word of the pair is reported as the problematic fragment.
 #[derive(Default, Clone, Copy)]

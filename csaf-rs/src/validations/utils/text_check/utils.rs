@@ -1,4 +1,13 @@
-//! Shared helpers for spell-checking and grammar-checking.
+//! Shared helpers and structs for spell-checking and grammar-checking.
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum TemporaryTextCheckQuality {
+    #[allow(unused)]
+    Good,
+    #[allow(unused)]
+    Medium,
+    Poor,
+}
 
 /// Splits `text` into alphanumeric word tokens suitable for spell-checking.
 ///

@@ -48,6 +48,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 
 [dev-dependencies]
 rstest = "0.26.1"
+rstest_reuse = "0.7.0"
 criterion = { version = "0.8", features = ["html_reports"] }
 tempfile = "3"
 

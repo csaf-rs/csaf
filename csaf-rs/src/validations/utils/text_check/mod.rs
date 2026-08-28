@@ -10,24 +10,43 @@
 //! The [`TextChecker`] trait abstracts over the concrete language-checking engine.
 
 use crate::csaf::types::language::ValidCsafLanguage;
-use crate::validations::utils::text_check::checkers::filter_checkers;
 
-pub(crate) mod checkers;
+mod grammar;
+mod spell;
 #[cfg(test)]
-mod tests;
+mod test_utils;
+mod utils;
 
 use crate::validation::TestFindingData;
+use crate::validations::utils::text_check::TextCheckerMatchingError::{NoCheckerAvailable, UnsupportedLanguage};
+use crate::validations::utils::text_check::grammar::all_grammar_checkers;
 #[cfg(test)]
-use crate::validations::utils::text_check::checkers::mock_spell::MockSpellChecker;
-pub use checkers::TextChecker;
+use crate::validations::utils::text_check::grammar::mock_grammar::MockGrammarChecker;
+use crate::validations::utils::text_check::spell::all_spell_checkers;
+#[cfg(test)]
+use crate::validations::utils::text_check::spell::mock_spell::MockSpellChecker;
+use crate::validations::utils::text_check::utils::TemporaryTextCheckQuality;
+
+pub trait TextChecker {
+    /// Temporary measure of quality, will be replaced later.
+    fn get_quality(&self) -> TemporaryTextCheckQuality;
+
+    /// Get the lowercases primary language tags
+    fn get_available_languages(&self) -> Vec<&str>;
+
+    /// Checks a single text snippet for issues of the given [`TextCheckKind`].
+    ///
+    /// Returns a (possibly empty) vector of findings. Each finding corresponds to a
+    /// single lint that matches the requested check kind.
+    fn check_text(&self, kind: TextCheckKind, text: &str) -> Vec<TextCheckFinding>;
+}
 
 /// The kind of text check to perform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TextCheckKind {
     /// Spell checking only.
     Spell,
-    /// Grammar checking only (TODO not yet implemented)
-    #[allow(dead_code)]
+    /// Grammar checking only.
     Grammar,
 }
 
@@ -85,6 +104,10 @@ pub fn select_checker(
     if kind == TextCheckKind::Spell {
         return Ok(Box::new(MockSpellChecker));
     }
+    #[cfg(test)]
+    if kind == TextCheckKind::Grammar {
+        return Ok(Box::new(MockGrammarChecker));
+    }
 
     // Prod code gets matching
     let checkers = filter_checkers(kind, lang)?;
@@ -103,4 +126,35 @@ pub fn select_checker(
         .expect("a checker with this quality should exist");
 
     Ok(checker)
+}
+
+/// TODO: Add unit tests once grammar checkers are implemented
+pub(crate) fn filter_checkers(
+    kind: TextCheckKind,
+    lang: &ValidCsafLanguage,
+) -> Result<Vec<Box<dyn TextChecker>>, TextCheckerMatchingError> {
+    let all_checkers = match kind {
+        TextCheckKind::Spell => all_spell_checkers(),
+        TextCheckKind::Grammar => all_grammar_checkers(),
+    };
+
+    if all_checkers.is_empty() {
+        return Err(NoCheckerAvailable(kind));
+    }
+
+    let matches = all_checkers
+        .into_iter()
+        .filter(|checker| {
+            checker
+                .get_available_languages()
+                .iter()
+                .any(|avail_lang| avail_lang.eq_ignore_ascii_case(lang.primary_language()))
+        })
+        .collect::<Vec<_>>();
+
+    if matches.is_empty() {
+        return Err(UnsupportedLanguage(lang.primary_language().to_string()));
+    }
+
+    Ok(matches)
 }

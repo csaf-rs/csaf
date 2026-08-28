@@ -39,7 +39,7 @@ impl<C: TextChecker> TextChecker for NoSuggestionChecker<C> {
 
 /// Extension trait to build checker-specific expected results `EXPECTED_RESULTS_*`.
 pub(crate) trait ExpectedResultExt {
-    /// Returns `self` with `finding` added to it, turning `Ok` into a `Err`
+    /// Returns `self` with `finding` added to it, turning `Ok` into an `Err`
     fn with_finding(self, finding: TestFinding) -> Self;
 
     /// Returns `self` with any finding whose message contains `fragment` removed, possibly turning now-empty `Err` into `Ok`

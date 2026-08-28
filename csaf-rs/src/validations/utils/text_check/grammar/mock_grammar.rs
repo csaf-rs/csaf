@@ -85,5 +85,3 @@ fn grammar_check(text: &str) -> Vec<TextCheckFinding> {
 fn known_bad_sequences() -> HashSet<&'static str> {
     ["must followed", "for ensure", "a products"].iter().copied().collect()
 }
-
-// TODO unit tests

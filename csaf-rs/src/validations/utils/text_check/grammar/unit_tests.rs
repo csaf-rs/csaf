@@ -1,5 +1,6 @@
 /// Tests that verify the behavior shared by every [`TextChecker`] implementation
 use crate::validations::utils::text_check::grammar::mock_grammar;
+use crate::validations::utils::text_check::test_utils::char_slice;
 use crate::validations::utils::text_check::{TextCheckKind, TextChecker};
 use rstest::rstest;
 use rstest_reuse::{self, apply, template};
@@ -17,7 +18,7 @@ fn detects_grammar_mistake(#[case] checker: Box<dyn TextChecker>) {
     assert_eq!(findings.len(), 1, "expected exactly one findings, got: {findings:?}");
     let finding = findings.first().unwrap();
     assert_eq!(
-        &text[finding.start..finding.end],
+        char_slice(text, finding.start, finding.end),
         "must followed",
         "expected a grammar finding 'must followed'"
     );
@@ -30,19 +31,19 @@ fn detects_multiple_grammar_mistake(#[case] checker: Box<dyn TextChecker>) {
     assert_eq!(findings.len(), 3, "expected exactly three findings, got: {findings:?}");
     let finding_1 = findings.get(0).unwrap();
     assert_eq!(
-        &text[finding_1.start..finding_1.end],
+        char_slice(text, finding_1.start, finding_1.end),
         "must followed",
         "expected a grammar finding 'must followed'"
     );
     let finding_2 = findings.get(1).unwrap();
     assert_eq!(
-        &text[finding_2.start..finding_2.end],
+        char_slice(text, finding_2.start, finding_2.end),
         "for ensure",
         "expected a grammar finding 'for ensure'"
     );
     let finding_3 = findings.get(2).unwrap();
     assert_eq!(
-        &text[finding_3.start..finding_3.end],
+        char_slice(text, finding_3.start, finding_3.end),
         "a products",
         "expected a grammar finding for 'a products'"
     );

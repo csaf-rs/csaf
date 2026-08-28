@@ -14,7 +14,7 @@ fn all_checkers(#[case] checker: Box<dyn TextChecker>) {}
 fn detects_grammar_mistake(#[case] checker: Box<dyn TextChecker>) {
     let text = "The security hardening guide must followed.";
     let findings = checker.check_text(TextCheckKind::Grammar, text);
-    assert_eq!(findings.len(), 1, "expected exactly three findings, got: {findings:?}");
+    assert_eq!(findings.len(), 1, "expected exactly one findings, got: {findings:?}");
     let finding = findings.first().unwrap();
     assert_eq!(
         &text[finding.start..finding.end],

@@ -37,3 +37,27 @@ pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
 
     tokens
 }
+
+#[cfg(test)]
+mod tests {
+    use super::tokenize_words;
+    use rstest::rstest;
+
+    #[rstest]
+    #[case::single_word("hello", vec![("hello", 0, 5)])]
+    #[case::multiple_words("hello world foo", vec![("hello", 0, 5), ("world", 6, 11), ("foo", 12, 15)])]
+    #[case::single_digit("5", vec![])]
+    #[case::date("15.01.2024", vec![])]
+    #[case::test_id("Test 6.3.8", vec![("Test", 0, 4)])]
+    #[case::typo("vu1lnerability", vec![("vu1lnerability", 0, 14)])]
+    #[case::acronym("OASIS TC", vec![("OASIS", 0, 5), ("TC", 6, 8)])]
+    #[case::cve_id("CVE-2024-1234", vec![("CVE-2024-1234", 0, 13)])]
+    fn tokenizes_expected_words(#[case] text: &str, #[case] expected: Vec<(&str, usize, usize)>) {
+        let tokens = tokenize_words(text);
+        let actual: Vec<(&str, usize, usize)> = tokens
+            .iter()
+            .map(|(word, start, end)| (word.as_str(), *start, *end))
+            .collect();
+        assert_eq!(actual, expected);
+    }
+}

@@ -68,6 +68,30 @@ mod tests {
         );
     }
 
+    // TODO: Currently custom dictionary is mocked
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn does_not_flag_custom_dictionary_words(#[case] checker: Box<dyn TextChecker>) {
+        let findings = checker.check_text(TextCheckKind::Spell, "OASIS TC");
+        assert!(
+            findings.is_empty(),
+            "expected custom dictionary words to be ignored, got: {findings:?}"
+        );
+    }
+
+    // TODO: Currently CVE-ID like stuff is mocked
+    #[rstest]
+    #[case::mock(Box::new(mock_spell::MockSpellChecker))]
+    #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
+    fn does_not_flag_cve_ids(#[case] checker: Box<dyn TextChecker>) {
+        let findings = checker.check_text(TextCheckKind::Spell, "CVE-2024-1234");
+        assert!(
+            findings.is_empty(),
+            "expected CVE IDs to be ignored, got: {findings:?}"
+        );
+    }
+
     #[rstest]
     #[case::mock(Box::new(mock_spell::MockSpellChecker))]
     #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]

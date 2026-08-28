@@ -35,7 +35,7 @@ static SYMSPELL: LazyLock<SymSpell<UnicodeStringStrategy>> = LazyLock::new(|| {
 ///
 /// Behavior:
 /// - Only [`TextCheckKind::Spell`] findings are produced; grammar checking is not implemented.
-/// - Text is tokenized into alphanumeric words; punctuation is stripped, see [`tokenize_words`].
+/// - Strings are tokenized, see [`tokenize_words`].
 /// - Words found verbatim in the dictionary are considered correctly spelled.
 /// - Words not found are looked up via SymSpell: if a close match is found within
 ///   [`MAX_EDIT_DISTANCE`] edits it is offered as `replacement`. Otherwise the word is
@@ -65,7 +65,7 @@ impl TextChecker for EnglishSymspellChecker {
         for (word, start, end) in tokenize_words(text) {
             // TODO: Until custom dictionaries are implemented, all-uppercase chars are treated
             // as "known" acronyms.
-            if word.chars().all(|c| c.is_uppercase()) {
+            if word.chars().filter(|c| c.is_alphabetic()).all(|c| c.is_uppercase()) {
                 continue;
             }
 

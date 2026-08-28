@@ -11,7 +11,7 @@ use std::collections::HashSet;
 ///
 /// Behavior:
 /// - Only [`TextCheckKind::Spell`] findings are produced; grammar checking is not implemented.
-/// - Strings are tokenized by whitespace, punctuation is stripped.
+/// - Strings are tokenized, see [`tokenize_words`].
 /// - Tokens that are entirely uppercase are treated as acronyms and skipped.
 /// - Tokens that appear (case-insensitively) in the built-in minimal word list are considered correctly spelled.
 /// - All other tokens are reported as misspellings without providing a replacement.
@@ -42,7 +42,7 @@ fn spell_check(text: &str) -> Vec<TextCheckFinding> {
     for (word, start, end) in tokenize_words(text) {
         // TODO: Until custom dictionaries are implemented, all-uppercase chars are treated
         // as "known" acronyms.
-        if word.chars().all(|c| c.is_uppercase()) {
+        if word.chars().filter(|c| c.is_alphabetic()).all(|c| c.is_uppercase()) {
             continue;
         }
 

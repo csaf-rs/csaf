@@ -61,6 +61,9 @@ fn to_legacy_response(result: ValidationResult) -> ValidateResponse {
         .map(|tr| {
             // ignore the is_valid flag from the TestResultStatus and instead compute it from the errors vector,
             // since the legacy response format uses isValid = true if there are no errors, even if there are warnings or infos.
+            // Legacy calculates overall is_valid from the individual is_valid flags, so this has to be set according to the spec.
+            // Our TestResultStatus is doesn't do that, but instead has a separate status for warnings and infos, so we have to convert it here.
+            // see https://github.com/secvisogram/csaf-validator-service/issues/239 for reference
             let (_, errors, warnings, infos) = match tr.status {
                 TestResultStatus::Success | TestResultStatus::Skipped => (true, vec![], vec![], vec![]),
                 TestResultStatus::NotFound => (false, vec![], vec![], vec![]),
@@ -153,15 +156,15 @@ fn from_potential_legacy_name(name: &str) -> String {
         examples(
             ("Validate with a single test" = (
              //   summary = "Validate with a single test",
-                value = json!({"tests": [{"type": "test", "name": "6.1.15"}], "document": {"category": "csaf_base", "csaf_version": "2.0", "publisher": {"category": "vendor", "name": "Example", "namespace": "https://example.com"}, "title": "Example", "tracking": {"current_release_date": "2024-01-01T00:00:00Z", "id": "Example-001", "initial_release_date": "2024-01-01T00:00:00Z", "revision_history": [{"date": "2024-01-01T00:00:00Z", "number": "1", "summary": "Initial"}], "status": "final", "version": "1"}}})
+                value = json!({"tests": [{"type": "test", "name": "6.1.15"}], "document": {"document": {"category": "csaf_base", "csaf_version": "2.0", "publisher": {"category": "vendor", "name": "Example", "namespace": "https://example.com"}, "title": "Example", "tracking": {"current_release_date": "2024-01-01T00:00:00Z", "id": "Example-001", "initial_release_date": "2024-01-01T00:00:00Z", "revision_history": [{"date": "2024-01-01T00:00:00Z", "number": "1", "summary": "Initial"}], "status": "final", "version": "1"}}}})
             )),
             ("Validate with the basic preset" = (
                 summary = "Validate with the basic preset",
-                value = json!({"tests": [{"type": "preset", "name": "basic"}], "document": {"category": "csaf_base", "csaf_version": "2.0"}})
+                value = json!({"tests": [{"type": "preset", "name": "basic"}], "document": {"document": {"category": "csaf_base", "csaf_version": "2.0"}}})
             )),
             ("Combine individual tests with presets" = (
                 summary = "Combine individual tests with presets",
-                value = json!({"tests": [{"type": "preset", "name": "basic"}, {"type": "test", "name": "6.2.1"}], "document": {"category": "csaf_base", "csaf_version": "2.0"}})
+                value = json!({"tests": [{"type": "preset", "name": "basic"}, {"type": "test", "name": "6.2.1"}], "document": {"document": {"category": "csaf_base", "csaf_version": "2.0"}}})
             ))
         )
     ),

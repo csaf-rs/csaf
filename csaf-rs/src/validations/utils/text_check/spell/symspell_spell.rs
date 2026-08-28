@@ -1,9 +1,8 @@
 //! English spell-checker backed by the SymSpell algorithm and static word-frequency
 //! dictionaries (TODO: only english for now)
 
-use crate::validations::utils::text_check::checkers::utils::tokenize_words;
-use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
-use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
+use crate::validations::utils::text_check::utils::{TemporaryTextCheckQuality, tokenize_words};
+use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind, TextChecker};
 use std::sync::LazyLock;
 use symspell::{SymSpell, SymSpellBuilder, UnicodeStringStrategy, Verbosity};
 

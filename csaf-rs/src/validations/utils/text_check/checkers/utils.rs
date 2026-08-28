@@ -1,4 +1,4 @@
-//! Shared helpers for [`TextChecker`] implementations.
+//! Shared helpers for spell-checking and grammar-checking.
 
 /// Splits `text` into alphanumeric word tokens suitable for spell-checking.
 ///

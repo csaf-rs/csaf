@@ -127,6 +127,19 @@ cargo install cargo-edit
 ./scripts/publish/bump_version.sh set 1.2.3    # explicit version
 ```
 
+## Commit Messages
+
+Please use commit messages and pull request titles following [Conventional Commits](https://www.conventionalcommits.org/) when contributing to this project.
+You can use a tool such as [commitlint](https://commitlint.js.org/) to check your commit locally, e.g., by running:
+
+```bash
+commitlint --default-config --last
+```
+
+to verify the latest commit. More options can be found with `--help`.
+The CI workflow `pre-checks` will also ensure that PR titles and commit messages in pushes to `main` conform to Conventional Commits.
+In addition, warnings in the pipeline are emitted if the commits contained within a PR do not adhere to Conventional Commits; these warnings do not fail the pipeline.
+
 ## Build
 
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run
@@ -221,14 +234,14 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.4 | ✅ | ✅ |
 | 6.1.5 | ✅ | ✅ |
 | 6.1.6 | ✅ | ✅ |
-| 6.1.7 | ✅ |   |
+| 6.1.7 | ✅ | ✅ |
 | 6.1.8 | ✅ |   |
 | 6.1.9 | ✅  | ✅ |
 | 6.1.10 | ✅ | ✅ |
-| 6.1.11 | ✅ |   |
+| 6.1.11 | ✅ | ✅ |
 | 6.1.12 | ✅ | ✅ |
 | 6.1.13 | ✅ | ✅ |
-| 6.1.14 | ✅ |   |
+| 6.1.14 | ✅ | ✅ |
 | 6.1.15 | ✅ | ✅ |
 | 6.1.16 | ✅ | ✅ |
 | 6.1.17 | ✅ | ✅ |
@@ -248,7 +261,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.27.5 | ✅ | ✅ |
 | 6.1.27.6 | ✅ | ✅ |
 | 6.1.27.7 | ✅ | ✅ |
-| 6.1.27.8 | ✅ |   |
+| 6.1.27.8 | ✅ | ✅ |
 | 6.1.27.9 | ✅ | ✅ |
 | 6.1.27.10 | ✅ | ✅ |
 | 6.1.27.11 | ✅ | ✅ |
@@ -300,16 +313,27 @@ For further configuration options, please refer to the [csaf-service README](csa
 ### Recommended Tests
 
 | Test specification | 2.0                | 2.1 (experimental) |
-| --- |--------------------|--------------------|
-| 6.2.1 |  |  |
-| 6.2.23 | ⭕ | ✅ |
-| 6.2.24 | ⭕ | ✅ |
-| 6.2.25 | ⭕ | ✅ |
-| 6.2.26 | ⭕ | ✅ |
-| 6.2.47 | ⭕ | ✅ |
+|----------|--------------------|--------------------|
+| 6.2.1    |  |  |
+| 6.2.11   | ✅ | ✅ |
+| 6.2.23   | ⭕ | ✅ |
+| 6.2.24   | ⭕ | ✅ |
+| 6.2.25   | ⭕ | ✅ |
+| 6.2.26   | ⭕ | ✅ |
+| 6.2.34   | ⭕ | ✅ |
+| 6.2.35   | ⭕ | ✅ |
+| 6.2.36   | ⭕ | ✅ |
+| 6.2.37   | ⭕ | ✅ |
+| 6.2.39.2 | ⭕ | ✅ |
+| 6.2.39.3 | ⭕ | ✅ |
+| 6.2.47   | ⭕ | ✅ |
 
 ### Informative Tests
 
 | Test specification | 2.0               | 2.1 (experimental) |
-| --- |-------------------|--------------------|
-| 6.3.1 |  |  |
+|--------|-------------------|--------------------|
+| 6.3.1  |  |  |
+| 6.3.5 | ✅ | ✅ |
+| 6.3.14 | ⭕ | ✅ |
+| 6.3.15 | ⭕ | ✅ |
+

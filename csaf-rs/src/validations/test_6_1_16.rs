@@ -1,14 +1,14 @@
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.1.16 Latest Document Version
 ///
 /// `/document/tracking/version` must be equal to the last `/document/tracking/revision_history[]/number` when
 /// sorting the revision history ascending by `date`. Build metadata is ignored. Pre-release parts are ignored
 /// if `/document/status` is "draft".
-pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
 
     let mut revision_history = tracking.aggregate_revision_history();
@@ -58,13 +58,13 @@ fn test_6_1_16_err_generator(
     doc_version: &CsafVersionNumber,
     latest_number: &CsafVersionNumber,
     doc_status: &DocumentStatus,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document version '{doc_version}' is not equal to the latest revision history number '{latest_number}' in document with status '{doc_status}'"
         ),
         instance_path: "/document/tracking/version".to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_16, test_6_1_16_latest_document_version);
@@ -72,7 +72,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_16, test_6_1_16_late
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_16 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_16 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -123,26 +125,26 @@ mod tests {
             )]);
 
         // CSAF 2.0 has 18 test cases (01-08, 11-19, 31)
-        TESTS_2_0.test_6_1_16.expect(
-            case_intver_history_greater_document_version.clone(),
-            case_intver_history_greater_document_version_same_date.clone(),
-            case_intver_history_greater_document_version_same_date_wrong_order.clone(),
-            case_semver_history_greater_document_version.clone(),
-            case_semver_history_greater_document_version_same_date.clone(),
-            case_intver_history_greater_document_version_same_date_multiple_versions.clone(),
-            case_semver_history_greater_document_version_same_date_multiple_versions.clone(),
-            case_intver_history_greater_document_version_same_date_higher_precision.clone(),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-            Ok(()), // case_15
-            Ok(()), // case_16
-            Ok(()), // case_17
-            Ok(()), // case_18
-            Ok(()), // case_19
-            Ok(()), // case_31
-        );
+        TESTS_2_0.test_6_1_16.expect(ExpectedResults_2_0 {
+            case_01: case_intver_history_greater_document_version.clone(),
+            case_02: case_intver_history_greater_document_version_same_date.clone(),
+            case_03: case_intver_history_greater_document_version_same_date_wrong_order.clone(),
+            case_04: case_semver_history_greater_document_version.clone(),
+            case_05: case_semver_history_greater_document_version_same_date.clone(),
+            case_06: case_intver_history_greater_document_version_same_date_multiple_versions.clone(),
+            case_07: case_semver_history_greater_document_version_same_date_multiple_versions.clone(),
+            case_08: case_intver_history_greater_document_version_same_date_higher_precision.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+            case_19: Ok(()),
+            case_31: Ok(()),
+        });
 
         let case_intver_history_greater_document_version_wrong_order = Err(vec![test_6_1_16_err_generator(
             &CsafVersionNumber::from("2"),
@@ -151,27 +153,27 @@ mod tests {
         )]);
 
         // CSAF 2.1 has 20 test cases (01-09, 11-19, 31-32)
-        TESTS_2_1.test_6_1_16.expect(
-            case_intver_history_greater_document_version,
-            case_intver_history_greater_document_version_same_date,
-            case_intver_history_greater_document_version_same_date_wrong_order,
-            case_semver_history_greater_document_version,
-            case_semver_history_greater_document_version_same_date,
-            case_intver_history_greater_document_version_same_date_multiple_versions,
-            case_semver_history_greater_document_version_same_date_multiple_versions,
-            case_intver_history_greater_document_version_same_date_higher_precision,
-            case_intver_history_greater_document_version_wrong_order,
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-            Ok(()), // case_15
-            Ok(()), // case_16
-            Ok(()), // case_17
-            Ok(()), // case_18
-            Ok(()), // case_19
-            Ok(()), // case_31
-            Ok(()), // case_32
-        );
+        TESTS_2_1.test_6_1_16.expect(ExpectedResults_2_1 {
+            case_01: case_intver_history_greater_document_version,
+            case_02: case_intver_history_greater_document_version_same_date,
+            case_03: case_intver_history_greater_document_version_same_date_wrong_order,
+            case_04: case_semver_history_greater_document_version,
+            case_05: case_semver_history_greater_document_version_same_date,
+            case_06: case_intver_history_greater_document_version_same_date_multiple_versions,
+            case_07: case_semver_history_greater_document_version_same_date_multiple_versions,
+            case_08: case_intver_history_greater_document_version_same_date_higher_precision,
+            case_09: case_intver_history_greater_document_version_wrong_order,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+            case_18: Ok(()),
+            case_19: Ok(()),
+            case_31: Ok(()),
+            case_32: Ok(()),
+        });
     }
 }

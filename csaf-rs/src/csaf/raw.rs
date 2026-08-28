@@ -2,7 +2,7 @@ use std::cell::OnceCell;
 
 use serde::de::DeserializeOwned;
 
-use crate::validation::{CsafError, TestResult, TestResultStatus, Validatable, ValidationError};
+use crate::validation::{TestFinding, CsafError, TestResult, TestResultStatus, Validatable};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawDocument<T> {
@@ -98,7 +98,7 @@ where
     T: crate::test_validation::TestValidator<CSAF>,
     CSAF: DeserializeOwned,
 {
-    fn validate(&self, doc: &RawDocument<CSAF>) -> Result<(), Vec<ValidationError>> {
+    fn validate(&self, doc: &RawDocument<CSAF>) -> Result<(), Vec<TestFinding>> {
         let parsed = doc.get_parsed();
         match parsed {
             Ok(parsed_doc) => self.validate(parsed_doc),

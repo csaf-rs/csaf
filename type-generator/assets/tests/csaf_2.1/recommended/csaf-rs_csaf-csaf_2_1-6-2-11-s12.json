@@ -1,0 +1,39 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "references": [
+      {
+        "category": "self",
+        "summary": "A canonical URL whose filename is derived from multiple invalid character sequences.",
+        "url": "https://example.com/security/data/csaf/2024/csaf-rs_csaf-csaf_2_1-6-2-11-s12.json"
+      }
+    ],
+    "title": "Recommended Test: Missing Canonical URL (valid supplementary example 2 - multiple invalid character sequences in tracking ID)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_#_%CSAF-CSAF_2_#_%1-6-2-11-S12",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  }
+}

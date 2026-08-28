@@ -8,7 +8,7 @@ use crate::schema::csaf2_1::schema::{
     RulesForDocumentSharing as RulesForDocumentSharing21, SharingGroup as SharingGroup21,
     TrafficLightProtocolTlp as TrafficLightProtocolTlp21,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// Trait representing distribution information for a document
 pub trait DistributionTrait {
@@ -25,7 +25,7 @@ pub trait DistributionTrait {
     fn get_tlp_20(&self) -> Option<&Self::TlpType>;
 
     /// Returns the TLP information for this distribution with CSAF 2.1 semantics
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError>;
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, TestFinding>;
 
     fn get_text(&self) -> Option<&str>;
 }
@@ -45,13 +45,13 @@ impl DistributionTrait for RulesForSharingDocument20 {
         self.tlp.as_ref()
     }
 
-    /// Return TLP or a ValidationError to satisfy CSAF 2.1 semantics
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError> {
+    /// Return TLP or a TestFinding to satisfy CSAF 2.1 semantics
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, TestFinding> {
         match self.tlp.as_ref() {
-            None => Err(ValidationError {
+            None => Err(TestFinding::Error(TestFindingData {
                 message: "CSAF 2.1 requires the TLP property, but it is not set.".to_string(),
                 instance_path: "/document/distribution/tlp".to_string(),
-            }),
+            })),
             Some(tlp) => Ok(tlp),
         }
     }
@@ -73,7 +73,7 @@ impl DistributionTrait for RulesForDocumentSharing21 {
     }
 
     /// Always return the value because it is mandatory
-    fn get_tlp_21(&self) -> Result<&Self::TlpType, ValidationError> {
+    fn get_tlp_21(&self) -> Result<&Self::TlpType, TestFinding> {
         Ok(&self.tlp)
     }
 }

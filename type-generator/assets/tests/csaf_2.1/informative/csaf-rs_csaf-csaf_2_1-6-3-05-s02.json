@@ -1,0 +1,83 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Informative Test: Use of Short Hash (failing supplementary example 2 - multiple full product names and findings)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-05-S02",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-0001",
+        "product_identification_helper": {
+          "hashes": [
+            {
+              "file_hashes": [
+                {
+                  "algorithm": "sha256",
+                  "value": "e9f3a00a7cc88c33acfa94a4eb40a51072c82bce1836babca47621fced6838f9"
+                },
+                {
+                  "algorithm": "md5",
+                  "value": "98db59d2b0b59a7c99278541e448be75"
+                }
+              ],
+              "filename": "product-a.so"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Product B",
+        "product_id": "CSAFPID-0002",
+        "product_identification_helper": {
+          "hashes": [
+            {
+              "file_hashes": [
+                {
+                  "algorithm": "sha512",
+                  "value": "0edf658ed7e51c2127d81ec688626f84159712e32fe7361ea6a7823ac401a8887aa87a042145ce448fb24cd235574f69c6227e8df5e689c0ac495872a466a334"
+                }
+              ],
+              "filename": "product-b-valid.so"
+            },
+            {
+              "file_hashes": [
+                {
+                  "algorithm": "sha1",
+                  "value": "e75923cfd14799f1d4c2d7073f28c07f91dfde17"
+                }
+              ],
+              "filename": "product-b-short.so"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

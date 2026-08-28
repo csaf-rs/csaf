@@ -6,7 +6,7 @@ use serde_json::{Map, Value};
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
-    validation::ValidationError,
+    validation::{TestFinding, TestFindingData},
 };
 
 static CVSS20_VALIDATOR: LazyLock<Validator> =
@@ -20,8 +20,8 @@ static CVSS40_VALIDATOR: LazyLock<Validator> =
 
 /// 6.1.8 Invalid CVSS
 /// Invalid CVSS object according to scheme
-pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
@@ -81,7 +81,7 @@ fn evaluate_cvss(
     validator: &Validator,
     base_path: &str,
     metric: CsafVulnerabilityMetric,
-    errors: &mut Option<Vec<ValidationError>>,
+    errors: &mut Option<Vec<TestFinding>>,
 ) {
     let value = serde_json::to_value(cvss_value).unwrap();
     for error in validator.iter_errors(&value) {
@@ -91,87 +91,89 @@ fn evaluate_cvss(
     }
 }
 
-fn create_validation_error(message: String, base: &str, metric: CsafVulnerabilityMetric) -> ValidationError {
-    ValidationError {
+fn create_validation_error(message: String, base: &str, metric: CsafVulnerabilityMetric) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message,
         instance_path: format!("{}/{}", base, metric.get_metric_prop_name()),
-    }
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_8 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_8 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_08() {
         // CSAF 2.0 has 7 test cases (01-03, 11-14)
-        TESTS_2_0.test_6_1_8.expect(
-            Err(vec![create_validation_error(
+        TESTS_2_0.test_6_1_8.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
                 CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_02: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
                 CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_03: Err(vec![create_validation_error(
                 "\"version\" is a required property".to_string(),
                 "/vulnerabilities/0/scores/0",
                 CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
             )]),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
 
         // CSAF 2.1 has 13 test cases (01-06, 11-17)
-        TESTS_2_1.test_6_1_8.expect(
-            Err(vec![create_validation_error(
+        TESTS_2_1.test_6_1_8.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_02: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_03: Err(vec![create_validation_error(
                 "\"version\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
             )]),
-            Err(vec![create_validation_error(
+            case_04: Err(vec![create_validation_error(
                 "\"baseSeverity\" is a required property".to_string(),
                 "/vulnerabilities/0/metrics/0/content",
                 CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
             )]),
-            Err(vec![
+            case_05: Err(vec![
                 create_validation_error(
                     "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
                     CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                 ),
             ]),
-            Err(vec![
+            case_06: Err(vec![
                 create_validation_error(
                     "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)".to_string(),
                     "/vulnerabilities/0/metrics/0/content",
                     CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
                 ),
             ]),
-            Ok(()), // case_11
-            Ok(()), // case_12
-            Ok(()), // case_13
-            Ok(()), // case_14
-            Ok(()), // case_15
-            Ok(()), // case_16
-            Ok(()), // case_17
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+            case_17: Ok(()),
+        });
     }
 }

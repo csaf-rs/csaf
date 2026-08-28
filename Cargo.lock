@@ -340,7 +340,7 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "thiserror 2.0.19",
+ "thiserror 2.0.20",
 ]
 
 [[package]]
@@ -579,7 +579,7 @@ version = "0.5.2"
 dependencies = [
  "csaf-rs",
  "serde_json",
- "thiserror 2.0.19",
+ "thiserror 2.0.20",
  "uniffi",
 ]
 
@@ -616,6 +616,7 @@ dependencies = [
  "spdx",
  "ssvc",
  "strum",
+ "symspell",
  "tempfile",
  "thiserror 2.0.19",
  "utoipa",
@@ -662,7 +663,42 @@ dependencies = [
  "serde",
  "serde_json",
  "strum",
- "thiserror 2.0.19",
+ "thiserror 2.0.20",
+]
+
+[[package]]
+name = "darling"
+version = "0.20.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc7f46116c46ff9ab3eb1597a45688b6715c6e628b5c133e288e709a29bcb4ee"
+dependencies = [
+ "darling_core",
+ "darling_macro",
+]
+
+[[package]]
+name = "darling_core"
+version = "0.20.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d00b9596d185e565c2207a0b01f8bd1a135483d02d9b7b0a54b11da8d53412e"
+dependencies = [
+ "fnv",
+ "ident_case",
+ "proc-macro2",
+ "quote",
+ "strsim",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "darling_macro"
+version = "0.20.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc34b93ccb385b40dc71c6fceac4b2ad23662c7eeb248cf10d529b7e055b6ead"
+dependencies = [
+ "darling_core",
+ "quote",
+ "syn 2.0.117",
 ]
 
 [[package]]
@@ -670,6 +706,37 @@ name = "data-encoding"
 version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4ae5f15dda3c708c0ade84bfee31ccab44a3da4f88015ed22f63732abe300c8"
+
+[[package]]
+name = "derive_builder"
+version = "0.20.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "507dfb09ea8b7fa618fcf76e953f4f5e192547945816d5358edffe39f6f94947"
+dependencies = [
+ "derive_builder_macro",
+]
+
+[[package]]
+name = "derive_builder_core"
+version = "0.20.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2d5bcf7b024d6835cfb3d473887cd966994907effbe9227e8c8219824d06c4e8"
+dependencies = [
+ "darling",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "derive_builder_macro"
+version = "0.20.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ab63b0e2bf4d5928aff72e83a7dace85d7bba5fe12dcc3c5a572d78caffd3f3c"
+dependencies = [
+ "derive_builder_core",
+ "syn 2.0.117",
+]
 
 [[package]]
 name = "derive_arbitrary"
@@ -783,6 +850,12 @@ dependencies = [
  "ref-cast",
  "serde",
 ]
+
+[[package]]
+name = "fnv"
+version = "1.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "foldhash"
@@ -1183,6 +1256,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d3067d79b975e8844ca9eb072e16b31c3c1c36928edf9c6789548c524d0d954"
 
 [[package]]
+name = "ident_case"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
+
+[[package]]
 name = "idna"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1262,9 +1341,9 @@ dependencies = [
 
 [[package]]
 name = "jsonschema"
-version = "0.49.6"
+version = "0.49.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e17384278234b10419a63c93fc85695ac9fc2da0833e3c59167f9986499590c"
+checksum = "59ec8a241beed129f06114aa68007e905ca350e7baeb6e17a7631bb7978d91b2"
 dependencies = [
  "ahash",
  "bytecount",
@@ -1565,7 +1644,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d33fa1a190c3c9024f21b82e6b30f94137d9c1bf25071e2ab2ba13020135fbaf"
 dependencies = [
  "percent-encoding",
- "thiserror 2.0.19",
+ "thiserror 2.0.20",
 ]
 
 [[package]]
@@ -2016,6 +2095,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-wasm-bindgen"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8302e169f0eddcc139c70f139d19d6467353af16f9fce27e8c30158036a1e16b"
+dependencies = [
+ "js-sys",
+ "serde",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "serde_core"
 version = "1.0.229"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2191,17 +2281,20 @@ dependencies = [
 
 [[package]]
 name = "ssvc"
-version = "0.2.1"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "591d8eb7f7ab8f67baa6250ede8c342b3022528020e360055528afbadae69042"
+checksum = "9117d67587cc2383727a58dbf6bc219f5d56716b29c941ec3b3f1317b34b9eeb"
 dependencies = [
+ "anyhow",
  "chrono",
- "prettyplease 0.2.37",
+ "jsonschema",
+ "prettyplease 0.3.0",
  "regress",
  "rust-embed",
  "serde",
  "serde_json",
- "syn 2.0.117",
+ "syn 3.0.3",
+ "thiserror 2.0.20",
  "typify",
 ]
 
@@ -2242,6 +2335,20 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.117",
+]
+
+[[package]]
+name = "symspell"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf08f17d60f1026f3b4de9751e298df03b305c6f394b8ae0523d7f54861e839e"
+dependencies = [
+ "derive_builder",
+ "serde",
+ "serde-wasm-bindgen",
+ "strsim",
+ "unidecode",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -2316,11 +2423,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.19"
+version = "2.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09a43598840e33d5b0331f38c5e30d13bb11c11210a4b58f0d9b18a5a5eefcd9"
+checksum = "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f"
 dependencies = [
- "thiserror-impl 2.0.19",
+ "thiserror-impl 2.0.20",
 ]
 
 [[package]]
@@ -2336,9 +2443,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.19"
+version = "2.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43cbfe0cf76104d42a574802844187e84a305e531ed54455f11fbde0f10541cd"
+checksum = "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2597,7 +2704,7 @@ dependencies = [
  "serde_json",
  "strum",
  "syn 3.0.3",
- "thiserror 2.0.19",
+ "thiserror 2.0.20",
  "typify",
 ]
 
@@ -2633,7 +2740,7 @@ dependencies = [
  "serde",
  "serde_json",
  "syn 2.0.117",
- "thiserror 2.0.19",
+ "thiserror 2.0.20",
  "unicode-ident",
 ]
 
@@ -2677,6 +2784,12 @@ name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
+
+[[package]]
+name = "unidecode"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "402bb19d8e03f1d1a7450e2bd613980869438e0666331be3e073089124aa1adc"
 
 [[package]]
 name = "uniffi"
@@ -2877,9 +2990,9 @@ dependencies = [
 
 [[package]]
 name = "uuid"
-version = "1.24.0"
+version = "1.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf3923a6f5c4c6382e0b653c4117f48d631ea17f38ed86e2a828e6f7412f5239"
+checksum = "2cefc03fd367c0c6d4305de1b312cf00248c4114f4a0418ce6a6af769e3b0bd9"
 dependencies = [
  "getrandom 0.4.2",
  "js-sys",

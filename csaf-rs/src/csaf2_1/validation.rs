@@ -6,40 +6,31 @@ use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{CsafError, TestResult, TestResultStatus, Validatable};
+use crate::validation::{TestFinding, CsafError, TestResult, TestResultStatus, Validatable, ValidationError};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
-enum Severity {
-    Error,
-    Warning,
-    Info,
-}
 
-fn to_test_result(
-    test_id: &str,
-    severity: Severity,
-    result: Option<Result<(), Vec<crate::validation::ValidationError>>>,
-) -> TestResult {
+fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation::TestFinding>>>) -> TestResult {
     TestResult {
         test_id: test_id.to_string(),
         status: match result {
             None => TestResultStatus::NotFound,
             Some(Ok(())) => TestResultStatus::Success,
-            Some(Err(data)) => match severity {
-                Severity::Error => TestResultStatus::Failure {
-                    errors: data,
-                    warnings: vec![],
-                    infos: vec![],
-                },
-                Severity::Warning => TestResultStatus::Failure {
-                    errors: vec![],
-                    warnings: data,
-                    infos: vec![],
-                },
-                Severity::Info => TestResultStatus::Failure {
-                    errors: vec![],
-                    warnings: vec![],
-                    infos: data,
-                },
+            Some(Err(data)) => TestResultStatus::Failure {
+                errors: data
+                    .iter()
+                    .filter(|f| matches!(f, TestFinding::Error(_)))
+                    .map(ValidationError::from)
+                    .collect(),
+                warnings: data
+                    .iter()
+                    .filter(|f| matches!(f, TestFinding::Warning(_)))
+                    .map(ValidationError::from)
+                    .collect(),
+                infos: data
+                    .iter()
+                    .filter(|f| matches!(f, TestFinding::Information(_)))
+                    .map(ValidationError::from)
+                    .collect(),
             },
         },
     }
@@ -225,9 +216,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
     }
 
     fn run_test(&self, test_id: &str) -> TestResult {
-        let mandatory_result = to_test_result(
+        to_test_result(
             test_id,
-            Severity::Error,
             match test_id {
                 // mandatory tests
                 "6.1.1" => Some(ValidatorForTest6_1_1.validate(self)),
@@ -236,14 +226,14 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.4" => Some(ValidatorForTest6_1_4.validate(self)),
                 "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
                 "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),
-                "6.1.7" => None, // Some(ValidatorForTest6_1_7.validate(self)),
+                "6.1.7" => Some(ValidatorForTest6_1_7.validate(self)),
                 "6.1.8" => None, // Some(ValidatorForTest6_1_8.validate(self)),
                 "6.1.9" => Some(ValidatorForTest6_1_9.validate(self)),
                 "6.1.10" => Some(ValidatorForTest6_1_10.validate(self)),
-                "6.1.11" => None, // Some(ValidatorForTest6_1_11.validate(self)),
+                "6.1.11" => Some(ValidatorForTest6_1_11.validate(self)),
                 "6.1.12" => Some(ValidatorForTest6_1_12.validate(self)),
                 "6.1.13" => Some(ValidatorForTest6_1_13.validate(self)),
-                "6.1.14" => None, // Some(ValidatorForTest6_1_14.validate(self)),
+                "6.1.14" => Some(ValidatorForTest6_1_14.validate(self)),
                 "6.1.15" => Some(ValidatorForTest6_1_15.validate(self)),
                 "6.1.16" => Some(ValidatorForTest6_1_16.validate(self)),
                 "6.1.17" => Some(ValidatorForTest6_1_17.validate(self)),
@@ -311,17 +301,6 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.60.2" => None, // Some(ValidatorForTest6_1_60_2.validate(self)),
                 "6.1.60.3" => None, // Some(ValidatorForTest6_1_60_3.validate(self)),
                 "6.1.61" => Some(ValidatorForTest6_1_61.validate(self)),
-                _ => None,
-            },
-        );
-        if TestResultStatus::NotFound != mandatory_result.status {
-            return mandatory_result;
-        }
-
-        let recommended_result = to_test_result(
-            test_id,
-            Severity::Warning,
-            match test_id {
                 // recommended tests
                 "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
                 "6.2.2" => Some(ValidatorForTest6_2_2.validate(self)),
@@ -367,14 +346,14 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.31" => Some(ValidatorForTest6_2_31.validate(self)),
                 "6.2.32" => Some(ValidatorForTest6_2_32.validate(self)),
                 "6.2.33" => Some(ValidatorForTest6_2_33.validate(self)),
-                "6.2.34" => None, // Some(ValidatorForTest6_2_34.validate(self)),
-                "6.2.35" => None, // Some(ValidatorForTest6_2_35.validate(self)),
-                "6.2.36" => None, // Some(ValidatorForTest6_2_36.validate(self)),
-                "6.2.37" => None, // Some(ValidatorForTest6_2_37.validate(self)),
+                "6.2.34" => Some(ValidatorForTest6_2_34.validate(self)),
+                "6.2.35" => Some(ValidatorForTest6_2_35.validate(self)),
+                "6.2.36" => Some(ValidatorForTest6_2_36.validate(self)),
+                "6.2.37" => Some(ValidatorForTest6_2_37.validate(self)),
                 "6.2.38" => Some(ValidatorForTest6_2_38.validate(self)),
                 "6.2.39.1" => None, // Some(ValidatorForTest6_2_39_1.validate(self)),
-                "6.2.39.2" => None, // Some(ValidatorForTest6_2_39_2.validate(self)),
-                "6.2.39.3" => None, // Some(ValidatorForTest6_2_39_3.validate(self)),
+                "6.2.39.2" => Some(ValidatorForTest6_2_39_2.validate(self)),
+                "6.2.39.3" => Some(ValidatorForTest6_2_39_3.validate(self)),
                 "6.2.39.4" => None, // Some(ValidatorForTest6_2_39_4.validate(self)),
                 "6.2.40" => None,   // Some(ValidatorForTest6_2_40.validate(self)),
                 "6.2.41" => Some(ValidatorForTest6_2_41.validate(self)),
@@ -392,23 +371,12 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.51" => None,   // Some(ValidatorForTest6_2_51.validate(self)),
                 "6.2.52" => Some(ValidatorForTest6_2_52.validate(self)),
                 "6.2.53" => Some(ValidatorForTest6_2_53.validate(self)),
-                _ => None,
-            },
-        );
-        if TestResultStatus::NotFound != recommended_result.status {
-            return recommended_result;
-        }
-
-        to_test_result(
-            test_id,
-            Severity::Info,
-            match test_id {
                 // informative tests
                 "6.3.1" => None, // Some(ValidatorForTest6_3_1.validate(self)),
                 "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
                 "6.3.3" => None, // Some(ValidatorForTest6_3_3.validate(self)),
                 "6.3.4" => None, // Some(ValidatorForTest6_3_4.validate(self)),
-                "6.3.5" => None, // Some(ValidatorForTest6_3_5.validate(self)),
+                "6.3.5" => Some(ValidatorForTest6_3_5.validate(self)),
                 "6.3.6" => None, // Some(ValidatorForTest6_3_6.validate(self)),
                 "6.3.7" => None, // Some(ValidatorForTest6_3_7.validate(self)),
                 "6.3.8" => None, // Some(ValidatorForTest6_3_8.validate(self)),
@@ -417,8 +385,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.11" => None, // Some(ValidatorForTest6_3_11.validate(self)),
                 "6.3.12" => Some(ValidatorForTest6_3_12.validate(self)),
                 "6.3.13" => None, // Some(ValidatorForTest6_3_13.validate(self)),
-                "6.3.14" => None, // Some(ValidatorForTest6_3_14.validate(self)),
-                "6.3.15" => None, // Some(ValidatorForTest6_3_15.validate(self)),
+                "6.3.14" => Some(ValidatorForTest6_3_14.validate(self)),
+                "6.3.15" => Some(ValidatorForTest6_3_15.validate(self)),
                 "6.3.16" => None, // Some(ValidatorForTest6_3_16.validate(self)),
                 "6.3.17" => None, // Some(ValidatorForTest6_3_17.validate(self)),
                 "6.3.18" => Some(ValidatorForTest6_3_18.validate(self)),
@@ -432,14 +400,10 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
-        if test_id == Preset::Schema.as_str() {
-            return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_1(self)));
-        }
-
         to_test_result(
             test_id,
-            Severity::Warning,
             match test_id {
+                Preset::Schema.as_str() => Some(validate_schema_csaf_2_1(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

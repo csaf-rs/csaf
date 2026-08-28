@@ -4,7 +4,7 @@ use crate::csaf_traits::{
     CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, TrackingTrait, VulnerabilityTrait, WithDate,
     WithOptionalDate,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -17,7 +17,7 @@ static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 ///
 /// This function checks all date/time fields in the document, including tracking dates,
 /// vulnerability disclosure/discovery dates, remediation dates, threat dates, etc.
-pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
 
     // Check the initial release date
@@ -108,23 +108,23 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<Validat
     Ok(())
 }
 
-fn create_invalid_format_error(date_time: &str, instance_path: &str) -> ValidationError {
-    ValidationError {
+fn create_invalid_format_error(date_time: &str, instance_path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Invalid date-time string {date_time}, expected RFC3339-compliant format with non-empty timezone and no leap seconds"
         ),
         instance_path: instance_path.to_string(),
-    }
+    })
 }
 
-fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> ValidationError {
-    ValidationError {
+fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Date-time string {date_time} matched RFC3339 regex but failed chrono parsing: {error}"),
         instance_path: instance_path.to_string(),
-    }
+    })
 }
 
-fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), Vec<ValidationError>> {
+fn check_datetime(date_time: &CsafDateTime, instance_path: &str) -> Result<(), Vec<TestFinding>> {
     let date = match date_time {
         Valid(date) => date.get_raw_string(),
         Invalid(err) => err.get_raw_string(),
@@ -145,60 +145,61 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_37, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_37 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_37() {
         // Only CSAF 2.1 has this test with 16 test cases (10 error cases, 6 success cases)
-        TESTS_2_1.test_6_1_37.expect(
-            Err(vec![create_invalid_format_error(
+        TESTS_2_1.test_6_1_37.expect(ExpectedResults {
+            case_01: Err(vec![create_invalid_format_error(
                 "2024-01-24 10:00:00.000Z",
                 "/document/tracking/initial_release_date",
             )]),
-            Err(vec![create_invalid_format_error(
+            case_02: Err(vec![create_invalid_format_error(
                 "2024-01-24T10:00:00.000z",
                 "/document/tracking/initial_release_date",
             )]),
-            Err(vec![create_invalid_format_error(
+            case_03: Err(vec![create_invalid_format_error(
                 "2017-01-01T02:59:60+04:00",
                 "/vulnerabilities/0/disclosure_date",
             )]),
-            Err(vec![create_parsing_error(
+            case_04: Err(vec![create_parsing_error(
                 "2023-04-31T00:00:00+01:00",
                 "Failed to parse '2023-04-31T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
                 "/vulnerabilities/0/disclosure_date",
             )]),
-            Err(vec![create_parsing_error(
+            case_05: Err(vec![create_parsing_error(
                 "2023-02-29T00:00:00+01:00",
                 "Failed to parse '2023-02-29T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
                 "/vulnerabilities/0/disclosure_date",
             )]),
-            Err(vec![create_invalid_format_error(
+            case_06: Err(vec![create_invalid_format_error(
                 "2016-12-31T00:00:60+23:59",
                 "/vulnerabilities/0/disclosure_date",
             )]),
-            Err(vec![create_invalid_format_error(
+            case_07: Err(vec![create_invalid_format_error(
                 "2015-06-30T10:29:60-13:30",
                 "/vulnerabilities/0/disclosure_date",
             )]),
-            Err(vec![create_invalid_format_error(
+            case_08: Err(vec![create_invalid_format_error(
                 "2015-06-30T10:29:60-13:30",
                 "/vulnerabilities/0/disclosure_date",
             )]),
-            Err(vec![create_invalid_format_error(
+            case_09: Err(vec![create_invalid_format_error(
                 "2016-12-31T23:59:60.0123+00:00",
                 "/vulnerabilities/0/disclosure_date",
             )]),
-            Err(vec![create_invalid_format_error(
+            case_20: Err(vec![create_invalid_format_error(
                 "2024-01-24t10:00:00.000Z",
                 "/vulnerabilities/0/first_known_exploitation_dates/0/date",
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
     }
 }

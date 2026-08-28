@@ -1,12 +1,12 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, DocumentTrait, MetricTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn create_qualitative_severity_rating_error(content_path: &str) -> ValidationError {
-    ValidationError {
+fn create_qualitative_severity_rating_error(content_path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: "A metric provided by the issuing party must not use `qualitative_severity_rating`.".to_string(),
         instance_path: format!("{content_path}/qualitative_severity_rating"),
-    }
+    })
 }
 
 /// 6.2.47 Use of Qualitative Severity Rating by Issuing Party
@@ -18,7 +18,7 @@ fn create_qualitative_severity_rating_error(content_path: &str) -> ValidationErr
 /// is equal to the canonical URL. It does not cover assessments made by third parties.
 pub fn test_6_2_47_use_of_qualitative_severity_rating_by_issuing_party(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
     if vulnerabilities.is_empty() {
         // wasSkipped later (#407)
@@ -28,7 +28,7 @@ pub fn test_6_2_47_use_of_qualitative_severity_rating_by_issuing_party(
     // collect canonical URLs into a HashSet for O(1) lookups
     let canonical_urls: HashSet<&str> = doc.get_document().get_canonical_urls().into_iter().collect();
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_v, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
@@ -68,6 +68,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_47 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -82,8 +83,11 @@ mod tests {
         // Case 11: metric without source and without qualitative severity
         // Case 12: metric with third-party URL as source and qualitative severity rating
 
-        TESTS_2_1
-            .test_6_2_47
-            .expect(case_01_no_source, case_02_source_is_canonical, Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_47.expect(ExpectedResults {
+            case_01: case_01_no_source,
+            case_02: case_02_source_is_canonical,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

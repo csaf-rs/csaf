@@ -1,20 +1,14 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_disallowed_cwe_usage_error(
-    cwe: &str,
-    usage: &str,
-    version: &str,
-    i_r: usize,
-    i_cwe: usize,
-) -> ValidationError {
-    ValidationError {
+fn create_disallowed_cwe_usage_error(cwe: &str, usage: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "Weakness '{cwe}' has usage '{usage}' in version '{version}', which is not allowed for vulnerability mapping."
         ),
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}"),
-    }
+    })
 }
 
 /// 6.2.25 Usage of CWE Not Allowed for Vulnerability Mapping
@@ -27,9 +21,9 @@ fn create_disallowed_cwe_usage_error(
 /// CWE version 4.12.
 pub fn test_6_2_25_usage_of_cwe_not_allowed_for_vulnerability_mapping(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwes) = vulnerability.get_cwes() {
@@ -80,6 +74,7 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_25 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -121,15 +116,15 @@ mod tests {
         // Case 13: CWE-1287 (Allowed)
         // Case 14: multiple vulns, multiple cwes, all allowed
 
-        TESTS_2_1.test_6_2_25.expect(
-            case_01_discouraged,
-            case_02_prohibited,
-            case_03_multiple_cwes_with_discouraged,
-            case_04_multiple_vulns_cwe_with_discouraged,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_2_25.expect(ExpectedResults {
+            case_01: case_01_discouraged,
+            case_02: case_02_prohibited,
+            case_03: case_03_multiple_cwes_with_discouraged,
+            case_04: case_04_multiple_vulns_cwe_with_discouraged,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

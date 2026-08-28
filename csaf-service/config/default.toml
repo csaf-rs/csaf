@@ -12,8 +12,8 @@
 # Host the service listens on. Use "0.0.0.0" to listen on all interfaces.
 host = "localhost"
 port = 8082
-# Maximum accepted request body size, in MB. Hard-capped at 150 MB as
-# required by the CSAF standard, regardless of this setting.
+# Maximum accepted request body size, in MiB. Hard-capped at 150 MiB as
+# suggested by the CSAF standard, regardless of this setting.
 body_limit_mb = 150
 
 [cors]

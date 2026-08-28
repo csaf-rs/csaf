@@ -312,7 +312,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
 
 impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
     fn run_raw_test(&self, test_id: &str) -> TestResult {
-        if test_id == PRESET_NAME_SCHEMA {
+        if test_id == Preset::Schema.as_str() {
             return to_test_result(test_id, Severity::Error, Some(validate_schema_csaf_2_0(self)));
         }
 

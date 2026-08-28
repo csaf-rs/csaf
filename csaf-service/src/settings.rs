@@ -8,11 +8,6 @@ use tracing::Level;
 /// source of truth for these values and is kept in sync via `include_str!`.
 const DEFAULT_CONFIG: &str = include_str!("../config/default.toml");
 
-/// Hard safety ceiling for request body size, as required by the CSAF
-/// standard. `server.body_limit_mb` is clamped to this value regardless of
-/// what is configured.
-pub const MAX_BODY_LIMIT_BYTES: usize = 150 * 1024 * 1024; // 150 MB
-
 #[derive(Debug, Deserialize, Clone)]
 pub struct ServerSettings {
     pub host: String,
@@ -79,10 +74,7 @@ impl Settings {
     }
 
     pub fn body_limit_bytes(&self) -> usize {
-        self.server
-            .body_limit_mb
-            .saturating_mul(1024 * 1024)
-            .min(MAX_BODY_LIMIT_BYTES)
+        self.server.body_limit_mb.saturating_mul(1024 * 1024)
     }
 
     pub fn addr(&self) -> String {

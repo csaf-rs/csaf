@@ -40,6 +40,8 @@ static SYMSPELL: LazyLock<SymSpell<UnicodeStringStrategy>> = LazyLock::new(|| {
 /// - Words not found are looked up via SymSpell: if a close match is found within
 ///   [`MAX_EDIT_DISTANCE`] edits it is offered as `replacement`. Otherwise the word is
 ///   reported as misspelled without a suggested fix.
+///   TODO: symspell also supports merging compound words with errornous spaces in between
+///   (exp. "foot ball" -> "football". This is currently ignored due to our naive tokenization.
 #[derive(Default, Clone, Copy)]
 pub struct EnglishSymspellChecker;
 
@@ -68,21 +70,24 @@ impl TextChecker for EnglishSymspellChecker {
             }
 
             let lower = word.to_lowercase();
-            // A distance of 0 means the (lower-cased) word itself is in the dictionary,
-            // TODO document
+            // Runs the symspell spellchecker on a single word, using the dictionary and a MAX_DISTANCE
+            // specifying the amount of edits we still consider a "correction".
             let suggestion = symspell
                 .lookup(&lower, Verbosity::Top, MAX_EDIT_DISTANCE)
                 .into_iter()
                 .next();
 
             match suggestion {
+                // word is in dictionary
                 Some(s) if s.distance == 0 => continue,
+                // similar word is in dictionary, provide report with correction
                 Some(s) => findings.push(TextCheckFinding {
                     fragment: word,
                     start,
                     end,
                     replacement: Some(s.term),
                 }),
+                // no similar word in dictionary, report without correction
                 None => findings.push(TextCheckFinding {
                     fragment: word,
                     start,

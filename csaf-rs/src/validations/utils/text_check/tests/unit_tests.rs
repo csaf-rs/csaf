@@ -86,10 +86,7 @@ mod tests {
     #[case::symspell(Box::new(symspell_spell::EnglishSymspellChecker))]
     fn does_not_flag_cve_ids(#[case] checker: Box<dyn TextChecker>) {
         let findings = checker.check_text(TextCheckKind::Spell, "CVE-2024-1234");
-        assert!(
-            findings.is_empty(),
-            "expected CVE IDs to be ignored, got: {findings:?}"
-        );
+        assert!(findings.is_empty(), "expected CVE IDs to be ignored, got: {findings:?}");
     }
 
     #[rstest]

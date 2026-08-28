@@ -39,7 +39,6 @@ fn detects_multiple_misspelling(#[case] checker: Box<dyn TextChecker>) {
     assert_eq!(char_slice(text, finding_2.start, finding_2.end), "ressearchers");
 }
 
-
 #[apply(all_checkers)]
 fn detects_misspelling_not_at_start(#[case] checker: Box<dyn TextChecker>) {
     let text = "A Secruity test";

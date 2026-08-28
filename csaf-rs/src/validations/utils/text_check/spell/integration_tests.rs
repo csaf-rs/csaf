@@ -8,11 +8,11 @@ use crate::validation::TestFinding;
 use crate::validations::test_6_3_08::test_6_3_8_spell_check_impl;
 use crate::validations::test_6_3_08::{EXPECTED_RESULTS_2_0, EXPECTED_RESULTS_2_1, create_misspelling_finding_info};
 use crate::validations::utils::text_check::TextChecker;
+use crate::validations::utils::text_check::spell::SpellTextChecker;
 use crate::validations::utils::text_check::spell::mock_spell::MockSpellChecker;
 use crate::validations::utils::text_check::spell::symspell_spell::EnglishSymspellChecker;
 use crate::validations::utils::text_check::test_utils::{ExpectedResultExt, NoSuggestionChecker};
 use rstest::rstest;
-use crate::validations::utils::text_check::spell::SpellTextChecker;
 
 /// Test-only entry point that forces the given checker instead of `select_checker`'s matching.
 fn test_6_3_8_spell_check_with_checker(
@@ -35,10 +35,7 @@ where
     Doc: CsafTrait,
 {
     fn validate(&self, doc: &Doc) -> Result<(), Vec<TestFinding>> {
-        test_6_3_8_spell_check_with_checker(
-            doc,
-            NoSuggestionChecker(self.0),
-        )
+        test_6_3_8_spell_check_with_checker(doc, NoSuggestionChecker(self.0))
     }
 }
 

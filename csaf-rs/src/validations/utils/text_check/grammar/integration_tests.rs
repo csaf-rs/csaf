@@ -1,11 +1,11 @@
-use rstest::rstest;
 use crate::csaf_traits::CsafTrait;
 use crate::validation::TestFinding;
-use crate::validations::test_6_3_16::{test_6_3_16_grammar_check_impl, EXPECTED_RESULTS_2_1};
-use crate::validations::utils::text_check::grammar::GrammarTextChecker;
-use crate::validations::utils::text_check::test_utils::NoSuggestionChecker;
+use crate::validations::test_6_3_16::{EXPECTED_RESULTS_2_1, test_6_3_16_grammar_check_impl};
 use crate::validations::utils::text_check::TextChecker;
+use crate::validations::utils::text_check::grammar::GrammarTextChecker;
 use crate::validations::utils::text_check::grammar::mock_grammar::MockGrammarChecker;
+use crate::validations::utils::text_check::test_utils::NoSuggestionChecker;
+use rstest::rstest;
 
 /// Test-only entry point that forces the given checker instead of `select_checker`'s matching.
 fn test_6_3_16_grammar_check_with_checker(
@@ -28,10 +28,7 @@ where
     Doc: CsafTrait,
 {
     fn validate(&self, doc: &Doc) -> Result<(), Vec<TestFinding>> {
-        test_6_3_16_grammar_check_with_checker(
-            doc,
-            NoSuggestionChecker(self.0),
-        )
+        test_6_3_16_grammar_check_with_checker(doc, NoSuggestionChecker(self.0))
     }
 }
 

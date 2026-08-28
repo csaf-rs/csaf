@@ -48,10 +48,6 @@ impl TextChecker for EnglishSymspellChecker {
         TemporaryTextCheckQuality::Poor
     }
 
-    fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
-        vec![TextCheckKind::Spell]
-    }
-
     fn get_available_languages(&self) -> Vec<&str> {
         vec!["en"]
     }
@@ -72,13 +68,14 @@ impl TextChecker for EnglishSymspellChecker {
             }
 
             let lower = word.to_lowercase();
+            // A distance of 0 means the (lower-cased) word itself is in the dictionary,
+            // TODO document
             let suggestion = symspell
                 .lookup(&lower, Verbosity::Top, MAX_EDIT_DISTANCE)
                 .into_iter()
                 .next();
 
             match suggestion {
-                // A distance of 0 means the (lower-cased) word itself is in the dictionary.
                 Some(s) if s.distance == 0 => continue,
                 Some(s) => findings.push(TextCheckFinding {
                     fragment: word,

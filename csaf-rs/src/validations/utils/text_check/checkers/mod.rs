@@ -15,9 +15,6 @@ pub trait TextChecker {
     /// Temporary measure of quality, will be replaced later.
     fn get_quality(&self) -> TemporaryTextCheckQuality;
 
-    /// Get the [`TextCheckKind`]s supported by this checker
-    fn get_available_check_kinds(&self) -> Vec<TextCheckKind>;
-
     /// Get the lowercases primary language tags
     fn get_available_languages(&self) -> Vec<&str>;
 
@@ -29,12 +26,16 @@ pub trait TextChecker {
 }
 
 /// Returns all known [`TextChecker`] implementations.
-pub(crate) fn all_checkers() -> Vec<Box<dyn TextChecker>> {
+pub(crate) fn all_spell_checkers() -> Vec<Box<dyn TextChecker>> {
     vec![
         #[cfg(test)]
         Box::new(mock_spell::MockSpellChecker),
         Box::new(symspell_spell::EnglishSymspellChecker),
     ]
+}
+
+pub(crate) fn all_grammar_checkers() -> Vec<Box<dyn TextChecker>> {
+    vec![]
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -51,25 +52,28 @@ pub(crate) fn filter_checkers(
     kind: TextCheckKind,
     lang: &ValidCsafLanguage,
 ) -> Result<Vec<Box<dyn TextChecker>>, TextCheckerMatchingError> {
-    let mut matches: Option<Vec<Box<dyn TextChecker>>> = None;
-    let mut no_checker_match = true;
-    for checker in all_checkers() {
-        if checker.get_available_check_kinds().contains(&kind) {
-            no_checker_match = false;
-            if checker
+    let all_checkers = match kind {
+        TextCheckKind::Spell => all_spell_checkers(),
+        TextCheckKind::Grammar => all_grammar_checkers(),
+    };
+
+    if all_checkers.is_empty() {
+        return Err(NoCheckerAvailable(kind));
+    }
+
+    let matches = all_checkers
+        .into_iter()
+        .filter(|checker| {
+            checker
                 .get_available_languages()
                 .iter()
                 .any(|avail_lang| avail_lang.eq_ignore_ascii_case(lang.primary_language()))
-            {
-                matches.get_or_insert_default().push(checker);
-            }
-        }
-    }
-    if no_checker_match {
-        return Err(NoCheckerAvailable(kind));
-    }
-    if matches.is_none() {
+        })
+        .collect::<Vec<_>>();
+
+    if matches.is_empty() {
         return Err(UnsupportedLanguage(lang.primary_language().to_string()));
     }
-    Ok(matches.unwrap())
+
+    Ok(matches)
 }

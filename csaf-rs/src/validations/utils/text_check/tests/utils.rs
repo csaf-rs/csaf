@@ -56,10 +56,6 @@ impl<C: TextChecker> TextChecker for NoSuggestionChecker<C> {
         self.0.get_quality()
     }
 
-    fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
-        self.0.get_available_check_kinds()
-    }
-
     fn get_available_languages(&self) -> Vec<&str> {
         self.0.get_available_languages()
     }

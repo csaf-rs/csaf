@@ -23,10 +23,6 @@ impl TextChecker for MockSpellChecker {
         TemporaryTextCheckQuality::Poor
     }
 
-    fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
-        vec![TextCheckKind::Spell]
-    }
-
     fn get_available_languages(&self) -> Vec<&str> {
         vec!["en"]
     }

@@ -4,7 +4,7 @@
 //! known incorrect two-word sequences.
 
 use super::{GrammarTextChecker, TextChecker};
-use crate::validations::utils::text_check::utils::{tokenize_words, TemporaryTextCheckQuality};
+use crate::validations::utils::text_check::utils::{TemporaryTextCheckQuality, tokenize_words};
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::collections::HashSet;
 

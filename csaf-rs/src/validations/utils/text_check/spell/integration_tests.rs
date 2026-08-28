@@ -12,6 +12,7 @@ use crate::validations::utils::text_check::spell::mock_spell::MockSpellChecker;
 use crate::validations::utils::text_check::spell::symspell_spell::EnglishSymspellChecker;
 use crate::validations::utils::text_check::test_utils::{ExpectedResultExt, NoSuggestionChecker};
 use rstest::rstest;
+use crate::validations::utils::text_check::spell::SpellTextChecker;
 
 /// Test-only entry point that forces the given checker instead of `select_checker`'s matching.
 fn test_6_3_8_spell_check_with_checker(
@@ -21,19 +22,22 @@ fn test_6_3_8_spell_check_with_checker(
     test_6_3_8_spell_check_impl(doc, |_| Ok(Box::new(checker) as Box<dyn TextChecker>))
 }
 
-// Any `TextChecker` can act as its own `TestValidator`, forcing
-// `check_text` to use exactly that checker. This allows us to run the CSAF 2.0 / 2.1 test suites
-// separately against each of the spell checkers. Suggested replacements are discarded (see
-// `NoSuggestionChecker`) since they can vary between checker implementations.
-impl<C, Doc> crate::test_validation::TestValidator<Doc> for C
+/// Wraps a [`SpellTextChecker`] so it can act as its own `TestValidator`, forcing
+/// `check_text` to use exactly that checker. This allows us to run the CSAF 2.0 / 2.1 test suites
+/// separately against each of the spell checkers. Suggested replacements are discarded (see
+/// `NoSuggestionChecker`) since they can vary between checker implementations.
+#[derive(Debug, Clone, Copy, Default)]
+struct SpellCheckerValidator<C>(C);
+
+impl<C, Doc> crate::test_validation::TestValidator<Doc> for SpellCheckerValidator<C>
 where
-    C: TextChecker + Default + Copy + 'static,
+    C: SpellTextChecker + Default + Copy + 'static,
     Doc: CsafTrait,
 {
     fn validate(&self, doc: &Doc) -> Result<(), Vec<TestFinding>> {
         test_6_3_8_spell_check_with_checker(
             doc,
-            NoSuggestionChecker(*self),
+            NoSuggestionChecker(self.0),
         )
     }
 }
@@ -99,11 +103,11 @@ fn expected_results_2_1_symspell() -> crate::csaf2_1::testcases::ExpectedResults
     expected_results_2_0_symspell(),
     expected_results_2_1_symspell()
 )]
-fn test_test_6_3_8_checker_only<C: TextChecker + Default + Copy + 'static>(
+fn test_test_6_3_8_checker_only<C: SpellTextChecker + Default + Copy + 'static>(
     #[case] _checker: C,
     #[case] expected_2_0: crate::csaf2_0::testcases::ExpectedResults_6_3_8,
     #[case] expected_2_1: crate::csaf2_1::testcases::ExpectedResults_6_3_8,
 ) {
-    Test6_3_8_2_0::<C>::new().expect(expected_2_0);
-    Test6_3_8_2_1::<C>::new().expect(expected_2_1);
+    Test6_3_8_2_0::<SpellCheckerValidator<C>>::new().expect(expected_2_0);
+    Test6_3_8_2_1::<SpellCheckerValidator<C>>::new().expect(expected_2_1);
 }

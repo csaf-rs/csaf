@@ -25,6 +25,22 @@ fn detects_misspelling(#[case] checker: Box<dyn TextChecker>) {
 }
 
 #[apply(all_checkers)]
+fn detects_multiple_misspelling(#[case] checker: Box<dyn TextChecker>) {
+    let text = "Secruity ressearchers";
+    let findings = checker.check_text(TextCheckKind::Spell, text);
+    assert_eq!(findings.len(), 2, "expected exactly two findings, got: {findings:?}");
+    let finding_1 = findings.get(0).unwrap();
+    assert_eq!(finding_1.start, 0);
+    assert_eq!(finding_1.end, 8);
+    assert_eq!(char_slice(text, finding_1.start, finding_1.end), "Secruity");
+    let finding_2 = findings.get(1).unwrap();
+    assert_eq!(finding_2.start, 9);
+    assert_eq!(finding_2.end, 21);
+    assert_eq!(char_slice(text, finding_2.start, finding_2.end), "ressearchers");
+}
+
+
+#[apply(all_checkers)]
 fn detects_misspelling_not_at_start(#[case] checker: Box<dyn TextChecker>) {
     let text = "A Secruity test";
     let findings = checker.check_text(TextCheckKind::Spell, text);

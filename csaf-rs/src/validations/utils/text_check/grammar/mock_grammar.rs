@@ -3,7 +3,7 @@
 //! This module provides a basic English grammar-checker backed by a static list of
 //! known incorrect two-word sequences.
 
-use super::TextChecker;
+use super::{GrammarTextChecker, TextChecker};
 use crate::validations::utils::text_check::utils::TemporaryTextCheckQuality;
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::collections::HashSet;
@@ -15,6 +15,7 @@ use std::collections::HashSet;
 /// - Text is tokenized by whitespace, punctuation is stripped.
 /// - Consecutive word pairs are matched against a built-in list of known incorrect sequences.
 /// - When a bad sequence is detected, the first word of the pair is reported as the problematic fragment.
+#[derive(Default, Clone, Copy)]
 pub struct MockGrammarChecker;
 
 impl TextChecker for MockGrammarChecker {
@@ -33,6 +34,8 @@ impl TextChecker for MockGrammarChecker {
         grammar_check(text)
     }
 }
+
+impl GrammarTextChecker for MockGrammarChecker {}
 
 fn grammar_check(text: &str) -> Vec<TextCheckFinding> {
     let known_bad_sequences = known_bad_sequences();

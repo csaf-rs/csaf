@@ -1,5 +1,6 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
+use crate::csaf::types::language::ValidCsafLanguage;
 use crate::csaf_traits::{
     AcknowledgmentTrait, AggregateSeverityTrait, BranchTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentTrait,
     EngineTrait, GeneratorTrait, InvolvementTrait, NoteTrait, ProductGroupTrait, ProductPathTrait, ProductTrait,
@@ -7,9 +8,10 @@ use crate::csaf_traits::{
     ThreatTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::text_check::{TextCheckKind, check_text};
+use crate::validations::utils::text_check::{TextCheckKind, TextChecker, TextCheckerMatchingError, select_checker};
 
-fn create_misspelling_finding_info(
+/// Finding generation, also used by the text_check/integration tests
+pub(crate) fn create_misspelling_finding_info(
     fragment: &str,
     start: usize,
     end: usize,
@@ -32,32 +34,45 @@ fn create_misspelling_finding_info(
 /// does not find any mistakes. The test is skipped if the document language is not set. It fails
 /// if the given language is not supported (only English is currently supported).
 pub fn test_6_3_8_spell_check(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    // Select the checker once for this lang/kind
+    // Note: If this is run as a unit test, the matcher will return a mock
+    test_6_3_8_spell_check_impl(doc, |lang| select_checker(TextCheckKind::Spell, lang))
+}
+
+/// Shared implementation, used by production code
+/// (with auto-selected checker) and integration tests (with a single, fixed checker, see text_check/integration_tests).
+pub(crate) fn test_6_3_8_spell_check_impl(
+    doc: &impl CsafTrait,
+    select_checker: impl FnOnce(&ValidCsafLanguage) -> Result<Box<dyn TextChecker>, TextCheckerMatchingError>,
+) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
-    // Skip this test if language is not set
+    // skip this test if language is not set
     let lang = match document.get_lang() {
         None => return Ok(()), // #409 skipped
         Some(lang) => lang,
     };
 
-    // Check if the language is supported
-    // TODO: currently, only english is supported, this will be delegated to the text_check module
-    // matching in the future
+    // check if the language is valid
     let lang = match &lang {
-        CsafLanguage::Valid(valid_lang) if valid_lang.is_english() => valid_lang,
+        CsafLanguage::Valid(valid_lang) => valid_lang,
         _ => {
             return Err(vec![TestFinding::Information(TestFindingData {
-                message: format!("Spell check does not support language '{lang}'"),
+                message: format!("Spell check is not possible for invalid language '{lang}'"),
                 instance_path: "/document/lang".to_string(),
             })]);
         },
     };
 
+    // Select the checker once for this lang/kind
+    // Note: If this is run as a unit test, the matcher will return a mock
+    let checker = select_checker(lang).map_err(|err| vec![TestFinding::Information(err.into())])?;
+
     let mut errors: Option<Vec<TestFinding>> = None;
 
     // Runs the spell-check for a single piece of text and appends any resulting findings.
     let mut check = |text: &str, instance_path: String| {
-        for finding in check_text(TextCheckKind::Spell, text, lang) {
+        for finding in checker.check_text(TextCheckKind::Spell, text) {
             errors.get_or_insert_default().push(create_misspelling_finding_info(
                 &finding.fragment,
                 finding.start,
@@ -260,23 +275,17 @@ pub fn test_6_3_8_spell_check(doc: &impl CsafTrait) -> Result<(), Vec<TestFindin
 crate::test_validation::impl_validator!(ValidatorForTest6_3_8, test_6_3_8_spell_check);
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::csaf2_0::testcases::ExpectedResults_6_3_8 as ExpectedResults_2_0;
-    use crate::csaf2_0::testcases::TESTS_2_0;
-    use crate::csaf2_1::testcases::ExpectedResults_6_3_8 as ExpectedResults_2_1;
-    use crate::csaf2_1::testcases::TESTS_2_1;
-
-    #[test]
-    fn test_test_6_3_8() {
-        let case_01_single_error = Err(vec![create_misspelling_finding_info(
+/// Expected results, also used by the text_check/integration tests
+pub(crate) static EXPECTED_RESULTS_2_0: std::sync::LazyLock<crate::csaf2_0::testcases::ExpectedResults_6_3_8> =
+    std::sync::LazyLock::new(|| crate::csaf2_0::testcases::ExpectedResults_6_3_8 {
+        case_01: Err(vec![create_misspelling_finding_info(
             "Secruity",
             0,
             8,
             &None,
             "/document/notes/0/text",
-        )]);
-        let case_02_multiple_csaf_20 = Err(vec![
+        )]),
+        case_02: Err(vec![
             create_misspelling_finding_info("Pruduct", 0, 7, &None, "/product_tree/branches/0/branches/0/name"),
             create_misspelling_finding_info(
                 "Pruduct",
@@ -289,12 +298,28 @@ mod tests {
             create_misspelling_finding_info("undisclused", 29, 40, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("addacker", 89, 97, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("x-cute", 101, 107, &None, "/vulnerabilities/0/notes/0/text"),
+            // this is debatable, "root" is what should be here, but "rood" is a legitimate (although older) english word: https://dictionary.cambridge.org/dictionary/english/rood
             create_misspelling_finding_info("rood", 128, 132, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("priviledges", 133, 144, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("Vu1nerability", 0, 13, &None, "/vulnerabilities/0/notes/0/title"),
             create_misspelling_finding_info("sommary", 14, 21, &None, "/vulnerabilities/0/notes/0/title"),
-        ]);
-        let case_02_multiple_csaf_21 = Err(vec![
+        ]),
+        case_11: Ok(()),
+        case_12: Ok(()),
+    });
+
+#[cfg(test)]
+/// Expected results, also used by the text_check/integration tests
+pub(crate) static EXPECTED_RESULTS_2_1: std::sync::LazyLock<crate::csaf2_1::testcases::ExpectedResults_6_3_8> =
+    std::sync::LazyLock::new(|| crate::csaf2_1::testcases::ExpectedResults_6_3_8 {
+        case_01: Err(vec![create_misspelling_finding_info(
+            "Secruity",
+            0,
+            8,
+            &None,
+            "/document/notes/0/text",
+        )]),
+        case_02: Err(vec![
             create_misspelling_finding_info("Produkt", 0, 7, &None, "/product_tree/branches/0/branches/0/name"),
             create_misspelling_finding_info(
                 "Produkt",
@@ -308,19 +333,20 @@ mod tests {
             create_misspelling_finding_info("x-cute", 101, 107, &None, "/vulnerabilities/0/notes/0/text"),
             create_misspelling_finding_info("Vuknerability", 0, 13, &None, "/vulnerabilities/0/notes/0/title"),
             create_misspelling_finding_info("sumsary", 14, 21, &None, "/vulnerabilities/0/notes/0/title"),
-        ]);
+        ]),
+        case_11: Ok(()),
+        case_12: Ok(()),
+    });
 
-        TESTS_2_0.test_6_3_8.expect(ExpectedResults_2_0 {
-            case_01: case_01_single_error.clone(),
-            case_02: case_02_multiple_csaf_20,
-            case_11: Ok(()),
-            case_12: Ok(()),
-        });
-        TESTS_2_1.test_6_3_8.expect(ExpectedResults_2_1 {
-            case_01: case_01_single_error,
-            case_02: case_02_multiple_csaf_21,
-            case_11: Ok(()),
-            case_12: Ok(()),
-        });
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+
+    #[test]
+    fn test_test_6_3_08() {
+        TESTS_2_0.test_6_3_8.expect(EXPECTED_RESULTS_2_0.to_owned());
+        TESTS_2_1.test_6_3_8.expect(EXPECTED_RESULTS_2_1.to_owned());
     }
 }

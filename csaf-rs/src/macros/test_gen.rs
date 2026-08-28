@@ -71,7 +71,7 @@ macro_rules! define_csaf_test {
 
         /// Expected results for each test case of this test, keyed by case name.
         #[cfg(test)]
-        #[derive(Debug)]
+        #[derive(Debug, Clone)]
         #[allow(non_camel_case_types)]
         pub struct $expect_name {
             $(pub $case_name: Result<(), Vec<crate::validation::TestFinding>>,)*

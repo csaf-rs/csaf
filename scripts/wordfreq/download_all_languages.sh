@@ -26,7 +26,7 @@ RAW_PY_SPELLCHECKER_GITHUB_URL="https://raw.githubusercontent.com/barrust/pyspel
 PY_SPELLCHECKER_LANGUAGES=(ar de en es eu fa fr it lv nl pt ru)
 
 # top N words to boil down to
-TOP_N=10000
+TOP_N=50000
 
 # ensure the output directory exists
 mkdir -p "$OUTPUT_DIR"

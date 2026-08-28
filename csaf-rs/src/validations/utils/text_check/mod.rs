@@ -10,14 +10,20 @@
 //! The [`TextChecker`] trait abstracts over the concrete language-checking engine.
 
 use crate::csaf::types::language::ValidCsafLanguage;
+use crate::validations::utils::text_check::checkers::filter_checkers;
 
+pub(crate) mod checkers;
 #[cfg(test)]
-mod mock_spell;
+mod tests;
+
+use crate::validation::TestFindingData;
+#[cfg(test)]
+use crate::validations::utils::text_check::checkers::mock_spell::MockSpellChecker;
+pub use checkers::TextChecker;
 
 /// The kind of text check to perform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TextCheckKind {
-    #[allow(dead_code)]
     /// Spell checking only.
     Spell,
     /// Grammar checking only (TODO not yet implemented)
@@ -40,120 +46,61 @@ pub struct TextCheckFinding {
     pub replacement: Option<String>,
 }
 
-/// A backend capable of checking text for spelling / grammar issues.
-#[allow(dead_code)]
-pub trait TextChecker {
-    fn get_available_check_kinds(&self) -> Vec<TextCheckKind>;
-
-    /// Checks a single text snippet for issues of the given [`TextCheckKind`].
-    ///
-    /// Returns a (possibly empty) vector of findings. Each finding corresponds to a
-    /// single lint that matches the requested check kind.
-    fn check_text(&self, kind: TextCheckKind, text: &str) -> Vec<TextCheckFinding>;
+pub enum TextCheckerMatchingError {
+    UnsupportedLanguage(String),
+    NoCheckerAvailable(TextCheckKind),
 }
 
-/// Checks a single text snippet for issues of the given [`TextCheckKind`] for the given [`ValidCsafLanguage`].
-/// TODO: Provide some matching on which spellchecking / grammarchecking to use for which language
-#[allow(dead_code)]
-pub fn check_text(kind: TextCheckKind, text: &str, lang: &ValidCsafLanguage) -> Vec<TextCheckFinding> {
+impl From<TextCheckerMatchingError> for TestFindingData {
+    fn from(err: TextCheckerMatchingError) -> Self {
+        match err {
+            TextCheckerMatchingError::UnsupportedLanguage(lang) => TestFindingData {
+                message: format!("No text checker available for valid language '{lang}'"),
+                instance_path: "".to_string(),
+            },
+            TextCheckerMatchingError::NoCheckerAvailable(kind) => {
+                let message = match kind {
+                    TextCheckKind::Spell => "There are no spell checkers available on your setup".to_string(),
+                    TextCheckKind::Grammar => "There are no grammar checkers available on your setup".to_string(),
+                };
+                TestFindingData {
+                    message,
+                    instance_path: "".to_string(),
+                }
+            },
+        }
+    }
+}
+
+/// Selects the single best-quality [`TextChecker`] able to handle the given [`TextCheckKind`]
+/// and [`ValidCsafLanguage`].
+///
+/// Matching only depends on `kind`/`lang`, not on any particular text.
+pub fn select_checker(
+    kind: TextCheckKind,
+    lang: &ValidCsafLanguage,
+) -> Result<Box<dyn TextChecker>, TextCheckerMatchingError> {
+    // Unit tests get the mock checkers
     #[cfg(test)]
-    if lang.is_english() && mock_spell::MockSpellChecker.get_available_check_kinds().contains(&kind) {
-        return mock_spell::MockSpellChecker.check_text(kind, text);
-    }
-    // happy linter
-    let _ = lang;
-    let _ = kind;
-    let _ = text;
-    vec![]
-}
-
-/// Returns the substring of `text` identified by the character-index span `[start, end)`.
-#[cfg(test)]
-fn char_slice(text: &str, start: usize, end: usize) -> String {
-    text.chars().skip(start).take(end - start).collect()
-}
-
-/// TODO: ensure these tests run for all implementers
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn detects_misspelling() {
-        let text = "Secruity researchers";
-        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
-        let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
-        let finding = finding.expect("expected a misspelling finding");
-        assert_eq!(finding.start, 0);
-        assert_eq!(finding.end, 8);
-        assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
+    if kind == TextCheckKind::Spell {
+        return Ok(Box::new(MockSpellChecker));
     }
 
-    #[test]
-    fn detects_misspelling_not_at_start() {
-        let text = "A Secruity test";
-        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
-        let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
-        let finding = finding.expect("expected a misspelling finding");
-        assert_eq!(finding.start, 2);
-        assert_eq!(finding.end, 10);
-        assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
-    }
+    // Prod code gets matching
+    let checkers = filter_checkers(kind, lang)?;
 
-    /// Validates that start/end are character indices, not byte offsets.
-    /// 'é' is a two-byte UTF-8 character; if bytes were used the start would be 3
-    /// instead of the correct character index 2.
-    #[test]
-    fn detects_misspelling_after_multibyte_char() {
-        let text = "é Secruity";
-        let findings = check_text(TextCheckKind::Spell, text, &ValidCsafLanguage::new_for_tests("en-US"));
-        let finding = findings.iter().find(|f| f.fragment.eq_ignore_ascii_case("secruity"));
-        let finding = finding.expect("expected a misspelling finding");
-        assert_eq!(finding.start, 2);
-        assert_eq!(finding.end, 10);
-        assert_eq!(char_slice(text, finding.start, finding.end), "Secruity");
-    }
+    // pick the best quality among the available checkers
+    let best_quality = checkers
+        .iter()
+        .map(|checker| checker.get_quality())
+        // temporary measure, good = 0, poor = 2, min means take the best available
+        .min()
+        .expect("filter_checkers should have returned at least one checker (or an error that none were found)");
+    // pick any of that quality
+    let checker = checkers
+        .into_iter()
+        .find(|checker| checker.get_quality() == best_quality)
+        .expect("a checker with this quality should exist");
 
-    #[test]
-    fn does_not_flag_correct_spelling() {
-        let findings = check_text(
-            TextCheckKind::Spell,
-            "Security researchers",
-            &ValidCsafLanguage::new_for_tests("en-US"),
-        );
-        assert!(findings.is_empty(), "expected no spell findings, got: {findings:?}");
-    }
-
-    #[test]
-    fn ignores_acronyms() {
-        let findings = check_text(
-            TextCheckKind::Spell,
-            "OASIS CSAF TC",
-            &ValidCsafLanguage::new_for_tests("en-US"),
-        );
-        assert!(
-            findings.is_empty(),
-            "expected acronyms to be ignored, got: {findings:?}"
-        );
-    }
-
-    #[test]
-    fn empty_text_produces_no_findings() {
-        let findings = check_text(TextCheckKind::Spell, "", &ValidCsafLanguage::new_for_tests("en-US"));
-        assert!(findings.is_empty());
-    }
-
-    #[test]
-    fn spell_check_ignores_grammar_issues() {
-        // "He are going" is a grammar issue, not a spelling issue.
-        let findings = check_text(
-            TextCheckKind::Spell,
-            "He are going",
-            &ValidCsafLanguage::new_for_tests("en-US"),
-        );
-        assert!(
-            findings.is_empty(),
-            "spell check should not flag grammar issues, got: {findings:?}"
-        );
-    }
+    Ok(checker)
 }

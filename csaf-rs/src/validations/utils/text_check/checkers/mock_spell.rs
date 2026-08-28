@@ -2,22 +2,29 @@
 //!
 //! This module provides a basic English spell-checker backed by a static word list.
 
-use super::{TextCheckFinding, TextCheckKind, TextChecker};
+use crate::validations::utils::text_check::checkers::utils::tokenize_words;
+use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
+use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::collections::HashSet;
 
 /// A mock spell-checker for English text.
 ///
-/// Behaviour:
+/// Behavior:
 /// - Only [`TextCheckKind::Spell`] findings are produced; grammar checking is not implemented.
-/// - Strings are tokenized by whitespace, punctuation is stripped.
+/// - Strings are tokenized, see [`tokenize_words`].
 /// - Tokens that are entirely uppercase are treated as acronyms and skipped.
 /// - Tokens that appear (case-insensitively) in the built-in minimal word list are considered correctly spelled.
 /// - All other tokens are reported as misspellings without providing a replacement.
+#[derive(Default, Clone, Copy)]
 pub struct MockSpellChecker;
 
 impl TextChecker for MockSpellChecker {
-    fn get_available_check_kinds(&self) -> Vec<TextCheckKind> {
-        vec![TextCheckKind::Spell]
+    fn get_quality(&self) -> TemporaryTextCheckQuality {
+        TemporaryTextCheckQuality::Poor
+    }
+
+    fn get_available_languages(&self) -> Vec<&str> {
+        vec!["en"]
     }
 
     fn check_text(&self, kind: TextCheckKind, text: &str) -> Vec<TextCheckFinding> {
@@ -31,35 +38,19 @@ impl TextChecker for MockSpellChecker {
 fn spell_check(text: &str) -> Vec<TextCheckFinding> {
     let dict = dictionary();
     let mut findings = Vec::new();
-    let mut search_from = 0;
 
-    for token in text.split_whitespace() {
-        // Locate the token's byte offset in the remaining text.
-        let offset = text[search_from..].find(token).unwrap_or(0);
-        let token_start = search_from + offset;
-        search_from = token_start + token.len();
-
-        // Strip leading/trailing non-alphabetic characters to get the bare word.
-        let trimmed = token.trim_matches(|c: char| !c.is_alphabetic());
-        if trimmed.is_empty() {
-            continue;
-        }
-        // Byte offset of trimmed within the original token (and so within the text).
-        let word_offset = trimmed.as_ptr() as usize - token.as_ptr() as usize;
-        // Convert to character counts so start/end
-        let word_start = text[..token_start + word_offset].chars().count();
-        let word_end = word_start + trimmed.chars().count();
-
-        // All-uppercase tokens are treated as acronyms and are not spell-checked.
-        if trimmed.chars().all(|c| c.is_uppercase()) {
+    for (word, start, end) in tokenize_words(text) {
+        // TODO: Until custom dictionaries are implemented, all-uppercase chars are treated
+        // as "known" acronyms.
+        if word.chars().filter(|c| c.is_alphabetic()).all(|c| c.is_uppercase()) {
             continue;
         }
 
-        if !dict.contains(trimmed.to_lowercase().as_str()) {
+        if !dict.contains(word.to_lowercase().as_str()) {
             findings.push(TextCheckFinding {
-                fragment: trimmed.to_string(),
-                start: word_start,
-                end: word_end,
+                fragment: word,
+                start,
+                end,
                 replacement: None,
             });
         }
@@ -68,6 +59,7 @@ fn spell_check(text: &str) -> Vec<TextCheckFinding> {
     findings
 }
 
+// just the words contained in the tests
 fn dictionary() -> HashSet<&'static str> {
     [
         "are",
@@ -112,4 +104,28 @@ fn dictionary() -> HashSet<&'static str> {
     .iter()
     .copied()
     .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn does_not_flag_known_word() {
+        let findings = MockSpellChecker.check_text(TextCheckKind::Spell, "security");
+        assert!(findings.is_empty());
+    }
+
+    #[test]
+    fn does_flag_unknown_word() {
+        let findings = MockSpellChecker.check_text(TextCheckKind::Spell, "Secruity");
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].fragment, "Secruity");
+    }
+
+    #[test]
+    fn non_spell_kind_produces_no_findings() {
+        let findings = MockSpellChecker.check_text(TextCheckKind::Grammar, "Secruity");
+        assert!(findings.is_empty());
+    }
 }

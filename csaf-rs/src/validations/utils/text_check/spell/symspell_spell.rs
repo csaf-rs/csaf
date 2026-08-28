@@ -1,6 +1,7 @@
 //! English spell-checker backed by the SymSpell algorithm and static word-frequency
 //! dictionaries (TODO: only english for now)
 
+use crate::validations::utils::text_check::spell::SpellTextChecker;
 use crate::validations::utils::text_check::utils::{TemporaryTextCheckQuality, tokenize_words};
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind, TextChecker};
 use std::sync::LazyLock;
@@ -99,6 +100,8 @@ impl TextChecker for EnglishSymspellChecker {
         findings
     }
 }
+
+impl SpellTextChecker for EnglishSymspellChecker {}
 
 #[cfg(test)]
 mod tests {

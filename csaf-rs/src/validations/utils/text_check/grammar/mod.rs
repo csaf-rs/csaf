@@ -8,7 +8,9 @@ pub(crate) mod mock_grammar;
 mod unit_tests;
 
 /// Marker trait for [`TextChecker`] implementations that perform grammar checking.
-pub trait GrammarTextChecker: TextChecker {}
+/// For now, only relevant to integration tests.
+#[allow(unused)]
+trait GrammarTextChecker: TextChecker {}
 
 pub(crate) fn all_grammar_checkers() -> Vec<Box<dyn TextChecker>> {
     vec![

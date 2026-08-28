@@ -35,6 +35,9 @@ impl TextChecker for MockGrammarChecker {
     }
 }
 
+/// Marker trait for [`TextChecker`] implementations that perform grammar checking.
+/// For now, only relevant to integration tests.
+#[cfg(test)]
 impl GrammarTextChecker for MockGrammarChecker {}
 
 fn grammar_check(text: &str) -> Vec<TextCheckFinding> {

@@ -9,7 +9,9 @@ pub(crate) mod symspell_spell;
 mod unit_tests;
 
 /// Marker trait for [`TextChecker`] implementations that perform spell checking.
-pub trait SpellTextChecker: TextChecker {}
+/// For now, only relevant to integration tests.
+#[allow(unused)]
+trait SpellTextChecker: TextChecker {}
 
 pub(crate) fn all_spell_checkers() -> Vec<Box<dyn TextChecker>> {
     vec![

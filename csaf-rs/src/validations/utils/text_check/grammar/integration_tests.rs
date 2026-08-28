@@ -38,7 +38,7 @@ where
 /// keeping it in here too for test development / test isolation.
 #[rstest]
 #[case::mock_checker(MockGrammarChecker, EXPECTED_RESULTS_2_1.clone())]
-fn test_test_6_3_8_checker_only<C: GrammarTextChecker + Default + Copy + 'static>(
+fn test_test_6_3_16_checker_only<C: GrammarTextChecker + Default + Copy + 'static>(
     #[case] _checker: C,
     #[case] expected_2_1: crate::csaf2_1::testcases::ExpectedResults_6_3_16,
 ) {

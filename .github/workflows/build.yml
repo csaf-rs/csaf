@@ -57,7 +57,7 @@ jobs:
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Run shared format and doc checks
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
         with:
           run-clippy: "false"
       - name: Run type-generator
@@ -76,7 +76,7 @@ jobs:
           fi
       - name: Compute Rust build context
         id: build-context
-        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
       - name: Compute Go build targets
         id: get-go-targets
         run: |
@@ -96,7 +96,7 @@ jobs:
           fi
       - name: Publish dry-run
         if: github.ref_type != 'tag'
-        uses: csaf-rs/shared-workflows/.github/actions/cargo-publish-dry-run@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
+        uses: csaf-rs/shared-workflows/.github/actions/cargo-publish-dry-run@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
 
   build-matrix:
     needs: prepare
@@ -126,7 +126,7 @@ jobs:
         shell: bash
         run: command -v cargo-auditable || cargo install cargo-auditable --locked
       - name: Run shared clippy check
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
         with:
           run-format: "false"
           run-doc: "false"
@@ -158,7 +158,7 @@ jobs:
           if-no-files-found: ignore
       - name: Generate CycloneDX and SPDX SBOMs
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
         with:
           file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           artifact-name-prefix: csaf-validator_${{ matrix.target.arch }}
@@ -175,7 +175,7 @@ jobs:
   coverage:
     needs:
       - prepare
-    uses: csaf-rs/shared-workflows/.github/workflows/rust-coverage.yml@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
+    uses: csaf-rs/shared-workflows/.github/workflows/rust-coverage.yml@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
 
   wasm-bindings:
     needs:
@@ -213,7 +213,7 @@ jobs:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
       - name: Generate CycloneDX and SPDX SBOMs
-        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@56bcf77399696052c9eb925a6059c77c1eaab1bc # v1.6.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
         with:
           file-to-scan: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           artifact-name-prefix: csaf-ffi-wasm_wasm32

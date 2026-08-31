@@ -507,7 +507,7 @@ dependencies = [
  "oxilangtag",
  "packageurl",
  "regex",
- "regress",
+ "regress 0.12.0",
  "rstest",
  "rust-embed",
  "semver",
@@ -1598,6 +1598,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "regress"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32eef8b209c3c1c15dbad02c1f30f9539f00dc7253e0cbcdaae442a50a09d7c1"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
 name = "relative-path"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1917,7 +1926,7 @@ dependencies = [
  "chrono",
  "jsonschema",
  "prettyplease 0.3.0",
- "regress",
+ "regress 0.11.1",
  "rust-embed",
  "serde",
  "serde_json",
@@ -2163,7 +2172,7 @@ dependencies = [
  "prettyplease 0.3.0",
  "proc-macro2",
  "quote",
- "regress",
+ "regress 0.12.0",
  "rstest",
  "schemars",
  "serde",
@@ -2200,7 +2209,7 @@ dependencies = [
  "log",
  "proc-macro2",
  "quote",
- "regress",
+ "regress 0.11.1",
  "schemars",
  "semver",
  "serde",

@@ -30,6 +30,26 @@
     }
   },
   "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product E",
+        "product_id": "CSAFPID-1000",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "98765?43210-BCD*"
+          ]
+        }
+      },
+      {
+        "name": "Product F",
+        "product_id": "CSAFPID-1001",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "98765?43210-BCD*"
+          ]
+        }
+      }
+    ],
     "product_paths": [
       {
         "beginning_product_reference": "CSAFPID-1000",

@@ -93,15 +93,18 @@ mod tests {
         // Failing test cases:
         // 01  - missing product identification helper in full product names
         // 02  - missing product identification helper in nested branches
-        // s01 - multiple products in nested branches with alternating present/missing product identification helpers
-        // s02 - multiple full product names with alternating present/missing product identification helpers
-        // s03 - multiple product paths with alternating present/missing product identification helpers
+        // s01 - multiple products in nested branches with alternating presence of product identification helpers
+        // s02 - multiple full product names with alternating presence of product identification helpers
+        // s03 - multiple product paths with alternating presence of product identification helpers;
+        //       referenced products are added separately to satisfy 6.1.1 and keep the case mandatory-valid
         // s04 - multiple missing product identification helpers across all three product tree locations
 
         // Valid test cases:
         // 11  - product identification helper present in full product names
         // s11 - no product tree
-        // s12 - product tree without relevant full product name types
+        // s12 - product tree without relevant full product name types;
+        //       uses product groups to keep the product tree non-empty and satisfy the schema,
+        //       resulting in a 6.1.1 mandatory failure because the referenced products are not defined
 
         TESTS_2_1.test_6_2_16.expect(ExpectedResults_2_1 {
             case_01,

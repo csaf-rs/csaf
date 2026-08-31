@@ -1,0 +1,118 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Recommended Test: Missing Product Identification Helper (failing supplementary example 3 - multiple product paths)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-16-S03",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product E",
+        "product_id": "CSAFPID-1000",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "98765?43210-BCD*"
+          ]
+        }
+      },
+      {
+        "name": "Product F",
+        "product_id": "CSAFPID-1001",
+        "product_identification_helper": {
+          "serial_numbers": [
+            "98765?43210-BCD*"
+          ]
+        }
+      }
+    ],
+    "product_paths": [
+      {
+        "beginning_product_reference": "CSAFPID-1000",
+        "full_product_name": {
+          "name": "Product A",
+          "product_id": "CSAFPID-0001",
+          "product_identification_helper": {
+            "serial_numbers": [
+              "98765?43210-BCD*"
+            ]
+          }
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-1001"
+          }
+        ]
+      },
+      {
+        "beginning_product_reference": "CSAFPID-1000",
+        "full_product_name": {
+          "name": "Product B",
+          "product_id": "CSAFPID-0002"
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-1001"
+          }
+        ]
+      },
+      {
+        "beginning_product_reference": "CSAFPID-1000",
+        "full_product_name": {
+          "name": "Product C",
+          "product_id": "CSAFPID-0003",
+          "product_identification_helper": {
+            "serial_numbers": [
+              "98765?43210-BCD*"
+            ]
+          }
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-1001"
+          }
+        ]
+      },
+      {
+        "beginning_product_reference": "CSAFPID-1000",
+        "full_product_name": {
+          "name": "Product D",
+          "product_id": "CSAFPID-0004"
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-1001"
+          }
+        ]
+      }
+    ]
+  }
+}

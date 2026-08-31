@@ -1,0 +1,102 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Recommended Test: Missing Product Identification Helper (failing supplementary example 4 - findings across all relevant paths)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-16-S04",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "1.0",
+                "product": {
+                  "name": "Product A 1.0",
+                  "product_id": "CSAFPID-0001"
+                }
+              },
+              {
+                "category": "product_version",
+                "name": "2.0",
+                "product": {
+                  "name": "Product A 2.0",
+                  "product_id": "CSAFPID-0002"
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "Product"
+          }
+        ],
+        "category": "vendor",
+        "name": "Example Company"
+      }
+    ],
+    "full_product_names": [
+      {
+        "name": "Product B",
+        "product_id": "CSAFPID-0003"
+      },
+      {
+        "name": "Product C",
+        "product_id": "CSAFPID-0004"
+      }
+    ],
+    "product_paths": [
+      {
+        "beginning_product_reference": "CSAFPID-0003",
+        "full_product_name": {
+          "name": "Product D",
+          "product_id": "CSAFPID-0005"
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-0004"
+          }
+        ]
+      },
+      {
+        "beginning_product_reference": "CSAFPID-0004",
+        "full_product_name": {
+          "name": "Product E",
+          "product_id": "CSAFPID-0006"
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-0003"
+          }
+        ]
+      }
+    ]
+  }
+}

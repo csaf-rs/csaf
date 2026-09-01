@@ -44,11 +44,30 @@ mod tests {
     #[test]
     fn test_test_6_2_07() {
         let case_01 = Err(vec![create_missing_date_in_involvements_error(0, 0)]);
+        let case_s01 = Err(vec![
+            create_missing_date_in_involvements_error(0, 1),
+            create_missing_date_in_involvements_error(0, 3),
+            create_missing_date_in_involvements_error(1, 1),
+            create_missing_date_in_involvements_error(1, 3),
+        ]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_2_7.expect(ExpectedResults_2_0 {
             case_01: case_01.clone(),
         });
-        TESTS_2_1.test_6_2_7.expect(ExpectedResults_2_1 { case_01 });
+
+        // Failing test cases:
+        // 01  - missing date in one involvement of one vulnerability
+        // s01 - alternating presence of dates across multiple vulnerabilities and involvements
+
+        // Valid test cases:
+        // s11 - no vulnerabilities
+        // s12 - vulnerability without involvements
+
+        TESTS_2_1.test_6_2_7.expect(ExpectedResults_2_1 {
+            case_01,
+            case_s01,
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 }

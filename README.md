@@ -341,6 +341,7 @@ This creates TypeScript + WASM output in `wasm/`.
 | Test specification | 2.0                | 2.1 (experimental) |
 |----------|--------------------|--------------------|
 | 6.2.1    |  |  |
+| 6.2.7   | ✅ | ✅ |
 | 6.2.11   | ✅ | ✅ |
 | 6.2.16   | ✅ | ✅ |
 | 6.2.17   | ✅ | ✅ |

@@ -57,7 +57,6 @@ mod tests {
         let case_s03 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 1)]);
         let case_s04 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 1, 0)]);
 
-        // Both CSAF 2.0 and 2.1 have 2 specified test cases
         TESTS_2_0.test_6_2_17.expect(ExpectedResults_2_0 {
             case_01: case_01.clone(),
             case_11: Ok(()),

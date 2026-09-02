@@ -56,18 +56,20 @@ mod tests {
         });
 
         // Failing test cases:
-        // 01  - missing date in one involvement of one vulnerability
+        // 01  - vulnerability with one involvement missing a date
         // s01 - alternating presence of dates across multiple vulnerabilities and involvements
 
         // Valid test cases:
         // s11 - no vulnerabilities
         // s12 - vulnerability without involvements
+        // s13 - vulnerability with one involvement containing a date
 
         TESTS_2_1.test_6_2_7.expect(ExpectedResults_2_1 {
             case_01,
             case_s01,
             case_s11: Ok(()),
             case_s12: Ok(()),
+            case_s13: Ok(()),
         });
     }
 }

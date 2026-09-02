@@ -46,8 +46,17 @@ mod tests {
     #[test]
     fn test_test_6_2_17() {
         let case_01 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 0)]);
+        let case_s01 = Err(vec![
+            create_cve_in_ids_error("CVE-2021-44228", 0, 0),
+            create_cve_in_ids_error("CVE-2021-44229", 0, 1),
+        ]);
+        let case_s02 = Err(vec![
+            create_cve_in_ids_error("CVE-2021-44228", 0, 0),
+            create_cve_in_ids_error("CVE-2021-44229", 1, 0),
+        ]);
+        let case_s03 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 1)]);
+        let case_s04 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 1, 0)]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_2_17.expect(ExpectedResults_2_0 {
             case_01: case_01.clone(),
             case_11: Ok(()),
@@ -55,6 +64,17 @@ mod tests {
         TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
             case_01,
             case_11: Ok(()),
+
+            // Failing test for two ids for the same vulnerability with CVEs in the text field
+            case_s01,
+            // Failing test for two vulnerability each containing one id with a CVE in the text field
+            case_s02,
+            // Failing test for two ids for the same vulnerability with the second having a CVE in the text field
+            case_s03,
+            // Failing test for two vulnerabilities with the second having a CVE in its id's text field
+            case_s04,
+            // Valid test for two vulnerabilities each with two ids with correctly set text fields
+            case_s11: Ok(()),
         });
     }
 }

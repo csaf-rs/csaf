@@ -52,12 +52,12 @@ mod tests {
 
     #[test]
     fn test_test_6_2_04() {
-        let case_01_build_metadata = Err(vec![create_build_metadata_in_rev_history_error(
+        let revision_history_with_build_metadata = Err(vec![create_build_metadata_in_rev_history_error(
             &SemVerVersion::from(Version::from_str("1.0.0+exp.sha.ac00785").unwrap()),
             &0,
         )]);
 
-        let case_s01_mixed_build_metadata_presence = Err(vec![
+        let revision_history_with_alternating_build_metadata = Err(vec![
             create_build_metadata_in_rev_history_error(
                 &SemVerVersion::from(Version::from_str("1.1.0+exp.sha.ac00785").unwrap()),
                 &1,
@@ -68,22 +68,23 @@ mod tests {
             ),
         ]);
 
-        let case_s02_build_metadata_after_pre_release = Err(vec![create_build_metadata_in_rev_history_error(
-            &SemVerVersion::from(Version::from_str("1.1.0-rc.1+exp.sha.ac00785").unwrap()),
-            &1,
-        )]);
+        let revision_history_with_build_metadata_after_pre_release =
+            Err(vec![create_build_metadata_in_rev_history_error(
+                &SemVerVersion::from(Version::from_str("1.1.0-rc.1+exp.sha.ac00785").unwrap()),
+                &1,
+            )]);
 
         TESTS_2_0.test_6_2_4.expect(ExpectedResults_2_0 {
-            case_01: case_01_build_metadata.clone(),
+            case_01: revision_history_with_build_metadata.clone(),
         });
 
-        // Case s11: no build metadata
-        // Case s12: integer version numbers (no build metadata allowed by schema)
+        // Case s11: revision_history without build metadata
+        // Case s12: revision_history with integer versions (no build metadata allowed by schema)
 
         TESTS_2_1.test_6_2_4.expect(ExpectedResults_2_1 {
-            case_01: case_01_build_metadata,
-            case_s01: case_s01_mixed_build_metadata_presence,
-            case_s02: case_s02_build_metadata_after_pre_release,
+            case_01: revision_history_with_build_metadata,
+            case_s01: revision_history_with_alternating_build_metadata,
+            case_s02: revision_history_with_build_metadata_after_pre_release,
             case_s11: Ok(()),
             case_s12: Ok(()),
         });

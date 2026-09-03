@@ -74,12 +74,16 @@ mod tests {
                 &1,
             )]);
 
-        TESTS_2_0.test_6_2_4.expect(ExpectedResults_2_0 {
-            case_01: revision_history_with_build_metadata.clone(),
-        });
-
         // Case s11: revision_history without build metadata
         // Case s12: revision_history with integer versions (no build metadata allowed by schema)
+
+        TESTS_2_0.test_6_2_4.expect(ExpectedResults_2_0 {
+            case_01: revision_history_with_build_metadata.clone(),
+            case_s01: revision_history_with_alternating_build_metadata.clone(),
+            case_s02: revision_history_with_build_metadata_after_pre_release.clone(),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
 
         TESTS_2_1.test_6_2_4.expect(ExpectedResults_2_1 {
             case_01: revision_history_with_build_metadata,

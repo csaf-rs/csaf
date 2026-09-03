@@ -2,8 +2,8 @@
 //!
 //! This module provides a basic English spell-checker backed by a static word list.
 
-use crate::validations::utils::text_check::checkers::utils::tokenize_words;
-use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
+use super::{SpellTextChecker, TextChecker};
+use crate::validations::utils::text_check::utils::{TemporaryTextCheckQuality, tokenize_words};
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::collections::HashSet;
 
@@ -34,6 +34,10 @@ impl TextChecker for MockSpellChecker {
         spell_check(text)
     }
 }
+
+/// Marker trait for [`TextChecker`] implementations that perform spell checking.
+/// For now, only relevant to integration tests.
+impl SpellTextChecker for MockSpellChecker {}
 
 fn spell_check(text: &str) -> Vec<TextCheckFinding> {
     let dict = dictionary();

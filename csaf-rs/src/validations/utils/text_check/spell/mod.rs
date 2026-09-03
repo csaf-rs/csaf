@@ -1,0 +1,22 @@
+use crate::validations::utils::text_check::TextChecker;
+
+#[cfg(test)]
+mod integration_tests;
+#[cfg(test)]
+pub(crate) mod mock_spell;
+pub(crate) mod symspell_spell;
+#[cfg(test)]
+mod unit_tests;
+
+/// Marker trait for [`TextChecker`] implementations that perform spell checking.
+/// For now, only relevant to integration tests.
+#[allow(unused)]
+trait SpellTextChecker: TextChecker {}
+
+pub(crate) fn all_spell_checkers() -> Vec<Box<dyn TextChecker>> {
+    vec![
+        #[cfg(test)]
+        Box::new(mock_spell::MockSpellChecker),
+        Box::new(symspell_spell::EnglishSymspellChecker),
+    ]
+}

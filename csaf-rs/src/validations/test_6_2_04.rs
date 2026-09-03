@@ -52,15 +52,40 @@ mod tests {
 
     #[test]
     fn test_test_6_2_04() {
-        let case_01 = Err(vec![create_build_metadata_in_rev_history_error(
+        let case_01_build_metadata = Err(vec![create_build_metadata_in_rev_history_error(
             &SemVerVersion::from(Version::from_str("1.0.0+exp.sha.ac00785").unwrap()),
             &0,
         )]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
+        let case_s01_mixed_build_metadata_presence = Err(vec![
+            create_build_metadata_in_rev_history_error(
+                &SemVerVersion::from(Version::from_str("1.1.0+exp.sha.ac00785").unwrap()),
+                &1,
+            ),
+            create_build_metadata_in_rev_history_error(
+                &SemVerVersion::from(Version::from_str("1.3.0+exp.sha.ac00785").unwrap()),
+                &3,
+            ),
+        ]);
+
+        let case_s02_build_metadata_after_pre_release = Err(vec![create_build_metadata_in_rev_history_error(
+            &SemVerVersion::from(Version::from_str("1.1.0-rc.1+exp.sha.ac00785").unwrap()),
+            &1,
+        )]);
+
         TESTS_2_0.test_6_2_4.expect(ExpectedResults_2_0 {
-            case_01: case_01.clone(),
+            case_01: case_01_build_metadata.clone(),
         });
-        TESTS_2_1.test_6_2_4.expect(ExpectedResults_2_1 { case_01 });
+
+        // Case s11: no build metadata
+        // Case s12: integer version numbers (no build metadata allowed by schema)
+
+        TESTS_2_1.test_6_2_4.expect(ExpectedResults_2_1 {
+            case_01: case_01_build_metadata,
+            case_s01: case_s01_mixed_build_metadata_presence,
+            case_s02: case_s02_build_metadata_after_pre_release,
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 }

@@ -1,0 +1,31 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Optional test: Build Metadata in Revision History (failing supplementary example 2 - build metadata following pre-release versions)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-2-04-S02",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-20T10:00:00.000Z",
+          "number": "1.0.0-rc.1",
+          "summary": "Initial version."
+        },
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1.1.0-rc.1+exp.sha.ac00785",
+          "summary": "Second version."
+        }
+      ],
+      "status": "draft",
+      "version": "1.1.0-rc.1"
+    }
+  }
+}

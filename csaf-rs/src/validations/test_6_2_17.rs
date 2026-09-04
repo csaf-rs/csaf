@@ -60,6 +60,17 @@ mod tests {
         TESTS_2_0.test_6_2_17.expect(ExpectedResults_2_0 {
             case_01: case_01.clone(),
             case_11: Ok(()),
+
+            // Failing test for two ids for the same vulnerability with CVEs in the text field
+            case_s01: case_s01.clone(),
+            // Failing test for two vulnerability each containing one id with a CVE in the text field
+            case_s02: case_s02.clone(),
+            // Failing test for two ids for the same vulnerability with the second having a CVE in the text field
+            case_s03: case_s03.clone(),
+            // Failing test for two vulnerabilities with the second having a CVE in its id's text field
+            case_s04: case_s04.clone(),
+            // Valid test for two vulnerabilities each with two ids with correctly set text fields
+            case_s11: Ok(()),
         });
         TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
             case_01,

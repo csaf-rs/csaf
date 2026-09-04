@@ -45,34 +45,41 @@ mod tests {
 
     #[test]
     fn test_test_6_2_17() {
-        let case_01 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 0)]);
-        let case_s01 = Err(vec![
+        let id_with_cve_in_text_field = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 0)]);
+        let multiple_ids_with_cve_in_text_field_fail_distinct = Err(vec![
             create_cve_in_ids_error("CVE-2021-44228", 0, 0),
             create_cve_in_ids_error("CVE-2021-44229", 0, 1),
         ]);
-        let case_s02 = Err(vec![
+        let two_vulnerabilities_with_ids_with_cve_in_text_field = Err(vec![
             create_cve_in_ids_error("CVE-2021-44228", 0, 0),
             create_cve_in_ids_error("CVE-2021-44229", 1, 0),
         ]);
-        let case_s03 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 1)]);
-        let case_s04 = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 1, 0)]);
+        let second_id_of_a_vulnerability_with_cve_in_text_field =
+            Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 1)]);
+        let second_vulnerability_with_an_id_with_cve_in_text_field =
+            Err(vec![create_cve_in_ids_error("CVE-2021-44228", 1, 0)]);
 
         TESTS_2_0.test_6_2_17.expect(ExpectedResults_2_0 {
-            case_01: case_01.clone(),
-            case_11: Ok(()),
-        });
-        TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
-            case_01,
+            case_01: id_with_cve_in_text_field.clone(),
+            // Valid test with one vulnerability containing an id with a correctly set text field
             case_11: Ok(()),
 
-            // Failing test for two ids for the same vulnerability with CVEs in the text field
-            case_s01,
-            // Failing test for two vulnerability each containing one id with a CVE in the text field
-            case_s02,
-            // Failing test for two ids for the same vulnerability with the second having a CVE in the text field
-            case_s03,
-            // Failing test for two vulnerabilities with the second having a CVE in its id's text field
-            case_s04,
+            case_s01: multiple_ids_with_cve_in_text_field_fail_distinct.clone(),
+            case_s02: two_vulnerabilities_with_ids_with_cve_in_text_field.clone(),
+            case_s03: second_id_of_a_vulnerability_with_cve_in_text_field.clone(),
+            case_s04: second_vulnerability_with_an_id_with_cve_in_text_field.clone(),
+            // Valid test for two vulnerabilities each with two ids with correctly set text fields
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
+            case_01: id_with_cve_in_text_field,
+            // Valid test with one vulnerability containing an id with a correctly set text field
+            case_11: Ok(()),
+
+            case_s01: multiple_ids_with_cve_in_text_field_fail_distinct,
+            case_s02: two_vulnerabilities_with_ids_with_cve_in_text_field,
+            case_s03: second_id_of_a_vulnerability_with_cve_in_text_field,
+            case_s04: second_vulnerability_with_an_id_with_cve_in_text_field,
             // Valid test for two vulnerabilities each with two ids with correctly set text fields
             case_s11: Ok(()),
         });

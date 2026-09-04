@@ -10,13 +10,13 @@
     },
     "publisher": {
       "category": "other",
-      "name": "OASIS CSAF TC",
-      "namespace": "https://csaf.io"
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Recommended Test: CVE in field IDs (failing supplementary example 2)",
+    "title": "Recommended Test: CVE in field IDs (failing supplementary example 2 - two vulnerabilities with one id each that contains a CVE in the text field)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "OASIS_CSAF_TC-CSAF_2.1-2024-6-2-17-01",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-17-S02",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {

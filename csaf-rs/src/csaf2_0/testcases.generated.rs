@@ -877,9 +877,19 @@ crate::macros::define_csaf_test!(
     crate ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework, version : "V2_0",
     cases : [(case_01, "01",
     "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-01.json",
-    "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-01.json"), (case_11, "11",
+    "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-01.json"), (case_s01, "s01",
+    "../type-generator/assets/tests/csaf_2.0/optional/csaf-rs_csaf-csaf_2_0-6-2-17-s01.json",
+    "optional/csaf-rs_csaf-csaf_2_0-6-2-17-s01.json"), (case_s02, "s02",
+    "../type-generator/assets/tests/csaf_2.0/optional/csaf-rs_csaf-csaf_2_0-6-2-17-s02.json",
+    "optional/csaf-rs_csaf-csaf_2_0-6-2-17-s02.json"), (case_s03, "s03",
+    "../type-generator/assets/tests/csaf_2.0/optional/csaf-rs_csaf-csaf_2_0-6-2-17-s03.json",
+    "optional/csaf-rs_csaf-csaf_2_0-6-2-17-s03.json"), (case_s04, "s04",
+    "../type-generator/assets/tests/csaf_2.0/optional/csaf-rs_csaf-csaf_2_0-6-2-17-s04.json",
+    "optional/csaf-rs_csaf-csaf_2_0-6-2-17-s04.json"), (case_11, "11",
     "../csaf/csaf_2.0/test/validator/data/optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-11.json",
-    "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-11.json")]
+    "optional/oasis_csaf_tc-csaf_2_0-2021-6-2-17-11.json"), (case_s11, "s11",
+    "../type-generator/assets/tests/csaf_2.0/optional/csaf-rs_csaf-csaf_2_0-6-2-17-s11.json",
+    "optional/csaf-rs_csaf-csaf_2_0-6-2-17-s11.json")]
 );
 crate::macros::define_csaf_test!(
     Test6_2_18, ValidatorForTest6_2_18, ExpectedResults_6_2_18, id : "6.2.18", doc_type :

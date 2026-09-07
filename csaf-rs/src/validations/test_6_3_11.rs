@@ -89,6 +89,7 @@ mod tests {
                 "/product_tree/branches/0/branches/0/branches/2",
             )
         ]);
+        // Note: Having stacked product version categories violates 6.1.57, making this test file mandatory invalid.
         let case_multiple_nested_branches = Err(vec![
             create_v_version_indicator_error(
                 "v4.2",
@@ -99,6 +100,10 @@ mod tests {
                 "/product_tree/branches/0/branches/0/branches/0/branches/0/branches/0",
             )
         ]);
+
+        // Case 11: product version "4.2"
+        // Case S11: product version "vAlpha"
+        // Case S12: architecture "v4.2"
 
         TESTS_2_0.test_6_3_11.expect(ExpectedResults_2_0 {
             case_01: case_v_4_2.clone(),

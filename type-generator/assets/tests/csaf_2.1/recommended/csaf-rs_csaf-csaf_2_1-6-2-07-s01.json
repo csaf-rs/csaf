@@ -34,12 +34,12 @@
       "involvements": [
         {
           "date": "2024-01-20T10:00:00.000Z",
-          "party": "vendor",
-          "status": "in_progress"
+          "party": "discoverer",
+          "status": "contact_attempted"
         },
         {
-          "party": "coordinator",
-          "status": "in_progress"
+          "party": "vendor",
+          "status": "open"
         },
         {
           "date": "2024-01-21T10:00:00.000Z",
@@ -47,8 +47,8 @@
           "status": "in_progress"
         },
         {
-          "party": "discoverer",
-          "status": "in_progress"
+          "party": "coordinator",
+          "status": "contact_attempted"
         }
       ]
     },
@@ -56,12 +56,12 @@
       "involvements": [
         {
           "date": "2024-01-22T10:00:00.000Z",
-          "party": "vendor",
-          "status": "in_progress"
+          "party": "discoverer",
+          "status": "contact_attempted"
         },
         {
-          "party": "coordinator",
-          "status": "in_progress"
+          "party": "vendor",
+          "status": "open"
         },
         {
           "date": "2024-01-23T10:00:00.000Z",
@@ -69,8 +69,8 @@
           "status": "in_progress"
         },
         {
-          "party": "discoverer",
-          "status": "in_progress"
+          "party": "coordinator",
+          "status": "contact_attempted"
         }
       ]
     }

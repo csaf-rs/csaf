@@ -32,40 +32,40 @@
   "product_tree": {
     "branches": [
       {
-        "category": "vendor",
-        "name": "Example Company",
         "branches": [
           {
-            "category": "product_name",
-            "name": "Product A",
             "branches": [
               {
                 "category": "product_version",
                 "name": "v4.2",
                 "product": {
-                  "product_id": "CSAFPID-9080701",
-                  "name": "Example Company Product A 4.2"
+                  "name": "Example Company Product A 4.2",
+                  "product_id": "CSAFPID-9080701"
                 }
               },
               {
                 "category": "product_version",
                 "name": "5.2",
                 "product": {
-                  "product_id": "CSAFPID-9080702",
-                  "name": "Example Company Product A 5.2"
+                  "name": "Example Company Product A 5.2",
+                  "product_id": "CSAFPID-9080702"
                 }
               },
               {
                 "category": "product_version",
                 "name": "v6.2",
                 "product": {
-                  "product_id": "CSAFPID-9080703",
-                  "name": "Example Company Product A 6.2"
+                  "name": "Example Company Product A 6.2",
+                  "product_id": "CSAFPID-9080703"
                 }
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product A"
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Example Company"
       }
     ]
   }

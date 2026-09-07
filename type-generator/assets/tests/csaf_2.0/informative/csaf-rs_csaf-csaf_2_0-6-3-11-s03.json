@@ -26,36 +26,36 @@
   "product_tree": {
     "branches": [
       {
-        "category": "vendor",
-        "name": "Example Company",
         "branches": [
           {
-            "category": "product_name",
-            "name": "Product A",
             "branches": [
               {
-                "category": "product_version",
-                "name": "v4.2",
                 "branches": [
                   {
-                    "category": "product_version",
-                    "name": "4.2.2",
                     "branches": [
                       {
                         "category": "product_version",
                         "name": "v4.2.2-alpha",
                         "product": {
-                          "product_id": "CSAFPID-9080705",
-                          "name": "Example Company Product A 4.2.2-alpha"
+                          "name": "Example Company Product A 4.2.2-alpha",
+                          "product_id": "CSAFPID-9080705"
                         }
                       }
-                    ]
+                    ],
+                    "category": "product_version",
+                    "name": "4.2.2"
                   }
-                ]
+                ],
+                "category": "product_version",
+                "name": "v4.2"
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product A"
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Example Company"
       }
     ]
   }

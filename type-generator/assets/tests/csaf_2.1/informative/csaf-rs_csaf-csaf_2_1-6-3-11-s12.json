@@ -32,30 +32,30 @@
   "product_tree": {
     "branches": [
       {
-        "category": "vendor",
-        "name": "Example Company",
         "branches": [
           {
-            "category": "product_name",
-            "name": "Product A",
             "branches": [
               {
-                "category": "product_version",
-                "name": "4.2",
                 "branches": [
                   {
                     "category": "architecture",
                     "name": "v4.2",
                     "product": {
-                      "product_id": "CSAFPID-9080703",
-                      "name": "Example Company Product A Version 4.2 Architecture v4.2"
+                      "name": "Example Company Product A Version 4.2 Architecture v4.2",
+                      "product_id": "CSAFPID-9080703"
                     }
                   }
-                ]
+                ],
+                "category": "product_version",
+                "name": "4.2"
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product A"
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Example Company"
       }
     ]
   }

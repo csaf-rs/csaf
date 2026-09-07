@@ -1065,7 +1065,11 @@ crate::macros::define_csaf_test!(
     crate ::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework, version : "V2_0",
     cases : [(case_01, "01",
     "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-01.json",
-    "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-01.json"), (case_11, "11",
+    "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-01.json"), (case_02, "02",
+    "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-02.json",
+    "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-02.json"), (case_12, "12",
+    "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-12.json",
+    "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-12.json"), (case_11, "11",
     "../csaf/csaf_2.0/test/validator/data/informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-11.json",
     "informative/oasis_csaf_tc-csaf_2_0-2021-6-3-11-11.json")]
 );

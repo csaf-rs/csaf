@@ -71,19 +71,26 @@ mod tests {
 
     #[test]
     fn test_test_6_3_11() {
-        let case_01 = Err(vec![create_v_version_indicator_error(
+        let case_v_4_2 = Err(vec![create_v_version_indicator_error(
             "v4.2",
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
+        let case_uppercase_v_4_2 = Err(vec![create_v_version_indicator_error(
+            "V4.2",
+            "/product_tree/branches/0/branches/0/branches/0",
+        )]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_3_11.expect(ExpectedResults_2_0 {
-            case_01: case_01.clone(),
+            case_01: case_v_4_2.clone(),
+            case_02: case_uppercase_v_4_2.clone(),
             case_11: Ok(()),
+            case_12: Ok(()),
         });
         TESTS_2_1.test_6_3_11.expect(ExpectedResults_2_1 {
-            case_01,
+            case_01: case_v_4_2,
+            case_02: case_uppercase_v_4_2,
             case_11: Ok(()),
+            case_12: Ok(()),
         });
     }
 }

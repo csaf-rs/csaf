@@ -1,17 +1,19 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, PublisherTrait};
 use crate::schema::csaf2_1::schema::CategoryOfPublisher;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::sync::LazyLock;
 
-static MISSING_SOURCE_LANG_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "source_lang is required when the publisher category is 'translator'".to_string(),
-    instance_path: "/document/source_lang".to_string(),
+static MISSING_SOURCE_LANG_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: "source_lang is required when the publisher category is 'translator'".to_string(),
+        instance_path: "/document/source_lang".to_string(),
+    })
 });
 
 /// 6.1.15 Translator
 ///
 /// If the `/document/publisher/category` is "translator", then the `/document/source_lang` must be present and set.
-pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_15_translator(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
     // This test only applies if the publisher category is "translator"
@@ -32,7 +34,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_15, test_6_1_15_tran
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_15 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_15 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -46,20 +50,20 @@ mod tests {
         // case 12: translator category with source_lang and lang field is present
         // case S11: source_lang is missing, but category is not translator (should be skipped)
 
-        TESTS_2_0.test_6_1_15.expect(
-            missing_source_lang_error.clone(),
-            missing_source_lang_error.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_15.expect(ExpectedResults_2_0 {
+            case_01: missing_source_lang_error.clone(),
+            case_02: missing_source_lang_error.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_15.expect(
-            missing_source_lang_error.clone(),
-            missing_source_lang_error,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_15.expect(ExpectedResults_2_1 {
+            case_01: missing_source_lang_error.clone(),
+            case_02: missing_source_lang_error,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

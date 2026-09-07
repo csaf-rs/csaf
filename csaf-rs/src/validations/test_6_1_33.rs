@@ -1,13 +1,13 @@
 use crate::csaf_traits::resolve_product_groups;
 use crate::csaf_traits::{CsafTrait, FlagTrait, VulnerabilityTrait, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_1::schema::LabelOfTheFlag;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
 type VexJustificationInfo = (LabelOfTheFlag, usize, Option<String>);
 /// 6.1.33 Multiple Flags with VEX Justification Codes per Product
-pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_33_multiple_flags_with_vex_codes_per_product(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // Check each flag in each vulnerability
     for (vuln_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
@@ -78,7 +78,7 @@ fn test_6_1_33_err_generator(
     group_id: Option<String>,
     vuln_i: usize,
     flag_i: usize,
-) -> ValidationError {
+) -> TestFinding {
     // sort labels and join them with ', ' for error message
     let labels_joined = {
         let mut labels_str: Vec<_> = labels.iter().map(|l| l.to_string()).collect();
@@ -93,12 +93,12 @@ fn test_6_1_33_err_generator(
             "".to_string()
         }
     };
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Product '{product_id}' is associated with multiple flag labels: [{labels_joined}] {group_id_str}, it has flag label {label} on this path"
         ),
         instance_path: format!("/vulnerabilities/{vuln_i}/flags/{flag_i}"),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(
@@ -109,7 +109,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_33 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_33 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -138,7 +140,13 @@ mod tests {
                 1,
             ),
         ]);
-        TESTS_2_0.test_6_1_33.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_1_33.expect(case_01, Ok(()));
+        TESTS_2_0.test_6_1_33.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_33.expect(ExpectedResults_2_1 {
+            case_01,
+            case_11: Ok(()),
+        });
     }
 }

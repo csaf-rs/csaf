@@ -1,15 +1,15 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_product_tree_exists_error(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_product_tree_exists_error(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The document contains a product tree which is prohibited for documents with category {document_category}"
         ),
         instance_path: "/product_tree".to_string(),
-    }
+    })
 }
 
 /// 6.1.27.15 Product tree
@@ -17,7 +17,7 @@ fn create_product_tree_exists_error(document_category: &CsafDocumentCategory) ->
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseded`.
 ///
 /// An item `/product_tree` shall not exist.
-pub fn test_6_1_27_15_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_15_product_tree(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -40,6 +40,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_15, test
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_15 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -52,8 +53,11 @@ mod tests {
         )]);
         // Case 11: category csaf_withdrawn, no product tree
         // Case 12: category csaf_superseded, no product tree
-        TESTS_2_1
-            .test_6_1_27_15
-            .expect(fail_withdrawn, fail_superseded, Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_27_15.expect(ExpectedResults {
+            case_01: fail_withdrawn,
+            case_02: fail_superseded,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
     }
 }

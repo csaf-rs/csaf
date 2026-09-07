@@ -1,18 +1,18 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_product_version_range_error(path: &str) -> ValidationError {
-    ValidationError {
+fn create_product_version_range_error(path: &str) -> TestFinding {
+    TestFinding::Information(TestFindingData {
         message: "Usage of 'product_version_range' branch category is not recommended".to_string(),
         instance_path: path.to_owned(),
-    }
+    })
 }
 
 /// 6.3.10 Usage of Product Version Range
 ///
 /// Tests that the `product_version_range` branch category is not used anywhere in the product tree.
-pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
@@ -32,7 +32,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_3_10, test_6_3_10_usag
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_3_10 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_3_10 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -42,7 +44,13 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_3_10.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_3_10.expect(case_01, Ok(()));
+        TESTS_2_0.test_6_3_10.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_11: Ok(()),
+        });
+        TESTS_2_1.test_6_3_10.expect(ExpectedResults_2_1 {
+            case_01,
+            case_11: Ok(()),
+        });
     }
 }

@@ -5,19 +5,21 @@ use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use chrono::{DateTime, FixedOffset};
 
-fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> ValidationError {
-    ValidationError {
+fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid date format in revision history: {date_str}"),
         instance_path: format!("/document/tracking/revision_history/{i_r}/date"),
-    }
+    })
 }
 
-static EMPTY_REVISION_HISTORY_ERROR: LazyLock<ValidationError> = LazyLock::new(|| ValidationError {
-    message: "Revision history must not be empty for status final or interim".to_string(),
-    instance_path: "/document/tracking/revision_history".to_string(),
+static EMPTY_REVISION_HISTORY_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Error(TestFindingData {
+        message: "Revision history must not be empty for status final or interim".to_string(),
+        instance_path: "/document/tracking/revision_history".to_string(),
+    })
 });
 
 fn create_ssvc_timestamp_too_late_error(
@@ -25,27 +27,27 @@ fn create_ssvc_timestamp_too_late_error(
     i_v: usize,
     newest_revision_date: &str,
     i_m: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "SSVC timestamp ({ssvc_timestamp}) for vulnerability at index {i_v} is later than the newest revision date ({newest_revision_date})"
         ),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp"),
-    }
+    })
 }
 
-fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> ValidationError {
-    ValidationError {
+fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Invalid SSVC object: {error}"),
         instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
-    }
+    })
 }
 
 /// 6.1.49 Inconsistent SSVC Timestamp
 ///
 /// For each vulnerability, it is tested that the SSVC `timestamp` is earlier or equal to the `date`
 /// of the newest item in the `revision_history` if the document status is `final` or `interim`.
-pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
 
@@ -114,33 +116,34 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_49, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_49 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_49() {
         // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success cases)
-        TESTS_2_1.test_6_1_49.expect(
-            Err(vec![create_ssvc_timestamp_too_late_error(
+        TESTS_2_1.test_6_1_49.expect(ExpectedResults {
+            case_01: Err(vec![create_ssvc_timestamp_too_late_error(
                 "2024-07-13T10:00:00+00:00",
                 0,
                 "2024-01-24T10:00:00+00:00",
                 0,
             )]),
-            Err(vec![create_ssvc_timestamp_too_late_error(
+            case_02: Err(vec![create_ssvc_timestamp_too_late_error(
                 "2024-02-29T10:30:00+00:00",
                 0,
                 "2024-02-29T10:00:00+00:00",
                 0,
             )]),
-            Err(vec![create_ssvc_timestamp_too_late_error(
+            case_03: Err(vec![create_ssvc_timestamp_too_late_error(
                 "2024-02-29T10:30:00+00:00",
                 0,
                 "2024-02-29T10:00:00+00:00",
                 0,
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

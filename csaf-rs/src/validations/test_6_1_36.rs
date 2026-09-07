@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusGroupMap, RemediationTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// Remediation categories that conflict with the product status "not affected".
 const NOT_AFFECTED_CONFLICTS: &[CategoryOfTheRemediation] = &[
@@ -25,13 +25,13 @@ fn create_affected_conflict_error(
     category: &CategoryOfTheRemediation,
     v_i: usize,
     r_i: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Product {product_id} is listed as affected but has conflicting remediation category {category}"
         ),
         instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
-    }
+    })
 }
 
 fn create_not_affected_conflict_error(
@@ -39,13 +39,13 @@ fn create_not_affected_conflict_error(
     category: &CategoryOfTheRemediation,
     v_i: usize,
     r_i: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Product {product_id} is listed as not affected but has conflicting remediation category {category}"
         ),
         instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
-    }
+    })
 }
 
 fn create_fixed_conflict_error(
@@ -53,16 +53,16 @@ fn create_fixed_conflict_error(
     category: &CategoryOfTheRemediation,
     v_i: usize,
     r_i: usize,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Product {product_id} is listed as fixed but has conflicting remediation category {category}"),
         instance_path: format!("/vulnerabilities/{v_i}/remediations/{r_i}"),
-    }
+    })
 }
 
 pub fn test_6_1_36_status_group_contradicting_remediation_categories(
     doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     for (v_i, v) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = v.get_product_status() {
             let status_map = ProductStatusGroupMap::from(product_status);
@@ -104,40 +104,41 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_36 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_36() {
         // Only CSAF 2.1 has this test with 8 test cases (4 error cases, 4 success cases)
-        TESTS_2_1.test_6_1_36.expect(
-            Err(vec![create_not_affected_conflict_error(
+        TESTS_2_1.test_6_1_36.expect(ExpectedResults {
+            case_01: Err(vec![create_not_affected_conflict_error(
                 "CSAFPID-9080700",
                 &CategoryOfTheRemediation::VendorFix,
                 0,
                 0,
             )]),
-            Err(vec![create_fixed_conflict_error(
+            case_02: Err(vec![create_fixed_conflict_error(
                 "CSAFPID-9080703",
                 &CategoryOfTheRemediation::NoneAvailable,
                 0,
                 0,
             )]),
-            Err(vec![create_affected_conflict_error(
+            case_03: Err(vec![create_affected_conflict_error(
                 "CSAFPID-9080700",
                 &CategoryOfTheRemediation::OptionalPatch,
                 0,
                 0,
             )]),
-            Err(vec![create_fixed_conflict_error(
+            case_04: Err(vec![create_fixed_conflict_error(
                 "CSAFPID-9080700",
                 &CategoryOfTheRemediation::NoFixPlanned,
                 0,
                 0,
             )]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

@@ -4,7 +4,7 @@ use cvss_rs::v2_0::CvssV2;
 use serde_json::Value;
 
 use super::{ScoreType, check_optional_field_mismatch, check_score_mismatch, create_vector_parse_error};
-use crate::validation::ValidationError;
+use crate::validation::TestFinding;
 use cvss_rs::Version;
 
 /// Validates CVSS v2 scores.
@@ -17,7 +17,7 @@ pub fn validate_scores(
     cvss2: &CvssV2,
     cvss_map: &serde_json::Map<String, Value>,
     instance_path: &str,
-    errors: &mut Option<Vec<ValidationError>>,
+    errors: &mut Option<Vec<TestFinding>>,
 ) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match CvssV2::from_str(&cvss2.vector_string) {
@@ -57,7 +57,7 @@ pub fn validate_scores(
 /// The `vectorString` is taken as authoritative. Each metric property declared in the JSON
 /// is compared against the value parsed from the vector string, and mismatches are reported.
 /// Mismatches include the value being present in either the JSON or vector string and missing in the other.
-pub fn validate_consistency(cvss2: &CvssV2, instance_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+pub fn validate_consistency(cvss2: &CvssV2, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match CvssV2::from_str(&cvss2.vector_string) {
         Ok(p) => p,

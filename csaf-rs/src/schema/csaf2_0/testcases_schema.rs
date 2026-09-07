@@ -840,3 +840,5 @@ pub mod builder {
         }
     }
 }
+crate::macros::impl_string_newtype_ergonomics!(NameOfTheTestFile);
+crate::macros::impl_string_newtype_ergonomics!(NumberOfTheTest);

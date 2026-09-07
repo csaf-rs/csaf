@@ -15,41 +15,29 @@ use crate::utils::read_write_fs::{read_file_to_string, write_generated_file};
 use generate::generate_kind_section;
 use proc_macro2::TokenStream;
 use quote::quote;
-use std::fmt;
 use std::path::Path;
+use strum::{AsRefStr, Display};
 
 /// The kinds of subtags we extract from the language subtag registry.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Display, AsRefStr)]
 pub(crate) enum SubtagKind {
+    #[strum(serialize = "language")]
     Language,
+    #[strum(serialize = "region")]
     Region,
+    #[strum(serialize = "script")]
     Script,
+    #[strum(serialize = "grandfathered")]
     Grandfathered,
 }
 
 impl SubtagKind {
     /// All variants in a fixed order.
-    pub const ALL: &[SubtagKind] = &[
-        SubtagKind::Language,
-        SubtagKind::Region,
-        SubtagKind::Script,
-        SubtagKind::Grandfathered,
-    ];
+    pub const ALL: &[SubtagKind] = &[Self::Language, Self::Region, Self::Script, Self::Grandfathered];
 
     /// Returns the registry `Type:` value that corresponds to this kind.
-    pub fn registry_key(self) -> &'static str {
-        match self {
-            SubtagKind::Language => "language",
-            SubtagKind::Region => "region",
-            SubtagKind::Script => "script",
-            SubtagKind::Grandfathered => "grandfathered",
-        }
-    }
-}
-
-impl fmt::Display for SubtagKind {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.registry_key())
+    pub fn registry_key(&self) -> &str {
+        self.as_ref()
     }
 }
 

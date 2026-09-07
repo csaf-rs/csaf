@@ -1,15 +1,15 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_revision_history_only_one_entry_error(document_category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_revision_history_only_one_entry_error(document_category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "The revision history contains only one entry which is prohibited for documents with category {document_category}"
         ),
         instance_path: "/document/tracking/revision_history".to_string(),
-    }
+    })
 }
 
 /// 6.1.27.16 Revision history
@@ -17,7 +17,7 @@ fn create_revision_history_only_one_entry_error(document_category: &CsafDocument
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseded`.
 ///
 /// The revision history shall not contain only one entry.
-pub fn test_6_1_27_16_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_16_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
@@ -40,6 +40,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_16, test
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_16 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -54,8 +55,13 @@ mod tests {
         // Case 12: document status is final, category is csaf_withdrawn, two revision history elements
         // Case 13: document status is final, category is csaf_superseded, two revision history elements
         // Case 14: document status is draft, category is csaf_superseded, two revision history elements, one of which is a draft
-        TESTS_2_1
-            .test_6_1_27_16
-            .expect(fail_withdrawn, fail_superseded, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_1_27_16.expect(ExpectedResults {
+            case_01: fail_withdrawn,
+            case_02: fail_superseded,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

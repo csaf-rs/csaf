@@ -8,9 +8,10 @@ use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use compare::compare_result_jsons;
 use convert::build_testresult_json;
-use csaf::csaf::loader::detect_version;
+use csaf::csaf::loader::detect_version_with;
 use csaf::csaf2_0::loader::load_document as load_document_2_0;
 use csaf::csaf2_1::loader::load_document as load_document_2_1;
+use csaf::json::JsonSource;
 use csaf::validation::{Validatable, ValidationResult, validate_by_tests};
 use result::ResultJson;
 
@@ -80,21 +81,12 @@ fn main() -> Result<(), anyhow::Error> {
 
             let file_path = Path::new(&path);
 
-            let version = match args.csaf_version.as_str() {
-                "auto" => detect_version(file_path)?,
-                other => other.to_string(),
-            };
-
-            let result = match version.as_str() {
-                "2.0" => {
-                    let document = load_document_2_0(file_path)?;
-                    validate_document(document, "2.0", &tests)
+            let result = match args.csaf_version.as_str() {
+                "auto" => {
+                    let detected = detect_version_with(file_path)?;
+                    load_and_validate(detected.data, &detected.version, &tests)?
                 },
-                "2.1" => {
-                    let document = load_document_2_1(file_path)?;
-                    validate_document(document, "2.1", &tests)
-                },
-                _ => bail!(format!("Invalid CSAF version: {version}")),
+                other => load_and_validate(file_path, other, &tests)?,
             };
 
             let test_result = build_testresult_json(&result, test_id.as_str())?;
@@ -127,21 +119,12 @@ fn main() -> Result<(), anyhow::Error> {
 
             let file_path = Path::new(&path);
 
-            let version = match args.csaf_version.as_str() {
-                "auto" => detect_version(file_path)?,
-                other => other.to_string(),
-            };
-
-            let result = match version.as_str() {
-                "2.0" => {
-                    let document = load_document_2_0(file_path)?;
-                    validate_document(document, "2.0", &tests)
+            let result = match args.csaf_version.as_str() {
+                "auto" => {
+                    let detected = detect_version_with(file_path)?;
+                    load_and_validate(detected.data, &detected.version, &tests)?
                 },
-                "2.1" => {
-                    let document = load_document_2_1(file_path)?;
-                    validate_document(document, "2.1", &tests)
-                },
-                _ => bail!(format!("Invalid CSAF version: {version}")),
+                other => load_and_validate(file_path, other, &tests)?,
             };
 
             let actual = build_testresult_json(&result, expected.primary_result.id.as_str())?;
@@ -187,6 +170,15 @@ fn main() -> Result<(), anyhow::Error> {
             compare_result_jsons(&actual, &expected);
             Ok(())
         },
+    }
+}
+
+/// Load a document of the given version from any JSON source and validate it.
+fn load_and_validate<S: JsonSource>(source: S, version: &str, tests: &[&str]) -> Result<ValidationResult> {
+    match version {
+        "2.0" => Ok(validate_document(load_document_2_0(source)?, "2.0", tests)),
+        "2.1" => Ok(validate_document(load_document_2_1(source)?, "2.1", tests)),
+        _ => bail!("Invalid CSAF version: {version}"),
     }
 }
 

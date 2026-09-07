@@ -1,4 +1,4 @@
-use crate::validation::ValidationError;
+use crate::validation::TestFinding;
 
 /// Trait for test validation logic.
 ///
@@ -13,8 +13,8 @@ pub trait TestValidator<Doc> {
     ///
     /// # Returns
     /// * `Ok(())` if validation passes
-    /// * `Err(Vec<ValidationError>)` if validation fails
-    fn validate(&self, doc: &Doc) -> Result<(), Vec<ValidationError>>;
+    /// * `Err(Vec<TestFinding>)` if validation fails
+    fn validate(&self, doc: &Doc) -> Result<(), Vec<TestFinding>>;
 }
 
 /// Macro to generate the boilerplate `TestValidator<CommonSecurityAdvisoryFramework>` impl blocks
@@ -48,7 +48,7 @@ macro_rules! impl_validator {
             fn validate(
                 &self,
                 doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-            ) -> Result<(), Vec<crate::validation::ValidationError>> {
+            ) -> Result<(), Vec<crate::validation::TestFinding>> {
                 $validate_fn(doc)
             }
         }
@@ -60,7 +60,7 @@ macro_rules! impl_validator {
             fn validate(
                 &self,
                 doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-            ) -> Result<(), Vec<crate::validation::ValidationError>> {
+            ) -> Result<(), Vec<crate::validation::TestFinding>> {
                 $validate_fn(doc)
             }
         }
@@ -104,7 +104,7 @@ macro_rules! impl_raw_json_validator {
                 document: &crate::csaf::raw::RawDocument<
                     crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
                 >,
-            ) -> Result<(), Vec<crate::validation::ValidationError>> {
+            ) -> Result<(), Vec<crate::validation::TestFinding>> {
                 $validate_fn(document.get_json())
             }
         }
@@ -120,7 +120,7 @@ macro_rules! impl_raw_json_validator {
                 document: &crate::csaf::raw::RawDocument<
                     crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
                 >,
-            ) -> Result<(), Vec<crate::validation::ValidationError>> {
+            ) -> Result<(), Vec<crate::validation::TestFinding>> {
                 $validate_fn(document.get_json())
             }
         }

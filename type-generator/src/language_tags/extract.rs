@@ -92,7 +92,7 @@ fn push_block_into_map(
                 })
                 .collect()
         }
-        // its a single subtag
+        // it's a single subtag
         else {
             vec![SubtagEntry {
                 subtag: subtag.clone(),

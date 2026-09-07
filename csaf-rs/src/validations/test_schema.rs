@@ -1,11 +1,11 @@
 use std::sync::LazyLock;
 
-use jsonschema::Resource;
+use jsonschema::{Registry, Resource};
 use serde_json::Value;
 
 use crate::{
     csaf::raw::RawDocument,
-    validation::ValidationError,
+    validation::{TestFinding, TestFindingData},
     validations::utils::{
         validation_schema_urls::{
             CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_SCHEMA_URL,
@@ -27,49 +27,63 @@ fn use_draft_schema(mut schema_value: Value) -> Value {
 }
 
 static VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    let registry = Registry::new()
+        .extend([
+            (CVSS_V2_SCHEMA_URL, Resource::from_contents(CVSS_V2_SCHEMA.clone())),
+            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())),
+            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())),
+        ])
+        .unwrap()
+        .prepare()
+        .unwrap();
     jsonschema::options()
         .should_validate_formats(true)
-        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(CVSS_V2_SCHEMA.clone()))
-        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))
-        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))
+        .with_registry(&registry)
         .build(&CSAF_2_0_SCHEMA.clone())
         .unwrap()
 });
 
 static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
+    let registry = Registry::new()
+        .extend([
+            (
+                EXTENSION_METASCHEMA_URL,
+                Resource::from_contents(use_draft_schema(EXTENSION_METASCHEMA.clone())),
+            ),
+            (
+                EXTENSION_SCHEMA_URL,
+                Resource::from_contents(use_draft_schema(EXTENSION_SCHEMA.clone())),
+            ),
+            (CVSS_V2_SCHEMA_URL, Resource::from_contents(CVSS_V2_SCHEMA.clone())),
+            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())),
+            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())),
+            (
+                CVSS_V4_0_SCHEMA_URL,
+                Resource::from_contents(use_draft_schema(CVSS_V4_0_SCHEMA.clone())),
+            ),
+            (SSVC_2_SCHEMA_URL, Resource::from_contents(SSVC_2_SCHEMA.clone())),
+        ])
+        .unwrap()
+        .prepare()
+        .unwrap();
     jsonschema::options()
         .should_validate_formats(true)
-        .with_resource(
-            EXTENSION_METASCHEMA_URL,
-            Resource::from_contents(use_draft_schema(EXTENSION_METASCHEMA.clone())),
-        )
-        .with_resource(
-            EXTENSION_SCHEMA_URL,
-            Resource::from_contents(use_draft_schema(EXTENSION_SCHEMA.clone())),
-        )
-        .with_resource(CVSS_V2_SCHEMA_URL, Resource::from_contents(CVSS_V2_SCHEMA.clone()))
-        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone()))
-        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone()))
-        .with_resource(
-            CVSS_V4_0_SCHEMA_URL,
-            Resource::from_contents(use_draft_schema(CVSS_V4_0_SCHEMA.clone())),
-        )
-        .with_resource(SSVC_2_SCHEMA_URL, Resource::from_contents(SSVC_2_SCHEMA.clone()))
+        .with_registry(&registry)
         .build(&use_draft_schema(CSAF_2_1_SCHEMA.clone()))
         .unwrap()
 });
 
-fn create_schema_error(err: String, path: &str) -> ValidationError {
-    ValidationError {
+fn create_schema_error(err: String, path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: err,
         instance_path: match path.len() {
             0 => "/".to_string(),
             _ => path.to_string(),
         },
-    }
+    })
 }
 
-fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Result<(), Vec<ValidationError>> {
+fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Result<(), Vec<TestFinding>> {
     let errors: Vec<_> = validator
         .iter_errors(document)
         .map(|error| create_schema_error(format!("{error}"), error.instance_path().as_str()))
@@ -82,13 +96,13 @@ fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Resul
 
 pub fn validate_schema_csaf_2_0(
     document: &RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     validate_schema(document.get_json(), &VALIDATOR_2_0)
 }
 
 pub fn validate_schema_csaf_2_1(
     document: &RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     validate_schema(document.get_json(), &VALIDATOR_2_1)
     // TODO: validate extensions
 }

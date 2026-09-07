@@ -8,7 +8,7 @@ use super::{
     ScoreType, check_optional_field_mismatch, check_score_mismatch, check_severity_mismatch, create_vector_parse_error,
     map_score_to_severity,
 };
-use crate::validation::ValidationError;
+use crate::validation::TestFinding;
 
 /// Converts a version-specific CVSS v3 [V3Severity] to the unified [Severity].
 /// The [CvssV3] implementation does not provide this only for base_score.
@@ -29,7 +29,7 @@ fn to_unified(severity: &V3Severity) -> Severity {
 ///
 /// Checked score fields: `baseScore`, `temporalScore`, `environmentalScore`
 /// Checked severity fields: `baseSeverity`, `temporalSeverity`, `environmentalSeverity`
-pub fn validate_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+pub fn validate_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match CvssV3::from_str(&cvss3.vector_string) {
         Ok(p) => p,
@@ -102,7 +102,7 @@ pub fn validate_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<
 /// The `vectorString` is taken as authoritative. Each metric property declared in the JSON
 /// is compared against the value parsed from the vector string, and mismatches are reported.
 /// Mismatches include the value being present in either the JSON or vector string and missing in the other.
-pub fn validate_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+pub fn validate_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match CvssV3::from_str(&cvss3.vector_string) {
         Ok(p) => p,

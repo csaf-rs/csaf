@@ -1,20 +1,20 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::test_validation::impl_validator;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-fn create_usage_of_deprecated_profile_error(category: &CsafDocumentCategory) -> ValidationError {
-    ValidationError {
+fn create_usage_of_deprecated_profile_error(category: &CsafDocumentCategory) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("Document category '{category}' starts with 'csaf_deprecated_' (or similar)"),
         instance_path: "/document/category".to_string(),
-    }
+    })
 }
 
 /// 6.2.38 Usage of Deprecated Profile
 ///
 /// It MUST be tested that the `/document/category` does not start with `csaf_deprecated_`.
 /// To implement this test it is deemed sufficient to do a "starts with" check.
-pub fn test_6_2_38_usage_of_deprecated_profile(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_2_38_usage_of_deprecated_profile(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let category = doc.get_document().get_category();
 
     if category.to_string().starts_with("csaf_deprecated_") {
@@ -29,6 +29,7 @@ impl_validator!(csaf2_1, ValidatorForTest6_2_38, test_6_2_38_usage_of_deprecated
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_38 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -43,8 +44,13 @@ mod tests {
         // Case 12: with prefix ("Example Company csaf_deprecated_security_advisory")´
         // Case 13: casing ("CSAF_deprecated_security_advisory")
         // Case S11: leading whitespace (" csaf_deprecated_some_other_type")
-        TESTS_2_1
-            .test_6_2_38
-            .expect(case_01, case_02, Ok(()), Ok(()), Ok(()), Ok(()));
+        TESTS_2_1.test_6_2_38.expect(ExpectedResults {
+            case_01,
+            case_02,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

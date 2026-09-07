@@ -1,42 +1,35 @@
-use std::fmt::{Display, Formatter};
+use strum::{AsRefStr, Display};
 
 /// Enum representing the category of a branch in a product tree.
 /// We need a shared type on the trait, as CSAF version 2.0 have fully divergent definitions.
 /// CSAF 2.0 has legacy, which 2.1 has not.
 /// CSAF 2.1 has platform, which 2.0 has not.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Display, AsRefStr)]
 pub enum CategoryOfTheBranch {
+    #[strum(serialize = "architecture")]
     Architecture,
+    #[strum(serialize = "host_name")]
     HostName,
+    #[strum(serialize = "language")]
     Language,
+    #[strum(serialize = "legacy")]
     Legacy,
+    #[strum(serialize = "patch_level")]
     PatchLevel,
+    #[strum(serialize = "platform")]
     Platform,
+    #[strum(serialize = "product_family")]
     ProductFamily,
+    #[strum(serialize = "product_name")]
     ProductName,
+    #[strum(serialize = "product_version")]
     ProductVersion,
+    #[strum(serialize = "product_version_range")]
     ProductVersionRange,
+    #[strum(serialize = "service_pack")]
     ServicePack,
+    #[strum(serialize = "specification")]
     Specification,
+    #[strum(serialize = "vendor")]
     Vendor,
-}
-
-impl Display for CategoryOfTheBranch {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CategoryOfTheBranch::Architecture => write!(f, "architecture"),
-            CategoryOfTheBranch::HostName => write!(f, "host_name"),
-            CategoryOfTheBranch::Language => write!(f, "language"),
-            CategoryOfTheBranch::Legacy => write!(f, "legacy"),
-            CategoryOfTheBranch::PatchLevel => write!(f, "patch_level"),
-            CategoryOfTheBranch::Platform => write!(f, "platform"),
-            CategoryOfTheBranch::ProductFamily => write!(f, "product_family"),
-            CategoryOfTheBranch::ProductName => write!(f, "product_name"),
-            CategoryOfTheBranch::ProductVersion => write!(f, "product_version"),
-            CategoryOfTheBranch::ProductVersionRange => write!(f, "product_version_range"),
-            CategoryOfTheBranch::ServicePack => write!(f, "service_pack"),
-            CategoryOfTheBranch::Specification => write!(f, "specification"),
-            CategoryOfTheBranch::Vendor => write!(f, "vendor"),
-        }
-    }
 }

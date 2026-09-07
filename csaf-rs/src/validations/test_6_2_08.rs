@@ -1,19 +1,21 @@
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf_traits::{CsafTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.2.8 Use of MD5 as the only Hash Algorithm
 ///
 /// When hashes are provided as product identification helpers for a product, another hash
 /// besides a MD5 hash must be provided.
-pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // for each product in the product tree, check all product identification helper hashes for MD5 as the only hash algorithm
     if let Some(tree) = doc.get_product_tree() {
         tree.visit_all_products(&mut |fpn, path| {
-            if let Some(helper) = fpn.get_product_identification_helper() {
-                for (h_i, hash) in helper.get_hashes().iter().enumerate() {
+            if let Some(helper) = fpn.get_product_identification_helper()
+                && let Some(hashes) = helper.get_hashes()
+            {
+                for (h_i, hash) in hashes.iter().enumerate() {
                     if hash.contains_only_hash_algorithm(CsafHashAlgorithm::Md5) {
                         errors
                             .get_or_insert_default()
@@ -27,11 +29,11 @@ pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<
     errors.map_or(Ok(()), Err)
 }
 
-fn create_md5_only_hash_error(path: &str, hash_index: usize) -> ValidationError {
-    ValidationError {
+fn create_md5_only_hash_error(path: &str, hash_index: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: "Product identification helper uses hashes with `md5` as the only hash algorithm".to_string(),
         instance_path: format!("{path}/product_identification_helper/hashes/{hash_index}/file_hashes",),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_2_8, test_6_2_08_use_of_md5_as_only_hash_algo);
@@ -39,7 +41,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_8, test_6_2_08_use_o
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_8 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_8 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -54,14 +58,16 @@ mod tests {
         // Case S01: (CSAF 2.0 only) two md5 hashes one with non-default casing
         // Case S11: two file hashes, one with md5
 
-        TESTS_2_0.test_6_2_8.expect(
-            case_01_and_02.clone(),
-            case_01_and_02.clone(),
-            case_01_and_02.clone(),
-            Ok(()),
-        );
-        TESTS_2_1
-            .test_6_2_8
-            .expect(case_01_and_02.clone(), case_01_and_02, Ok(()));
+        TESTS_2_0.test_6_2_8.expect(ExpectedResults_2_0 {
+            case_01: case_01_and_02.clone(),
+            case_02: case_01_and_02.clone(),
+            case_s01: case_01_and_02.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_8.expect(ExpectedResults_2_1 {
+            case_01: case_01_and_02.clone(),
+            case_02: case_01_and_02,
+            case_s11: Ok(()),
+        });
     }
 }

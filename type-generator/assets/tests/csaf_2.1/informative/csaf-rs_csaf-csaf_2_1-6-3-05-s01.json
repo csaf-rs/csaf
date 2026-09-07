@@ -1,0 +1,128 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Informative Test: Use of Short Hash (failing supplementary example 1 - nested branches and multiple findings)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-05-S01",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "1.0",
+                "product": {
+                  "name": "Example Company Product A 1.0",
+                  "product_id": "CSAFPID-0001",
+                  "product_identification_helper": {
+                    "hashes": [
+                      {
+                        "file_hashes": [
+                          {
+                            "algorithm": "sha256",
+                            "value": "d212f3b9e587f61a89ff39f70fb8669c033f799d5417c47467a0a7d9b76fee20"
+                          },
+                          {
+                            "algorithm": "md4",
+                            "value": "3202b50e2e5b2fcd75e284c3d9d5f8d6"
+                          }
+                        ],
+                        "filename": "product_a_1_0.so"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "Product A"
+          },
+          {
+            "category": "product_name",
+            "name": "Product B",
+            "product": {
+              "name": "Example Company Product B",
+              "product_id": "CSAFPID-0002",
+              "product_identification_helper": {
+                "hashes": [
+                  {
+                    "file_hashes": [
+                      {
+                        "algorithm": "sha256",
+                        "value": "5f8d3c4b2a190e7d6c5b4a39281716151413121110ffeeddccbbaa9988776655"
+                      },
+                      {
+                        "algorithm": "sha1",
+                        "value": "b4d25eefd8ebd2b48ee4bcca7362f55279d55764"
+                      }
+                    ],
+                    "filename": "product_b.so"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "category": "vendor",
+        "name": "Example Company"
+      },
+      {
+        "category": "product_name",
+        "name": "Product C",
+        "product": {
+          "name": "Product C",
+          "product_id": "CSAFPID-0003",
+          "product_identification_helper": {
+            "hashes": [
+              {
+                "file_hashes": [
+                  {
+                    "algorithm": "sha512",
+                    "value": "fd22cb886ab930a5a45c61a15f2f4dc6291ce67ce9751d66a4e1d65a890345f3d8ead486afb88a36a13398bd37070725eb5f794644add1848e6e1e05aed47678"
+                  }
+                ],
+                "filename": "product_c_valid.so"
+              },
+              {
+                "file_hashes": [
+                  {
+                    "algorithm": "sha224",
+                    "value": "446c5231729981edb88d685834509e348475830efe1328e5712e9972"
+                  }
+                ],
+                "filename": "product_c_short.so"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

@@ -373,7 +373,7 @@ func uniffiCheckChecksums() {
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_csaf_ffi_checksum_func_validate_csaf()
 		})
-		if checksum != 52424 {
+		if checksum != 38341 {
 			// If this happens try cleaning and rebuilding your project
 			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf: UniFFI API checksum mismatch")
 		}
@@ -391,7 +391,7 @@ func uniffiCheckChecksums() {
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_csaf_ffi_checksum_func_validate_csaf_2_0_to_json_string()
 		})
-		if checksum != 27025 {
+		if checksum != 14729 {
 			// If this happens try cleaning and rebuilding your project
 			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf_2_0_to_json_string: UniFFI API checksum mismatch")
 		}
@@ -409,7 +409,7 @@ func uniffiCheckChecksums() {
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_csaf_ffi_checksum_func_validate_csaf_2_1_to_json_string()
 		})
-		if checksum != 56379 {
+		if checksum != 55049 {
 			// If this happens try cleaning and rebuilding your project
 			panic("csaf_ffi: uniffi_csaf_ffi_checksum_func_validate_csaf_2_1_to_json_string: UniFFI API checksum mismatch")
 		}
@@ -2009,7 +2009,7 @@ func (FfiDestroyerSequenceValidationError) Destroy(sequence []ValidationError) {
 //
 // # Returns
 //
-// An `ValidationResult` containing the validation outcome and any findings.
+// A `ValidationResult` containing the validation outcome and any findings.
 func ValidateCsaf(jsonStr string, preset string) (ValidationResult, error) {
 	_uniffiRV, _uniffiErr := rustCallWithError[*CsafError](FfiConverterCsafError{}, func(_uniffiStatus *C.RustCallStatus) RustBufferI {
 		return GoRustBuffer{
@@ -2047,7 +2047,7 @@ func ValidateCsaf20(jsonStr string, preset string) (ValidationResult, error) {
 // Validate a CSAF 2.0 document and return the result as JSON.
 //
 // Same as [`validate_csaf_2_0`] but returns the [`ValidationResult`]
-// serialized as a JSON string.  Prefer in WASM contexts.
+// serialized as a JSON string.  Prefer this in WASM contexts.
 //
 // # Arguments
 //
@@ -2090,7 +2090,7 @@ func ValidateCsaf21(jsonStr string, preset string) (ValidationResult, error) {
 // Validate a CSAF 2.1 document and return the result as JSON.
 //
 // Same as [`validate_csaf_2_1`] but returns the [`ValidationResult`]
-// serialized as a JSON string.  Prefer in WASM contexts.
+// serialized as a JSON string.  Prefer this in WASM contexts.
 //
 // # Arguments
 //

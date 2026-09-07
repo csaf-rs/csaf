@@ -152,7 +152,7 @@ impl From<csaf::validation::ValidationResult> for ValidationResult {
 ///
 /// # Returns
 ///
-/// An `ValidationResult` containing the validation outcome and any findings.
+/// A `ValidationResult` containing the validation outcome and any findings.
 #[uniffi::export]
 pub fn validate_csaf(json_str: String, preset: String) -> Result<ValidationResult, CsafError> {
     let json_value: serde_json::Value =
@@ -257,7 +257,7 @@ pub fn validate_csaf_to_json_string(json_str: String, preset: String) -> Result<
 /// Validate a CSAF 2.0 document and return the result as JSON.
 ///
 /// Same as [`validate_csaf_2_0`] but returns the [`ValidationResult`]
-/// serialized as a JSON string.  Prefer in WASM contexts.
+/// serialized as a JSON string.  Prefer this in WASM contexts.
 ///
 /// # Arguments
 ///
@@ -273,7 +273,7 @@ pub fn validate_csaf_2_0_to_json_string(json_str: String, preset: String) -> Res
 /// Validate a CSAF 2.1 document and return the result as JSON.
 ///
 /// Same as [`validate_csaf_2_1`] but returns the [`ValidationResult`]
-/// serialized as a JSON string.  Prefer in WASM contexts.
+/// serialized as a JSON string.  Prefer this in WASM contexts.
 ///
 /// # Arguments
 ///

@@ -21,26 +21,26 @@ impl CsafPurl {
             Ok(mut purl) => {
                 let normalized_purl = purl.to_string();
                 let base_without_qualifiers = purl.clear_qualifiers().to_string();
-                CsafPurl::Valid(ValidPurl::new(
+                Self::Valid(ValidPurl::new(
                     purl_str.to_owned(),
                     normalized_purl,
                     base_without_qualifiers,
                 ))
             },
-            Err(e) => CsafPurl::Invalid(PurlParseError::from_packageurl_error(purl_str, e)),
+            Err(e) => Self::Invalid(PurlParseError::from_packageurl_error(purl_str, e)),
         }
     }
 }
 
 impl From<&PackageUrlRepresentation20> for CsafPurl {
     fn from(purl: &PackageUrlRepresentation20) -> Self {
-        CsafPurl::parse(purl.deref())
+        Self::parse(purl.deref())
     }
 }
 
 impl From<&PackageUrlRepresentation21> for CsafPurl {
     fn from(purl: &PackageUrlRepresentation21) -> Self {
-        CsafPurl::parse(purl.deref())
+        Self::parse(purl.deref())
     }
 }
 
@@ -97,7 +97,7 @@ mod test_purl_full_pipeline {
     use crate::csaf::types::purl::{PurlParseError, PurlParseErrorKind};
     use crate::schema::csaf2_0::schema::PackageUrlRepresentation as PackageUrlRepresentation20;
     use crate::schema::csaf2_1::schema::PackageUrlRepresentation as PackageUrlRepresentation21;
-    use crate::validation::IntoValidationError;
+    use crate::validation::IntoTestFindingError;
     use rstest::rstest;
     use std::str::FromStr;
 
@@ -142,11 +142,11 @@ mod test_purl_full_pipeline {
     ) {
         let csaf_purl = to_csaf_purl(purl_str, version);
 
-        let expected = PurlParseError::new_for_test(purl_str, expected_error).into_validation_error("");
+        let expected = PurlParseError::new_for_test(purl_str, expected_error).into_test_finding_error("");
 
         match csaf_purl {
             CsafPurl::Invalid(err) => {
-                let actual = err.into_validation_error("");
+                let actual = err.into_test_finding_error("");
                 assert_eq!(actual, expected);
             },
             CsafPurl::Valid(_) => {

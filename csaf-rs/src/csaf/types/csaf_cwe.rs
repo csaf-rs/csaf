@@ -12,7 +12,7 @@ pub struct Cwe {
 
 impl From<&Cwe21> for Cwe {
     fn from(cwe: &Cwe21) -> Self {
-        Cwe {
+        Self {
             id: cwe.id.to_string(),
             name: cwe.name.to_string(),
             version: Some(cwe.version.to_string()),
@@ -22,7 +22,7 @@ impl From<&Cwe21> for Cwe {
 
 impl From<&Cwe20> for Cwe {
     fn from(cwe: &Cwe20) -> Self {
-        Cwe {
+        Self {
             id: cwe.id.to_string(),
             name: cwe.name.to_string(),
             version: None,

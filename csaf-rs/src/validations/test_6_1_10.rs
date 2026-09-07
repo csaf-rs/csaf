@@ -1,7 +1,7 @@
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
     cvss,
-    validation::ValidationError,
+    validation::TestFinding,
 };
 
 /// 6.1.10 Inconsistent CVSS
@@ -12,8 +12,8 @@ use crate::{
 /// Generates an error if a CVSS 2.0, 3.x, 4.0 metric differs in value between the JSON and vector or is
 /// missing in either the JSON or vector and present in the other. For the latter comparison, the "NotDefined"
 /// values are normalized to be "not present".
-pub fn test_6_1_10_inconsistent_cvss(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_10_inconsistent_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
@@ -33,7 +33,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_10, test_6_1_10_inco
 
 #[cfg(test)]
 mod tests {
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_10 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_10 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::cvss::create_field_value_mismatch_error;
 
@@ -47,7 +49,9 @@ mod tests {
             create_field_value_mismatch_error("availabilityImpact", &"L", &"H", path_2_0),
         ]);
 
-        TESTS_2_0.test_6_1_10.expect(case_01_3_1_mismatch_csaf_2_0);
+        TESTS_2_0.test_6_1_10.expect(ExpectedResults_2_0 {
+            case_01: case_01_3_1_mismatch_csaf_2_0,
+        });
 
         let path_2_1 = "/vulnerabilities/0/metrics/0/content";
 
@@ -88,15 +92,15 @@ mod tests {
         // Case 13: v2.0 correct
         // Case 14: v4.0 correct
 
-        TESTS_2_1.test_6_1_10.expect(
-            case_01_3_1_mismatch_csaf_2_1,
-            case_02_3_0_mismatch_csaf_2_1,
-            case_03_2_0_mismatch_csaf_2_1,
-            case_04_4_0_mismatch_csaf_2_1,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_10.expect(ExpectedResults_2_1 {
+            case_01: case_01_3_1_mismatch_csaf_2_1,
+            case_02: case_02_3_0_mismatch_csaf_2_1,
+            case_03: case_03_2_0_mismatch_csaf_2_1,
+            case_04: case_04_4_0_mismatch_csaf_2_1,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 }

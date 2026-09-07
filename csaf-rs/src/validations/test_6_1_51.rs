@@ -4,20 +4,20 @@ use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::schema::csaf2_1::schema::DocumentStatus;
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 fn create_epss_timestamp_too_new_error(
     doc_status: &DocumentStatus,
     epss_timestamp: &ValidCsafDateTime,
     newest_revision_date: &ValidCsafDateTime,
     content_json_path: &str,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "EPSS timestamp ({epss_timestamp}) is newer than the newest revision date ({newest_revision_date}) on a document with status {doc_status}.",
         ),
         instance_path: format!("{content_json_path}/epss/timestamp"),
-    }
+    })
 }
 
 /// 6.1.51 Inconsistent EPSS Timestamp
@@ -25,7 +25,7 @@ fn create_epss_timestamp_too_new_error(
 /// For each vulnerability, it is tested that the EPSS `timestamp` is earlier or equal to the `date`
 /// of the newest item in the `revision_history` (taking timezones into consideration)
 /// if the document status is `final` or `interim`.
-pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
     let status = tracking.get_status();
@@ -46,7 +46,7 @@ pub fn test_6_1_51_inconsistent_epss_timestamp(doc: &impl CsafTrait) -> Result<(
     };
 
     // Check each vulnerability's EPSS timestamp
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
             for (i_m, metric) in metrics.iter().enumerate() {
@@ -82,6 +82,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_51, test_6_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_51 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use std::str::FromStr;
 
@@ -110,13 +111,13 @@ mod tests {
         // Case 12: EPSS timestamp before newest rev history, with negative timezone offset
         // Case 13: EPSS timestamp before newest rev history, with positive timezone offset
 
-        TESTS_2_1.test_6_1_51.expect(
-            case_01_too_late_new_timezone,
-            case_02_too_new_neg_timezone_offset,
-            case_03_too_new_pos_timezone_offset,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_51.expect(ExpectedResults {
+            case_01: case_01_too_late_new_timezone,
+            case_02: case_02_too_new_neg_timezone_offset,
+            case_03: case_03_too_new_pos_timezone_offset,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

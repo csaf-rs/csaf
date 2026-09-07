@@ -7,7 +7,7 @@ use super::{
     ScoreType, check_optional_field_mismatch, check_score_mismatch, check_severity_mismatch, create_vector_parse_error,
     map_score_to_severity,
 };
-use crate::validation::ValidationError;
+use crate::validation::TestFinding;
 
 /// Validates CVSS v4 base score and base severity.
 ///
@@ -15,7 +15,7 @@ use crate::validation::ValidationError;
 /// which are then compared against the values declared in the JSON.
 ///
 /// Checked fields: `baseScore`, `baseSeverity`
-pub fn validate_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+pub fn validate_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match CvssV4::from_str(&cvss4.vector_string) {
         Ok(p) => p,
@@ -50,7 +50,7 @@ pub fn validate_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<
 /// The `vectorString` is taken as authoritative. Each metric property declared in the JSON
 /// is compared against the value parsed from the vector string, and mismatches are reported.
 /// Mismatches include the value being present in either the JSON or vector string and missing in the other.
-pub fn validate_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<ValidationError>>) {
+pub fn validate_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match CvssV4::from_str(&cvss4.vector_string) {
         Ok(p) => p,

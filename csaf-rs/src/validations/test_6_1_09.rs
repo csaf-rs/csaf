@@ -1,7 +1,7 @@
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
     cvss,
-    validation::ValidationError,
+    validation::TestFinding,
 };
 
 /// 6.1.9 Invalid CVSS computation
@@ -10,8 +10,8 @@ use crate::{
 /// For CVSS v2.0, the base, temporal and environmental scores are checked.
 /// For CVSS v3.0 and v3.1, the base, temporal and environmental scores and severities are checked.
 /// For CVSS v4.0, the score and severity are checked
-pub fn test_6_1_09_invalid_cvss_computation(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_09_invalid_cvss_computation(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
@@ -31,7 +31,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_9, test_6_1_09_inval
 
 #[cfg(test)]
 mod tests {
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_9 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_9 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::cvss::{ScoreType, create_score_mismatch_error, create_severity_mismatch_error};
     use cvss_rs::Severity;
@@ -55,14 +57,14 @@ mod tests {
         // Case 12: v3.0 correct
         // Case 13: v2.0 correct
 
-        TESTS_2_0.test_6_1_9.expect(
-            case01_3_1_base_score_and_severity_wrong_csaf_2_0,
-            case02_3_0_base_score_and_severity_wrong_csaf_2_0,
-            case03_2_0_base_score_wrong_csaf_2_0,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_9.expect(ExpectedResults_2_0 {
+            case_01: case01_3_1_base_score_and_severity_wrong_csaf_2_0,
+            case_02: case02_3_0_base_score_and_severity_wrong_csaf_2_0,
+            case_03: case03_2_0_base_score_wrong_csaf_2_0,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
 
         let path_2_1 = "/vulnerabilities/0/metrics/0/content";
 
@@ -91,18 +93,18 @@ mod tests {
         // Case 15: v4.0 correct
         // Case 16: v4.0 correct
 
-        TESTS_2_1.test_6_1_9.expect(
-            case01_3_1_base_score_and_severity_wrong_csaf_2_1,
-            case02_3_0_base_score_and_severity_wrong_csaf_2_1,
-            case03_2_0_base_score_wrong_csaf_2_1,
-            case04_4_0_base_score_wrong_csaf_2_1,
-            case05_4_0_base_score_and_severity_wrong_csaf_2_1,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_9.expect(ExpectedResults_2_1 {
+            case_01: case01_3_1_base_score_and_severity_wrong_csaf_2_1,
+            case_02: case02_3_0_base_score_and_severity_wrong_csaf_2_1,
+            case_03: case03_2_0_base_score_wrong_csaf_2_1,
+            case_04: case04_4_0_base_score_wrong_csaf_2_1,
+            case_05: case05_4_0_base_score_and_severity_wrong_csaf_2_1,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+            case_15: Ok(()),
+            case_16: Ok(()),
+        });
     }
 }

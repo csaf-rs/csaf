@@ -1,11 +1,11 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithOptionalDate};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.2.7 Missing Date in Involvements
 ///
 /// Each involvement item must have the `date` field set.
-pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // for each vuln and each of its involvements, check if date is set
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
@@ -24,11 +24,11 @@ pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<
     errors.map_or(Ok(()), Err)
 }
 
-fn create_missing_date_in_involvements_error(vulnerability_index: usize, involvement_index: usize) -> ValidationError {
-    ValidationError {
+fn create_missing_date_in_involvements_error(vulnerability_index: usize, involvement_index: usize) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: "Involvement item is missing required 'date' field".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/involvements/{involvement_index}"),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_2_7, test_6_2_07_missing_date_in_involvements);
@@ -36,7 +36,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_7, test_6_2_07_missi
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_7 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_7 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -44,7 +46,9 @@ mod tests {
         let case_01 = Err(vec![create_missing_date_in_involvements_error(0, 0)]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_2_7.expect(case_01.clone());
-        TESTS_2_1.test_6_2_7.expect(case_01);
+        TESTS_2_0.test_6_2_7.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+        });
+        TESTS_2_1.test_6_2_7.expect(ExpectedResults_2_1 { case_01 });
     }
 }

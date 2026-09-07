@@ -1,13 +1,13 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_unused_product_id_error(product_id: &str, path: &str) -> ValidationError {
-    ValidationError {
+fn create_unused_product_id_error(product_id: &str, path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!("Product ID '{product_id}' is defined but not referenced in the document"),
         instance_path: format!("{path}/product_id"),
-    }
+    })
 }
 
 const SKIP_TEST_CONFIG: DocumentCategoryTestConfig =
@@ -16,8 +16,8 @@ const SKIP_TEST_CONFIG: DocumentCategoryTestConfig =
 /// 6.2.1 Unused Definition of Product ID
 ///
 /// All defined product IDs need to be referenced at least once in the document.
-pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     // Skips the test for profile "Informational Advisory"
     if SKIP_TEST_CONFIG.matches_category(&doc.get_document().get_category()) {
@@ -46,7 +46,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_1, test_6_2_01_unuse
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_1 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_1 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -57,7 +59,13 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_2_1.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_2_1.expect(case_01, Ok(()));
+        TESTS_2_0.test_6_2_1.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_1.expect(ExpectedResults_2_1 {
+            case_01,
+            case_11: Ok(()),
+        });
     }
 }

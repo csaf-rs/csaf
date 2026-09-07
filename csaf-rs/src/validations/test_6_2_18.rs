@@ -1,23 +1,23 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
-fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> ValidationError {
-    ValidationError {
-        message: format!("Product version range {version_range} does not match vers syntax"),
+fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
+        message: format!("Product version range {version_range} does not match VERS syntax"),
         instance_path: format!("{path}/name"),
-    }
+    })
 }
 
 static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^vers:[a-z.\-+][a-z0-9.\-+]*/.+").unwrap());
 
-/// 6.2.18 Product Version Range without vers
+/// 6.2.18 Product Version Range without VERS
 ///
-/// Tests that in the product tree, all branches with the category `product_version_range` use vers
+/// Tests that in the product tree, all branches with the category `product_version_range` use VERS
 /// in their `name` property.
-pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     if let Some(product_tree) = doc.get_product_tree() {
         product_tree.visit_all_branches(&mut |branch, path| {
@@ -39,7 +39,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_18, test_6_2_18_prod
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_2_18 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_2_18 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -50,7 +52,13 @@ mod tests {
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0.test_6_2_18.expect(case_01.clone(), Ok(()));
-        TESTS_2_1.test_6_2_18.expect(case_01, Ok(()));
+        TESTS_2_0.test_6_2_18.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_18.expect(ExpectedResults_2_1 {
+            case_01,
+            case_11: Ok(()),
+        });
     }
 }

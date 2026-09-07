@@ -1,48 +1,39 @@
-use std::fmt::{Display, Formatter};
+use strum::{AsRefStr, Display};
 
 use crate::csaf::enums::product_status::ProductStatus;
 
 /// Enum representing product status groups
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd, Display, AsRefStr)]
 pub enum ProductStatusGroup {
     // first_affected, known_affected, last_affected
+    #[strum(serialize = "affected")]
     Affected,
     // known_not_affected
+    #[strum(serialize = "not affected")]
     NotAffected,
     // first_fixed, fixed
+    #[strum(serialize = "fixed")]
     Fixed,
     // under_investigation
+    #[strum(serialize = "under investigation")]
     UnderInvestigation,
     // unknown
+    #[strum(serialize = "unknown")]
     Unknown,
     // recommended
+    #[strum(serialize = "recommended")]
     Recommended,
-}
-
-impl Display for ProductStatusGroup {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ProductStatusGroup::Affected => write!(f, "affected"),
-            ProductStatusGroup::NotAffected => write!(f, "not affected"),
-            ProductStatusGroup::Fixed => write!(f, "fixed"),
-            ProductStatusGroup::UnderInvestigation => write!(f, "under investigation"),
-            ProductStatusGroup::Unknown => write!(f, "unknown"),
-            ProductStatusGroup::Recommended => write!(f, "recommended"),
-        }
-    }
 }
 
 impl From<&ProductStatus> for ProductStatusGroup {
     fn from(status: &ProductStatus) -> Self {
         match status {
-            ProductStatus::FirstAffected | ProductStatus::KnownAffected | ProductStatus::LastAffected => {
-                ProductStatusGroup::Affected
-            },
-            ProductStatus::KnownNotAffected => ProductStatusGroup::NotAffected,
-            ProductStatus::Fixed | ProductStatus::FirstFixed => ProductStatusGroup::Fixed,
-            ProductStatus::UnderInvestigation => ProductStatusGroup::UnderInvestigation,
-            ProductStatus::Unknown => ProductStatusGroup::Unknown,
-            ProductStatus::Recommended => ProductStatusGroup::Recommended,
+            ProductStatus::FirstAffected | ProductStatus::KnownAffected | ProductStatus::LastAffected => Self::Affected,
+            ProductStatus::KnownNotAffected => Self::NotAffected,
+            ProductStatus::Fixed | ProductStatus::FirstFixed => Self::Fixed,
+            ProductStatus::UnderInvestigation => Self::UnderInvestigation,
+            ProductStatus::Unknown => Self::Unknown,
+            ProductStatus::Recommended => Self::Recommended,
         }
     }
 }

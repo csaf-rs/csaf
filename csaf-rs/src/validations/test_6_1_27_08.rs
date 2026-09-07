@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
 /// 6.1.27.8 Vulnerability ID
@@ -9,14 +9,14 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 ///
 /// In documents with this category each `/vulnerabilities[]` item must have at the `cve` or the `ids`
 /// element.
-pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
     if !PROFILE_TEST_CONFIG.matches_category(&doc_category) {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     // return error if there are vulnerabilities without either cve or ids
     for (v_i, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if vulnerability.get_cve().is_none() && vulnerability.get_ids().is_none() {
@@ -37,13 +37,13 @@ pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<V
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]);
 
-fn test_6_1_27_08_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> ValidationError {
-    ValidationError {
+fn test_6_1_27_08_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document with category '{document_category}' must provide at least either cve or ids in each vulnerability"
         ),
         instance_path: format!("/vulnerabilities/{vuln_path_index}/product_status"),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_8, test_6_1_27_08_vulnerability_id);
@@ -51,22 +51,25 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_27_8, test_6_1_27_08
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_27_8 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_27_8 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_1_27_08() {
         let case_vex_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
 
-        TESTS_2_0
-            .test_6_1_27_8
-            .expect(case_vex_without_cve_or_id.clone(), Ok(()));
-        TESTS_2_1.test_6_1_27_8.expect(
-            case_vex_without_cve_or_id,
-            Ok(()), // TODO: Adapt once check condition is implemented #694
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_27_8.expect(ExpectedResults_2_0 {
+            case_01: case_vex_without_cve_or_id.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_27_8.expect(ExpectedResults_2_1 {
+            case_01: case_vex_without_cve_or_id,
+            case_02: Ok(()), // TODO: Adapt once check condition is implemented #694
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+        });
     }
 }

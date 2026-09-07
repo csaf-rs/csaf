@@ -37,7 +37,7 @@ pub enum CsafHashAlgorithm {
 impl CsafHashAlgorithm {
     /// Checks if the original algorithm string is lowercase
     pub fn is_lowercase(&self) -> bool {
-        if let CsafHashAlgorithm::Other(algo) = self {
+        if let Self::Other(algo) = self {
             // these could be not lowercase, so we need to check
             algo.chars().all(|c| !c.is_alphabetic() || c.is_lowercase())
         } else {
@@ -56,7 +56,7 @@ impl CsafHashAlgorithm {
     /// CSAF 2.0 as 2.1 has not been implemented, we do not need to make that distinction (yet).
     pub fn is_mentioned_in_spec(&self) -> bool {
         match self {
-            CsafHashAlgorithm::Other(_) => !matches!(self.normalize(), CsafHashAlgorithm::Other(_)),
+            Self::Other(_) => !matches!(self.normalize(), Self::Other(_)),
             _ => true,
         }
     }
@@ -93,8 +93,8 @@ impl CsafHashAlgorithm {
     #[allow(dead_code)]
     fn checked_lowercase_algorithm(original: &CsafHashAlgorithm) -> Option<CsafHashAlgorithm> {
         match original {
-            CsafHashAlgorithm::Other(original_str) => {
-                let lowercased = CsafHashAlgorithm::from_str(original_str.to_lowercase().as_str());
+            Self::Other(original_str) => {
+                let lowercased = Self::from_str(original_str.to_lowercase().as_str());
                 (original != &lowercased).then_some(lowercased)
             },
             _ => None,
@@ -114,7 +114,7 @@ impl CsafHashAlgorithm {
     /// This might be needed for the converter.
     fn lowercase_algorithm(original: &CsafHashAlgorithm) -> CsafHashAlgorithm {
         match original {
-            CsafHashAlgorithm::Other(s) => CsafHashAlgorithm::from_str(s.to_lowercase().as_str()),
+            Self::Other(s) => Self::from_str(s.to_lowercase().as_str()),
             _ => original.clone(),
         }
     }
@@ -127,46 +127,46 @@ impl CsafHashAlgorithm {
     /// from using it. Use the `From<&AlgorithmOfTheCryptographicHash*>` impls instead.
     pub(crate) fn from_str(algo: &str) -> Self {
         match algo {
-            "blake2b512" => CsafHashAlgorithm::Blake2b512,
-            "blake2s256" => CsafHashAlgorithm::Blake2s256,
-            "md4" => CsafHashAlgorithm::Md4,
-            "md5" => CsafHashAlgorithm::Md5,
-            "md5-sha1" => CsafHashAlgorithm::Md5Sha1,
-            "mdc2" => CsafHashAlgorithm::Mdc2,
-            "ripemd" => CsafHashAlgorithm::Ripemd,
-            "ripemd160" => CsafHashAlgorithm::Ripemd160,
-            "rmd160" => CsafHashAlgorithm::Rmd160,
-            "sha1" => CsafHashAlgorithm::Sha1,
-            "sha224" => CsafHashAlgorithm::Sha224,
-            "sha256" => CsafHashAlgorithm::Sha256,
-            "sha3-224" => CsafHashAlgorithm::Sha3_224,
-            "sha3-256" => CsafHashAlgorithm::Sha3_256,
-            "sha3-384" => CsafHashAlgorithm::Sha3_384,
-            "sha3-512" => CsafHashAlgorithm::Sha3_512,
-            "sha384" => CsafHashAlgorithm::Sha384,
-            "sha512" => CsafHashAlgorithm::Sha512,
-            "sha512-224" => CsafHashAlgorithm::Sha512_224,
-            "sha512-256" => CsafHashAlgorithm::Sha512_256,
-            "shake128" => CsafHashAlgorithm::Shake128,
-            "shake256" => CsafHashAlgorithm::Shake256,
-            "sm3" => CsafHashAlgorithm::Sm3,
-            "ssl3-md5" => CsafHashAlgorithm::Ssl3Md5,
-            "ssl3-sha1" => CsafHashAlgorithm::Ssl3Sha1,
-            "whirlpool" => CsafHashAlgorithm::Whirlpool,
-            other => CsafHashAlgorithm::Other(other.to_string()),
+            "blake2b512" => Self::Blake2b512,
+            "blake2s256" => Self::Blake2s256,
+            "md4" => Self::Md4,
+            "md5" => Self::Md5,
+            "md5-sha1" => Self::Md5Sha1,
+            "mdc2" => Self::Mdc2,
+            "ripemd" => Self::Ripemd,
+            "ripemd160" => Self::Ripemd160,
+            "rmd160" => Self::Rmd160,
+            "sha1" => Self::Sha1,
+            "sha224" => Self::Sha224,
+            "sha256" => Self::Sha256,
+            "sha3-224" => Self::Sha3_224,
+            "sha3-256" => Self::Sha3_256,
+            "sha3-384" => Self::Sha3_384,
+            "sha3-512" => Self::Sha3_512,
+            "sha384" => Self::Sha384,
+            "sha512" => Self::Sha512,
+            "sha512-224" => Self::Sha512_224,
+            "sha512-256" => Self::Sha512_256,
+            "shake128" => Self::Shake128,
+            "shake256" => Self::Shake256,
+            "sm3" => Self::Sm3,
+            "ssl3-md5" => Self::Ssl3Md5,
+            "ssl3-sha1" => Self::Ssl3Sha1,
+            "whirlpool" => Self::Whirlpool,
+            other => Self::Other(other.to_string()),
         }
     }
 }
 
 impl From<&AlgorithmOfTheCryptographicHash20> for CsafHashAlgorithm {
     fn from(algo: &AlgorithmOfTheCryptographicHash20) -> Self {
-        CsafHashAlgorithm::from_str(algo.as_str())
+        Self::from_str(algo.as_str())
     }
 }
 
 impl From<&AlgorithmOfTheCryptographicHash21> for CsafHashAlgorithm {
     fn from(algo: &AlgorithmOfTheCryptographicHash21) -> Self {
-        CsafHashAlgorithm::from_str(algo.as_str())
+        Self::from_str(algo.as_str())
     }
 }
 
@@ -176,33 +176,33 @@ impl Display for CsafHashAlgorithm {
             f,
             "{}",
             match self {
-                CsafHashAlgorithm::Blake2b512 => "blake2b512",
-                CsafHashAlgorithm::Blake2s256 => "blake2s256",
-                CsafHashAlgorithm::Md4 => "md4",
-                CsafHashAlgorithm::Md5 => "md5",
-                CsafHashAlgorithm::Md5Sha1 => "md5-sha1",
-                CsafHashAlgorithm::Mdc2 => "mdc2",
-                CsafHashAlgorithm::Ripemd => "ripemd",
-                CsafHashAlgorithm::Ripemd160 => "ripemd160",
-                CsafHashAlgorithm::Rmd160 => "rmd160",
-                CsafHashAlgorithm::Sha1 => "sha1",
-                CsafHashAlgorithm::Sha224 => "sha224",
-                CsafHashAlgorithm::Sha256 => "sha256",
-                CsafHashAlgorithm::Sha3_224 => "sha3-224",
-                CsafHashAlgorithm::Sha3_256 => "sha3-256",
-                CsafHashAlgorithm::Sha3_384 => "sha3-384",
-                CsafHashAlgorithm::Sha3_512 => "sha3-512",
-                CsafHashAlgorithm::Sha384 => "sha384",
-                CsafHashAlgorithm::Sha512 => "sha512",
-                CsafHashAlgorithm::Sha512_224 => "sha512-224",
-                CsafHashAlgorithm::Sha512_256 => "sha512-256",
-                CsafHashAlgorithm::Shake128 => "shake128",
-                CsafHashAlgorithm::Shake256 => "shake256",
-                CsafHashAlgorithm::Sm3 => "sm3",
-                CsafHashAlgorithm::Ssl3Md5 => "ssl3-md5",
-                CsafHashAlgorithm::Ssl3Sha1 => "ssl3-sha1",
-                CsafHashAlgorithm::Whirlpool => "whirlpool",
-                CsafHashAlgorithm::Other(other) => other.as_str(),
+                Self::Blake2b512 => "blake2b512",
+                Self::Blake2s256 => "blake2s256",
+                Self::Md4 => "md4",
+                Self::Md5 => "md5",
+                Self::Md5Sha1 => "md5-sha1",
+                Self::Mdc2 => "mdc2",
+                Self::Ripemd => "ripemd",
+                Self::Ripemd160 => "ripemd160",
+                Self::Rmd160 => "rmd160",
+                Self::Sha1 => "sha1",
+                Self::Sha224 => "sha224",
+                Self::Sha256 => "sha256",
+                Self::Sha3_224 => "sha3-224",
+                Self::Sha3_256 => "sha3-256",
+                Self::Sha3_384 => "sha3-384",
+                Self::Sha3_512 => "sha3-512",
+                Self::Sha384 => "sha384",
+                Self::Sha512 => "sha512",
+                Self::Sha512_224 => "sha512-224",
+                Self::Sha512_256 => "sha512-256",
+                Self::Shake128 => "shake128",
+                Self::Shake256 => "shake256",
+                Self::Sm3 => "sm3",
+                Self::Ssl3Md5 => "ssl3-md5",
+                Self::Ssl3Sha1 => "ssl3-sha1",
+                Self::Whirlpool => "whirlpool",
+                Self::Other(other) => other.as_str(),
             }
         )
     }

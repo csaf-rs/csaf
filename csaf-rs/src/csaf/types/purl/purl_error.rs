@@ -1,4 +1,4 @@
-use crate::validation::{IntoValidationError, ValidationError};
+use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -14,17 +14,22 @@ pub enum PurlParseErrorKind {
     InvalidKey(String),
     MissingName,
     TypeProhibitsNamespace(String),
+    TypeRequiresNamespace(String),
+    MissingRequiredQualifier(String, String),
+    InvalidName(String, String),
+    InvalidVersion(String, String),
     InvalidNamespaceComponent(String),
     MissingScheme,
     MissingType,
     InvalidSubpathSegment(String),
     DecodingError,
+    Other(String),
 }
 
 impl PurlParseError {
     /// Private constructor
     fn new(purl_str: &str, kind: PurlParseErrorKind) -> Self {
-        PurlParseError {
+        Self {
             original_purl: purl_str.to_owned(),
             kind,
         }
@@ -46,14 +51,19 @@ impl PurlParseError {
     pub fn kind(&self) -> &PurlParseErrorKind {
         &self.kind
     }
+
+    /// Returns the raw input PURL string that failed parsing.
+    pub fn original_purl(&self) -> &str {
+        self.original_purl.as_str()
+    }
 }
 
-impl IntoValidationError for PurlParseError {
-    fn into_validation_error(self, instance_path: &str) -> ValidationError {
-        ValidationError {
+impl IntoTestFindingError for PurlParseError {
+    fn into_test_finding_error(self, instance_path: &str) -> TestFinding {
+        TestFinding::Error(TestFindingData {
             message: format!("Invalid PURL format: {}, Error: {}", self.original_purl, self.kind),
             instance_path: instance_path.to_string(),
-        }
+        })
     }
 }
 
@@ -66,11 +76,18 @@ impl From<packageurl::Error> for PurlParseErrorKind {
             packageurl::Error::InvalidKey(key) => Self::InvalidKey(key),
             packageurl::Error::MissingName => Self::MissingName,
             packageurl::Error::TypeProhibitsNamespace(package_type) => Self::TypeProhibitsNamespace(package_type),
+            packageurl::Error::TypeRequiresNamespace(package_type) => Self::TypeRequiresNamespace(package_type),
+            packageurl::Error::MissingRequiredQualifier(package_type, qualifier) => {
+                Self::MissingRequiredQualifier(package_type, qualifier)
+            },
+            packageurl::Error::InvalidName(package_type, name) => Self::InvalidName(package_type, name),
+            packageurl::Error::InvalidVersion(package_type, version) => Self::InvalidVersion(package_type, version),
             packageurl::Error::InvalidNamespaceComponent(component) => Self::InvalidNamespaceComponent(component),
             packageurl::Error::MissingScheme => Self::MissingScheme,
             packageurl::Error::MissingType => Self::MissingType,
             packageurl::Error::InvalidSubpathSegment(segment) => Self::InvalidSubpathSegment(segment),
             packageurl::Error::DecodingError(_) => Self::DecodingError,
+            error => Self::Other(error.to_string()),
         }
     }
 }
@@ -85,6 +102,18 @@ impl Display for PurlParseErrorKind {
             Self::TypeProhibitsNamespace(package_type) => {
                 write!(f, "no namespace allowed for type {package_type:?}")
             },
+            Self::TypeRequiresNamespace(package_type) => {
+                write!(f, "namespace required for type {package_type:?}")
+            },
+            Self::MissingRequiredQualifier(package_type, qualifier) => {
+                write!(f, "missing required qualifier {qualifier:?} for type {package_type:?}")
+            },
+            Self::InvalidName(package_type, name) => {
+                write!(f, "invalid name for type {package_type:?}: {name:?}")
+            },
+            Self::InvalidVersion(package_type, version) => {
+                write!(f, "invalid version for type {package_type:?}: {version:?}")
+            },
             Self::InvalidNamespaceComponent(component) => {
                 write!(f, "invalid namespace component: {component:?}")
             },
@@ -94,6 +123,7 @@ impl Display for PurlParseErrorKind {
                 write!(f, "invalid subpath segment: {segment:?}")
             },
             Self::DecodingError => write!(f, "utf-8 decoding failed"),
+            Self::Other(message) => write!(f, "{message}"),
         }
     }
 }

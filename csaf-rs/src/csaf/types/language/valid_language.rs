@@ -111,12 +111,12 @@ pub enum PrivateUseReason {
 impl Display for PrivateUseReason {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            PrivateUseReason::PrivateUseSubtag(subtag) => write!(f, "Private-use subtag '{subtag}'"),
-            PrivateUseReason::PrivateUsePrimaryLangSubtag(primary_lang) => {
+            Self::PrivateUseSubtag(subtag) => write!(f, "Private-use subtag '{subtag}'"),
+            Self::PrivateUsePrimaryLangSubtag(primary_lang) => {
                 write!(f, "Private-use primary language subtag '{primary_lang}'")
             },
-            PrivateUseReason::PrivateUseScriptSubtag(script) => write!(f, "Private-use script subtag '{script}'"),
-            PrivateUseReason::PrivateUseRegionSubtag(region) => write!(f, "Private-use region subtag '{region}'"),
+            Self::PrivateUseScriptSubtag(script) => write!(f, "Private-use script subtag '{script}'"),
+            Self::PrivateUseRegionSubtag(region) => write!(f, "Private-use region subtag '{region}'"),
         }
     }
 }

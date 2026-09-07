@@ -1,8 +1,8 @@
 use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<ValidationError>> {
+fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<TestFinding>> {
     let mut definitions_set = HashSet::<String>::new();
     if let Some(tree) = doc.get_product_tree().as_ref() {
         tree.visit_all_products(&mut |fpn, _path| {
@@ -11,7 +11,7 @@ fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<Vali
     }
 
     let references = doc.get_all_product_references();
-    let mut errors: Option<Vec<ValidationError>> = Option::None;
+    let mut errors: Option<Vec<TestFinding>> = Option::None;
     for (ref_id, ref_path) in &references {
         if !definitions_set.contains(ref_id) {
             errors.get_or_insert_default().push(generate_err_msg(ref_id, ref_path));
@@ -20,11 +20,11 @@ fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<Vali
     errors.map_or(Ok(()), Err)
 }
 
-fn generate_err_msg(ref_id: &str, ref_path: &str) -> ValidationError {
-    ValidationError {
+fn generate_err_msg(ref_id: &str, ref_path: &str) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Missing definition of product_id: {ref_id}"),
         instance_path: ref_path.to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_1, validate_missing_product_id);
@@ -32,21 +32,23 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_1, validate_missing_
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_1 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_1 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_6_1_01() {
-        TESTS_2_0.test_6_1_1.expect(
-            Err(vec![
+        TESTS_2_0.test_6_1_1.expect(ExpectedResults_2_0 {
+            case_01: Err(vec![
                 generate_err_msg("CSAFPID-9080700", "/product_tree/product_groups/0/product_ids/0"),
                 generate_err_msg("CSAFPID-9080701", "/product_tree/product_groups/0/product_ids/1"),
             ]),
-            Err(vec![
+            case_02: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/vulnerabilities/0/flags/0/product_ids/1"),
                 generate_err_msg("CSAFPID-9080702", "/vulnerabilities/1/flags/0/product_ids/0"),
             ]),
-            Err(vec![
+            case_s01: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/product_tree/relationships/0/product_reference"),
                 generate_err_msg(
                     "CSAFPID-9080702",
@@ -70,16 +72,16 @@ mod tests {
                 generate_err_msg("CSAFPID-9080705", "/vulnerabilities/0/scores/0/products/0"),
                 generate_err_msg("CSAFPID-9080706", "/vulnerabilities/0/threats/0/product_ids/0"),
             ]),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_1.expect(
-            Err(vec![
+        TESTS_2_1.test_6_1_1.expect(ExpectedResults_2_1 {
+            case_01: Err(vec![
                 generate_err_msg("CSAFPID-9080700", "/product_tree/product_groups/0/product_ids/0"),
                 generate_err_msg("CSAFPID-9080701", "/product_tree/product_groups/0/product_ids/1"),
             ]),
-            Err(vec![
+            case_02: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/document/notes/0/product_ids/1"),
                 generate_err_msg("CSAFPID-9080702", "/document/notes/0/product_ids/2"),
                 generate_err_msg("CSAFPID-9080703", "/document/notes/0/product_ids/3"),
@@ -135,14 +137,14 @@ mod tests {
                     "/product_tree/product_paths/2/subpaths/0/next_product_reference",
                 ),
             ]),
-            Err(vec![
+            case_03: Err(vec![
                 generate_err_msg("CSAFPID-9080710", "/vulnerabilities/0/ids/0/product_ids/0"),
                 generate_err_msg("CSAFPID-9080711", "/vulnerabilities/0/ids/0/product_ids/1"),
                 generate_err_msg("CSAFPID-9080712", "/vulnerabilities/0/ids/1/product_ids/0"),
                 generate_err_msg("CSAFPID-9080714", "/vulnerabilities/0/ids/1/product_ids/2"),
                 generate_err_msg("CSAFPID-9080715", "/vulnerabilities/0/ids/2/product_ids/0"),
             ]),
-            Err(vec![
+            case_s01: Err(vec![
                 generate_err_msg("CSAFPID-9080701", "/document/notes/0/product_ids/0"),
                 generate_err_msg(
                     "CSAFPID-9080703",
@@ -178,9 +180,9 @@ mod tests {
                     "/vulnerabilities/0/first_known_exploitation_dates/0/product_ids/0",
                 ),
             ]),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+        });
     }
 }

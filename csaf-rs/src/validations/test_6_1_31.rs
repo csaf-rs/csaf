@@ -1,12 +1,12 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
 fn create_forbidden_strings_in_version_error(
     product_name: &str,
     forbidden_substrings: Vec<&str>,
     product_path: &str,
-) -> ValidationError {
+) -> TestFinding {
     let forbidden_substrings_str: String = {
         if forbidden_substrings.len() > 1 {
             format!("substrings '{}'", forbidden_substrings.join("', '"))
@@ -14,10 +14,10 @@ fn create_forbidden_strings_in_version_error(
             format!("substring '{}'", forbidden_substrings[0])
         }
     };
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!("Product version '{product_name}' contains forbidden {forbidden_substrings_str}"),
         instance_path: format!("{product_path}/name"),
-    }
+    })
 }
 const FORBIDDEN_LESS_EQUAL: &str = "<=";
 const FORBIDDEN_GREATER_EQUAL: &str = ">=";
@@ -79,14 +79,12 @@ fn check_branch_name_for_forbidden_substrings(branch_name: &str) -> Option<Vec<&
 /// tokenized by whitespace in their branch `name`.
 /// `<=` and `>=` are prioritized before `<` and `>` respectively.
 /// The error contains all unique offending operators and keywords.
-pub fn test_6_1_31_version_range_in_product_version_branch_name(
-    doc: &impl CsafTrait,
-) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_31_version_range_in_product_version_branch_name(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(());
     };
 
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
 
     product_tree.visit_all_branches(&mut |branch, path| {
         if branch.get_category() == CategoryOfTheBranch::ProductVersion {
@@ -114,7 +112,9 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_31 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_31 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -192,45 +192,45 @@ mod tests {
         // Case S11: Keyword "all" as part of word "overall" (backport for CSAF 2.0, CSAF 2.1 has this as Case 13)
         // Case S12: Just a valid branch name "2.0"
 
-        TESTS_2_0.test_6_1_31.expect(
-            case_01_prior.clone(),
-            case_02_less_than.clone(),
-            case_03_less_equal.clone(),
-            case_04_less_equal_space.clone(),
-            case_05_earlier.clone(),
-            case_06_all.clone(),
-            case_07_before.clone(),
-            case_08_later.clone(),
-            case_09_versions.clone(),
-            case_s01_all_uppercase.clone(),
-            case_s02_greater_than.clone(),
-            case_s03_greater_equal.clone(),
-            case_s04_multiple.clone(),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_31.expect(ExpectedResults_2_0 {
+            case_01: case_01_prior.clone(),
+            case_02: case_02_less_than.clone(),
+            case_03: case_03_less_equal.clone(),
+            case_04: case_04_less_equal_space.clone(),
+            case_05: case_05_earlier.clone(),
+            case_06: case_06_all.clone(),
+            case_07: case_07_before.clone(),
+            case_08: case_08_later.clone(),
+            case_09: case_09_versions.clone(),
+            case_s01: case_s01_all_uppercase.clone(),
+            case_s02: case_s02_greater_than.clone(),
+            case_s03: case_s03_greater_equal.clone(),
+            case_s04: case_s04_multiple.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+        });
 
-        TESTS_2_1.test_6_1_31.expect(
-            case_01_prior,
-            case_02_less_than,
-            case_03_less_equal,
-            case_04_less_equal_space,
-            case_05_earlier,
-            case_06_all,
-            case_07_before,
-            case_08_later,
-            case_09_versions,
-            case_s01_all_uppercase,
-            case_s02_greater_than,
-            case_s03_greater_equal,
-            case_s04_multiple,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_1.test_6_1_31.expect(ExpectedResults_2_1 {
+            case_01: case_01_prior,
+            case_02: case_02_less_than,
+            case_03: case_03_less_equal,
+            case_04: case_04_less_equal_space,
+            case_05: case_05_earlier,
+            case_06: case_06_all,
+            case_07: case_07_before,
+            case_08: case_08_later,
+            case_09: case_09_versions,
+            case_s01: case_s01_all_uppercase,
+            case_s02: case_s02_greater_than,
+            case_s03: case_s03_greater_equal,
+            case_s04: case_s04_multiple,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_s12: Ok(()),
+        });
     }
 
     // Additional tests for the helper function `check_branch_name_for_forbidden_substrings`.

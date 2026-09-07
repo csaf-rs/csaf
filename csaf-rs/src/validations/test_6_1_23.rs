@@ -1,18 +1,18 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashMap;
 
-fn generate_duplicate_cve_error(cve: &str, path: usize) -> ValidationError {
-    ValidationError {
+fn generate_duplicate_cve_error(cve: &str, path: usize) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!("Duplicate usage of same CVE identifier '{cve}'"),
         instance_path: format!("/vulnerabilities/{path}/cve"),
-    }
+    })
 }
 
 /// Test 6.1.23: Multiple Use of Same CVE
 ///
 /// Vulnerability items must not contain the same string in the `/vulnerabilities[]/cve` field.
-pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
 
     // Check if there are any vulnerabilities, if there aren't, this test can be skipped
@@ -38,7 +38,7 @@ pub fn test_6_1_23_multiple_use_of_same_cve(doc: &impl CsafTrait) -> Result<(), 
     }
 
     // Generate errors for CVE identifiers with multiple occurrence paths indexes
-    let mut errors: Option<Vec<ValidationError>> = None;
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (cve, paths) in &cve_paths {
         if paths.len() > 1 {
             errors
@@ -55,7 +55,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_23, test_6_1_23_mult
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_23 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_23 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -86,15 +88,19 @@ mod tests {
         ]);
         // Case S11: Two vulnerabilities, different CVE identifiers (valid)
 
-        TESTS_2_0.test_6_1_23.expect(
-            case_01.clone(),
-            case_s01.clone(),
-            case_s02.clone(),
-            case_s03.clone(),
-            Ok(()),
-        );
-        TESTS_2_1
-            .test_6_1_23
-            .expect(case_01, case_s01, case_s02, case_s03, Ok(()));
+        TESTS_2_0.test_6_1_23.expect(ExpectedResults_2_0 {
+            case_01: case_01.clone(),
+            case_s01: case_s01.clone(),
+            case_s02: case_s02.clone(),
+            case_s03: case_s03.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_1_23.expect(ExpectedResults_2_1 {
+            case_01,
+            case_s01,
+            case_s02,
+            case_s03,
+            case_s11: Ok(()),
+        });
     }
 }

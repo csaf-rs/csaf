@@ -1,8 +1,8 @@
 use crate::csaf_traits::{CsafTrait, ProductGroupsByIdMap, ProductStatusGroup, VulnerabilityTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
-pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
-    let mut errors: Option<Vec<ValidationError>> = None;
+pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let mut errors: Option<Vec<TestFinding>> = None;
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(product_status) = vulnerability.get_product_status() {
             let product_to_groups = ProductGroupsByIdMap::from(product_status);
@@ -31,22 +31,24 @@ pub fn test_6_1_06_contradicting_product_status(doc: &impl CsafTrait) -> Result<
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_6, test_6_1_06_contradicting_product_status);
 
-fn generate_err_msg(product_id: &str, groups: &[ProductStatusGroup], vulnerability_index: usize) -> ValidationError {
+fn generate_err_msg(product_id: &str, groups: &[ProductStatusGroup], vulnerability_index: usize) -> TestFinding {
     let group_names: Vec<String> = groups.iter().map(|g| format!("'{g}'")).collect();
-    ValidationError {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Product {} is member of contradicting product status groups: {}",
             product_id,
             group_names.join(", ")
         ),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/product_status"),
-    }
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_6 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_6 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -98,53 +100,53 @@ mod tests {
         )]);
 
         // CSAF 2.0 has 10 test cases (01-05, 11-15)
-        TESTS_2_0.test_6_1_6.expect(
-            case_affected_not_affected.clone(),
-            case_affected_not_affected.clone(),
-            case_affected_not_affected.clone(),
-            Err(case_affected_under_investigation_vec
+        TESTS_2_0.test_6_1_6.expect(ExpectedResults_2_0 {
+            case_01: case_affected_not_affected.clone(),
+            case_02: case_affected_not_affected.clone(),
+            case_03: case_affected_not_affected.clone(),
+            case_04: Err(case_affected_under_investigation_vec
                 .clone()
                 .into_iter()
                 .chain(case_not_affected_fixed_vec.clone())
                 .collect()),
-            Err(case_affected_under_investigation_vec
+            case_05: Err(case_affected_under_investigation_vec
                 .clone()
                 .into_iter()
                 .chain(case_not_affected_under_investigation_vec.clone())
                 .chain(case_affected_fixed_vec.clone())
                 .collect()),
-            Ok(()), // know_affected(0) & recommended(0)
-            Ok(()), // first_affected(0) & known_affected(0)
-            Ok(()), // known_affected(0) & last_affected(0)
-            Ok(()), // first_fixed(1) & fixed(1) + recommended(0) & under_investigation(0)
-            Ok(()), // first_affected(0) & known_affected(0) & recommended(0) + first_fixed(2) & fixed(2) + known_not_affected(1) & recommended(1)
-        );
+            case_11: Ok(()), // know_affected(0) & recommended(0)
+            case_12: Ok(()), // first_affected(0) & known_affected(0)
+            case_13: Ok(()), // known_affected(0) & last_affected(0)
+            case_14: Ok(()), // first_fixed(1) & fixed(1) + recommended(0) & under_investigation(0)
+            case_15: Ok(()), // first_affected(0) & known_affected(0) & recommended(0) + first_fixed(2) & fixed(2) + known_not_affected(1) & recommended(1)
+        });
 
         // CSAF 2.1 has 12 test cases (01-06, 11-16)
-        TESTS_2_1.test_6_1_6.expect(
-            case_affected_not_affected.clone(),
-            case_affected_not_affected.clone(),
-            case_affected_not_affected,
-            Err(case_affected_under_investigation_vec
+        TESTS_2_1.test_6_1_6.expect(ExpectedResults_2_1 {
+            case_01: case_affected_not_affected.clone(),
+            case_02: case_affected_not_affected.clone(),
+            case_03: case_affected_not_affected,
+            case_04: Err(case_affected_under_investigation_vec
                 .clone()
                 .into_iter()
                 .chain(case_not_affected_fixed_vec)
                 .collect()),
-            Err(case_affected_under_investigation_vec
+            case_05: Err(case_affected_under_investigation_vec
                 .into_iter()
                 .chain(case_not_affected_under_investigation_vec)
                 .chain(case_affected_fixed_vec)
                 .collect()),
-            case_affected_unknown,
-            case_not_affected_unknown,
-            case_fixed_unknown,
-            case_under_investigation_unknown,
-            Ok(()), // know_affected(0) & recommended(0)
-            Ok(()), // first_affected(0) & known_affected(0)
-            Ok(()), // known_affected(0) & last_affected(0)
-            Ok(()), // first_fixed(1) & fixed(1) + recommended(0) & under_investigation(0)
-            Ok(()), // first_affected(0) & known_affected(0) & recommended(0) + first_fixed(2) & fixed(2) + known_not_affected(1) & recommended(1)
-            Ok(()),
-        );
+            case_06: case_affected_unknown,
+            case_s01: case_not_affected_unknown,
+            case_s02: case_fixed_unknown,
+            case_s03: case_under_investigation_unknown,
+            case_11: Ok(()), // know_affected(0) & recommended(0)
+            case_12: Ok(()), // first_affected(0) & known_affected(0)
+            case_13: Ok(()), // known_affected(0) & last_affected(0)
+            case_14: Ok(()), // first_fixed(1) & fixed(1) + recommended(0) & under_investigation(0)
+            case_15: Ok(()), // first_affected(0) & known_affected(0) & recommended(0) + first_fixed(2) & fixed(2) + known_not_affected(1) & recommended(1)
+            case_16: Ok(()),
+        });
     }
 }

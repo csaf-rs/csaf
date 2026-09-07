@@ -1,4 +1,4 @@
-use crate::csaf::traits::util::{impl_str_field_getter, impl_str_iter_field_getter};
+use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_str_field_getter, impl_str_iter_field_getter};
 use crate::schema::csaf2_0::schema::ProductGroup as ProductGroup20;
 use crate::schema::csaf2_1::schema::ProductGroup as ProductGroup21;
 
@@ -12,14 +12,19 @@ pub trait ProductGroupTrait {
 
     /// Retrieves an iterator over product IDs contained within the product group.
     fn get_product_ids(&self) -> impl Iterator<Item = &str> + '_;
+
+    /// Returns the optional description of the product group.
+    fn get_summary(&self) -> Option<&str>;
 }
 
 impl ProductGroupTrait for ProductGroup20 {
     impl_str_field_getter!(get_group_id, group_id);
     impl_str_iter_field_getter!(get_product_ids, product_ids);
+    impl_optional_str_field_getter!(get_summary, summary);
 }
 
 impl ProductGroupTrait for ProductGroup21 {
     impl_str_field_getter!(get_group_id, group_id);
     impl_str_iter_field_getter!(get_product_ids, product_ids);
+    impl_optional_str_field_getter!(get_summary, summary);
 }

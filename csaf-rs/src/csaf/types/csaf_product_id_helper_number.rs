@@ -58,19 +58,19 @@ impl Display for CsafStockKeepingUnit {
 
 impl From<&StockKeepingUnit20> for CsafStockKeepingUnit {
     fn from(value: &StockKeepingUnit20) -> Self {
-        CsafStockKeepingUnit(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
 impl From<&StockKeepingUnit21> for CsafStockKeepingUnit {
     fn from(value: &StockKeepingUnit21) -> Self {
-        CsafStockKeepingUnit(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
 impl From<&str> for CsafStockKeepingUnit {
     fn from(value: &str) -> Self {
-        CsafStockKeepingUnit(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
@@ -91,19 +91,19 @@ impl Display for CsafModelNumber {
 
 impl From<&ModelNumber20> for CsafModelNumber {
     fn from(value: &ModelNumber20) -> Self {
-        CsafModelNumber(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
 impl From<&ModelNumber21> for CsafModelNumber {
     fn from(value: &ModelNumber21) -> Self {
-        CsafModelNumber(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
 impl From<&str> for CsafModelNumber {
     fn from(value: &str) -> Self {
-        CsafModelNumber(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
@@ -124,40 +124,42 @@ impl CsafSerialNumber {
 
 impl From<&SerialNumber20> for CsafSerialNumber {
     fn from(value: &SerialNumber20) -> Self {
-        CsafSerialNumber(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
 impl From<&SerialNumber21> for CsafSerialNumber {
     fn from(value: &SerialNumber21) -> Self {
-        CsafSerialNumber(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
 impl From<&str> for CsafSerialNumber {
     fn from(value: &str) -> Self {
-        CsafSerialNumber(ProductIdentificationHelperNumber(value.to_string()))
+        Self(ProductIdentificationHelperNumber(value.to_string()))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::ProductIdentificationHelperNumber as PIHNumber;
+    use rstest::rstest;
 
-    #[test]
-    fn test_count_unescaped_stars() {
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abcdef"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("*"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc*def"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc*def*ghi"), 2);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\*def"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\*def"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\\\*def"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\\\\\*def"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\\\*\\\\\\*def"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\*\\\\*def"), 2);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("\\*\\*\\*"), 0);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\*def*ghi"), 1);
-        assert_eq!(PIHNumber::count_unescaped_stars_impl("abc\\\\*def\\*ghi"), 1);
+    #[rstest]
+    #[case("abcdef", 0)]
+    #[case("*", 1)]
+    #[case("abc*def", 1)]
+    #[case("abc*def*ghi", 2)]
+    #[case("abc\\*def", 0)]
+    #[case("abc\\\\*def", 1)]
+    #[case("abc\\\\\\*def", 0)]
+    #[case("abc\\\\\\\\*def", 1)]
+    #[case("abc\\\\\\*\\\\\\*def", 0)]
+    #[case("abc\\\\*\\\\*def", 2)]
+    #[case("\\*\\*\\*", 0)]
+    #[case("abc\\*def*ghi", 1)]
+    #[case("abc\\\\*def\\*ghi", 1)]
+    fn test_count_unescaped_stars(#[case] input: &str, #[case] expected: u32) {
+        assert_eq!(PIHNumber::count_unescaped_stars_impl(input), expected);
     }
 }

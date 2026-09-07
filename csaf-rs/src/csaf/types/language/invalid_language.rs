@@ -1,4 +1,4 @@
-use crate::validation::{IntoValidationError, ValidationError};
+use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 
 /// Represents an error that occurred while parsing or validating a language tag in a CSAF document.
 #[derive(Debug, PartialEq, Clone)]
@@ -13,25 +13,25 @@ pub enum CsafLanguageError {
     InvalidRegionSubtag(String, String),
 }
 
-impl IntoValidationError for CsafLanguageError {
-    fn into_validation_error(self, instance_path: &str) -> ValidationError {
+impl IntoTestFindingError for CsafLanguageError {
+    fn into_test_finding_error(self, instance_path: &str) -> TestFinding {
         let message = match self {
-            CsafLanguageError::ParserError(invalid_lang_tag, parser_error) => {
+            Self::ParserError(invalid_lang_tag, parser_error) => {
                 format!("Invalid language code '{invalid_lang_tag}': parser failed with error: {parser_error}")
             },
-            CsafLanguageError::InvalidPrimaryLanguageSubtag(invalid_lang_tag, primary_lang_subtag) => format!(
+            Self::InvalidPrimaryLanguageSubtag(invalid_lang_tag, primary_lang_subtag) => format!(
                 "Invalid language code '{invalid_lang_tag}': primary language subtag '{primary_lang_subtag}' is not a valid primary language subtag"
             ),
-            CsafLanguageError::InvalidScriptSubtag(invalid_lang_tag, script_subtag) => format!(
+            Self::InvalidScriptSubtag(invalid_lang_tag, script_subtag) => format!(
                 "Invalid language code '{invalid_lang_tag}': script subtag '{script_subtag}' is not a valid script subtag"
             ),
-            CsafLanguageError::InvalidRegionSubtag(invalid_lang_tag, region_sub_tag) => format!(
+            Self::InvalidRegionSubtag(invalid_lang_tag, region_sub_tag) => format!(
                 "Invalid language code '{invalid_lang_tag}': region subtag '{region_sub_tag}' is not a valid region subtag"
             ),
         };
-        ValidationError {
+        TestFinding::Error(TestFindingData {
             message,
             instance_path: instance_path.to_string(),
-        }
+        })
     }
 }

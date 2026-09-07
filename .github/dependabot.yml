@@ -4,3 +4,15 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      shared-workflows:
+        patterns:
+          - "csaf-rs/shared-workflows*"

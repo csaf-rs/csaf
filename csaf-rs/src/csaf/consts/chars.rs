@@ -70,14 +70,14 @@ const INVISIBLE_CHARACTERS: &[char] = &[
     '\u{FEFF}', // Zero-Width No-Break Space (BOM)
 ];
 
-pub fn is_invisible_char(c: &char) -> bool {
-    INVISIBLE_CHARACTERS.contains(c)
+pub fn is_invisible_char(c: char) -> bool {
+    INVISIBLE_CHARACTERS.contains(&c)
 }
 
-pub fn is_underscore_char(c: &char) -> bool {
-    UNDERSCORE_CHARACTERS.contains(c)
+pub fn is_underscore_char(c: char) -> bool {
+    UNDERSCORE_CHARACTERS.contains(&c)
 }
 
-pub fn is_hyphen_dash_char(c: &char) -> bool {
-    HYPHEN_DASH_CHARACTERS.contains(c)
+pub fn is_hyphen_dash_char(c: char) -> bool {
+    HYPHEN_DASH_CHARACTERS.contains(&c)
 }

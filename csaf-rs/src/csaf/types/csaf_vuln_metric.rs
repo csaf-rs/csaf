@@ -15,12 +15,12 @@ impl CsafVulnerabilityMetric {
     /// Returns the property name for the metric, which is used in the JSON representation.
     pub fn get_metric_prop_name(&self) -> &'static str {
         match self {
-            CsafVulnerabilityMetric::SsvcV2 => "ssvc_v2",
-            CsafVulnerabilityMetric::CvssV2(_) => "cvss_v2",
-            CsafVulnerabilityMetric::CvssV3(_) => "cvss_v3",
-            CsafVulnerabilityMetric::CvssV4(_) => "cvss_v4",
-            CsafVulnerabilityMetric::Epss => "epss",
-            CsafVulnerabilityMetric::QualitativeSeverityRating => "qualitative_severity_rating",
+            Self::SsvcV2 => "ssvc_v2",
+            Self::CvssV2(_) => "cvss_v2",
+            Self::CvssV3(_) => "cvss_v3",
+            Self::CvssV4(_) => "cvss_v4",
+            Self::Epss => "epss",
+            Self::QualitativeSeverityRating => "qualitative_severity_rating",
         }
     }
 }
@@ -29,12 +29,12 @@ impl CsafVulnerabilityMetric {
 impl Display for CsafVulnerabilityMetric {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            CsafVulnerabilityMetric::SsvcV2 => write!(f, "SSVC-v2"),
-            CsafVulnerabilityMetric::CvssV2(version) => write!(f, "CVSS-v{}", *version),
-            CsafVulnerabilityMetric::CvssV3(version) => write!(f, "CVSS-v{}", *version),
-            CsafVulnerabilityMetric::CvssV4(version) => write!(f, "CVSS-v{}", *version),
-            CsafVulnerabilityMetric::Epss => write!(f, "EPSS"),
-            CsafVulnerabilityMetric::QualitativeSeverityRating => write!(f, "Qualitative Severity Rating"),
+            Self::SsvcV2 => write!(f, "SSVC-v2"),
+            Self::CvssV2(version) => write!(f, "CVSS-v{}", *version),
+            Self::CvssV3(version) => write!(f, "CVSS-v{}", *version),
+            Self::CvssV4(version) => write!(f, "CVSS-v{}", *version),
+            Self::Epss => write!(f, "EPSS"),
+            Self::QualitativeSeverityRating => write!(f, "Qualitative Severity Rating"),
         }
     }
 }

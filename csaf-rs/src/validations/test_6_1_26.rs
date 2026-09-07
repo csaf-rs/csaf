@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait};
-use crate::validation::ValidationError;
+use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.1.26 Prohibited Document Category Name
-pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<(), Vec<ValidationError>> {
+pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_version = doc.get_document().get_csaf_version();
     let doc_category = doc.get_document().get_category();
 
@@ -14,7 +14,7 @@ pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<
 fn validate_document_category(
     doc_category: &CsafDocumentCategory,
     doc_version: CsafVersion,
-) -> Result<(), Vec<ValidationError>> {
+) -> Result<(), Vec<TestFinding>> {
     // skip test for known profiles and categories
     if doc_category.is_known_profile(doc_version) {
         return Ok(());
@@ -45,26 +45,26 @@ fn validate_document_category(
 fn test_6_1_26_err_generator_starts_with_csaf(
     doc_category: &CsafDocumentCategory,
     version: CsafVersion,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document category '{doc_category}' is prohibited. Only the following values starting with 'csaf_' (or similar) are allowed: {}",
             CsafDocumentCategory::known_profile_concat(version)
         ),
         instance_path: "/document/category".to_string(),
-    }
+    })
 }
 
 fn test_6_1_26_err_generator_too_similar(
     doc_category: &CsafDocumentCategory,
     known_category: &CsafDocumentCategory,
-) -> ValidationError {
-    ValidationError {
+) -> TestFinding {
+    TestFinding::Error(TestFindingData {
         message: format!(
             "Document category '{doc_category}' is prohibited. It is too similar to the known category: {known_category}",
         ),
         instance_path: "/document/category".to_string(),
-    }
+    })
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_26, test_6_1_26_prohibited_document_category);
@@ -72,7 +72,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_26, test_6_1_26_proh
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf2_0::testcases::ExpectedResults_6_1_26 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_26 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
@@ -142,31 +144,31 @@ mod tests {
             CsafVersion::X20,
         )]);
 
-        TESTS_2_0.test_6_1_26.expect(
-            case_01_shared.clone(),
-            case_02_csaf20,
-            case_03_csaf20,
-            case_04_csaf20,
-            deprecated_sec_advisory_csaf20,
-            withdrawn_csaf20,
-            superseded_csaf20,
-            Ok(()),
-            Ok(()),
-        );
-        TESTS_2_1.test_6_1_26.expect(
-            case_01_shared,
-            case_02_csaf21,
-            case_03_csaf21,
-            case_04_csaf21,
-            case_05_csaf21,
-            case_06_csaf21,
-            case_07_csaf21,
-            case_08_csaf21,
-            Ok(()),
-            Ok(()),
-            Ok(()),
-            Ok(()),
-        );
+        TESTS_2_0.test_6_1_26.expect(ExpectedResults_2_0 {
+            case_01: case_01_shared.clone(),
+            case_02: case_02_csaf20,
+            case_03: case_03_csaf20,
+            case_04: case_04_csaf20,
+            case_s01: deprecated_sec_advisory_csaf20,
+            case_s02: withdrawn_csaf20,
+            case_s03: superseded_csaf20,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+        TESTS_2_1.test_6_1_26.expect(ExpectedResults_2_1 {
+            case_01: case_01_shared,
+            case_02: case_02_csaf21,
+            case_03: case_03_csaf21,
+            case_04: case_04_csaf21,
+            case_05: case_05_csaf21,
+            case_06: case_06_csaf21,
+            case_07: case_07_csaf21,
+            case_08: case_08_csaf21,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
+        });
     }
 
     // Additional unit tests from the editorial version of CSAF 2.1

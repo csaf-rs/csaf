@@ -66,7 +66,7 @@ impl<T: RevisionTrait> From<&Vec<T>> for UnvalidatedCsafRevisionHistory {
                 number: revision.get_number(),
             });
         }
-        UnvalidatedCsafRevisionHistory(items)
+        Self(items)
     }
 }
 

@@ -2011,7 +2011,9 @@ crate::macros::define_csaf_test!(
     "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-26-12.json",
     "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-26-12.json"), (case_13, "13",
     "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-26-13.json",
-    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-26-13.json")]
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-26-13.json"), (case_14, "14",
+    "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-26-14.json",
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-26-14.json")]
 );
 crate::macros::define_csaf_test!(
     Test6_2_27, ValidatorForTest6_2_27, ExpectedResults_6_2_27, id : "6.2.27", doc_type :
@@ -2493,6 +2495,23 @@ crate::macros::define_csaf_test!(
     "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-54-04-11.json")]
 );
 crate::macros::define_csaf_test!(
+    Test6_2_55, ValidatorForTest6_2_55, ExpectedResults_6_2_55, id : "6.2.55", doc_type :
+    crate ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework, version : "V2_1",
+    cases : [(case_01, "01",
+    "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-01.json",
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-01.json"), (case_02, "02",
+    "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-02.json",
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-02.json"), (case_03, "03",
+    "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-03.json",
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-03.json"), (case_04, "04",
+    "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-04.json",
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-04.json"), (case_11, "11",
+    "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-11.json",
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-11.json"), (case_12, "12",
+    "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-12.json",
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-55-12.json")]
+);
+crate::macros::define_csaf_test!(
     Test6_3_1, ValidatorForTest6_3_1, ExpectedResults_6_3_1, id : "6.3.1", doc_type :
     crate ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework, version : "V2_1",
     cases : [(case_01, "01",
@@ -2578,7 +2597,9 @@ crate::macros::define_csaf_test!(
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-01.json",
     "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-01.json"), (case_02, "02",
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-02.json",
-    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-02.json"), (case_11, "11",
+    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-02.json"), (case_03, "03",
+    "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-03.json",
+    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-03.json"), (case_11, "11",
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-11.json",
     "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-06-11.json")]
 );
@@ -2898,6 +2919,19 @@ crate::macros::define_csaf_test!(
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-22-11.json",
     "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-22-11.json")]
 );
+crate::macros::define_csaf_test!(
+    Test6_3_24, ValidatorForTest6_3_24, ExpectedResults_6_3_24, id : "6.3.24", doc_type :
+    crate ::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework, version : "V2_1",
+    cases : [(case_01, "01",
+    "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-01.json",
+    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-01.json"), (case_02, "02",
+    "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-02.json",
+    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-02.json"), (case_11, "11",
+    "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-11.json",
+    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-11.json"), (case_12, "12",
+    "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-12.json",
+    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-24-12.json")]
+);
 crate::macros::define_test_cases_aggregate!(
     const_name : TESTS_2_1, mandatory : [(test_6_1_1, Test6_1_1, ValidatorForTest6_1_1),
     (test_6_1_2, Test6_1_2, ValidatorForTest6_1_2), (test_6_1_3, Test6_1_3,
@@ -2998,28 +3032,29 @@ crate::macros::define_test_cases_aggregate!(
     ValidatorForTest6_2_53), (test_6_2_54_1, Test6_2_54_1, ValidatorForTest6_2_54_1),
     (test_6_2_54_2, Test6_2_54_2, ValidatorForTest6_2_54_2), (test_6_2_54_3,
     Test6_2_54_3, ValidatorForTest6_2_54_3), (test_6_2_54_4, Test6_2_54_4,
-    ValidatorForTest6_2_54_4)], informative : [(test_6_3_1, Test6_3_1,
-    ValidatorForTest6_3_1), (test_6_3_2, Test6_3_2, ValidatorForTest6_3_2), (test_6_3_3,
-    Test6_3_3, ValidatorForTest6_3_3), (test_6_3_4, Test6_3_4, ValidatorForTest6_3_4),
-    (test_6_3_5, Test6_3_5, ValidatorForTest6_3_5), (test_6_3_6, Test6_3_6,
-    ValidatorForTest6_3_6), (test_6_3_7, Test6_3_7, ValidatorForTest6_3_7), (test_6_3_8,
-    Test6_3_8, ValidatorForTest6_3_8), (test_6_3_9, Test6_3_9, ValidatorForTest6_3_9),
-    (test_6_3_10, Test6_3_10, ValidatorForTest6_3_10), (test_6_3_11, Test6_3_11,
-    ValidatorForTest6_3_11), (test_6_3_12, Test6_3_12, ValidatorForTest6_3_12),
-    (test_6_3_13, Test6_3_13, ValidatorForTest6_3_13), (test_6_3_14, Test6_3_14,
-    ValidatorForTest6_3_14), (test_6_3_15, Test6_3_15, ValidatorForTest6_3_15),
-    (test_6_3_16, Test6_3_16, ValidatorForTest6_3_16), (test_6_3_17, Test6_3_17,
-    ValidatorForTest6_3_17), (test_6_3_18, Test6_3_18, ValidatorForTest6_3_18),
-    (test_6_3_19_1, Test6_3_19_1, ValidatorForTest6_3_19_1), (test_6_3_19_2,
-    Test6_3_19_2, ValidatorForTest6_3_19_2), (test_6_3_19_3, Test6_3_19_3,
-    ValidatorForTest6_3_19_3), (test_6_3_19_4, Test6_3_19_4, ValidatorForTest6_3_19_4),
-    (test_6_3_19_5, Test6_3_19_5, ValidatorForTest6_3_19_5), (test_6_3_20, Test6_3_20,
-    ValidatorForTest6_3_20), (test_6_3_21_1, Test6_3_21_1, ValidatorForTest6_3_21_1),
-    (test_6_3_21_2, Test6_3_21_2, ValidatorForTest6_3_21_2), (test_6_3_21_3,
-    Test6_3_21_3, ValidatorForTest6_3_21_3), (test_6_3_21_4, Test6_3_21_4,
-    ValidatorForTest6_3_21_4), (test_6_3_21_5, Test6_3_21_5, ValidatorForTest6_3_21_5),
-    (test_6_3_21_6, Test6_3_21_6, ValidatorForTest6_3_21_6), (test_6_3_21_7,
-    Test6_3_21_7, ValidatorForTest6_3_21_7), (test_6_3_21_8, Test6_3_21_8,
-    ValidatorForTest6_3_21_8), (test_6_3_21_9, Test6_3_21_9, ValidatorForTest6_3_21_9),
-    (test_6_3_22, Test6_3_22, ValidatorForTest6_3_22)]
+    ValidatorForTest6_2_54_4), (test_6_2_55, Test6_2_55, ValidatorForTest6_2_55)],
+    informative : [(test_6_3_1, Test6_3_1, ValidatorForTest6_3_1), (test_6_3_2,
+    Test6_3_2, ValidatorForTest6_3_2), (test_6_3_3, Test6_3_3, ValidatorForTest6_3_3),
+    (test_6_3_4, Test6_3_4, ValidatorForTest6_3_4), (test_6_3_5, Test6_3_5,
+    ValidatorForTest6_3_5), (test_6_3_6, Test6_3_6, ValidatorForTest6_3_6), (test_6_3_7,
+    Test6_3_7, ValidatorForTest6_3_7), (test_6_3_8, Test6_3_8, ValidatorForTest6_3_8),
+    (test_6_3_9, Test6_3_9, ValidatorForTest6_3_9), (test_6_3_10, Test6_3_10,
+    ValidatorForTest6_3_10), (test_6_3_11, Test6_3_11, ValidatorForTest6_3_11),
+    (test_6_3_12, Test6_3_12, ValidatorForTest6_3_12), (test_6_3_13, Test6_3_13,
+    ValidatorForTest6_3_13), (test_6_3_14, Test6_3_14, ValidatorForTest6_3_14),
+    (test_6_3_15, Test6_3_15, ValidatorForTest6_3_15), (test_6_3_16, Test6_3_16,
+    ValidatorForTest6_3_16), (test_6_3_17, Test6_3_17, ValidatorForTest6_3_17),
+    (test_6_3_18, Test6_3_18, ValidatorForTest6_3_18), (test_6_3_19_1, Test6_3_19_1,
+    ValidatorForTest6_3_19_1), (test_6_3_19_2, Test6_3_19_2, ValidatorForTest6_3_19_2),
+    (test_6_3_19_3, Test6_3_19_3, ValidatorForTest6_3_19_3), (test_6_3_19_4,
+    Test6_3_19_4, ValidatorForTest6_3_19_4), (test_6_3_19_5, Test6_3_19_5,
+    ValidatorForTest6_3_19_5), (test_6_3_20, Test6_3_20, ValidatorForTest6_3_20),
+    (test_6_3_21_1, Test6_3_21_1, ValidatorForTest6_3_21_1), (test_6_3_21_2,
+    Test6_3_21_2, ValidatorForTest6_3_21_2), (test_6_3_21_3, Test6_3_21_3,
+    ValidatorForTest6_3_21_3), (test_6_3_21_4, Test6_3_21_4, ValidatorForTest6_3_21_4),
+    (test_6_3_21_5, Test6_3_21_5, ValidatorForTest6_3_21_5), (test_6_3_21_6,
+    Test6_3_21_6, ValidatorForTest6_3_21_6), (test_6_3_21_7, Test6_3_21_7,
+    ValidatorForTest6_3_21_7), (test_6_3_21_8, Test6_3_21_8, ValidatorForTest6_3_21_8),
+    (test_6_3_21_9, Test6_3_21_9, ValidatorForTest6_3_21_9), (test_6_3_22, Test6_3_22,
+    ValidatorForTest6_3_22), (test_6_3_24, Test6_3_24, ValidatorForTest6_3_24)]
 );

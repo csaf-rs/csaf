@@ -79,10 +79,21 @@ mod tests {
             "V4.2",
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
+        let case_multiple_parallel_branches = Err(vec![
+            create_v_version_indicator_error(
+                "v4.2",
+                "/product_tree/branches/0/branches/0/branches/0",
+            ),
+            create_v_version_indicator_error(
+                "v6.2",
+                "/product_tree/branches/0/branches/0/branches/2",
+            )
+        ]);
 
         TESTS_2_0.test_6_3_11.expect(ExpectedResults_2_0 {
             case_01: case_v_4_2.clone(),
             case_s01: case_uppercase_v_4_2.clone(),
+            case_s02: case_multiple_parallel_branches.clone(),
             case_11: Ok(()),
             case_s11: Ok(()),
             case_s12: Ok(()),
@@ -90,6 +101,7 @@ mod tests {
         TESTS_2_1.test_6_3_11.expect(ExpectedResults_2_1 {
             case_01: case_v_4_2,
             case_s01: case_uppercase_v_4_2,
+            case_s02: case_multiple_parallel_branches.clone(),
             case_11: Ok(()),
             case_s11: Ok(()),
             case_s12: Ok(()),

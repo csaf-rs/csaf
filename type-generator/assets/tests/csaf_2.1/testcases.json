@@ -933,6 +933,10 @@
         {
           "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-11-s01.json",
           "valid": false
+        },
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-11-s02.json",
+          "valid": false
         }
       ],
       "valid": [

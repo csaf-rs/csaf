@@ -3,8 +3,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn is_version_with_v_indicator(version: &str) -> bool {
     let mut chars = version.chars();
-    matches!(chars.next(), Some('v') | Some('V'))
-        && matches!(chars.next(), Some(c) if c.is_ascii_digit())
+    matches!(chars.next(), Some('v') | Some('V')) && matches!(chars.next(), Some(c) if c.is_ascii_digit())
 }
 
 fn create_v_version_indicator_error(version: &str, path: &str) -> TestFinding {
@@ -80,25 +79,16 @@ mod tests {
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
         let case_multiple_parallel_branches = Err(vec![
-            create_v_version_indicator_error(
-                "v4.2",
-                "/product_tree/branches/0/branches/0/branches/0",
-            ),
-            create_v_version_indicator_error(
-                "v6.2",
-                "/product_tree/branches/0/branches/0/branches/2",
-            )
+            create_v_version_indicator_error("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
+            create_v_version_indicator_error("v6.2", "/product_tree/branches/0/branches/0/branches/2"),
         ]);
         // Note: Having stacked product version categories violates 6.1.57, making this test file mandatory invalid.
         let case_multiple_nested_branches = Err(vec![
-            create_v_version_indicator_error(
-                "v4.2",
-                "/product_tree/branches/0/branches/0/branches/0",
-            ),
+            create_v_version_indicator_error("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
             create_v_version_indicator_error(
                 "v4.2.2-alpha",
                 "/product_tree/branches/0/branches/0/branches/0/branches/0/branches/0",
-            )
+            ),
         ]);
 
         // Case 11: product version "4.2"

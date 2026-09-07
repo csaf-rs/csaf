@@ -1,6 +1,8 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
+/// To implement this test it is deemed sufficient that the value of name does not match the following regex:
+/// `^[vV][0-9].*$`. This function implements this trivial regex using regular string operations, which is significantly faster.
 fn is_version_with_v_indicator(version: &str) -> bool {
     let mut chars = version.chars();
     matches!(chars.next(), Some('v') | Some('V')) && matches!(chars.next(), Some(c) if c.is_ascii_digit())

@@ -13,7 +13,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Supplementary test: Usage of V as Version Indicator (failing example - mixed v4.2 and 4.2)",
+    "title": "Supplementary test: Usage of V as Version Indicator (failing example - parallel, alternating branches)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-11-S02",

@@ -7,7 +7,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Supplementary test: Usage of V as Version Indicator (valid example - v4.2 but architecture category)",
+    "title": "Supplementary test: Usage of V as Version Indicator (failing example - stacked categories)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_0-6-3-11-S03",

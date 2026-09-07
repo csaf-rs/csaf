@@ -82,15 +82,17 @@ mod tests {
 
         TESTS_2_0.test_6_3_11.expect(ExpectedResults_2_0 {
             case_01: case_v_4_2.clone(),
-            case_02: case_uppercase_v_4_2.clone(),
+            case_s01: case_uppercase_v_4_2.clone(),
             case_11: Ok(()),
-            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
         });
         TESTS_2_1.test_6_3_11.expect(ExpectedResults_2_1 {
             case_01: case_v_4_2,
-            case_02: case_uppercase_v_4_2,
+            case_s01: case_uppercase_v_4_2,
             case_11: Ok(()),
-            case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
         });
     }
 }

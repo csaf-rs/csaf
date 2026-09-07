@@ -112,8 +112,8 @@ mod tests {
         TESTS_2_1.test_6_3_11.expect(ExpectedResults_2_1 {
             case_01: case_v_4_2,
             case_s01: case_uppercase_v_4_2,
-            case_s02: case_multiple_parallel_branches.clone(),
-            case_s03: case_multiple_nested_branches.clone(),
+            case_s02: case_multiple_parallel_branches,
+            case_s03: case_multiple_nested_branches,
             case_11: Ok(()),
             case_s11: Ok(()),
             case_s12: Ok(()),

@@ -1,9 +1,11 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use regex::Regex;
-use std::sync::LazyLock;
 
-static V_AS_VERSION_INDICATOR_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[vV][0-9].*$").unwrap());
+fn is_version_with_v_indicator(version: &str) -> bool {
+    let mut chars = version.chars();
+    matches!(chars.next(), Some('v') | Some('V'))
+        && matches!(chars.next(), Some(c) if c.is_ascii_digit())
+}
 
 fn create_v_version_indicator_error(version: &str, path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
@@ -24,7 +26,7 @@ pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Resu
     if let Some(product_tree) = doc.get_product_tree().as_ref() {
         product_tree.visit_all_branches(&mut |branch, path| {
             if branch.get_category() == CategoryOfTheBranch::ProductVersion
-                && V_AS_VERSION_INDICATOR_REGEX.is_match(branch.get_name())
+                && is_version_with_v_indicator(branch.get_name())
             {
                 errors
                     .get_or_insert_default()
@@ -45,6 +47,27 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_3_11 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use rstest::rstest;
+
+    #[rstest]
+    #[case("v1", true)]
+    #[case("V1", true)]
+    #[case("v4.2", true)]
+    #[case("V4.2", true)]
+    #[case("v1.0.0", true)]
+    #[case("V1.0.0", true)]
+    #[case("", false)]
+    #[case("v", false)]
+    #[case("V", false)]
+    #[case("1", false)]
+    #[case("4.2", false)]
+    #[case("1.0.0", false)]
+    #[case("vAlpha", false)]
+    #[case("VAlpha", false)]
+    #[case("version4.2", false)]
+    fn test_is_version_with_v_indicator(#[case] version: &str, #[case] expected: bool) {
+        assert_eq!(is_version_with_v_indicator(version), expected);
+    }
 
     #[test]
     fn test_test_6_3_11() {

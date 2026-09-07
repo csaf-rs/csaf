@@ -87,7 +87,8 @@ mod tests {
             create_v_version_indicator_error("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
             create_v_version_indicator_error("v6.2", "/product_tree/branches/0/branches/0/branches/2"),
         ]);
-        // Note: Having stacked product version categories violates 6.1.57, making this test file mandatory invalid.
+        // Note: Having stacked product version categories violates 6.1.57, making this test file mandatory invalid on
+        // CSAF 2.1
         let case_multiple_nested_branches = Err(vec![
             create_v_version_indicator_error("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
             create_v_version_indicator_error(

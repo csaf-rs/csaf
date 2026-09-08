@@ -55,24 +55,46 @@ mod tests {
 
     #[test]
     fn test_test_6_2_05() {
-        // Both CSAF 2.0 and 2.1 have test cases
-        TESTS_2_0.test_6_2_5.expect(ExpectedResults_2_0 {
-            case_01: Err(vec![create_older_initial_release_date_error(
-                "2021-04-22T10:00:00.000Z",
-                "2021-05-06T10:00:00.000Z",
-            )]),
-        });
-        TESTS_2_1.test_6_2_5.expect(ExpectedResults_2_1 {
-            case_01: Err(vec![create_older_initial_release_date_error(
-                "2023-08-22T10:00:00.000Z",
-                "2023-09-06T10:00:00.000Z",
-            )]),
-            case_02: Err(vec![create_older_initial_release_date_error(
+        let initial_release_date_older_than_oldest_revision_2_0 = Err(vec![create_older_initial_release_date_error(
+            "2021-04-22T10:00:00.000Z",
+            "2021-05-06T10:00:00.000Z",
+        )]);
+
+        let initial_release_date_older_than_oldest_revision_2_1 = Err(vec![create_older_initial_release_date_error(
+            "2023-08-22T10:00:00.000Z",
+            "2023-09-06T10:00:00.000Z",
+        )]);
+
+        let initial_release_date_older_after_timezone_normalization =
+            Err(vec![create_older_initial_release_date_error(
                 "2023-09-06T10:00:00.000+10:00",
                 "2023-09-06T10:00:00.000-01:00",
-            )]),
+            )]);
+
+        let initial_release_date_older_after_crossing_calendar_boundary =
+            Err(vec![create_older_initial_release_date_error(
+                "2024-01-01T00:00:00.000+01:30",
+                "2023-12-31T23:00:00.000Z",
+            )]);
+
+        TESTS_2_0.test_6_2_5.expect(ExpectedResults_2_0 {
+            case_01: initial_release_date_older_than_oldest_revision_2_0,
+        });
+
+        TESTS_2_1.test_6_2_5.expect(ExpectedResults_2_1 {
+            case_01: initial_release_date_older_than_oldest_revision_2_1,
+            case_02: initial_release_date_older_after_timezone_normalization,
+            case_s01: initial_release_date_older_after_crossing_calendar_boundary,
+            // initial_release_date equal to the oldest revision
             case_11: Ok(()),
+            // initial_release_date equal to the oldest revision with a timezone offset
             case_12: Ok(()),
+            // initial_release_date newer than the oldest revision
+            case_s11: Ok(()),
+            // initial_release_date equal to the oldest revision after normalizing different timezone offsets
+            case_s12: Ok(()),
+            // initial_release_date newer than the oldest revision selected timezone-aware independent of array order
+            case_s13: Ok(()),
         });
     }
 }

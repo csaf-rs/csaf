@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #
-# create-new-testfile.sh
+# create_new_testfile.sh
 #
 # Bootstraps a new supplementary CSAF test fixture under
 # type-generator/assets/tests/csaf_<version>/, wires it up in the
 # corresponding testcases.json, and regenerates the Rust test definitions.
 #
 # Usage:
-#   ./create-new-testfile.sh --test <id> --case <failure|valid> [--csaf-version <2.0|2.1|both>]
+#   ./create_new_testfile.sh --test <id> --case <failure|valid> [--csaf-version <2.0|2.1|both>]
 #
 # Examples:
-#   ./create-new-testfile.sh --test 6.1.29 --validity failure
-#   ./create-new-testfile.sh -t 1.29 --validity valid -c 2.1
-#   ./create-new-testfile.sh -t 6.1.27.5 --validity failure -c both
+#   ./create_new_testfile.sh --test 6.1.29 --validity failure
+#   ./create_new_testfile.sh -t 6.1.29 --validity valid -c 2.1
+#   ./create_new_testfile.sh -t 6.1.27.5 --validity failure -c both
 #
 set -euo pipefail
 
@@ -21,12 +21,11 @@ ASSETS_DIR="$SCRIPT_DIR/../../type-generator/assets/tests"
 
 usage() {
   cat <<'EOF'
-Usage: create-new-testfile.sh --test <id> --validity <failure|valid> [--csaf-version <2.0|2.1|both>]
+Usage: create_new_testfile.sh --test <id> --validity <failure|valid> [--csaf-version <2.0|2.1|both>]
 
 Required:
   -t, --test <id>        Test number from the specification, e.g. "6.1.29"
-  --validity <type>       Whether the new file is a "failure" (failing test case) or
-                          "valid" case.
+  --validity <type>      States whether the test file is valid according to the CSAF standard.
 
 Optional:
   -c, --csaf-version <ver>    CSAF version to target: "2.0", "2.1", or "both". Defaults to "2.1".
@@ -87,12 +86,12 @@ case "$CASE_TYPE" in
     CASE_TYPE="valid"
     ;;
   *)
-    echo "Error: --case must be one of failure/fail/invalid or valid/pass (got '$CASE_TYPE')" >&2
+    echo "Error: --case must be one of failure/valid (got '$CASE_TYPE')" >&2
     exit 1
     ;;
 esac
 
-if ! [[ "$TEST_ID" =~ ^6(\.[0-9]+)+$ ]]; then
+if ! [[ "$TEST_ID" =~ ^6(\.[0-9]+){2,3}$ ]]; then
   echo "Error: invalid test id '$TEST_ID' (expected e.g. '6.1.29' or '6.1.27.5')" >&2
   exit 1
 fi
@@ -263,6 +262,6 @@ for v in "${VERSIONS[@]}"; do
 done
 
 echo "Running type-generator..."
-cargo run -p type-generator
+cargo run -p type-generator --manifest-path "$SCRIPT_DIR/../../Cargo.toml"
 
 echo "Done."

@@ -30,7 +30,7 @@ jobs:
       go-targets: ${{ steps.get-go-targets.outputs.go-targets }}
       ref-name: ${{ steps.build-context.outputs.ref-name }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "true"
           fetch-depth: 0
@@ -45,7 +45,7 @@ jobs:
             exit 1
           fi
       - name: Use cache
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: prepare
       - name: Check JSON syntax
@@ -110,11 +110,11 @@ jobs:
         target: ${{ fromJson(needs.prepare.outputs.targets) }}
     runs-on: ${{ matrix.target.runs-on }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "true"
       - name: Use cache
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: build-${{ matrix.version }}-${{ matrix.target.arch }}
       - name: Install Rust toolchain
@@ -141,13 +141,13 @@ jobs:
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: csaf-validator-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: libcsaf_ffi-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: |
@@ -182,11 +182,11 @@ jobs:
       - prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "true"
       - name: Use cache
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: wasm-bindings
       - name: Update rustup
@@ -195,7 +195,7 @@ jobs:
         run: rustup target add wasm32-unknown-unknown
       - name: Cache uniffi-bindgen-js
         id: uniffi-js-cache
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cargo/bin/uniffi-bindgen-js
           key: uniffi-bindgen-js-0.2.1-${{ runner.os }}-${{ runner.arch }}
@@ -208,7 +208,7 @@ jobs:
         working-directory: ./wasm
         run: npm publish --dry-run
       - name: Archive UniFFI WASM bindings
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -227,17 +227,17 @@ jobs:
         target: ${{ fromJson(needs.prepare.outputs.go-targets) }}
     runs-on: ${{ matrix.target.runs-on }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "true"
       - name: Setup Go
-        uses: actions/setup-go@v7
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "stable"
           cache: false
       - name: Cache uniffi-bindgen-go
         id: uniffi-cache
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cargo/bin/uniffi-bindgen-go
           key: uniffi-bindgen-go-v0.7.0-${{ runner.os }}-${{ runner.arch }}
@@ -248,7 +248,7 @@ jobs:
             --git https://github.com/NordSecurity/uniffi-bindgen-go \
             --tag v0.7.0+v0.31.0 --locked
       - name: Download libcsaf_ffi
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.target-arch }}/release/
@@ -269,7 +269,7 @@ jobs:
         run: |
           GOOS=$(go env GOOS) GOARCH=${{ matrix.target.go-arch }} CGO_ENABLED=1 go test -v ./csaf_ffi/
       - name: Archive Go static library
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
@@ -320,7 +320,7 @@ jobs:
 
       - name: Cache devguard-scanner
         id: cache-scanner
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/go/bin/devguard-scanner
           key: devguard-scanner-${{ runner.os }}
@@ -330,7 +330,7 @@ jobs:
           go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
 
       - name: Download all CDX artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: "*_sbom.cdx.json"
           path: sboms/
@@ -382,10 +382,10 @@ jobs:
       - build-platforms
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "true"
-      - uses: rust-lang/crates-io-auth-action@v1
+      - uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
         id: auth
       - name: Update rustup
         run: rustup update stable --no-self-update
@@ -405,12 +405,12 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
       - name: Download WASM bindings
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -428,16 +428,16 @@ jobs:
       - go-bindings
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-tags: true
       - name: Setup Go
-        uses: actions/setup-go@v7
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "stable"
           cache: false
       - name: Download Go library for verification
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: go-csaf-ffi-lib-Linux-amd64-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
@@ -468,19 +468,19 @@ jobs:
       - publish-go
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: csaf-validator
           pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: csaf-ffi-wasm
           pattern: csaf-ffi-wasm-*
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: go-csaf-ffi-lib
           pattern: go-csaf-ffi-lib-*
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: sboms
           pattern: "*_sbom.*"
@@ -499,7 +499,7 @@ jobs:
           done
           ls go-csaf-ffi-lib-*.zip 2>/dev/null || true
       - name: Create Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           name: ${{ github.ref_name }}
           generate_release_notes: false

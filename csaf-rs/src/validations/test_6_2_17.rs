@@ -1,9 +1,7 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
+use crate::schema::csaf2_1::schema::Cve;
 use crate::validation::{TestFinding, TestFindingData};
-use regex::Regex;
-use std::sync::LazyLock;
-
-static CVE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^CVE-[0-9]{4}-[0-9]{4,}$").unwrap());
+use std::str::FromStr;
 
 fn create_cve_in_ids_error(id: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
@@ -21,7 +19,7 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Test
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(ids) = vuln.get_ids() {
             for (i_i, id) in ids.iter().enumerate() {
-                if CVE_REGEX.is_match(id.get_text()) {
+                if Cve::from_str(id.get_text()).is_ok() {
                     errors
                         .get_or_insert_default()
                         .push(create_cve_in_ids_error(id.get_text(), v_i, i_i));

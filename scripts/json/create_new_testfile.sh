@@ -7,7 +7,7 @@
 # corresponding testcases.json, and regenerates the Rust test definitions.
 #
 # Usage:
-#   ./create_new_testfile.sh --test <id> --case <failure|valid> [--csaf-version <2.0|2.1|both>]
+#   ./create_new_testfile.sh --test <id> --validity <failure|valid> [--csaf-version <2.0|2.1|both>]
 #
 # Examples:
 #   ./create_new_testfile.sh --test 6.1.29 --validity failure

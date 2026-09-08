@@ -14,7 +14,7 @@ cargo test --verbose // tests
 
 ## Schemas and type generation
 
-We have several json schema files included in the code base from which code is generated. The most prominent being the CSAF repository which is integrated as a git submodule. If there are changes to those schemas, we have to review these changes and incorporate them into our code. This can mean regenerating code (this is here referred to as 'asset-update') and updating existing code to match the new requirements.
+We have several json schema files included in the code base from which code is generated. The most prominent being from the CSAF repository which is integrated as a git submodule. If there are changes to those schemas, we have to review these changes and incorporate them into our code. This can mean regenerating code (this is here referred to as 'asset-update') and updating existing code to match the new requirements.
 To help with this, there are a few update scripts in [scripts/update](./scripts/update) to make this process easier.
 Additionally, after using those scripts or after updating a submodule, you should run the type-generator to ensure the generated code is up-to-date.
 ```rust
@@ -58,12 +58,12 @@ When defining the expected results, there is only an `Ok(())` return value for v
 // Case 12: disclosure_date is definitely not in the past (9999-12-31)
 // Case 13: disclosure_date is earlier than newest revision, with timezones
 
-TESTS_2_1.test_6_2_33.expect(
-    case_01_disclosure_date_newer_than_newest_rev,
-    case_02_disclosure_date_newer_than_newest_rev_with_timezone,
-    case_03_disclosure_date_newer_than_newest_rev_with_timezone,
-    Ok(()),
-    Ok(()),
-    Ok(()),
-);
+TESTS_2_1.test_6_2_33.expect(ExpectedResults {
+    case_01: disclosure_date_newer_than_newest_rev,
+    case_02: disclosure_date_newer_than_newest_rev_with_timezone,
+    case_03: disclosure_date_newer_than_newest_rev_with_timezone,
+    case_11: Ok(()),
+    case_12: Ok(()),
+    case_s11: Ok(()),
+    });
 ```

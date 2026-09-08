@@ -45,9 +45,9 @@ crate::test_validation::impl_validator!(ValidatorForTest6_X_X, validate_missing_
 "6.3.5" => Some(ValidatorForTest6_3_5.validate(self)),
 ```
 5. Add the test module in [csaf-rs/src/validations/mod.rs](./csaf-rs/src/validations/mod.rs)
-6. Add supplementary test files if needed. You can use this script [create-new-testfile.sh](./create-new-testfile.sh) to make this easier. This creates the new testfile, adds it to the testcases.json files and runs the type-generator.
+6. Add supplementary test files if needed. You can use this script [create_new_testfile.sh](./scripts/json/create_new_testfile.sh) to make this easier. This creates the new testfile, adds it to the testcases.json files and runs the type-generator.
 ```sh
-./create-new-testfile.sh --test 6.2.35 --csaf-version 2.1 --validity failure
+./scripts/json/create_new_testfile.sh --test 6.2.35 --csaf-version 2.1 --validity failure
 ```
 7. Implement the validation code
 8. When finished, update the [implementation status](./README.md#implementation-status-in-regards-to-the-standard) to indicate the implementation state.

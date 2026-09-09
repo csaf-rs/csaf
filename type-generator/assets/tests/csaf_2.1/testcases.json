@@ -655,6 +655,30 @@
       ]
     },
     {
+      "id": "6.2.5",
+      "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s01.json",
+          "valid": true
+        }
+      ],
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s11.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s12.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s13.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.2.7",
       "group": "recommended",
       "failures": [

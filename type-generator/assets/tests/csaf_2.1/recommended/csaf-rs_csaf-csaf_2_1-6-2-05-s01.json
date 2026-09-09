@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Recommended Test: Older Initial Release Date than Revision History (invalid supplementary example 1 - initial release date is earlier and falls on the previous calendar day after timezone conversion)",
+    "tracking": {
+      "current_release_date": "2023-12-31T23:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-05-S01",
+      "initial_release_date": "2024-01-01T00:00:00.000+01:30",
+      "revision_history": [
+        {
+          "date": "2023-12-31T23:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  }
+}

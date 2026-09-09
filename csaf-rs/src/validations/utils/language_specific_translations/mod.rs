@@ -53,7 +53,7 @@ pub fn get_translation_for_term_superseding_document(primary_lang_tag: &str) -> 
 
 /// Creates a [`TestFinding::Information`] indicating that no translation for `term` is known for
 /// the given language tag, and that the test was therefore skipped.
-/// 
+///
 /// # Arguments
 /// * `term` - The term for which no translation is known
 /// * `lang` - The language tag

@@ -107,8 +107,11 @@ mod tests {
 
         // Case 11: correct category + prefix
         // Case 12: multiple correct category + prefix
-        let case_s11_esperanto_no_translation =
-            Err(vec![create_no_translation_known_info("Superseding Document", "eo", "/document/references")]);
+        let case_s11_esperanto_no_translation = Err(vec![create_no_translation_known_info(
+            "Superseding Document",
+            "eo",
+            "/document/references",
+        )]);
 
         TESTS_2_1.test_6_2_39_4.expect(ExpectedResults {
             case_01: no_reference_with_prefix,

@@ -8,9 +8,9 @@
       "initial_release_date": "2021-07-21T10:00:00.000Z",
       "revision_history": [
         {
+          "summary": "Initial version.",
           "date": "2021-07-21T10:00:00.000Z",
-          "number": "1",
-          "summary": "Initial version."
+          "number": "1"
         }
       ],
       "status": "final",

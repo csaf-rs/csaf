@@ -929,6 +929,12 @@
     {
       "id": "6.2.39.4",
       "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-39-04-s01.json",
+          "valid": true
+        }
+      ],
       "valid": [
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-39-04-s11.json",

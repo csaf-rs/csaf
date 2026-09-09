@@ -65,20 +65,44 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_39_4 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validations::utils::document_references_with_summary_and_category::create_missing_reference_data;
+    use crate::validations::utils::document_references_with_summary_and_category::{
+        create_incorrect_category_data, create_missing_reference_data,
+    };
 
     #[test]
     fn test_test_6_2_39_4() {
-
         let de_summary_prefix = get_translation_for_term_superseding_document("de").unwrap();
 
-        let no_reference_with_prefix = Err(vec![TestFinding::Warning(
-            create_missing_reference_data(
+        let no_reference_with_prefix = Err(vec![TestFinding::Warning(create_missing_reference_data(
+            de_summary_prefix,
+            &CategoryOfReference::External,
+            &CsafDocumentCategory::CsafSuperseded,
+        ))]);
+
+        let incorrect_category = Err(vec![TestFinding::Warning(create_incorrect_category_data(
+            de_summary_prefix,
+            &CategoryOfReference::Self_,
+            &CategoryOfReference::External,
+            &CsafDocumentCategory::CsafSuperseded,
+            0,
+        ))]);
+
+        let multiple_incorrect_category = Err(vec![
+            TestFinding::Warning(create_incorrect_category_data(
                 de_summary_prefix,
+                &CategoryOfReference::Self_,
                 &CategoryOfReference::External,
                 &CsafDocumentCategory::CsafSuperseded,
-            ),
-        )]);
+                0,
+            )),
+            TestFinding::Warning(create_incorrect_category_data(
+                de_summary_prefix,
+                &CategoryOfReference::Self_,
+                &CategoryOfReference::External,
+                &CsafDocumentCategory::CsafSuperseded,
+                1,
+            )),
+        ]);
 
         // Case 11: correct category + prefix
         // Case 12: multiple correct category + prefix
@@ -87,9 +111,12 @@ mod tests {
 
         TESTS_2_1.test_6_2_39_4.expect(ExpectedResults {
             case_01: no_reference_with_prefix,
+            case_s01: incorrect_category,
+            case_s02: multiple_incorrect_category,
             case_11: Ok(()),
             case_12: Ok(()),
             case_s11: case_s11_esperanto_no_translation,
+
         });
     }
 }

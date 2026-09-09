@@ -357,6 +357,7 @@ This creates TypeScript + WASM output in `wasm/`.
 | 6.2.37   | ⭕ | ✅ |
 | 6.2.39.2 | ⭕ | ✅ |
 | 6.2.39.3 | ⭕ | ✅ |
+| 6.2.39.4 | ⭕ | ✅ |
 | 6.2.47   | ⭕ | ✅ |
 
 ### Informative Tests

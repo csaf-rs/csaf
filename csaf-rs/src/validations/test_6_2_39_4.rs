@@ -116,7 +116,6 @@ mod tests {
             case_11: Ok(()),
             case_12: Ok(()),
             case_s11: case_s11_esperanto_no_translation,
-
         });
     }
 }

@@ -57,12 +57,30 @@ mod tests {
 
     #[test]
     fn test_test_6_2_13() {
-        let err = Err(vec![create_unsorted_keys_error("/document/csaf_version")]);
+        let simple_unordered_key = Err(vec![create_unsorted_keys_error("/document/csaf_version")]);
+        
+        // Multiple errors:
+        // 2x document level (csaf_version, tracking)
+        // nested in correctly sorted key (publisher -> namespace)
+        // nested in incorrectly sorted key (tracking -> revision_history -> ...)
+        let multiple_unordered_keys_with_nesting = Err(vec![
+            create_unsorted_keys_error("/document/csaf_version"),
+            create_unsorted_keys_error("/document/tracking"),
+            create_unsorted_keys_error("/document/publisher/namespace"),
+            create_unsorted_keys_error("/document/tracking/revision_history/0/summary"),
+        ]);
+        
+        // Case S11: Passing case with all keys sorted (just 01 fixed)
 
-        // Both CSAF 2.0 and 2.1 have 1 test cases
-        TESTS_2_0
-            .test_6_2_13
-            .expect(ExpectedResults_2_0 { case_01: err.clone() });
-        TESTS_2_1.test_6_2_13.expect(ExpectedResults_2_1 { case_01: err });
+        TESTS_2_0.test_6_2_13.expect(ExpectedResults_2_0 {
+            case_01: simple_unordered_key.clone(),
+            case_s01: multiple_unordered_keys_with_nesting.clone(),
+            case_s11: Ok(())
+        });
+        TESTS_2_1.test_6_2_13.expect(ExpectedResults_2_1 {
+            case_01: simple_unordered_key,
+            case_s01: multiple_unordered_keys_with_nesting,
+            case_s11: Ok(())
+        });
     }
 }

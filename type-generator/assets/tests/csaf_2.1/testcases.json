@@ -782,11 +782,11 @@
       "failures": [
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-14-s01.json",
-          "valid": false
+          "valid": true
         },
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-14-s02.json",
-          "valid": false
+          "valid": true
         }
       ]
     },
@@ -800,7 +800,7 @@
         },
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-15-s02.json",
-          "valid": false
+          "valid": true
         }
       ],
       "valid": [

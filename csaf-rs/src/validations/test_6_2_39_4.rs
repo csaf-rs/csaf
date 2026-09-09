@@ -65,14 +65,14 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_39_4 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validations::utils::document_references_with_summary_and_category::create_missing_reference_data;
 
     #[test]
     fn test_test_6_2_39_4() {
-        use crate::validations::utils::document_references_with_summary_and_category::create_missing_reference_data;
 
         let de_summary_prefix = get_translation_for_term_superseding_document("de").unwrap();
 
-        let case_01_wrong_summary = Err(vec![TestFinding::Warning(
+        let no_reference_with_prefix = Err(vec![TestFinding::Warning(
             create_missing_reference_data(
                 de_summary_prefix,
                 &CategoryOfReference::External,
@@ -86,7 +86,7 @@ mod tests {
             Err(vec![create_no_translation_known_info("Superseding Document", "eo")]);
 
         TESTS_2_1.test_6_2_39_4.expect(ExpectedResults {
-            case_01: case_01_wrong_summary,
+            case_01: no_reference_with_prefix,
             case_11: Ok(()),
             case_12: Ok(()),
             case_s11: case_s11_esperanto_no_translation,

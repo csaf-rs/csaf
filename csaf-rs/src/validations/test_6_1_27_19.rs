@@ -103,7 +103,7 @@ mod tests {
             case_11: Ok(()),  // lang: unspecified, single correct reference
             case_12: Ok(()),  // lang: en-us, multiple correct references
             case_13: Ok(()),  // lang: de-DE is ignored
-            case_s11: Ok(()), // lang: en-us, wrong category
+            case_s11: Ok(()), // lang: en-us, category not csaf_superseded
         });
     }
 }

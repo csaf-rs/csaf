@@ -113,6 +113,9 @@ mod tests {
             test_6_1_27_10_err_generator("CSAFPID-9080701".to_string(), 0, 1),
             test_6_1_27_10_err_generator("CSAFPID-9080702".to_string(), 0, 2),
         ]);
+        
+        // Case S11: remediations for all products
+        // Case S12: remediations for all products, also via groups
 
         TESTS_2_0.test_6_1_27_10.expect(ExpectedResults_2_0 {
             case_01: case_one_product_missing_from_group.clone(),

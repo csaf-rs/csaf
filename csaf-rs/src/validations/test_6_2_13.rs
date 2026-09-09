@@ -58,7 +58,7 @@ mod tests {
     #[test]
     fn test_test_6_2_13() {
         let simple_unordered_key = Err(vec![create_unsorted_keys_error("/document/csaf_version")]);
-        
+
         // Multiple errors:
         // 2x document level (csaf_version, tracking)
         // nested in correctly sorted key (publisher -> namespace)
@@ -69,18 +69,18 @@ mod tests {
             create_unsorted_keys_error("/document/publisher/namespace"),
             create_unsorted_keys_error("/document/tracking/revision_history/0/summary"),
         ]);
-        
+
         // Case S11: Passing case with all keys sorted (just 01 fixed)
 
         TESTS_2_0.test_6_2_13.expect(ExpectedResults_2_0 {
             case_01: simple_unordered_key.clone(),
             case_s01: multiple_unordered_keys_with_nesting.clone(),
-            case_s11: Ok(())
+            case_s11: Ok(()),
         });
         TESTS_2_1.test_6_2_13.expect(ExpectedResults_2_1 {
             case_01: simple_unordered_key,
             case_s01: multiple_unordered_keys_with_nesting,
-            case_s11: Ok(())
+            case_s11: Ok(()),
         });
     }
 }

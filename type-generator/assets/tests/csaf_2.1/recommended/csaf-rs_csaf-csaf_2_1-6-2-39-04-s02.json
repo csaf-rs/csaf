@@ -33,7 +33,7 @@
         "url": "https://example.com/.well-known/csaf/green/2024/esa-2024-1234.json"
       }
     ],
-    "title": "Recommended Test: Language Specific Superseding Document (failing supplementary example 1: wrong category)",
+    "title": "Recommended Test: Language Specific Superseding Document (failing supplementary example 2: multiple wrong category)",
     "tracking": {
       "current_release_date": "2024-05-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-2024-6-2-39-04-S02",

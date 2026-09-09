@@ -82,11 +82,14 @@ mod tests {
 
         // Case 11: correct category + prefix
         // Case 12: multiple correct category + prefix
+        let case_s11_esperanto_no_translation =
+            Err(vec![create_no_translation_known_info("Superseding Document", "eo")]);
 
         TESTS_2_1.test_6_2_39_4.expect(ExpectedResults {
             case_01: case_01_wrong_summary,
             case_11: Ok(()),
             case_12: Ok(()),
+            case_s11: case_s11_esperanto_no_translation,
         });
     }
 }

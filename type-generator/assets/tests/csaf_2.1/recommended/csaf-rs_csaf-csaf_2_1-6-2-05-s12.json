@@ -13,14 +13,14 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Recommended Test: CVE in field IDs (failing supplementary example 1 - two ids with a CVE in the text field)",
+    "title": "Recommended Test: Older Initial Release Date than Revision History (valid supplementary example 2 - equal timestamps with positive and negative offsets)",
     "tracking": {
-      "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-17-S01",
-      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "current_release_date": "2024-01-24T10:00:00.000-05:00",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-05-S12",
+      "initial_release_date": "2024-01-24T17:00:00.000+02:00",
       "revision_history": [
         {
-          "date": "2024-01-24T10:00:00.000Z",
+          "date": "2024-01-24T10:00:00.000-05:00",
           "number": "1",
           "summary": "Initial version."
         }
@@ -28,19 +28,5 @@
       "status": "final",
       "version": "1"
     }
-  },
-  "vulnerabilities": [
-    {
-      "ids": [
-        {
-          "system_name": "CVE Project",
-          "text": "CVE-2021-44228"
-        },
-        {
-          "system_name": "CVE Project",
-          "text": "CVE-2021-44229"
-        }
-      ]
-    }
-  ]
+  }
 }

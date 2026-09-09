@@ -13,38 +13,30 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Recommended Test: CVE in field IDs (failing supplementary example 2 - two vulnerabilities with one id each that contains a CVE in the text field)",
+    "title": "Recommended Test: Older Initial Release Date than Revision History (valid supplementary example 3 - timezone-aware oldest revision selection independent of array order)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-17-S02",
-      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-05-S13",
+      "initial_release_date": "2024-01-22T23:00:00.000Z",
       "revision_history": [
         {
-          "date": "2024-01-24T10:00:00.000Z",
+          "date": "2024-01-22T23:55:00.000Z",
+          "number": "2",
+          "summary": "Second version."
+        },
+        {
+          "date": "2024-01-23T00:00:00.000+02:00",
           "number": "1",
           "summary": "Initial version."
+        },
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "3",
+          "summary": "Third version."
         }
       ],
       "status": "final",
-      "version": "1"
+      "version": "3"
     }
-  },
-  "vulnerabilities": [
-    {
-      "ids": [
-        {
-          "system_name": "CVE Project",
-          "text": "CVE-2021-44228"
-        }
-      ]
-    },
-    {
-      "ids": [
-        {
-          "system_name": "CVE Project",
-          "text": "CVE-2021-44229"
-        }
-      ]
-    }
-  ]
+  }
 }

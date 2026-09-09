@@ -1,0 +1,44 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Optional test: CVE in field IDs (failing supplementary example 4 - two vulnerabilities where the second's id has a CVE in text property)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-2-17-S04",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "vulnerabilities": [
+    {
+      "ids": [
+        {
+          "system_name": "GitHub Issue",
+          "text": "csaf-tools/CVRF-CSAF-Converter#78"
+        }
+      ]
+    },
+    {
+      "ids": [
+        {
+          "system_name": "CVE Project",
+          "text": "CVE-2021-44228"
+        }
+      ]
+    }
+  ]
+}

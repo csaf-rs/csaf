@@ -655,6 +655,54 @@
       ]
     },
     {
+      "id": "6.2.5",
+      "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s01.json",
+          "valid": true
+        }
+      ],
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s11.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s12.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-05-s13.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.2.7",
+      "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-07-s01.json",
+          "valid": true
+        }
+      ],
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-07-s11.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-07-s12.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-07-s13.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.2.8",
       "group": "recommended",
       "valid": [
@@ -719,16 +767,26 @@
       ]
     },
     {
+      "id": "6.2.12",
+      "group": "recommended",
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-12-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.2.14",
       "group": "recommended",
       "failures": [
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-14-s01.json",
-          "valid": false
+          "valid": true
         },
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-14-s02.json",
-          "valid": false
+          "valid": true
         }
       ]
     },
@@ -742,7 +800,7 @@
         },
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-15-s02.json",
-          "valid": false
+          "valid": true
         }
       ],
       "valid": [
@@ -922,7 +980,7 @@
       "valid": [
         {
           "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-09-s11.json",
-          "valid": true
+          "valid": false
         }
       ]
     },

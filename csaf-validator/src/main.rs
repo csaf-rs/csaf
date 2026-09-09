@@ -25,10 +25,25 @@ struct Args {
     #[arg(short = 'C', long, default_value = "auto")]
     csaf_version: String,
 
-    /// The validation preset or tests to use
-    #[arg(short = 'T', long, default_value = "basic", action = clap::ArgAction::Append)]
+    /// Set of tests to run, choose either one or more test IDs by repeating the option
+    /// (e.g. -T 6.2.12 -T 6.3.11), or a preset test suite [default: "basic"]:
+    ///     - basic: Validate mandatory tests and schema
+    ///     - extended: Validate mandatory tests, recommended tests and JSON schema
+    ///     - full: Validate all tests and JSON schema
+    ///     - schema: Check if the input file(s) match the JSON schema
+    /// In addition for CSAF version 2.1 the following preset test suites are available:
+    ///     - mandatory: Validate all mandatory tests
+    ///     - recommended: Validate all recommended tests
+    ///     - informative: Validate all informative tests
+    ///     - external-request-free: Validate full test suite without 6.3.6 and 6.3.7
+    ///     - consistent-revision-history: Validate 6.1.14, 6.1.18, 6.1.19, 6.1.21, 6.1.22, 6.1.37, 6.2.4 - 6.2.6
+    ///       6.2.21 and 6.2.33
+    ///     - consistent-date-times: Validate 6.1.37, 6.1.45, 6.1.49, 6.1.51 - 6.1.53
+    ///     - ssvc: Validate 6.1.46 - 6.1.49, 6.2.3, 6.2.34 - 6.2.37, 6.3.13 - 6.3.15
+    #[arg(short = 'T', long, verbatim_doc_comment, default_value = "basic", hide_default_value = true, action = clap::ArgAction::Append)]
     test: Vec<String>,
 
+    /// Provide information about the validator invocation as well as individual test results
     #[arg(short = 'v', long)]
     verbose: bool,
 }
@@ -98,9 +113,17 @@ where
     let test_ids: Vec<_> = args
         .test
         .iter()
-        .flat_map(|test_or_preset| match T::tests_in_preset(test_or_preset) {
-            Some(test_ids) => test_ids,
-            None => vec![test_or_preset.as_str()],
+        .flat_map(|test_or_preset| {
+            let presets = T::get_presets();
+            // Try to find a matching preset for the document version
+            let matched_preset = presets
+                .iter()
+                .find(|p| p.to_string().eq_ignore_ascii_case(test_or_preset));
+            match matched_preset {
+                Some(preset) => T::tests_in_preset(preset).unwrap_or_default(),
+                // no matching preset found, treat the argument as a test ID
+                None => vec![test_or_preset.as_str()],
+            }
         })
         .collect();
 

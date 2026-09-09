@@ -31,12 +31,15 @@ mod tests {
 
     #[test]
     fn test_test_6_2_12() {
-        let err = Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]);
+        let missing_document_language_property = Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
-        TESTS_2_0
-            .test_6_2_12
-            .expect(ExpectedResults_2_0 { case_01: err.clone() });
-        TESTS_2_1.test_6_2_12.expect(ExpectedResults_2_1 { case_01: err });
+        TESTS_2_0.test_6_2_12.expect(ExpectedResults_2_0 {
+            case_01: missing_document_language_property.clone(),
+            case_s11: Ok(()),
+        });
+        TESTS_2_1.test_6_2_12.expect(ExpectedResults_2_1 {
+            case_01: missing_document_language_property,
+            case_s11: Ok(()),
+        });
     }
 }

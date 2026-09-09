@@ -1,0 +1,57 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_superseded",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "lang": "de",
+    "notes": [
+      {
+        "category": "description",
+        "text": "Dieses CSAF-Dokument enthielt Beispieldaten und wurde ersetzt, um Testdaten zu erstellen.",
+        "title": "Grund für die Ersetzung"
+      }
+    ],
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "references": [
+      {
+        "category": "self",
+        "summary": "Ersetzendes Dokument",
+        "url": "https://example.com/.well-known/csaf/clear/2024/esa-2024-1234.json"
+      },
+      {
+        "category": "self",
+        "summary": "Ersetzendes Dokument",
+        "url": "https://example.com/.well-known/csaf/green/2024/esa-2024-1234.json"
+      }
+    ],
+    "title": "Recommended Test: Language Specific Superseding Document (failing supplementary example 1: wrong category)",
+    "tracking": {
+      "current_release_date": "2024-05-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-2024-6-2-39-04-S02",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initiale Version."
+        },
+        {
+          "date": "2024-05-24T10:00:00.000Z",
+          "number": "2",
+          "summary": "Ersetzt."
+        }
+      ],
+      "status": "final",
+      "version": "2"
+    }
+  }
+}

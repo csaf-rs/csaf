@@ -4,7 +4,7 @@
     "category": "csaf_base",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_0-6-2-13-S02",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-2-13-S01",
       "initial_release_date": "2021-07-21T10:00:00.000Z",
       "revision_history": [
         {
@@ -17,10 +17,10 @@
       "version": "1"
     },
     "publisher": {
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests",
       "category": "other",
-      "name": "CSAF-RS Test Files",
-      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+      "name": "CSAF-RS Test Files"
     },
-    "title": "Optional test: Sorting (failing example 2 - multiple unsorted pairs)"
+    "title": "Optional test: Sorting (failing example 2 - multiple unsorted keys with nesting)"
   }
 }

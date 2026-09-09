@@ -319,6 +319,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.5   | ✅ | ✅ |
 | 6.2.7   | ✅ | ✅ |
 | 6.2.11   | ✅ | ✅ |
+| 6.2.13   | ✅ | ✅ |
 | 6.2.16   | ✅ | ✅ |
 | 6.2.17   | ✅ | ✅ |
 | 6.2.23   | ⭕ | ✅ |

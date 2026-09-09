@@ -777,6 +777,22 @@
       ]
     },
     {
+      "id": "6.2.13",
+      "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-13-s01.json",
+          "valid": true
+        }
+      ],
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-13-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.2.14",
       "group": "recommended",
       "failures": [

@@ -1,25 +1,10 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait};
+use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
-use crate::validation::{TestFinding, TestFindingData};
+use crate::validation::TestFinding;
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
-
-fn create_missing_reference_error(document_category: &CsafDocumentCategory) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!(
-            "Document with category `{document_category}' must have at least one reference whose summary starts with `Superseding Document` and has the category `external`"
-        ),
-        instance_path: "/document/references".to_string(),
-    })
-}
-
-fn create_incorrect_category_error(reference_index: usize) -> TestFinding {
-    TestFinding::Error ( TestFindingData {
-        message: "The reference summary starts with the correct string \"Superseding Document\". However it uses the wrong category.".to_string(),
-        instance_path: format!("/document/references/{reference_index}"),
-    })
-}
+use crate::validations::utils::document_references_with_summary_and_category::check_references_with_summary_prefix_and_category;
 
 /// 6.1.27.19 Reference to superseding document
 ///
@@ -33,6 +18,7 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
+    
     match doc.get_document().get_lang() {
         Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
         Some(CsafLanguage::Valid(valid_lang)) if valid_lang.is_default() || !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
@@ -40,38 +26,14 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
         None => {},    // no language set
     }
 
-    let mut has_external_reference_with_correct_summary = false;
-    let mut errors: Option<Vec<TestFinding>> = None;
-    // Check for summary starting with "Superseding Document" and category external
-    if let Some(references) = doc.get_document().get_references() {
-        for (r_i, reference) in references.iter().enumerate() {
-            if reference.get_summary().starts_with("Superseding Document") {
-                if reference.get_category() != CategoryOfReference::External {
-                    errors
-                        .get_or_insert_default()
-                        .push(create_incorrect_category_error(r_i));
-                } else {
-                    has_external_reference_with_correct_summary = true;
-                }
-            }
-        }
-    }
-
-    // We first check for an incorrect category, because if there is a reference with the correct summary but wrong category,
-    // the document is not valid, even if there is also a reference with correct summary and correct category.
-    // So the incorrect category has precedence over the missing reference. This way the error message is more specific and hints more
-    // directly to the wrong instance.
-    if let Some(errs) = errors {
-        return Err(errs);
-    }
-
-    // completely missing reference with correct summary and category has second precedence
-    if !has_external_reference_with_correct_summary {
-        return Err(vec![create_missing_reference_error(
-            &CsafDocumentCategory::CsafSuperseded,
-        )]);
-    }
-    Ok(())
+    check_references_with_summary_prefix_and_category(
+        doc.get_document().get_references().map(Vec::as_slice),
+        "Superseding Document",
+        &CategoryOfReference::External,
+        &doc_category,
+    )
+    .map(|findings| findings.into_iter().map(TestFinding::Error).collect())
+    .map_or(Ok(()), Err)
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
@@ -88,12 +50,25 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_27_19 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validations::utils::document_references_with_summary_and_category::{create_incorrect_category_data, create_missing_reference_data};
 
     #[test]
     fn test_test_6_1_27_19() {
-        let undefined_lang_wrong_category = Err(vec![create_incorrect_category_error(0)]);
-        let lang_en_missing_category = Err(vec![create_missing_reference_error(
-            &CsafDocumentCategory::CsafSuperseded,
+        let undefined_lang_wrong_category = Err(vec![TestFinding::Error(
+            create_incorrect_category_data(
+                "Superseding Document",
+                &CategoryOfReference::Self_,
+                &CategoryOfReference::External,
+                &CsafDocumentCategory::CsafSuperseded,
+                0,
+            ),
+        )]);
+        let lang_en_missing_category = Err(vec![TestFinding::Error(
+            create_missing_reference_data(
+                "Superseding Document",
+                &CategoryOfReference::External,
+                &CsafDocumentCategory::CsafSuperseded,
+            ),
         )]);
         TESTS_2_1.test_6_1_27_19.expect(ExpectedResults {
             case_01: undefined_lang_wrong_category.clone(),

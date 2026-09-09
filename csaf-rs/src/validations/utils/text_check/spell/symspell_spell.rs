@@ -1,8 +1,8 @@
 //! English spell-checker backed by the SymSpell algorithm and static word-frequency
 //! dictionaries (TODO: only english for now)
 
-use crate::validations::utils::text_check::checkers::utils::tokenize_words;
-use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
+use super::{SpellTextChecker, TextChecker};
+use crate::validations::utils::text_check::utils::{TemporaryTextCheckQuality, tokenize_words};
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::sync::LazyLock;
 use symspell::{SymSpell, SymSpellBuilder, UnicodeStringStrategy, Verbosity};
@@ -100,6 +100,10 @@ impl TextChecker for EnglishSymspellChecker {
         findings
     }
 }
+
+/// Marker trait implementation: this checker performs spell checking.
+/// For now, only relevant to integration tests.
+impl SpellTextChecker for EnglishSymspellChecker {}
 
 #[cfg(test)]
 mod tests {

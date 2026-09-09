@@ -53,10 +53,15 @@ pub fn get_translation_for_term_superseding_document(primary_lang_tag: &str) -> 
 
 /// Creates a [`TestFinding::Information`] indicating that no translation for `term` is known for
 /// the given language tag, and that the test was therefore skipped.
-pub(crate) fn create_no_translation_known_info(term: &str, lang: &str) -> TestFinding {
+/// 
+/// # Arguments
+/// * `term` - The term for which no translation is known
+/// * `lang` - The language tag
+/// * `instance_path` - The JSON pointer to the document location being validated
+pub(crate) fn create_no_translation_known_info(term: &str, lang: &str, instance_path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!("No translation for '{term}' known for language '{lang}'. Test skipped."),
-        instance_path: "/document/notes".to_string(),
+        instance_path: instance_path.to_string(),
     })
 }
 

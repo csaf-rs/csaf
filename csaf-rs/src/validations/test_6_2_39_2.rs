@@ -37,6 +37,7 @@ pub fn test_6_2_39_2_language_specific_reasoning_for_withdrawal(doc: &impl CsafT
         return Err(vec![create_no_translation_known_info(
             "Reasoning for Withdrawal",
             &primary_lang,
+            "/document/notes",
         )]);
     };
 
@@ -79,7 +80,7 @@ mod tests {
         ))]);
         // Case 11: correct category description
         let case_s11_esperanto_no_translation =
-            Err(vec![create_no_translation_known_info("Reasoning for Withdrawal", "eo")]);
+            Err(vec![create_no_translation_known_info("Reasoning for Withdrawal", "eo", "/document/notes")]);
 
         TESTS_2_1.test_6_2_39_2.expect(ExpectedResults {
             case_01: case_01_category_summary,

@@ -40,7 +40,7 @@ fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<Tes
 
 fn create_unsorted_keys_error(path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
-        message: "The keys in the CSAF document are not sorted alphabetically".to_string(),
+        message: "This key does not adhere to the alphabetical sorting of JSON keys".to_string(),
         instance_path: path.to_string(),
     })
 }

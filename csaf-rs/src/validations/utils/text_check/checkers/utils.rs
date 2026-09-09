@@ -9,6 +9,7 @@
 pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
     let mut tokens = Vec::new();
     let mut search_from = 0;
+    let mut char_count = 0;
 
     for token in text.split_whitespace() {
         // Locate the token's byte offset in the remaining text
@@ -16,6 +17,8 @@ pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
             .find(token)
             .expect("token should be found in remaining text");
         let token_start = search_from + offset;
+
+        char_count += text[search_from..token_start].chars().count();
         search_from = token_start + token.len();
 
         // Strip leading/trailing non-alphanumeric characters to get the bare word
@@ -23,16 +26,18 @@ pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
 
         // Skip empty and only-numeric+punctuation tokens
         if trimmed.is_empty() || trimmed.chars().all(|c| c.is_numeric() || !c.is_alphabetic()) {
+            char_count += token.chars().count();
             continue;
         }
 
         // Byte offset of trimmed within the original token (and so within the text)
         let word_offset = trimmed.as_ptr() as usize - token.as_ptr() as usize;
-        // Convert to character counts so start/end are char, not byte, offsets
-        let word_start = text[..token_start + word_offset].chars().count();
+        let word_start = char_count + token[..word_offset].chars().count();
         let word_end = word_start + trimmed.chars().count();
 
         tokens.push((trimmed.to_string(), word_start, word_end));
+
+        char_count += token.chars().count();
     }
 
     tokens

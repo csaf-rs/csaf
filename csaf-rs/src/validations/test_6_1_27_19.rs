@@ -18,7 +18,7 @@ pub fn test_6_1_27_19_reference_to_superseding_document(doc: &impl CsafTrait) ->
     if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
-    
+
     match doc.get_document().get_lang() {
         Some(CsafLanguage::Invalid(_, _)) => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
         Some(CsafLanguage::Valid(valid_lang)) if valid_lang.is_default() || !valid_lang.is_english() => return Ok(()), // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
@@ -50,26 +50,24 @@ mod tests {
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_27_19 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validations::utils::document_references_with_summary_and_category::{create_incorrect_category_data, create_missing_reference_data};
+    use crate::validations::utils::document_references_with_summary_and_category::{
+        create_incorrect_category_data, create_missing_reference_data,
+    };
 
     #[test]
     fn test_test_6_1_27_19() {
-        let undefined_lang_wrong_category = Err(vec![TestFinding::Error(
-            create_incorrect_category_data(
-                "Superseding Document",
-                &CategoryOfReference::Self_,
-                &CategoryOfReference::External,
-                &CsafDocumentCategory::CsafSuperseded,
-                0,
-            ),
-        )]);
-        let lang_en_missing_category = Err(vec![TestFinding::Error(
-            create_missing_reference_data(
-                "Superseding Document",
-                &CategoryOfReference::External,
-                &CsafDocumentCategory::CsafSuperseded,
-            ),
-        )]);
+        let undefined_lang_wrong_category = Err(vec![TestFinding::Error(create_incorrect_category_data(
+            "Superseding Document",
+            &CategoryOfReference::Self_,
+            &CategoryOfReference::External,
+            &CsafDocumentCategory::CsafSuperseded,
+            0,
+        ))]);
+        let lang_en_missing_category = Err(vec![TestFinding::Error(create_missing_reference_data(
+            "Superseding Document",
+            &CategoryOfReference::External,
+            &CsafDocumentCategory::CsafSuperseded,
+        ))]);
         TESTS_2_1.test_6_1_27_19.expect(ExpectedResults {
             case_01: undefined_lang_wrong_category.clone(),
             case_02: Ok(()), // ToDo this test case is currently marked as failing, but the data is valid see https://github.com/oasis-tcs/csaf/issues/1359

@@ -10,8 +10,17 @@ import argparse
 import json
 import subprocess
 import sys
+from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+
+class ValidationOutcome(Enum):
+    """Possible outcomes from validating a file."""
+    SUCCESS = "success"
+    FAILED = "failed"
+    TIMEOUT = "timeout"
+    ERROR = "error"
 
 
 class TestValidator:
@@ -20,11 +29,10 @@ class TestValidator:
         self.testcase_json_path = testcase_json_path
         self.csaf_version = csaf_version
 
-    def validate_file(self, test_file: Path) -> bool:
+    def validate_file(self, test_file: Path) -> ValidationOutcome:
         """
         Validate a single test file.
-        Returns True if validation succeeds (no mandatory + schema errors), False if validation fails, timeout is reached
-        or the csaf-validator throws an error.
+        Returns ValidationOutcome enum indicating success, failure, timeout, or error.
         """
         cmd = [
             str(self.validator_path),
@@ -40,13 +48,13 @@ class TestValidator:
                 text=True,
                 timeout=10
             )
-            return result.returncode == 0
+            return ValidationOutcome.SUCCESS if result.returncode == 0 else ValidationOutcome.FAILED
         except subprocess.TimeoutExpired:
-            print(f"  ⚠ Timeout validating {test_file.name}")
-            return False
+            print(f"Timeout validating {test_file.name}")
+            return ValidationOutcome.TIMEOUT
         except Exception as e:
-            print(f"  ⚠ Error validating {test_file.name}: {e}")
-            return False
+            print(f"Error validating {test_file.name}: {e}")
+            return ValidationOutcome.ERROR
 
     def process_testcases_json_file(self) -> int:
         """
@@ -71,7 +79,7 @@ class TestValidator:
 
                         # test case file not found
                         if not test_case_file_path.exists():
-                            print(f"⚠ Test case file not found: {test_case_file_path}")
+                            print(f"Test case file not found: {test_case_file_path}")
                             error_count += 1
                             continue
 
@@ -79,13 +87,18 @@ class TestValidator:
                         expected = test_case.get("valid")
 
                         # validate the test case file
-                        is_valid = self.validate_file(test_case_file_path)
+                        outcome = self.validate_file(test_case_file_path)
 
+                        if outcome == ValidationOutcome.TIMEOUT or outcome == ValidationOutcome.ERROR:
+                            error_count += 1
+                            continue
+
+                        is_valid = outcome == ValidationOutcome.SUCCESS
 
                         # compare testcases.json validity vs csaf-validator basic (schema + mandatory) run result
                         if is_valid != expected:
-                            error_count += 1
-                            print(f"⚠ {test_id}: {test_case['name']} (csaf-validator={is_valid}, testcases.json={expected})")
+                           error_count += 1
+                           print(f"{test_id}: {test_case['name']} (csaf-validator={is_valid}, testcases.json={expected})")
 
 
         return error_count

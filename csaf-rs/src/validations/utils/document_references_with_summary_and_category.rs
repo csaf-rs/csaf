@@ -51,13 +51,13 @@ pub(crate) fn check_references_with_summary_prefix_and_category<Ref: ReferenceTr
     doc_category: &CsafDocumentCategory,
 ) -> Option<Vec<TestFindingData>> {
     let mut wrong_category_errors = Vec::new();
-    let mut has_correct_match = false;
 
     if let Some(references) = references {
         for (i_r, reference) in references.iter().enumerate() {
             if reference.get_summary().starts_with(required_summary_prefix) {
                 if reference.get_category() == *required_category {
-                    has_correct_match = true;
+                    // a reference with both correct prefix and correct category was found
+                    return None;
                 } else {
                     wrong_category_errors.push(create_incorrect_category_data(
                         required_summary_prefix,
@@ -69,11 +69,6 @@ pub(crate) fn check_references_with_summary_prefix_and_category<Ref: ReferenceTr
                 }
             }
         }
-    }
-
-    // a reference with both correct prefix and correct category was found
-    if has_correct_match {
-        return None;
     }
 
     // references with matching prefix but wrong category were found, report those errors

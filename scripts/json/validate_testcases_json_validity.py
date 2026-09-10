@@ -23,7 +23,8 @@ class TestValidator:
     def validate_file(self, test_file: Path) -> bool:
         """
         Validate a single test file.
-        Returns True if validation succeeds (no mandatory + schema errors), False otherwise.
+        Returns True if validation succeeds (no mandatory + schema errors), False if validation fails, timeout is reached
+        or the csaf-validator throws an error.
         """
         cmd = [
             str(self.validator_path),

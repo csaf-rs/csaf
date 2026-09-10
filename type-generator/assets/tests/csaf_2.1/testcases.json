@@ -154,7 +154,7 @@
         },
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s13.json",
-          "valid": true
+          "valid": false
         },
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s14.json",
@@ -162,7 +162,7 @@
         },
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-17-s15.json",
-          "valid": true
+          "valid": false
         }
       ]
     },
@@ -178,7 +178,7 @@
       "valid": [
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-20-s11.json",
-          "valid": false
+          "valid": true
         }
       ]
     },

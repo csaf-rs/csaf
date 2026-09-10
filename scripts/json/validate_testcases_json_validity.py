@@ -130,7 +130,9 @@ def main():
         sys.exit(1)
     
     validator = TestValidator(args.validator_path, args.testcase_json_path, args.csaf_version)
-    validator.process_testcases_json_file()
+    error_count = validator.process_testcases_json_file()
+    sys.exit(1 if error_count else 0)
+
 
 
 if __name__ == "__main__":

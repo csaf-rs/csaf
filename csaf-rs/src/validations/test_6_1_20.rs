@@ -61,6 +61,8 @@ mod tests {
             &SemVerVersion::from(Version::from_str("1.0.0-alpha").unwrap()),
         )]);
 
+        // Case 11: document status final, no pre-release part
+
         TESTS_2_0.test_6_1_20.expect(ExpectedResults_2_0 {
             case_01: case_interim.clone(),
             case_s01: case_final.clone(),

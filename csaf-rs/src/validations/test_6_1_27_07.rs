@@ -60,6 +60,9 @@ mod tests {
     fn test_test_6_1_27_07() {
         let case_01 = Err(vec![test_6_1_27_07_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
 
+        // Note: For simplicity, this file violates 6.1.27.5, 8, 9, 10
+        // Case S11: 4 vulns, one valid product_status for each
+
         TESTS_2_0.test_6_1_27_7.expect(ExpectedResults_2_0 {
             case_01: case_01.clone(),
             case_s11: Ok(()),

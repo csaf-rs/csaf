@@ -1,4 +1,7 @@
-use crate::validation::{TestFinding, TestFindingData};
+use crate::{
+    validation::{TestFinding, TestFindingData},
+    validations::utils::raw_json::{JsonValuePresence, is_present_and_set},
+};
 use serde_json::Value;
 use std::sync::LazyLock;
 
@@ -6,11 +9,10 @@ use std::sync::LazyLock;
 ///
 /// `/document/lang` must be set.
 pub fn test_6_2_12_missing_document_language(json: &Value) -> Result<(), Vec<TestFinding>> {
-    match json.pointer("/document/lang") {
-        Some(Value::Null) => Err(vec![UNSET_DOCUMENT_LANGUAGE.clone()]),
-        Some(Value::String(l)) if l.is_empty() => Err(vec![UNSET_DOCUMENT_LANGUAGE.clone()]),
-        Some(_) => Ok(()),
-        None => Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]),
+    match is_present_and_set("/document/lang", json) {
+        JsonValuePresence::Missing => Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]),
+        JsonValuePresence::Unset | JsonValuePresence::Empty => Err(vec![UNSET_DOCUMENT_LANGUAGE.clone()]),
+        JsonValuePresence::Set => Ok(()),
     }
 }
 

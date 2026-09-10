@@ -43,6 +43,9 @@ mod tests {
         // Case 11: different profile ("csaf_security_advisory")
         // Case 12: with prefix ("Example Company csaf_deprecated_security_advisory")´
         // Case 13: casing ("CSAF_deprecated_security_advisory")
+        // TODO: This test file is schema-invalid, as the leading whitespace violates the category regex
+        // TODO: Currently, this test case is "failing upwards", as schema-invalid files are reported as passing without actually running the test (bug #411)
+        // TODO: Leaving it in, as this file will become relevant when lenient parsing is implemented.
         // Case S11: leading whitespace (" csaf_deprecated_some_other_type")
         TESTS_2_1.test_6_2_38.expect(ExpectedResults {
             case_01,

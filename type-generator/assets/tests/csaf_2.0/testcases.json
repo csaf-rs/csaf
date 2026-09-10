@@ -398,7 +398,7 @@
       "valid": [
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-07-s11.json",
-          "valid": true
+          "valid": false
         }
       ]
     },
@@ -408,7 +408,7 @@
       "valid": [
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-27-08-s11.json",
-          "valid": true
+          "valid": false
         }
       ]
     },

@@ -212,6 +212,7 @@ mod tests {
             ),
         ]);
 
+        // Note: Stacked categories violate 6.1.57, making this test file mandatory invalid on CSAF 2.1
         let case_s01_stacked_wrong_order = Err(vec![create_branch_categories_error(
             &[
                 CategoryOfTheBranch::Vendor,

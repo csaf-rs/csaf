@@ -37,10 +37,11 @@ pub(crate) fn create_incorrect_category_data(
 /// functions and not used in the error detection logic.
 ///
 /// The following findings are reported in that order / prioritization:
-/// - If there is no reference with summary starting with `required_summary_prefix`: a single
-///   missing-reference error.
-/// - If at least one reference with summary starting with `required_summary_prefix` is found
-///   but one has the wrong category: wrong-category errors for those with wrong category.
+/// - If there is at least one reference with both the required summary prefix AND required
+///   category: no error.
+/// - If at least one reference with the required summary prefix is found but none have the
+///   required category: wrong-category errors for those with wrong category.
+/// - If there is no reference with the required summary prefix: a single missing-reference error.
 ///
 /// Returns `None` if the check passes, or `Some` with a list of [`TestFindingData`]s otherwise.
 pub(crate) fn check_references_with_summary_prefix_and_category<Ref: ReferenceTrait>(
@@ -49,16 +50,16 @@ pub(crate) fn check_references_with_summary_prefix_and_category<Ref: ReferenceTr
     required_category: &CategoryOfReference,
     doc_category: &CsafDocumentCategory,
 ) -> Option<Vec<TestFindingData>> {
-    let mut errors: Option<Vec<TestFindingData>> = None;
-    let mut matching_indices = Vec::new();
+    let mut wrong_category_errors = Vec::new();
+    let mut has_correct_match = false;
 
-    // filter references for required summary prefix and category
-    // collect correct summary prefix, wrong category errors
     if let Some(references) = references {
         for (i_r, reference) in references.iter().enumerate() {
             if reference.get_summary().starts_with(required_summary_prefix) {
-                if reference.get_category() != *required_category {
-                    errors.get_or_insert_default().push(create_incorrect_category_data(
+                if reference.get_category() == *required_category {
+                    has_correct_match = true;
+                } else {
+                    wrong_category_errors.push(create_incorrect_category_data(
                         required_summary_prefix,
                         &reference.get_category(),
                         required_category,
@@ -66,20 +67,24 @@ pub(crate) fn check_references_with_summary_prefix_and_category<Ref: ReferenceTr
                         i_r,
                     ));
                 }
-                matching_indices.push(i_r);
             }
         }
     }
 
-    // If no reference with the required summary prefix is found, report missing reference.
-    // If at least one is found, report only the category errors (if any).
-    if matching_indices.is_empty() {
-        return Some(vec![create_missing_reference_data(
-            required_summary_prefix,
-            required_category,
-            doc_category,
-        )]);
+    // a reference with both correct prefix and correct category was found
+    if has_correct_match {
+        return None;
     }
 
-    errors
+    // references with matching prefix but wrong category were found, report those errors
+    if !wrong_category_errors.is_empty() {
+        return Some(wrong_category_errors);
+    }
+
+    // no references with matching prefix at all, report missing reference
+    Some(vec![create_missing_reference_data(
+        required_summary_prefix,
+        required_category,
+        doc_category,
+    )])
 }

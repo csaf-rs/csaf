@@ -12,17 +12,19 @@ fn create_product_version_range_error(path: &str) -> TestFinding {
 ///
 /// Tests that the `product_version_range` branch category is not used anywhere in the product tree.
 pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let Some(product_tree) = doc.get_product_tree() else {
+        return Ok(()); // TODO #409 wasSkipped
+    };
+
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    if let Some(product_tree) = doc.get_product_tree() {
-        product_tree.visit_all_branches(&mut |branch, path| {
-            if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
-                errors
-                    .get_or_insert_default()
-                    .push(create_product_version_range_error(path));
-            }
-        });
-    }
+    product_tree.visit_all_branches(&mut |branch, path| {
+        if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
+            errors
+                .get_or_insert_default()
+                .push(create_product_version_range_error(path));
+        }
+    });
 
     errors.map_or(Ok(()), Err)
 }

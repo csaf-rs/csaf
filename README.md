@@ -343,6 +343,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.3  | ✅ | ✅ |
 | 6.3.4  | ✅ | ✅ |
 | 6.3.5  | ✅ | ✅ |
+| 6.3.10 | ✅ | ✅ |
 | 6.3.11 | ✅ | ✅ |
 | 6.3.14 | ⭕ | ✅ |
 | 6.3.15 | ⭕ | ✅ |

@@ -12,17 +12,19 @@ fn create_product_version_range_error(path: &str) -> TestFinding {
 ///
 /// Tests that the `product_version_range` branch category is not used anywhere in the product tree.
 pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    let Some(product_tree) = doc.get_product_tree() else {
+        return Ok(()); // TODO #409 wasSkipped
+    };
+
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    if let Some(product_tree) = doc.get_product_tree() {
-        product_tree.visit_all_branches(&mut |branch, path| {
-            if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
-                errors
-                    .get_or_insert_default()
-                    .push(create_product_version_range_error(path));
-            }
-        });
-    }
+    product_tree.visit_all_branches(&mut |branch, path| {
+        if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
+            errors
+                .get_or_insert_default()
+                .push(create_product_version_range_error(path));
+        }
+    });
 
     errors.map_or(Ok(()), Err)
 }
@@ -39,18 +41,38 @@ mod tests {
 
     #[test]
     fn test_test_6_3_10() {
-        let case_01 = Err(vec![create_product_version_range_error(
+        let tree_with_product_version_range = Err(vec![create_product_version_range_error(
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
 
+        let tree_with_parallel_product_version_range = Err(vec![
+            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/0"),
+            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/1"),
+        ]);
+
+        // Stacked product categories violate 6.1.57 on CSAF 2.1, making this test file invalid there
+        let tree_with_stacked_product_version_range = Err(vec![
+            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/0"),
+            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/0/branches/0"),
+        ]);
+
+        // Case 11: product tree without product version range
+        // Case S11: no product tree
+
         // Both CSAF 2.0 and 2.1 have 2 test cases
         TESTS_2_0.test_6_3_10.expect(ExpectedResults_2_0 {
-            case_01: case_01.clone(),
+            case_01: tree_with_product_version_range.clone(),
+            case_s01: tree_with_parallel_product_version_range.clone(),
+            case_s02: tree_with_stacked_product_version_range.clone(),
             case_11: Ok(()),
+            case_s11: Ok(()), // TODO #409 wasSkipped
         });
         TESTS_2_1.test_6_3_10.expect(ExpectedResults_2_1 {
-            case_01,
+            case_01: tree_with_product_version_range,
+            case_s01: tree_with_parallel_product_version_range,
+            case_s02: tree_with_stacked_product_version_range,
             case_11: Ok(()),
+            case_s11: Ok(()), // TODO #409 wasSkipped
         });
     }
 }

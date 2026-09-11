@@ -12,8 +12,8 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 
 TEST_ROOT="$REPO_ROOT/type-generator/assets/tests"
 SCRIPT_PATH="$REPO_ROOT/scripts/json/validate_testcases_json_tracking_id.py"
-PREFIX_2_0="CSAF-RS_CSAF-CSAF_2_0"
-PREFIX_2_1="CSAF-RS_CSAF-CSAF_2_1"
+PREFIX_2_0="CSAF-RS_CSAF-CSAF_2_0-"
+PREFIX_2_1="CSAF-RS_CSAF-CSAF_2_1-"
 
 # Validate test files tracking ID prefixes
 python3 "$SCRIPT_PATH" \

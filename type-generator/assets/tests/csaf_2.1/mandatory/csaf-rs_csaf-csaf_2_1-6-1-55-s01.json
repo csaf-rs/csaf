@@ -23,8 +23,8 @@
     ],
     "publisher": {
       "category": "other",
-      "name": "OASIS CSAF TC",
-      "namespace": "https://csaf.io"
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
     "title": "Mandatory Test: License Text (invalid supplementary example 1: multiple license notes)",
     "tracking": {

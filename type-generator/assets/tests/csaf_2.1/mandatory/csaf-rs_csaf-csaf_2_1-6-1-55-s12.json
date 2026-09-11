@@ -11,8 +11,8 @@
     "license_expression": "LicenseRef-scancode-public-domain",
     "publisher": {
       "category": "other",
-      "name": "OASIS CSAF TC",
-      "namespace": "https://csaf.io"
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
     "title": "Mandatory Test: License Text (valid supplementary example 2: well-known scancode license expression)",
     "tracking": {

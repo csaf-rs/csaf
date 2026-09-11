@@ -278,7 +278,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.30 | ✅ | ✅ |
 | 6.1.31 | ✅ | ✅ |
 | 6.1.32 | ✅ | ✅ |
-| 6.1.33 | ✅ |   |
+| 6.1.33 | ✅ | ✅ |
 | 6.1.34 | ⭕ | ✅ |
 | 6.1.35 | ⭕ | ✅ |
 | 6.1.36 | ⭕ |   |

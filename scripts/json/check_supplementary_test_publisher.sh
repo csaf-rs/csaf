@@ -1,7 +1,7 @@
 #!/bin/bash
 # Checks that all supplementary test files have the expected publisher field.
-# Usage: ./check_json_formatting.sh [--fix]
-#   --fix        Automatically reformat files in-place
+# Usage: ./check_supplementary_test_publisher.sh [--fix]
+#   --fix        Corrects publisher fields in-place
 set -euo pipefail
 
 # Always run from the repository root so results are deterministic

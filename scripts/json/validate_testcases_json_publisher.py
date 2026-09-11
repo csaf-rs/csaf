@@ -66,6 +66,7 @@ def main() -> int:
                             data["document"]["publisher"] = expected_publisher
                             with open(file_path, "w", encoding="utf-8") as f:
                                 json.dump(data, f, indent=2)
+                                f.write("\n")
                             print(f"Fixed wrong publisher in file {file_path.name}")
                         else:
                             print(f"Found wrong publisher in file {file_path.name}")

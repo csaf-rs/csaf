@@ -10,7 +10,7 @@
     "title": "Mandatory test: Released Revision History (succeeding supplementary example 1 - semver revision history with major version 0, but status is draft)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2.0-6-1-18-S11",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-18-S11",
       "initial_release_date": "2021-07-21T10:00:00.000Z",
       "revision_history": [
         {

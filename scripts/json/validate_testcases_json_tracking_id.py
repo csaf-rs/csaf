@@ -53,13 +53,13 @@ def main() -> int:
         "--prefix-2-0",
         type=str,
         required=True,
-        help="Expected tracking ID prefix for CSAF 2.0)",
+        help="Expected tracking ID prefix for CSAF 2.0",
     )
     parser.add_argument(
         "--prefix-2-1",
         type=str,
         required=True,
-        help="Expected tracking ID prefix for CSAF 2.1)",
+        help="Expected tracking ID prefix for CSAF 2.1",
     )
     args = parser.parse_args()
 

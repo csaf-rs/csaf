@@ -42,7 +42,7 @@ def validate_tracking_id_prefix(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate and optionally fix publisher properties in CSAF test files"
+        description="Validate tracking ID prefixes and filenames in CSAF test files"
     )
     parser.add_argument(
         "test_root",

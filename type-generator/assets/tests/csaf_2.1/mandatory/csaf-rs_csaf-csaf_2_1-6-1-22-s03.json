@@ -10,8 +10,8 @@
     },
     "publisher": {
       "category": "other",
-      "name": "OASIS CSAF TC",
-      "namespace": "https://csaf.io"
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
     "title": "Mandatory Test: Multiple Definition in Revision History (failing supplementary example 3)",
     "tracking": {

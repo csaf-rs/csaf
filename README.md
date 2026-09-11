@@ -278,7 +278,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.30 | ✅ | ✅ |
 | 6.1.31 | ✅ | ✅ |
 | 6.1.32 | ✅ | ✅ |
-| 6.1.33 | ✅ |   |
+| 6.1.33 | ✅ | ✅ |
 | 6.1.34 | ⭕ | ✅ |
 | 6.1.35 | ⭕ | ✅ |
 | 6.1.36 | ⭕ |   |
@@ -340,6 +340,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | Test specification | 2.0               | 2.1 (experimental) |
 |--------|-------------------|--------------------|
 | 6.3.1  |  |  |
+| 6.3.3  | ✅ | ✅ |
 | 6.3.5  | ✅ | ✅ |
 | 6.3.10 | ✅ | ✅ |
 | 6.3.11 | ✅ | ✅ |

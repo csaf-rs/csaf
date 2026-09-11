@@ -973,6 +973,16 @@
       ]
     },
     {
+      "id": "6.3.3",
+      "group": "informative",
+      "valid": [
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-03-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
       "id": "6.3.5",
       "group": "informative",
       "failures": [
@@ -1055,16 +1065,6 @@
         {
           "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-12-s01.json",
           "valid": false
-        }
-      ]
-    },
-    {
-      "id": "6.3.3",
-      "group": "informative",
-      "valid": [
-        {
-          "name": "informative/csaf-rs_csaf-csaf_2_1-6-3-03-s11.json",
-          "valid": true
         }
       ]
     }

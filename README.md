@@ -340,7 +340,8 @@ For further configuration options, please refer to the [csaf-service README](csa
 | Test specification | 2.0               | 2.1 (experimental) |
 |--------|-------------------|--------------------|
 | 6.3.1  |  |  |
-| 6.3.5 | ✅ | ✅ |
+| 6.3.3  | ✅ | ✅ |
+| 6.3.5  | ✅ | ✅ |
 | 6.3.11 | ✅ | ✅ |
 | 6.3.14 | ⭕ | ✅ |
 | 6.3.15 | ⭕ | ✅ |

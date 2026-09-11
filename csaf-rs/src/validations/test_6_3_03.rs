@@ -14,7 +14,14 @@ fn create_missing_cve_error(vulnerability_index: usize) -> TestFinding {
 pub fn test_6_3_3_missing_cve(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
+    let vulnerabilities = doc.get_vulnerabilities();
+
+    if vulnerabilities.is_empty() {
+        // TODO #409 wasSkipped
+        return Ok(());
+    }
+
+    for (v_i, vuln) in vulnerabilities.iter().enumerate() {
         if vuln.get_cve().is_none() {
             errors.get_or_insert_default().push(create_missing_cve_error(v_i));
         }
@@ -35,21 +42,28 @@ mod tests {
 
     #[test]
     fn test_test_6_3_3() {
-        let case_01 = Err(vec![create_missing_cve_error(0)]);
-        let case_02 = Err(vec![create_missing_cve_error(0), create_missing_cve_error(2)]);
+        let single_vuln_no_cve = Err(vec![create_missing_cve_error(0)]);
+        let multi_vuln_alternating_no_cve = Err(vec![create_missing_cve_error(0), create_missing_cve_error(2)]);
 
-        // Both CSAF 2.0 and 2.1 have 4 test cases
+        // Case 11: 1 vuln, with CVE (fixed case 01)
+        // Case 12: 3 vuln, with CWE (fixed case 02)
+        // Case S11: no vulns, this might be wasSkipped later #409
+
+        // TODO: Clarify upstream if this test should actually be "present and set" instead.
+        // TODO If so, add present and set test coverage
         TESTS_2_0.test_6_3_3.expect(ExpectedResults_2_0 {
-            case_01: case_01.clone(),
-            case_02: case_02.clone(),
+            case_01: single_vuln_no_cve.clone(),
+            case_02: multi_vuln_alternating_no_cve.clone(),
             case_11: Ok(()),
             case_12: Ok(()),
+            case_s11: Ok(()),
         });
         TESTS_2_1.test_6_3_3.expect(ExpectedResults_2_1 {
-            case_01,
-            case_02,
+            case_01: single_vuln_no_cve,
+            case_02: multi_vuln_alternating_no_cve,
             case_11: Ok(()),
             case_12: Ok(()),
+            case_s11: Ok(()),
         });
     }
 }

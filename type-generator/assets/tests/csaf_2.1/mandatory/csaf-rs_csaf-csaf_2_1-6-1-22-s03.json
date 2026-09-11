@@ -13,10 +13,10 @@
       "name": "OASIS CSAF TC",
       "namespace": "https://csaf.io"
     },
-    "title": "Mandatory Test: Multiple Definition in Revision History (failing supplementary example 1)",
+    "title": "Mandatory Test: Multiple Definition in Revision History (failing supplementary example 3)",
     "tracking": {
       "current_release_date": "2024-01-21T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-22-S01",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-22-S03",
       "initial_release_date": "2024-01-20T10:00:00.000Z",
       "revision_history": [
         {

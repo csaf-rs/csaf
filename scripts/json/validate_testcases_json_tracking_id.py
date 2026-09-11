@@ -32,7 +32,7 @@ def validate_tracking_id_prefix(
         return False
 
     # filename should be tracking id in lower case, without .json extension
-    filename_without_ext = filename.replace(".json", "")
+    filename_without_ext = filename.removesuffix(".json")
     tracking_id_lowercase = tracking_id.lower()
     if not filename_without_ext == tracking_id_lowercase:
         print(f"Filename does not match tracking ID. Filename without extension: {filename_without_ext}, Tracking ID: {tracking_id_lowercase}")

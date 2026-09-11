@@ -10,8 +10,8 @@
     },
     "publisher": {
       "category": "other",
-      "name": "csaf-rs project",
-      "namespace": "https://github.com/csaf-poc/csaf-rs"
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
     "title": "Recommended Test: Usage of Deprecated Profile (supplemental passing example 1 - leading white space before csaf_deprecated_)",
     "tracking": {

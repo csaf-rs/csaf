@@ -46,7 +46,7 @@ mod tests {
         let multi_vuln_alternating_no_cve = Err(vec![create_missing_cve_error(0), create_missing_cve_error(2)]);
 
         // Case 11: 1 vuln, with CVE (fixed case 01)
-        // Case 12: 3 vuln, with CWE (fixed case 02)
+        // Case 12: 3 vuln, all with CVEs (fixed case 02)
         // Case S11: no vulns, this might be wasSkipped later #409
 
         // TODO: Clarify upstream if this test should actually be "present and set" instead.

@@ -769,6 +769,16 @@
           "valid": true
         }
       ]
+    },
+    {
+      "id": "6.3.3",
+      "group": "informative",
+      "valid": [
+        {
+          "name": "informative/csaf-rs_csaf-csaf_2_0-6-3-03-s11.json",
+          "valid": true
+        }
+      ]
     }
   ]
 }

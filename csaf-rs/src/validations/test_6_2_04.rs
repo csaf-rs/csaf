@@ -21,7 +21,7 @@ pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result
                 if semver.has_build_metadata() {
                     errors
                         .get_or_insert_default()
-                        .push(create_build_metadata_in_rev_history_error(&semver, &revision_index));
+                        .push(create_build_metadata_in_rev_history_error(&semver, revision_index));
                 }
             },
             CsafVersionNumber::Invalid(_) => {}, // ignore invalid version numbers
@@ -31,7 +31,7 @@ pub fn test_6_2_04_build_metadata_in_rev_history(doc: &impl CsafTrait) -> Result
     errors.map_or(Ok(()), Err)
 }
 
-fn create_build_metadata_in_rev_history_error(number: &SemVerVersion, revision_index: &usize) -> TestFinding {
+fn create_build_metadata_in_rev_history_error(number: &SemVerVersion, revision_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Revision history item with number '{number}' contains build metadata"),
         instance_path: format!("/document/tracking/revision_history/{revision_index}/number"),
@@ -54,24 +54,24 @@ mod tests {
     fn test_test_6_2_04() {
         let revision_history_with_build_metadata = Err(vec![create_build_metadata_in_rev_history_error(
             &SemVerVersion::from(Version::from_str("1.0.0+exp.sha.ac00785").unwrap()),
-            &0,
+            0,
         )]);
 
         let revision_history_with_alternating_build_metadata = Err(vec![
             create_build_metadata_in_rev_history_error(
                 &SemVerVersion::from(Version::from_str("1.1.0+exp.sha.ac00785").unwrap()),
-                &1,
+                1,
             ),
             create_build_metadata_in_rev_history_error(
                 &SemVerVersion::from(Version::from_str("1.3.0+exp.sha.ac00785").unwrap()),
-                &3,
+                3,
             ),
         ]);
 
         let revision_history_with_build_metadata_after_pre_release =
             Err(vec![create_build_metadata_in_rev_history_error(
                 &SemVerVersion::from(Version::from_str("1.1.0-rc.1+exp.sha.ac00785").unwrap()),
-                &1,
+                1,
             )]);
 
         // Case s11: revision_history without build metadata

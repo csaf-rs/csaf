@@ -60,6 +60,9 @@ mod tests {
     fn test_test_6_1_27_08() {
         let case_vex_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
 
+        // Note: For simplicity, this file does not contain product tree or notes elements for the two vulns, which violates 6.1.27.4 and 6.1.27.5
+        // Case S11: two vulns, one with cve, one with ids
+
         TESTS_2_0.test_6_1_27_8.expect(ExpectedResults_2_0 {
             case_01: case_vex_without_cve_or_id.clone(),
             case_s11: Ok(()),

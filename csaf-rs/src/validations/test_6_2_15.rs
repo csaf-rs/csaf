@@ -68,6 +68,8 @@ mod tests {
             "/document/source_lang",
         )]);
 
+        // Having both doc lang and source lang set to the same value violates 6.1.28
+        // making this test file mandatory invalid
         let case_s01_default_both_langs = Err(vec![
             create_default_language_error("i-default".to_string(), "/document/lang"),
             create_default_language_error("i-default".to_string(), "/document/source_lang"),

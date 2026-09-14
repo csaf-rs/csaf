@@ -140,8 +140,12 @@ mod tests {
 
         // Case S11: document status is "draft", version is 0 (should be skipped)
         // Case S12: document status is "draft", version is 0.y.z (should be skipped)
-        // Case S13: document status is "draft", version has prerelease (should be skipped)
+        // Case S13: document status is "draft", version has prerelease (should be skipped, also violates 6.1.19)
         // Case S14: document status is "final", version has metadata
+        // TODO: This test file is schema-invalid, as the leading whitespace violates the category regex
+        // TODO: Currently, this test case is "failing upwards", as schema-invalid files are reported as passing without actually running the test (bug #411)
+        // TODO: Leaving it in, as this file will become relevant when lenient parsing is implemented.
+        // Case S15: document status is "final", invalid version (schema invalid)
 
         TESTS_2_0.test_6_1_17.expect(ExpectedResults_2_0 {
             case_01: case_final_with_semver_0.clone(),

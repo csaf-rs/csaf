@@ -212,6 +212,7 @@ mod tests {
             ),
         ]);
 
+        // Note: Stacked categories violate 6.1.57, making this test file mandatory invalid on CSAF 2.1
         let case_s01_stacked_wrong_order = Err(vec![create_branch_categories_error(
             &[
                 CategoryOfTheBranch::Vendor,
@@ -233,6 +234,7 @@ mod tests {
         // Case 13: vendor -> family -> split to 2x name -> version
         // Case 14: vendor -> split to 2x name -> version
         // Case 15: Deep tree, split after 2x after name
+        // Note: Stacked categories violate 6.1.57, making this test file mandatory invalid on CSAF 2.1
         // Case S11: Stacked categories vendor x2, product_name x2, product_version x2
 
         TESTS_2_0.test_6_3_9.expect(ExpectedResults_2_0 {

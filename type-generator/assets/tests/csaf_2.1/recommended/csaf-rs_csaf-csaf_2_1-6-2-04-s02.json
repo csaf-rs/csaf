@@ -17,7 +17,7 @@
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-04-S02",
-      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "initial_release_date": "2024-01-23T10:00:00.000Z",
       "revision_history": [
         {
           "date": "2024-01-23T10:00:00.000Z",
@@ -31,7 +31,7 @@
         }
       ],
       "status": "draft",
-      "version": "1.1.0-rc.1"
+      "version": "1.1.0"
     }
   }
 }

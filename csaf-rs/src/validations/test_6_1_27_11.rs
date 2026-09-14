@@ -60,6 +60,9 @@ mod tests {
             &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
 
+        // Case S11: vulns are missing, but category is csaf_base
+        // Case S12: vulns are not missing
+
         TESTS_2_0.test_6_1_27_11.expect(ExpectedResults_2_0 {
             case_01: case_security_advisory.clone(),
             case_s01: case_vex.clone(),

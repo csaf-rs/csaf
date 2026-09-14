@@ -39,6 +39,7 @@ pub fn test_6_2_39_3_language_specific_reasoning_for_supersession(
         return Err(vec![create_no_translation_known_info(
             "Reasoning for Supersession",
             &primary_lang,
+            "/document/notes",
         )]);
     };
 
@@ -83,6 +84,7 @@ mod tests {
         let case_s11_esperanto_no_translation = Err(vec![create_no_translation_known_info(
             "Reasoning for Supersession",
             "eo",
+            "/document/notes",
         )]);
 
         TESTS_2_1.test_6_2_39_3.expect(ExpectedResults {

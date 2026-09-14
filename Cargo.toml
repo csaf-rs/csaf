@@ -1,9 +1,9 @@
 [workspace]
-members = ["csaf-validator", "csaf-rs", "type-generator", "csaf-converter", "csaf-ffi", "csaf-result-json"]
+members = ["csaf-validator", "csaf-rs", "type-generator", "csaf-converter", "csaf-ffi", "csaf-result-json", "csaf-service"]
 resolver = "2"
 
 [workspace.package]
-version = "0.5.1"
+version = "0.5.2"
 edition = "2024"
 rust-version = "1.88.0"
 license = "Apache-2.0"

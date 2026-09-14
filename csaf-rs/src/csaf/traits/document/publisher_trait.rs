@@ -52,7 +52,7 @@ impl PublisherTrait for Publisher21 {
     impl_str_field_getter!(get_name, name);
     impl_str_field_getter!(get_namespace, namespace);
 
-    // The CSAF 2.0 syntax can still be fulfilled in CSAF 2.1, its just own layer nested now.
+    // The CSAF 2.0 syntax can still be fulfilled in CSAF 2.1, it's just own layer nested now.
     fn get_contact_details_20(&self) -> Option<&str> {
         self.contact.as_ref()?.details.as_ref().map(|d| d.as_str())
     }

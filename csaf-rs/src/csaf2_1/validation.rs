@@ -312,7 +312,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.8" => Some(ValidatorForTest6_2_8.validate(self)),
                 "6.2.9" => Some(ValidatorForTest6_2_9.validate(self)),
                 "6.2.11" => Some(ValidatorForTest6_2_11.validate(self)),
-                "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
+                "6.2.12" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.2.13" => {
                     // see below in RawValidatable
                     return TestResult {
@@ -404,6 +410,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             test_id,
             match test_id {
                 PRESET_NAME_SCHEMA => Some(validate_schema_csaf_2_1(self)),
+                "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

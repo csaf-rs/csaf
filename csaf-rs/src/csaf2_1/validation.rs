@@ -34,6 +34,7 @@ fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation
 
 impl Validatable for CommonSecurityAdvisoryFramework {
     fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
+        let external_request = vec!["6.2.5", "6.3.6", "6.3.7", "6.3.24"];
         match preset {
             "mandatory" => Some(mandatory_tests()),
             "recommended" => Some(recommended_tests()),
@@ -50,6 +51,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 ]
                 .concat(),
             ),
+            "non-external-request-free" => Some(external_request),
             "external-request-free" => Some(
                 [
                     vec!["schema"],
@@ -59,7 +61,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 ]
                 .concat()
                 .into_iter()
-                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+                .filter(|id| !external_request.contains(id))
                 .collect(),
             ),
             "consistent-revision-history" => Some(vec![
@@ -70,6 +72,14 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             "ssvc" => Some(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
+            ]),
+            "extensions" => Some(vec![
+                "6.1.60.1", "6.1.60.2", "6.1.60.3", "6.2.39.5", "6.2.54.1", "6.2.54.2", "6.2.54.3", "6.2.54.4",
+                "6.3.21.1", "6.3.21.2", "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8",
+                "6.3.21.9",
+            ]),
+            "extensions-exist" => Some(vec![
+                "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9",
             ]),
             _ => None,
         }

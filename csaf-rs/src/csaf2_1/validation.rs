@@ -86,7 +86,7 @@ impl Preset {
             Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATETIMES,
             Preset::Ssvc => PRESET_NAME_SSVC,
             Preset::Extensions => PRESET_NAME_EXTENSIONS,
-            Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
+            Preset::ExtensionsExist => PRESET_NAME_EXTENSION_EXIST,
         }
     }
 }
@@ -114,7 +114,7 @@ impl TryFrom<&str> for Preset {
             PRESET_NAME_CONSISTENT_DATETIMES => Ok(Preset::ConsistentDateTimes),
             PRESET_NAME_SSVC => Ok(Preset::Ssvc),
             PRESET_NAME_EXTENSIONS => Ok(Preset::Extensions),
-            PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
+            PRESET_NAME_EXTENSION_EXIST => Ok(Preset::ExtensionsExist),
             _ => Err(CsafError::InvalidPreset {
                 preset: value.to_string(),
             }),

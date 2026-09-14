@@ -41,17 +41,18 @@ fn create_discouraged_combination_warning(
 pub fn test_6_2_27_discouraged_product_status_remediation_combination(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<TestFinding>> {
-    let mut warnings: Option<Vec<TestFinding>> = None;
+    let mut warnings = Vec::new();
 
     // Iterate over vulnerabilities
     for (vulnerability_index, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
-        // Only proceed if the vulnerability has a product status
-        let Some(product_status) = vulnerability.get_product_status() else {
-            continue;
-        };
-
         // Group the product IDs by their corresponding status group
-        let products_by_status_group = ProductStatusGroupMap::from(product_status);
+        let products_by_status_group =
+            // Only proceed if the vulnerability has a product status
+            if let Some(product_status) = vulnerability.get_product_status() {
+                ProductStatusGroupMap::from(product_status)
+            } else {
+                continue;
+            };
 
         // Iterate over remediations
         for (remediation_index, remediation) in vulnerability.get_remediations().iter().enumerate() {
@@ -69,15 +70,13 @@ pub fn test_6_2_27_discouraged_product_status_remediation_combination(
                 if products_by_status_group.contains(&ProductStatusGroup::NotAffected, &product_id)
                     && NOT_AFFECTED_DISCOURAGED.contains(&category)
                 {
-                    warnings
-                        .get_or_insert_default()
-                        .push(create_discouraged_combination_warning(
-                            &product_id,
-                            &ProductStatusGroup::NotAffected,
-                            &category,
-                            vulnerability_index,
-                            remediation_index,
-                        ));
+                    warnings.push(create_discouraged_combination_warning(
+                        &product_id,
+                        &ProductStatusGroup::NotAffected,
+                        &category,
+                        vulnerability_index,
+                        remediation_index,
+                    ));
                 }
 
                 // If a product belongs to the "fixed" status group
@@ -86,15 +85,13 @@ pub fn test_6_2_27_discouraged_product_status_remediation_combination(
                 if products_by_status_group.contains(&ProductStatusGroup::Fixed, &product_id)
                     && FIXED_DISCOURAGED.contains(&category)
                 {
-                    warnings
-                        .get_or_insert_default()
-                        .push(create_discouraged_combination_warning(
-                            &product_id,
-                            &ProductStatusGroup::Fixed,
-                            &category,
-                            vulnerability_index,
-                            remediation_index,
-                        ));
+                    warnings.push(create_discouraged_combination_warning(
+                        &product_id,
+                        &ProductStatusGroup::Fixed,
+                        &category,
+                        vulnerability_index,
+                        remediation_index,
+                    ));
                 }
 
                 // If a product belongs to the "under investigation" status group
@@ -103,15 +100,13 @@ pub fn test_6_2_27_discouraged_product_status_remediation_combination(
                 if products_by_status_group.contains(&ProductStatusGroup::UnderInvestigation, &product_id)
                     && UNDER_INVESTIGATION_DISCOURAGED.contains(&category)
                 {
-                    warnings
-                        .get_or_insert_default()
-                        .push(create_discouraged_combination_warning(
-                            &product_id,
-                            &ProductStatusGroup::UnderInvestigation,
-                            &category,
-                            vulnerability_index,
-                            remediation_index,
-                        ));
+                    warnings.push(create_discouraged_combination_warning(
+                        &product_id,
+                        &ProductStatusGroup::UnderInvestigation,
+                        &category,
+                        vulnerability_index,
+                        remediation_index,
+                    ));
                 }
 
                 // If a product belongs to the "unknown" status group
@@ -120,21 +115,19 @@ pub fn test_6_2_27_discouraged_product_status_remediation_combination(
                 if products_by_status_group.contains(&ProductStatusGroup::Unknown, &product_id)
                     && UNKNOWN_DISCOURAGED.contains(&category)
                 {
-                    warnings
-                        .get_or_insert_default()
-                        .push(create_discouraged_combination_warning(
-                            &product_id,
-                            &ProductStatusGroup::Unknown,
-                            &category,
-                            vulnerability_index,
-                            remediation_index,
-                        ));
+                    warnings.push(create_discouraged_combination_warning(
+                        &product_id,
+                        &ProductStatusGroup::Unknown,
+                        &category,
+                        vulnerability_index,
+                        remediation_index,
+                    ));
                 }
             }
         }
     }
 
-    warnings.map_or(Ok(()), Err)
+    if warnings.is_empty() { Ok(()) } else { Err(warnings) }
 }
 
 crate::test_validation::impl_validator!(

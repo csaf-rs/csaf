@@ -44,9 +44,12 @@ const PRESET_NAME_BASIC: &str = "basic";
 const PRESET_NAME_EXTENDED: &str = "extended";
 const PRESET_NAME_FULL: &str = "full";
 const PRESET_NAME_EXTERNAL_REQUEST_FREE: &str = "external-request-free";
+const PRESET_NAME_NON_EXTERNAL_REQUEST_FREE: &str = "non-external-request-free";
 const PRESET_NAME_CONSISTENT_REVISION_HISTORY: &str = "consistent-revision-history";
 const PRESET_NAME_CONSISTENT_DATETIMES: &str = "consistent-date-times";
 const PRESET_NAME_SSVC: &str = "ssvc";
+const PRESET_NAME_EXTENSIONS: &str = "extensions";
+const PRESET_NAME_EXTENSIONS_EXIST: &str = "extensions-exist";
 
 #[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
@@ -58,10 +61,13 @@ pub enum Preset {
     Basic,
     Extended,
     Full,
+    NonExternalRequestFree,
     ExternalRequestFree,
     ConsistentRevisionHistory,
     ConsistentDateTimes,
     Ssvc,
+    Extensions,
+    ExtensionsExist,
 }
 
 impl Preset {
@@ -75,9 +81,12 @@ impl Preset {
             Preset::Extended => PRESET_NAME_EXTENDED,
             Preset::Full => PRESET_NAME_FULL,
             Preset::ExternalRequestFree => PRESET_NAME_EXTERNAL_REQUEST_FREE,
+            Preset::NonExternalRequestFree => PRESET_NAME_NON_EXTERNAL_REQUEST_FREE,
             Preset::ConsistentRevisionHistory => PRESET_NAME_CONSISTENT_REVISION_HISTORY,
             Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATETIMES,
             Preset::Ssvc => PRESET_NAME_SSVC,
+            Preset::Extensions => PRESET_NAME_EXTENSIONS,
+            Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
         }
     }
 }
@@ -100,9 +109,12 @@ impl TryFrom<&str> for Preset {
             PRESET_NAME_EXTENDED => Ok(Preset::Extended),
             PRESET_NAME_FULL => Ok(Preset::Full),
             PRESET_NAME_EXTERNAL_REQUEST_FREE => Ok(Preset::ExternalRequestFree),
+            PRESET_NAME_NON_EXTERNAL_REQUEST_FREE => Ok(Preset::NonExternalRequestFree),
             PRESET_NAME_CONSISTENT_REVISION_HISTORY => Ok(Preset::ConsistentRevisionHistory),
             PRESET_NAME_CONSISTENT_DATETIMES => Ok(Preset::ConsistentDateTimes),
             PRESET_NAME_SSVC => Ok(Preset::Ssvc),
+            PRESET_NAME_EXTENSIONS => Ok(Preset::Extensions),
+            PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
             _ => Err(CsafError::InvalidPreset {
                 preset: value.to_string(),
             }),
@@ -138,9 +150,12 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Preset::Extended.as_str(),
             Preset::Full.as_str(),
             Preset::ExternalRequestFree.as_str(),
+            Preset::NonExternalRequestFree.as_str(),
             Preset::ConsistentRevisionHistory.as_str(),
             Preset::ConsistentDateTimes.as_str(),
             Preset::Ssvc.as_str(),
+            Preset::Extensions.as_str(),
+            Preset::ExtensionsExist.as_str(),
         ]
     }
 

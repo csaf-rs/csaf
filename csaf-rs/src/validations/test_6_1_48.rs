@@ -118,8 +118,10 @@ mod tests {
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
         })]);
         let case_06 = Err(vec![TestFinding::Error(TestFindingData {
-            message: "Unknown SSVC decision point 'cvss::E' with version '3.0.1'".to_string(),
-            instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
+            message:
+                "The values for SSVC decision point 'cvss::Exploit Maturity' (version 2.0.0) are not in correct order"
+                    .to_string(),
+            instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
         })]);
         let case_07 = Err(vec![TestFinding::Error ( TestFindingData {
             message: "The SSVC decision point 'ssvc//.example.test#some-private-decision-point-collection::Safety Impact' (version 2.0.0) doesn't have a value with key 'S'".to_string(),
@@ -137,13 +139,7 @@ mod tests {
             message: "Invalid SSVC namespace: Reserved forbidden namespace 'invalid' must not be used".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/namespace".to_string(),
         })]);
-        let case_16 = case_06.clone();
-        let case_19 = Err(vec![TestFinding::Error ( TestFindingData {
-            message: "The values for SSVC decision point 'ssvc//.example.test$de-DE::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
-            instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
-        })]);
 
-        // Only CSAF 2.1 has this test, with 20 test cases (6 error cases, 14 success cases)
         TESTS_2_1.test_6_1_48.expect(ExpectedResults {
             case_01,
             case_02,
@@ -160,10 +156,10 @@ mod tests {
             case_13: Ok(()),
             case_14: Ok(()),
             case_15: Ok(()),
-            case_16, // no Exploit Maturity E v3.0.1
+            case_16: Ok(()),
             case_17: Ok(()),
             case_18: Ok(()),
-            case_19, // wrong order of translated keys "R" and "C"
+            case_19: Ok(()),
             case_31: Ok(()),
         });
     }

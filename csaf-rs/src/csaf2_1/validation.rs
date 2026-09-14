@@ -86,7 +86,7 @@ impl Preset {
             Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATE_TIMES,
             Preset::Ssvc => PRESET_NAME_SSVC,
             Preset::Extensions => PRESET_NAME_EXTENSIONS,
-            Preset::ExtensionsExist => PRESET_NAME_EXTENSION_EXIST,
+            Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
         }
     }
 }

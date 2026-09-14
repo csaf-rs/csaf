@@ -160,7 +160,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
     }
 
     fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
-        let external_request = vec!["6.2.55", "6.3.6", "6.3.7", "6.3.24"];
+        let external_request = ["6.2.55", "6.3.6", "6.3.7", "6.3.24"];
         match Preset::try_from(preset) {
             Ok(Preset::Schema) => Ok(vec![Preset::Schema.as_str()]),
             Ok(Preset::Mandatory) => Ok(mandatory_tests()),

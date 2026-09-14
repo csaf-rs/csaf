@@ -23,7 +23,7 @@ converter = []
 utoipa = ["dep:utoipa"]
 
 [dependencies]
-cvss-rs = "0.4.0"
+cvss-rs = "0.5.0"
 regress = "0.12"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1.0.131", features = ["preserve_order"] }

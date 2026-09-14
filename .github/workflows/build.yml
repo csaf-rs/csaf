@@ -158,7 +158,7 @@ jobs:
           if-no-files-found: ignore
       - name: Generate CycloneDX and SPDX SBOMs
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@a55e51a118eb3d0beae0fed4a616eec29dc01ca2 # v1.10.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@a026baa029a5f7d7b1dfca973cdcd0c940e545dc #v1.11.0
         with:
           file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           artifact-name-prefix: csaf-validator_${{ matrix.target.arch }}
@@ -213,7 +213,7 @@ jobs:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
       - name: Generate CycloneDX and SPDX SBOMs
-        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@a55e51a118eb3d0beae0fed4a616eec29dc01ca2 # v1.10.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@a026baa029a5f7d7b1dfca973cdcd0c940e545dc #v1.11.0
         with:
           file-to-scan: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           artifact-name-prefix: csaf-ffi-wasm_wasm32

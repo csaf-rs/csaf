@@ -24,4 +24,4 @@ jobs:
         with:
           fetch-depth: 0
       - name: Lint commit message
-        uses: csaf-rs/shared-workflows/.github/actions/commitlint@4828cd545465d4faade7eb410621ad7d8954f0dc # v1.9.0
+        uses: csaf-rs/shared-workflows/.github/actions/commitlint@a55e51a118eb3d0beae0fed4a616eec29dc01ca2 # v1.10.0

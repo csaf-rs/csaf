@@ -1,4 +1,5 @@
 pub mod aggregate_severity_trait;
+pub mod contact_trait;
 pub mod distribution_trait;
 pub mod engine_trait;
 pub mod generator_trait;

@@ -51,12 +51,16 @@ mod tests {
             case_s01: unset_document_language.clone(),
             case_s02: empty_document_language.clone(),
             case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
         });
         TESTS_2_1.test_6_2_12.expect(ExpectedResults_2_1 {
             case_01: missing_document_language_property,
             case_s01: unset_document_language,
             case_s02: empty_document_language,
             case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
         });
     }
 }

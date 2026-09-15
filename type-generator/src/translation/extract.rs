@@ -15,11 +15,13 @@ struct JsonTranslationsFile {
 /// A single language's term translations, used for deserialization
 #[derive(Deserialize)]
 struct JsonTermTranslation {
+    cve_description: String,
     license: String,
     product_description: String,
     reasoning_for_supersession: String,
     reasoning_for_withdrawal: String,
     superseding_document: String,
+    vulnerability_summary: String,
 }
 
 /// Reads `translations.json` and returns a [`Translations`] struct
@@ -30,14 +32,17 @@ pub(crate) fn extract_translations(path: &str) -> Result<Translations, BuildErro
 
     // Reorder the lookup from lang -> term -> translation to term -> lang -> translation
     let mut translations = Translations {
+        cve_description: BTreeMap::new(),
         license: BTreeMap::new(),
         product_description: BTreeMap::new(),
         reasoning_for_supersession: BTreeMap::new(),
         reasoning_for_withdrawal: BTreeMap::new(),
         superseding_document: BTreeMap::new(),
+        vulnerability_summary: BTreeMap::new(),
     };
 
     for (lang, term) in file.translation {
+        translations.cve_description.insert(lang.clone(), term.cve_description);
         translations.license.insert(lang.clone(), term.license);
         translations
             .product_description
@@ -50,7 +55,8 @@ pub(crate) fn extract_translations(path: &str) -> Result<Translations, BuildErro
             .insert(lang.clone(), term.reasoning_for_withdrawal);
         translations
             .superseding_document
-            .insert(lang, term.superseding_document);
+            .insert(lang.clone(), term.superseding_document);
+        translations.vulnerability_summary.insert(lang, term.vulnerability_summary);
     }
 
     Ok(translations)

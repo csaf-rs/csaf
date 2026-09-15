@@ -30,7 +30,7 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
         CsafDocumentCategory::CsafSecurityAdvisory,
         CsafDocumentCategory::CsafVex,
     ])
-    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
+    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory, CsafDocumentCategory::CsafVulnerabilityReport]);
 
 fn test_6_1_27_04_err_generator(document_category: CsafDocumentCategory) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -58,6 +58,9 @@ mod tests {
         let case_deprecated_security_advisory = Err(vec![test_6_1_27_04_err_generator(
             CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
+        let case_vulnerability_report = Err(vec![test_6_1_27_04_err_generator(
+            CsafDocumentCategory::CsafVulnerabilityReport,
+        )]);
 
         TESTS_2_0.test_6_1_27_4.expect(ExpectedResults_2_0 {
             case_01: case_security_advisory.clone(),
@@ -66,6 +69,7 @@ mod tests {
             case_01: case_security_advisory,
             case_02: case_vex,
             case_03: case_deprecated_security_advisory,
+            case_04: case_vulnerability_report,
         });
     }
 }

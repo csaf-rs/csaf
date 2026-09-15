@@ -34,7 +34,22 @@ fn canonical_url_candidates<'a, R: ReferenceTrait>(
         // using CategoryOfReference21 here is fine, CategoryOfReference20 is 1:1 mapped to this
         .filter(|r| r.get_category() == CategoryOfReference21::Self_)
         .map(|r| r.get_url())
-        .filter(move |url| url.starts_with("https://") && url.ends_with(expected_filename))
+        .filter(move |url| {
+            // Check that the URL starts with "https://"
+            let Some(after_scheme) = url.strip_prefix("https://") else {
+                return false;
+            };
+
+            // Split the authority from the path
+            let Some((authority, path)) = after_scheme.split_once('/') else {
+                return false;
+            };
+
+            // Get the last path segment, which is the actual filename
+            let actual_filename = path.rsplit('/').next().unwrap_or(path);
+
+            !authority.is_empty() && actual_filename == expected_filename
+        })
 }
 
 /// Trait representing document meta-level information

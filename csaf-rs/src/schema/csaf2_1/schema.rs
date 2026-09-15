@@ -1539,6 +1539,7 @@ impl<'de> ::serde::Deserialize<'de> for CommonPlatformEnumerationRepresentation 
 ///            "csaf_base",
 ///            "csaf_security_advisory",
 ///            "csaf_vex",
+///            "csaf_vulnerability_report",
 ///            "Example Company Security Notice"
 ///          ],
 ///          "type": "string",
@@ -3595,6 +3596,7 @@ impl<'de> ::serde::Deserialize<'de> for DetailsOfTheThreat {
 ///    "csaf_base",
 ///    "csaf_security_advisory",
 ///    "csaf_vex",
+///    "csaf_vulnerability_report",
 ///    "Example Company Security Notice"
 ///  ],
 ///  "type": "string",
@@ -3797,6 +3799,7 @@ impl DocumentGenerator {
 ///        "csaf_base",
 ///        "csaf_security_advisory",
 ///        "csaf_vex",
+///        "csaf_vulnerability_report",
 ///        "Example Company Security Notice"
 ///      ],
 ///      "type": "string",

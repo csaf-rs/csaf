@@ -2,6 +2,9 @@ use crate::csaf_traits::{CsafTrait, ProductStatusGroup, ProductStatusGroupMap, R
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::{TestFinding, TestFindingData};
 
+/// Remediation categories that conflict with the product status "affected".
+const AFFECTED_PROHIBITED: &[CategoryOfTheRemediation] = &[CategoryOfTheRemediation::OptionalPatch];
+
 /// Remediation categories that conflict with the product status "not affected".
 const NOT_AFFECTED_PROHIBITED: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::Workaround,
@@ -18,6 +21,12 @@ const FIXED_PROHIBITED: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::VendorFix,
     CategoryOfTheRemediation::Mitigation,
     CategoryOfTheRemediation::Workaround,
+];
+
+const PROHIBITED_COMBINATIONS: &[(ProductStatusGroup, &[CategoryOfTheRemediation])] = &[
+    (ProductStatusGroup::Affected, AFFECTED_PROHIBITED),
+    (ProductStatusGroup::NotAffected, NOT_AFFECTED_PROHIBITED),
+    (ProductStatusGroup::Fixed, FIXED_PROHIBITED),
 ];
 
 fn create_prohibited_combination_error(
@@ -54,40 +63,21 @@ pub fn test_6_1_36_status_group_contradicting_remediation_categories(
 
                     // Iterate over product IDs
                     for product_id in remediation_product_ids {
-                        if status_map.contains(&ProductStatusGroup::Affected, &product_id)
-                            && category == CategoryOfTheRemediation::OptionalPatch
-                        {
-                            errors.push(create_prohibited_combination_error(
-                                &product_id,
-                                &ProductStatusGroup::Affected,
-                                &category,
-                                vulnerability_index,
-                                remediation_index,
-                            ));
-                        }
-
-                        if status_map.contains(&ProductStatusGroup::NotAffected, &product_id)
-                            && NOT_AFFECTED_PROHIBITED.contains(&category)
-                        {
-                            errors.push(create_prohibited_combination_error(
-                                &product_id,
-                                &ProductStatusGroup::NotAffected,
-                                &category,
-                                vulnerability_index,
-                                remediation_index,
-                            ));
-                        }
-
-                        if status_map.contains(&ProductStatusGroup::Fixed, &product_id)
-                            && FIXED_PROHIBITED.contains(&category)
-                        {
-                            errors.push(create_prohibited_combination_error(
-                                &product_id,
-                                &ProductStatusGroup::Fixed,
-                                &category,
-                                vulnerability_index,
-                                remediation_index,
-                            ));
+                        for (status_group, prohibited_categories) in PROHIBITED_COMBINATIONS {
+                            // If the product belongs to the current status group
+                            // and the remediation category is prohibited for that group,
+                            // add an error.
+                            if status_map.contains(status_group, &product_id)
+                                && prohibited_categories.contains(&category)
+                            {
+                                errors.push(create_prohibited_combination_error(
+                                    &product_id,
+                                    status_group,
+                                    &category,
+                                    vulnerability_index,
+                                    remediation_index,
+                                ));
+                            }
                         }
                     }
                 }

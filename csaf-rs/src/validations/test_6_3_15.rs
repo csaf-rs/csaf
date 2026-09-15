@@ -20,6 +20,9 @@ fn create_namespace_extension_in_non_tlp_clear_info(namespace: &str, instance_pa
 /// For each SSVC decision point given under `selections`, it MUST be tested that the namespace
 /// does not use an extension if the document is not labeled TLP:CLEAR. Namespaces reserved for
 /// special purpose MUST be treated as per their definition.
+///
+/// To implement the check for an extensions part in the `namespace`,
+/// it is deemed sufficient to check whether the `namespace` contains a `/`.
 pub fn test_6_3_15_usage_of_ssvc_decision_point_namespace_with_extension_in_non_tlp_clear_document(
     doc: &impl CsafTrait,
     allow_test_namespaces: bool,
@@ -85,21 +88,26 @@ mod tests {
 
     #[test]
     fn test_test_6_3_15() {
-        let case_01_extension_in_tlp_green = Err(vec![create_namespace_extension_in_non_tlp_clear_info(
+        let registered_ns_default_first_extension_segment_tlp_green = Err(vec![create_namespace_extension_in_non_tlp_clear_info(
             "ssvc//.example.test#refined-technical-impacts",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
-        let case_02_extension_in_tlp_amber_unregistered_ns =
+        let unregistered_namespace_default_first_extension_tlp_amber =
             Err(vec![create_namespace_extension_in_non_tlp_clear_info(
                 "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
                 &ssvc_selection_namespace_path(0, 0, 0),
             )]);
+        let registered_ns_non_default_first_extension_segment_tlp_green = Err(vec![create_namespace_extension_in_non_tlp_clear_info(
+             "ssvc/en-US",
+            &ssvc_selection_namespace_path(0, 0, 0),
+        )]);
 
         // Case 11: TLP:GREEN, namespace without extension
 
         TESTS_2_1.test_6_3_15.expect(ExpectedResults {
-            case_01: case_01_extension_in_tlp_green,
-            case_02: case_02_extension_in_tlp_amber_unregistered_ns,
+            case_01: registered_ns_default_first_extension_segment_tlp_green,
+            case_02: unregistered_namespace_default_first_extension_tlp_amber,
+            case_03: registered_ns_non_default_first_extension_segment_tlp_green,
             case_11: Ok(()),
         });
     }

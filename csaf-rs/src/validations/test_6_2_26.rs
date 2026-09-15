@@ -90,6 +90,7 @@ mod tests {
             case_11: Ok(()), // CWE-184 (Allowed)
             case_12: Ok(()), // CWE-14 + CWE-733 (both Allowed)
             case_13: Ok(()), // all Allowed
+            case_14: Ok(()),
         });
     }
 }

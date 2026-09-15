@@ -18,6 +18,7 @@ pub enum CsafDocumentCategory {
     CsafVex,
     CsafWithdrawn,
     CsafSuperseded,
+    CsafVulnerabilityReport,
     CsafDeprecatedSecurityAdvisory,
     CsafVulnerabilityReport,
     // By definition of the standard, everything that is not an exact match for the categories above,

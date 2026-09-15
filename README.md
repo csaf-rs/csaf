@@ -339,6 +339,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.39.3  | ⭕ | ✅ |
 | 6.2.39.4  | ⭕ | ✅ |
 | 6.2.39.5  | ⭕ | ✅ |
+| 6.2.39.6  | ⭕ | ✅ |
 | 6.2.39.7  | ⭕ | ✅ |
 | 6.2.39.8  | ⭕ | ✅ |
 | 6.2.39.9  | ⭕ | ✅ |

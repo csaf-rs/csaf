@@ -7,6 +7,8 @@ use std::sync::LazyLock;
 
 use crate::validation::{TestFinding, TestFindingData};
 
+static CVE_DESCRIPTION_MAP: LazyLock<HashMap<&'static str, &'static str>> =
+    LazyLock::new(|| CVE_DESCRIPTION_TRANSLATIONS.iter().copied().collect());
 static LICENSE_MAP: LazyLock<HashMap<&'static str, &'static str>> =
     LazyLock::new(|| LICENSE_TRANSLATIONS.iter().copied().collect());
 static PRODUCT_DESCRIPTION_MAP: LazyLock<HashMap<&'static str, &'static str>> =
@@ -17,6 +19,15 @@ static REASONING_FOR_WITHDRAWAL_MAP: LazyLock<HashMap<&'static str, &'static str
     LazyLock::new(|| REASONING_FOR_WITHDRAWAL_TRANSLATIONS.iter().copied().collect());
 static SUPERSEDING_DOCUMENT_MAP: LazyLock<HashMap<&'static str, &'static str>> =
     LazyLock::new(|| SUPERSEDING_DOCUMENT_TRANSLATIONS.iter().copied().collect());
+static VULNERABILITY_SUMMARY_MAP: LazyLock<HashMap<&'static str, &'static str>> =
+    LazyLock::new(|| VULNERABILITY_SUMMARY_TRANSLATIONS.iter().copied().collect());
+
+/// Returns the translation of the term `cve_description` for the given lang tag, if available.
+pub fn get_translation_for_term_cve_description(primary_lang_tag: &str) -> Option<&'static str> {
+    CVE_DESCRIPTION_MAP
+        .get(primary_lang_tag.to_lowercase().as_str())
+        .copied()
+}
 
 /// Returns the translation of the term `license` for the given lang tag, if available.
 pub fn get_translation_for_term_license(primary_lang_tag: &str) -> Option<&'static str> {
@@ -47,6 +58,13 @@ pub fn get_translation_for_term_reasoning_for_withdrawal(primary_lang_tag: &str)
 /// Returns the translation of the term `superseding_document` for the given lang tag, if available
 pub fn get_translation_for_term_superseding_document(primary_lang_tag: &str) -> Option<&'static str> {
     SUPERSEDING_DOCUMENT_MAP
+        .get(primary_lang_tag.to_lowercase().as_str())
+        .copied()
+}
+
+/// Returns the translation of the term `vulnerability_summary` for the given lang tag, if available.
+pub fn get_translation_for_term_vulnerability_summary(primary_lang_tag: &str) -> Option<&'static str> {
+    VULNERABILITY_SUMMARY_MAP
         .get(primary_lang_tag.to_lowercase().as_str())
         .copied()
 }

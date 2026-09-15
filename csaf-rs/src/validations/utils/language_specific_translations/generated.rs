@@ -6,6 +6,7 @@
  * Do not edit manually!
  * Re-generate with: cargo run --locked -p type-generator
  */
+pub static CVE_DESCRIPTION_TRANSLATIONS: &[(&str, &str)] = &[("de", "CVE Beschreibung")];
 pub static LICENSE_TRANSLATIONS: &[(&str, &str)] = &[("de", "Lizenz")];
 pub static PRODUCT_DESCRIPTION_TRANSLATIONS: &[(&str, &str)] = &[
     ("de", "Produktbeschreibung"),
@@ -18,4 +19,7 @@ pub static REASONING_FOR_WITHDRAWAL_TRANSLATIONS: &[(&str, &str)] = &[
 ];
 pub static SUPERSEDING_DOCUMENT_TRANSLATIONS: &[(&str, &str)] = &[
     ("de", "Ersetzendes Dokument"),
+];
+pub static VULNERABILITY_SUMMARY_TRANSLATIONS: &[(&str, &str)] = &[
+    ("de", "Schwachstellenzusammenfassung"),
 ];

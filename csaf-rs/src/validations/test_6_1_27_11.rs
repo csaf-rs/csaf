@@ -36,7 +36,7 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
         CsafDocumentCategory::CsafSecurityAdvisory,
         CsafDocumentCategory::CsafVex,
     ])
-    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory]);
+    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory, CsafDocumentCategory::CsafVulnerabilityReport]);
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_11, test_6_1_27_11_vulnerabilities);
 
@@ -59,6 +59,9 @@ mod tests {
         let case_deprecated_security_advisory = Err(vec![create_missing_vulnerabilities_error(
             &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
+        let case_vulnerability_report = Err(vec![create_missing_vulnerabilities_error(
+            &CsafDocumentCategory::CsafVulnerabilityReport,
+        )]);
 
         // Case S11: vulns are missing, but category is csaf_base
         // Case S12: vulns are not missing
@@ -74,6 +77,7 @@ mod tests {
             case_01: case_security_advisory,
             case_02: case_vex,
             case_03: case_deprecated_security_advisory,
+            case_04: case_vulnerability_report,
             case_s11: Ok(()),
             case_s12: Ok(()),
         });

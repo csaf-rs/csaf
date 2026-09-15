@@ -88,19 +88,21 @@ mod tests {
 
     #[test]
     fn test_test_6_3_15() {
-        let registered_ns_default_first_extension_segment_tlp_green = Err(vec![create_namespace_extension_in_non_tlp_clear_info(
-            "ssvc//.example.test#refined-technical-impacts",
-            &ssvc_selection_namespace_path(0, 0, 0),
-        )]);
+        let registered_ns_default_first_extension_segment_tlp_green =
+            Err(vec![create_namespace_extension_in_non_tlp_clear_info(
+                "ssvc//.example.test#refined-technical-impacts",
+                &ssvc_selection_namespace_path(0, 0, 0),
+            )]);
         let unregistered_namespace_default_first_extension_tlp_amber =
             Err(vec![create_namespace_extension_in_non_tlp_clear_info(
                 "x_example.unregistered#some-decision-point-collection//.example.test#refined-technical-impacts",
                 &ssvc_selection_namespace_path(0, 0, 0),
             )]);
-        let registered_ns_non_default_first_extension_segment_tlp_green = Err(vec![create_namespace_extension_in_non_tlp_clear_info(
-             "ssvc/en-US",
-            &ssvc_selection_namespace_path(0, 0, 0),
-        )]);
+        let registered_ns_non_default_first_extension_segment_tlp_green =
+            Err(vec![create_namespace_extension_in_non_tlp_clear_info(
+                "ssvc/en-US",
+                &ssvc_selection_namespace_path(0, 0, 0),
+            )]);
 
         // Case 11: TLP:GREEN, namespace without extension
 

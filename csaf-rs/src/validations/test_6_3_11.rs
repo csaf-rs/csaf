@@ -81,14 +81,8 @@ mod tests {
         )]);
         // CSAF 2.1 02 / CSAF 2.0 S11: 2 parallel offending branches, with V (uppercase) and newline
         let multiple_parallel_offending_branches = Err(vec![
-            create_v_version_indicator_error(
-                "V4.2",
-                "/product_tree/branches/0/branches/0/branches/1",
-            ),
-            create_v_version_indicator_error(
-                "V4\\nN2",
-                "/product_tree/branches/0/branches/1/branches/0",
-            )
+            create_v_version_indicator_error("V4.2", "/product_tree/branches/0/branches/0/branches/1"),
+            create_v_version_indicator_error("V4\\nN2", "/product_tree/branches/0/branches/1/branches/0"),
         ]);
         // Note: Having stacked product version categories violates 6.1.57, making this test file mandatory invalid on
         // CSAF 2.1

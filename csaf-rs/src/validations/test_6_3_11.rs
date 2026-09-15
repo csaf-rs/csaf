@@ -75,21 +75,24 @@ mod tests {
 
     #[test]
     fn test_test_6_3_11() {
-        let case_v_4_2 = Err(vec![create_v_version_indicator_error(
+        let v_4_2 = Err(vec![create_v_version_indicator_error(
             "v4.2",
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
-        let case_uppercase_v_4_2 = Err(vec![create_v_version_indicator_error(
-            "V4.2",
-            "/product_tree/branches/0/branches/0/branches/0",
-        )]);
-        let case_multiple_parallel_branches = Err(vec![
-            create_v_version_indicator_error("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
-            create_v_version_indicator_error("v6.2", "/product_tree/branches/0/branches/0/branches/2"),
+        // CSAF 2.1 02 / CSAF 2.0 S11: 2 parallel offending branches, with V (uppercase) and newline
+        let multiple_parallel_offending_branches = Err(vec![
+            create_v_version_indicator_error(
+                "V4.2",
+                "/product_tree/branches/0/branches/0/branches/1",
+            ),
+            create_v_version_indicator_error(
+                "V4\\nN2",
+                "/product_tree/branches/0/branches/1/branches/0",
+            )
         ]);
         // Note: Having stacked product version categories violates 6.1.57, making this test file mandatory invalid on
         // CSAF 2.1
-        let case_multiple_nested_branches = Err(vec![
+        let multiple_nested_branches = Err(vec![
             create_v_version_indicator_error("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
             create_v_version_indicator_error(
                 "v4.2.2-alpha",
@@ -98,26 +101,21 @@ mod tests {
         ]);
 
         // Case 11: product version "4.2"
-        // Case S11: product version "vAlpha"
-        // Case S12: architecture "v4.2"
+        // CSAF 2.1 12 / CSAF 2.0 S11: architecture "v9example", product_version "valerian 4", "Valerie",
 
         TESTS_2_0.test_6_3_11.expect(ExpectedResults_2_0 {
-            case_01: case_v_4_2.clone(),
-            case_s01: case_uppercase_v_4_2.clone(),
-            case_s02: case_multiple_parallel_branches.clone(),
-            case_s03: case_multiple_nested_branches.clone(),
+            case_01: v_4_2.clone(),
+            case_s01: multiple_parallel_offending_branches.clone(),
+            case_s02: multiple_nested_branches.clone(),
             case_11: Ok(()),
             case_s11: Ok(()),
-            case_s12: Ok(()),
         });
         TESTS_2_1.test_6_3_11.expect(ExpectedResults_2_1 {
-            case_01: case_v_4_2,
-            case_s01: case_uppercase_v_4_2,
-            case_s02: case_multiple_parallel_branches,
-            case_s03: case_multiple_nested_branches,
+            case_01: v_4_2,
+            case_02: multiple_parallel_offending_branches,
+            case_s02: multiple_nested_branches,
             case_11: Ok(()),
-            case_s11: Ok(()),
-            case_s12: Ok(()),
+            case_12: Ok(()),
         });
     }
 }

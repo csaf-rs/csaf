@@ -7,7 +7,8 @@ use std::sync::LazyLock;
 /// `/document/references` must contain at least one item with:
 /// - category = "self"
 /// - url starts with "https://"
-/// - url ends with the valid filename according to section 5.1
+/// - url ends with the valid filename according to section 5.1, preceded by "/"
+/// - url has a non-empty hostname
 pub fn test_6_2_11_missing_canonical_url(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     if !doc.get_document().has_canonical_url() {
         return Err(vec![MISSING_CANONICAL_URL.clone()]);

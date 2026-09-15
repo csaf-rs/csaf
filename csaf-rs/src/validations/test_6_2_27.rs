@@ -23,6 +23,13 @@ const UNKNOWN_DISCOURAGED: &[CategoryOfTheRemediation] = &[
     CategoryOfTheRemediation::FixPlanned,
 ];
 
+const DISCOURAGED_COMBINATIONS: &[(ProductStatusGroup, &[CategoryOfTheRemediation])] = &[
+    (ProductStatusGroup::NotAffected, NOT_AFFECTED_DISCOURAGED),
+    (ProductStatusGroup::Fixed, FIXED_DISCOURAGED),
+    (ProductStatusGroup::UnderInvestigation, UNDER_INVESTIGATION_DISCOURAGED),
+    (ProductStatusGroup::Unknown, UNKNOWN_DISCOURAGED),
+];
+
 fn create_discouraged_combination_warning(
     product_id: &str,
     status_group: &ProductStatusGroup,
@@ -64,64 +71,21 @@ pub fn test_6_2_27_discouraged_product_status_remediation_combination(
             let category = remediation.get_category();
 
             for product_id in remediation_product_ids {
-                // If a product belongs to the "not affected" status group
-                // AND the remediation category is discouraged for that status group,
-                // add a warning.
-                if products_by_status_group.contains(&ProductStatusGroup::NotAffected, &product_id)
-                    && NOT_AFFECTED_DISCOURAGED.contains(&category)
-                {
-                    warnings.push(create_discouraged_combination_warning(
-                        &product_id,
-                        &ProductStatusGroup::NotAffected,
-                        &category,
-                        vulnerability_index,
-                        remediation_index,
-                    ));
-                }
-
-                // If a product belongs to the "fixed" status group
-                // AND the remediation category is discouraged for that status group,
-                // add a warning.
-                if products_by_status_group.contains(&ProductStatusGroup::Fixed, &product_id)
-                    && FIXED_DISCOURAGED.contains(&category)
-                {
-                    warnings.push(create_discouraged_combination_warning(
-                        &product_id,
-                        &ProductStatusGroup::Fixed,
-                        &category,
-                        vulnerability_index,
-                        remediation_index,
-                    ));
-                }
-
-                // If a product belongs to the "under investigation" status group
-                // AND the remediation category is discouraged for that status group,
-                // add a warning.
-                if products_by_status_group.contains(&ProductStatusGroup::UnderInvestigation, &product_id)
-                    && UNDER_INVESTIGATION_DISCOURAGED.contains(&category)
-                {
-                    warnings.push(create_discouraged_combination_warning(
-                        &product_id,
-                        &ProductStatusGroup::UnderInvestigation,
-                        &category,
-                        vulnerability_index,
-                        remediation_index,
-                    ));
-                }
-
-                // If a product belongs to the "unknown" status group
-                // AND the remediation category is discouraged for that status group,
-                // add a warning.
-                if products_by_status_group.contains(&ProductStatusGroup::Unknown, &product_id)
-                    && UNKNOWN_DISCOURAGED.contains(&category)
-                {
-                    warnings.push(create_discouraged_combination_warning(
-                        &product_id,
-                        &ProductStatusGroup::Unknown,
-                        &category,
-                        vulnerability_index,
-                        remediation_index,
-                    ));
+                for (status_group, discouraged_categories) in DISCOURAGED_COMBINATIONS {
+                    // If the product belongs to the current status group
+                    // and the remediation category is discouraged for that group,
+                    // add a warning.
+                    if products_by_status_group.contains(status_group, &product_id)
+                        && discouraged_categories.contains(&category)
+                    {
+                        warnings.push(create_discouraged_combination_warning(
+                            &product_id,
+                            status_group,
+                            &category,
+                            vulnerability_index,
+                            remediation_index,
+                        ));
+                    }
                 }
             }
         }

@@ -16,7 +16,7 @@ fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
     CsafDocumentCategory::CsafInformationalAdvisory,
     CsafDocumentCategory::CsafSecurityIncidentResponse,
-]);
+]).csaf21(&[CsafDocumentCategory::CsafSuperseded]);
 
 /// 6.1.27.2 Document References
 ///
@@ -65,12 +65,23 @@ mod tests {
         let case_informational_advisory = Err(vec![create_missing_external_reference_error(
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
+        let case_security_incident_response = Err(vec![create_missing_external_reference_error(
+            &CsafDocumentCategory::CsafSecurityIncidentResponse,
+        )]);
+        let case_superseded = Err(vec![create_missing_external_reference_error(
+            &CsafDocumentCategory::CsafSuperseded,
+        )]);
 
         TESTS_2_0.test_6_1_27_2.expect(ExpectedResults_2_0 {
             case_01: case_informational_advisory.clone(),
         });
         TESTS_2_1.test_6_1_27_2.expect(ExpectedResults_2_1 {
             case_01: case_informational_advisory,
+            case_02: case_security_incident_response,
+            case_03: case_superseded,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
         });
     }
 }

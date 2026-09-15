@@ -14,11 +14,13 @@ use std::collections::BTreeMap;
 /// All term translations, lookup via term -> lang -> translation
 #[derive(Debug)]
 pub(crate) struct Translations {
+    pub cve_description: LanguageTranslationLookup,
     pub license: LanguageTranslationLookup,
     pub product_description: LanguageTranslationLookup,
     pub reasoning_for_supersession: LanguageTranslationLookup,
     pub reasoning_for_withdrawal: LanguageTranslationLookup,
     pub superseding_document: LanguageTranslationLookup,
+    pub vulnerability_summary: LanguageTranslationLookup,
 }
 
 pub(crate) type LanguageTranslationLookup = BTreeMap<String, String>;

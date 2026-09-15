@@ -70,8 +70,10 @@ mod tests {
     fn test_test_6_1_46() {
         // Case 01: selections object is missing
         // Case 02: key in selections object is missing
+        // Case 03: invalid bcp47 tag
         // Case 11: minimal valid ssvc
         // Case 12: valid ssvc
+        // Case 13: valid bcp47 tag
 
         TESTS_2_1.test_6_1_46.expect(ExpectedResults {
             case_01: Err(vec![create_invalid_ssvc_error(
@@ -84,8 +86,11 @@ mod tests {
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0", 0, 0),
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0/values/0", 0, 0),
             ]),
+            // TODO update when new requirements are added
+            case_03: Ok(()),
             case_11: Ok(()),
             case_12: Ok(()),
+            case_13: Ok(()),
         });
     }
 }

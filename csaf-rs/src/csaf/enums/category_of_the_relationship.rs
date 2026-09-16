@@ -16,5 +16,4 @@ pub enum CategoryOfTheRelationship {
     InstalledWith,
     #[strum(serialize = "optional_component_of")]
     OptionalComponentOf,
-
 }

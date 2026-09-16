@@ -95,7 +95,8 @@ impl ProductPathTrait<FullProductNameT> for ProductPath {
     }
 
     fn get_subpath_product_references_with_category(&self) -> Vec<(CategoryOfTheRelationship, &str)> {
-        self.subpaths.iter()
+        self.subpaths
+            .iter()
             .map(|subpath| (subpath.category.into(), subpath.next_product_reference.as_str()))
             .collect()
     }

@@ -265,7 +265,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.27.10 | ✅ | ✅ |
 | 6.1.27.11 | ✅ | ✅ |
 | 6.1.27.12 | ⭕ | ✅ |
-| 6.1.27.13 | ⭕ |   |
+| 6.1.27.13 | ⭕ | ✅ |
 | 6.1.27.14 | ⭕ | ✅ |
 | 6.1.27.15 | ⭕ | ✅ |
 | 6.1.27.16 | ⭕ | ✅ |

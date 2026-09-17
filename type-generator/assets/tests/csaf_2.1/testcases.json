@@ -1001,6 +1001,20 @@
       ]
     },
     {
+      "id": "6.2.43",
+      "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s01.json",
+          "valid": false
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s02.json",
+          "valid": false
+        }
+      ]
+    },
+    {
       "id": "6.2.48",
       "group": "recommended",
       "valid": [

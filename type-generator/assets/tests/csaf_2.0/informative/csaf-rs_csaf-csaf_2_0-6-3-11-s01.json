@@ -7,7 +7,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Supplementary test: Usage of V as Version Indicator (failing example 2 - uppercase V followed by digit)",
+    "title": "Supplementary test: Usage of V as Version Indicator (failing supplementary example 1 - backport of CSAF 2.1 6-3-11-02)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_0-6-3-11-S01",
@@ -26,24 +26,46 @@
   "product_tree": {
     "branches": [
       {
+        "category": "vendor",
+        "name": "Example Company",
         "branches": [
           {
+            "category": "product_name",
+            "name": "Product A",
             "branches": [
+              {
+                "category": "product_version",
+                "name": "4.1",
+                "product": {
+                  "product_id": "CSAFPID-9080700",
+                  "name": "Example Company Product A 4.1"
+                }
+              },
               {
                 "category": "product_version",
                 "name": "V4.2",
                 "product": {
-                  "name": "Example Company Product A 4.2",
-                  "product_id": "CSAFPID-9080701"
+                  "product_id": "CSAFPID-9080701",
+                  "name": "Example Company Product A 4.2"
                 }
               }
-            ],
+            ]
+          },
+          {
             "category": "product_name",
-            "name": "Product A"
+            "name": "Product B",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "V4\\nN2",
+                "product": {
+                  "product_id": "CSAFPID-9080702",
+                  "name": "Example Company Product B V4\\nN2"
+                }
+              }
+            ]
           }
-        ],
-        "category": "vendor",
-        "name": "Example Company"
+        ]
       }
     ]
   }

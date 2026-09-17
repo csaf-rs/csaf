@@ -35,11 +35,10 @@ mod tests {
     #[test]
     fn test_test_6_2_11() {
         let err = Err(vec![MISSING_CANONICAL_URL.clone()]);
-        let ok = Ok(());
 
         TESTS_2_0.test_6_2_11.expect(ExpectedResults_2_0 {
             case_01: err.clone(),
-            case_11: ok.clone(),
+            case_11: Ok(()),
         });
 
         // Failing test cases:
@@ -64,18 +63,22 @@ mod tests {
             case_01: err.clone(),
             case_02: err.clone(),
             case_03: err.clone(),
+            // TODO: Update when new requirements are added
+            case_04: Ok(()),
+            // TODO: Update when new requirements are added
+            case_05: Ok(()),
             case_s01: err.clone(),
             case_s02: err.clone(),
             case_s03: err.clone(),
             case_s04: err.clone(),
             case_s05: err.clone(),
             case_s06: err,
-            case_11: ok.clone(),
-            case_12: ok.clone(),
-            case_13: ok.clone(),
-            case_s11: ok.clone(),
-            case_s12: ok.clone(),
-            case_s13: ok,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
         });
     }
 }

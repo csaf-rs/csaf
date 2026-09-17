@@ -18,6 +18,7 @@ pub enum CsafDocumentCategory {
     CsafVex,
     CsafWithdrawn,
     CsafSuperseded,
+    CsafVulnerabilityReport,
     CsafDeprecatedSecurityAdvisory,
     // By definition of the standard, everything that is not an exact match for the categories above,
     // is also csaf_base. This variant represents this case, saving the original string for later
@@ -36,6 +37,7 @@ impl From<&str> for CsafDocumentCategory {
             "csaf_deprecated_security_advisory" => Self::CsafDeprecatedSecurityAdvisory,
             "csaf_withdrawn" => Self::CsafWithdrawn,
             "csaf_superseded" => Self::CsafSuperseded,
+            "csaf_vulnerability_report" => Self::CsafVulnerabilityReport,
             default => Self::CsafBaseOther(default.to_string()),
         }
     }
@@ -64,7 +66,7 @@ impl CsafDocumentCategory {
     ];
 
     /// Well-known CSAF 2.1 profiles
-    const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 8] = [
+    const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 9] = [
         Self::CsafBase,
         Self::CsafSecurityIncidentResponse,
         Self::CsafInformationalAdvisory,
@@ -73,6 +75,7 @@ impl CsafDocumentCategory {
         Self::CsafDeprecatedSecurityAdvisory,
         Self::CsafWithdrawn,
         Self::CsafSuperseded,
+        Self::CsafVulnerabilityReport,
     ];
 
     /// Checks if the category is DocumentCategory::CsafBaseOther
@@ -216,6 +219,7 @@ impl Display for CsafDocumentCategory {
             Self::CsafDeprecatedSecurityAdvisory => write!(f, "csaf_deprecated_security_advisory"),
             Self::CsafWithdrawn => write!(f, "csaf_withdrawn"),
             Self::CsafSuperseded => write!(f, "csaf_superseded"),
+            Self::CsafVulnerabilityReport => write!(f, "csaf_vulnerability_report"),
             Self::CsafBaseOther(other) => write!(f, "{other}"),
         }
     }

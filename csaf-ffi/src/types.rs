@@ -24,6 +24,7 @@ pub enum DocumentCategory {
     CsafVex,
     CsafWithdrawn,
     CsafSuperseded,
+    CsafVulnerabilityReport,
     CsafDeprecatedSecurityAdvisory,
     CsafBaseOther { value: String },
 }
@@ -39,6 +40,7 @@ impl From<&csaf::csaf::types::csaf_document_category::CsafDocumentCategory> for 
             C::CsafVex => Self::CsafVex,
             C::CsafWithdrawn => Self::CsafWithdrawn,
             C::CsafSuperseded => Self::CsafSuperseded,
+            C::CsafVulnerabilityReport => Self::CsafVulnerabilityReport,
             C::CsafDeprecatedSecurityAdvisory => Self::CsafDeprecatedSecurityAdvisory,
             C::CsafBaseOther(s) => Self::CsafBaseOther { value: s.clone() },
         }

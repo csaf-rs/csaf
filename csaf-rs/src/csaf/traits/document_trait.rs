@@ -23,8 +23,8 @@ use crate::schema::csaf2_1::schema::{
 use crate::validation::{TestFinding, TestFindingData};
 
 /// Returns an iterator over the reference URLs that satisfy the canonical URL requirements:
-/// `category = "self"`, starts with `https://`, has a non-empty authority,
-/// and has the tracking-ID-derived filename preceded by "/".
+/// `category = "self"`, starts with `https://`, has a non-empty hostname,
+/// and has the tracking-ID-derived filename preceded by `/`.
 fn canonical_url_candidates<'a, R: ReferenceTrait>(
     references: Option<&'a Vec<R>>,
     expected_filename: &str,
@@ -37,29 +37,38 @@ fn canonical_url_candidates<'a, R: ReferenceTrait>(
         .map(|r| r.get_url())
         .filter(move |url| {
             // Check that the URL starts with "https://"
-            let Some(after_scheme) = url.strip_prefix("https://") else {
-                return false;
-            };
-
-            // Split the authority from the path
-            let Some((authority, path)) = after_scheme.split_once('/') else {
-                return false;
-            };
-
-            // Check that the authority is not empty
-            if authority.is_empty() {
-                return false;
+            if let Some(after_scheme) = url.strip_prefix("https://")
+                // Check that there is a '/' after the authority
+                && let Some((authority, path)) = after_scheme.split_once('/')
+                // Check that the authority is non-empty
+                && !authority.is_empty()
+                // Check that the authority has a non-empty hostname
+                && has_non_empty_hostname(authority)
+                // Check that the last segment of the path matches the expected filename
+                && path.rsplit('/').next() == Some(expected_filename)
+            {
+                true
+            } else {
+                false
             }
-
-            // Get the last path segment, which is the actual filename
-            let actual_filename = path
-                .rsplit('/')
-                .next()
-                .expect("rsplit() result is guaranteed to contain at least one element");
-
-            // Check if filenames match
-            actual_filename == expected_filename
         })
+}
+
+// URI syntax is validated separately by the JSON Schema ('format: "uri"').
+// This helper only checks the additional 6.2.11 CSAF 2.1 requirement that the hostname is non-empty.
+fn has_non_empty_hostname(authority: &str) -> bool {
+    // Strip optional userinfo
+    let hostname_port = authority
+        .rsplit_once('@')
+        .map_or(authority, |(_, hostname_port)| hostname_port);
+
+    // Strip optional port (or the part after the last ':' for IPv6)
+    let hostname = hostname_port
+        .rsplit_once(':')
+        .map_or(hostname_port, |(hostname, _)| hostname);
+
+    // The hostname is non-empty if any character remains after handling userinfo and port
+    !hostname.is_empty()
 }
 
 /// Trait representing document meta-level information
@@ -308,6 +317,34 @@ mod tests {
         Some(vec![make_ref21("self", HTTPS_MATCH_WELL_KNOWN)]),
         1
     )]
+    #[case::userinfo_and_port_with_hostname(
+        Some(vec![make_ref21(
+        "self",
+        "https://user:pass@example.com:443/example-company-2019-yh3234.json"
+    )]),
+        1
+    )]
+    #[case::ipv4_hostname(
+        Some(vec![make_ref21(
+        "self",
+        "https://192.168.1.1/example-company-2019-yh3234.json"
+    )]),
+        1
+    )]
+    #[case::ipv6_hostname(
+        Some(vec![make_ref21(
+        "self",
+        "https://[2001:db8::1]/example-company-2019-yh3234.json"
+    )]),
+        1
+    )]
+    #[case::ipvfuture_hostname(
+        Some(vec![make_ref21(
+        "self",
+        "https://[v1.foo]/example-company-2019-yh3234.json"
+    )]),
+        1
+    )]
     // non-canonical URLs
     #[case::reference_category_external(
         Some(vec![make_ref21("external", HTTPS_MATCH)]),
@@ -374,29 +411,26 @@ mod tests {
     )]),
         0
     )]
-    // Known MVP limitation:
-    // The current implementation only checks that the authority is non-empty.
-    // It does not fully parse the authority to verify a valid, non-empty hostname.
+    #[case::userinfo_without_hostname(
+        Some(vec![make_ref21(
+        "self",
+        "https://user:password@/example-company-2019-yh3234.json"
+    )]),
+        0
+    )]
     #[case::port_without_hostname(
         Some(vec![make_ref21(
         "self",
         "https://:443/example-company-2019-yh3234.json"
     )]),
-        1
+        0
     )]
-    #[case::userinfo_marker_without_hostname(
+    #[case::userinfo_and_port_without_hostname(
         Some(vec![make_ref21(
         "self",
-        "https://@:/example-company-2019-yh3234.json"
+        "https://user:password@:443/example-company-2019-yh3234.json"
     )]),
-        1
-    )]
-    #[case::userinfo_without_hostname(
-        Some(vec![make_ref21(
-        "self",
-        "https://userinfo@/example-company-2019-yh3234.json"
-    )]),
-        1
+        0
     )]
     fn test_candidate_filtering(#[case] refs: Option<Vec<Reference21>>, #[case] expected_count: usize) {
         let refs_ref = refs.as_ref();

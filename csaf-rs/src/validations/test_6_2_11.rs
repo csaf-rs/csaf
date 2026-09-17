@@ -46,6 +46,8 @@ mod tests {
         // 01  - URL does not end with the canonical filename
         // 02  - invalid character in filename is not replaced
         // 03  - filename is not converted to lowercase
+        // 04  - URL has no path separator before the canonical filename
+        // 05  - URL has an empty hostname
         // s01 - no references
         // s02 - external reference category instead of self
         // s03 - HTTP URL instead of HTTPS
@@ -64,10 +66,8 @@ mod tests {
             case_01: err.clone(),
             case_02: err.clone(),
             case_03: err.clone(),
-            // TODO #297: Update when new requirements are added
-            case_04: Ok(()),
-            // TODO #297: Update when new requirements are added
-            case_05: Ok(()),
+            case_04: err.clone(),
+            case_05: err.clone(),
             case_s01: err.clone(),
             case_s02: err.clone(),
             case_s03: err.clone(),

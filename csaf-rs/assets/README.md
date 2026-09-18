@@ -11,6 +11,9 @@ These assets are described within this `README.md`.
 - `csaf_2.0_json_schema.json`
 - `csaf_2.1_json_schema.json`
 
+- `extension-content.json`
+- `extension-metaschema.json`
+
 See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
 They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
@@ -129,7 +132,7 @@ License as provided in the document
 > WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-- `cvss-v4.0.1.json` see https://www.first.org/cvss/cvss-v4.0.1.json
+- `cvss-v4.0.json` see https://www.first.org/cvss/cvss-v4.0.json
 
 License as provided in the document
 > Copyright (c) 2025, FIRST.ORG, INC.
@@ -189,3 +192,17 @@ Terms of use according to https://cwe.mitre.org/about/termsofuse.html:
 > but not limited to loss of income, program interruption, loss of information, or > other pecuniary loss) arising 
 > out of use of this information, no matter the cause of action, even if The MITRE Corporation has been > advised 
 > of the possibility of such damages.
+
+## Derived Assets
+
+Soem schema files are derived from the officials schemas, but with the modification that unevaluatedProperties are 
+not allowed, as needed for test 6.2.20.
+
+- `csaf_2.0_json_schema.strict.json`
+- `csaf_2.1_json_schema.strict.json`
+
+- `extension-content.strict.json`
+- `extension-metaschema.strict.json`
+
+- `cvss-v2.0.strict.json`
+- `cvss-v4.0.strict.json`

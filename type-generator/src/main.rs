@@ -2,19 +2,19 @@ mod build_errors;
 mod language_tags;
 mod rvisc;
 mod schema;
+mod strict_schema;
 mod testcases;
 mod translation;
 mod utils;
-mod validation_schemas;
 
 use crate::build_errors::BuildError;
 use crate::language_tags::generate_language_tags;
 use crate::rvisc::generate_registry;
 use crate::schema::build_schema;
 use crate::schema::config::{get_schemas, get_testcases_schemas};
+use crate::strict_schema::generate_strict_schemas;
 use crate::testcases::{generate_testcases, get_testcase_configs};
 use crate::translation::generate_translations;
-use crate::validation_schemas::generate_validation_schemas;
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -36,9 +36,9 @@ struct Args {
     #[arg(long, default_value_t = false)]
     language_tags: bool,
 
-    /// Generate validation schemas
+    /// Generate strict schemas for test 6.2.20
     #[arg(long, default_value_t = false)]
-    validation_schemas: bool,
+    strict_schemas: bool,
 
     /// Generate rvisc lookup
     #[arg(long, default_value_t = false)]
@@ -61,7 +61,7 @@ fn main() -> Result<(), BuildError> {
         && !args.test_schema
         && !args.test_definitions
         && !args.language_tags
-        && !args.validation_schemas
+        && !args.strict_schemas
         && !args.translations
         && !args.rvisc;
 
@@ -87,8 +87,8 @@ fn main() -> Result<(), BuildError> {
         generate_language_tags(&args.target_folder)?;
     }
 
-    if run_all || args.validation_schemas {
-        generate_validation_schemas(&args.target_folder)?;
+    if run_all || args.strict_schemas {
+        generate_strict_schemas(&args.target_folder)?;
     }
 
     if run_all || args.translations {

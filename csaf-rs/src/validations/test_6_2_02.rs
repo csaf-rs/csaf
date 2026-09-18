@@ -1,43 +1,25 @@
-use crate::csaf_traits::{CsafTrait, ProductStatusTrait, RemediationTrait, VulnerabilityTrait, WithOptionalProductIds};
+use crate::csaf_traits::{
+    CsafTrait, ProductStatusAndPath, ProductStatusGroup, ProductStatusGroupMap, RemediationTrait, VulnerabilityTrait,
+    WithOptionalProductIds,
+};
 use crate::schema::csaf2_1::schema::CategoryOfTheRemediation;
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
 fn create_missing_remediation_error(
     vulnerability_index: usize,
-    status_group_name: &str,
-    status_group_product_index: usize,
     product_id: &str,
+    status_path: ProductStatusAndPath,
 ) -> TestFinding {
+    let status_group_name = status_path.status.to_string();
+    let none_available_name = CategoryOfTheRemediation::NoneAvailable.to_string();
+    let no_fix_planned_name = CategoryOfTheRemediation::NoFixPlanned.to_string();
     TestFinding::Warning(TestFindingData {
         message: format!(
-            "Missing at least a remediation of category 'none_available' or 'no_fix_planned' for product ID '{product_id}' in product status group '{status_group_name}'",
+            "Missing at least a remediation of category '{none_available_name}' or '{no_fix_planned_name}' for product ID '{product_id}' with product status '{status_group_name}'",
         ),
-        instance_path: format!(
-            "/vulnerabilities/{vulnerability_index}/product_status/{status_group_name}/{status_group_product_index}"
-        ),
+        instance_path: status_path.json_path(vulnerability_index),
     })
-}
-
-fn check_product_status_group_for_missing_remediations<'a>(
-    errors: &mut Option<Vec<TestFinding>>,
-    status_group_product_ids: impl Iterator<Item = &'a str>,
-    remediation_product_ids: &HashSet<String>,
-    vulnerability_index: usize,
-    status_group_name: &str,
-) {
-    // for each product ID in the status group, check if a relevant remediation exists
-    // if not, generate an error
-    for (sg_p_i, product_id) in status_group_product_ids.enumerate() {
-        if !remediation_product_ids.contains(product_id) {
-            errors.get_or_insert_default().push(create_missing_remediation_error(
-                vulnerability_index,
-                status_group_name,
-                sg_p_i,
-                product_id,
-            ));
-        }
-    }
 }
 
 /// 6.2.2 Missing Remediation
@@ -51,14 +33,11 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         // if there are product statuses
         if let Some(product_status) = vuln.get_product_status() {
-            // check if there are products with the relevant product status groups
-            if product_status.get_first_affected().is_none()
-                && product_status.get_known_affected().is_none()
-                && product_status.get_last_affected().is_none()
-                && product_status.get_under_investigation().is_none()
-            {
-                continue;
-            }
+            let product_to_groups = ProductStatusGroupMap::from(product_status);
+
+            let relevant_groups = product_to_groups
+                .into_iter()
+                .filter(|g| g.0 == ProductStatusGroup::Affected || g.0 == ProductStatusGroup::UnderInvestigation);
 
             // collect all product IDs referenced in remediations of category none_available or no_fix_planned
             let mut remediation_product_ids = HashSet::<String>::new();
@@ -73,42 +52,18 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
                 }
             }
 
-            // check each relevant product status group for missing remediations
-            if let Some(first_affected) = product_status.get_first_affected() {
-                check_product_status_group_for_missing_remediations(
-                    &mut errors,
-                    first_affected,
-                    &remediation_product_ids,
-                    v_i,
-                    "first_affected",
-                );
-            }
-            if let Some(known_affected) = product_status.get_known_affected() {
-                check_product_status_group_for_missing_remediations(
-                    &mut errors,
-                    known_affected,
-                    &remediation_product_ids,
-                    v_i,
-                    "known_affected",
-                );
-            }
-            if let Some(last_affected) = product_status.get_last_affected() {
-                check_product_status_group_for_missing_remediations(
-                    &mut errors,
-                    last_affected,
-                    &remediation_product_ids,
-                    v_i,
-                    "last_affected",
-                );
-            }
-            if let Some(under_investigation) = product_status.get_under_investigation() {
-                check_product_status_group_for_missing_remediations(
-                    &mut errors,
-                    under_investigation,
-                    &remediation_product_ids,
-                    v_i,
-                    "under_investigation",
-                );
+            for (_, product_ids_map) in relevant_groups {
+                for (product_id, status_with_path) in product_ids_map {
+                    if !remediation_product_ids.contains(&product_id) {
+                        for status_path in status_with_path {
+                            errors.get_or_insert_default().push(create_missing_remediation_error(
+                                v_i,
+                                &product_id,
+                                status_path,
+                            ));
+                        }
+                    }
+                }
             }
         }
     }
@@ -121,6 +76,7 @@ crate::test_validation::impl_validator!(ValidatorForTest6_2_2, test_6_2_02_missi
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf_traits::ProductStatus;
     use crate::csaf2_0::testcases::ExpectedResults_6_2_2 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_2 as ExpectedResults_2_1;
@@ -130,9 +86,11 @@ mod tests {
     fn test_test_6_2_02() {
         let case_01 = Err(vec![create_missing_remediation_error(
             0,
-            "last_affected",
-            0,
             "CSAFPID-9080700",
+            ProductStatusAndPath {
+                status: ProductStatus::LastAffected,
+                index: 0,
+            },
         )]);
 
         // Both CSAF 2.0 and 2.1 have 2 test cases

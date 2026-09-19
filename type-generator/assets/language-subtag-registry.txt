@@ -1,4 +1,4 @@
-File-Date: 2026-08-08
+File-Date: 2026-09-17
 %%
 Type: language
 Subtag: aa
@@ -47049,6 +47049,7 @@ Added: 2005-10-16
 %%
 Type: region
 Subtag: NR
+Description: Naoero
 Description: Nauru
 Added: 2005-10-16
 %%

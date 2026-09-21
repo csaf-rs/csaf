@@ -315,6 +315,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | Test specification | 2.0                | 2.1 (experimental) |
 |----------|--------------------|--------------------|
 | 6.2.1    | ✅ | ✅ |
+| 6.2.2    | ✅ | ✅ |
 | 6.2.4   | ✅ | ✅ |
 | 6.2.5   | ✅ | ✅ |
 | 6.2.7   | ✅ | ✅ |

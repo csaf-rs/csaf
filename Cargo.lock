@@ -631,7 +631,6 @@ dependencies = [
  "config",
  "csaf-rs",
  "http",
- "http-body-util",
  "serde",
  "serde_json",
  "tokio",

@@ -64,13 +64,13 @@ jobs:
         run: cargo run --locked -p type-generator
       - name: Check for uncommitted changes in generated files
         run: |
-          CHANGES=$(git status --porcelain -- csaf-rs/src/)
+          CHANGES=$(git status --porcelain -- csaf-rs/src/ csaf-rs/assets/)
           if [ -n "$CHANGES" ]; then
             echo ""
             echo "$CHANGES"
             echo ""
             echo "::error::Generated files are out of date or untracked!"
-            echo "The files in csaf-rs/src/ do not match the output of the type-generator."
+            echo "The files in csaf-rs/src/ or csaf-rs/assets/ do not match the output of the type-generator."
             echo "Please run 'cargo run --locked -p type-generator' and commit the updated files."
             exit 1
           fi

@@ -33,9 +33,9 @@ Only create language subtag registry types from the IANA registry
 cargo run -- --language-tags
 ```
 
-Only create validation schemas for the different JSON schemas used in the library.
+Only create strict versions of the JSON schemas used in the library
 ```
-cargo run -- --validation-schemas
+cargo run -- --strict-schemas
 ```
 
 Only create the RVISC types from the RVISC registry file

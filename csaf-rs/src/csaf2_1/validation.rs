@@ -44,9 +44,12 @@ const PRESET_NAME_BASIC: &str = "basic";
 const PRESET_NAME_EXTENDED: &str = "extended";
 const PRESET_NAME_FULL: &str = "full";
 const PRESET_NAME_EXTERNAL_REQUEST_FREE: &str = "external-request-free";
+// const PRESET_NAME_NON_EXTERNAL_REQUEST_FREE: &str = "non-external-request-free";
 const PRESET_NAME_CONSISTENT_REVISION_HISTORY: &str = "consistent-revision-history";
-const PRESET_NAME_CONSISTENT_DATETIMES: &str = "consistent-date-times";
+const PRESET_NAME_CONSISTENT_DATE_TIMES: &str = "consistent-date-times";
 const PRESET_NAME_SSVC: &str = "ssvc";
+// const PRESET_NAME_EXTENSIONS: &str = "extensions";
+// const PRESET_NAME_EXTENSIONS_EXIST: &str = "extensions-exist";
 
 #[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
@@ -58,10 +61,13 @@ pub enum Preset {
     Basic,
     Extended,
     Full,
+    // NonExternalRequestFree,
     ExternalRequestFree,
     ConsistentRevisionHistory,
     ConsistentDateTimes,
     Ssvc,
+    // Extensions,
+    // ExtensionsExist,
 }
 
 impl Preset {
@@ -75,9 +81,12 @@ impl Preset {
             Preset::Extended => PRESET_NAME_EXTENDED,
             Preset::Full => PRESET_NAME_FULL,
             Preset::ExternalRequestFree => PRESET_NAME_EXTERNAL_REQUEST_FREE,
+            // Preset::NonExternalRequestFree => PRESET_NAME_NON_EXTERNAL_REQUEST_FREE,
             Preset::ConsistentRevisionHistory => PRESET_NAME_CONSISTENT_REVISION_HISTORY,
-            Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATETIMES,
+            Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATE_TIMES,
             Preset::Ssvc => PRESET_NAME_SSVC,
+            // Preset::Extensions => PRESET_NAME_EXTENSIONS,
+            // Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
         }
     }
 }
@@ -100,9 +109,12 @@ impl TryFrom<&str> for Preset {
             PRESET_NAME_EXTENDED => Ok(Preset::Extended),
             PRESET_NAME_FULL => Ok(Preset::Full),
             PRESET_NAME_EXTERNAL_REQUEST_FREE => Ok(Preset::ExternalRequestFree),
+            // PRESET_NAME_NON_EXTERNAL_REQUEST_FREE => Ok(Preset::NonExternalRequestFree),
             PRESET_NAME_CONSISTENT_REVISION_HISTORY => Ok(Preset::ConsistentRevisionHistory),
-            PRESET_NAME_CONSISTENT_DATETIMES => Ok(Preset::ConsistentDateTimes),
+            PRESET_NAME_CONSISTENT_DATE_TIMES => Ok(Preset::ConsistentDateTimes),
             PRESET_NAME_SSVC => Ok(Preset::Ssvc),
+            // PRESET_NAME_EXTENSIONS => Ok(Preset::Extensions),
+            // PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
             _ => Err(CsafError::InvalidPreset {
                 preset: value.to_string(),
             }),
@@ -138,13 +150,17 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Preset::Extended.as_str(),
             Preset::Full.as_str(),
             Preset::ExternalRequestFree.as_str(),
+            // Preset::NonExternalRequestFree.as_str(),
             Preset::ConsistentRevisionHistory.as_str(),
             Preset::ConsistentDateTimes.as_str(),
             Preset::Ssvc.as_str(),
+            // Preset::Extensions.as_str(),
+            // Preset::ExtensionsExist.as_str(),
         ]
     }
 
     fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
+        let external_request = ["6.2.55", "6.3.6", "6.3.7", "6.3.24"];
         match Preset::try_from(preset) {
             Ok(Preset::Schema) => Ok(vec![Preset::Schema.as_str()]),
             Ok(Preset::Mandatory) => Ok(mandatory_tests()),
@@ -161,6 +177,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 informative_tests(),
             ]
             .concat()),
+            // Ok(Preset::NonExternalRequestFree) => Ok(external_request),
             Ok(Preset::ExternalRequestFree) => Ok([
                 vec![Preset::Schema.as_str()],
                 mandatory_tests(),
@@ -169,7 +186,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             ]
             .concat()
             .into_iter()
-            .filter(|id| *id != "6.3.6" && *id != "6.3.7")
+            .filter(|id| !external_request.contains(id))
             .collect()),
             Ok(Preset::ConsistentRevisionHistory) => Ok(vec![
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
@@ -180,6 +197,14 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
+            // Ok(Preset::Extensions) => Ok(vec![
+            //     "6.1.60.1", "6.1.60.2", "6.1.60.3", "6.2.39.5", "6.2.54.1", "6.2.54.2", "6.2.54.3", "6.2.54.4",
+            //     "6.3.21.1", "6.3.21.2", "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8",
+            //     "6.3.21.9",
+            // ]),
+            // Ok(Preset::ExtensionsExist) => Ok(vec![
+            //        "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9"
+            // ]),
             Err(e) => Err(e),
         }
     }
@@ -227,7 +252,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
                 "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),
                 "6.1.7" => Some(ValidatorForTest6_1_7.validate(self)),
-                "6.1.8" => None, // Some(ValidatorForTest6_1_8.validate(self)),
+                "6.1.8" => Some(ValidatorForTest6_1_8.validate(self)),
                 "6.1.9" => Some(ValidatorForTest6_1_9.validate(self)),
                 "6.1.10" => Some(ValidatorForTest6_1_10.validate(self)),
                 "6.1.11" => Some(ValidatorForTest6_1_11.validate(self)),
@@ -286,7 +311,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.46" => Some(ValidatorForTest6_1_46.validate(self)),
                 "6.1.47" => Some(ValidatorForTest6_1_47.validate(self)),
                 "6.1.48" => None, // Some(ValidatorForTest6_1_48.validate(self)),
-                "6.1.49" => None, // Some(ValidatorForTest6_1_49.validate(self)),
+                "6.1.49" => Some(ValidatorForTest6_1_49.validate(self)),
                 "6.1.50" => None, // Some(ValidatorForTest6_1_50.validate(self)),
                 "6.1.51" => Some(ValidatorForTest6_1_51.validate(self)),
                 "6.1.52" => Some(ValidatorForTest6_1_52.validate(self)),
@@ -312,7 +337,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.8" => Some(ValidatorForTest6_2_8.validate(self)),
                 "6.2.9" => Some(ValidatorForTest6_2_9.validate(self)),
                 "6.2.11" => Some(ValidatorForTest6_2_11.validate(self)),
-                "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
+                "6.2.12" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.2.13" => {
                     // see below in RawValidatable
                     return TestResult {
@@ -339,7 +370,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.24" => Some(ValidatorForTest6_2_24.validate(self)),
                 "6.2.25" => Some(ValidatorForTest6_2_25.validate(self)),
                 "6.2.26" => Some(ValidatorForTest6_2_26.validate(self)),
-                "6.2.27" => None, // Some(ValidatorForTest6_2_27.validate(self)),
+                "6.2.27" => Some(ValidatorForTest6_2_27.validate(self)),
                 "6.2.28" => Some(ValidatorForTest6_2_28.validate(self)),
                 "6.2.29" => Some(ValidatorForTest6_2_29.validate(self)),
                 "6.2.30" => Some(ValidatorForTest6_2_30.validate(self)),
@@ -371,11 +402,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.51" => None,   // Some(ValidatorForTest6_2_51.validate(self)),
                 "6.2.52" => Some(ValidatorForTest6_2_52.validate(self)),
                 "6.2.53" => Some(ValidatorForTest6_2_53.validate(self)),
+                "6.2.54" => None, //Some(ValidatorForTest6_2_54.validate(self)),
+                "6.2.55" => None, //Some(ValidatorForTest6_2_55.validate(self)),
                 // informative tests
                 "6.3.1" => None, // Some(ValidatorForTest6_3_1.validate(self)),
                 "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
                 "6.3.3" => Some(ValidatorForTest6_3_3.validate(self)),
-                "6.3.4" => None, // Some(ValidatorForTest6_3_4.validate(self)),
+                "6.3.4" => Some(ValidatorForTest6_3_4.validate(self)),
                 "6.3.5" => Some(ValidatorForTest6_3_5.validate(self)),
                 "6.3.6" => None, // Some(ValidatorForTest6_3_6.validate(self)),
                 "6.3.7" => None, // Some(ValidatorForTest6_3_7.validate(self)),
@@ -392,6 +425,10 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.18" => Some(ValidatorForTest6_3_18.validate(self)),
                 "6.3.19" => None, // Some(ValidatorForTest6_3_19.validate(self)),
                 "6.3.20" => Some(ValidatorForTest6_3_20.validate(self)),
+                "6.3.21" => None, // Some(ValidatorForTest6_3_21.validate(self)),
+                "6.3.22" => None, // Some(ValidatorForTest6_3_22.validate(self)),
+                "6.3.23" => None, // Some(ValidatorForTest6_3_23.validate(self)),
+                "6.3.24" => None, // Some(ValidatorForTest6_3_24.validate(self)),
                 _ => None,
             },
         )
@@ -404,6 +441,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             test_id,
             match test_id {
                 PRESET_NAME_SCHEMA => Some(validate_schema_csaf_2_1(self)),
+                "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 _ => None,

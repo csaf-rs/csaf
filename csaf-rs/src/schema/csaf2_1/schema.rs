@@ -865,7 +865,26 @@ impl CommonSecurityAdvisoryFramework {
         Default::default()
     }
 }
-///Information on how to contact the publisher, possibly including details such as web sites, email addresses, phone numbers, and postal mail addresses.
+///Contains information on how to contact the publisher.
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct Contact {
+    ///Contains details regarding ways to reach the publisher, e.g. through web sites, phone numbers, and postal mail addresses.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub details: ::std::option::Option<ContactDetails>,
+    ///Contains the email address that can be used to reach the issuing party.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub email: ::std::option::Option<Email>,
+    ///Contains a URL pointing to a public OpenPGP key valid for the email of issuing party provided in the sibling property `email`.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub public_openpgp_key_url: ::std::option::Option<PublicOpenPgpKeyUrl>,
+}
+impl Contact {
+    pub fn builder() -> builder::Contact {
+        Default::default()
+    }
+}
+///Contains details regarding ways to reach the publisher, e.g. through web sites, phone numbers, and postal mail addresses.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
 pub struct ContactDetails(::std::string::String);
@@ -1481,6 +1500,60 @@ impl ::std::convert::TryFrom<::std::string::String> for DocumentStatus {
         value: ::std::string::String,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         value.parse()
+    }
+}
+///Contains the email address that can be used to reach the issuing party.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct Email(::std::string::String);
+impl ::std::ops::Deref for Email {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<Email> for ::std::string::String {
+    fn from(value: Email) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for Email {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 6usize {
+            return Err("shorter than 6 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for Email {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for Email {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for Email {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
     }
 }
 ///Represents the name of the engine that generated the CSAF document.
@@ -3369,15 +3442,73 @@ impl ::std::convert::From<::std::vec::Vec<ProductIdT>> for ProductsT {
         Self(value)
     }
 }
+///Contains a URL pointing to a public OpenPGP key valid for the email of issuing party provided in the sibling property `email`.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct PublicOpenPgpKeyUrl(::std::string::String);
+impl ::std::ops::Deref for PublicOpenPgpKeyUrl {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<PublicOpenPgpKeyUrl> for ::std::string::String {
+    fn from(value: PublicOpenPgpKeyUrl) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for PublicOpenPgpKeyUrl {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 11usize {
+            return Err("shorter than 11 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^https:\\/\\/").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err("doesn't match pattern \"^https:\\/\\/\"".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for PublicOpenPgpKeyUrl {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for PublicOpenPgpKeyUrl {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for PublicOpenPgpKeyUrl {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
 ///Provides information about the publisher of the document.
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Publisher {
     ///Provides information about the category of publisher releasing the document.
     pub category: CategoryOfPublisher,
-    ///Information on how to contact the publisher, possibly including details such as web sites, email addresses, phone numbers, and postal mail addresses.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub contact_details: ::std::option::Option<ContactDetails>,
+    pub contact: ::std::option::Option<Contact>,
     ///Provides information about the authority of the issuing party to release the document, in particular, the party's constituency and responsibilities or other obligations.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub issuing_authority: ::std::option::Option<IssuingAuthority>,
@@ -5334,6 +5465,91 @@ pub mod builder {
                 schema: Ok(value.schema),
                 vulnerabilities: Ok(value.vulnerabilities),
                 x_extensions: Ok(value.x_extensions),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct Contact {
+        details: ::std::result::Result<
+            ::std::option::Option<super::ContactDetails>,
+            ::std::string::String,
+        >,
+        email: ::std::result::Result<
+            ::std::option::Option<super::Email>,
+            ::std::string::String,
+        >,
+        public_openpgp_key_url: ::std::result::Result<
+            ::std::option::Option<super::PublicOpenPgpKeyUrl>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for Contact {
+        fn default() -> Self {
+            Self {
+                details: Ok(Default::default()),
+                email: Ok(Default::default()),
+                public_openpgp_key_url: Ok(Default::default()),
+            }
+        }
+    }
+    impl Contact {
+        pub fn details<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ContactDetails>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.details = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for details: {e}")
+                });
+            self
+        }
+        pub fn email<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::Email>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.email = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for email: {e}"));
+            self
+        }
+        pub fn public_openpgp_key_url<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<super::PublicOpenPgpKeyUrl>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.public_openpgp_key_url = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for public_openpgp_key_url: {e}"
+                    )
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<Contact> for super::Contact {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: Contact,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                details: value.details?,
+                email: value.email?,
+                public_openpgp_key_url: value.public_openpgp_key_url?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::Contact> for Contact {
+        fn from(value: super::Contact) -> Self {
+            Self {
+                details: Ok(value.details),
+                email: Ok(value.email),
+                public_openpgp_key_url: Ok(value.public_openpgp_key_url),
             }
         }
     }
@@ -7662,8 +7878,8 @@ pub mod builder {
             super::CategoryOfPublisher,
             ::std::string::String,
         >,
-        contact_details: ::std::result::Result<
-            ::std::option::Option<super::ContactDetails>,
+        contact: ::std::result::Result<
+            ::std::option::Option<super::Contact>,
             ::std::string::String,
         >,
         issuing_authority: ::std::result::Result<
@@ -7677,7 +7893,7 @@ pub mod builder {
         fn default() -> Self {
             Self {
                 category: Err("no value supplied for category".to_string()),
-                contact_details: Ok(Default::default()),
+                contact: Ok(Default::default()),
                 issuing_authority: Ok(Default::default()),
                 name: Err("no value supplied for name".to_string()),
                 namespace: Err("no value supplied for namespace".to_string()),
@@ -7697,15 +7913,15 @@ pub mod builder {
                 });
             self
         }
-        pub fn contact_details<T>(mut self, value: T) -> Self
+        pub fn contact<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::option::Option<super::ContactDetails>>,
+            T: ::std::convert::TryInto<::std::option::Option<super::Contact>>,
             T::Error: ::std::fmt::Display,
         {
-            self.contact_details = value
+            self.contact = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for contact_details: {e}")
+                    format!("error converting supplied value for contact: {e}")
                 });
             self
         }
@@ -7751,7 +7967,7 @@ pub mod builder {
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
                 category: value.category?,
-                contact_details: value.contact_details?,
+                contact: value.contact?,
                 issuing_authority: value.issuing_authority?,
                 name: value.name?,
                 namespace: value.namespace?,
@@ -7762,7 +7978,7 @@ pub mod builder {
         fn from(value: super::Publisher) -> Self {
             Self {
                 category: Ok(value.category),
-                contact_details: Ok(value.contact_details),
+                contact: Ok(value.contact),
                 issuing_authority: Ok(value.issuing_authority),
                 name: Ok(value.name),
                 namespace: Ok(value.namespace),
@@ -9147,6 +9363,7 @@ crate::macros::impl_string_newtype_ergonomics!(CweVersion);
 crate::macros::impl_string_newtype_ergonomics!(DetailsOfTheRemediation);
 crate::macros::impl_string_newtype_ergonomics!(DetailsOfTheThreat);
 crate::macros::impl_string_newtype_ergonomics!(DocumentCategory);
+crate::macros::impl_string_newtype_ergonomics!(Email);
 crate::macros::impl_string_newtype_ergonomics!(EngineName);
 crate::macros::impl_string_newtype_ergonomics!(EngineVersion);
 crate::macros::impl_string_newtype_ergonomics!(EntitlementOfTheRemediation);
@@ -9166,6 +9383,7 @@ crate::macros::impl_string_newtype_ergonomics!(Percentile);
 crate::macros::impl_string_newtype_ergonomics!(Probability);
 crate::macros::impl_string_newtype_ergonomics!(ProductGroupIdT);
 crate::macros::impl_string_newtype_ergonomics!(ProductIdT);
+crate::macros::impl_string_newtype_ergonomics!(PublicOpenPgpKeyUrl);
 crate::macros::impl_string_newtype_ergonomics!(SerialNumber);
 crate::macros::impl_string_newtype_ergonomics!(SharingGroupName);
 crate::macros::impl_string_newtype_ergonomics!(StockKeepingUnit);

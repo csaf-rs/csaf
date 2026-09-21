@@ -991,6 +991,16 @@
       ]
     },
     {
+      "id": "6.2.39.13",
+      "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-39-13-s01.json",
+          "valid": false
+        }
+      ]
+    },
+    {
       "id": "6.2.40",
       "group": "recommended",
       "valid": [

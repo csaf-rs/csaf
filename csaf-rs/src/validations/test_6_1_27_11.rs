@@ -36,7 +36,10 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
         CsafDocumentCategory::CsafSecurityAdvisory,
         CsafDocumentCategory::CsafVex,
     ])
-    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory, CsafDocumentCategory::CsafVulnerabilityReport]);
+    .csaf21(&[
+        CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+        CsafDocumentCategory::CsafVulnerabilityReport,
+    ]);
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_27_11, test_6_1_27_11_vulnerabilities);
 

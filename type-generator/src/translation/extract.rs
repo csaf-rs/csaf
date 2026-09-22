@@ -56,7 +56,9 @@ pub(crate) fn extract_translations(path: &str) -> Result<Translations, BuildErro
         translations
             .superseding_document
             .insert(lang.clone(), term.superseding_document);
-        translations.vulnerability_summary.insert(lang, term.vulnerability_summary);
+        translations
+            .vulnerability_summary
+            .insert(lang, term.vulnerability_summary);
     }
 
     Ok(translations)

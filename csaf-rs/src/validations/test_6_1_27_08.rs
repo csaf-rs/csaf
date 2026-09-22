@@ -34,8 +34,12 @@ pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<T
     errors.map_or(Ok(()), Err)
 }
 
-const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]).csaf21(&[CsafDocumentCategory::CsafSecurityAdvisory, CsafDocumentCategory::CsafVulnerabilityReport]);
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
+    .shared(&[CsafDocumentCategory::CsafVex])
+    .csaf21(&[
+        CsafDocumentCategory::CsafSecurityAdvisory,
+        CsafDocumentCategory::CsafVulnerabilityReport,
+    ]);
 
 fn test_6_1_27_08_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> TestFinding {
     TestFinding::Error(TestFindingData {

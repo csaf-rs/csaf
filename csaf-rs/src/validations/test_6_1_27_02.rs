@@ -1,4 +1,5 @@
-  use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;
 use crate::validation::{TestFinding, TestFindingData};
@@ -13,10 +14,12 @@ fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) 
     })
 }
 
-const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new().shared(&[
-    CsafDocumentCategory::CsafInformationalAdvisory,
-    CsafDocumentCategory::CsafSecurityIncidentResponse,
-]).csaf21(&[CsafDocumentCategory::CsafSuperseded]);
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
+    .shared(&[
+        CsafDocumentCategory::CsafInformationalAdvisory,
+        CsafDocumentCategory::CsafSecurityIncidentResponse,
+    ])
+    .csaf21(&[CsafDocumentCategory::CsafSuperseded]);
 
 /// 6.1.27.2 Document References
 ///

@@ -75,7 +75,7 @@ impl CsafDocumentCategory {
         Self::CsafDeprecatedSecurityAdvisory,
         Self::CsafWithdrawn,
         Self::CsafSuperseded,
-        Self::CsafVulnerabilityReport
+        Self::CsafVulnerabilityReport,
     ];
 
     /// Checks if the category is DocumentCategory::CsafBaseOther

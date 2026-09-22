@@ -20,7 +20,7 @@ pub(crate) struct Translations {
     pub reasoning_for_supersession: LanguageTranslationLookup,
     pub reasoning_for_withdrawal: LanguageTranslationLookup,
     pub superseding_document: LanguageTranslationLookup,
-    pub vulnerability_summary: LanguageTranslationLookup
+    pub vulnerability_summary: LanguageTranslationLookup,
 }
 
 pub(crate) type LanguageTranslationLookup = BTreeMap<String, String>;

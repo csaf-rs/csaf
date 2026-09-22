@@ -30,7 +30,10 @@ const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConf
         CsafDocumentCategory::CsafSecurityAdvisory,
         CsafDocumentCategory::CsafVex,
     ])
-    .csaf21(&[CsafDocumentCategory::CsafDeprecatedSecurityAdvisory, CsafDocumentCategory::CsafVulnerabilityReport]);
+    .csaf21(&[
+        CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+        CsafDocumentCategory::CsafVulnerabilityReport,
+    ]);
 
 fn test_6_1_27_04_err_generator(document_category: CsafDocumentCategory) -> TestFinding {
     TestFinding::Error(TestFindingData {

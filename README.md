@@ -325,6 +325,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.13   | ✅ | ✅ |
 | 6.2.16   | ✅ | ✅ |
 | 6.2.17   | ✅ | ✅ |
+| 6.2.18   | ✅ | ✅ |
 | 6.2.23   | ⭕ | ✅ |
 | 6.2.24   | ⭕ | ✅ |
 | 6.2.25   | ⭕ | ✅ |

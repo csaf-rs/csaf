@@ -5,7 +5,9 @@ use std::sync::LazyLock;
 
 fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
-        message: format!("Product version range {version_range} does not match VERS syntax"),
+        message: format!(
+            "Product version range {version_range} does not match VERS syntax. If possible, use VERS syntax for version ranges as VLS is just provided as a fallback solution and in the future CSAF might deprecate the use of VLS"
+        ),
         instance_path: format!("{path}/name"),
     })
 }

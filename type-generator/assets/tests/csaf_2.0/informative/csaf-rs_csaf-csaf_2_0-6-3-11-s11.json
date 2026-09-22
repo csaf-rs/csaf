@@ -26,40 +26,36 @@
   "product_tree": {
     "branches": [
       {
-        "category": "vendor",
-        "name": "Example Company",
         "branches": [
           {
-            "category": "product_name",
-            "name": "Product A",
             "branches": [
               {
                 "category": "product_version",
                 "name": "Valerie",
                 "product": {
-                  "product_id": "CSAFPID-9080700",
-                  "name": "Example Company Product A Valerie"
+                  "name": "Example Company Product A Valerie",
+                  "product_id": "CSAFPID-9080700"
                 }
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product A"
           },
           {
-            "category": "product_name",
-            "name": "Product B",
             "branches": [
               {
                 "category": "product_version",
                 "name": "valerian 4",
                 "product": {
-                  "product_id": "CSAFPID-9080701",
-                  "name": "Example Company Product B valerian 4"
+                  "name": "Example Company Product B valerian 4",
+                  "product_id": "CSAFPID-9080701"
                 }
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product B"
           },
           {
-            "category": "product_name",
-            "name": "Product C",
             "branches": [
               {
                 "branches": [
@@ -67,25 +63,29 @@
                     "category": "architecture",
                     "name": "m68k",
                     "product": {
-                      "product_id": "CSAFPID-9080702",
-                      "name": "Example Company Product C 1 m68k"
+                      "name": "Example Company Product C 1 m68k",
+                      "product_id": "CSAFPID-9080702"
                     }
                   },
                   {
                     "category": "architecture",
                     "name": "v9example",
                     "product": {
-                      "product_id": "CSAFPID-9080703",
-                      "name": "Example Company Product C 1 v9example"
+                      "name": "Example Company Product C 1 v9example",
+                      "product_id": "CSAFPID-9080703"
                     }
                   }
                 ],
                 "category": "product_version",
                 "name": "1"
               }
-            ]
+            ],
+            "category": "product_name",
+            "name": "Product C"
           }
-        ]
+        ],
+        "category": "vendor",
+        "name": "Example Company"
       }
     ]
   }

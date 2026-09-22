@@ -128,6 +128,16 @@
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-15-s11.json",
           "valid": true
         }
+      ],
+      "failures": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-15-s01.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-15-s02.json",
+          "valid": false
+        }
       ]
     },
     {

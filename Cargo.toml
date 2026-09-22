@@ -11,6 +11,9 @@ repository = "https://github.com/csaf-rs/csaf"
 keywords = ["csaf"]
 readme = "README.md"
 
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
 [workspace.lints.clippy]
 needless_collect = "deny"
 exit = "deny"

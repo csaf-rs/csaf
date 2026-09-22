@@ -1,112 +1,43 @@
-use std::sync::LazyLock;
-
-use crate::{
-    validation::{TestFinding, TestFindingData},
-    validations::utils::{
-        validation_schema_urls::{
-            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_SCHEMA_URL,
-            EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA_URL,
-        },
-        validation_schemas::{
-            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_SCHEMA,
-            EXTENSION_METASCHEMA, EXTENSION_SCHEMA, SSVC_2_SCHEMA,
-        },
-    },
-};
-use jsonschema::{Resource, error::ValidationErrorKind};
+use crate::validation::{TestFinding, TestFindingData};
+use jsonschema::error::ValidationErrorKind;
 use serde_json::Value;
 
-fn make_strict(schema_value: Value) -> Value {
-    let mut schema_value = schema_value;
-    make_strict_inplace(&mut schema_value);
-    schema_value.as_object_mut().unwrap().insert(
-        "$schema".to_string(),
-        Value::String("https://json-schema.org/draft/2020-12/schema".to_string()),
-    );
-    schema_value
-}
-
-fn make_strict_inplace(schema_value: &mut Value) {
-    if let Some(obj) = schema_value.as_object_mut() {
-        for value in obj.values_mut() {
-            make_strict_inplace(value);
-        }
-        if obj.get("type").and_then(|t| t.as_str()) == Some("object") {
-            obj.insert("unevaluatedProperties".to_string(), Value::Bool(false));
-        }
-        if obj.contains_key("oneOf") {
-            obj.insert("unevaluatedProperties".to_string(), Value::Bool(false));
-        }
-    } else if let Some(array) = schema_value.as_array_mut() {
-        for item in array {
-            make_strict_inplace(item);
-        }
+#[jsonschema::validator(
+    path = "assets/csaf_2.0_json_schema.strict.json",
+    validate_formats = true,
+    resources = {
+        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.strict.json" },
+        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"},
+        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"}
     }
-}
+)]
+struct StrictValidator2_0;
 
-static STRICT_VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
-    let registry = jsonschema::Registry::new()
-        .extend([
-            (
-                CVSS_V2_SCHEMA_URL,
-                Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())),
-            ),
-            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
-            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
-        ])
-        .unwrap()
-        .prepare()
-        .unwrap();
-    jsonschema::options()
-        .with_registry(&registry)
-        .build(&make_strict(CSAF_2_0_SCHEMA.clone()))
-        .unwrap()
-});
-
-static STRICT_VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
-    let registry = jsonschema::Registry::new()
-        .extend([
-            (
-                EXTENSION_METASCHEMA_URL,
-                Resource::from_contents(make_strict(EXTENSION_METASCHEMA.clone())),
-            ),
-            (
-                EXTENSION_SCHEMA_URL,
-                Resource::from_contents(make_strict(EXTENSION_SCHEMA.clone())),
-            ),
-            (
-                CVSS_V2_SCHEMA_URL,
-                Resource::from_contents(make_strict(CVSS_V2_SCHEMA.clone())),
-            ),
-            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
-            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())), // we may not make this strict, otherwise the oneOf does not match
-            (
-                CVSS_V4_0_SCHEMA_URL,
-                Resource::from_contents(make_strict(CVSS_V4_0_SCHEMA.clone())),
-            ),
-            (
-                SSVC_2_SCHEMA_URL,
-                Resource::from_contents(make_strict(SSVC_2_SCHEMA.clone())),
-            ),
-        ])
-        .unwrap()
-        .prepare()
-        .unwrap();
-    jsonschema::options()
-        .with_registry(&registry)
-        .build(&make_strict(CSAF_2_1_SCHEMA.clone()))
-        .unwrap()
-});
+#[jsonschema::validator(
+    path = "assets/csaf_2.1_json_schema.strict.json",
+    validate_formats = true,
+    draft = Draft202012,
+    resources = {
+        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json" => { path = "assets/extension-metaschema.strict.json" },
+        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json" => { path = "assets/extension-content.strict.json" },
+        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.strict.json" },
+        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"}, // we may not make this strict, otherwise the oneOf does not match
+        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"}, // we may not make this strict, otherwise the oneOf does not match
+        "https://www.first.org/cvss/cvss-v4.0.json" => { path = "assets/cvss-v4.0.strict.json" },
+        "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json" => { path = "assets/SelectionList_2_0_0.schema.strict.json" }
+    }
+)]
+struct StrictValidator2_1;
 
 /// 6.2.20 Additional Properties
 ///
 /// There is no additional property in the CSAF document that was not defined in the CSAF JSON schema.
 pub fn test_6_2_20_additional_properties(
     json: &Value,
-    validator: &jsonschema::Validator,
+    iter_errors: impl Fn(&serde_json::Value) -> jsonschema::ErrorIterator,
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
-    for error in validator.iter_errors(json) {
+    for error in iter_errors(json) {
         if let ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind() {
             for property in unexpected {
                 errors.get_or_insert_default().push(create_additional_properties_error(
@@ -128,11 +59,11 @@ fn create_additional_properties_error(key: &str, path: &str) -> TestFinding {
 }
 
 fn test_6_2_20_validate_2_0(json: &Value) -> Result<(), Vec<TestFinding>> {
-    test_6_2_20_additional_properties(json, &STRICT_VALIDATOR_2_0)
+    test_6_2_20_additional_properties(json, StrictValidator2_0::iter_errors)
 }
 
 fn test_6_2_20_validate_2_1(json: &Value) -> Result<(), Vec<TestFinding>> {
-    test_6_2_20_additional_properties(json, &STRICT_VALIDATOR_2_1)
+    test_6_2_20_additional_properties(json, StrictValidator2_1::iter_errors)
 }
 
 crate::test_validation::impl_raw_json_validator!(csaf2_0, ValidatorForTest6_2_20, test_6_2_20_validate_2_0);

@@ -1,12 +1,8 @@
-use std::sync::LazyLock;
-
-use jsonschema::Validator;
-
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::validation_schemas::SSVC_2_SCHEMA;
 
-static SSVC_VALIDATOR: LazyLock<Validator> = LazyLock::new(|| jsonschema::draft202012::new(&SSVC_2_SCHEMA).unwrap());
+#[jsonschema::validator(path = "assets/SelectionList_2_0_0.schema.json", draft = Draft202012)]
+struct SsvcValidator;
 
 fn create_invalid_ssvc_error(
     error_message: &str,
@@ -42,7 +38,7 @@ pub fn test_6_1_46_invalid_ssvc(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
                     // schema validation
                     // depending on how we implement lenient parsing, this might need to be
                     // prefaced with json format check
-                    for error in SSVC_VALIDATOR.iter_errors(&serde_json::Value::Object(ssvc.clone())) {
+                    for error in SsvcValidator::iter_errors(&serde_json::Value::Object(ssvc.clone())) {
                         errors.get_or_insert_default().push(create_invalid_ssvc_error(
                             &error.to_string(),
                             error.instance_path().as_str(),

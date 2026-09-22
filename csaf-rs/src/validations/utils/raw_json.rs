@@ -24,3 +24,9 @@ pub(crate) fn is_present_and_set(path: &str, json: &Value) -> JsonValuePresence 
         None => JsonValuePresence::Missing,
     }
 }
+
+/// Returns `true`, if the provided JSON `path` contains a String object with the `expected` value.
+/// Returns `false` in all other cases.
+pub(crate) fn property_string_value_is(path: &str, expected: &str, json: &Value) -> bool {
+    matches!(json.pointer(path), Some(Value::String(value)) if value == expected)
+}

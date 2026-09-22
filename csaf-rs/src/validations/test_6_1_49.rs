@@ -1,26 +1,9 @@
-use std::sync::LazyLock;
-
 use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, MetricTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
 use crate::validation::{TestFinding, TestFindingData};
-use chrono::{DateTime, FixedOffset};
-
-fn create_invalid_revision_date_error(date_str: &str, i_r: usize) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("Invalid date format in revision history: {date_str}"),
-        instance_path: format!("/document/tracking/revision_history/{i_r}/date"),
-    })
-}
-
-static EMPTY_REVISION_HISTORY_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
-    TestFinding::Error(TestFindingData {
-        message: "Revision history must not be empty for status final or interim".to_string(),
-        instance_path: "/document/tracking/revision_history".to_string(),
-    })
-});
 
 fn create_ssvc_timestamp_too_late_error(
     ssvc_timestamp: &str,
@@ -47,41 +30,29 @@ fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usi
 ///
 /// For each vulnerability, it is tested that the SSVC `timestamp` is earlier or equal to the `date`
 /// of the newest item in the `revision_history` if the document status is `final` or `interim`.
+/// As the timestamps might use different timezones, the sorting SHALL take timezones into account.
 pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
     let tracking = document.get_tracking();
 
     skip_if_document_status_is_not!(tracking.get_status(), Final, Interim);
 
-    // Parse the date of each revision and find the newest one
-    let mut newest_revision_date: Option<DateTime<FixedOffset>> = None;
-    for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
-        // TODO: Rewrite this after revision history refactor
-        let date = match revision.get_date() {
-            Valid(date) => date.get_raw_string().to_owned(),
-            Invalid(err) => err.get_raw_string().to_owned(),
-        };
-        match DateTime::parse_from_rfc3339(date.as_str()) {
-            Ok(parsed_date) => {
-                newest_revision_date = match newest_revision_date {
-                    None => Some(parsed_date),
-                    Some(newest_date) => Some(newest_date.max(parsed_date)),
-                };
-            },
-            Err(_) => {
-                return Err(vec![create_invalid_revision_date_error(date.as_str(), i_r)]);
-            },
-        }
-    }
-
-    let newest_revision_date = match newest_revision_date {
-        Some(date) => date,
-        // No entries in revision history
-        None => {
-            return Err(vec![EMPTY_REVISION_HISTORY_ERROR.clone()]);
-        },
+    let newest_revision_date = if let Some(newest_date) = tracking
+        .get_revision_history()
+        .iter()
+        .filter_map(|revision| match revision.get_date() {
+            Valid(date) => Some(date.get_as_utc()),
+            Invalid(_) => None,
+        })
+        .max()
+    {
+        newest_date
+    } else {
+        // Tested in 6.1.16
+        return Ok(());
     };
 
+    let mut findings = Vec::new();
     // Check each vulnerability's SSVC timestamp
     for (i_v, vulnerability) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(metrics) = vulnerability.get_metrics() {
@@ -91,16 +62,16 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
                     match content.get_ssvc_v2() {
                         Ok(ssvc) => {
                             if ssvc.timestamp.fixed_offset() > newest_revision_date {
-                                return Err(vec![create_ssvc_timestamp_too_late_error(
+                                findings.push(create_ssvc_timestamp_too_late_error(
                                     &ssvc.timestamp.to_rfc3339(),
                                     i_v,
                                     &newest_revision_date.to_rfc3339(),
                                     i_m,
-                                )]);
+                                ));
                             }
                         },
                         Err(err) => {
-                            return Err(vec![create_invalid_ssvc_error(err, i_v, i_m)]);
+                            findings.push(create_invalid_ssvc_error(err, i_v, i_m));
                         },
                     }
                 }
@@ -108,7 +79,8 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
         }
     }
 
-    Ok(())
+    // TODO: Refactor this with roll-out of finding collector see #1018
+    if findings.is_empty() { Ok(()) } else { Err(findings) }
 }
 
 crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_49, test_6_1_49_inconsistent_ssvc_timestamp);
@@ -121,7 +93,14 @@ mod tests {
 
     #[test]
     fn test_test_6_1_49() {
-        // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success cases)
+        let two_vulnerabilities_alternating_valid_and_invalid_ssvc_timestamps = Err(vec![
+            create_ssvc_timestamp_too_late_error("2024-07-13T10:00:00+00:00", 0, "2024-01-24T10:00:00+00:00", 0),
+            create_ssvc_timestamp_too_late_error("2025-07-13T10:00:00+00:00", 0, "2024-01-24T10:00:00+00:00", 2),
+            create_ssvc_timestamp_too_late_error("2024-07-13T10:00:00+00:00", 1, "2024-01-24T10:00:00+00:00", 0),
+            create_ssvc_timestamp_too_late_error("2025-07-13T10:00:00+00:00", 1, "2024-01-24T10:00:00+00:00", 2),
+        ]);
+
+        // Only CSAF 2.1 has this test
         TESTS_2_1.test_6_1_49.expect(ExpectedResults {
             case_01: Err(vec![create_ssvc_timestamp_too_late_error(
                 "2024-07-13T10:00:00+00:00",
@@ -144,6 +123,7 @@ mod tests {
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
+            case_s01: two_vulnerabilities_alternating_valid_and_invalid_ssvc_timestamps,
         });
     }
 }

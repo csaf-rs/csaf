@@ -6,68 +6,7 @@
 #![allow(clippy::all)]
 #![cfg_attr(any(), rustfmt::skip)]
 #![allow(rustdoc::all)]
-/// Error types.
-pub mod error {
-    /// Error from a `TryFrom` or `FromStr` implementation.
-    pub struct ConversionError(::std::borrow::Cow<'static, str>);
-    impl ::std::error::Error for ConversionError {}
-    impl ::std::fmt::Display for ConversionError {
-        fn fmt(
-            &self,
-            f: &mut ::std::fmt::Formatter<'_>,
-        ) -> Result<(), ::std::fmt::Error> {
-            ::std::fmt::Display::fmt(&self.0, f)
-        }
-    }
-    impl ::std::fmt::Debug for ConversionError {
-        fn fmt(
-            &self,
-            f: &mut ::std::fmt::Formatter<'_>,
-        ) -> Result<(), ::std::fmt::Error> {
-            ::std::fmt::Debug::fmt(&self.0, f)
-        }
-    }
-    impl From<&'static str> for ConversionError {
-        fn from(value: &'static str) -> Self {
-            Self(value.into())
-        }
-    }
-    impl From<String> for ConversionError {
-        fn from(value: String) -> Self {
-            Self(value.into())
-        }
-    }
-}
 ///Contains information about a single test file.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "File information",
-///  "description": "Contains information about a single test file.",
-///  "type": "object",
-///  "required": [
-///    "name",
-///    "valid"
-///  ],
-///  "properties": {
-///    "name": {
-///      "title": "Name of the test file",
-///      "description": "Contains the filename and path relative to the JSON that includes this object.",
-///      "type": "string",
-///      "pattern": "^.+\\.json$"
-///    },
-///    "valid": {
-///      "title": "Evaluation result",
-///      "description": "States whether the test file is valid according to the CSAF standard.",
-///      "type": "boolean"
-///    }
-///  },
-///  "additionalProperties": false
-///}
-/// ```
-/// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct FileT {
@@ -82,21 +21,6 @@ impl FileT {
     }
 }
 ///Contains the URL of the JSON schema for test data which the document promises to be valid for.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "JSON schema",
-///  "description": "Contains the URL of the JSON schema for test data which the document promises to be valid for.",
-///  "type": "string",
-///  "format": "uri",
-///  "enum": [
-///    "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.0/test/validator/testcases_json_schema.json"
-///  ]
-///}
-/// ```
-/// </details>
 #[derive(
     ::serde::Deserialize,
     ::serde::Serialize,
@@ -149,14 +73,6 @@ impl ::std::convert::TryFrom<&str> for JsonSchema {
         value.parse()
     }
 }
-impl ::std::convert::TryFrom<&::std::string::String> for JsonSchema {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
 impl ::std::convert::TryFrom<::std::string::String> for JsonSchema {
     type Error = self::error::ConversionError;
     fn try_from(
@@ -166,18 +82,6 @@ impl ::std::convert::TryFrom<::std::string::String> for JsonSchema {
     }
 }
 ///Contains the filename and path relative to the JSON that includes this object.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Name of the test file",
-///  "description": "Contains the filename and path relative to the JSON that includes this object.",
-///  "type": "string",
-///  "pattern": "^.+\\.json$"
-///}
-/// ```
-/// </details>
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
 pub struct NameOfTheTestFile(::std::string::String);
@@ -213,14 +117,6 @@ impl ::std::convert::TryFrom<&str> for NameOfTheTestFile {
         value.parse()
     }
 }
-impl ::std::convert::TryFrom<&::std::string::String> for NameOfTheTestFile {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
 impl ::std::convert::TryFrom<::std::string::String> for NameOfTheTestFile {
     type Error = self::error::ConversionError;
     fn try_from(
@@ -242,18 +138,6 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheTestFile {
     }
 }
 ///Contains the section number of the test in the specification.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Number of the test",
-///  "description": "Contains the section number of the test in the specification.",
-///  "type": "string",
-///  "pattern": "^6\\.(([1-3]\\.[1-9])|([12]\\.1[0-9])|(3\\.1[01])|([12]\\.20)|(1\\.2[1-68-9])|(1\\.27\\.([1-9]|10|11))|(1\\.3[0-3]))$"
-///}
-/// ```
-/// </details>
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
 pub struct NumberOfTheTest(::std::string::String);
@@ -297,14 +181,6 @@ impl ::std::convert::TryFrom<&str> for NumberOfTheTest {
         value.parse()
     }
 }
-impl ::std::convert::TryFrom<&::std::string::String> for NumberOfTheTest {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
 impl ::std::convert::TryFrom<::std::string::String> for NumberOfTheTest {
     type Error = self::error::ConversionError;
     fn try_from(
@@ -326,53 +202,6 @@ impl<'de> ::serde::Deserialize<'de> for NumberOfTheTest {
     }
 }
 ///Representation of the data provided for test cases from section 6 of the specification.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "$id": "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.0/test/validator/testcases_json_schema.json",
-///  "title": "Test cases for CSAF",
-///  "description": "Representation of the data provided for test cases from section 6 of the specification.",
-///  "type": "object",
-///  "required": [
-///    "$schema",
-///    "tests",
-///    "testschema_version"
-///  ],
-///  "properties": {
-///    "$schema": {
-///      "title": "JSON schema",
-///      "description": "Contains the URL of the JSON schema for test data which the document promises to be valid for.",
-///      "type": "string",
-///      "format": "uri",
-///      "enum": [
-///        "https://raw.githubusercontent.com/oasis-tcs/csaf/master/csaf_2.0/test/validator/testcases_json_schema.json"
-///      ]
-///    },
-///    "tests": {
-///      "title": "List of tests",
-///      "description": "Contains a list of test data.",
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/test_t"
-///      },
-///      "minItems": 1,
-///      "uniqueItems": true
-///    },
-///    "testschema_version": {
-///      "title": "Test schema version",
-///      "description": "Contains the current version of this schema",
-///      "type": "string",
-///      "enum": [
-///        "2.0"
-///      ]
-///    }
-///  },
-///  "additionalProperties": false
-///}
-/// ```
-/// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct TestCasesForCsaf {
@@ -380,7 +209,7 @@ pub struct TestCasesForCsaf {
     #[serde(rename = "$schema")]
     pub schema: JsonSchema,
     ///Contains a list of test data.
-    pub tests: Vec<TestT>,
+    pub tests: ::std::vec::Vec<TestT>,
     ///Contains the current version of this schema
     pub testschema_version: TestSchemaVersion,
 }
@@ -390,22 +219,6 @@ impl TestCasesForCsaf {
     }
 }
 ///Contains the name of the group the test belongs to.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Test group",
-///  "description": "Contains the name of the group the test belongs to.",
-///  "type": "string",
-///  "enum": [
-///    "mandatory",
-///    "informative",
-///    "optional"
-///  ]
-///}
-/// ```
-/// </details>
 #[derive(
     ::serde::Deserialize,
     ::serde::Serialize,
@@ -456,14 +269,6 @@ impl ::std::convert::TryFrom<&str> for TestGroup {
         value.parse()
     }
 }
-impl ::std::convert::TryFrom<&::std::string::String> for TestGroup {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
 impl ::std::convert::TryFrom<::std::string::String> for TestGroup {
     type Error = self::error::ConversionError;
     fn try_from(
@@ -473,20 +278,6 @@ impl ::std::convert::TryFrom<::std::string::String> for TestGroup {
     }
 }
 ///Contains the current version of this schema
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Test schema version",
-///  "description": "Contains the current version of this schema",
-///  "type": "string",
-///  "enum": [
-///    "2.0"
-///  ]
-///}
-/// ```
-/// </details>
 #[derive(
     ::serde::Deserialize,
     ::serde::Serialize,
@@ -529,14 +320,6 @@ impl ::std::convert::TryFrom<&str> for TestSchemaVersion {
         value.parse()
     }
 }
-impl ::std::convert::TryFrom<&::std::string::String> for TestSchemaVersion {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
 impl ::std::convert::TryFrom<::std::string::String> for TestSchemaVersion {
     type Error = self::error::ConversionError;
     fn try_from(
@@ -546,73 +329,18 @@ impl ::std::convert::TryFrom<::std::string::String> for TestSchemaVersion {
     }
 }
 ///Contains test data for a single test.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "title": "Test",
-///  "description": "Contains test data for a single test.",
-///  "type": "object",
-///  "required": [
-///    "failures",
-///    "group",
-///    "id"
-///  ],
-///  "properties": {
-///    "failures": {
-///      "title": "List of failing examples",
-///      "description": "Contains a list of files of examples that fail that specific test.",
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/file_t"
-///      },
-///      "minItems": 1,
-///      "uniqueItems": true
-///    },
-///    "group": {
-///      "title": "Test group",
-///      "description": "Contains the name of the group the test belongs to.",
-///      "type": "string",
-///      "enum": [
-///        "mandatory",
-///        "informative",
-///        "optional"
-///      ]
-///    },
-///    "id": {
-///      "title": "Number of the test",
-///      "description": "Contains the section number of the test in the specification.",
-///      "type": "string",
-///      "pattern": "^6\\.(([1-3]\\.[1-9])|([12]\\.1[0-9])|(3\\.1[01])|([12]\\.20)|(1\\.2[1-68-9])|(1\\.27\\.([1-9]|10|11))|(1\\.3[0-3]))$"
-///    },
-///    "valid": {
-///      "title": "List of valid examples",
-///      "description": "Contains a list of files of examples that pass that specific test.",
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/file_t"
-///      },
-///      "minItems": 1,
-///      "uniqueItems": true
-///    }
-///  },
-///  "additionalProperties": false
-///}
-/// ```
-/// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct TestT {
     ///Contains a list of files of examples that fail that specific test.
-    pub failures: Vec<FileT>,
+    pub failures: ::std::vec::Vec<FileT>,
     ///Contains the name of the group the test belongs to.
     pub group: TestGroup,
     ///Contains the section number of the test in the specification.
     pub id: NumberOfTheTest,
     ///Contains a list of files of examples that pass that specific test.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub valid: ::std::option::Option<Vec<FileT>>,
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub valid: ::std::option::Option<::std::vec::Vec<FileT>>,
 }
 impl TestT {
     pub fn builder() -> builder::TestT {
@@ -678,7 +406,10 @@ pub mod builder {
     #[derive(Clone, Debug)]
     pub struct TestCasesForCsaf {
         schema: ::std::result::Result<super::JsonSchema, ::std::string::String>,
-        tests: ::std::result::Result<Vec<super::TestT>, ::std::string::String>,
+        tests: ::std::result::Result<
+            ::std::vec::Vec<super::TestT>,
+            ::std::string::String,
+        >,
         testschema_version: ::std::result::Result<
             super::TestSchemaVersion,
             ::std::string::String,
@@ -708,7 +439,7 @@ pub mod builder {
         }
         pub fn tests<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<Vec<super::TestT>>,
+            T: ::std::convert::TryInto<::std::vec::Vec<super::TestT>>,
             T::Error: ::std::fmt::Display,
         {
             self.tests = value
@@ -754,11 +485,14 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct TestT {
-        failures: ::std::result::Result<Vec<super::FileT>, ::std::string::String>,
+        failures: ::std::result::Result<
+            ::std::vec::Vec<super::FileT>,
+            ::std::string::String,
+        >,
         group: ::std::result::Result<super::TestGroup, ::std::string::String>,
         id: ::std::result::Result<super::NumberOfTheTest, ::std::string::String>,
         valid: ::std::result::Result<
-            ::std::option::Option<Vec<super::FileT>>,
+            ::std::option::Option<::std::vec::Vec<super::FileT>>,
             ::std::string::String,
         >,
     }
@@ -775,7 +509,7 @@ pub mod builder {
     impl TestT {
         pub fn failures<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<Vec<super::FileT>>,
+            T: ::std::convert::TryInto<::std::vec::Vec<super::FileT>>,
             T::Error: ::std::fmt::Display,
         {
             self.failures = value
@@ -807,7 +541,9 @@ pub mod builder {
         }
         pub fn valid<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::option::Option<Vec<super::FileT>>>,
+            T: ::std::convert::TryInto<
+                ::std::option::Option<::std::vec::Vec<super::FileT>>,
+            >,
             T::Error: ::std::fmt::Display,
         {
             self.valid = value
@@ -837,6 +573,38 @@ pub mod builder {
                 id: Ok(value.id),
                 valid: Ok(value.valid),
             }
+        }
+    }
+}
+/// Error types.
+pub mod error {
+    /// Error from a `TryFrom` or `FromStr` implementation.
+    pub struct ConversionError(::std::borrow::Cow<'static, str>);
+    impl ::std::error::Error for ConversionError {}
+    impl ::std::fmt::Display for ConversionError {
+        fn fmt(
+            &self,
+            f: &mut ::std::fmt::Formatter<'_>,
+        ) -> Result<(), ::std::fmt::Error> {
+            ::std::fmt::Display::fmt(&self.0, f)
+        }
+    }
+    impl ::std::fmt::Debug for ConversionError {
+        fn fmt(
+            &self,
+            f: &mut ::std::fmt::Formatter<'_>,
+        ) -> Result<(), ::std::fmt::Error> {
+            ::std::fmt::Debug::fmt(&self.0, f)
+        }
+    }
+    impl From<&'static str> for ConversionError {
+        fn from(value: &'static str) -> Self {
+            Self(value.into())
+        }
+    }
+    impl From<String> for ConversionError {
+        fn from(value: String) -> Self {
+            Self(value.into())
         }
     }
 }

@@ -6,5 +6,3 @@ pub(crate) mod raw_json;
 pub(crate) mod rvisc;
 pub(crate) mod ssvc;
 pub(crate) mod text_check;
-pub(crate) mod validation_schema_urls;
-pub(crate) mod validation_schemas;

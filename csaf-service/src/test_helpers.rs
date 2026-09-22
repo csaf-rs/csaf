@@ -1,11 +1,10 @@
 #![cfg(test)]
 
 use axum::Router;
-use axum::body::Body;
+use axum::body::{Body, to_bytes};
 use axum::http::StatusCode;
 use axum::routing::{get, post};
 use http::Request;
-use http_body_util::BodyExt;
 use tower::ServiceExt;
 
 use crate::handlers::health::health;
@@ -27,7 +26,7 @@ pub async fn get_json(uri: &str) -> (StatusCode, serde_json::Value) {
         .await
         .unwrap();
     let status = response.status();
-    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
     let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
     (status, json)
 }
@@ -46,7 +45,7 @@ pub async fn post_json(uri: &str, body: serde_json::Value) -> (StatusCode, serde
         .await
         .unwrap();
     let status = response.status();
-    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
     let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
     (status, json)
 }

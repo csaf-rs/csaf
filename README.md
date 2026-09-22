@@ -294,7 +294,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.46 | ⭕ | ✅ |
 | 6.1.47 | ⭕ | ✅ |
 | 6.1.48 | ⭕ |   |
-| 6.1.49 | ⭕ |   |
+| 6.1.49 | ⭕ | ✅ |
 | 6.1.50 | ⭕ |   |
 | 6.1.51 | ⭕ |   |
 | 6.1.52 | ⭕ |   |
@@ -314,19 +314,23 @@ For further configuration options, please refer to the [csaf-service README](csa
 
 | Test specification | 2.0                | 2.1 (experimental) |
 |----------|--------------------|--------------------|
-| 6.2.1    |  |  |
+| 6.2.1    | ✅ | ✅ |
+| 6.2.2    | ✅ | ✅ |
 | 6.2.4   | ✅ | ✅ |
 | 6.2.5   | ✅ | ✅ |
+| 6.2.6   | ✅ | ✅ |
 | 6.2.7   | ✅ | ✅ |
 | 6.2.11   | ✅ | ✅ |
 | 6.2.12   | ✅ | ✅ |
 | 6.2.13   | ✅ | ✅ |
 | 6.2.16   | ✅ | ✅ |
 | 6.2.17   | ✅ | ✅ |
+| 6.2.18   | ✅ | ✅ |
 | 6.2.23   | ⭕ | ✅ |
 | 6.2.24   | ⭕ | ✅ |
 | 6.2.25   | ⭕ | ✅ |
 | 6.2.26   | ⭕ | ✅ |
+| 6.2.27   | ⭕ | ✅ |
 | 6.2.34   | ⭕ | ✅ |
 | 6.2.35   | ⭕ | ✅ |
 | 6.2.36   | ⭕ | ✅ |
@@ -334,6 +338,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.39.2 | ⭕ | ✅ |
 | 6.2.39.3 | ⭕ | ✅ |
 | 6.2.39.4 | ⭕ | ✅ |
+| 6.2.43   | ⭕ | ✅ |
 | 6.2.47   | ⭕ | ✅ |
 
 ### Informative Tests
@@ -348,4 +353,3 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.11 | ✅ | ✅ |
 | 6.3.14 | ⭕ | ✅ |
 | 6.3.15 | ⭕ | ✅ |
-

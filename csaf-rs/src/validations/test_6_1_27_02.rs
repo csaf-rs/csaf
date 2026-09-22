@@ -1,4 +1,3 @@
-
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait};
 use crate::schema::csaf2_1::schema::CategoryOfReference;

@@ -1,6 +1,6 @@
 use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
-use crate::schema::csaf2_1::schema::Contact as Contact21;
+use crate::schema::csaf2_1::schema::ContactT as Contact21;
 
 /// Trait representing contact information (CSAF 2.1)
 /// Note: In CSAF 2.0, contact details are stored as a string on publisher.contact_details

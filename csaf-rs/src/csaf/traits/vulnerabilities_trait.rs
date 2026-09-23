@@ -4,6 +4,7 @@ use crate::csaf::traits::util::extract_references::{
 use crate::csaf::traits::util::impl_optional_str_field_getter;
 
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
+use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
@@ -260,7 +261,7 @@ impl VulnerabilityTrait for Vulnerability21 {
     type MetricType = Metric21;
     type ThreatType = Threat21;
     type FlagType = Flag21;
-    type InvolvementType = Involvement21;
+    type InvolvementType = NotPresentInCsaf21;
     type VulnerabilityIdType = Id21;
     type NoteType = Note21;
     type FirstKnownExploitationDatesType = FirstKnownExploitationDate21;
@@ -304,7 +305,7 @@ impl VulnerabilityTrait for Vulnerability21 {
     }
 
     fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>> {
-        self.involvements.as_ref()
+        None
     }
 
     impl_optional_str_field_getter!(get_cve, cve);

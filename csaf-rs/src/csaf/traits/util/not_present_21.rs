@@ -1,5 +1,6 @@
 use crate::csaf::traits::util::generic_with::{WithDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf_traits::WithOptionalDate;
 
 /// Marker type for features that are not present in CSAF 2.1.
 /// It cannot be instantiated since it is an empty enum.
@@ -36,6 +37,12 @@ impl WithOptionalGroupIds for NotPresentInCsaf21 {
 
 impl WithDate for NotPresentInCsaf21 {
     fn get_date(&self) -> CsafDateTime {
+        self.into_any()
+    }
+}
+
+impl WithOptionalDate for NotPresentInCsaf21 {
+    fn get_date(&self) -> Option<CsafDateTime> {
         self.into_any()
     }
 }

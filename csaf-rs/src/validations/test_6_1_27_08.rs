@@ -63,6 +63,7 @@ mod tests {
     #[test]
     fn test_test_6_1_27_08() {
         let case_vex_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
+        // TODO fix during #694
         // let case_vuln_report_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafVulnerabilityReport, &0)]);
         // let case_security_advisory_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafSecurityAdvisory, &0)]);
 

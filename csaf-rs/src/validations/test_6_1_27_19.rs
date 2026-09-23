@@ -63,7 +63,7 @@ mod tests {
             &CsafDocumentCategory::CsafSuperseded,
             0,
         ))]);
-        // TODO: There should also be an error here on index 0.
+        // TODO: There should also be an error here on index 0, to be fixed during #1009
         // let wrong_category_todo = Err(vec![TestFinding::Error(create_incorrect_category_data(
         //     "Superseding Document",
         //     &CategoryOfReference::Self_,
@@ -77,9 +77,9 @@ mod tests {
             &CsafDocumentCategory::CsafSuperseded,
         ))]);
         TESTS_2_1.test_6_1_27_19.expect(ExpectedResults {
-            case_01: lang_en_missing_category.clone(), // TODO REVIEW, I think this is the wrong result
-            case_02: Ok(()), // ToDo this test case is currently marked as failing, but the data is valid see https://github.com/oasis-tcs/csaf/issues/1359
-            case_03: Ok(()), // TODO Review, this should also find
+            case_01: lang_en_missing_category.clone(), // TODO #1009 REVIEW, I think this is the wrong result
+            case_02: Ok(()), // ToDo #1009 this test case is currently marked as failing, but the data is valid see https://github.com/oasis-tcs/csaf/issues/1359
+            case_03: Ok(()), // #1009 TODO Review, this should also find
             case_s01: undefined_lang_wrong_category,
             case_s02: lang_en_missing_category,
             case_11: Ok(()),  // lang: unspecified, single correct reference

@@ -82,7 +82,7 @@ mod tests {
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0", 0, 0),
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0/values/0", 0, 0),
             ]),
-            // TODO update when new requirements are added
+            // TODO update when new requirements are added #379
             case_03: Ok(()),
             case_11: Ok(()),
             case_12: Ok(()),

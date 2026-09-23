@@ -67,6 +67,7 @@ mod tests {
         let case_informational_advisory = Err(vec![create_missing_external_reference_error(
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
+        // TODO fix during #1011
         // let case_security_incident_response = Err(vec![create_missing_external_reference_error(
         //    &CsafDocumentCategory::CsafSecurityIncidentResponse,
         // )]);
@@ -79,7 +80,7 @@ mod tests {
         });
         TESTS_2_1.test_6_1_27_2.expect(ExpectedResults_2_1 {
             case_01: case_informational_advisory,
-            // TODO: This will need to be fixed later
+            // TODO fix during #1011
             case_02: Ok(()),
             case_03: case_superseded,
             case_11: Ok(()),

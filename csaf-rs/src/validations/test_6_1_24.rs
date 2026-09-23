@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
-use crate::schema::csaf2_1::schema::PartyCategory;
 use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 use std::collections::HashMap;
+use crate::schema::csaf2_0::schema::PartyCategory;
 
 fn generate_duplicate_involvement_error(
     date: &Option<ValidCsafDateTime>,
@@ -88,7 +88,7 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_24, test_6_1_24_multiple_definition_in_involvements);
+crate::test_validation::impl_validator!(csaf2_0, ValidatorForTest6_1_24, test_6_1_24_multiple_definition_in_involvements);
 
 #[cfg(test)]
 mod tests {
@@ -161,34 +161,6 @@ mod tests {
                 generate_duplicate_involvement_error(&default_date_csaf_20, &discoverer, 0, 3),
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 2),
-            ]),
-            case_11: Ok(()),
-            case_12: Ok(()),
-            case_s11: Ok(()),
-            case_s12: Ok(()),
-            case_s13: Ok(()),
-        });
-
-        TESTS_2_1.test_6_1_24.expect(ExpectedResults_2_1 {
-            case_01: Err(vec![
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 1),
-            ]),
-            case_02: Err(vec![
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&default_date_csaf_21, &vendor, 0, 1),
-            ]),
-            case_s01,
-            case_s02,
-            case_s03: Err(vec![
-                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 1),
-            ]),
-            case_s04: Err(vec![
-                generate_duplicate_involvement_error(&default_date_csaf_21, &discoverer, 0, 1),
-                generate_duplicate_involvement_error(&default_date_csaf_21, &discoverer, 0, 3),
-                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 0),
-                generate_duplicate_involvement_error(&alternate_date_csaf_21, &vendor, 0, 2),
             ]),
             case_11: Ok(()),
             case_12: Ok(()),

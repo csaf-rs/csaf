@@ -122,8 +122,6 @@ mod tests {
         // Shared values for the test cases
         let default_date_csaf_20 = Some(ValidCsafDateTime::from_str("2021-04-23T10:00:00.000Z").unwrap());
         let alternate_date_csaf_20 = Some(ValidCsafDateTime::from_str("2021-04-24T10:00:00.000Z").unwrap());
-        let default_date_csaf_21 = Some(ValidCsafDateTime::from_str("2023-08-23T10:00:00.000Z").unwrap());
-        let alternate_date_csaf_21 = Some(ValidCsafDateTime::from_str("2023-08-24T10:00:00.000Z").unwrap());
         let vendor = PartyCategory::Vendor;
         let discoverer = PartyCategory::Discoverer;
 

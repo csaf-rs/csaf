@@ -150,8 +150,8 @@ mod tests {
                 generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&default_date_csaf_20, &vendor, 0, 1),
             ]),
-            case_s01: case_s01.clone(),
-            case_s02: case_s02.clone(),
+            case_s01,
+            case_s02,
             case_s03: Err(vec![
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 0),
                 generate_duplicate_involvement_error(&alternate_date_csaf_20, &vendor, 0, 1),

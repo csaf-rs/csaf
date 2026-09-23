@@ -96,8 +96,6 @@ mod tests {
     use crate::csaf::types::csaf_datetime::CsafDateTime::{self, Invalid};
     use crate::csaf2_0::testcases::ExpectedResults_6_1_24 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
-    use crate::csaf2_1::testcases::ExpectedResults_6_1_24 as ExpectedResults_2_1;
-    use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::validation::IntoTestFindingError;
     use std::str::FromStr;
 

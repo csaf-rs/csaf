@@ -111,10 +111,10 @@ fn get_dates(doc: &impl CsafTrait) -> Vec<(CsafDateTime, String)> {
                     ));
                 }
                 if let Some(ssvc_map) = metric.get_content().get_ssvc_v2_raw()
-                    && let Some(timestamp) = ssvc_map.get("timestamp")
+                    && let Some(timestamp) = ssvc_map.get("timestamp").and_then(serde_json::Value::as_str)
                 {
                     dates.push((
-                        CsafDateTime::from(timestamp.as_str().unwrap()),
+                        CsafDateTime::from(timestamp),
                         format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp").to_string(),
                     ))
                 }

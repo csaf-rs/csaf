@@ -3,7 +3,7 @@ use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_str_field_g
 use crate::csaf_traits::ContactTrait;
 use crate::schema::csaf2_0::schema::{CategoryOfPublisher as CategoryOfPublisher20, Publisher as Publisher20};
 use crate::schema::csaf2_1::schema::{
-    CategoryOfPublisher as CategoryOfPublisher21, Contact as Contact21, Publisher as Publisher21,
+    CategoryOfPublisher as CategoryOfPublisher21, ContactT as Contact21, Publisher as Publisher21,
 };
 
 /// Trait representing publisher information

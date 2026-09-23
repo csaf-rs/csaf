@@ -141,7 +141,7 @@ mod tests {
             ),
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
-        // TODO fix this during #359
+        // TODO fix this during #99/#359
         // let case_22_csaf21_hyphen = Err(vec![
         //     test_6_1_26_err_generator_too_similar(
         //         &CsafDocumentCategory::from("cs\u{002D}\u{02D7}\u{05BE}\u{058A}\u{1400}\u{1806}\u{2010}\u{2011}\u{2012}\u{2013}\u{2014}\u{2015}\u{2043}\u{2053}\u{207B}\u{208B}\u{2212}\u{23AF}\u{23BA}\u{23BB}\u{23BC}\u{23E4}\u{2500}\u{2501}\u{254C}\u{254D}\u{2574}\u{2576}\u{2578}\u{257A}\u{2796}\u{29FF}\u{2E3A}\u{2E3B}\u{301C}\u{FE58}\u{FE63}\u{FF0D}\u{1CC86}af_informa\u{002D}\u{02D7}\u{05BE}\u{058A}\u{1400}\u{1806}\u{2010}\u{2011}\u{2012}\u{2013}\u{2014}\u{2015}\u{2043}\u{2053}\u{207B}\u{208B}\u{2212}\u{23AF}\u{23BA}\u{23BB}\u{23BC}\u{23E4}\u{2500}\u{2501}\u{254C}\u{254D}\u{2574}\u{2576}\u{2578}\u{257A}\u{2796}\u{29FF}\u{2E3A}\u{2E3B}\u{301C}\u{FE58}\u{FE63}\u{FF0D}\u{1CC86}tional_advisory"),
@@ -204,8 +204,8 @@ mod tests {
             case_15: Ok(()),
             case_16: Ok(()),
             case_21: case_21_csaf21_white_spaces,
-            case_22: Ok(()), // TODO fix this during #359
-            case_23: Ok(()), // TODO fix this during #359
+            case_22: Ok(()), // TODO fix this during #99/#359
+            case_23: Ok(()), // TODO fix this during #99/#359
             case_24: case_24_csaf21,
         });
     }

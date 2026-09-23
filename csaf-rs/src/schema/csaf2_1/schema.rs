@@ -48,6 +48,261 @@ impl ::std::convert::From<::std::vec::Vec<Acknowledgment>> for AcknowledgmentsT 
         Self(value)
     }
 }
+///Contains details about a single event in the timeline.
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct Action {
+    ///Contains a list of entities that act.
+    pub acting_entity_refs: EntityRefsT,
+    ///Contains the reference token for this action.
+    pub action_id: ActionIdT,
+    ///Specifies the category which this action belongs to.
+    pub category: ActionCategory,
+    ///Contains the date when the action occurred.
+    pub date: ::std::string::String,
+    ///Contains a list of local IDs referring to vulnerabilities within the same document that this action applies to.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub dl_vuln_ids: ::std::option::Option<::std::vec::Vec<DlVulnIdT>>,
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub group_ids: ::std::option::Option<ProductGroupsT>,
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub product_ids: ::std::option::Option<ProductsT>,
+    ///Contains a list of entities that receive the action.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub receiving_entity_refs: ::std::option::Option<EntityRefsT>,
+    ///Contains a list of other actions reference by this action.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub referenced_action_ids: ::std::option::Option<::std::vec::Vec<ActionIdT>>,
+    ///Contains an observation about the action.
+    pub status: ActionStatus,
+    ///Contains information about the action.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub summary: ::std::option::Option<SummaryOfTheAction>,
+}
+impl Action {
+    pub fn builder() -> builder::Action {
+        Default::default()
+    }
+}
+///Specifies the category which this action belongs to.
+#[derive(
+    ::serde::Deserialize,
+    ::serde::Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd
+)]
+pub enum ActionCategory {
+    #[serde(rename = "confirmation")]
+    Confirmation,
+    #[serde(rename = "coordination")]
+    Coordination,
+    #[serde(rename = "discovery")]
+    Discovery,
+    #[serde(rename = "dispute")]
+    Dispute,
+    #[serde(rename = "exploitation")]
+    Exploitation,
+    #[serde(rename = "fix_deployment")]
+    FixDeployment,
+    #[serde(rename = "fix_release")]
+    FixRelease,
+    #[serde(rename = "notification")]
+    Notification,
+    #[serde(rename = "triage")]
+    Triage,
+}
+impl ::std::fmt::Display for ActionCategory {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Confirmation => f.write_str("confirmation"),
+            Self::Coordination => f.write_str("coordination"),
+            Self::Discovery => f.write_str("discovery"),
+            Self::Dispute => f.write_str("dispute"),
+            Self::Exploitation => f.write_str("exploitation"),
+            Self::FixDeployment => f.write_str("fix_deployment"),
+            Self::FixRelease => f.write_str("fix_release"),
+            Self::Notification => f.write_str("notification"),
+            Self::Triage => f.write_str("triage"),
+        }
+    }
+}
+impl ::std::str::FromStr for ActionCategory {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        match value {
+            "confirmation" => Ok(Self::Confirmation),
+            "coordination" => Ok(Self::Coordination),
+            "discovery" => Ok(Self::Discovery),
+            "dispute" => Ok(Self::Dispute),
+            "exploitation" => Ok(Self::Exploitation),
+            "fix_deployment" => Ok(Self::FixDeployment),
+            "fix_release" => Ok(Self::FixRelease),
+            "notification" => Ok(Self::Notification),
+            "triage" => Ok(Self::Triage),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl ::std::convert::TryFrom<&str> for ActionCategory {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for ActionCategory {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+///Contains a token required to identify an action uniquely in the context of the current document so that it can be referred to from other parts in the document.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct ActionIdT(::std::string::String);
+impl ::std::ops::Deref for ActionIdT {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<ActionIdT> for ::std::string::String {
+    fn from(value: ActionIdT) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for ActionIdT {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err(
+                "doesn't match pattern \"^[^\\s\\-_\\.](.*[^\\s\\-_\\.])?$\"".into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for ActionIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for ActionIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for ActionIdT {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains an observation about the action.
+#[derive(
+    ::serde::Deserialize,
+    ::serde::Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd
+)]
+pub enum ActionStatus {
+    #[serde(rename = "attempted")]
+    Attempted,
+    #[serde(rename = "completed")]
+    Completed,
+    #[serde(rename = "deferred")]
+    Deferred,
+    #[serde(rename = "discontinued")]
+    Discontinued,
+    #[serde(rename = "in_progress")]
+    InProgress,
+    #[serde(rename = "outstanding")]
+    Outstanding,
+    #[serde(rename = "planned")]
+    Planned,
+}
+impl ::std::fmt::Display for ActionStatus {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Attempted => f.write_str("attempted"),
+            Self::Completed => f.write_str("completed"),
+            Self::Deferred => f.write_str("deferred"),
+            Self::Discontinued => f.write_str("discontinued"),
+            Self::InProgress => f.write_str("in_progress"),
+            Self::Outstanding => f.write_str("outstanding"),
+            Self::Planned => f.write_str("planned"),
+        }
+    }
+}
+impl ::std::str::FromStr for ActionStatus {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        match value {
+            "attempted" => Ok(Self::Attempted),
+            "completed" => Ok(Self::Completed),
+            "deferred" => Ok(Self::Deferred),
+            "discontinued" => Ok(Self::Discontinued),
+            "in_progress" => Ok(Self::InProgress),
+            "outstanding" => Ok(Self::Outstanding),
+            "planned" => Ok(Self::Planned),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl ::std::convert::TryFrom<&str> for ActionStatus {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for ActionStatus {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
 ///Provides additional information for the restart. This can include details on procedures, scope or impact.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
@@ -865,26 +1120,7 @@ impl CommonSecurityAdvisoryFramework {
         Default::default()
     }
 }
-///Contains information on how to contact the publisher.
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, Eq, PartialEq)]
-#[serde(deny_unknown_fields)]
-pub struct Contact {
-    ///Contains details regarding ways to reach the publisher, e.g. through web sites, phone numbers, and postal mail addresses.
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub details: ::std::option::Option<ContactDetails>,
-    ///Contains the email address that can be used to reach the issuing party.
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub email: ::std::option::Option<Email>,
-    ///Contains a URL pointing to a public OpenPGP key valid for the email of issuing party provided in the sibling property `email`.
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub public_openpgp_key_url: ::std::option::Option<PublicOpenPgpKeyUrl>,
-}
-impl Contact {
-    pub fn builder() -> builder::Contact {
-        Default::default()
-    }
-}
-///Contains details regarding ways to reach the publisher, e.g. through web sites, phone numbers, and postal mail addresses.
+///Contains details regarding ways to reach the party, e.g. through web sites, phone numbers, and postal mail addresses.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
 pub struct ContactDetails(::std::string::String);
@@ -927,6 +1163,87 @@ impl ::std::convert::TryFrom<::std::string::String> for ContactDetails {
     }
 }
 impl<'de> ::serde::Deserialize<'de> for ContactDetails {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains information on how to contact the party.
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ContactT {
+    ///Contains details regarding ways to reach the party, e.g. through web sites, phone numbers, and postal mail addresses.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub details: ::std::option::Option<ContactDetails>,
+    ///Contains the email address that can be used to reach the party.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub email: ::std::option::Option<Email>,
+    ///Contains a URL pointing to a public OpenPGP key valid for the email of party provided in the sibling property `email`.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub public_openpgp_key_url: ::std::option::Option<PublicOpenPgpKeyUrl>,
+    ///Contains a URL that can be used to reach the party.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub url: ::std::option::Option<ContactUrl>,
+}
+impl ContactT {
+    pub fn builder() -> builder::ContactT {
+        Default::default()
+    }
+}
+///Contains a URL that can be used to reach the party.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct ContactUrl(::std::string::String);
+impl ::std::ops::Deref for ContactUrl {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<ContactUrl> for ::std::string::String {
+    fn from(value: ContactUrl) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for ContactUrl {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 11usize {
+            return Err("shorter than 11 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^https:\\/\\/").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err("doesn't match pattern \"^https:\\/\\/\"".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for ContactUrl {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for ContactUrl {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for ContactUrl {
     fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
     where
         D: ::serde::Deserializer<'de>,
@@ -1326,6 +1643,65 @@ impl<'de> ::serde::Deserialize<'de> for DetailsOfTheThreat {
             })
     }
 }
+///Contains a token required to identify a vulnerability uniquely in the context of the current document so that it can be referred to from other parts in the document.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct DlVulnIdT(::std::string::String);
+impl ::std::ops::Deref for DlVulnIdT {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<DlVulnIdT> for ::std::string::String {
+    fn from(value: DlVulnIdT) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for DlVulnIdT {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 6usize {
+            return Err("shorter than 6 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^VULN-[0-9A-Za-z._-]+$").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err("doesn't match pattern \"^VULN-[0-9A-Za-z._-]+$\"".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for DlVulnIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for DlVulnIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for DlVulnIdT {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
 ///Defines a short canonical name, chosen by the document producer, which will inform the end user as to the category of document.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
@@ -1415,6 +1791,8 @@ pub struct DocumentLevelMetaData {
     ///Gives the version of the CSAF specification which the document was generated for.
     pub csaf_version: CsafVersion,
     pub distribution: RulesForDocumentSharing,
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub involvement: ::std::option::Option<Involvement>,
     ///Identifies the language used by this document, corresponding to IETF BCP 47 / RFC 5646.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub lang: ::std::option::Option<LangT>,
@@ -1502,7 +1880,7 @@ impl ::std::convert::TryFrom<::std::string::String> for DocumentStatus {
         value.parse()
     }
 }
-///Contains the email address that can be used to reach the issuing party.
+///Contains the email address that can be used to reach the party.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
 pub struct Email(::std::string::String);
@@ -1731,6 +2109,283 @@ impl<'de> ::serde::Deserialize<'de> for EntitlementOfTheRemediation {
             .map_err(|e: self::error::ConversionError| {
                 <D::Error as ::serde::de::Error>::custom(e.to_string())
             })
+    }
+}
+///Contains information about a single entity.
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct Entity {
+    ///Specifies the category of the party.
+    pub category: EntityCategory,
+    ///Contains information on how to contact the entity.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub contact: ::std::option::Option<ContactT>,
+    ///Contains an ID for the entity.
+    pub entity_id: EntityIdT,
+    ///Contains the name of the entity.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub name: ::std::option::Option<NameOfTheEntity>,
+}
+impl Entity {
+    pub fn builder() -> builder::Entity {
+        Default::default()
+    }
+}
+///Specifies the category of the party.
+#[derive(
+    ::serde::Deserialize,
+    ::serde::Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd
+)]
+pub enum EntityCategory {
+    #[serde(rename = "adversary")]
+    Adversary,
+    #[serde(rename = "coordinator")]
+    Coordinator,
+    #[serde(rename = "discoverer")]
+    Discoverer,
+    #[serde(rename = "multiplier")]
+    Multiplier,
+    #[serde(rename = "other")]
+    Other,
+    #[serde(rename = "public")]
+    Public,
+    #[serde(rename = "reporting_authority")]
+    ReportingAuthority,
+    #[serde(rename = "user")]
+    User,
+    #[serde(rename = "vendor")]
+    Vendor,
+}
+impl ::std::fmt::Display for EntityCategory {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Adversary => f.write_str("adversary"),
+            Self::Coordinator => f.write_str("coordinator"),
+            Self::Discoverer => f.write_str("discoverer"),
+            Self::Multiplier => f.write_str("multiplier"),
+            Self::Other => f.write_str("other"),
+            Self::Public => f.write_str("public"),
+            Self::ReportingAuthority => f.write_str("reporting_authority"),
+            Self::User => f.write_str("user"),
+            Self::Vendor => f.write_str("vendor"),
+        }
+    }
+}
+impl ::std::str::FromStr for EntityCategory {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        match value {
+            "adversary" => Ok(Self::Adversary),
+            "coordinator" => Ok(Self::Coordinator),
+            "discoverer" => Ok(Self::Discoverer),
+            "multiplier" => Ok(Self::Multiplier),
+            "other" => Ok(Self::Other),
+            "public" => Ok(Self::Public),
+            "reporting_authority" => Ok(Self::ReportingAuthority),
+            "user" => Ok(Self::User),
+            "vendor" => Ok(Self::Vendor),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl ::std::convert::TryFrom<&str> for EntityCategory {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for EntityCategory {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+///Defines a new logical group of entities that can then be referred to in other parts of the document to address a group of entities with a single identifier.
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct EntityGroup {
+    ///Contains an ID for the entity group.
+    pub entity_group_id: EntityGroupIdT,
+    ///Lists the Entity IDs of those entities which are known as one group in the document.
+    pub entity_ids: ::std::vec::Vec<EntityIdT>,
+    ///Contains a human-readable name for the entities grouped.
+    pub name: NameOfTheEntityGroup,
+    ///Contains a human-readable summary stating the purpose of the group.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub summary: ::std::option::Option<SummaryOfTheEntityGroup>,
+}
+impl EntityGroup {
+    pub fn builder() -> builder::EntityGroup {
+        Default::default()
+    }
+}
+///Contains a token required to identify a group of entities uniquely in the context of the current document so that it can be referred to from other parts in the document.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct EntityGroupIdT(::std::string::String);
+impl ::std::ops::Deref for EntityGroupIdT {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<EntityGroupIdT> for ::std::string::String {
+    fn from(value: EntityGroupIdT) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for EntityGroupIdT {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 6usize {
+            return Err("shorter than 6 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^EGID-[0-9A-Za-z][0-9A-Za-z._-]*$").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err(
+                "doesn't match pattern \"^EGID-[0-9A-Za-z][0-9A-Za-z._-]*$\"".into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for EntityGroupIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for EntityGroupIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for EntityGroupIdT {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains a token required to identify an entity uniquely in the context of the current document so that it can be referred to from other parts in the document.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct EntityIdT(::std::string::String);
+impl ::std::ops::Deref for EntityIdT {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<EntityIdT> for ::std::string::String {
+    fn from(value: EntityIdT) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for EntityIdT {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 5usize {
+            return Err("shorter than 5 characters".into());
+        }
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::new("^EID-[0-9A-Za-z][0-9A-Za-z._-]*$").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err(
+                "doesn't match pattern \"^EID-[0-9A-Za-z][0-9A-Za-z._-]*$\"".into(),
+            );
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for EntityIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for EntityIdT {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for EntityIdT {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Specifies a list of entity_ids or entity_group_ids to give context to the parent item.
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(transparent)]
+pub struct EntityRefsT(pub ::std::vec::Vec<EntityRefsTItem>);
+impl ::std::ops::Deref for EntityRefsT {
+    type Target = ::std::vec::Vec<EntityRefsTItem>;
+    fn deref(&self) -> &::std::vec::Vec<EntityRefsTItem> {
+        &self.0
+    }
+}
+impl ::std::convert::From<EntityRefsT> for ::std::vec::Vec<EntityRefsTItem> {
+    fn from(value: EntityRefsT) -> Self {
+        value.0
+    }
+}
+impl ::std::convert::From<::std::vec::Vec<EntityRefsTItem>> for EntityRefsT {
+    fn from(value: ::std::vec::Vec<EntityRefsTItem>) -> Self {
+        Self(value)
+    }
+}
+///`EntityRefsTItem`
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, Eq, PartialEq)]
+pub struct EntityRefsTItem {
+    #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
+    pub subtype_0: ::std::option::Option<EntityGroupIdT>,
+    #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
+    pub subtype_1: ::std::option::Option<EntityIdT>,
+}
+impl EntityRefsTItem {
+    pub fn builder() -> builder::EntityRefsTItem {
+        Default::default()
     }
 }
 ///Contains the EPSS data.
@@ -1973,27 +2628,17 @@ impl Id {
         Default::default()
     }
 }
-///Is a container, that allows the document producers to comment on the level of involvement (or engagement) of themselves or third parties in the vulnerability identification, scoping, and remediation process.
+///Contains the coordination record stating entities and actions between them.
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Involvement {
-    ///Contains the contact information of the party that was used in this state.
+    ///Contains the timeline of actions.
+    pub actions: ::std::vec::Vec<Action>,
+    ///Contains a list of entities related.
+    pub entities: ::std::vec::Vec<Entity>,
+    ///Contains a list of entity groups.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub contact: ::std::option::Option<PartyContactInformation>,
-    ///Holds the date and time of the involvement entry.
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub date: ::std::option::Option<::std::string::String>,
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub group_ids: ::std::option::Option<ProductGroupsT>,
-    ///Defines the category of the involved party.
-    pub party: PartyCategory,
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub product_ids: ::std::option::Option<ProductsT>,
-    ///Defines contact status of the involved party.
-    pub status: PartyStatus,
-    ///Contains additional context regarding what is going on.
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub summary: ::std::option::Option<SummaryOfTheInvolvement>,
+    pub entity_groups: ::std::option::Option<::std::vec::Vec<EntityGroup>>,
 }
 impl Involvement {
     pub fn builder() -> builder::Involvement {
@@ -2663,6 +3308,114 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheContributor {
             })
     }
 }
+///Contains the name of the entity.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct NameOfTheEntity(::std::string::String);
+impl ::std::ops::Deref for NameOfTheEntity {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<NameOfTheEntity> for ::std::string::String {
+    fn from(value: NameOfTheEntity) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for NameOfTheEntity {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for NameOfTheEntity {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for NameOfTheEntity {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for NameOfTheEntity {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains a human-readable name for the entities grouped.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct NameOfTheEntityGroup(::std::string::String);
+impl ::std::ops::Deref for NameOfTheEntityGroup {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<NameOfTheEntityGroup> for ::std::string::String {
+    fn from(value: NameOfTheEntityGroup) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for NameOfTheEntityGroup {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for NameOfTheEntityGroup {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for NameOfTheEntityGroup {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for NameOfTheEntityGroup {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
 ///Is a place to put all manner of text blobs related to the current context.
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
@@ -2897,198 +3650,6 @@ impl<'de> ::serde::Deserialize<'de> for PackageUrlRepresentation {
             })
     }
 }
-///Defines the category of the involved party.
-#[derive(
-    ::serde::Deserialize,
-    ::serde::Serialize,
-    Clone,
-    Copy,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd
-)]
-pub enum PartyCategory {
-    #[serde(rename = "coordinator")]
-    Coordinator,
-    #[serde(rename = "discoverer")]
-    Discoverer,
-    #[serde(rename = "other")]
-    Other,
-    #[serde(rename = "user")]
-    User,
-    #[serde(rename = "vendor")]
-    Vendor,
-}
-impl ::std::fmt::Display for PartyCategory {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        match *self {
-            Self::Coordinator => f.write_str("coordinator"),
-            Self::Discoverer => f.write_str("discoverer"),
-            Self::Other => f.write_str("other"),
-            Self::User => f.write_str("user"),
-            Self::Vendor => f.write_str("vendor"),
-        }
-    }
-}
-impl ::std::str::FromStr for PartyCategory {
-    type Err = self::error::ConversionError;
-    fn from_str(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        match value {
-            "coordinator" => Ok(Self::Coordinator),
-            "discoverer" => Ok(Self::Discoverer),
-            "other" => Ok(Self::Other),
-            "user" => Ok(Self::User),
-            "vendor" => Ok(Self::Vendor),
-            _ => Err("invalid value".into()),
-        }
-    }
-}
-impl ::std::convert::TryFrom<&str> for PartyCategory {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl ::std::convert::TryFrom<::std::string::String> for PartyCategory {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: ::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-///Contains the contact information of the party that was used in this state.
-#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[serde(transparent)]
-pub struct PartyContactInformation(::std::string::String);
-impl ::std::ops::Deref for PartyContactInformation {
-    type Target = ::std::string::String;
-    fn deref(&self) -> &::std::string::String {
-        &self.0
-    }
-}
-impl ::std::convert::From<PartyContactInformation> for ::std::string::String {
-    fn from(value: PartyContactInformation) -> Self {
-        value.0
-    }
-}
-impl ::std::str::FromStr for PartyContactInformation {
-    type Err = self::error::ConversionError;
-    fn from_str(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        if value.chars().count() < 1usize {
-            return Err("shorter than 1 characters".into());
-        }
-        Ok(Self(value.to_string()))
-    }
-}
-impl ::std::convert::TryFrom<&str> for PartyContactInformation {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl ::std::convert::TryFrom<::std::string::String> for PartyContactInformation {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: ::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl<'de> ::serde::Deserialize<'de> for PartyContactInformation {
-    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-    where
-        D: ::serde::Deserializer<'de>,
-    {
-        ::std::string::String::deserialize(deserializer)?
-            .parse()
-            .map_err(|e: self::error::ConversionError| {
-                <D::Error as ::serde::de::Error>::custom(e.to_string())
-            })
-    }
-}
-///Defines contact status of the involved party.
-#[derive(
-    ::serde::Deserialize,
-    ::serde::Serialize,
-    Clone,
-    Copy,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd
-)]
-pub enum PartyStatus {
-    #[serde(rename = "completed")]
-    Completed,
-    #[serde(rename = "contact_attempted")]
-    ContactAttempted,
-    #[serde(rename = "disputed")]
-    Disputed,
-    #[serde(rename = "in_progress")]
-    InProgress,
-    #[serde(rename = "not_contacted")]
-    NotContacted,
-    #[serde(rename = "open")]
-    Open,
-}
-impl ::std::fmt::Display for PartyStatus {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        match *self {
-            Self::Completed => f.write_str("completed"),
-            Self::ContactAttempted => f.write_str("contact_attempted"),
-            Self::Disputed => f.write_str("disputed"),
-            Self::InProgress => f.write_str("in_progress"),
-            Self::NotContacted => f.write_str("not_contacted"),
-            Self::Open => f.write_str("open"),
-        }
-    }
-}
-impl ::std::str::FromStr for PartyStatus {
-    type Err = self::error::ConversionError;
-    fn from_str(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        match value {
-            "completed" => Ok(Self::Completed),
-            "contact_attempted" => Ok(Self::ContactAttempted),
-            "disputed" => Ok(Self::Disputed),
-            "in_progress" => Ok(Self::InProgress),
-            "not_contacted" => Ok(Self::NotContacted),
-            "open" => Ok(Self::Open),
-            _ => Err("invalid value".into()),
-        }
-    }
-}
-impl ::std::convert::TryFrom<&str> for PartyStatus {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
-impl ::std::convert::TryFrom<::std::string::String> for PartyStatus {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: ::std::string::String,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
 ///Contains the rank ordering of probabilities from highest to lowest.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
@@ -3210,7 +3771,7 @@ impl<'de> ::serde::Deserialize<'de> for Probability {
 #[serde(deny_unknown_fields)]
 pub struct ProductGroup {
     pub group_id: ProductGroupIdT,
-    ///Lists the product_ids of those products which known as one group in the document.
+    ///Lists the product_ids of those products which are known as one group in the document.
     pub product_ids: ::std::vec::Vec<ProductIdT>,
     ///Gives a short, optional description of the group.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -3442,7 +4003,7 @@ impl ::std::convert::From<::std::vec::Vec<ProductIdT>> for ProductsT {
         Self(value)
     }
 }
-///Contains a URL pointing to a public OpenPGP key valid for the email of issuing party provided in the sibling property `email`.
+///Contains a URL pointing to a public OpenPGP key valid for the email of party provided in the sibling property `email`.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
 pub struct PublicOpenPgpKeyUrl(::std::string::String);
@@ -3507,8 +4068,9 @@ impl<'de> ::serde::Deserialize<'de> for PublicOpenPgpKeyUrl {
 pub struct Publisher {
     ///Provides information about the category of publisher releasing the document.
     pub category: CategoryOfPublisher,
+    ///Contains information on how to contact the publisher.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub contact: ::std::option::Option<Contact>,
+    pub contact: ::std::option::Option<ContactT>,
     ///Provides information about the authority of the issuing party to release the document, in particular, the party's constituency and responsibilities or other obligations.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub issuing_authority: ::std::option::Option<IssuingAuthority>,
@@ -4016,22 +4578,22 @@ impl<'de> ::serde::Deserialize<'de> for SummaryOfTheAcknowledgment {
             })
     }
 }
-///Contains additional context regarding what is going on.
+///Contains information about the action.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]
-pub struct SummaryOfTheInvolvement(::std::string::String);
-impl ::std::ops::Deref for SummaryOfTheInvolvement {
+pub struct SummaryOfTheAction(::std::string::String);
+impl ::std::ops::Deref for SummaryOfTheAction {
     type Target = ::std::string::String;
     fn deref(&self) -> &::std::string::String {
         &self.0
     }
 }
-impl ::std::convert::From<SummaryOfTheInvolvement> for ::std::string::String {
-    fn from(value: SummaryOfTheInvolvement) -> Self {
+impl ::std::convert::From<SummaryOfTheAction> for ::std::string::String {
+    fn from(value: SummaryOfTheAction) -> Self {
         value.0
     }
 }
-impl ::std::str::FromStr for SummaryOfTheInvolvement {
+impl ::std::str::FromStr for SummaryOfTheAction {
     type Err = self::error::ConversionError;
     fn from_str(
         value: &str,
@@ -4042,7 +4604,7 @@ impl ::std::str::FromStr for SummaryOfTheInvolvement {
         Ok(Self(value.to_string()))
     }
 }
-impl ::std::convert::TryFrom<&str> for SummaryOfTheInvolvement {
+impl ::std::convert::TryFrom<&str> for SummaryOfTheAction {
     type Error = self::error::ConversionError;
     fn try_from(
         value: &str,
@@ -4050,7 +4612,7 @@ impl ::std::convert::TryFrom<&str> for SummaryOfTheInvolvement {
         value.parse()
     }
 }
-impl ::std::convert::TryFrom<::std::string::String> for SummaryOfTheInvolvement {
+impl ::std::convert::TryFrom<::std::string::String> for SummaryOfTheAction {
     type Error = self::error::ConversionError;
     fn try_from(
         value: ::std::string::String,
@@ -4058,7 +4620,61 @@ impl ::std::convert::TryFrom<::std::string::String> for SummaryOfTheInvolvement 
         value.parse()
     }
 }
-impl<'de> ::serde::Deserialize<'de> for SummaryOfTheInvolvement {
+impl<'de> ::serde::Deserialize<'de> for SummaryOfTheAction {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {
+        ::std::string::String::deserialize(deserializer)?
+            .parse()
+            .map_err(|e: self::error::ConversionError| {
+                <D::Error as ::serde::de::Error>::custom(e.to_string())
+            })
+    }
+}
+///Contains a human-readable summary stating the purpose of the group.
+#[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct SummaryOfTheEntityGroup(::std::string::String);
+impl ::std::ops::Deref for SummaryOfTheEntityGroup {
+    type Target = ::std::string::String;
+    fn deref(&self) -> &::std::string::String {
+        &self.0
+    }
+}
+impl ::std::convert::From<SummaryOfTheEntityGroup> for ::std::string::String {
+    fn from(value: SummaryOfTheEntityGroup) -> Self {
+        value.0
+    }
+}
+impl ::std::str::FromStr for SummaryOfTheEntityGroup {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if value.chars().count() < 1usize {
+            return Err("shorter than 1 characters".into());
+        }
+        Ok(Self(value.to_string()))
+    }
+}
+impl ::std::convert::TryFrom<&str> for SummaryOfTheEntityGroup {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for SummaryOfTheEntityGroup {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl<'de> ::serde::Deserialize<'de> for SummaryOfTheEntityGroup {
     fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
     where
         D: ::serde::Deserializer<'de>,
@@ -4927,6 +5543,9 @@ pub struct Vulnerability {
     ///Holds the date and time the vulnerability was originally discovered.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub discovery_date: ::std::option::Option<::std::string::String>,
+    ///Contains the local IDs referring to this vulnerability from another part of the same document.
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    pub dl_vuln_id: ::std::option::Option<DlVulnIdT>,
     ///Contains a list of dates of first known exploitations.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub first_known_exploitation_dates: ::std::option::Option<
@@ -4938,9 +5557,6 @@ pub struct Vulnerability {
     ///Represents a list of unique labels or tracking IDs for the vulnerability (if such information exists).
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub ids: ::std::option::Option<::std::vec::Vec<Id>>,
-    ///Contains a list of involvements.
-    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-    pub involvements: ::std::option::Option<::std::vec::Vec<Involvement>>,
     ///Contains metric objects for the current vulnerability.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub metrics: ::std::option::Option<::std::vec::Vec<Metric>>,
@@ -5188,6 +5804,237 @@ pub mod builder {
                 organization: Ok(value.organization),
                 summary: Ok(value.summary),
                 urls: Ok(value.urls),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct Action {
+        acting_entity_refs: ::std::result::Result<
+            super::EntityRefsT,
+            ::std::string::String,
+        >,
+        action_id: ::std::result::Result<super::ActionIdT, ::std::string::String>,
+        category: ::std::result::Result<super::ActionCategory, ::std::string::String>,
+        date: ::std::result::Result<::std::string::String, ::std::string::String>,
+        dl_vuln_ids: ::std::result::Result<
+            ::std::option::Option<::std::vec::Vec<super::DlVulnIdT>>,
+            ::std::string::String,
+        >,
+        group_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductGroupsT>,
+            ::std::string::String,
+        >,
+        product_ids: ::std::result::Result<
+            ::std::option::Option<super::ProductsT>,
+            ::std::string::String,
+        >,
+        receiving_entity_refs: ::std::result::Result<
+            ::std::option::Option<super::EntityRefsT>,
+            ::std::string::String,
+        >,
+        referenced_action_ids: ::std::result::Result<
+            ::std::option::Option<::std::vec::Vec<super::ActionIdT>>,
+            ::std::string::String,
+        >,
+        status: ::std::result::Result<super::ActionStatus, ::std::string::String>,
+        summary: ::std::result::Result<
+            ::std::option::Option<super::SummaryOfTheAction>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for Action {
+        fn default() -> Self {
+            Self {
+                acting_entity_refs: Err(
+                    "no value supplied for acting_entity_refs".to_string(),
+                ),
+                action_id: Err("no value supplied for action_id".to_string()),
+                category: Err("no value supplied for category".to_string()),
+                date: Err("no value supplied for date".to_string()),
+                dl_vuln_ids: Ok(Default::default()),
+                group_ids: Ok(Default::default()),
+                product_ids: Ok(Default::default()),
+                receiving_entity_refs: Ok(Default::default()),
+                referenced_action_ids: Ok(Default::default()),
+                status: Err("no value supplied for status".to_string()),
+                summary: Ok(Default::default()),
+            }
+        }
+    }
+    impl Action {
+        pub fn acting_entity_refs<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::EntityRefsT>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.acting_entity_refs = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for acting_entity_refs: {e}"
+                    )
+                });
+            self
+        }
+        pub fn action_id<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::ActionIdT>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.action_id = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for action_id: {e}")
+                });
+            self
+        }
+        pub fn category<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::ActionCategory>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.category = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {e}")
+                });
+            self
+        }
+        pub fn date<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::string::String>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.date = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for date: {e}"));
+            self
+        }
+        pub fn dl_vuln_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<::std::vec::Vec<super::DlVulnIdT>>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.dl_vuln_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for dl_vuln_ids: {e}")
+                });
+            self
+        }
+        pub fn group_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductGroupsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.group_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for group_ids: {e}")
+                });
+            self
+        }
+        pub fn product_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.product_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for product_ids: {e}")
+                });
+            self
+        }
+        pub fn receiving_entity_refs<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::EntityRefsT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.receiving_entity_refs = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for receiving_entity_refs: {e}"
+                    )
+                });
+            self
+        }
+        pub fn referenced_action_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<::std::vec::Vec<super::ActionIdT>>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.referenced_action_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!(
+                        "error converting supplied value for referenced_action_ids: {e}"
+                    )
+                });
+            self
+        }
+        pub fn status<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::ActionStatus>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.status = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for status: {e}"));
+            self
+        }
+        pub fn summary<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::SummaryOfTheAction>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.summary = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {e}")
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<Action> for super::Action {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: Action,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                acting_entity_refs: value.acting_entity_refs?,
+                action_id: value.action_id?,
+                category: value.category?,
+                date: value.date?,
+                dl_vuln_ids: value.dl_vuln_ids?,
+                group_ids: value.group_ids?,
+                product_ids: value.product_ids?,
+                receiving_entity_refs: value.receiving_entity_refs?,
+                referenced_action_ids: value.referenced_action_ids?,
+                status: value.status?,
+                summary: value.summary?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::Action> for Action {
+        fn from(value: super::Action) -> Self {
+            Self {
+                acting_entity_refs: Ok(value.acting_entity_refs),
+                action_id: Ok(value.action_id),
+                category: Ok(value.category),
+                date: Ok(value.date),
+                dl_vuln_ids: Ok(value.dl_vuln_ids),
+                group_ids: Ok(value.group_ids),
+                product_ids: Ok(value.product_ids),
+                receiving_entity_refs: Ok(value.receiving_entity_refs),
+                referenced_action_ids: Ok(value.referenced_action_ids),
+                status: Ok(value.status),
+                summary: Ok(value.summary),
             }
         }
     }
@@ -5469,7 +6316,7 @@ pub mod builder {
         }
     }
     #[derive(Clone, Debug)]
-    pub struct Contact {
+    pub struct ContactT {
         details: ::std::result::Result<
             ::std::option::Option<super::ContactDetails>,
             ::std::string::String,
@@ -5482,17 +6329,22 @@ pub mod builder {
             ::std::option::Option<super::PublicOpenPgpKeyUrl>,
             ::std::string::String,
         >,
+        url: ::std::result::Result<
+            ::std::option::Option<super::ContactUrl>,
+            ::std::string::String,
+        >,
     }
-    impl ::std::default::Default for Contact {
+    impl ::std::default::Default for ContactT {
         fn default() -> Self {
             Self {
                 details: Ok(Default::default()),
                 email: Ok(Default::default()),
                 public_openpgp_key_url: Ok(Default::default()),
+                url: Ok(Default::default()),
             }
         }
     }
-    impl Contact {
+    impl ContactT {
         pub fn details<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<::std::option::Option<super::ContactDetails>>,
@@ -5531,25 +6383,37 @@ pub mod builder {
                 });
             self
         }
+        pub fn url<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ContactUrl>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.url = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for url: {e}"));
+            self
+        }
     }
-    impl ::std::convert::TryFrom<Contact> for super::Contact {
+    impl ::std::convert::TryFrom<ContactT> for super::ContactT {
         type Error = super::error::ConversionError;
         fn try_from(
-            value: Contact,
+            value: ContactT,
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
                 details: value.details?,
                 email: value.email?,
                 public_openpgp_key_url: value.public_openpgp_key_url?,
+                url: value.url?,
             })
         }
     }
-    impl ::std::convert::From<super::Contact> for Contact {
-        fn from(value: super::Contact) -> Self {
+    impl ::std::convert::From<super::ContactT> for ContactT {
+        fn from(value: super::ContactT) -> Self {
             Self {
                 details: Ok(value.details),
                 email: Ok(value.email),
                 public_openpgp_key_url: Ok(value.public_openpgp_key_url),
+                url: Ok(value.url),
             }
         }
     }
@@ -5950,6 +6814,10 @@ pub mod builder {
             super::RulesForDocumentSharing,
             ::std::string::String,
         >,
+        involvement: ::std::result::Result<
+            ::std::option::Option<super::Involvement>,
+            ::std::string::String,
+        >,
         lang: ::std::result::Result<
             ::std::option::Option<super::LangT>,
             ::std::string::String,
@@ -5986,6 +6854,7 @@ pub mod builder {
                 category: Err("no value supplied for category".to_string()),
                 csaf_version: Err("no value supplied for csaf_version".to_string()),
                 distribution: Err("no value supplied for distribution".to_string()),
+                involvement: Ok(Default::default()),
                 lang: Ok(Default::default()),
                 license_expression: Ok(Default::default()),
                 notes: Ok(Default::default()),
@@ -6058,6 +6927,18 @@ pub mod builder {
                 .try_into()
                 .map_err(|e| {
                     format!("error converting supplied value for distribution: {e}")
+                });
+            self
+        }
+        pub fn involvement<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::Involvement>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.involvement = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for involvement: {e}")
                 });
             self
         }
@@ -6178,6 +7059,7 @@ pub mod builder {
                 category: value.category?,
                 csaf_version: value.csaf_version?,
                 distribution: value.distribution?,
+                involvement: value.involvement?,
                 lang: value.lang?,
                 license_expression: value.license_expression?,
                 notes: value.notes?,
@@ -6198,6 +7080,7 @@ pub mod builder {
                 category: Ok(value.category),
                 csaf_version: Ok(value.csaf_version),
                 distribution: Ok(value.distribution),
+                involvement: Ok(value.involvement),
                 lang: Ok(value.lang),
                 license_expression: Ok(value.license_expression),
                 notes: Ok(value.notes),
@@ -6268,6 +7151,265 @@ pub mod builder {
             Self {
                 name: Ok(value.name),
                 version: Ok(value.version),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct Entity {
+        category: ::std::result::Result<super::EntityCategory, ::std::string::String>,
+        contact: ::std::result::Result<
+            ::std::option::Option<super::ContactT>,
+            ::std::string::String,
+        >,
+        entity_id: ::std::result::Result<super::EntityIdT, ::std::string::String>,
+        name: ::std::result::Result<
+            ::std::option::Option<super::NameOfTheEntity>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for Entity {
+        fn default() -> Self {
+            Self {
+                category: Err("no value supplied for category".to_string()),
+                contact: Ok(Default::default()),
+                entity_id: Err("no value supplied for entity_id".to_string()),
+                name: Ok(Default::default()),
+            }
+        }
+    }
+    impl Entity {
+        pub fn category<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::EntityCategory>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.category = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for category: {e}")
+                });
+            self
+        }
+        pub fn contact<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::ContactT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.contact = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for contact: {e}")
+                });
+            self
+        }
+        pub fn entity_id<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::EntityIdT>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.entity_id = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for entity_id: {e}")
+                });
+            self
+        }
+        pub fn name<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::NameOfTheEntity>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.name = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<Entity> for super::Entity {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: Entity,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                category: value.category?,
+                contact: value.contact?,
+                entity_id: value.entity_id?,
+                name: value.name?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::Entity> for Entity {
+        fn from(value: super::Entity) -> Self {
+            Self {
+                category: Ok(value.category),
+                contact: Ok(value.contact),
+                entity_id: Ok(value.entity_id),
+                name: Ok(value.name),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct EntityGroup {
+        entity_group_id: ::std::result::Result<
+            super::EntityGroupIdT,
+            ::std::string::String,
+        >,
+        entity_ids: ::std::result::Result<
+            ::std::vec::Vec<super::EntityIdT>,
+            ::std::string::String,
+        >,
+        name: ::std::result::Result<super::NameOfTheEntityGroup, ::std::string::String>,
+        summary: ::std::result::Result<
+            ::std::option::Option<super::SummaryOfTheEntityGroup>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for EntityGroup {
+        fn default() -> Self {
+            Self {
+                entity_group_id: Err(
+                    "no value supplied for entity_group_id".to_string(),
+                ),
+                entity_ids: Err("no value supplied for entity_ids".to_string()),
+                name: Err("no value supplied for name".to_string()),
+                summary: Ok(Default::default()),
+            }
+        }
+    }
+    impl EntityGroup {
+        pub fn entity_group_id<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::EntityGroupIdT>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.entity_group_id = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for entity_group_id: {e}")
+                });
+            self
+        }
+        pub fn entity_ids<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::EntityIdT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.entity_ids = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for entity_ids: {e}")
+                });
+            self
+        }
+        pub fn name<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<super::NameOfTheEntityGroup>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.name = value
+                .try_into()
+                .map_err(|e| format!("error converting supplied value for name: {e}"));
+            self
+        }
+        pub fn summary<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<
+                ::std::option::Option<super::SummaryOfTheEntityGroup>,
+            >,
+            T::Error: ::std::fmt::Display,
+        {
+            self.summary = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for summary: {e}")
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<EntityGroup> for super::EntityGroup {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: EntityGroup,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                entity_group_id: value.entity_group_id?,
+                entity_ids: value.entity_ids?,
+                name: value.name?,
+                summary: value.summary?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::EntityGroup> for EntityGroup {
+        fn from(value: super::EntityGroup) -> Self {
+            Self {
+                entity_group_id: Ok(value.entity_group_id),
+                entity_ids: Ok(value.entity_ids),
+                name: Ok(value.name),
+                summary: Ok(value.summary),
+            }
+        }
+    }
+    #[derive(Clone, Debug)]
+    pub struct EntityRefsTItem {
+        subtype_0: ::std::result::Result<
+            ::std::option::Option<super::EntityGroupIdT>,
+            ::std::string::String,
+        >,
+        subtype_1: ::std::result::Result<
+            ::std::option::Option<super::EntityIdT>,
+            ::std::string::String,
+        >,
+    }
+    impl ::std::default::Default for EntityRefsTItem {
+        fn default() -> Self {
+            Self {
+                subtype_0: Ok(Default::default()),
+                subtype_1: Ok(Default::default()),
+            }
+        }
+    }
+    impl EntityRefsTItem {
+        pub fn subtype_0<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::EntityGroupIdT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.subtype_0 = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for subtype_0: {e}")
+                });
+            self
+        }
+        pub fn subtype_1<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::EntityIdT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.subtype_1 = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for subtype_1: {e}")
+                });
+            self
+        }
+    }
+    impl ::std::convert::TryFrom<EntityRefsTItem> for super::EntityRefsTItem {
+        type Error = super::error::ConversionError;
+        fn try_from(
+            value: EntityRefsTItem,
+        ) -> ::std::result::Result<Self, super::error::ConversionError> {
+            Ok(Self {
+                subtype_0: value.subtype_0?,
+                subtype_1: value.subtype_1?,
+            })
+        }
+    }
+    impl ::std::convert::From<super::EntityRefsTItem> for EntityRefsTItem {
+        fn from(value: super::EntityRefsTItem) -> Self {
+            Self {
+                subtype_0: Ok(value.subtype_0),
+                subtype_1: Ok(value.subtype_1),
             }
         }
     }
@@ -7044,122 +8186,64 @@ pub mod builder {
     }
     #[derive(Clone, Debug)]
     pub struct Involvement {
-        contact: ::std::result::Result<
-            ::std::option::Option<super::PartyContactInformation>,
+        actions: ::std::result::Result<
+            ::std::vec::Vec<super::Action>,
             ::std::string::String,
         >,
-        date: ::std::result::Result<
-            ::std::option::Option<::std::string::String>,
+        entities: ::std::result::Result<
+            ::std::vec::Vec<super::Entity>,
             ::std::string::String,
         >,
-        group_ids: ::std::result::Result<
-            ::std::option::Option<super::ProductGroupsT>,
-            ::std::string::String,
-        >,
-        party: ::std::result::Result<super::PartyCategory, ::std::string::String>,
-        product_ids: ::std::result::Result<
-            ::std::option::Option<super::ProductsT>,
-            ::std::string::String,
-        >,
-        status: ::std::result::Result<super::PartyStatus, ::std::string::String>,
-        summary: ::std::result::Result<
-            ::std::option::Option<super::SummaryOfTheInvolvement>,
+        entity_groups: ::std::result::Result<
+            ::std::option::Option<::std::vec::Vec<super::EntityGroup>>,
             ::std::string::String,
         >,
     }
     impl ::std::default::Default for Involvement {
         fn default() -> Self {
             Self {
-                contact: Ok(Default::default()),
-                date: Ok(Default::default()),
-                group_ids: Ok(Default::default()),
-                party: Err("no value supplied for party".to_string()),
-                product_ids: Ok(Default::default()),
-                status: Err("no value supplied for status".to_string()),
-                summary: Ok(Default::default()),
+                actions: Err("no value supplied for actions".to_string()),
+                entities: Err("no value supplied for entities".to_string()),
+                entity_groups: Ok(Default::default()),
             }
         }
     }
     impl Involvement {
-        pub fn contact<T>(mut self, value: T) -> Self
+        pub fn actions<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Action>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.actions = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for actions: {e}")
+                });
+            self
+        }
+        pub fn entities<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::vec::Vec<super::Entity>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.entities = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for entities: {e}")
+                });
+            self
+        }
+        pub fn entity_groups<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<
-                ::std::option::Option<super::PartyContactInformation>,
+                ::std::option::Option<::std::vec::Vec<super::EntityGroup>>,
             >,
             T::Error: ::std::fmt::Display,
         {
-            self.contact = value
+            self.entity_groups = value
                 .try_into()
                 .map_err(|e| {
-                    format!("error converting supplied value for contact: {e}")
-                });
-            self
-        }
-        pub fn date<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.date = value
-                .try_into()
-                .map_err(|e| format!("error converting supplied value for date: {e}"));
-            self
-        }
-        pub fn group_ids<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::option::Option<super::ProductGroupsT>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.group_ids = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for group_ids: {e}")
-                });
-            self
-        }
-        pub fn party<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<super::PartyCategory>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.party = value
-                .try_into()
-                .map_err(|e| format!("error converting supplied value for party: {e}"));
-            self
-        }
-        pub fn product_ids<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::option::Option<super::ProductsT>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.product_ids = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for product_ids: {e}")
-                });
-            self
-        }
-        pub fn status<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<super::PartyStatus>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.status = value
-                .try_into()
-                .map_err(|e| format!("error converting supplied value for status: {e}"));
-            self
-        }
-        pub fn summary<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<
-                ::std::option::Option<super::SummaryOfTheInvolvement>,
-            >,
-            T::Error: ::std::fmt::Display,
-        {
-            self.summary = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for summary: {e}")
+                    format!("error converting supplied value for entity_groups: {e}")
                 });
             self
         }
@@ -7170,26 +8254,18 @@ pub mod builder {
             value: Involvement,
         ) -> ::std::result::Result<Self, super::error::ConversionError> {
             Ok(Self {
-                contact: value.contact?,
-                date: value.date?,
-                group_ids: value.group_ids?,
-                party: value.party?,
-                product_ids: value.product_ids?,
-                status: value.status?,
-                summary: value.summary?,
+                actions: value.actions?,
+                entities: value.entities?,
+                entity_groups: value.entity_groups?,
             })
         }
     }
     impl ::std::convert::From<super::Involvement> for Involvement {
         fn from(value: super::Involvement) -> Self {
             Self {
-                contact: Ok(value.contact),
-                date: Ok(value.date),
-                group_ids: Ok(value.group_ids),
-                party: Ok(value.party),
-                product_ids: Ok(value.product_ids),
-                status: Ok(value.status),
-                summary: Ok(value.summary),
+                actions: Ok(value.actions),
+                entities: Ok(value.entities),
+                entity_groups: Ok(value.entity_groups),
             }
         }
     }
@@ -7879,7 +8955,7 @@ pub mod builder {
             ::std::string::String,
         >,
         contact: ::std::result::Result<
-            ::std::option::Option<super::Contact>,
+            ::std::option::Option<super::ContactT>,
             ::std::string::String,
         >,
         issuing_authority: ::std::result::Result<
@@ -7915,7 +8991,7 @@ pub mod builder {
         }
         pub fn contact<T>(mut self, value: T) -> Self
         where
-            T: ::std::convert::TryInto<::std::option::Option<super::Contact>>,
+            T: ::std::convert::TryInto<::std::option::Option<super::ContactT>>,
             T::Error: ::std::fmt::Display,
         {
             self.contact = value
@@ -8980,6 +10056,10 @@ pub mod builder {
             ::std::option::Option<::std::string::String>,
             ::std::string::String,
         >,
+        dl_vuln_id: ::std::result::Result<
+            ::std::option::Option<super::DlVulnIdT>,
+            ::std::string::String,
+        >,
         first_known_exploitation_dates: ::std::result::Result<
             ::std::option::Option<::std::vec::Vec<super::FirstKnownExploitationDate>>,
             ::std::string::String,
@@ -8990,10 +10070,6 @@ pub mod builder {
         >,
         ids: ::std::result::Result<
             ::std::option::Option<::std::vec::Vec<super::Id>>,
-            ::std::string::String,
-        >,
-        involvements: ::std::result::Result<
-            ::std::option::Option<::std::vec::Vec<super::Involvement>>,
             ::std::string::String,
         >,
         metrics: ::std::result::Result<
@@ -9037,10 +10113,10 @@ pub mod builder {
                 cwes: Ok(Default::default()),
                 disclosure_date: Ok(Default::default()),
                 discovery_date: Ok(Default::default()),
+                dl_vuln_id: Ok(Default::default()),
                 first_known_exploitation_dates: Ok(Default::default()),
                 flags: Ok(Default::default()),
                 ids: Ok(Default::default()),
-                involvements: Ok(Default::default()),
                 metrics: Ok(Default::default()),
                 notes: Ok(Default::default()),
                 product_status: Ok(Default::default()),
@@ -9111,6 +10187,18 @@ pub mod builder {
                 });
             self
         }
+        pub fn dl_vuln_id<T>(mut self, value: T) -> Self
+        where
+            T: ::std::convert::TryInto<::std::option::Option<super::DlVulnIdT>>,
+            T::Error: ::std::fmt::Display,
+        {
+            self.dl_vuln_id = value
+                .try_into()
+                .map_err(|e| {
+                    format!("error converting supplied value for dl_vuln_id: {e}")
+                });
+            self
+        }
         pub fn first_known_exploitation_dates<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<
@@ -9149,20 +10237,6 @@ pub mod builder {
             self.ids = value
                 .try_into()
                 .map_err(|e| format!("error converting supplied value for ids: {e}"));
-            self
-        }
-        pub fn involvements<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<
-                ::std::option::Option<::std::vec::Vec<super::Involvement>>,
-            >,
-            T::Error: ::std::fmt::Display,
-        {
-            self.involvements = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for involvements: {e}")
-                });
             self
         }
         pub fn metrics<T>(mut self, value: T) -> Self
@@ -9271,10 +10345,10 @@ pub mod builder {
                 cwes: value.cwes?,
                 disclosure_date: value.disclosure_date?,
                 discovery_date: value.discovery_date?,
+                dl_vuln_id: value.dl_vuln_id?,
                 first_known_exploitation_dates: value.first_known_exploitation_dates?,
                 flags: value.flags?,
                 ids: value.ids?,
-                involvements: value.involvements?,
                 metrics: value.metrics?,
                 notes: value.notes?,
                 product_status: value.product_status?,
@@ -9294,10 +10368,10 @@ pub mod builder {
                 cwes: Ok(value.cwes),
                 disclosure_date: Ok(value.disclosure_date),
                 discovery_date: Ok(value.discovery_date),
+                dl_vuln_id: Ok(value.dl_vuln_id),
                 first_known_exploitation_dates: Ok(value.first_known_exploitation_dates),
                 flags: Ok(value.flags),
                 ids: Ok(value.ids),
-                involvements: Ok(value.involvements),
                 metrics: Ok(value.metrics),
                 notes: Ok(value.notes),
                 product_status: Ok(value.product_status),
@@ -9351,22 +10425,27 @@ pub mod error {
         }
     }
 }
+crate::macros::impl_string_newtype_ergonomics!(ActionIdT);
 crate::macros::impl_string_newtype_ergonomics!(AdditionalRestartInformation);
 crate::macros::impl_string_newtype_ergonomics!(AlgorithmOfTheCryptographicHash);
 crate::macros::impl_string_newtype_ergonomics!(AlternateName);
 crate::macros::impl_string_newtype_ergonomics!(AudienceOfNote);
 crate::macros::impl_string_newtype_ergonomics!(CommonPlatformEnumerationRepresentation);
 crate::macros::impl_string_newtype_ergonomics!(ContactDetails);
+crate::macros::impl_string_newtype_ergonomics!(ContactUrl);
 crate::macros::impl_string_newtype_ergonomics!(ContributingOrganization);
 crate::macros::impl_string_newtype_ergonomics!(Cve);
 crate::macros::impl_string_newtype_ergonomics!(CweVersion);
 crate::macros::impl_string_newtype_ergonomics!(DetailsOfTheRemediation);
 crate::macros::impl_string_newtype_ergonomics!(DetailsOfTheThreat);
+crate::macros::impl_string_newtype_ergonomics!(DlVulnIdT);
 crate::macros::impl_string_newtype_ergonomics!(DocumentCategory);
 crate::macros::impl_string_newtype_ergonomics!(Email);
 crate::macros::impl_string_newtype_ergonomics!(EngineName);
 crate::macros::impl_string_newtype_ergonomics!(EngineVersion);
 crate::macros::impl_string_newtype_ergonomics!(EntitlementOfTheRemediation);
+crate::macros::impl_string_newtype_ergonomics!(EntityGroupIdT);
+crate::macros::impl_string_newtype_ergonomics!(EntityIdT);
 crate::macros::impl_string_newtype_ergonomics!(Filename);
 crate::macros::impl_string_newtype_ergonomics!(IssuingAuthority);
 crate::macros::impl_string_newtype_ergonomics!(LangT);
@@ -9376,9 +10455,10 @@ crate::macros::impl_string_newtype_ergonomics!(ModelNumber);
 crate::macros::impl_string_newtype_ergonomics!(NameOfPublisher);
 crate::macros::impl_string_newtype_ergonomics!(NameOfTheBranch);
 crate::macros::impl_string_newtype_ergonomics!(NameOfTheContributor);
+crate::macros::impl_string_newtype_ergonomics!(NameOfTheEntity);
+crate::macros::impl_string_newtype_ergonomics!(NameOfTheEntityGroup);
 crate::macros::impl_string_newtype_ergonomics!(NoteContent);
 crate::macros::impl_string_newtype_ergonomics!(PackageUrlRepresentation);
-crate::macros::impl_string_newtype_ergonomics!(PartyContactInformation);
 crate::macros::impl_string_newtype_ergonomics!(Percentile);
 crate::macros::impl_string_newtype_ergonomics!(Probability);
 crate::macros::impl_string_newtype_ergonomics!(ProductGroupIdT);
@@ -9388,7 +10468,8 @@ crate::macros::impl_string_newtype_ergonomics!(SerialNumber);
 crate::macros::impl_string_newtype_ergonomics!(SharingGroupName);
 crate::macros::impl_string_newtype_ergonomics!(StockKeepingUnit);
 crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheAcknowledgment);
-crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheInvolvement);
+crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheAction);
+crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheEntityGroup);
 crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheProductGroup);
 crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheReference);
 crate::macros::impl_string_newtype_ergonomics!(SummaryOfTheRevision);

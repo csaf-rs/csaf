@@ -58,7 +58,6 @@ mod tests {
         // s12 - vulnerability without involvements
         // s13 - vulnerability with one involvement containing a date
 
-
         TESTS_2_0.test_6_2_7.expect(ExpectedResults_2_0 {
             case_01,
             case_s01,

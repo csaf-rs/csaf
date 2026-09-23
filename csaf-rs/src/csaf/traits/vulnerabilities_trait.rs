@@ -18,8 +18,8 @@ use crate::schema::csaf2_0::schema::{
 };
 use crate::schema::csaf2_1::schema::{
     Acknowledgment as Acknowledgment21, FirstKnownExploitationDate as FirstKnownExploitationDate21, Flag as Flag21,
-    Id as Id21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21,
-    Reference as Reference21, Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
+    Id as Id21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21, Reference as Reference21,
+    Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
 };
 
 /// Collects references from all vulnerabilities using the given extractor, prepending

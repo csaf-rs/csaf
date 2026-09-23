@@ -1,9 +1,9 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
 use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
+use crate::schema::csaf2_0::schema::PartyCategory;
 use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 use std::collections::HashMap;
-use crate::schema::csaf2_0::schema::PartyCategory;
 
 fn generate_duplicate_involvement_error(
     date: &Option<ValidCsafDateTime>,
@@ -88,7 +88,11 @@ pub fn test_6_1_24_multiple_definition_in_involvements(doc: &impl CsafTrait) -> 
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(csaf2_0, ValidatorForTest6_1_24, test_6_1_24_multiple_definition_in_involvements);
+crate::test_validation::impl_validator!(
+    csaf2_0,
+    ValidatorForTest6_1_24,
+    test_6_1_24_multiple_definition_in_involvements
+);
 
 #[cfg(test)]
 mod tests {

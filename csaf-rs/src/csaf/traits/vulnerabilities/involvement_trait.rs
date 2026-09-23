@@ -22,8 +22,6 @@ crate::csaf::traits::impl_with_optional_date!(Involvement20);
 crate::csaf::traits::impl_optional_ids!(Involvement20, WithOptionalGroupIds, ReturnsEmpty);
 crate::csaf::traits::impl_optional_ids!(Involvement20, WithOptionalProductIds, ReturnsEmpty);
 
-
-
 impl InvolvementTrait for NotPresentInCsaf21 {
     fn get_party(&self) -> PartyCategory20 {
         self.into_any()
@@ -33,4 +31,3 @@ impl InvolvementTrait for NotPresentInCsaf21 {
         self.into_any()
     }
 }
-

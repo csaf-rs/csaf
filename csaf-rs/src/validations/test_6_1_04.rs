@@ -85,9 +85,9 @@ mod tests {
             case_12: Ok(()),
         });
         TESTS_2_1.test_6_1_4.expect(ExpectedResults_2_1 {
-            case_01: case_threats,         // threats
-            case_02: Ok(()), // TODO: Fix during #338
-            case_03: case_vuln_id,         // vulnerability ids
+            case_01: case_threats, // threats
+            case_02: Ok(()),       // TODO: Fix during #338
+            case_03: case_vuln_id, // vulnerability ids
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

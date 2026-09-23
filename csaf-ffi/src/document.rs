@@ -19,6 +19,7 @@ use crate::{CsafError, ValidationResult};
 // Internal enum dispatch
 // ---------------------------------------------------------------------------
 
+#[allow(clippy::large_enum_variant)]
 enum DocumentInner {
     V20(RawDocument<Csaf20>),
     V21(RawDocument<Csaf21>),

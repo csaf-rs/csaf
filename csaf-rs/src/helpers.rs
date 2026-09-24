@@ -105,7 +105,7 @@ pub static SCANCODE_LICENSEDB_LICENSES: LazyLock<HashSet<String>> =
     LazyLock::new(|| scancode_licensedb_refs(false, "LicenseRef-"));
 
 pub static SCANCODE_LICENSEDB_EXCEPTIONS: LazyLock<HashSet<String>> =
-    LazyLock::new(|| scancode_licensedb_refs(true, "LicenseRef-")); // TODO: recheck after https://github.com/aboutcode-org/dejacode/issues/318 is closed (after that probably simply replace prefix with "AdditionRef-")
+    LazyLock::new(|| scancode_licensedb_refs(true, "LicenseRef-")); // TODO: Recheck ScanCode exception identifier handling after https://github.com/aboutcode-org/dejacode/issues/318 is resolved.
 
 fn scancode_licensedb_refs(is_exception: bool, prefix: &str) -> HashSet<String> {
     let licenses: Vec<ScancodeLicense> =
@@ -117,7 +117,7 @@ fn scancode_licensedb_refs(is_exception: bool, prefix: &str) -> HashSet<String> 
             std::iter::once(&license.spdx_license_key)
                 .filter_map(|key| key.as_ref())
                 .chain(license.other_spdx_license_keys.iter())
-                .filter_map(|key| key.strip_prefix(prefix).map(|k| k.to_string()))
+                .filter_map(|key| key.strip_prefix(prefix).map(|key| key.to_lowercase())) // SPDX 3.0.1 LicenseRef and AdditionRef identifiers are case-insensitive: https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity
                 .collect::<Vec<String>>()
         })
         .collect()

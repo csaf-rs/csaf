@@ -1,4 +1,3 @@
-use spdx::Expression;
 use std::sync::LazyLock;
 
 use crate::csaf::types::language::CsafLanguage;
@@ -7,35 +6,40 @@ use crate::helpers::{SCANCODE_LICENSEDB_EXCEPTIONS, SCANCODE_LICENSEDB_LICENSES}
 use crate::schema::csaf2_1::schema::LicenseExpression;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::{TestFinding, TestFindingData};
+use crate::validations::utils::license_expressions::parse_csaf_license_expression;
 
 static MISSING_LICENSE_TEXT_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message: "Missing license text (document note with title 'License') for non-standard license.".to_string(),
+        message:
+            "Missing license text (document note with title 'License') for unlisted license identifier or exception."
+                .to_string(),
         instance_path: "/document/notes".to_string(),
     })
 });
 
 static MULTIPLE_LICENSE_TEXT_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message: "Multiple license texts (document notes with title 'License') for non-standard license.".to_string(),
+        message:
+            "Multiple license texts (document notes with title 'License') for unlisted license identifier or exception."
+                .to_string(),
         instance_path: "/document/notes".to_string(),
     })
 });
 
-fn create_incorrect_license_text_category_error(license_expression_path: &str, category: &NoteCategory) -> TestFinding {
+fn create_incorrect_license_text_category_error(instance_path: &str, category: &NoteCategory) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("Invalid category for license text: '{category}' instead of 'legal_disclaimer'."),
-        instance_path: license_expression_path.to_string(),
+        instance_path: instance_path.to_string(),
     })
 }
 
 fn license_listed_in_spdx_licensedb_or_invalid_license_expression(license: &LicenseExpression) -> bool {
-    match Expression::parse(license.as_str()) {
+    match parse_csaf_license_expression(license) {
         Ok(parsed) => parsed.requirements().all(|requirement| {
             let license_is_listed = match &requirement.req.license {
                 spdx::LicenseItem::Other(license_ref) => {
                     let license_ref: &str = &license_ref.lic_ref;
-                    SCANCODE_LICENSEDB_LICENSES.contains(license_ref)
+                    SCANCODE_LICENSEDB_LICENSES.contains(&license_ref.to_lowercase()) // The variable parts of SPDX LicenseRef and AdditionRef identifiers are case-insensitive
                 },
                 spdx::LicenseItem::Spdx { .. } => true,
             };
@@ -44,7 +48,7 @@ fn license_listed_in_spdx_licensedb_or_invalid_license_expression(license: &Lice
                 None => true,
                 Some(spdx::AdditionItem::Other(addition_ref)) => {
                     let addition_ref: &str = &addition_ref.add_ref;
-                    SCANCODE_LICENSEDB_EXCEPTIONS.contains(addition_ref)
+                    SCANCODE_LICENSEDB_EXCEPTIONS.contains(&addition_ref.to_lowercase()) // The variable parts of SPDX LicenseRef and AdditionRef identifiers are case-insensitive
                 },
                 Some(spdx::AdditionItem::Spdx(_)) => true,
             };

@@ -7,7 +7,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Supplementary test: Usage of V as Version Indicator (valid example - v not followed by digit)",
+    "title": "Supplementary test: Usage of V as Version Indicator (valid supplementary example 1 - backport of CSAF 2.1 6-3-11-12)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_0-6-3-11-S11",
@@ -31,15 +31,57 @@
             "branches": [
               {
                 "category": "product_version",
-                "name": "vAlpha",
+                "name": "Valerie",
                 "product": {
-                  "name": "Example Company Product A Alpha",
-                  "product_id": "CSAFPID-9080702"
+                  "name": "Example Company Product A Valerie",
+                  "product_id": "CSAFPID-9080700"
                 }
               }
             ],
             "category": "product_name",
             "name": "Product A"
+          },
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "valerian 4",
+                "product": {
+                  "name": "Example Company Product B valerian 4",
+                  "product_id": "CSAFPID-9080701"
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "Product B"
+          },
+          {
+            "branches": [
+              {
+                "branches": [
+                  {
+                    "category": "architecture",
+                    "name": "m68k",
+                    "product": {
+                      "name": "Example Company Product C 1 m68k",
+                      "product_id": "CSAFPID-9080702"
+                    }
+                  },
+                  {
+                    "category": "architecture",
+                    "name": "v9example",
+                    "product": {
+                      "name": "Example Company Product C 1 v9example",
+                      "product_id": "CSAFPID-9080703"
+                    }
+                  }
+                ],
+                "category": "product_version",
+                "name": "1"
+              }
+            ],
+            "category": "product_name",
+            "name": "Product C"
           }
         ],
         "category": "vendor",

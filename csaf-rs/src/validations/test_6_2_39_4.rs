@@ -88,6 +88,15 @@ mod tests {
             0,
         ))]);
 
+        // TODO #827: The test language was updated, this should also find an error at index 0
+        // let case_02_incorrect_category_todo = Err(vec![TestFinding::Warning(create_incorrect_category_data(
+        //     de_summary_prefix,
+        //     &CategoryOfReference::Self_,
+        //     &CategoryOfReference::External,
+        //     &CsafDocumentCategory::CsafSuperseded,
+        //     2,
+        // ))]);
+
         let multiple_incorrect_category = Err(vec![
             TestFinding::Warning(create_incorrect_category_data(
                 de_summary_prefix,
@@ -115,6 +124,7 @@ mod tests {
 
         TESTS_2_1.test_6_2_39_4.expect(ExpectedResults {
             case_01: no_reference_with_prefix,
+            case_02: Ok(()), // TODO fix during #827
             case_s01: incorrect_category,
             case_s02: multiple_incorrect_category,
             case_11: Ok(()),

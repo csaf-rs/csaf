@@ -603,11 +603,11 @@ dependencies = [
  "chrono",
  "criterion",
  "cvss-rs",
- "jsonschema",
+ "jsonschema 0.49.9",
  "oxilangtag",
  "packageurl",
  "regex",
- "regress 0.12.0",
+ "regress",
  "rstest",
  "rust-embed",
  "semver",
@@ -888,6 +888,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "fraction"
+version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e246562084dde8ebbcc943b261c406ce4f68e5032ec28029a251a47d6a295500"
+dependencies = [
+ "num",
+ "num-bigint",
+]
+
+[[package]]
 name = "fs-err"
 version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1032,17 +1042,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
 dependencies = [
  "foldhash 0.1.5",
-]
-
-[[package]]
-name = "hashbrown"
-version = "0.16.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
-dependencies = [
- "allocator-api2",
- "equivalent",
- "foldhash 0.2.0",
 ]
 
 [[package]]
@@ -1349,17 +1348,45 @@ dependencies = [
  "data-encoding",
  "email_address",
  "fancy-regex",
- "fraction",
+ "fraction 0.15.4",
  "getrandom 0.3.4",
  "idna",
  "itoa",
  "jsonschema-macros",
- "jsonschema-regex",
- "jsonschema-value",
+ "jsonschema-regex 0.49.9",
+ "jsonschema-value 0.49.9",
  "num-cmp",
  "num-traits",
  "percent-encoding",
- "referencing",
+ "referencing 0.49.9",
+ "regex",
+ "serde",
+ "serde_json",
+ "strum",
+ "unicode-general-category",
+ "uuid-simd",
+]
+
+[[package]]
+name = "jsonschema"
+version = "0.56.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6a806f80c1f5560431009ce5ec29b59d38f950e0cd7db5f1b8925e6d8104e21"
+dependencies = [
+ "ahash",
+ "bytecount",
+ "data-encoding",
+ "email_address",
+ "fancy-regex",
+ "fraction 0.17.0",
+ "getrandom 0.3.4",
+ "itoa",
+ "jsonschema-regex 0.56.0",
+ "jsonschema-value 0.56.0",
+ "num-cmp",
+ "num-traits",
+ "percent-encoding",
+ "referencing 0.56.0",
  "regex",
  "serde",
  "serde_json",
@@ -1386,12 +1413,12 @@ checksum = "660a4d9630fc867a0e5260f520f3c0dde13e8e83d3d63df50b3c6593188be4da"
 dependencies = [
  "fancy-regex",
  "indexmap",
- "jsonschema-regex",
+ "jsonschema-regex 0.49.9",
  "percent-encoding",
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "referencing",
+ "referencing 0.49.9",
  "regex",
  "serde_json",
  "syn 2.0.117",
@@ -1407,6 +1434,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "jsonschema-regex"
+version = "0.56.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb862addfa7782108933abcf842fe25334523a9df5b89ea4d9620e3dd7b42181"
+dependencies = [
+ "regex-syntax",
+]
+
+[[package]]
 name = "jsonschema-value"
 version = "0.49.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1414,10 +1450,26 @@ checksum = "7ec7637f83e510868ae6ed625f7ebfbbde4554ee8ce49854caa5126a8b9b9ecb"
 dependencies = [
  "ahash",
  "bytecount",
- "fraction",
+ "fraction 0.15.4",
  "num-cmp",
  "num-traits",
  "serde_json",
+]
+
+[[package]]
+name = "jsonschema-value"
+version = "0.56.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a05cd404c5ff6e2731dbbf7e290a27417750acfb59e329560a1d0af384c93fb0"
+dependencies = [
+ "ahash",
+ "bytecount",
+ "fraction 0.17.0",
+ "getrandom 0.3.4",
+ "num-cmp",
+ "num-traits",
+ "serde_json",
+ "zmij",
 ]
 
 [[package]]
@@ -1570,9 +1622,9 @@ dependencies = [
 
 [[package]]
 name = "num-bigint"
-version = "0.4.6"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5e44f723f1133c9deac646763579fdb3ac745e418f2a7af9cd0c431da1f20b9"
+checksum = "c89e69e7e0f03bea5ef08013795c25018e101932225a656383bd384495ecc367"
 dependencies = [
  "num-integer",
  "num-traits",
@@ -1896,6 +1948,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "referencing"
+version = "0.56.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3b4a92fac7e28c27de3ad26df2ecb9e652f227b258e845af034052e5b22c96c"
+dependencies = [
+ "ahash",
+ "fluent-uri",
+ "getrandom 0.3.4",
+ "hashbrown 0.17.1",
+ "itoa",
+ "micromap",
+ "parking_lot",
+ "percent-encoding",
+ "serde_json",
+]
+
+[[package]]
 name = "regex"
 version = "1.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1923,16 +1992,6 @@ name = "regex-syntax"
 version = "0.8.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
-
-[[package]]
-name = "regress"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "158a764437582235e3501f683b93a0a6f8d825d04a789dbe5ed30b8799b8908a"
-dependencies = [
- "hashbrown 0.16.1",
- "memchr",
-]
 
 [[package]]
 name = "regress"
@@ -2210,18 +2269,6 @@ dependencies = [
 
 [[package]]
 name = "serde_tokenstream"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7c49585c52c01f13c5c2ebb333f14f6885d76daa768d8a037d28017ec538c69"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde",
- "syn 2.0.117",
-]
-
-[[package]]
-name = "serde_tokenstream"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db95b8acf6eca5bc1bc771a7d7fb1a0d1485bdef0c46eec2f573bbaf4b4118f8"
@@ -2331,21 +2378,21 @@ dependencies = [
 
 [[package]]
 name = "ssvc"
-version = "0.3.1"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9117d67587cc2383727a58dbf6bc219f5d56716b29c941ec3b3f1317b34b9eeb"
+checksum = "0fd0f97f4e79f12302c4e88309c91d8f8c95c05ee90aabdc0ff99c42982442ac"
 dependencies = [
  "anyhow",
  "chrono",
- "jsonschema",
+ "jsonschema 0.56.0",
  "prettyplease 0.3.0",
- "regress 0.11.1",
+ "regress",
  "rust-embed",
  "serde",
  "serde_json",
  "syn 3.0.5",
  "thiserror 2.0.20",
- "typify 0.7.0",
+ "typify",
 ]
 
 [[package]]
@@ -2747,7 +2794,7 @@ dependencies = [
  "prettyplease 0.3.0",
  "proc-macro2",
  "quote",
- "regress 0.12.0",
+ "regress",
  "rstest",
  "schemars",
  "serde",
@@ -2755,7 +2802,7 @@ dependencies = [
  "strum",
  "syn 3.0.5",
  "thiserror 2.0.20",
- "typify 0.8.0",
+ "typify",
 ]
 
 [[package]]
@@ -2766,42 +2813,12 @@ checksum = "40ce102ab67701b8526c123c1bab5cbe42d7040ccfd0f64af1a385808d2f43de"
 
 [[package]]
 name = "typify"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8cdc2e612ea322c6e232d46a0b34607c8eb28978fd6060ecfb139f2a50db8d5f"
-dependencies = [
- "typify-impl 0.7.0",
- "typify-macro 0.7.0",
-]
-
-[[package]]
-name = "typify"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71187d2e983363e9a6ca884f7b061620bc6da4316902058e74bbc9d61c347696"
 dependencies = [
- "typify-impl 0.8.0",
- "typify-macro 0.8.0",
-]
-
-[[package]]
-name = "typify-impl"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "691591f49550c0d371bc441d019c30ce241d4116aee7d68df7a9840d6c70bf8f"
-dependencies = [
- "heck",
- "log",
- "proc-macro2",
- "quote",
- "regress 0.11.1",
- "schemars",
- "semver",
- "serde",
- "serde_json",
- "syn 2.0.117",
- "thiserror 2.0.20",
- "unicode-ident",
+ "typify-impl",
+ "typify-macro",
 ]
 
 [[package]]
@@ -2814,7 +2831,7 @@ dependencies = [
  "log",
  "proc-macro2",
  "quote",
- "regress 0.12.0",
+ "regress",
  "schemars",
  "semver",
  "serde",
@@ -2822,23 +2839,6 @@ dependencies = [
  "syn 3.0.5",
  "thiserror 2.0.20",
  "unicode-ident",
-]
-
-[[package]]
-name = "typify-macro"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d41aea893c49cf95661389207b8af0c6254ff48b2c3ae1e4f3704777dbdfcf03"
-dependencies = [
- "proc-macro2",
- "quote",
- "schemars",
- "semver",
- "serde",
- "serde_json",
- "serde_tokenstream 0.2.3",
- "syn 2.0.117",
- "typify-impl 0.7.0",
 ]
 
 [[package]]
@@ -2853,9 +2853,9 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "serde_tokenstream 0.3.0",
+ "serde_tokenstream",
  "syn 3.0.5",
- "typify-impl 0.8.0",
+ "typify-impl",
 ]
 
 [[package]]
@@ -3593,9 +3593,9 @@ checksum = "3be3d40e40a133f9c916ee3f9f4fa2d9d63435b5fbe1bfc6d9dae0aa0ada1513"
 
 [[package]]
 name = "zmij"
-version = "1.0.21"
+version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8848ee67ecc8aedbaf3e4122217aff892639231befc6a1b58d29fff4c2cabaa"
+checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
 
 [[package]]
 name = "zopfli"

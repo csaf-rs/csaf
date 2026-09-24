@@ -50,7 +50,7 @@ ssvc = "0.4.1"
 serde_json = { version = "1", features = ["preserve_order"] }
 
 [dev-dependencies]
-rstest = "0.26.1"
+rstest = "0.27.0"
 criterion = { version = "0.8", features = ["html_reports"] }
 tempfile = "3"
 

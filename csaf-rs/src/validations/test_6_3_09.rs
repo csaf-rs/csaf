@@ -4,7 +4,7 @@ use crate::validation::{TestFinding, TestFindingData};
 fn format_category_path(categories: &[CategoryOfTheBranch]) -> String {
     categories
         .iter()
-        .map(|c| c.to_string())
+        .map(|c| format!("`{c}`"))
         .collect::<Vec<_>>()
         .join(" -> ")
 }
@@ -15,17 +15,17 @@ fn create_branch_categories_error(
     instance_path: String,
 ) -> TestFinding {
     let full_display = format_category_path(full_path);
-    let found_display = if relevant_categories.is_empty() {
-        "(none)".to_string()
+    let message = if relevant_categories.is_empty() {
+        format!(
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. None of these categories were used. Full path: {full_display}",
+        )
     } else {
-        format_category_path(relevant_categories)
+        format!(
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Identified incomplete or wrongly ordered use: {}. Full path: {full_display}",
+            format_category_path(relevant_categories)
+        )
     };
-    TestFinding::Information(TestFindingData {
-        message: format!(
-            "Branch path to product does not follow the recommended sequence of the categories 'vendor' -> 'product_name' -> 'product_version'. Along the categories of this path '{full_display}', the following sequence was found: '{found_display}'"
-        ),
-        instance_path,
-    })
+    TestFinding::Information(TestFindingData { message, instance_path })
 }
 
 /// Required category sequence for branch paths.
@@ -268,5 +268,55 @@ mod tests {
             case_15: Ok(()),
             case_s11: Ok(()),
         });
+    }
+
+    #[test]
+    fn test_create_branch_categories_error_with_empty_relevant_categories() {
+        let full_path = &[CategoryOfTheBranch::HostName, CategoryOfTheBranch::Architecture];
+
+        assert_eq!(
+            create_branch_categories_error(full_path, &[], "".to_string())
+                .get_data()
+                .message,
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. None of these categories were used. Full path: `host_name` -> `architecture`"
+        );
+    }
+
+    #[test]
+    fn test_create_branch_categories_error_with_incomplete_categories() {
+        let full_path = &[
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductFamily,
+            CategoryOfTheBranch::ProductName,
+        ];
+        let relevant_categories = &[CategoryOfTheBranch::Vendor, CategoryOfTheBranch::ProductName];
+
+        assert_eq!(
+            create_branch_categories_error(full_path, relevant_categories, "".to_string())
+                .get_data()
+                .message,
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Identified incomplete or wrongly ordered use: `vendor` -> `product_name`. Full path: `vendor` -> `product_family` -> `product_name`"
+        );
+    }
+
+    #[test]
+    fn test_create_branch_categories_error_with_wrong_order() {
+        let full_path = &[
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch::ProductName,
+        ];
+        let relevant_categories = &[
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductVersion,
+            CategoryOfTheBranch::ProductName,
+        ];
+
+        assert_eq!(
+            create_branch_categories_error(full_path, relevant_categories, "".to_string())
+                .get_data()
+                .message,
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Identified incomplete or wrongly ordered use: `vendor` -> `product_version` -> `product_name`. Full path: `vendor` -> `product_version` -> `product_name`"
+        );
     }
 }

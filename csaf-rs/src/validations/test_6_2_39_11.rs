@@ -42,7 +42,11 @@ pub fn test_6_2_39_11_vulnerability_references(doc: &impl CsafTrait) -> Result<(
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
     DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafVulnerabilityReport]);
 
-crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_39_11, test_6_2_39_11_vulnerability_references);
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_2_39_11,
+    test_6_2_39_11_vulnerability_references
+);
 
 #[cfg(test)]
 mod tests {

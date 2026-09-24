@@ -1,0 +1,64 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "notes": [
+      {
+        "category": "description",
+        "group_ids": [
+          "CSAFGID-1000001"
+        ],
+        "text": "Product A is a local time tracking tool. It is mainly used by software developers and can be connected with most modern time-tracking systems.",
+        "title": "Product Description"
+      }
+    ],
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Recommended Test: Product Description without Product Reference (valid supplementary example 1 - uses group ids for reference)",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-40-S11",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080701"
+      },
+      {
+        "name": "Product B",
+        "product_id": "CSAFPID-9080702"
+      }
+    ],
+    "product_groups": [
+      {
+        "group_id": "CSAFGID-1000001",
+        "product_ids": [
+          "CSAFPID-9080701",
+          "CSAFPID-9080702"
+        ],
+        "summary": "All versions of Product A (at the time of publication)."
+      }
+    ]
+  }
+}

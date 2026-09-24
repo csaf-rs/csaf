@@ -4,6 +4,7 @@ use crate::csaf::traits::util::extract_references::{
 use crate::csaf::traits::util::impl_optional_str_field_getter;
 
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
+use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
@@ -17,8 +18,8 @@ use crate::schema::csaf2_0::schema::{
 };
 use crate::schema::csaf2_1::schema::{
     Acknowledgment as Acknowledgment21, FirstKnownExploitationDate as FirstKnownExploitationDate21, Flag as Flag21,
-    Id as Id21, Involvement as Involvement21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21,
-    Reference as Reference21, Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
+    Id as Id21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21, Reference as Reference21,
+    Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
 };
 
 /// Collects references from all vulnerabilities using the given extractor, prepending
@@ -260,7 +261,7 @@ impl VulnerabilityTrait for Vulnerability21 {
     type MetricType = Metric21;
     type ThreatType = Threat21;
     type FlagType = Flag21;
-    type InvolvementType = Involvement21;
+    type InvolvementType = NotPresentInCsaf21;
     type VulnerabilityIdType = Id21;
     type NoteType = Note21;
     type FirstKnownExploitationDatesType = FirstKnownExploitationDate21;
@@ -304,7 +305,7 @@ impl VulnerabilityTrait for Vulnerability21 {
     }
 
     fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>> {
-        self.involvements.as_ref()
+        None
     }
 
     impl_optional_str_field_getter!(get_cve, cve);

@@ -116,6 +116,8 @@ pub mod test_6_2_35;
 pub mod test_6_2_36;
 pub mod test_6_2_37;
 pub mod test_6_2_38;
+pub mod test_6_2_39_10;
+pub mod test_6_2_39_11;
 pub mod test_6_2_39_12;
 pub mod test_6_2_39_13;
 pub mod test_6_2_39_2;

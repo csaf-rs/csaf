@@ -1,0 +1,25 @@
+{
+    "document": {
+        "category": "csaf_vex",
+        "csaf_version": "2.0",
+        "distribution": {
+            "tlp": {
+                "label": "WHITE"
+            }
+        },
+        "publisher": {
+            "category": "vendor",
+            "name": "csaf-rs",
+            "namespace": "https://github.com/csaf-rs"
+        },
+        "title": "some title",
+        "tracking": {
+            "current_release_date": "2026-01-01T00:00:00Z",
+            "id": "test-01",
+            "initial_release_date": "2026-01-01T00:00:00.000Z",
+            "revision_history": [],
+            "status": "final",
+            "version": "1.0.0"
+        }
+    }
+}

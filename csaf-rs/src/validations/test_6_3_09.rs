@@ -9,22 +9,44 @@ fn format_category_path(categories: &[CategoryOfTheBranch]) -> String {
         .join(" -> ")
 }
 
-fn create_branch_categories_error(
+fn format_category_list(categories: &Vec<&CategoryOfTheBranch>) -> String {
+    categories
+        .iter()
+        .map(|c| format!("`{c}`"))
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+fn create_branch_categories_info(
     full_path: &[CategoryOfTheBranch],
     relevant_categories: &[CategoryOfTheBranch],
     instance_path: String,
 ) -> TestFinding {
     let full_display = format_category_path(full_path);
-    let message = if relevant_categories.is_empty() {
-        format!(
-            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. None of these categories were used. Full path: {full_display}",
-        )
-    } else {
-        format!(
-            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Identified incomplete or wrongly ordered use: {}. Full path: {full_display}",
+    let prefix = "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories.";
+    let mut message;
+    // none of the categories were used
+    if relevant_categories.is_empty() {
+        message = format!("{prefix} None of these categories were used. Full path: {full_display}",)
+    }
+    // all categories were used, but in the wrong order
+    else if relevant_categories.len() == REQUIRED_CATEGORIES_ORDER.len() {
+        message = format!(
+            "{prefix} The categories are in wrong order: {}. Full path: {full_display}",
             format_category_path(relevant_categories)
         )
-    };
+    // some categories were used
+    } else {
+        let missing_categories: Vec<_> = REQUIRED_CATEGORIES_ORDER
+            .iter()
+            .filter(|c| !relevant_categories.contains(c))
+            .collect();
+        message = format!(
+            "{prefix} Some of the categories are missing: {}. Full path: {full_display}",
+            format_category_list(&missing_categories)
+        );
+    }
+
     TestFinding::Information(TestFindingData { message, instance_path })
 }
 
@@ -69,7 +91,7 @@ pub fn test_6_3_9_branch_categories(doc: &impl CsafTrait) -> Result<(), Vec<Test
         if !relevant.iter().eq(REQUIRED_CATEGORIES_ORDER.iter()) {
             // collect all categories only when needed for the error message
             let all_categories: Vec<CategoryOfTheBranch> = path.iter().map(|b| b.get_category()).collect();
-            errors.get_or_insert_default().push(create_branch_categories_error(
+            errors.get_or_insert_default().push(create_branch_categories_info(
                 &all_categories,
                 &relevant,
                 build_leaf_instance_path(&indices),
@@ -92,7 +114,7 @@ mod tests {
 
     #[test]
     fn test_test_6_3_9() {
-        let case_01_missing_product_version = Err(vec![create_branch_categories_error(
+        let case_01_missing_product_version = Err(vec![create_branch_categories_info(
             &[
                 CategoryOfTheBranch::Vendor,
                 CategoryOfTheBranch::ProductName,
@@ -103,7 +125,7 @@ mod tests {
         )]);
 
         let case_02_missing_vendor = Err(vec![
-            create_branch_categories_error(
+            create_branch_categories_info(
                 &[
                     CategoryOfTheBranch::ProductFamily,
                     CategoryOfTheBranch::ProductName,
@@ -112,7 +134,7 @@ mod tests {
                 &[CategoryOfTheBranch::ProductName, CategoryOfTheBranch::ProductVersion],
                 "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
             ),
-            create_branch_categories_error(
+            create_branch_categories_info(
                 &[
                     CategoryOfTheBranch::ProductFamily,
                     CategoryOfTheBranch::ProductName,
@@ -124,7 +146,7 @@ mod tests {
         ]);
 
         let case_03_missing_vendor_wrong_order = Err(vec![
-            create_branch_categories_error(
+            create_branch_categories_info(
                 &[
                     CategoryOfTheBranch::ProductFamily,
                     CategoryOfTheBranch::ProductVersion,
@@ -133,7 +155,7 @@ mod tests {
                 &[CategoryOfTheBranch::ProductVersion, CategoryOfTheBranch::ProductName],
                 "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
             ),
-            create_branch_categories_error(
+            create_branch_categories_info(
                 &[
                     CategoryOfTheBranch::ProductFamily,
                     CategoryOfTheBranch::ProductVersion,
@@ -150,12 +172,12 @@ mod tests {
             CategoryOfTheBranch::ProductName,
         ];
         let case_04_wrong_order = Err(vec![
-            create_branch_categories_error(
+            create_branch_categories_info(
                 case_04_categories,
                 case_04_categories,
                 "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
             ),
-            create_branch_categories_error(
+            create_branch_categories_info(
                 case_04_categories,
                 case_04_categories,
                 "/product_tree/branches/0/branches/0/branches/1/product".to_string(),
@@ -178,12 +200,12 @@ mod tests {
             CategoryOfTheBranch::ProductName,
         ];
         let case_05_wrong_order_deep_tree = Err(vec![
-            create_branch_categories_error(
+            create_branch_categories_info(
                 case_05_full,
                 case_05_relevant,
                 "/product_tree/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/branches/0/product".to_string(),
             ),
-            create_branch_categories_error(
+            create_branch_categories_info(
                 case_05_full,
                 case_05_relevant,
                 "/product_tree/branches/0/branches/0/branches/0/branches/0/branches/0/branches/1/branches/0/branches/0/product".to_string(),
@@ -191,7 +213,7 @@ mod tests {
         ]);
 
         let case_06_missing_vendor_name_version = Err(vec![
-            create_branch_categories_error(
+            create_branch_categories_info(
                 &[
                     CategoryOfTheBranch::HostName,
                     CategoryOfTheBranch::Architecture,
@@ -200,7 +222,7 @@ mod tests {
                 &[],
                 "/product_tree/branches/0/branches/0/branches/0/product".to_string(),
             ),
-            create_branch_categories_error(
+            create_branch_categories_info(
                 &[
                     CategoryOfTheBranch::HostName,
                     CategoryOfTheBranch::Architecture,
@@ -213,7 +235,7 @@ mod tests {
         ]);
 
         // Note: Stacked categories violate 6.1.57, making this test file mandatory invalid on CSAF 2.1
-        let case_s01_stacked_wrong_order = Err(vec![create_branch_categories_error(
+        let case_s01_stacked_wrong_order = Err(vec![create_branch_categories_info(
             &[
                 CategoryOfTheBranch::Vendor,
                 CategoryOfTheBranch::ProductName,
@@ -275,7 +297,7 @@ mod tests {
         let full_path = &[CategoryOfTheBranch::HostName, CategoryOfTheBranch::Architecture];
 
         assert_eq!(
-            create_branch_categories_error(full_path, &[], "".to_string())
+            create_branch_categories_info(full_path, &[], "".to_string())
                 .get_data()
                 .message,
             "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. None of these categories were used. Full path: `host_name` -> `architecture`"
@@ -292,10 +314,10 @@ mod tests {
         let relevant_categories = &[CategoryOfTheBranch::Vendor, CategoryOfTheBranch::ProductName];
 
         assert_eq!(
-            create_branch_categories_error(full_path, relevant_categories, "".to_string())
+            create_branch_categories_info(full_path, relevant_categories, "".to_string())
                 .get_data()
                 .message,
-            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Identified incomplete or wrongly ordered use: `vendor` -> `product_name`. Full path: `vendor` -> `product_family` -> `product_name`"
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Some of the categories are missing: `product_version`. Full path: `vendor` -> `product_family` -> `product_name`"
         );
     }
 
@@ -313,10 +335,10 @@ mod tests {
         ];
 
         assert_eq!(
-            create_branch_categories_error(full_path, relevant_categories, "".to_string())
+            create_branch_categories_info(full_path, relevant_categories, "".to_string())
                 .get_data()
                 .message,
-            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Identified incomplete or wrongly ordered use: `vendor` -> `product_version` -> `product_name`. Full path: `vendor` -> `product_version` -> `product_name`"
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in wrong order: `vendor` -> `product_version` -> `product_name`. Full path: `vendor` -> `product_version` -> `product_name`"
         );
     }
 }

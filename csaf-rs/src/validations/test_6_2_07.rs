@@ -31,24 +31,39 @@ fn create_missing_date_in_involvements_error(vulnerability_index: usize, involve
     })
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_2_7, test_6_2_07_missing_date_in_involvements);
+crate::test_validation::impl_validator!(csaf2_0, ValidatorForTest6_2_7, test_6_2_07_missing_date_in_involvements);
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::csaf2_0::testcases::ExpectedResults_6_2_7 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
-    use crate::csaf2_1::testcases::ExpectedResults_6_2_7 as ExpectedResults_2_1;
-    use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_2_07() {
         let case_01 = Err(vec![create_missing_date_in_involvements_error(0, 0)]);
+        let case_s01 = Err(vec![
+            create_missing_date_in_involvements_error(0, 1),
+            create_missing_date_in_involvements_error(0, 3),
+            create_missing_date_in_involvements_error(1, 1),
+            create_missing_date_in_involvements_error(1, 3),
+        ]);
 
-        // Both CSAF 2.0 and 2.1 have 2 test cases
+        // Failing test cases:
+        // 01  - vulnerability with one involvement missing a date
+        // s01 - alternating presence of dates across multiple vulnerabilities and involvements
+
+        // Valid test cases:
+        // s11 - no vulnerabilities
+        // s12 - vulnerability without involvements
+        // s13 - vulnerability with one involvement containing a date
+
         TESTS_2_0.test_6_2_7.expect(ExpectedResults_2_0 {
-            case_01: case_01.clone(),
+            case_01,
+            case_s01,
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
         });
-        TESTS_2_1.test_6_2_7.expect(ExpectedResults_2_1 { case_01 });
     }
 }

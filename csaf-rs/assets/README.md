@@ -11,6 +11,9 @@ These assets are described within this `README.md`.
 - `csaf_2.0_json_schema.json`
 - `csaf_2.1_json_schema.json`
 
+- `extension-content.json`
+- `extension-metaschema.json`
+
 See https://github.com/oasis-tcs/csaf for information regarding these files and their respective licenses.
 They are 1:1 copies from the respective repository (i.e., git submodule), cloned solely for successful crate publishing.
 
@@ -83,6 +86,7 @@ License as provided in the document
 > SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 > WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 - `cvss-v3.0.json` see https://www.first.org/cvss/cvss-v3.0.json
 
 License as provided in the document
@@ -129,7 +133,7 @@ License as provided in the document
 > WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-- `cvss-v4.0.1.json` see https://www.first.org/cvss/cvss-v4.0.1.json
+- `cvss-v4.0.json` see https://www.first.org/cvss/cvss-v4.0.json
 
 License as provided in the document
 > Copyright (c) 2025, FIRST.ORG, INC.
@@ -151,6 +155,51 @@ License as provided in the document
 > SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
 > WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+- `SelectionList_2_0_0.schema.json` from https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json
+
+License:
+> Copyright 2026 Carnegie Mellon University.
+> 
+> Licensed under a MIT (SEI)-style license, please see information below, you may also contact permission@sei.cmu.edu 
+> for full terms.
+> 
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+> documentation files (the "Software"), to deal in the Software without restriction, including without limitation the 
+> rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+> permit persons to whom the Software is furnished to do so, subject to the following conditions:
+> 
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of 
+> the Software.
+> 
+> This Software includes and/or can make use of certain third party software ("Third Party Software"). The Third 
+> Party Software that is used by the software is dependent upon your system configuration, but typically includes 
+> the software identified in this license.txt file, and/or described in the documentation and/or read me file. By 
+> using this software, you agree to comply with any and all relevant Third Party Software terms and conditions 
+> contained in any such Third Party Software or separate license file distributed with such Third Party Software. 
+> The parties who own the Third Party Software ("Third Party Licensors") are intended third party beneficiaries 
+> to this License with respect to the terms applicable to their Third Party Software. Third Party Software 
+> licenses only apply to the Third Party Software and not any other portion of SEI Software or this software as 
+> a whole.
+> 
+> This material is based upon work funded and supported by the Department of Defense under Contract No. 
+> FA8702-15-D-0002 with Carnegie Mellon University for the operation of the Software Engineering Institute, 
+> a federally funded research and development center.  
+> 
+> The view, opinions, and/or findings contained in this material are those of the author(s) and should not be 
+> construed as an official Government position, policy, or decision, unless designated by other documentation.  
+> 
+> References herein to any specific commercial product, process, or service by trade name, trade mark, 
+> manufacturer, or otherwise, does not necessarily constitute or imply its endorsement, recommendation, or 
+> favoring by Carnegie Mellon University or its Software Engineering Institute.
+> 
+> NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING INSTITUTE MATERIAL IS FURNISHED ON 
+> AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, 
+> AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR MERCHANTABILITY, 
+> EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY 
+> WARRANTY OF ANY KIND WITH RESPECT TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
+> 
+> This work product was created in part using generative AI.
 
 ### CWE resources
 
@@ -189,3 +238,17 @@ Terms of use according to https://cwe.mitre.org/about/termsofuse.html:
 > but not limited to loss of income, program interruption, loss of information, or > other pecuniary loss) arising 
 > out of use of this information, no matter the cause of action, even if The MITRE Corporation has been > advised 
 > of the possibility of such damages.
+
+## Derived Assets
+
+Some schema files are derived from the official schemas, but with the modification that unevaluatedProperties are 
+not allowed, as needed for test 6.2.20.
+
+- `csaf_2.0_json_schema.strict.json`
+- `csaf_2.1_json_schema.strict.json`
+
+- `extension-content.strict.json`
+- `extension-metaschema.strict.json`
+
+- `cvss-v2.0.strict.json`
+- `cvss-v4.0.strict.json`

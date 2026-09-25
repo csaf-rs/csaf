@@ -34,8 +34,12 @@ pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<T
     errors.map_or(Ok(()), Err)
 }
 
-const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafVex]);
+const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
+    .shared(&[CsafDocumentCategory::CsafVex])
+    .csaf21(&[
+        CsafDocumentCategory::CsafSecurityAdvisory,
+        CsafDocumentCategory::CsafVulnerabilityReport,
+    ]);
 
 fn test_6_1_27_08_err_generator(document_category: &CsafDocumentCategory, vuln_path_index: &usize) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -59,6 +63,14 @@ mod tests {
     #[test]
     fn test_test_6_1_27_08() {
         let case_vex_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafVex, &0)]);
+        // TODO fix during #694
+        // let case_vuln_report_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafVulnerabilityReport, &0)]);
+        // let case_security_advisory_without_cve_or_id = Err(vec![test_6_1_27_08_err_generator(&CsafDocumentCategory::CsafSecurityAdvisory, &0)]);
+
+        // Note: For simplicity, this file does not contain product tree or notes elements for the two vulns, which violates 6.1.27.4 and 6.1.27.5
+        // Case S11: two vulns, one with cve, one with ids
+
+        // TODO: add comment which does which
 
         TESTS_2_0.test_6_1_27_8.expect(ExpectedResults_2_0 {
             case_01: case_vex_without_cve_or_id.clone(),
@@ -67,8 +79,12 @@ mod tests {
         TESTS_2_1.test_6_1_27_8.expect(ExpectedResults_2_1 {
             case_01: case_vex_without_cve_or_id,
             case_02: Ok(()), // TODO: Adapt once check condition is implemented #694
+            case_03: Ok(()),
+            case_04: Ok(()),
             case_11: Ok(()),
             case_12: Ok(()),
+            case_13: Ok(()),
+            case_14: Ok(()),
             case_s11: Ok(()),
         });
     }

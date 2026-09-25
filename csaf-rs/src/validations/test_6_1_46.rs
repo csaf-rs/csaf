@@ -1,12 +1,8 @@
-use std::sync::LazyLock;
-
-use jsonschema::Validator;
-
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::validation_schemas::SSVC_2_SCHEMA;
 
-static SSVC_VALIDATOR: LazyLock<Validator> = LazyLock::new(|| jsonschema::draft202012::new(&SSVC_2_SCHEMA).unwrap());
+#[jsonschema::validator(path = "assets/SelectionList_2_0_0.schema.json", draft = Draft202012)]
+struct SsvcValidator;
 
 fn create_invalid_ssvc_error(
     error_message: &str,
@@ -42,7 +38,7 @@ pub fn test_6_1_46_invalid_ssvc(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
                     // schema validation
                     // depending on how we implement lenient parsing, this might need to be
                     // prefaced with json format check
-                    for error in SSVC_VALIDATOR.iter_errors(&serde_json::Value::Object(ssvc.clone())) {
+                    for error in SsvcValidator::iter_errors(&serde_json::Value::Object(ssvc.clone())) {
                         errors.get_or_insert_default().push(create_invalid_ssvc_error(
                             &error.to_string(),
                             error.instance_path().as_str(),
@@ -70,8 +66,10 @@ mod tests {
     fn test_test_6_1_46() {
         // Case 01: selections object is missing
         // Case 02: key in selections object is missing
+        // Case 03: invalid bcp47 tag
         // Case 11: minimal valid ssvc
         // Case 12: valid ssvc
+        // Case 13: valid bcp47 tag
 
         TESTS_2_1.test_6_1_46.expect(ExpectedResults {
             case_01: Err(vec![create_invalid_ssvc_error(
@@ -84,8 +82,11 @@ mod tests {
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0", 0, 0),
                 create_invalid_ssvc_error("\"key\" is a required property", "/selections/0/values/0", 0, 0),
             ]),
+            // TODO update when new requirements are added #379
+            case_03: Ok(()),
             case_11: Ok(()),
             case_12: Ok(()),
+            case_13: Ok(()),
         });
     }
 }

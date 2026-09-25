@@ -10,8 +10,8 @@
     },
     "publisher": {
       "category": "other",
-      "name": "OASIS CSAF TC",
-      "namespace": "https://csaf.io"
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
     "title": "Mandatory Test: Missing Item in Revision History (failing supplementary example 1: semver missing version 1.0.0)",
     "tracking": {

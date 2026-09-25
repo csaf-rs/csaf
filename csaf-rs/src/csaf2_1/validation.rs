@@ -2,8 +2,11 @@ use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
-use crate::validation::{TestFinding, TestResult, TestResultStatus, Validatable, ValidationError};
+use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Validatable, ValidationError};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
+use std::collections::HashSet;
+use std::fmt::Display;
+use std::sync::OnceLock;
 
 fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation::TestFinding>>>) -> TestResult {
     TestResult {
@@ -32,47 +35,208 @@ fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation
     }
 }
 
+const PRESET_NAME_SCHEMA: &str = "schema";
+const PRESET_NAME_MANDATORY: &str = "mandatory";
+const PRESET_NAME_RECOMMENDED: &str = "recommended";
+const PRESET_NAME_INFORMATIVE: &str = "informative";
+const PRESET_NAME_BASIC: &str = "basic";
+const PRESET_NAME_EXTENDED: &str = "extended";
+const PRESET_NAME_FULL: &str = "full";
+const PRESET_NAME_EXTERNAL_REQUEST_FREE: &str = "external-request-free";
+// const PRESET_NAME_NON_EXTERNAL_REQUEST_FREE: &str = "non-external-request-free";
+const PRESET_NAME_CONSISTENT_REVISION_HISTORY: &str = "consistent-revision-history";
+const PRESET_NAME_CONSISTENT_DATE_TIMES: &str = "consistent-date-times";
+const PRESET_NAME_SSVC: &str = "ssvc";
+// const PRESET_NAME_EXTENSIONS: &str = "extensions";
+// const PRESET_NAME_EXTENSIONS_EXIST: &str = "extensions-exist";
+
+#[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "kebab-case")]
+pub enum Preset {
+    Schema,
+    Mandatory,
+    Recommended,
+    Informative,
+    Basic,
+    Extended,
+    Full,
+    // NonExternalRequestFree,
+    ExternalRequestFree,
+    ConsistentRevisionHistory,
+    ConsistentDateTimes,
+    Ssvc,
+    // Extensions,
+    // ExtensionsExist,
+}
+
+impl Preset {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Preset::Schema => PRESET_NAME_SCHEMA,
+            Preset::Mandatory => PRESET_NAME_MANDATORY,
+            Preset::Recommended => PRESET_NAME_RECOMMENDED,
+            Preset::Informative => PRESET_NAME_INFORMATIVE,
+            Preset::Basic => PRESET_NAME_BASIC,
+            Preset::Extended => PRESET_NAME_EXTENDED,
+            Preset::Full => PRESET_NAME_FULL,
+            Preset::ExternalRequestFree => PRESET_NAME_EXTERNAL_REQUEST_FREE,
+            // Preset::NonExternalRequestFree => PRESET_NAME_NON_EXTERNAL_REQUEST_FREE,
+            Preset::ConsistentRevisionHistory => PRESET_NAME_CONSISTENT_REVISION_HISTORY,
+            Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATE_TIMES,
+            Preset::Ssvc => PRESET_NAME_SSVC,
+            // Preset::Extensions => PRESET_NAME_EXTENSIONS,
+            // Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
+        }
+    }
+}
+
+impl Display for Preset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+impl TryFrom<&str> for Preset {
+    type Error = CsafError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            PRESET_NAME_MANDATORY => Ok(Preset::Mandatory),
+            PRESET_NAME_RECOMMENDED => Ok(Preset::Recommended),
+            PRESET_NAME_INFORMATIVE => Ok(Preset::Informative),
+            PRESET_NAME_SCHEMA => Ok(Preset::Schema),
+            PRESET_NAME_BASIC => Ok(Preset::Basic),
+            PRESET_NAME_EXTENDED => Ok(Preset::Extended),
+            PRESET_NAME_FULL => Ok(Preset::Full),
+            PRESET_NAME_EXTERNAL_REQUEST_FREE => Ok(Preset::ExternalRequestFree),
+            // PRESET_NAME_NON_EXTERNAL_REQUEST_FREE => Ok(Preset::NonExternalRequestFree),
+            PRESET_NAME_CONSISTENT_REVISION_HISTORY => Ok(Preset::ConsistentRevisionHistory),
+            PRESET_NAME_CONSISTENT_DATE_TIMES => Ok(Preset::ConsistentDateTimes),
+            PRESET_NAME_SSVC => Ok(Preset::Ssvc),
+            // PRESET_NAME_EXTENSIONS => Ok(Preset::Extensions),
+            // PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
+            _ => Err(CsafError::InvalidPreset {
+                preset: value.to_string(),
+            }),
+        }
+    }
+}
+
+/// Lazily-built set of all known test IDs (schema + mandatory + recommended + informative)
+/// for O(1) membership lookups, instead of scanning the individual arrays linearly on
+/// every `has_test` call.
+static KNOWN_TESTS: OnceLock<HashSet<&'static str>> = OnceLock::new();
+
+fn known_tests() -> &'static HashSet<&'static str> {
+    KNOWN_TESTS.get_or_init(|| {
+        let mut set: HashSet<&'static str> =
+            HashSet::with_capacity(1 + MANDATORY_TESTS.len() + RECOMMENDED_TESTS.len() + INFORMATIVE_TESTS.len());
+        set.insert(Preset::Schema.as_str());
+        set.extend(MANDATORY_TESTS.iter().copied());
+        set.extend(RECOMMENDED_TESTS.iter().copied());
+        set.extend(INFORMATIVE_TESTS.iter().copied());
+        set
+    })
+}
+
 impl Validatable for CommonSecurityAdvisoryFramework {
-    fn tests_in_preset(preset: &str) -> Option<Vec<&'static str>> {
-        match preset {
-            "mandatory" => Some(mandatory_tests()),
-            "recommended" => Some(recommended_tests()),
-            "informative" => Some(informative_tests()),
-            "schema" => Some(vec!["schema"]),
-            "basic" => Some([vec!["schema"], mandatory_tests()].concat()),
-            "extended" => Some([vec!["schema"], mandatory_tests(), recommended_tests()].concat()),
-            "full" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat(),
-            ),
-            "external-request-free" => Some(
-                [
-                    vec!["schema"],
-                    mandatory_tests(),
-                    recommended_tests(),
-                    informative_tests(),
-                ]
-                .concat()
-                .into_iter()
-                .filter(|id| *id != "6.3.6" && *id != "6.3.7")
-                .collect(),
-            ),
-            "consistent-revision-history" => Some(vec![
+    fn get_presets() -> Vec<&'static str> {
+        vec![
+            Preset::Schema.as_str(),
+            Preset::Mandatory.as_str(),
+            Preset::Recommended.as_str(),
+            Preset::Informative.as_str(),
+            Preset::Basic.as_str(),
+            Preset::Extended.as_str(),
+            Preset::Full.as_str(),
+            Preset::ExternalRequestFree.as_str(),
+            // Preset::NonExternalRequestFree.as_str(),
+            Preset::ConsistentRevisionHistory.as_str(),
+            Preset::ConsistentDateTimes.as_str(),
+            Preset::Ssvc.as_str(),
+            // Preset::Extensions.as_str(),
+            // Preset::ExtensionsExist.as_str(),
+        ]
+    }
+
+    fn tests_in_preset(preset: &str) -> Result<Vec<&'static str>, CsafError> {
+        let external_request = ["6.2.55", "6.3.6", "6.3.7", "6.3.24"];
+        match Preset::try_from(preset) {
+            Ok(Preset::Schema) => Ok(vec![Preset::Schema.as_str()]),
+            Ok(Preset::Mandatory) => Ok(mandatory_tests()),
+            Ok(Preset::Recommended) => Ok(recommended_tests()),
+            Ok(Preset::Informative) => Ok(informative_tests()),
+            Ok(Preset::Basic) => Ok([vec![Preset::Schema.as_str()], mandatory_tests()].concat()),
+            Ok(Preset::Extended) => {
+                Ok([vec![Preset::Schema.as_str()], mandatory_tests(), recommended_tests()].concat())
+            },
+            Ok(Preset::Full) => Ok([
+                vec![Preset::Schema.as_str()],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()),
+            // Ok(Preset::NonExternalRequestFree) => Ok(external_request),
+            Ok(Preset::ExternalRequestFree) => Ok([
+                vec![Preset::Schema.as_str()],
+                mandatory_tests(),
+                recommended_tests(),
+                informative_tests(),
+            ]
+            .concat()
+            .into_iter()
+            .filter(|id| !external_request.contains(id))
+            .collect()),
+            Ok(Preset::ConsistentRevisionHistory) => Ok(vec![
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
                 "6.2.33",
             ]),
-            "consistent-date-times" => Some(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
-            "ssvc" => Some(vec![
+            Ok(Preset::ConsistentDateTimes) => Ok(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            Ok(Preset::Ssvc) => Ok(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
-            _ => None,
+            // Ok(Preset::Extensions) => Ok(vec![
+            //     "6.1.60.1", "6.1.60.2", "6.1.60.3", "6.2.39.5", "6.2.54.1", "6.2.54.2", "6.2.54.3", "6.2.54.4",
+            //     "6.3.21.1", "6.3.21.2", "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8",
+            //     "6.3.21.9",
+            // ]),
+            // Ok(Preset::ExtensionsExist) => Ok(vec![
+            //        "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9"
+            // ]),
+            Err(e) => Err(e),
         }
+    }
+
+    fn get_tests() -> Vec<(&'static str, &'static str)> {
+        let mut tests =
+            Vec::with_capacity(1 + MANDATORY_TESTS.len() + RECOMMENDED_TESTS.len() + INFORMATIVE_TESTS.len());
+
+        tests.push((Preset::Schema.as_str(), Preset::Schema.as_str()));
+        tests.extend(
+            MANDATORY_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Mandatory.as_str())),
+        );
+        tests.extend(
+            RECOMMENDED_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Recommended.as_str())),
+        );
+        tests.extend(
+            INFORMATIVE_TESTS
+                .iter()
+                .copied()
+                .map(|id| (id, Preset::Informative.as_str())),
+        );
+
+        tests
+    }
+
+    fn has_test(test_id: &str) -> bool {
+        known_tests().contains(test_id)
     }
 
     fn run_test(&self, test_id: &str) -> TestResult {
@@ -87,14 +251,20 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.5" => Some(ValidatorForTest6_1_5.validate(self)),
                 "6.1.6" => Some(ValidatorForTest6_1_6.validate(self)),
                 "6.1.7" => Some(ValidatorForTest6_1_7.validate(self)),
-                "6.1.8" => None, // Some(ValidatorForTest6_1_8.validate(self)),
+                "6.1.8" => Some(ValidatorForTest6_1_8.validate(self)),
                 "6.1.9" => Some(ValidatorForTest6_1_9.validate(self)),
                 "6.1.10" => Some(ValidatorForTest6_1_10.validate(self)),
                 "6.1.11" => Some(ValidatorForTest6_1_11.validate(self)),
                 "6.1.12" => Some(ValidatorForTest6_1_12.validate(self)),
                 "6.1.13" => Some(ValidatorForTest6_1_13.validate(self)),
                 "6.1.14" => Some(ValidatorForTest6_1_14.validate(self)),
-                "6.1.15" => Some(ValidatorForTest6_1_15.validate(self)),
+                "6.1.15" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.1.16" => Some(ValidatorForTest6_1_16.validate(self)),
                 "6.1.17" => Some(ValidatorForTest6_1_17.validate(self)),
                 "6.1.18" => Some(ValidatorForTest6_1_18.validate(self)),
@@ -103,7 +273,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.21" => Some(ValidatorForTest6_1_21.validate(self)),
                 "6.1.22" => Some(ValidatorForTest6_1_22.validate(self)),
                 "6.1.23" => Some(ValidatorForTest6_1_23.validate(self)),
-                "6.1.24" => Some(ValidatorForTest6_1_24.validate(self)),
+                "6.1.24" => None, // TODO: #1091, this test needs to be re-implemented
                 "6.1.25" => Some(ValidatorForTest6_1_25.validate(self)),
                 "6.1.26" => Some(ValidatorForTest6_1_26.validate(self)),
                 "6.1.27.1" => Some(ValidatorForTest6_1_27_1.validate(self)),
@@ -130,11 +300,11 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.30" => Some(ValidatorForTest6_1_30.validate(self)),
                 "6.1.31" => Some(ValidatorForTest6_1_31.validate(self)),
                 "6.1.32" => Some(ValidatorForTest6_1_32.validate(self)),
-                "6.1.33" => None, // Some(ValidatorForTest6_1_33.validate(self)),
+                "6.1.33" => Some(ValidatorForTest6_1_33.validate(self)),
                 "6.1.34" => Some(ValidatorForTest6_1_34.validate(self)),
                 "6.1.35" => Some(ValidatorForTest6_1_35.validate(self)),
-                "6.1.36" => None, // Some(ValidatorForTest6_1_36.validate(self)),
-                "6.1.37" => None, // Some(ValidatorForTest6_1_37.validate(self)),
+                "6.1.36" => Some(ValidatorForTest6_1_36.validate(self)),
+                "6.1.37" => Some(ValidatorForTest6_1_37.validate(self)),
                 "6.1.38" => Some(ValidatorForTest6_1_38.validate(self)),
                 "6.1.39" => Some(ValidatorForTest6_1_39.validate(self)),
                 "6.1.40" => Some(ValidatorForTest6_1_40.validate(self)),
@@ -146,7 +316,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.46" => Some(ValidatorForTest6_1_46.validate(self)),
                 "6.1.47" => Some(ValidatorForTest6_1_47.validate(self)),
                 "6.1.48" => None, // Some(ValidatorForTest6_1_48.validate(self)),
-                "6.1.49" => None, // Some(ValidatorForTest6_1_49.validate(self)),
+                "6.1.49" => Some(ValidatorForTest6_1_49.validate(self)),
                 "6.1.50" => None, // Some(ValidatorForTest6_1_50.validate(self)),
                 "6.1.51" => Some(ValidatorForTest6_1_51.validate(self)),
                 "6.1.52" => Some(ValidatorForTest6_1_52.validate(self)),
@@ -168,11 +338,16 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.4" => Some(ValidatorForTest6_2_4.validate(self)),
                 "6.2.5" => Some(ValidatorForTest6_2_5.validate(self)),
                 "6.2.6" => Some(ValidatorForTest6_2_6.validate(self)),
-                "6.2.7" => Some(ValidatorForTest6_2_7.validate(self)),
                 "6.2.8" => Some(ValidatorForTest6_2_8.validate(self)),
                 "6.2.9" => Some(ValidatorForTest6_2_9.validate(self)),
                 "6.2.11" => Some(ValidatorForTest6_2_11.validate(self)),
-                "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
+                "6.2.12" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.2.13" => {
                     // see below in RawValidatable
                     return TestResult {
@@ -199,7 +374,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.24" => Some(ValidatorForTest6_2_24.validate(self)),
                 "6.2.25" => Some(ValidatorForTest6_2_25.validate(self)),
                 "6.2.26" => Some(ValidatorForTest6_2_26.validate(self)),
-                "6.2.27" => None, // Some(ValidatorForTest6_2_27.validate(self)),
+                "6.2.27" => Some(ValidatorForTest6_2_27.validate(self)),
                 "6.2.28" => Some(ValidatorForTest6_2_28.validate(self)),
                 "6.2.29" => Some(ValidatorForTest6_2_29.validate(self)),
                 "6.2.30" => Some(ValidatorForTest6_2_30.validate(self)),
@@ -214,11 +389,24 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.39.1" => None, // Some(ValidatorForTest6_2_39_1.validate(self)),
                 "6.2.39.2" => Some(ValidatorForTest6_2_39_2.validate(self)),
                 "6.2.39.3" => Some(ValidatorForTest6_2_39_3.validate(self)),
-                "6.2.39.4" => None, // Some(ValidatorForTest6_2_39_4.validate(self)),
-                "6.2.40" => None,   // Some(ValidatorForTest6_2_40.validate(self)),
+                "6.2.39.4" => Some(ValidatorForTest6_2_39_4.validate(self)),
+                "6.2.39.5" => Some(ValidatorForTest6_2_39_5.validate(self)),
+                "6.2.39.7" => Some(ValidatorForTest6_2_39_7.validate(self)),
+                "6.2.39.8" => Some(ValidatorForTest6_2_39_8.validate(self)),
+                "6.2.39.9" => Some(ValidatorForTest6_2_39_9.validate(self)),
+                "6.2.39.10" => Some(ValidatorForTest6_2_39_10.validate(self)),
+                "6.2.39.11" => Some(ValidatorForTest6_2_39_11.validate(self)),
+                "6.2.39.12" => Some(ValidatorForTest6_2_39_12.validate(self)),
+                "6.2.39.13" => Some(ValidatorForTest6_2_39_13.validate(self)),
+                "6.2.40" => Some(ValidatorForTest6_2_40.validate(self)),
                 "6.2.41" => Some(ValidatorForTest6_2_41.validate(self)),
                 "6.2.42" => None, // Some(ValidatorForTest6_2_42.validate(self)),
-                "6.2.43" => None, // Some(ValidatorForTest6_2_43.validate(self)),
+                "6.2.43" => {
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.2.44" => None, // Some(ValidatorForTest6_2_44.validate(self)),
                 "6.2.45" => None, // Some(ValidatorForTest6_2_45.validate(self)),
                 "6.2.46" => None, // Some(ValidatorForTest6_2_46.validate(self)),
@@ -231,17 +419,19 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.51" => None,   // Some(ValidatorForTest6_2_51.validate(self)),
                 "6.2.52" => Some(ValidatorForTest6_2_52.validate(self)),
                 "6.2.53" => Some(ValidatorForTest6_2_53.validate(self)),
+                "6.2.54" => None, //Some(ValidatorForTest6_2_54.validate(self)),
+                "6.2.55" => None, //Some(ValidatorForTest6_2_55.validate(self)),
                 // informative tests
                 "6.3.1" => None, // Some(ValidatorForTest6_3_1.validate(self)),
                 "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
-                "6.3.3" => None, // Some(ValidatorForTest6_3_3.validate(self)),
-                "6.3.4" => None, // Some(ValidatorForTest6_3_4.validate(self)),
+                "6.3.3" => Some(ValidatorForTest6_3_3.validate(self)),
+                "6.3.4" => Some(ValidatorForTest6_3_4.validate(self)),
                 "6.3.5" => Some(ValidatorForTest6_3_5.validate(self)),
                 "6.3.6" => None, // Some(ValidatorForTest6_3_6.validate(self)),
                 "6.3.7" => None, // Some(ValidatorForTest6_3_7.validate(self)),
                 "6.3.8" => None, // Some(ValidatorForTest6_3_8.validate(self)),
                 "6.3.9" => Some(ValidatorForTest6_3_9.validate(self)),
-                "6.3.10" => None, // Some(ValidatorForTest6_3_10.validate(self)),
+                "6.3.10" => Some(ValidatorForTest6_3_10.validate(self)),
                 "6.3.11" => Some(ValidatorForTest6_3_11.validate(self)),
                 "6.3.12" => Some(ValidatorForTest6_3_12.validate(self)),
                 "6.3.13" => None, // Some(ValidatorForTest6_3_13.validate(self)),
@@ -252,6 +442,12 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.18" => Some(ValidatorForTest6_3_18.validate(self)),
                 "6.3.19" => None, // Some(ValidatorForTest6_3_19.validate(self)),
                 "6.3.20" => Some(ValidatorForTest6_3_20.validate(self)),
+                "6.3.21.3" => Some(ValidatorForTest6_3_21_3.validate(self)),
+                "6.3.21.8" => Some(ValidatorForTest6_3_21_8.validate(self)),
+                "6.3.21.9" => Some(ValidatorForTest6_3_21_9.validate(self)),
+                "6.3.22" => None, // Some(ValidatorForTest6_3_22.validate(self)),
+                "6.3.23" => None, // Some(ValidatorForTest6_3_23.validate(self)),
+                "6.3.24" => None, // Some(ValidatorForTest6_3_24.validate(self)),
                 _ => None,
             },
         )
@@ -263,9 +459,12 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
         to_test_result(
             test_id,
             match test_id {
-                "schema" => Some(validate_schema_csaf_2_1(self)),
+                PRESET_NAME_SCHEMA => Some(validate_schema_csaf_2_1(self)),
+                "6.1.15" => Some(ValidatorForTest6_1_15.validate(self)),
+                "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
+                "6.2.43" => Some(ValidatorForTest6_2_43.validate(self)),
                 _ => None,
             },
         )

@@ -7,6 +7,7 @@ pub use crate::csaf::enums::product_status::ProductStatus;
 pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
 pub use crate::csaf::traits::csaf_trait::CsafTrait;
 pub use crate::csaf::traits::document::aggregate_severity_trait::AggregateSeverityTrait;
+pub use crate::csaf::traits::document::contact_trait::ContactTrait;
 pub use crate::csaf::traits::document::distribution_trait::DistributionTrait;
 pub use crate::csaf::traits::document::engine_trait::EngineTrait;
 pub use crate::csaf::traits::document::generator_trait::GeneratorTrait;
@@ -23,6 +24,7 @@ pub use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 pub use crate::csaf::traits::product_tree::product_trait::ProductTrait;
 pub use crate::csaf::traits::product_tree_trait::{BranchTrait, ProductTreeTrait, build_leaf_instance_path};
 pub use crate::csaf::traits::shared::acknowledgment_trait::AcknowledgmentTrait;
+pub use crate::csaf::traits::shared::extension_trait::ExtensionsTrait;
 pub use crate::csaf::traits::shared::note_trait::NoteTrait;
 pub use crate::csaf::traits::shared::references_trait::ReferenceTrait;
 pub use crate::csaf::traits::util::generic_with::{

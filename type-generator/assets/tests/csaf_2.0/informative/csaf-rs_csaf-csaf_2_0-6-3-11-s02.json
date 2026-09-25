@@ -7,7 +7,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Supplementary test: Usage of V as Version Indicator (failing example - parallel, alternating branches)",
+    "title": "Supplementary test: Usage of V as Version Indicator (failing supplementary example 2 - stacked categories)",
     "tracking": {
       "current_release_date": "2021-07-21T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_0-6-3-11-S02",
@@ -30,28 +30,24 @@
           {
             "branches": [
               {
+                "branches": [
+                  {
+                    "branches": [
+                      {
+                        "category": "product_version",
+                        "name": "v4.2.2-alpha",
+                        "product": {
+                          "name": "Example Company Product A 4.2.2-alpha",
+                          "product_id": "CSAFPID-9080705"
+                        }
+                      }
+                    ],
+                    "category": "product_version",
+                    "name": "4.2.2"
+                  }
+                ],
                 "category": "product_version",
-                "name": "v4.2",
-                "product": {
-                  "name": "Example Company Product A 4.2",
-                  "product_id": "CSAFPID-9080701"
-                }
-              },
-              {
-                "category": "product_version",
-                "name": "5.2",
-                "product": {
-                  "name": "Example Company Product A 5.2",
-                  "product_id": "CSAFPID-9080702"
-                }
-              },
-              {
-                "category": "product_version",
-                "name": "v6.2",
-                "product": {
-                  "name": "Example Company Product A 6.2",
-                  "product_id": "CSAFPID-9080703"
-                }
+                "name": "v4.2"
               }
             ],
             "category": "product_name",

@@ -1,77 +1,36 @@
-use std::sync::LazyLock;
-
-use jsonschema::{Registry, Resource};
 use serde_json::Value;
 
 use crate::{
     csaf::raw::RawDocument,
     validation::{TestFinding, TestFindingData},
-    validations::utils::{
-        validation_schema_urls::{
-            CVSS_V2_SCHEMA_URL, CVSS_V3_0_SCHEMA_URL, CVSS_V3_1_SCHEMA_URL, CVSS_V4_0_SCHEMA_URL,
-            EXTENSION_METASCHEMA_URL, EXTENSION_SCHEMA_URL, SSVC_2_SCHEMA_URL,
-        },
-        validation_schemas::{
-            CSAF_2_0_SCHEMA, CSAF_2_1_SCHEMA, CVSS_V2_SCHEMA, CVSS_V3_0_SCHEMA, CVSS_V3_1_SCHEMA, CVSS_V4_0_SCHEMA,
-            EXTENSION_METASCHEMA, EXTENSION_SCHEMA, SSVC_2_SCHEMA,
-        },
-    },
 };
 
-fn use_draft_schema(mut schema_value: Value) -> Value {
-    schema_value.as_object_mut().unwrap().insert(
-        "$schema".to_string(),
-        Value::String("https://json-schema.org/draft/2020-12/schema".to_string()),
-    );
-    schema_value
-}
+#[jsonschema::validator(
+    path = "assets/csaf_2.0_json_schema.json",
+    validate_formats = true,
+    resources = {
+        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.json" },
+        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"},
+        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"}
+    }
+)]
+struct Validator2_0;
 
-static VALIDATOR_2_0: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
-    let registry = Registry::new()
-        .extend([
-            (CVSS_V2_SCHEMA_URL, Resource::from_contents(CVSS_V2_SCHEMA.clone())),
-            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())),
-            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())),
-        ])
-        .unwrap()
-        .prepare()
-        .unwrap();
-    jsonschema::options()
-        .should_validate_formats(true)
-        .with_registry(&registry)
-        .build(&CSAF_2_0_SCHEMA.clone())
-        .unwrap()
-});
-
-static VALIDATOR_2_1: LazyLock<jsonschema::Validator> = LazyLock::new(|| {
-    let registry = Registry::new()
-        .extend([
-            (
-                EXTENSION_METASCHEMA_URL,
-                Resource::from_contents(use_draft_schema(EXTENSION_METASCHEMA.clone())),
-            ),
-            (
-                EXTENSION_SCHEMA_URL,
-                Resource::from_contents(use_draft_schema(EXTENSION_SCHEMA.clone())),
-            ),
-            (CVSS_V2_SCHEMA_URL, Resource::from_contents(CVSS_V2_SCHEMA.clone())),
-            (CVSS_V3_0_SCHEMA_URL, Resource::from_contents(CVSS_V3_0_SCHEMA.clone())),
-            (CVSS_V3_1_SCHEMA_URL, Resource::from_contents(CVSS_V3_1_SCHEMA.clone())),
-            (
-                CVSS_V4_0_SCHEMA_URL,
-                Resource::from_contents(use_draft_schema(CVSS_V4_0_SCHEMA.clone())),
-            ),
-            (SSVC_2_SCHEMA_URL, Resource::from_contents(SSVC_2_SCHEMA.clone())),
-        ])
-        .unwrap()
-        .prepare()
-        .unwrap();
-    jsonschema::options()
-        .should_validate_formats(true)
-        .with_registry(&registry)
-        .build(&use_draft_schema(CSAF_2_1_SCHEMA.clone()))
-        .unwrap()
-});
+#[jsonschema::validator(
+    path = "assets/csaf_2.1_json_schema.json",
+    validate_formats = true,
+    draft = Draft202012,
+    resources = {
+        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json" => { path = "assets/extension-metaschema.json" },
+        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json" => { path = "assets/extension-content.json" },
+        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.json" },
+        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"},
+        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"},
+        "https://www.first.org/cvss/cvss-v4.0.json" => { path = "assets/cvss-v4.0.json" },
+        "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json" => { path = "assets/SelectionList_2_0_0.schema.json" }
+    }
+)]
+struct Validator2_1;
 
 fn create_schema_error(err: String, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -83,9 +42,11 @@ fn create_schema_error(err: String, path: &str) -> TestFinding {
     })
 }
 
-fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Result<(), Vec<TestFinding>> {
-    let errors: Vec<_> = validator
-        .iter_errors(document)
+fn validate_schema(
+    document: &Value,
+    iter_errors: impl Fn(&serde_json::Value) -> jsonschema::ErrorIterator,
+) -> Result<(), Vec<TestFinding>> {
+    let errors: Vec<_> = iter_errors(document)
         .map(|error| create_schema_error(format!("{error}"), error.instance_path().as_str()))
         .collect();
     match errors.len() {
@@ -97,13 +58,13 @@ fn validate_schema(document: &Value, validator: &jsonschema::Validator) -> Resul
 pub fn validate_schema_csaf_2_0(
     document: &RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
 ) -> Result<(), Vec<TestFinding>> {
-    validate_schema(document.get_json(), &VALIDATOR_2_0)
+    validate_schema(document.get_json(), Validator2_0::iter_errors)
 }
 
 pub fn validate_schema_csaf_2_1(
     document: &RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
 ) -> Result<(), Vec<TestFinding>> {
-    validate_schema(document.get_json(), &VALIDATOR_2_1)
+    validate_schema(document.get_json(), Validator2_1::iter_errors)
     // TODO: validate extensions
 }
 
@@ -161,18 +122,18 @@ mod tests {
         )]);
 
         // checks for CSAF 2.0
-        check_file!(2, 0, "s01", &VALIDATOR_2_0, min_properties);
-        check_file!(2, 0, "s02", &VALIDATOR_2_0, pattern);
-        check_file!(2, 0, "s03", &VALIDATOR_2_0, min_items);
-        check_file!(2, 0, "s04", &VALIDATOR_2_0, min_length);
-        check_file!(2, 0, "s05", &VALIDATOR_2_0, non_unique);
+        check_file!(2, 0, "s01", &Validator2_0::iter_errors, min_properties);
+        check_file!(2, 0, "s02", &Validator2_0::iter_errors, pattern);
+        check_file!(2, 0, "s03", &Validator2_0::iter_errors, min_items);
+        check_file!(2, 0, "s04", &Validator2_0::iter_errors, min_length);
+        check_file!(2, 0, "s05", &Validator2_0::iter_errors, non_unique);
 
         // checks for CSAF 2.1
-        check_file!(2, 1, "s01", &VALIDATOR_2_1, min_properties);
-        check_file!(2, 1, "s02", &VALIDATOR_2_1, pattern);
-        check_file!(2, 1, "s03", &VALIDATOR_2_1, min_items);
-        check_file!(2, 1, "s04", &VALIDATOR_2_1, min_length);
-        check_file!(2, 1, "s05", &VALIDATOR_2_1, non_unique);
-        check_file!(2, 1, "s06", &VALIDATOR_2_1, format);
+        check_file!(2, 1, "s01", &Validator2_1::iter_errors, min_properties);
+        check_file!(2, 1, "s02", &Validator2_1::iter_errors, pattern);
+        check_file!(2, 1, "s03", &Validator2_1::iter_errors, min_items);
+        check_file!(2, 1, "s04", &Validator2_1::iter_errors, min_length);
+        check_file!(2, 1, "s05", &Validator2_1::iter_errors, non_unique);
+        check_file!(2, 1, "s06", &Validator2_1::iter_errors, format);
     }
 }

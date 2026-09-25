@@ -3,7 +3,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn create_vulnerability_extension_info(vulnerability_index: usize) -> TestFinding {
     TestFinding::Information(TestFindingData {
-        message: "The vulnerability contains a CSAF Extension.".to_string(),
+        message: "The vulnerability uses a CSAF Extension.".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/x_extensions"),
     })
 }

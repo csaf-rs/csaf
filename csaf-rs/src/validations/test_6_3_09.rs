@@ -24,7 +24,7 @@ fn create_branch_categories_info(
 ) -> TestFinding {
     let full_display = format_category_path(full_path);
     let prefix = "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories.";
-    let mut message;
+    let message;
     // none of the categories were used
     if relevant_categories.is_empty() {
         message = format!("{prefix} None of these categories were used. Full path: {full_display}",)

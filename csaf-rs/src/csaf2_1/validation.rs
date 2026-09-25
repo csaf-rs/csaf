@@ -1,13 +1,13 @@
-use std::collections::HashSet;
-use std::fmt::Display;
-use std::sync::OnceLock;
-
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
 use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Validatable, ValidationError};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
+use serde_json::Value;
+use std::collections::HashSet;
+use std::fmt::Display;
+use std::sync::OnceLock;
 
 fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation::TestFinding>>>) -> TestResult {
     TestResult {
@@ -391,13 +391,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.39.2" => Some(ValidatorForTest6_2_39_2.validate(self)),
                 "6.2.39.3" => Some(ValidatorForTest6_2_39_3.validate(self)),
                 "6.2.39.4" => Some(ValidatorForTest6_2_39_4.validate(self)),
-                "6.2.39.5" => {
-                    // see below in RawValidatable
-                    return TestResult {
-                        test_id: test_id.to_string(),
-                        status: TestResultStatus::Skipped,
-                    };
-                },
+                "6.2.39.5" => Some(ValidatorForTest6_2_39_5.validate(self)),
                 "6.2.39.7" => Some(ValidatorForTest6_2_39_7.validate(self)),
                 "6.2.39.8" => Some(ValidatorForTest6_2_39_8.validate(self)),
                 "6.2.39.9" => Some(ValidatorForTest6_2_39_9.validate(self)),
@@ -469,7 +463,6 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
                 "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
-                "6.2.39.5" => Some(ValidatorForTest6_2_39_5.validate(self)),
                 "6.2.43" => Some(ValidatorForTest6_2_43.validate(self)),
                 _ => None,
             },

@@ -1,3 +1,5 @@
+use crate::csaf::traits::shared::extension_trait::ExtensionTrait;
+use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities_trait::collect_references;
 use crate::csaf_traits::{DocumentTrait, ProductTreeTrait, VulnerabilityTrait};
 use crate::schema::csaf2_0::schema::{
@@ -6,7 +8,8 @@ use crate::schema::csaf2_0::schema::{
 };
 use crate::schema::csaf2_1::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework21,
-    DocumentLevelMetaData as DocumentLevelMetaData21, ProductTree as ProductTree21, Vulnerability as Vulnerability21,
+    DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extension21, ProductTree as ProductTree21,
+    Vulnerability as Vulnerability21,
 };
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
@@ -23,6 +26,8 @@ pub trait CsafTrait {
 
     /// The associated type representing the type of document meta in this CSAF structure.
     type DocumentType: DocumentTrait;
+
+    type ExtensionType: ExtensionTrait;
 
     /// Returns the product tree of the CSAF document, if available.
     fn get_product_tree(&self) -> Option<&Self::ProductTreeType>;
@@ -61,12 +66,15 @@ pub trait CsafTrait {
             .map(|(id, _)| id.to_owned())
             .collect()
     }
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionType>;
 }
 
 impl CsafTrait for CommonSecurityAdvisoryFramework20 {
     type VulnerabilityType = Vulnerability20;
     type ProductTreeType = ProductTree20;
     type DocumentType = DocumentLevelMetaData20;
+    type ExtensionType = NotPresentInCsaf20;
 
     fn get_product_tree(&self) -> Option<&Self::ProductTreeType> {
         self.product_tree.as_ref()
@@ -78,6 +86,10 @@ impl CsafTrait for CommonSecurityAdvisoryFramework20 {
 
     fn get_document(&self) -> &Self::DocumentType {
         &self.document
+    }
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionType> {
+        None
     }
 }
 
@@ -85,6 +97,7 @@ impl CsafTrait for CommonSecurityAdvisoryFramework21 {
     type VulnerabilityType = Vulnerability21;
     type ProductTreeType = ProductTree21;
     type DocumentType = DocumentLevelMetaData21;
+    type ExtensionType = Extension21;
 
     fn get_product_tree(&self) -> Option<&Self::ProductTreeType> {
         self.product_tree.as_ref()
@@ -96,5 +109,9 @@ impl CsafTrait for CommonSecurityAdvisoryFramework21 {
 
     fn get_document(&self) -> &Self::DocumentType {
         &self.document
+    }
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionType> {
+        self.x_extensions.as_ref()
     }
 }

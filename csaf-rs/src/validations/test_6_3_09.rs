@@ -293,7 +293,7 @@ mod tests {
     }
 
     #[test]
-    fn test_create_branch_categories_error_with_empty_relevant_categories() {
+    fn test_create_branch_categories_info_with_empty_relevant_categories() {
         let full_path = &[CategoryOfTheBranch::HostName, CategoryOfTheBranch::Architecture];
 
         assert_eq!(
@@ -305,7 +305,7 @@ mod tests {
     }
 
     #[test]
-    fn test_create_branch_categories_error_with_incomplete_categories() {
+    fn test_create_branch_categories_info_with_incomplete_categories() {
         let full_path = &[
             CategoryOfTheBranch::Vendor,
             CategoryOfTheBranch::ProductFamily,
@@ -322,7 +322,7 @@ mod tests {
     }
 
     #[test]
-    fn test_create_branch_categories_error_with_wrong_order() {
+    fn test_create_branch_categories_info_with_wrong_order() {
         let full_path = &[
             CategoryOfTheBranch::Vendor,
             CategoryOfTheBranch::ProductVersion,

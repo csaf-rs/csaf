@@ -19,25 +19,21 @@ pub fn test_6_1_62_inconsistent_discovery_date(doc: &impl CsafTrait) -> Result<(
     let status = tracking.get_status();
 
     // Get the revision history only if the document status is "final" or "interim"
-    let mut revision_history = match status {
+    let revision_history = match status {
         DocumentStatus::Final | DocumentStatus::Interim => Some(tracking.aggregate_revision_history()),
         _ => None,
     };
 
     // Calculate the newest revision date if the revision history is present
     // For document statuses other than "final" or "interim", the newest revision date is not relevant and will be None
-    let newest_revision_date = revision_history.as_mut().and_then(|revision_history| {
-        // Get sorted revision history and find the newest entry (panic if two entries are compared and either date is invalid)
-        revision_history.inplace_sort_by_date_then_number();
-
-        // Check if the revision history isn't empty
-        match revision_history.last() {
-            Some(revision) => match &revision.date {
+    let newest_revision_date = revision_history.as_ref().and_then(|revision_history| {
+        revision_history
+            .iter()
+            .filter_map(|revision| match &revision.date {
                 CsafDateTime::Valid(date) => Some(date),
-                CsafDateTime::Invalid(_) => None, // TODO: This will be a Precondition failed #409
-            },
-            None => None, // TODO: This will be a Precondition failed #409
-        }
+                CsafDateTime::Invalid(_) => None, // TODO: This should result in a precondition finding (#409)
+            })
+            .max()
     });
 
     let mut errors = Vec::new();
@@ -90,7 +86,8 @@ fn create_discovery_date_too_late_for_revision_error(
 ) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
-            "Discovery date ({discovery_date}) for vulnerability at index {vulnerability_index} is newer than the newest revision date ({newest_revision_date}) on a document with status {doc_status}"
+            "Discovery date `{discovery_date}` is newer than the newest revision date \
+             `{newest_revision_date}` on a document with status `{doc_status}`"
         ),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/discovery_date"),
     })
@@ -102,9 +99,7 @@ fn create_discovery_date_too_late_for_disclosure_error(
     vulnerability_index: usize,
 ) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!(
-            "Discovery date ({discovery_date}) for vulnerability at index {vulnerability_index} is newer than its disclosure date ({disclosure_date})"
-        ),
+        message: format!("Discovery date `{discovery_date}` is newer than its disclosure date `{disclosure_date}`"),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/discovery_date"),
     })
 }

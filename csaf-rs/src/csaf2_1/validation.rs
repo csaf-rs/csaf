@@ -391,6 +391,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.39.2" => Some(ValidatorForTest6_2_39_2.validate(self)),
                 "6.2.39.3" => Some(ValidatorForTest6_2_39_3.validate(self)),
                 "6.2.39.4" => Some(ValidatorForTest6_2_39_4.validate(self)),
+                "6.2.39.5" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.2.39.7" => Some(ValidatorForTest6_2_39_7.validate(self)),
                 "6.2.39.8" => Some(ValidatorForTest6_2_39_8.validate(self)),
                 "6.2.39.9" => Some(ValidatorForTest6_2_39_9.validate(self)),
@@ -462,6 +469,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
                 "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
+                "6.2.39.5" => Some(ValidatorForTest6_2_39_5.validate(self)),
                 "6.2.43" => Some(ValidatorForTest6_2_43.validate(self)),
                 _ => None,
             },

@@ -29,6 +29,7 @@ pub use crate::csaf::traits::shared::references_trait::ReferenceTrait;
 pub use crate::csaf::traits::util::generic_with::{
     WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
+pub use crate::csaf::traits::shared::extension_trait::ExtensionsTrait;
 pub use crate::csaf::traits::util::resolve_product_groups::resolve_product_groups;
 pub use crate::csaf::traits::vulnerabilities::content_trait::ContentTrait;
 pub use crate::csaf::traits::vulnerabilities::epss_trait::EpssTrait;

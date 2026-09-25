@@ -1,5 +1,4 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
-use crate::csaf::traits::shared::extension_trait::ExtensionTrait;
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
@@ -9,7 +8,7 @@ use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{
     AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, NoteTrait, PublisherTrait, ReferenceTrait,
-    TrackingTrait,
+    TrackingTrait, ExtensionsTrait
 };
 use crate::schema::csaf2_0::schema::{
     Acknowledgment as Acknowledgment20, AggregateSeverity as AggregateSeverity20, CsafVersion as CsafVersion20,
@@ -59,7 +58,7 @@ pub trait DocumentTrait {
 
     type ReferenceType: ReferenceTrait;
 
-    type ExtensionType: ExtensionTrait;
+    type ExtensionsType: ExtensionsTrait;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
 
@@ -119,7 +118,7 @@ pub trait DocumentTrait {
     /// Returns the title of this document
     fn get_title(&self) -> &str;
 
-    fn get_extensions(&self) -> Option<&Self::ExtensionType>;
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType>;
 }
 
 impl DocumentTrait for DocumentLevelMetaData20 {
@@ -130,7 +129,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     type NoteType = Note20;
     type PublisherType = Publisher20;
     type ReferenceType = Reference20;
-    type ExtensionType = NotPresentInCsaf20;
+    type ExtensionsType = NotPresentInCsaf20;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
         self.acknowledgments.as_deref()
@@ -192,7 +191,7 @@ impl DocumentTrait for DocumentLevelMetaData20 {
 
     impl_str_field_getter!(get_title, title);
 
-    fn get_extensions(&self) -> Option<&Self::ExtensionType> {
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         None
     }
 }
@@ -205,7 +204,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     type NoteType = Note21;
     type PublisherType = Publisher21;
     type ReferenceType = Reference21;
-    type ExtensionType = Extensions21;
+    type ExtensionsType = Extensions21;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
         self.acknowledgments.as_deref()
@@ -261,7 +260,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
 
     impl_str_field_getter!(get_title, title);
 
-    fn get_extensions(&self) -> Option<&Self::ExtensionType> {
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         self.x_extensions.as_ref()
     }
 }

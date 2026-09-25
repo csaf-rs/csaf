@@ -27,12 +27,8 @@ pub fn test_6_2_37_usage_of_unknown_ssvc_decision_point_namespace_without_resour
 
     for (vuln_index, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         for (metric_index, metric) in vuln.get_metrics().into_iter().flatten().enumerate() {
-            if !metric.get_content().has_ssvc_v2() {
-                continue;
-            }
-
-            // Parse failures are reported by test 6.1.46
-            let Ok(selection_list) = metric.get_content().get_ssvc_v2() else {
+            // Skip absent SSVC metrics; parse failures are reported by test 6.1.46
+            let Some(Ok(selection_list)) = metric.get_content().get_ssvc_v2() else {
                 continue;
             };
 

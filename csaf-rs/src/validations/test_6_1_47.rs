@@ -49,9 +49,9 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
                 let content = m.get_content();
-                if content.has_ssvc_v2() {
-                    // try to parse ssvc_v2 content as SSVC
-                    match content.get_ssvc_v2() {
+                // if ssvc_v2 is present, try to parse its content as SSVC
+                if let Some(ssvc_result) = content.get_ssvc_v2() {
+                    match ssvc_result {
                         // parsing succeeded
                         Ok(ssvc) => {
                             // get the SSVC target_ids if they exist

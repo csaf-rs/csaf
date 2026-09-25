@@ -7,20 +7,13 @@ use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf_traits::{
-    AcknowledgmentTrait, Cwe, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait, MetricTrait, NoteTrait,
-    ReferenceTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
-};
+use crate::csaf_traits::{AcknowledgmentTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait, MetricTrait, NoteTrait, ReferenceTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait};
 use crate::schema::csaf2_0::schema::{
     Acknowledgment as Acknowledgment20, Flag as Flag20, Id as Id20, Involvement as Involvement20, Note as Note20,
     ProductStatus as ProductStatus20, Reference as Reference20, Remediation as Remediation20, Score as Score20,
     Threat as Threat20, Vulnerability as Vulnerability20,
 };
-use crate::schema::csaf2_1::schema::{
-    Acknowledgment as Acknowledgment21, FirstKnownExploitationDate as FirstKnownExploitationDate21, Flag as Flag21,
-    Id as Id21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21, Reference as Reference21,
-    Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21,
-};
+use crate::schema::csaf2_1::schema::{Acknowledgment as Acknowledgment21, ExtensionsT as Extensions21, FirstKnownExploitationDate as FirstKnownExploitationDate21, Flag as Flag21, Id as Id21, Metric as Metric21, Note as Note21, ProductStatus as ProductStatus21, Reference as Reference21, Remediation as Remediation21, Threat as Threat21, Vulnerability as Vulnerability21};
 
 /// Collects references from all vulnerabilities using the given extractor, prepending
 /// each path with `/vulnerabilities/{index}/`.
@@ -73,6 +66,8 @@ pub trait VulnerabilityTrait {
 
     /// The associated type representing vulnerability references.
     type ReferenceType: ReferenceTrait;
+
+    type ExtensionsType: ExtensionsTrait;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
 
@@ -166,6 +161,8 @@ pub trait VulnerabilityTrait {
     }
 
     fn get_title(&self) -> Option<&str>;
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType>;
 }
 
 impl VulnerabilityTrait for Vulnerability20 {
@@ -182,6 +179,7 @@ impl VulnerabilityTrait for Vulnerability20 {
     // First known exploitation dates are not implemented in CSAF 2.0
     type FirstKnownExploitationDatesType = NotPresentInCsaf20;
     type ReferenceType = Reference20;
+    type ExtensionsType = NotPresentInCsaf20;
 
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>> {
         self.acknowledgments.as_deref()
@@ -249,6 +247,10 @@ impl VulnerabilityTrait for Vulnerability20 {
 
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
+    }
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
+        None
     }
 }
 
@@ -332,5 +334,11 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
+    }
+
+    type ExtensionsType = Extensions21;
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
+        self.x_extensions.as_ref()
     }
 }

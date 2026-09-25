@@ -1,6 +1,6 @@
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities_trait::collect_references;
-use crate::csaf_traits::{DocumentTrait, ProductTreeTrait, VulnerabilityTrait, ExtensionsTrait};
+use crate::csaf_traits::{DocumentTrait, ExtensionsTrait, ProductTreeTrait, VulnerabilityTrait};
 use crate::schema::csaf2_0::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework20,
     DocumentLevelMetaData as DocumentLevelMetaData20, ProductTree as ProductTree20, Vulnerability as Vulnerability20,

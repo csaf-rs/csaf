@@ -7,8 +7,8 @@ use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, NoteTrait, PublisherTrait, ReferenceTrait,
-    TrackingTrait, ExtensionsTrait
+    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, ExtensionsTrait, NoteTrait, PublisherTrait,
+    ReferenceTrait, TrackingTrait,
 };
 use crate::schema::csaf2_0::schema::{
     Acknowledgment as Acknowledgment20, AggregateSeverity as AggregateSeverity20, CsafVersion as CsafVersion20,

@@ -5,7 +5,6 @@ use cvss_rs::v2_0::CvssV2;
 use cvss_rs::v3::CvssV3;
 use cvss_rs::v4_0::CvssV4;
 use serde::Deserialize;
-use serde::de::Error as SerdeError;
 use serde_json::{Map, Value};
 use ssvc::selection_list::SelectionList;
 
@@ -48,11 +47,15 @@ pub trait ContentTrait {
     }
 
     /// Returns whether this content contains a non-empty SSVC metric.
-    fn has_ssvc_v2(&self) -> bool;
+    fn has_ssvc_v2(&self) -> bool {
+        self.get_ssvc_v2_raw().is_some()
+    }
 
-    /// Returns a parsed instance of the contained SSVC metric, or a `serde_json::Error`,
-    /// encapsulated as a `Result`.
-    fn get_ssvc_v2(&self) -> Result<SelectionList, serde_json::Error>;
+    /// Returns the contained SSVC v2 metric parsed into its typed representation, if any.
+    ///
+    /// Returns `None` if no SSVC metric is present, `Some(Err(_))` if it is present but
+    /// cannot be deserialized.
+    fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>>;
 
     /// Returns a JSON representation of the contained SSVC v2 metric, if any.
     fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>>;
@@ -144,12 +147,9 @@ pub trait ContentTrait {
 }
 
 impl ContentTrait for Score {
-    fn has_ssvc_v2(&self) -> bool {
-        false
-    }
-
-    fn get_ssvc_v2(&self) -> Result<SelectionList, serde_json::Error> {
-        Err(SerdeError::custom("SSVC metrics are not implemented in CSAF 2.0"))
+    fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>> {
+        // SSVC metrics do not exist in CSAF 2.0
+        None
     }
 
     fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>> {
@@ -190,12 +190,12 @@ impl ContentTrait for Score {
 }
 
 impl ContentTrait for Content {
-    fn has_ssvc_v2(&self) -> bool {
-        !self.ssvc_v2.is_empty()
-    }
-
-    fn get_ssvc_v2(&self) -> Result<SelectionList, serde_json::Error> {
-        SelectionList::deserialize(&self.ssvc_v2)
+    fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>> {
+        if self.ssvc_v2.is_empty() {
+            None
+        } else {
+            Some(SelectionList::deserialize(&self.ssvc_v2))
+        }
     }
 
     fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>> {
@@ -350,5 +350,49 @@ mod tests {
         if key != "cvss_v4" {
             assert_typed_err(&score_with(key, &metric), key);
         }
+    }
+
+    #[test]
+    fn ssvc_accessor_parses_a_present_metric() {
+        let metric = json!({
+            "schemaVersion": "2.0.0",
+            "selections": [{
+                "key": "E",
+                "name": "Exploitation",
+                "namespace": "ssvc",
+                "values": [{ "key": "A", "name": "Active" }],
+                "version": "1.1.0"
+            }],
+            "timestamp": "2024-01-24T10:00:00.000Z"
+        });
+        let content = content_with("ssvc_v2", &metric);
+        assert!(content.has_ssvc_v2());
+        let selection_list = content.get_ssvc_v2().expect("present").expect("parses");
+        assert_eq!(selection_list.selections.len(), 1);
+    }
+
+    #[test]
+    fn ssvc_accessor_reports_a_nonconforming_map() {
+        let content = content_with("ssvc_v2", &json!({ "schemaVersion": "2.0.0" }));
+        assert!(content.has_ssvc_v2());
+        assert!(content.get_ssvc_v2().expect("present").is_err());
+    }
+
+    #[test]
+    fn ssvc_accessor_returns_none_when_absent() {
+        let cvss_v3 = json!({
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "baseScore": 9.8,
+            "baseSeverity": "CRITICAL"
+        });
+        // CSAF 2.1 content without an SSVC metric
+        let content = content_with("cvss_v3", &cvss_v3);
+        assert!(!content.has_ssvc_v2());
+        assert!(content.get_ssvc_v2().is_none());
+        // CSAF 2.0 has no SSVC metric at all
+        let score = score_with("cvss_v3", &cvss_v3);
+        assert!(!score.has_ssvc_v2());
+        assert!(score.get_ssvc_v2().is_none());
     }
 }

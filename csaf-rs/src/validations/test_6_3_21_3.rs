@@ -4,7 +4,7 @@ use std::sync::LazyLock;
 
 static DOCUMENT_EXTENSION_INFO: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Information(TestFindingData {
-        message: "The document contains a CSAF Extension.".to_string(),
+        message: "The document uses a CSAF Extension.".to_string(),
         instance_path: "/document/x_extensions".to_string(),
     })
 });

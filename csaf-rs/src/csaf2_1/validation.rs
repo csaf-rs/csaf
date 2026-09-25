@@ -4,7 +4,6 @@ use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
 use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Validatable, ValidationError};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
-use serde_json::Value;
 use std::collections::HashSet;
 use std::fmt::Display;
 use std::sync::OnceLock;

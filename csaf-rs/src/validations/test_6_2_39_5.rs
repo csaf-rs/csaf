@@ -30,12 +30,16 @@ pub fn test_6_2_39_5_extension_in_superseded_or_withdrawn_document(
         return Ok(());
     }
 
-    let mut warnings: Option<Vec<TestFinding>>  = None;
+    let mut warnings: Option<Vec<TestFinding>> = None;
     if document.get_extensions().is_some() {
-        warnings.get_or_insert_default().push(create_extension_warning(&doc_category, "/document/x_extensions"));
+        warnings
+            .get_or_insert_default()
+            .push(create_extension_warning(&doc_category, "/document/x_extensions"));
     }
     if doc.get_extensions().is_some() {
-        warnings.get_or_insert_default().push(create_extension_warning(&doc_category, "/x_extensions"));
+        warnings
+            .get_or_insert_default()
+            .push(create_extension_warning(&doc_category, "/x_extensions"));
     }
 
     warnings.map_or(Ok(()), Err)

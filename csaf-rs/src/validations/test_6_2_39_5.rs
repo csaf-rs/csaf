@@ -1,10 +1,7 @@
-use serde_json::Value;
-
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf_traits::CsafVersion;
+use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
-use crate::validations::utils::raw_json::property_exists;
 
 fn create_extension_warning(doc_category: &CsafDocumentCategory, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
@@ -23,36 +20,28 @@ fn create_extension_warning(doc_category: &CsafDocumentCategory, instance_path: 
 /// The relevant paths for this test are:
 /// - `/document/x_extensions`
 /// - `/x_extensions`
-pub fn test_6_2_39_5_extension_in_superseded_or_withdrawn_document(json: &Value) -> Result<(), Vec<TestFinding>> {
-    // read category
-    let doc_category = match json.pointer("/document/category") {
-        Some(Value::String(cat)) => CsafDocumentCategory::from(cat.as_str()),
-        _ => return Ok(()),
-    };
+pub fn test_6_2_39_5_extension_in_superseded_or_withdrawn_document(
+    doc: &impl CsafTrait,
+) -> Result<(), Vec<TestFinding>> {
+    let document = doc.get_document();
+    let doc_category = document.get_category();
 
-    // CSAF 2.1 is hard-coded here, as this test did not exist in CSAF 2.0, and extensions are a CSAF 2.1 feature.
-    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X21, &doc_category) {
+    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(document.get_csaf_version(), &doc_category) {
         return Ok(());
     }
 
-    let mut errors: Option<Vec<TestFinding>> = None;
+    let mut warnings: Option<Vec<TestFinding>>  = None;
+    if document.get_extensions().is_some() {
+        warnings.get_or_insert_default().push(create_extension_warning(&doc_category, "/document/x_extensions"));
+    }
+    if doc.get_extensions().is_some() {
+        warnings.get_or_insert_default().push(create_extension_warning(&doc_category, "/x_extensions"));
+    }
 
-    // check if the extension path exists
-    let mut check_document_extension = |instance_path: &str| {
-        if property_exists(instance_path, json) {
-            errors
-                .get_or_insert_default()
-                .push(create_extension_warning(&doc_category, instance_path));
-        }
-    };
-
-    check_document_extension("/document/x_extensions");
-    check_document_extension("/x_extensions");
-
-    errors.map_or(Ok(()), Err)
+    warnings.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_raw_json_validator!(
+crate::test_validation::impl_validator!(
     csaf2_1,
     ValidatorForTest6_2_39_5,
     test_6_2_39_5_extension_in_superseded_or_withdrawn_document

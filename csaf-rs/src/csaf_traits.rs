@@ -24,6 +24,7 @@ pub use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 pub use crate::csaf::traits::product_tree::product_trait::ProductTrait;
 pub use crate::csaf::traits::product_tree_trait::{BranchTrait, ProductTreeTrait, build_leaf_instance_path};
 pub use crate::csaf::traits::shared::acknowledgment_trait::AcknowledgmentTrait;
+pub use crate::csaf::traits::shared::extension_trait::ExtensionsTrait;
 pub use crate::csaf::traits::shared::note_trait::NoteTrait;
 pub use crate::csaf::traits::shared::references_trait::ReferenceTrait;
 pub use crate::csaf::traits::util::generic_with::{

@@ -158,7 +158,7 @@ jobs:
           if-no-files-found: ignore
       - name: Generate CycloneDX and SPDX SBOMs
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@a026baa029a5f7d7b1dfca973cdcd0c940e545dc #v1.11.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
         with:
           file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           artifact-name-prefix: csaf-validator_${{ matrix.target.arch }}
@@ -327,7 +327,7 @@ jobs:
       - name: Install devguard-scanner
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
-          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
+          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@89b48259fa89ad5fdeb723dc312f20a3b453e24f # v1.14.2
 
       - name: Download all CDX artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1

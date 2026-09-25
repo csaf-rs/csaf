@@ -124,6 +124,7 @@ pub mod test_6_2_39_2;
 pub mod test_6_2_39_3;
 pub mod test_6_2_39_4;
 pub mod test_6_2_39_5;
+pub mod test_6_2_39_6;
 pub mod test_6_2_39_7;
 pub mod test_6_2_39_8;
 pub mod test_6_2_39_9;

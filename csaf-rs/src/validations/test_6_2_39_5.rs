@@ -6,7 +6,7 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 fn create_extension_warning(doc_category: &CsafDocumentCategory, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
-            "The document contains a CSAF Extension, which is not recommended for category `{doc_category}`."
+            "The document uses a CSAF Extension, which is not recommended for category `{doc_category}`."
         ),
         instance_path: instance_path.to_string(),
     })

@@ -24,14 +24,13 @@ fn create_branch_categories_info(
 ) -> TestFinding {
     let full_display = format_category_path(full_path);
     let prefix = "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories.";
-    let message;
-    // none of the categories were used
-    if relevant_categories.is_empty() {
-        message = format!("{prefix} None of these categories were used. Full path: {full_display}",)
+    let message = if relevant_categories.is_empty() {
+        // none of the categories were used
+        format!("{prefix} None of these categories were used. Full path: {full_display}",)
     }
     // all categories were used, but in the wrong order
     else if relevant_categories.len() == REQUIRED_CATEGORIES_ORDER.len() {
-        message = format!(
+        format!(
             "{prefix} The categories are in wrong order: {}. Full path: {full_display}",
             format_category_path(relevant_categories)
         )
@@ -41,11 +40,11 @@ fn create_branch_categories_info(
             .iter()
             .filter(|c| !relevant_categories.contains(c))
             .collect();
-        message = format!(
+        format!(
             "{prefix} Some of the categories are missing: {}. Full path: {full_display}",
             format_category_list(&missing_categories)
-        );
-    }
+        )
+    };
 
     TestFinding::Information(TestFindingData { message, instance_path })
 }

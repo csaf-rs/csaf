@@ -23,6 +23,7 @@ pub fn test_6_1_54_invalid_license_expression(
     document
         .license_expression
         .as_ref()
+        // Unknown SPDX identifiers should not fail test 6.1.54
         .map(|license| match parse_csaf_license_expression(license) {
             Ok(_) => Ok(()),
             Err(error) => Err(vec![create_invalid_license_expression_error(

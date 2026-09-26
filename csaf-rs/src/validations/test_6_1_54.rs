@@ -1,8 +1,6 @@
-use spdx::Expression;
-
 use crate::csaf_traits::CsafTrait;
-use crate::schema::csaf2_1::schema::LicenseExpression;
 use crate::validation::{TestFinding, TestFindingData};
+use crate::validations::utils::license_expressions::parse_csaf_license_expression;
 
 fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -11,53 +9,12 @@ fn create_invalid_license_expression_error(license_expression: &str, error: &str
     })
 }
 
-/// Parses the given license expression using the SPDX parser with specific options that align with the requirements of CSAF.
-/// For example, unknown SPDX identifiers should not fail test 6.1.54, whereas expressions with DocumentRef are not allowed.
-fn parse_license_as_allowed_in_csaf(license: &LicenseExpression) -> Result<Expression, spdx::ParseError> {
-    let expression = Expression::parse_mode(
-        license.as_str(),
-        spdx::ParseMode {
-            allow_slash_as_or_operator: false,
-            allow_imprecise_license_names: false,
-            allow_postfix_plus_on_gpl: true,
-            allow_deprecated: true,
-            allow_unknown: true,
-        },
-    )?;
-    expression
-        .requirements()
-        .filter_map(|requirement| {
-            if let spdx::LicenseItem::Other(license_ref) = &requirement.req.license
-                && license_ref.doc_ref.is_some()
-            {
-                Some(spdx::ParseError {
-                    original: license.to_string(),
-                    span: requirement.span.start as usize..requirement.span.end as usize,
-                    reason: spdx::error::Reason::Unexpected(&["LicenseRef"]),
-                })
-            } else if let Some(spdx::AdditionItem::Other(addition)) = &requirement.req.addition
-                && addition.doc_ref.is_some()
-            {
-                Some(spdx::ParseError {
-                    original: license.to_string(),
-                    span: requirement.span.start as usize..requirement.span.end as usize,
-                    reason: spdx::error::Reason::Unexpected(&["AdditionRef"]),
-                })
-            } else {
-                None
-            }
-        })
-        .next()
-        .map_or(Ok(()), Err)?;
-    Ok(expression)
-}
-
 /// 6.1.54 License Expression
 ///
 /// It MUST be tested that the license expression is valid.
 /// To implement this test, it is deemed sufficient to check for the ABNF defined
 /// in annex B of [SPDX](https://spdx.github.io/spdx-spec/) and the restriction
-/// on the DocumentRef part given in 3.2.2.7.
+/// on the DocumentRef part given in 3.2.2.8.
 pub fn test_6_1_54_invalid_license_expression(
     doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
 ) -> Result<(), Vec<TestFinding>> {
@@ -66,7 +23,8 @@ pub fn test_6_1_54_invalid_license_expression(
     document
         .license_expression
         .as_ref()
-        .map(|license| match parse_license_as_allowed_in_csaf(license) {
+        // Unknown SPDX identifiers should not fail test 6.1.54
+        .map(|license| match parse_csaf_license_expression(license) {
             Ok(_) => Ok(()),
             Err(error) => Err(vec![create_invalid_license_expression_error(
                 license.as_str(),

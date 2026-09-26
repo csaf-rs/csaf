@@ -7,7 +7,8 @@ use std::sync::LazyLock;
 /// `/document/references` must contain at least one item with:
 /// - category = "self"
 /// - url starts with "https://"
-/// - url ends with the valid filename according to section 5.1
+/// - url ends with the valid filename according to section 5.1, preceded by "/"
+/// - url has a non-empty hostname
 pub fn test_6_2_11_missing_canonical_url(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     if !doc.get_document().has_canonical_url() {
         return Err(vec![MISSING_CANONICAL_URL.clone()]);
@@ -45,6 +46,8 @@ mod tests {
         // 01  - URL does not end with the canonical filename
         // 02  - invalid character in filename is not replaced
         // 03  - filename is not converted to lowercase
+        // 04  - URL has no path separator before the canonical filename
+        // 05  - URL has an empty hostname
         // s01 - no references
         // s02 - external reference category instead of self
         // s03 - HTTP URL instead of HTTPS
@@ -63,10 +66,8 @@ mod tests {
             case_01: err.clone(),
             case_02: err.clone(),
             case_03: err.clone(),
-            // TODO #297: Update when new requirements are added
-            case_04: Ok(()),
-            // TODO #297: Update when new requirements are added
-            case_05: Ok(()),
+            case_04: err.clone(),
+            case_05: err.clone(),
             case_s01: err.clone(),
             case_s02: err.clone(),
             case_s03: err.clone(),

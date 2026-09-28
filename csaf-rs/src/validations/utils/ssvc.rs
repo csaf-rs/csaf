@@ -38,11 +38,11 @@ pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
                 .enumerate()
                 .map(move |(metric_index, metric)| (vuln_index, metric_index, metric))
         })
-        .filter(|(_, _, metric)| metric.get_content().has_ssvc_v2())
         .flat_map(move |(vuln_index, metric_index, metric)| {
             metric
                 .get_content()
                 .get_ssvc_v2()
+                .and_then(Result::ok)
                 .into_iter()
                 .flat_map(|selection_list| selection_list.selections.into_iter().enumerate())
                 .map(move |(sl_item_index, sl_item)| SsvcNamespaceResultAndPath {

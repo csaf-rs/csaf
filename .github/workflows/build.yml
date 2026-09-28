@@ -135,12 +135,12 @@ jobs:
           run-doc: "false"
           clippy-extra-args: "--target=${{ matrix.target.arch }} ${{ env.exclude-ffi-args }}"
       - name: Build
-        run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose ${{ env.exclude-ffi-args }}
+        run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose --workspace ${{ env.exclude-ffi-args }}
       - name: Run tests
         run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
       - name: Build with --no-default-features
-        run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose ${{ env.exclude-ffi-args }}
+        run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version

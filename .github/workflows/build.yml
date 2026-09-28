@@ -109,6 +109,9 @@ jobs:
           - ${{ needs.prepare.outputs.stable-version }}
         target: ${{ fromJson(needs.prepare.outputs.targets) }}
     runs-on: ${{ matrix.target.runs-on }}
+    env:
+      # csaf-ffi (uniffi) is only built/tested/linted on the stable toolchain row
+      exclude-ffi-args: ${{ matrix.version != needs.prepare.outputs.stable-version && '--workspace --exclude csaf-ffi' || '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -130,14 +133,14 @@ jobs:
         with:
           run-format: "false"
           run-doc: "false"
-          clippy-extra-args: "--target=${{ matrix.target.arch }}"
+          clippy-extra-args: "--target=${{ matrix.target.arch }} ${{ env.exclude-ffi-args }}"
       - name: Build
-        run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose
+        run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose ${{ env.exclude-ffi-args }}
       - name: Run tests
-        run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose
+        run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
       - name: Build with --no-default-features
-        run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose
+        run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version

@@ -2358,34 +2358,21 @@ impl<'de> ::serde::Deserialize<'de> for EntityIdT {
 ///Specifies a list of entity_ids or entity_group_ids to give context to the parent item.
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
-pub struct EntityRefsT(pub ::std::vec::Vec<EntityRefsTItem>);
+pub struct EntityRefsT(pub ::std::vec::Vec<::std::string::String>);
 impl ::std::ops::Deref for EntityRefsT {
-    type Target = ::std::vec::Vec<EntityRefsTItem>;
-    fn deref(&self) -> &::std::vec::Vec<EntityRefsTItem> {
+    type Target = ::std::vec::Vec<::std::string::String>;
+    fn deref(&self) -> &::std::vec::Vec<::std::string::String> {
         &self.0
     }
 }
-impl ::std::convert::From<EntityRefsT> for ::std::vec::Vec<EntityRefsTItem> {
+impl ::std::convert::From<EntityRefsT> for ::std::vec::Vec<::std::string::String> {
     fn from(value: EntityRefsT) -> Self {
         value.0
     }
 }
-impl ::std::convert::From<::std::vec::Vec<EntityRefsTItem>> for EntityRefsT {
-    fn from(value: ::std::vec::Vec<EntityRefsTItem>) -> Self {
+impl ::std::convert::From<::std::vec::Vec<::std::string::String>> for EntityRefsT {
+    fn from(value: ::std::vec::Vec<::std::string::String>) -> Self {
         Self(value)
-    }
-}
-///`EntityRefsTItem`
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, Eq, PartialEq)]
-pub struct EntityRefsTItem {
-    #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-    pub subtype_0: ::std::option::Option<EntityGroupIdT>,
-    #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-    pub subtype_1: ::std::option::Option<EntityIdT>,
-}
-impl EntityRefsTItem {
-    pub fn builder() -> builder::EntityRefsTItem {
-        Default::default()
     }
 }
 ///Contains the EPSS data.
@@ -7346,70 +7333,6 @@ pub mod builder {
                 entity_ids: Ok(value.entity_ids),
                 name: Ok(value.name),
                 summary: Ok(value.summary),
-            }
-        }
-    }
-    #[derive(Clone, Debug)]
-    pub struct EntityRefsTItem {
-        subtype_0: ::std::result::Result<
-            ::std::option::Option<super::EntityGroupIdT>,
-            ::std::string::String,
-        >,
-        subtype_1: ::std::result::Result<
-            ::std::option::Option<super::EntityIdT>,
-            ::std::string::String,
-        >,
-    }
-    impl ::std::default::Default for EntityRefsTItem {
-        fn default() -> Self {
-            Self {
-                subtype_0: Ok(Default::default()),
-                subtype_1: Ok(Default::default()),
-            }
-        }
-    }
-    impl EntityRefsTItem {
-        pub fn subtype_0<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::option::Option<super::EntityGroupIdT>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.subtype_0 = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for subtype_0: {e}")
-                });
-            self
-        }
-        pub fn subtype_1<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<::std::option::Option<super::EntityIdT>>,
-            T::Error: ::std::fmt::Display,
-        {
-            self.subtype_1 = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for subtype_1: {e}")
-                });
-            self
-        }
-    }
-    impl ::std::convert::TryFrom<EntityRefsTItem> for super::EntityRefsTItem {
-        type Error = super::error::ConversionError;
-        fn try_from(
-            value: EntityRefsTItem,
-        ) -> ::std::result::Result<Self, super::error::ConversionError> {
-            Ok(Self {
-                subtype_0: value.subtype_0?,
-                subtype_1: value.subtype_1?,
-            })
-        }
-    }
-    impl ::std::convert::From<super::EntityRefsTItem> for EntityRefsTItem {
-        fn from(value: super::EntityRefsTItem) -> Self {
-            Self {
-                subtype_0: Ok(value.subtype_0),
-                subtype_1: Ok(value.subtype_1),
             }
         }
     }

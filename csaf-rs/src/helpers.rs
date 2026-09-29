@@ -132,3 +132,92 @@ fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
         })
         .collect()
 }
+
+// TODO: Remove internal CPE implementation once #1158 is resolvable
+fn split_only_unescaped_separators(s: &str, separator: char, escape_char: char) -> Vec<&str> {
+    let mut splits = vec![];
+
+    let mut escap_char_count: usize = 0;
+    let mut last_pos = 0;
+    for (pos, c) in s.char_indices() {
+        match c {
+            c if c == escape_char => escap_char_count += 1,
+            c if c == separator && escap_char_count.is_multiple_of(2) => {
+                splits.push(&s[last_pos..pos]);
+                last_pos = pos + 1;
+                escap_char_count = 0;
+            },
+            _ => escap_char_count = 0,
+        }
+    }
+    splits.push(&s[last_pos..]);
+    splits
+}
+
+/// A simple CPE 2.3 formatted string binding implementation
+// TODO: Replace once https://github.com/KenDJohnson/cpe-rs/pull/16 is merged (see #1158)
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct Fsb<'a> {
+    pub(crate) part: &'a str,
+    pub(crate) vendor: &'a str,
+    pub(crate) product: &'a str,
+    pub(crate) version: &'a str,
+    pub(crate) update: &'a str,
+    pub(crate) edition: &'a str,
+    pub(crate) language: &'a str,
+    pub(crate) sw_edition: &'a str,
+    pub(crate) target_sw: &'a str,
+    pub(crate) target_hw: &'a str,
+    pub(crate) other: &'a str,
+}
+
+impl<'a> Fsb<'a> {
+    /// Parse a CPE formatted string. If the string is not parsable None is returned,
+    /// this is a simplification but sufficient for our purposes.
+    ///
+    /// This function will decode special characters to their semantic meaning.
+    pub(crate) fn parse(fsb: &'a str) -> Option<Self> {
+        let stripped_fsb = fsb.strip_prefix("cpe:2.3:")?;
+
+        // It is necessary to prevent splitting on escaped separators
+        let components = split_only_unescaped_separators(stripped_fsb, ':', '\\');
+        let mut components = components.iter();
+
+        macro_rules! parse_field {
+            ($attribute:ident) => {
+                let &$attribute = components.next()?;
+            };
+        }
+
+        parse_field!(part);
+        parse_field!(vendor);
+        parse_field!(product);
+        parse_field!(version);
+        parse_field!(update);
+        parse_field!(edition);
+        parse_field!(language);
+        parse_field!(sw_edition);
+        parse_field!(target_sw);
+        parse_field!(target_hw);
+        parse_field!(other);
+
+        // Fail on additional fiels
+        if components.next().is_some() {
+            return None;
+        }
+
+        Some(Self {
+            part,
+            vendor,
+            product,
+            version,
+            update,
+            edition,
+            language,
+            sw_edition,
+            target_sw,
+            target_hw,
+            other,
+        })
+    }
+}

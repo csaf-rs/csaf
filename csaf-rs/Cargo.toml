@@ -41,6 +41,7 @@ strum = { version = "0.28", features = ["derive"] }
 symspell = "0.5.2"
 thiserror = { version = "2" }
 utoipa = { version = "5", optional = true }
+cpe = { version = "0.1.5", features = ["permissive_encoding"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }

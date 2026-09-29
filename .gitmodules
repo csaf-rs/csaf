@@ -2,3 +2,6 @@
 	path = csaf
 	url = https://github.com/oasis-tcs/csaf
 	branch = master
+[submodule "csaf-2.0-to-csaf-2.1"]
+	path = csaf-2.0-to-csaf-2.1
+	url = https://github.com/csaf-testsuite/csaf-2.0-to-csaf-2.1

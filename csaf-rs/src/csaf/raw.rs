@@ -2,6 +2,7 @@ use std::cell::OnceCell;
 
 use serde::de::DeserializeOwned;
 
+use crate::schema::{csaf2_0, csaf2_1};
 use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Validatable};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -25,6 +26,37 @@ where
             raw,
             parsed: OnceCell::new(),
         }
+    }
+}
+
+impl RawDocument<csaf2_0::schema::CommonSecurityAdvisoryFramework> {
+    pub fn into_wip(self) -> Result<WipDocument, String> {
+        self.get_parsed();
+        let Self { raw, parsed } = self;
+        Ok(WipDocument {
+            raw,
+            parsed: parsed.into_inner().unwrap()?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WipDocument {
+    raw: serde_json::Value,
+    parsed: csaf2_0::schema::CommonSecurityAdvisoryFramework,
+}
+
+impl WipDocument {
+    pub fn raw(&mut self) -> &mut serde_json::Value {
+        &mut self.raw
+    }
+
+    pub fn parsed(&self) -> &csaf2_0::schema::CommonSecurityAdvisoryFramework {
+        &self.parsed
+    }
+
+    pub fn into_2_1(self) -> RawDocument<csaf2_1::schema::CommonSecurityAdvisoryFramework> {
+        RawDocument::new(self.raw)
     }
 }
 

@@ -32,17 +32,15 @@ static CONVERSIONS: &[&(dyn Convert + Sync)] = &[&gh1066::Conversion, &gh1067::C
 
 #[derive(Default)]
 pub struct ConversionOptions {
-    // TODO
+    // TODO add conversion options
 }
 
 trait Convert {
-    // TODO is the transforms are completely independent and can be executed in any order then
+    // TODO if the transforms are completely independent and can be executed in any order then
     // this can be removed
     fn priority(&self) -> u8 {
         100
     }
-    // TODO do we need "priority" metadata to ensure some conversions are performed in
-    // a certain order?
     fn convert(&self, wip: &mut WipDocument, opts: &ConversionOptions, diagnostics: &mut dyn Diagnostics);
 }
 

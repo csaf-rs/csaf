@@ -1,5 +1,26 @@
 # Architecture & test setup
 
+## TL;DR how do I try this out?
+
+Run unit tests with
+``` console
+$ cargo test -p csaf-converter --lib
+```
+
+Run conformance tests with
+``` console
+$ # everything is currently ignored;
+$ # add `-- --ignored` to run ignored tests which are expected to fail
+$ cargo test -p csaf-converter --test conformance 
+```
+
+Convert a 2.0 file
+
+``` console
+$ # output goes to stdout
+$ cargo run -p csaf-converter -- some-input.json
+```
+
 ## Design goal
 
 The main design goal is to ensure that the development of the converter can be performed by several people in parallel.

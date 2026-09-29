@@ -57,7 +57,7 @@ jobs:
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Run shared format and doc checks
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@a026baa029a5f7d7b1dfca973cdcd0c940e545dc # v1.11.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
         with:
           run-clippy: "false"
       - name: Run type-generator
@@ -76,7 +76,7 @@ jobs:
           fi
       - name: Compute Rust build context
         id: build-context
-        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@a026baa029a5f7d7b1dfca973cdcd0c940e545dc # v1.11.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-build-context@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
       - name: Compute Go build targets
         id: get-go-targets
         run: |
@@ -96,7 +96,7 @@ jobs:
           fi
       - name: Publish dry-run
         if: github.ref_type != 'tag'
-        uses: csaf-rs/shared-workflows/.github/actions/cargo-publish-dry-run@a026baa029a5f7d7b1dfca973cdcd0c940e545dc # v1.11.0
+        uses: csaf-rs/shared-workflows/.github/actions/cargo-publish-dry-run@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
 
   build-matrix:
     needs: prepare
@@ -129,7 +129,7 @@ jobs:
         shell: bash
         run: command -v cargo-auditable || cargo install cargo-auditable --locked
       - name: Run shared clippy check
-        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@a026baa029a5f7d7b1dfca973cdcd0c940e545dc # v1.11.0
+        uses: csaf-rs/shared-workflows/.github/actions/rust-checks@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
         with:
           run-format: "false"
           run-doc: "false"
@@ -161,7 +161,7 @@ jobs:
           if-no-files-found: ignore
       - name: Generate CycloneDX and SPDX SBOMs
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@a026baa029a5f7d7b1dfca973cdcd0c940e545dc #v1.11.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
         with:
           file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
           artifact-name-prefix: csaf-validator_${{ matrix.target.arch }}
@@ -178,7 +178,7 @@ jobs:
   coverage:
     needs:
       - prepare
-    uses: csaf-rs/shared-workflows/.github/workflows/rust-coverage.yml@a026baa029a5f7d7b1dfca973cdcd0c940e545dc # v1.11.0
+    uses: csaf-rs/shared-workflows/.github/workflows/rust-coverage.yml@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
 
   wasm-bindings:
     needs:
@@ -216,7 +216,7 @@ jobs:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
       - name: Generate CycloneDX and SPDX SBOMs
-        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@a026baa029a5f7d7b1dfca973cdcd0c940e545dc #v1.11.0
+        uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 #v1.12.0
         with:
           file-to-scan: ./target/wasm32-unknown-unknown/release/csaf_ffi.wasm
           artifact-name-prefix: csaf-ffi-wasm_wasm32
@@ -330,7 +330,7 @@ jobs:
       - name: Install devguard-scanner
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
-          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@v1.2.0
+          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@89b48259fa89ad5fdeb723dc312f20a3b453e24f # v1.14.2
 
       - name: Download all CDX artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -383,7 +383,7 @@ jobs:
       id-token: write
     needs:
       - build-platforms
-    uses: csaf-rs/shared-workflows/.github/workflows/cargo-publish.yml@a026baa029a5f7d7b1dfca973cdcd0c940e545dc # v1.11.0
+    uses: csaf-rs/shared-workflows/.github/workflows/cargo-publish.yml@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
 
   publish-npm:
     runs-on: ubuntu-latest

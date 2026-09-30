@@ -366,5 +366,6 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.21.4 | ⭕ | ✅ |
 | 6.3.21.5 | ⭕ | ✅ |
 | 6.3.21.6 | ⭕ | ✅ |
+| 6.3.21.7 | ⭕ | ✅ |
 | 6.3.21.8 | ⭕ | ✅ |
 | 6.3.21.9 | ⭕ | ✅ |

@@ -12,9 +12,6 @@ fn create_metrics_extension_info(vulnerability_index: usize, metric_index: usize
 ///
 /// It SHALL be tested that the element `x_extensions` does not exist in any path that starts with
 /// `$.vulnerabilities[*].metrics`.
-///
-/// The relevant path for this test is:
-/// - `$.vulnerabilities[*].metrics[*].content.x_extensions`
 pub fn test_6_3_21_7_usage_of_extension_in_vulnerabilities_metrics_path(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<TestFinding>> {

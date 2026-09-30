@@ -1,6 +1,8 @@
+use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
+use crate::csaf_traits::ExtensionsTrait;
 use crate::schema::csaf2_0::schema::Score;
-use crate::schema::csaf2_1::schema::{Content, Epss, QualitativeSeverityRating};
+use crate::schema::csaf2_1::schema::{Content, Epss, ExtensionsT as Extensions21, QualitativeSeverityRating};
 use cvss_rs::v2_0::CvssV2;
 use cvss_rs::v3::CvssV3;
 use cvss_rs::v4_0::CvssV4;
@@ -16,6 +18,10 @@ fn get_cvss_version(cvss: &Map<String, Value>) -> Option<String> {
 
 /// Trait representing a "content holder" for actual metrics inside a "metric" object.
 pub trait ContentTrait {
+    type ExtensionsType: ExtensionsTrait;
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType>;
+
     /// Returns all CVSS metric types present.
     fn get_cvss_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
         let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
@@ -147,6 +153,12 @@ pub trait ContentTrait {
 }
 
 impl ContentTrait for Score {
+    type ExtensionsType = NotPresentInCsaf20;
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
+        None
+    }
+
     fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>> {
         // SSVC metrics do not exist in CSAF 2.0
         None
@@ -190,6 +202,12 @@ impl ContentTrait for Score {
 }
 
 impl ContentTrait for Content {
+    type ExtensionsType = Extensions21;
+
+    fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
+        self.x_extensions.as_ref()
+    }
+
     fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>> {
         if self.ssvc_v2.is_empty() {
             None

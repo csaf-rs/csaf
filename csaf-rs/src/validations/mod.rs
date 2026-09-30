@@ -152,5 +152,8 @@ pub mod test_6_3_15;
 pub mod test_6_3_18;
 pub mod test_6_3_20;
 pub mod test_6_3_21_3;
+pub mod test_6_3_21_4;
+pub mod test_6_3_21_5;
+pub mod test_6_3_21_6;
 pub mod test_6_3_21_8;
 pub mod test_6_3_21_9;

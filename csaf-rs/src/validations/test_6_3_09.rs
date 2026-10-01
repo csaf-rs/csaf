@@ -34,7 +34,7 @@ fn create_branch_categories_info(
     } else if missing_categories.is_empty() {
         // all categories were used, but in the wrong order
         format!(
-            "{prefix} The categories are in wrong order: {}. Full path: {full_display}",
+            "{prefix} The categories are in the wrong order: {}. Full path: {full_display}",
             format_category_path(relevant_categories)
         )
     } else {
@@ -331,7 +331,7 @@ mod tests {
             create_branch_categories_info(full_path, full_path, "".to_string())
                 .get_data()
                 .message,
-            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in wrong order: `vendor` -> `product_version` -> `product_name`. Full path: `vendor` -> `product_version` -> `product_name`"
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in the wrong order: `vendor` -> `product_version` -> `product_name`. Full path: `vendor` -> `product_version` -> `product_name`"
         );
     }
 
@@ -364,7 +364,7 @@ mod tests {
             create_branch_categories_info(full_path, full_path, "".to_string())
                 .get_data()
                 .message,
-            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in wrong order: `vendor` -> `product_name` -> `vendor` -> `product_version`. Full path: `vendor` -> `product_name` -> `vendor` -> `product_version`"
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in the wrong order: `vendor` -> `product_name` -> `vendor` -> `product_version`. Full path: `vendor` -> `product_name` -> `vendor` -> `product_version`"
         );
     }
 

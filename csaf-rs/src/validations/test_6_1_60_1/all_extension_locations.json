@@ -1,0 +1,62 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+            "category": "vendor",
+            "name": "csaf-rs",
+            "namespace": "https://github.com/csaf-rs"
+        },
+    "title": "some title",
+    "tracking": {
+        "current_release_date": "2026-01-01T00:00:00Z",
+        "id": "test-01",
+        "initial_release_date": "2026-01-01T00:00:00.000Z",
+        "revision_history": [],
+        "status": "final",
+        "version": "1.0.0"
+    },
+    "x_extensions": []
+  },
+  "vulnerabilities": [{
+    "x_extensions": [],
+    "metrics": [{
+        "content": {
+            "x_extensions": []
+        },
+        "products": []
+    }]
+  }],
+  "product_tree": {
+    "branches": [{
+        "category": "product_name",
+        "name": "main",
+        "product": {
+            "name": "csaf",
+            "product_id": "csaf@main",
+            "x_extensions": []
+        }
+    }],
+    "full_product_names": [{
+        "name": "csaf",
+        "product_id": "csaf",
+        "x_extensions": []
+    }],
+    "product_paths": [{
+        "beginning_product_reference": "csaf-ref",
+        "full_product_name": {
+            "name": "csaf",
+            "product_id": "csaf-path",
+            "x_extensions": []
+        },
+        "subpaths": []
+    }]
+  },
+  "x_extensions": []
+}

@@ -50,7 +50,7 @@ pub fn test_6_1_47_inconsistent_ssvc_id(doc: &impl CsafTrait) -> Result<(), Vec<
             for (i_m, m) in metrics.iter().enumerate() {
                 let content = m.get_content();
                 // if ssvc_v2 is present, try to parse its content as SSVC
-                if let Some(ssvc_result) = content.get_ssvc_v2() {
+                if let Some(ssvc_result) = content.get_ssvc_v2_typed() {
                     match ssvc_result {
                         // parsing succeeded
                         Ok(ssvc) => {

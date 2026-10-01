@@ -41,7 +41,7 @@ pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
         .flat_map(move |(vuln_index, metric_index, metric)| {
             metric
                 .get_content()
-                .get_ssvc_v2()
+                .get_ssvc_v2_typed()
                 .and_then(Result::ok)
                 .into_iter()
                 .flat_map(|selection_list| selection_list.selections.into_iter().enumerate())

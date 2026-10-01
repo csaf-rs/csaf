@@ -28,29 +28,29 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
             for (metric_index, metric) in metrics.iter().enumerate() {
                 let content = metric.get_content();
                 let instance_prefix = content.get_content_json_path(i_v, metric_index);
-                if let Some(cvss2) = content.get_cvss_v2() {
+                if let Some(cvss_v2_raw) = content.get_cvss_v2_raw() {
                     evaluate_cvss(
-                        cvss2,
+                        cvss_v2_raw,
                         &CVSS20_VALIDATOR,
                         &instance_prefix,
                         CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                         &mut errors,
                     );
                 }
-                if let Some(cvss3) = content.get_cvss_v3() {
+                if let Some(cvss_v3_raw) = content.get_cvss_v3_raw() {
                     // Use as_str because otherwise additional quotation marks would be included
-                    if let Some(version) = cvss3.get("version").and_then(|v| v.as_str()) {
+                    if let Some(version) = cvss_v3_raw.get("version").and_then(|v| v.as_str()) {
                         let metric_type = CsafVulnerabilityMetric::CvssV3(version.to_string());
                         if version == "3.0" {
-                            evaluate_cvss(cvss3, &CVSS30_VALIDATOR, &instance_prefix, metric_type, &mut errors);
+                            evaluate_cvss(cvss_v3_raw, &CVSS30_VALIDATOR, &instance_prefix, metric_type, &mut errors);
                         } else if version == "3.1" {
-                            evaluate_cvss(cvss3, &CVSS31_VALIDATOR, &instance_prefix, metric_type, &mut errors);
+                            evaluate_cvss(cvss_v3_raw, &CVSS31_VALIDATOR, &instance_prefix, metric_type, &mut errors);
                         }
                     }
                 }
-                if let Some(cvss4) = content.get_cvss_v4() {
+                if let Some(cvss_v4_raw) = content.get_cvss_v4_raw() {
                     evaluate_cvss(
-                        cvss4,
+                        cvss_v4_raw,
                         &CVSS40_VALIDATOR,
                         &instance_prefix,
                         CsafVulnerabilityMetric::CvssV4("4.0".to_string()),

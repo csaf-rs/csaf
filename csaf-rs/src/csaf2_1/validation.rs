@@ -1,13 +1,12 @@
-use std::collections::HashSet;
-use std::fmt::Display;
-use std::sync::OnceLock;
-
 use crate::csaf::raw::{RawDocument, RawValidatable};
 use crate::csaf2_1::testcases::*;
 use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
 use crate::test_validation::TestValidator;
 use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Validatable, ValidationError};
 use crate::validations::test_schema::validate_schema_csaf_2_1;
+use std::collections::HashSet;
+use std::fmt::Display;
+use std::sync::OnceLock;
 
 fn to_test_result(test_id: &str, result: Option<Result<(), Vec<crate::validation::TestFinding>>>) -> TestResult {
     TestResult {
@@ -391,6 +390,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.39.2" => Some(ValidatorForTest6_2_39_2.validate(self)),
                 "6.2.39.3" => Some(ValidatorForTest6_2_39_3.validate(self)),
                 "6.2.39.4" => Some(ValidatorForTest6_2_39_4.validate(self)),
+                "6.2.39.5" => Some(ValidatorForTest6_2_39_5.validate(self)),
                 "6.2.39.7" => Some(ValidatorForTest6_2_39_7.validate(self)),
                 "6.2.39.8" => Some(ValidatorForTest6_2_39_8.validate(self)),
                 "6.2.39.9" => Some(ValidatorForTest6_2_39_9.validate(self)),
@@ -442,7 +442,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.18" => Some(ValidatorForTest6_3_18.validate(self)),
                 "6.3.19" => None, // Some(ValidatorForTest6_3_19.validate(self)),
                 "6.3.20" => Some(ValidatorForTest6_3_20.validate(self)),
-                "6.3.21" => None, // Some(ValidatorForTest6_3_21.validate(self)),
+                "6.3.21.3" => Some(ValidatorForTest6_3_21_3.validate(self)),
+                "6.3.21.4" => Some(ValidatorForTest6_3_21_4.validate(self)),
+                "6.3.21.5" => Some(ValidatorForTest6_3_21_5.validate(self)),
+                "6.3.21.6" => Some(ValidatorForTest6_3_21_6.validate(self)),
+                "6.3.21.7" => Some(ValidatorForTest6_3_21_7.validate(self)),
+                "6.3.21.8" => Some(ValidatorForTest6_3_21_8.validate(self)),
+                "6.3.21.9" => Some(ValidatorForTest6_3_21_9.validate(self)),
                 "6.3.22" => None, // Some(ValidatorForTest6_3_22.validate(self)),
                 "6.3.23" => None, // Some(ValidatorForTest6_3_23.validate(self)),
                 "6.3.24" => None, // Some(ValidatorForTest6_3_24.validate(self)),

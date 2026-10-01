@@ -25,8 +25,8 @@ fn test_6_1_48_ssvc_decision_points_internal(
         if let Some(metrics) = v.get_metrics() {
             for (i_m, m) in metrics.iter().enumerate() {
                 let content = m.get_content();
-                if content.has_ssvc_v2() {
-                    match content.get_ssvc_v2() {
+                if let Some(ssvc_result) = content.get_ssvc_v2() {
+                    match ssvc_result {
                         Ok(ssvc) => {
                             let result = ssvc::validate_selection_list(&ssvc, allow_test_namespaces);
                             if !result.success {

@@ -18,8 +18,7 @@ pub mod validation;
 pub mod validation_result;
 pub mod validations;
 
-/// The CVSS metric types returned by `ContentTrait`'s typed accessors
-/// (`get_cvss_v2_typed`, `get_cvss_v3_typed`, `get_cvss_v4_typed`).
+// The CVSS metric types returned by ContentTrait's typed accessors
 pub use cvss_rs;
-/// The SSVC selection types returned by `ContentTrait::get_ssvc_v2`.
+// The SSVC selection types returned by ContentTrait's typed accessors
 pub use ssvc;

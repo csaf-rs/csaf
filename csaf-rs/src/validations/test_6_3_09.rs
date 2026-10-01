@@ -24,22 +24,21 @@ fn create_branch_categories_info(
 ) -> TestFinding {
     let full_display = format_category_path(full_path);
     let prefix = "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories.";
+    let missing_categories: Vec<_> = REQUIRED_CATEGORIES_ORDER
+        .iter()
+        .filter(|c| !relevant_categories.contains(c))
+        .collect();
     let message = if relevant_categories.is_empty() {
         // none of the categories were used
         format!("{prefix} None of these categories were used. Full path: {full_display}",)
-    }
-    // all categories were used, but in the wrong order
-    else if relevant_categories.len() == REQUIRED_CATEGORIES_ORDER.len() {
+    } else if missing_categories.is_empty() {
+        // all categories were used, but in the wrong order
         format!(
             "{prefix} The categories are in wrong order: {}. Full path: {full_display}",
             format_category_path(relevant_categories)
         )
-    // some categories were used
     } else {
-        let missing_categories: Vec<_> = REQUIRED_CATEGORIES_ORDER
-            .iter()
-            .filter(|c| !relevant_categories.contains(c))
-            .collect();
+        // some categories were used
         format!(
             "{prefix} Some of the categories are missing: {}. Full path: {full_display}",
             format_category_list(&missing_categories)
@@ -327,17 +326,62 @@ mod tests {
             CategoryOfTheBranch::ProductVersion,
             CategoryOfTheBranch::ProductName,
         ];
-        let relevant_categories = &[
+
+        assert_eq!(
+            create_branch_categories_info(full_path, full_path, "".to_string())
+                .get_data()
+                .message,
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in wrong order: `vendor` -> `product_version` -> `product_name`. Full path: `vendor` -> `product_version` -> `product_name`"
+        );
+    }
+
+    #[test]
+    fn test_create_branch_categories_info_with_duplicates_and_missing_category() {
+        let full_path = &[
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductName,
+            CategoryOfTheBranch::Vendor,
+        ];
+
+        assert_eq!(
+            create_branch_categories_info(full_path, full_path, "".to_string())
+                .get_data()
+                .message,
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Some of the categories are missing: `product_version`. Full path: `vendor` -> `product_name` -> `vendor`"
+        );
+    }
+
+    #[test]
+    fn test_create_branch_categories_info_with_non_consecutive_duplicates_all_present() {
+        let full_path = &[
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::ProductName,
             CategoryOfTheBranch::Vendor,
             CategoryOfTheBranch::ProductVersion,
+        ];
+
+        assert_eq!(
+            create_branch_categories_info(full_path, full_path, "".to_string())
+                .get_data()
+                .message,
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in wrong order: `vendor` -> `product_name` -> `vendor` -> `product_version`. Full path: `vendor` -> `product_name` -> `vendor` -> `product_version`"
+        );
+    }
+
+    #[test]
+    fn test_create_branch_categories_info_with_consecutive_duplicates_and_missing_category() {
+        let full_path = &[
+            CategoryOfTheBranch::Vendor,
+            CategoryOfTheBranch::Vendor,
             CategoryOfTheBranch::ProductName,
         ];
+        let relevant_categories = &[CategoryOfTheBranch::Vendor, CategoryOfTheBranch::ProductName];
 
         assert_eq!(
             create_branch_categories_info(full_path, relevant_categories, "".to_string())
                 .get_data()
                 .message,
-            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. The categories are in wrong order: `vendor` -> `product_version` -> `product_name`. Full path: `vendor` -> `product_version` -> `product_name`"
+            "The recommended branch category sequence is: `vendor` -> `product_name` -> `product_version`, irrespective of other branch categories. Some of the categories are missing: `product_version`. Full path: `vendor` -> `vendor` -> `product_name`"
         );
     }
 }

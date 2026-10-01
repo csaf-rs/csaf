@@ -25,13 +25,13 @@ pub trait ContentTrait {
     /// Returns all CVSS metric types present.
     fn get_cvss_metric_types(&self) -> Vec<CsafVulnerabilityMetric> {
         let mut types: Vec<CsafVulnerabilityMetric> = Vec::new();
-        if let Some(version) = self.get_cvss_v2().and_then(get_cvss_version) {
+        if let Some(version) = self.get_cvss_v2_raw().and_then(get_cvss_version) {
             types.push(CsafVulnerabilityMetric::CvssV2(version));
         }
-        if let Some(version) = self.get_cvss_v3().and_then(get_cvss_version) {
+        if let Some(version) = self.get_cvss_v3_raw().and_then(get_cvss_version) {
             types.push(CsafVulnerabilityMetric::CvssV3(version));
         }
-        if let Some(version) = self.get_cvss_v4().and_then(get_cvss_version) {
+        if let Some(version) = self.get_cvss_v4_raw().and_then(get_cvss_version) {
             types.push(CsafVulnerabilityMetric::CvssV4(version));
         }
         types
@@ -61,48 +61,48 @@ pub trait ContentTrait {
     ///
     /// Returns `None` if no SSVC metric is present, `Some(Err(_))` if it is present but
     /// cannot be deserialized.
-    fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>>;
+    fn get_ssvc_v2_typed(&self) -> Option<Result<SelectionList, serde_json::Error>>;
 
     /// Returns a JSON representation of the contained SSVC v2 metric, if any.
     fn get_ssvc_v2_raw(&self) -> Option<&Map<String, Value>>;
 
     /// Returns a JSON representation of the contained CVSS 2.0 metric, if any.
-    fn get_cvss_v2(&self) -> Option<&Map<String, Value>>;
+    fn get_cvss_v2_raw(&self) -> Option<&Map<String, Value>>;
 
     /// Returns whether this content contains a CVSS 2.0 metric.
     fn has_cvss_v2(&self) -> bool {
-        self.get_cvss_v2().is_some()
+        self.get_cvss_v2_raw().is_some()
     }
 
     /// Returns the contained CVSS 2.0 metric parsed into its typed representation, if any.
     fn get_cvss_v2_typed(&self) -> Option<Result<CvssV2, serde_json::Error>> {
-        self.get_cvss_v2().map(CvssV2::deserialize)
+        self.get_cvss_v2_raw().map(CvssV2::deserialize)
     }
 
     /// Returns a JSON representation of the contained CVSS 3.0/3.1 metric, if any.
-    fn get_cvss_v3(&self) -> Option<&Map<String, Value>>;
+    fn get_cvss_v3_raw(&self) -> Option<&Map<String, Value>>;
 
     /// Returns whether this content contains a CVSS 3.0/3.1 metric.
     fn has_cvss_v3(&self) -> bool {
-        self.get_cvss_v3().is_some()
+        self.get_cvss_v3_raw().is_some()
     }
 
     /// Returns the contained CVSS 3.0/3.1 metric parsed into its typed representation, if any.
     fn get_cvss_v3_typed(&self) -> Option<Result<CvssV3, serde_json::Error>> {
-        self.get_cvss_v3().map(CvssV3::deserialize)
+        self.get_cvss_v3_raw().map(CvssV3::deserialize)
     }
 
     /// Returns a JSON representation of the contained CVSS 4.0 metric, if any.
-    fn get_cvss_v4(&self) -> Option<&Map<String, Value>>;
+    fn get_cvss_v4_raw(&self) -> Option<&Map<String, Value>>;
 
     /// Returns whether this content contains a CVSS 4.0 metric.
     fn has_cvss_v4(&self) -> bool {
-        self.get_cvss_v4().is_some()
+        self.get_cvss_v4_raw().is_some()
     }
 
     /// Returns the contained CVSS 4.0 metric parsed into its typed representation, if any.
     fn get_cvss_v4_typed(&self) -> Option<Result<CvssV4, serde_json::Error>> {
-        self.get_cvss_v4().map(CvssV4::deserialize)
+        self.get_cvss_v4_raw().map(CvssV4::deserialize)
     }
 
     /// Returns whether this content contains any CVSS metric (v2, v3, or v4).
@@ -159,7 +159,7 @@ impl ContentTrait for Score {
         None
     }
 
-    fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>> {
+    fn get_ssvc_v2_typed(&self) -> Option<Result<SelectionList, serde_json::Error>> {
         // SSVC metrics do not exist in CSAF 2.0
         None
     }
@@ -168,7 +168,7 @@ impl ContentTrait for Score {
         None
     }
 
-    fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
+    fn get_cvss_v2_raw(&self) -> Option<&Map<String, Value>> {
         if self.cvss_v2.is_empty() {
             None
         } else {
@@ -176,7 +176,7 @@ impl ContentTrait for Score {
         }
     }
 
-    fn get_cvss_v3(&self) -> Option<&Map<String, Value>> {
+    fn get_cvss_v3_raw(&self) -> Option<&Map<String, Value>> {
         if self.cvss_v3.is_empty() {
             None
         } else {
@@ -184,7 +184,7 @@ impl ContentTrait for Score {
         }
     }
 
-    fn get_cvss_v4(&self) -> Option<&Map<String, Value>> {
+    fn get_cvss_v4_raw(&self) -> Option<&Map<String, Value>> {
         None
     }
 
@@ -208,7 +208,7 @@ impl ContentTrait for Content {
         self.x_extensions.as_ref()
     }
 
-    fn get_ssvc_v2(&self) -> Option<Result<SelectionList, serde_json::Error>> {
+    fn get_ssvc_v2_typed(&self) -> Option<Result<SelectionList, serde_json::Error>> {
         if self.ssvc_v2.is_empty() {
             None
         } else {
@@ -224,7 +224,7 @@ impl ContentTrait for Content {
         }
     }
 
-    fn get_cvss_v2(&self) -> Option<&Map<String, Value>> {
+    fn get_cvss_v2_raw(&self) -> Option<&Map<String, Value>> {
         if self.cvss_v2.is_empty() {
             None
         } else {
@@ -232,7 +232,7 @@ impl ContentTrait for Content {
         }
     }
 
-    fn get_cvss_v3(&self) -> Option<&Map<String, Value>> {
+    fn get_cvss_v3_raw(&self) -> Option<&Map<String, Value>> {
         if self.cvss_v3.is_empty() {
             None
         } else {
@@ -240,7 +240,7 @@ impl ContentTrait for Content {
         }
     }
 
-    fn get_cvss_v4(&self) -> Option<&Map<String, Value>> {
+    fn get_cvss_v4_raw(&self) -> Option<&Map<String, Value>> {
         if self.cvss_v4.is_empty() {
             None
         } else {
@@ -385,7 +385,7 @@ mod tests {
         });
         let content = content_with("ssvc_v2", &metric);
         assert!(content.has_ssvc_v2());
-        let selection_list = content.get_ssvc_v2().expect("present").expect("parses");
+        let selection_list = content.get_ssvc_v2_typed().expect("present").expect("parses");
         assert_eq!(selection_list.selections.len(), 1);
     }
 
@@ -393,7 +393,7 @@ mod tests {
     fn ssvc_accessor_reports_a_nonconforming_map() {
         let content = content_with("ssvc_v2", &json!({ "schemaVersion": "2.0.0" }));
         assert!(content.has_ssvc_v2());
-        assert!(content.get_ssvc_v2().expect("present").is_err());
+        assert!(content.get_ssvc_v2_typed().expect("present").is_err());
     }
 
     #[test]
@@ -407,10 +407,10 @@ mod tests {
         // CSAF 2.1 content without an SSVC metric
         let content = content_with("cvss_v3", &cvss_v3);
         assert!(!content.has_ssvc_v2());
-        assert!(content.get_ssvc_v2().is_none());
+        assert!(content.get_ssvc_v2_typed().is_none());
         // CSAF 2.0 has no SSVC metric at all
         let score = score_with("cvss_v3", &cvss_v3);
         assert!(!score.has_ssvc_v2());
-        assert!(score.get_ssvc_v2().is_none());
+        assert!(score.get_ssvc_v2_typed().is_none());
     }
 }

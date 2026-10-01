@@ -42,9 +42,21 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
                     if let Some(version) = cvss_v3_raw.get("version").and_then(|v| v.as_str()) {
                         let metric_type = CsafVulnerabilityMetric::CvssV3(version.to_string());
                         if version == "3.0" {
-                            evaluate_cvss(cvss_v3_raw, &CVSS30_VALIDATOR, &instance_prefix, metric_type, &mut errors);
+                            evaluate_cvss(
+                                cvss_v3_raw,
+                                &CVSS30_VALIDATOR,
+                                &instance_prefix,
+                                metric_type,
+                                &mut errors,
+                            );
                         } else if version == "3.1" {
-                            evaluate_cvss(cvss_v3_raw, &CVSS31_VALIDATOR, &instance_prefix, metric_type, &mut errors);
+                            evaluate_cvss(
+                                cvss_v3_raw,
+                                &CVSS31_VALIDATOR,
+                                &instance_prefix,
+                                metric_type,
+                                &mut errors,
+                            );
                         }
                     }
                 }

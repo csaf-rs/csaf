@@ -96,7 +96,7 @@ fn evaluate_cvss(
 fn create_validation_error(message: String, base: &str, property_name: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message,
-        instance_path: format!("{}/{}", base, property_name),
+        instance_path: format!("{base}/{property_name}"),
     })
 }
 

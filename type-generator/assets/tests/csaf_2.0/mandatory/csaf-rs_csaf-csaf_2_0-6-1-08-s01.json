@@ -1,0 +1,51 @@
+{
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
+    },
+    "title": "Mandatory test: Invalid CVSS (failing supplementary example 1 - CVSS v2 with severity property)",
+    "tracking": {
+      "current_release_date": "2021-07-21T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_0-6-1-08-S01",
+      "initial_release_date": "2021-07-21T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2021-07-21T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "scores": [
+        {
+          "cvss_v2": {
+            "baseScore": 6.5,
+            "severity": "MEDIUM",
+            "vectorString": "AV:L/AC:L/Au:M/C:C/I:C/A:C",
+            "version": "2.0"
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    }
+  ]
+}

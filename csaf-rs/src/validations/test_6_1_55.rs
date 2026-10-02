@@ -1,52 +1,78 @@
-use spdx::Expression;
+use spdx::lexer::{Lexer, Token};
 use std::sync::LazyLock;
 
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, NoteTrait};
-use crate::helpers::SCANCODE_LICENSEDB_LICENSES;
+use crate::helpers::SCANCODE_LICENSEDB;
 use crate::schema::csaf2_1::schema::LicenseExpression;
 use crate::schema::csaf2_1::schema::NoteCategory;
 use crate::validation::{TestFinding, TestFindingData};
+use crate::validations::utils::license_expressions::CSAF_PARSE_MODE;
 
 static MISSING_LICENSE_TEXT_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message: "Missing license text (document note with title 'License') for non-standard license.".to_string(),
-        instance_path: "/document/license_expression".to_string(),
+        message:
+            "Missing license text (document note with title 'License') for unlisted license identifier or exception."
+                .to_string(),
+        instance_path: "/document/notes".to_string(),
     })
 });
 
 static MULTIPLE_LICENSE_TEXT_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message: "Multiple license texts (document notes with title 'License') for non-standard license.".to_string(),
-        instance_path: "/document/license_expression".to_string(),
+        message:
+            "Multiple license texts (document notes with title 'License') for unlisted license identifier or exception."
+                .to_string(),
+        instance_path: "/document/notes".to_string(),
     })
 });
 
-fn create_incorrect_license_text_category_error(license_expression_path: &str, category: &NoteCategory) -> TestFinding {
+fn create_incorrect_license_text_category_error(instance_path: &str, category: &NoteCategory) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("Invalid category for license text: '{category}' instead of 'legal_disclaimer'."),
-        instance_path: license_expression_path.to_string(),
+        instance_path: instance_path.to_string(),
     })
 }
 
-fn license_listed_in_spdx_licensedb(license: &LicenseExpression) -> bool {
-    match Expression::parse(license.as_str()) {
-        Ok(parsed) => parsed.requirements().all(|requirement| match &requirement.req.license {
-            spdx::LicenseItem::Other(license_ref) => {
-                let license_ref: &str = &license_ref.lic_ref;
-                SCANCODE_LICENSEDB_LICENSES.get(license_ref).is_some()
-            },
-            spdx::LicenseItem::Spdx { id: _, or_later: _ } => true,
-        }),
-        Err(_) => false,
+fn has_only_listed_license_identifiers_or_is_invalid(license_expression: &LicenseExpression) -> bool {
+    for lexer_result in Lexer::new_mode(license_expression.as_str(), CSAF_PARSE_MODE) {
+        let token = match lexer_result {
+            Ok(lexer_token) => lexer_token.token,
+            // The current `spdx` 0.13.4 lexer does not advance past a lexical error.
+            // Continuing after such an error would require custom recovery/lexer logic.
+            //
+            // Lexical errors are handled by 6.1.54.
+            // TODO #409: return a precondition failed here.
+            Err(_) => return true,
+        };
+
+        // TODO: SPDX 3.0.1 spec requires license and exception identifiers to be matched case-insensitively,
+        // while `spdx` 0.13.4 currently performs case-sensitive identifier lookup. Revisit this once case-insensitive parsing is supported.
+        let is_listed = match token {
+            Token::Unknown(_) => false,
+            Token::LicenseRef { lic_ref, .. } => SCANCODE_LICENSEDB
+                .get(&lic_ref.to_lowercase())
+                .is_some_and(|info| !info.is_exception),
+            Token::AdditionRef { add_ref, .. } => SCANCODE_LICENSEDB
+                .get(&add_ref.to_lowercase())
+                .is_some_and(|info| info.is_exception),
+
+            // Known SPDX licenses/exceptions, operators, parentheses, etc.
+            _ => true,
+        };
+        if !is_listed {
+            return false;
+        }
+        // If the token is listed, continue to the next token
     }
+    true
 }
 
-fn is_english_or_default(doc: &impl CsafTrait) -> bool {
+fn is_english_or_unspecified(doc: &impl CsafTrait) -> bool {
     match doc.get_document().get_lang() {
         Some(CsafLanguage::Invalid(_, _)) => false,
-        Some(CsafLanguage::Valid(valid_lang)) => valid_lang.is_default() || valid_lang.is_english(),
-        None => true,
+        Some(CsafLanguage::Valid(valid_lang)) => valid_lang.is_english(),
+        None => true, // no language set
     }
 }
 
@@ -95,11 +121,11 @@ pub fn test_6_1_55_license_text(
 ) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();
 
-    if document
-        .license_expression
-        .as_ref()
-        .is_some_and(|license| !license_listed_in_spdx_licensedb(license))
-        && is_english_or_default(doc)
+    if is_english_or_unspecified(doc)
+        && document
+            .license_expression
+            .as_ref()
+            .is_some_and(|license_expression| !has_only_listed_license_identifiers_or_is_invalid(license_expression))
     {
         expect_exactly_one_license_text(doc)
     } else {
@@ -117,25 +143,34 @@ mod tests {
 
     #[test]
     fn test_test_6_1_55() {
-        // Only CSAF 2.1 has this test with 6 test cases (3 error cases, 3 success case)
-        let case_01_category_other = Err(vec![create_incorrect_license_text_category_error(
+        let category_other = Err(vec![create_incorrect_license_text_category_error(
             "/document/notes/0/category",
             &NoteCategory::Other,
         )]);
-        let case_02_category_general = Err(vec![create_incorrect_license_text_category_error(
+        let category_general = Err(vec![create_incorrect_license_text_category_error(
             "/document/notes/0/category",
             &NoteCategory::General,
         )]);
-        let case_s01_multiple = Err(vec![MULTIPLE_LICENSE_TEXT_ERROR.clone()]);
 
+        let multiple_license_text_notes_for_unlisted_license_identifier =
+            Err(vec![MULTIPLE_LICENSE_TEXT_ERROR.clone()]);
+        let unlisted_license_exception_without_license_text = Err(vec![MISSING_LICENSE_TEXT_ERROR.clone()]);
+
+        // Case 11: unlisted license identifier with required license text
+        // Case 12: unlisted license identifier with required license text and English set as document language
+        // Case S11: listed license identifier with listed license exception
+        // Case S12: listed ScanCode license without license text
+        // Case S13: listed ScanCode custom addition without license text
         TESTS_2_1.test_6_1_55.expect(ExpectedResults {
-            case_01: case_01_category_other,
-            case_02: case_02_category_general,
-            case_s01: case_s01_multiple,
+            case_01: category_other,
+            case_02: category_general,
+            case_s01: multiple_license_text_notes_for_unlisted_license_identifier,
+            case_s02: unlisted_license_exception_without_license_text,
             case_11: Ok(()),
             case_12: Ok(()),
             case_s11: Ok(()),
             case_s12: Ok(()),
+            case_s13: Ok(()),
         });
     }
 }

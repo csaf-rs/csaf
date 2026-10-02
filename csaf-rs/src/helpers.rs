@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use chrono::NaiveDate;
 use rust_embed::RustEmbed;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::sync::LazyLock;
 
 #[derive(RustEmbed)]
@@ -101,17 +101,34 @@ pub struct ScancodeLicense {
     pub license: String,
 }
 
-pub static SCANCODE_LICENSEDB_LICENSES: LazyLock<HashSet<String>> = LazyLock::new(|| {
+#[derive(Clone, Copy)]
+pub struct ScancodeLicenseInfo {
+    pub is_exception: bool,
+    pub is_deprecated: bool,
+}
+
+pub static SCANCODE_LICENSEDB: LazyLock<HashMap<String, ScancodeLicenseInfo>> =
+    LazyLock::new(scancode_licensedb_entries);
+
+fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
     let licenses: Vec<ScancodeLicense> =
         serde_json::from_str(include_str!("../assets/scancode-licensedb.json")).unwrap();
+
     licenses
         .into_iter()
         .flat_map(|license| {
+            let info = ScancodeLicenseInfo {
+                is_exception: license.is_exception,
+                is_deprecated: license.is_deprecated,
+            };
+
             std::iter::once(&license.spdx_license_key)
                 .filter_map(|key| key.as_ref())
                 .chain(license.other_spdx_license_keys.iter())
-                .filter_map(|key| key.strip_prefix("LicenseRef-").map(|k| k.to_string()))
-                .collect::<Vec<String>>()
+                .filter_map(|key| {
+                    key.strip_prefix("LicenseRef-").map(|key| (key.to_lowercase(), info)) // TODO: Recheck ScanCode exception identifier handling after https://github.com/aboutcode-org/dejacode/issues/318 is resolved
+                })
+                .collect::<Vec<_>>()
         })
         .collect()
-});
+}

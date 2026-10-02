@@ -28,7 +28,7 @@ static CVSS40_VALIDATOR: LazyLock<Validator> =
 /// It checks if the CVSS object matches the respective CVSS JSON schema using [`jsonschema`].
 ///
 /// For this test, additional properties are not to be allowed.
-/// For the CVSS v2 schema, we "make the schema strict" by adding "unevaluatedProperties": false` and
+/// For the CVSS v2 schema, we "make the schema strict" by adding "unevaluatedProperties": false" and
 /// constructing the validator as draft-2020-12.
 ///
 /// It emits an error for each offense, including required properties being missing and unevaluated / additional
@@ -143,36 +143,32 @@ mod tests {
 
         TESTS_2_1.test_6_1_8.expect(ExpectedResults_2_1 {
             case_01: Err(vec![create_validation_error_with_path(
-"\"baseSeverity\" is a required property",
-"/vulnerabilities/0/metrics/0/content/cvss_v3",
-)]),
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
+            )]),
             case_02: Err(vec![create_validation_error_with_path(
-"\"baseSeverity\" is a required property",
-"/vulnerabilities/0/metrics/0/content/cvss_v3",
-)]),
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
+            )]),
             case_03: Err(vec![create_validation_error_with_path(
-"\"version\" is a required property",
-"/vulnerabilities/0/metrics/0/content/cvss_v2",
-)]),
+                "\"version\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v2",
+            )]),
             case_04: Err(vec![create_validation_error_with_path(
-"\"baseSeverity\" is a required property",
-"/vulnerabilities/0/metrics/0/content/cvss_v4",
-)]),
-            case_05: Err(vec![
-                create_validation_error_with_path(
-"Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)",
-"/vulnerabilities/0/metrics/0/content/cvss_v4",
-),
-            ]),
-            case_06: Err(vec![
-                create_validation_error_with_path(
-"Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)",
-"/vulnerabilities/0/metrics/0/content/cvss_v4",
-                )
-            ,]),
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v4",
+            )]),
+            case_05: Err(vec![create_validation_error_with_path(
+                "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v4",
+            )]),
+            case_06: Err(vec![create_validation_error_with_path(
+                "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v4",
+            )]),
             case_s01: Err(vec![create_validation_error_with_path(
-"Unevaluated properties are not allowed ('severity' was unexpected)",
-"/vulnerabilities/0/metrics/0/content/cvss_v2",
+                "Unevaluated properties are not allowed ('severity' was unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v2",
             )]),
             case_11: Ok(()),
             case_12: Ok(()),

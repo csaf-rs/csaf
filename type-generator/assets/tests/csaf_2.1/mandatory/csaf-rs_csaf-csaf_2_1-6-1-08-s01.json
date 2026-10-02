@@ -32,8 +32,8 @@
   "product_tree": {
     "full_product_names": [
       {
-        "product_id": "CSAFPID-9080700",
-        "name": "Product A"
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
       }
     ]
   },
@@ -43,10 +43,10 @@
         {
           "content": {
             "cvss_v2": {
-              "version": "2.0",
-              "vectorString": "AV:L/AC:L/Au:M/C:C/I:C/A:C",
               "baseScore": 6.5,
-              "severity": "MEDIUM"
+              "severity": "MEDIUM",
+              "vectorString": "AV:L/AC:L/Au:M/C:C/I:C/A:C",
+              "version": "2.0"
             }
           },
           "products": [

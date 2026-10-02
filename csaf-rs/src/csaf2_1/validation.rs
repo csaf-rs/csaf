@@ -400,7 +400,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.39.13" => Some(ValidatorForTest6_2_39_13.validate(self)),
                 "6.2.40" => Some(ValidatorForTest6_2_40.validate(self)),
                 "6.2.41" => Some(ValidatorForTest6_2_41.validate(self)),
-                "6.2.42" => None, // Some(ValidatorForTest6_2_42.validate(self)),
+                "6.2.42" => Some(ValidatorForTest6_2_42.validate(self)),
                 "6.2.43" => {
                     return TestResult {
                         test_id: test_id.to_string(),

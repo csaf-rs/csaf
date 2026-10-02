@@ -28,7 +28,7 @@ static CVSS40_VALIDATOR: LazyLock<Validator> =
 /// It checks if the CVSS object matches the respective CVSS JSON schema using [`jsonschema`].
 ///
 /// For this test, additional properties are not to be allowed.
-/// For the CVSS v2 schema, we "make the schema strict" by adding "unevaluatedProperties": "false" and
+/// For the CVSS v2 schema, we "make the schema strict" by setting `unevaluatedProperties` to `false` and
 /// constructing the validator as draft-2020-12.
 ///
 /// It emits an error for each offense, including required properties being missing and unevaluated / additional

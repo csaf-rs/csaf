@@ -8,6 +8,7 @@ use crate::{
 #[jsonschema::validator(
     path = "assets/csaf_2.0_json_schema.json",
     validate_formats = true,
+    methods = { iter_errors = true, is_valid = false, validate = false },
     resources = {
         "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.json" },
         "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"},
@@ -19,6 +20,7 @@ struct Validator2_0;
 #[jsonschema::validator(
     path = "assets/csaf_2.1_json_schema.json",
     validate_formats = true,
+    methods = { iter_errors = true, is_valid = false, validate = false },
     draft = Draft202012,
     resources = {
         "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json" => { path = "assets/extension-metaschema.json" },

@@ -1,7 +1,11 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-#[jsonschema::validator(path = "assets/SelectionList_2_0_0.schema.json", draft = Draft202012)]
+#[jsonschema::validator(
+    path = "assets/SelectionList_2_0_0.schema.json", 
+    draft = Draft202012,
+    methods = { iter_errors = true, is_valid = false, validate = false },
+)]
 struct SsvcValidator;
 
 fn create_invalid_ssvc_error(

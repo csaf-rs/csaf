@@ -1,6 +1,6 @@
 {
   "$id": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json",
-  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/meta.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "description": "Representation of additional information extending a CSAF Document.",
   "properties": {

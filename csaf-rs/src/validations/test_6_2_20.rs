@@ -1,10 +1,11 @@
-use crate::validation::{TestFinding, TestFindingData};
+use crate::{test_validation::TestValidator, validation::{TestFinding, TestFindingData}};
 use jsonschema::error::ValidationErrorKind;
 use serde_json::Value;
 
 #[jsonschema::validator(
     path = "assets/csaf_2.0_json_schema.strict.json",
     validate_formats = true,
+    methods = { iter_errors = true, is_valid = false, validate = false },
     resources = {
         "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.strict.json" },
         "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"},
@@ -16,7 +17,7 @@ struct StrictValidator2_0;
 #[jsonschema::validator(
     path = "assets/csaf_2.1_json_schema.strict.json",
     validate_formats = true,
-    draft = Draft202012,
+    methods = { iter_errors = true, is_valid = false, validate = false },
     resources = {
         "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json" => { path = "assets/extension-metaschema.strict.json" },
         "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json" => { path = "assets/extension-content.strict.json" },

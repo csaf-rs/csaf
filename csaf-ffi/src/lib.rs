@@ -320,6 +320,7 @@ pub fn validate_csaf_to_json_string(json_str: String, preset: String) -> Result<
         },
     };
 
+    let result = result.map_err(CsafError::from)?;
     serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })
 }
 
@@ -335,7 +336,7 @@ pub fn validate_csaf_to_json_string(json_str: String, preset: String) -> Result<
 #[uniffi::export]
 pub fn validate_csaf_2_0_to_json_string(json_str: String, preset: String) -> Result<String, CsafError> {
     let doc = load_document_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
-    let result = validate_by_preset(&doc, "2.0", &preset);
+    let result = validate_by_preset(&doc, "2.0", &preset).map_err(CsafError::from)?;
     serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })
 }
 
@@ -351,6 +352,6 @@ pub fn validate_csaf_2_0_to_json_string(json_str: String, preset: String) -> Res
 #[uniffi::export]
 pub fn validate_csaf_2_1_to_json_string(json_str: String, preset: String) -> Result<String, CsafError> {
     let doc = load_document_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
-    let result = validate_by_preset(&doc, "2.1", &preset);
+    let result = validate_by_preset(&doc, "2.1", &preset).map_err(CsafError::from)?;
     serde_json::to_string(&result).map_err(|e| CsafError::InvalidJson { message: e.to_string() })
 }

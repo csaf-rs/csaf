@@ -6,35 +6,25 @@ use crate::csaf_traits::{
 };
 use crate::validation::{TestFinding, TestFindingData};
 
-fn extension_invalid_content_schema_missing_property_error(
-    instance_path: impl Into<String>,
-    name: &str,
-) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("The extension is missing required property {name}"),
-        instance_path: instance_path.into(),
-    })
-}
+#[jsonschema::validator(
+    path = "assets/extension-content.json",
+    validate_formats = true,
+    resources = {
+        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/meta.json" => { path = "assets/meta.json" },
+        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json" => { path = "assets/extension-metaschema.json" },
+    }
+)]
+struct ValidatorExtensionContent2_1;
 
-fn extension_invalid_content_schema_wrong_type_error(
-    instance_path: impl Into<String>,
-    name: &str,
-    expected: &str,
-) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("The property {name} of the extension has the wrong type. Expected type `{expected}`."),
-        instance_path: instance_path.into(),
-    })
-}
-
-fn extension_invalid_content_schema_unknown_property_error(
-    instance_path: impl Into<String>,
-    name: &str,
-) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("The extension has an additional unknown property {name}."),
-        instance_path: instance_path.into(),
-    })
+fn validate_schema_extension_content(json: &Value, path: &str) -> Vec<TestFinding> {
+    ValidatorExtensionContent2_1::iter_errors(json)
+        .map(|err| {
+            TestFinding::Error(TestFindingData {
+                message: err.to_string(),
+                instance_path: path.to_string(),
+            })
+        })
+        .collect()
 }
 
 /// Content Schema
@@ -55,45 +45,11 @@ pub fn test_6_1_60_1_extension_content_schema(doc: &impl CsafTrait) -> Result<()
         for (idx, extension) in extensions.get_raw().iter().enumerate() {
             let path = format!("{path_base}/{idx}");
 
-            let expected_properties = [
-                ("$schema", Value::is_string as fn(&Value) -> bool, "String"),
-                ("category", check_category_enum, "String.Enum"),
-                ("content", Value::is_object, "Mapping"),
-                ("critical", Value::is_boolean, "Boolean"),
-            ];
-            for (property_name, check_type, expected_type) in expected_properties {
-                if let Some(property) = extension.get(property_name) {
-                    if !check_type(property) {
-                        errors
-                            .get_or_insert_default()
-                            .push(extension_invalid_content_schema_wrong_type_error(
-                                &path,
-                                property_name,
-                                expected_type,
-                            ));
-                    }
-                } else {
-                    errors
-                        .get_or_insert_default()
-                        .push(extension_invalid_content_schema_missing_property_error(
-                            &path,
-                            property_name,
-                        ));
-                }
-            }
+            let extension_errors =
+                validate_schema_extension_content(&serde_json::Value::Object(extension.clone()), &path);
 
-            for property_name in extension.keys() {
-                if expected_properties
-                    .iter()
-                    .all(|(expected_property, ..)| property_name != expected_property)
-                {
-                    errors
-                        .get_or_insert_default()
-                        .push(extension_invalid_content_schema_unknown_property_error(
-                            &path,
-                            property_name,
-                        ));
-                }
+            if !extension_errors.is_empty() {
+                errors.get_or_insert_default().extend(extension_errors);
             }
         }
     }
@@ -101,10 +57,7 @@ pub fn test_6_1_60_1_extension_content_schema(doc: &impl CsafTrait) -> Result<()
     errors.map_or(Ok(()), Err)
 }
 
-fn collect_extensions<DOC>(doc: &DOC) -> Vec<(&dyn ExtensionsTrait, String)>
-where
-    DOC: CsafTrait,
-{
+fn collect_extensions(doc: &impl CsafTrait) -> Vec<(&dyn ExtensionsTrait, String)> {
     let mut collected_extensions: Vec<(&dyn ExtensionsTrait, String)> = Vec::new();
 
     // $.x_extensions[*]
@@ -171,12 +124,6 @@ where
     collected_extensions
 }
 
-/// Check that category enum is of type String and matches the allowed value,
-/// as specified in `2.4.4.2 Content Schema Property - Category`.
-fn check_category_enum(v: &Value) -> bool {
-    matches!(v.as_str(), Some("essential" | "supplementary" | "significant"))
-}
-
 crate::test_validation::impl_validator!(
     csaf2_1,
     ValidatorForTest6_1_60_1,
@@ -193,11 +140,29 @@ mod tests {
             loader::load_document,
             testcases::{ExpectedResults_6_1_60_1 as ExpectedResults, TESTS_2_1},
         },
-        validations::test_6_1_60_1::{
-            collect_extensions, extension_invalid_content_schema_missing_property_error,
-            extension_invalid_content_schema_unknown_property_error,
-        },
+        validation::{TestFinding, TestFindingData},
+        validations::test_6_1_60_1::collect_extensions,
     };
+
+    fn extension_invalid_content_schema_missing_property_error(
+        instance_path: impl Into<String>,
+        name: &str,
+    ) -> TestFinding {
+        TestFinding::Error(TestFindingData {
+            message: format!("\"{name}\" is a required property"),
+            instance_path: instance_path.into(),
+        })
+    }
+
+    fn extension_invalid_content_schema_unknown_property_error(
+        instance_path: impl Into<String>,
+        name: &str,
+    ) -> TestFinding {
+        TestFinding::Error(TestFindingData {
+            message: format!("Additional properties are not allowed ('{name}' was unexpected)"),
+            instance_path: instance_path.into(),
+        })
+    }
 
     #[test]
     fn test_6_1_60_1() {

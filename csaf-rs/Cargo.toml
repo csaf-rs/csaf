@@ -33,14 +33,14 @@ rust-embed = { version = "8", features = ["include-exclude"] }
 packageurl = "0.7"
 uuid = { version = "1.17.0", features = ["v7", "serde"] }
 semver = { version = "1" }
-jsonschema = { version = "0.56.0", default-features = false, features = ["macros"] }
+jsonschema = { version = "0.58.4", default-features = false, features = ["macros"] }
 spdx = "0.13.4"
 oxilangtag = "0.1.5"
 ssvc = "0.4.1"
 strum = { version = "0.28", features = ["derive"] }
 symspell = "0.5.2"
 thiserror = { version = "2" }
-utoipa = { version = "5", optional = true }
+utoipa = { version = "6", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }

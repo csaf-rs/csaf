@@ -18,13 +18,13 @@ pub fn validate_content_scores(
     instance_path: &str,
     errors: &mut Option<Vec<TestFinding>>,
 ) {
-    if let Some(cvss_v2_map) = content.get_cvss_v2() {
+    if let Some(cvss_v2_map) = content.get_cvss_v2_raw() {
         validate_scores(cvss_v2_map, instance_path, errors, Version::V2);
     }
-    if let Some(cvss_v3_map) = content.get_cvss_v3() {
+    if let Some(cvss_v3_map) = content.get_cvss_v3_raw() {
         validate_scores(cvss_v3_map, instance_path, errors, Version::V3_0);
     }
-    if let Some(cvss_v4_map) = content.get_cvss_v4() {
+    if let Some(cvss_v4_map) = content.get_cvss_v4_raw() {
         validate_scores(cvss_v4_map, instance_path, errors, Version::V4);
     }
 }
@@ -35,13 +35,13 @@ pub fn validate_content_consistency(
     instance_path: &str,
     errors: &mut Option<Vec<TestFinding>>,
 ) {
-    if let Some(cvss_map) = content.get_cvss_v2() {
+    if let Some(cvss_map) = content.get_cvss_v2_raw() {
         validate_consistency(cvss_map, instance_path, errors, Version::V2);
     }
-    if let Some(cvss_map) = content.get_cvss_v3() {
+    if let Some(cvss_map) = content.get_cvss_v3_raw() {
         validate_consistency(cvss_map, instance_path, errors, Version::V3_0);
     }
-    if let Some(cvss_map) = content.get_cvss_v4() {
+    if let Some(cvss_map) = content.get_cvss_v4_raw() {
         validate_consistency(cvss_map, instance_path, errors, Version::V4);
     }
 }

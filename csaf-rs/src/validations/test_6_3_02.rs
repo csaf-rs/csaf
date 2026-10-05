@@ -32,7 +32,7 @@ pub fn test_6_3_2_use_of_cvss_v3_0(doc: &impl CsafTrait) -> Result<(), Vec<TestF
         if let Some(metrics) = vuln.get_metrics() {
             for (m_i, metric) in metrics.iter().enumerate() {
                 let content = metric.get_content();
-                if let Some(cvss_v3_map) = content.get_cvss_v3() {
+                if let Some(cvss_v3_map) = content.get_cvss_v3_raw() {
                     let content_path = content.get_content_json_path(v_i, m_i);
 
                     // if version is "3.0", add an error

@@ -16,12 +16,15 @@ Before opening a new issue, please:
 - If you spot unrelated issues while working, open a separate issue or PR for them.
 - Link the issue that is related to the PR
 - Run formatting, linting and tests. See [Pre-Commit Guideline](./CODING_GUIDELINES.md#pre-commit-guidelines)
+- Please follow the [commit message guidelines](./CODING_GUIDELINES.md#commit-message-guidelines) when writing commit messages, as they are checked in the CI pipeline.
 - If submodule or schema updates are necessary, see [Schema](./CODING_GUIDELINES.md#schemas-and-type-generation)
 - If you need to extend the test harness see [Test harness](./CODING_GUIDELINES.md#test-harness) for instructions
 
 ## AI usage
 
-Assistance from LLMs or other artificial neural network tools should help our developers to create better results. Experiences in recent months (up to 2026-07) show that there is a real danger that use of so called "AI tools" for contributions creates significant more work than it saves. In addition there is the question of who is responsible for the code. Our current approach is: You - as a human contributor - are fully responsible for your contribution and the potential review work it causes. Thus we require: Indicate the extend of LLM or ANN assistance. Check the contents fully. (And as corollary: do not let agents generate contributions automatically.)
+Assistance from AI tools aims to create better results for our developers. Experiences in recent months (up to 2026-07) show that there is a real danger that use of these tools for contributions creates significantly more work than it saves. In addition there is the question of who is responsible for the code. 
+Our current approach is: You - as a human contributor - are fully responsible for your contribution and the potential review work it causes. 
+Thus we require: Indicate the extent of AI tool usage. Check the contents fully. (And as corollary: do not let agents generate contributions automatically.)
 
 ## Questions?
 

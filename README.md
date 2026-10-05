@@ -145,7 +145,7 @@ In addition, warnings in the pipeline are emitted if the commits contained withi
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run
 
 ```bash
-# make sure local submodules are up-to-date with the remote repository
+# make sure local submodules are up-to-date
 git submodule update --init --recursive
 
 # make sure that local assets are in sync with git submodules

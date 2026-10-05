@@ -1,23 +1,28 @@
 # Coding Guidelines
 
 - Use the `CsafTrait` / `VulnerabilityTrait` / `ProductTreeTrait` / etc. abstractions for version-agnostic logic.
-- When implementing a validation tests, collect all validation errors rather than failing fast — return `Err(Vec<ValidationError>)`, not a single error.
+- When implementing a validation test, collect all test findings rather than failing fast — return `Err(Vec<TestFinding>)`, not a single finding. Make sure to use the correct classification for the findings, i.e. `TestFinding::Error` when handling mandatory tests (6.1.x), `TestFinding::Warning` for optional/recommended tests (6.2.x), and `TestFinding::Info` for informational tests (6.3.x), unless the specification says otherwise.
 
 ## Pre-Commit Guidelines
 
 To ensure high maintainability, we encourage you to do some checks before you commit code. Those are also checked in the build pipeline and will fail the build if not addressed before. 
-```rust
-cargo fmt --all // formatting
-cargo clippy --all-targets -- -D warnings // linting
-cargo test --verbose // tests
+```sh
+cargo fmt --all # formatting
+cargo clippy --all-targets -- -D warnings # linting
+cargo test --verbose # tests
 ```
+
+## Commit messsage guidelines
+
+When writing commit messages, please follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. 
+This helps us to keep a clean and understandable history of changes.
 
 ## Schemas and type generation
 
 We have several json schema files included in the code base from which code is generated. The most prominent being from the CSAF repository which is integrated as a git submodule. If there are changes to those schemas, we have to review these changes and incorporate them into our code. This can mean regenerating code (this is here referred to as 'asset-update') and updating existing code to match the new requirements.
 To help with this, there are a few update scripts in [scripts/update](./scripts/update) to make this process easier.
 Additionally, after using those scripts or after updating a submodule, you should run the type-generator to ensure the generated code is up-to-date.
-```rust
+```sh
 cargo run -p type-generator
 ```
 > Updates of the git submodules is also handled by dependabot, so there should not be the need to do this manually.
@@ -30,7 +35,7 @@ Here is a small step-by-step guide for implementing a new test:
 1. Create the new test file following the existing naming convention (`test_6_X_XX.rs`) in the validations folder [csaf-rs/src/validations](./csaf-rs/src/validations)
 2. Add the test function, i.e.
 ```rust
-fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<ValidationError>> {
+fn validate_missing_product_id<Doc: CsafTrait>(doc: &Doc) -> Result<(), Vec<TestFinding>> {
 }
 ```
 3. Add the validator hooks
@@ -65,5 +70,5 @@ TESTS_2_1.test_6_2_33.expect(ExpectedResults {
     case_11: Ok(()),
     case_12: Ok(()),
     case_s11: Ok(()),
-    });
+});
 ```

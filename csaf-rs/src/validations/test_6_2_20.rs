@@ -1,4 +1,4 @@
-use crate::{test_validation::TestValidator, validation::{TestFinding, TestFindingData}};
+use crate::validation::{TestFinding, TestFindingData};
 use jsonschema::error::ValidationErrorKind;
 use serde_json::Value;
 

@@ -9,7 +9,7 @@ fn make_strict(schema_value: Value) -> Value {
     schema_value.as_object_mut().unwrap().insert(
         "$schema".to_string(),
         Value::String("https://json-schema.org/draft/2020-12/schema".to_string()),
-    );    
+    );
     schema_value
 }
 

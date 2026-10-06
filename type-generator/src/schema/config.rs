@@ -60,6 +60,7 @@ fn fix_2_1_schema(value: &mut Value) -> Result<(), BuildError> {
     for path in fix_paths {
         patch_dot_set(value, &path, json!({"type": "object"}))?;
     }
+    patch_dot_set(value, "$defs.entity_refs_t.items", json!({"type": "string"}))?;
     remove_format(value, "date-time");
     remove_format(value, "uri");
     Ok(())

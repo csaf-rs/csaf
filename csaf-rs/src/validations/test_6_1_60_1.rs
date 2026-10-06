@@ -132,16 +132,9 @@ crate::test_validation::impl_validator!(
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use crate::{
-        csaf::raw::HasParsed,
-        csaf2_1::{
-            loader::load_document,
-            testcases::{ExpectedResults_6_1_60_1 as ExpectedResults, TESTS_2_1},
-        },
+        csaf2_1::testcases::{ExpectedResults_6_1_60_1 as ExpectedResults, TESTS_2_1},
         validation::{TestFinding, TestFindingData},
-        validations::test_6_1_60_1::collect_extensions,
     };
 
     fn extension_invalid_content_schema_missing_property_error(
@@ -181,33 +174,90 @@ mod tests {
             case_11: Ok(()),
             // Case 12:
             case_12: Ok(()),
+            case_s01: Err(vec![
+                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "$schema"),
+                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "category"),
+                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "critical"),
+                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "content"),
+                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "$schema"),
+                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "category"),
+                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "critical"),
+                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "content"),
+                extension_invalid_content_schema_missing_property_error("/vulnerabilities/0/x_extensions/0", "$schema"),
+                extension_invalid_content_schema_missing_property_error(
+                    "/vulnerabilities/0/x_extensions/0",
+                    "category",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/vulnerabilities/0/x_extensions/0",
+                    "critical",
+                ),
+                extension_invalid_content_schema_missing_property_error("/vulnerabilities/0/x_extensions/0", "content"),
+                extension_invalid_content_schema_missing_property_error(
+                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
+                    "$schema",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
+                    "category",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
+                    "critical",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
+                    "content",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/branches/0/product/x_extensions/0",
+                    "$schema",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/branches/0/product/x_extensions/0",
+                    "category",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/branches/0/product/x_extensions/0",
+                    "critical",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/branches/0/product/x_extensions/0",
+                    "content",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/full_product_names/0/x_extensions/0",
+                    "$schema",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/full_product_names/0/x_extensions/0",
+                    "category",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/full_product_names/0/x_extensions/0",
+                    "critical",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/full_product_names/0/x_extensions/0",
+                    "content",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
+                    "$schema",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
+                    "category",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
+                    "critical",
+                ),
+                extension_invalid_content_schema_missing_property_error(
+                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
+                    "content",
+                ),
+            ]),
         });
-    }
-
-    #[test]
-    fn test_extension_collection() {
-        let csaf_doc = include_str!("test_6_1_60_1/all_extension_locations.json");
-        let raw_doc =
-            load_document(csaf_doc).expect("Failed to load CSAF test document containing all extension locations");
-        let doc = raw_doc.get_parsed().as_ref().expect("Failed to parse CSAF document");
-
-        let collected_extensions: HashSet<_> = collect_extensions(doc).iter().map(|(_, path)| path.clone()).collect();
-
-        assert_eq!(
-            collected_extensions,
-            [
-                "/x_extensions",
-                "/document/x_extensions",
-                "/vulnerabilities/0/x_extensions",
-                "/vulnerabilities/0/metrics/0/content/x_extensions",
-                "/product_tree/branches/0/product/x_extensions",
-                "/product_tree/full_product_names/0/x_extensions",
-                "/product_tree/product_paths/0/full_product_name/x_extensions",
-            ]
-            .into_iter()
-            .map(|p| p.to_string())
-            .collect(),
-            "Did not return the expected extension locations"
-        )
     }
 }

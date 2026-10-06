@@ -13,7 +13,7 @@
             "name": "csaf-rs",
             "namespace": "https://github.com/csaf-rs"
         },
-    "title": "some title",
+    "title": "Invalid extension content in all available extension fields",
     "tracking": {
         "current_release_date": "2026-01-01T00:00:00Z",
         "id": "test-01",
@@ -22,13 +22,13 @@
         "status": "final",
         "version": "1.0.0"
     },
-    "x_extensions": []
+    "x_extensions": [{}]
   },
   "vulnerabilities": [{
-    "x_extensions": [],
+    "x_extensions": [{}],
     "metrics": [{
         "content": {
-            "x_extensions": []
+            "x_extensions": [{}]
         },
         "products": []
     }]
@@ -40,23 +40,23 @@
         "product": {
             "name": "csaf",
             "product_id": "csaf@main",
-            "x_extensions": []
+            "x_extensions": [{}]
         }
     }],
     "full_product_names": [{
         "name": "csaf",
         "product_id": "csaf",
-        "x_extensions": []
+        "x_extensions": [{}]
     }],
     "product_paths": [{
         "beginning_product_reference": "csaf-ref",
         "full_product_name": {
             "name": "csaf",
             "product_id": "csaf-path",
-            "x_extensions": []
+            "x_extensions": [{}]
         },
         "subpaths": []
     }]
   },
-  "x_extensions": []
+  "x_extensions": [{}]
 }

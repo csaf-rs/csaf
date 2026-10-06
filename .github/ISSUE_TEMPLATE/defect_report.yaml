@@ -45,9 +45,9 @@ body:
       label: Architecture
       description: Please select your system architecture.
       options:
-        - x86
-        - x64
-        - ARM
+        - x86_64 (Intel/AMD 64-bit)
+        - aarch64 (ARM 64-bit)
+        - wasm32 (WebAssembly)
         - Other
 
 

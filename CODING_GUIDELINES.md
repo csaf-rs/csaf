@@ -29,7 +29,7 @@ cargo run -p type-generator
 
 ## Test Harness
 
-In order to test our implementation, the CSAF standard, which is integrated as a git submodule, provides many [test files](./csaf/csaf_2.0/test/validator/data). Those files are incorporated into our test harness in a way, that every file must be addressed with expected results (see [test_6_1_01.rs](./csaf-rs/src/validations/test_6_1_01.rs) for an example). The provided tests do not cover all edge cases, thus we provide supplementary test cases, which are located in the [type-generator](./type-generator/assets/tests). Those can, and possibly should, be extended if a new test is implemented or requirements for an existing test change.
+In order to test our implementation, the CSAF standard, which is integrated as a git submodule, provides many [test files](./csaf/csaf_2.1/test/validator/data). Those files are incorporated into our test harness in a way, that every file must be addressed with expected results (see [test_6_1_01.rs](./csaf-rs/src/validations/test_6_1_01.rs) for an example). The provided tests do not cover all edge cases, thus we provide supplementary test cases, which are located in the [type-generator](./type-generator/assets/tests). Those can, and possibly should, be extended if a new test is implemented or requirements for an existing test change.
 Here is a small step-by-step guide for implementing a new test:
 
 1. Create the new test file following the existing naming convention (`test_6_X_XX.rs`) in the validations folder [csaf-rs/src/validations](./csaf-rs/src/validations)

@@ -272,6 +272,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.27.17 | ⭕ | ✅ |
 | 6.1.27.18 | ⭕ | ✅ |
 | 6.1.27.19 | ⭕ | ✅ |
+| 6.1.27.20 | ⭕ | ✅ |
 | 6.1.28 | ✅ | ✅ |
 | 6.1.29 | ✅ | ✅ |
 | 6.1.30 | ✅ | ✅ |

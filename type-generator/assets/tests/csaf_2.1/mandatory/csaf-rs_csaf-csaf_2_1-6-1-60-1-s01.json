@@ -9,54 +9,78 @@
       }
     },
     "publisher": {
-            "category": "vendor",
-            "name": "csaf-rs",
-            "namespace": "https://github.com/csaf-rs"
-        },
+      "category": "vendor",
+      "name": "csaf-rs",
+      "namespace": "https://github.com/csaf-rs"
+    },
     "title": "Invalid extension content in all available extension fields",
     "tracking": {
-        "current_release_date": "2026-01-01T00:00:00Z",
-        "id": "test-01",
-        "initial_release_date": "2026-01-01T00:00:00.000Z",
-        "revision_history": [],
-        "status": "final",
-        "version": "1.0.0"
+      "current_release_date": "2026-01-01T00:00:00Z",
+      "id": "test-01",
+      "initial_release_date": "2026-01-01T00:00:00.000Z",
+      "revision_history": [],
+      "status": "final",
+      "version": "1.0.0"
     },
-    "x_extensions": [{}]
+    "x_extensions": [
+      {}
+    ]
   },
-  "vulnerabilities": [{
-    "x_extensions": [{}],
-    "metrics": [{
-        "content": {
-            "x_extensions": [{}]
-        },
-        "products": []
-    }]
-  }],
+  "vulnerabilities": [
+    {
+      "x_extensions": [
+        {}
+      ],
+      "metrics": [
+        {
+          "content": {
+            "x_extensions": [
+              {}
+            ]
+          },
+          "products": []
+        }
+      ]
+    }
+  ],
   "product_tree": {
-    "branches": [{
+    "branches": [
+      {
         "category": "product_name",
         "name": "main",
         "product": {
-            "name": "csaf",
-            "product_id": "csaf@main",
-            "x_extensions": [{}]
+          "name": "csaf",
+          "product_id": "csaf@main",
+          "x_extensions": [
+            {}
+          ]
         }
-    }],
-    "full_product_names": [{
+      }
+    ],
+    "full_product_names": [
+      {
         "name": "csaf",
         "product_id": "csaf",
-        "x_extensions": [{}]
-    }],
-    "product_paths": [{
+        "x_extensions": [
+          {}
+        ]
+      }
+    ],
+    "product_paths": [
+      {
         "beginning_product_reference": "csaf-ref",
         "full_product_name": {
-            "name": "csaf",
-            "product_id": "csaf-path",
-            "x_extensions": [{}]
+          "name": "csaf",
+          "product_id": "csaf-path",
+          "x_extensions": [
+            {}
+          ]
         },
         "subpaths": []
-    }]
+      }
+    ]
   },
-  "x_extensions": [{}]
+  "x_extensions": [
+    {}
+  ]
 }

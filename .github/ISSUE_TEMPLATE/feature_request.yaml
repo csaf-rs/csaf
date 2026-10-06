@@ -1,0 +1,15 @@
+name: Feature Request
+description: Suggest an idea for this project
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Describe the feature**
+        A clear and concise description of what the feature is.
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: Please provide a clear picture of the use case for this feature.
+    validations:
+      required: true

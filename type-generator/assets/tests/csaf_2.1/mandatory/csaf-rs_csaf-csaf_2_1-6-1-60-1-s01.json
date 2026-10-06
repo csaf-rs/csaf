@@ -26,23 +26,6 @@
       {}
     ]
   },
-  "vulnerabilities": [
-    {
-      "x_extensions": [
-        {}
-      ],
-      "metrics": [
-        {
-          "content": {
-            "x_extensions": [
-              {}
-            ]
-          },
-          "products": []
-        }
-      ]
-    }
-  ],
   "product_tree": {
     "branches": [
       {
@@ -80,6 +63,23 @@
       }
     ]
   },
+  "vulnerabilities": [
+    {
+      "metrics": [
+        {
+          "content": {
+            "x_extensions": [
+              {}
+            ]
+          },
+          "products": []
+        }
+      ],
+      "x_extensions": [
+        {}
+      ]
+    }
+  ],
   "x_extensions": [
     {}
   ]

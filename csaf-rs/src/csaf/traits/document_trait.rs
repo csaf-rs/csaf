@@ -40,12 +40,15 @@ fn canonical_url_candidates<'a, R: ReferenceTrait>(
         .filter(move |url| {
             // Check that the URL starts with "https://"
             if let Some(after_scheme) = url.strip_prefix("https://")
-                // Check that there is a '/' after the authority
-                && let Some((authority, path)) = after_scheme.split_once('/')
-                // Check that the authority is non-empty
-                && !authority.is_empty()
-                // Check that the authority has a non-empty hostname
-                && has_non_empty_hostname(authority)
+                // Split the part after the scheme at the first '/' to get the potential authority part
+                && let Some((authority_part, path)) = after_scheme.split_once('/')
+                // Check that the authority part is non-empty
+                && !authority_part.is_empty()
+                // Check that the authority part contains no query or fragment delimiter
+                && !authority_part.contains('?')
+                && !authority_part.contains('#')
+                // Check that the authority part has a non-empty hostname
+                && has_non_empty_hostname(authority_part)
                 // Check that the last segment of the path matches the expected filename
                 && path.rsplit('/').next() == Some(expected_filename)
             {
@@ -410,6 +413,20 @@ mod tests {
         Some(vec![make_ref21(
         "self",
         "https://example-company-2019-yh3234.json"
+    )]),
+        0
+    )]
+    #[case::empty_hostname_with_query_before_slash(
+        Some(vec![make_ref21(
+        "self",
+        "https://?next=/example-company-2019-yh3234.json"
+    )]),
+        0
+    )]
+    #[case::empty_hostname_with_fragment_before_slash(
+        Some(vec![make_ref21(
+        "self",
+        "https://#/example-company-2019-yh3234.json"
     )]),
         0
     )]

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::csaf::aggregation::revision_history::CsafRevisionHistoryItem;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::version_number::CsafVersionNumber;
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidCsafVersionNumber};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
@@ -37,12 +37,12 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                 // checks first item
                 None => {
                     let mut first_item = current.number.clone();
-                    if let Ok(major) = first_item.get_major()
-                        && !(major == 0 || major == 1)
+                    if let Some(first_valid) = current.number.as_valid()
+                        && !(current_major == 0 || current_major == 1)
                     {
                         errors
                             .get_or_insert_default()
-                            .push(test_6_1_21_err_wrong_first_version(&first_item));
+                            .push(test_6_1_21_err_wrong_first_version(&first_valid));
                         while let Ok(previous_version) = first_item.get_previous_major_version()
                             && let Some(previous_version) = previous_version
                         {
@@ -141,11 +141,10 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_21, test_6_1_21_miss
 
 const REVISION_HISTORY_PATH: &str = "/document/tracking/revision_history";
 
-fn test_6_1_21_err_wrong_first_version(version: &CsafVersionNumber) -> TestFinding {
+fn test_6_1_21_err_wrong_first_version(version: &ValidCsafVersionNumber) -> TestFinding {
     let expected_version = match version {
-        CsafVersionNumber::IntVer(_) => "`0` or `1`",
-        CsafVersionNumber::SemVer(_) => "`0.y.z` or `1.y.z`",
-        CsafVersionNumber::Invalid(_) => panic!("Invalid version number should not be passed to this function"),
+        ValidCsafVersionNumber::IntVer(_) => "`0` or `1`",
+        ValidCsafVersionNumber::SemVer(_) => "`0.y.z` or `1.y.z`",
     }
     .to_string();
 
@@ -199,14 +198,14 @@ mod tests {
             "2",
         ))]);
         let case_intver_2_3_wrong_first_and_missing_1_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2").as_valid().unwrap()),
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1")),
         ]);
         let case_semver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from(
             "2.0.0",
         ))]);
         let case_semver_2_3_missing_1_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2.0.0")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2.0.0").as_valid().unwrap()),
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1.0.0")),
         ]);
         let case_s03_intver_1_3_2_missing_2_between = Err(vec![test_6_1_21_err_missing_version_between(
@@ -221,7 +220,7 @@ mod tests {
         )]);
 
         let case_s05_intver_3_1_missing_1_before_2_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1"),
                 &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
@@ -229,7 +228,7 @@ mod tests {
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("2")),
         ]);
         let case_s06_semver_3_1_missing_1_before_2_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3.0.0")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3.0.0").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1.0.0"),
                 &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
@@ -241,7 +240,7 @@ mod tests {
             &CsafVersionNumber::from("2"),
         )]);
         let case_intver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1"),
                 &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
@@ -258,7 +257,7 @@ mod tests {
         ]);
 
         let case_semver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("4.0.0")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("4.0.0").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1.0.0"),
                 &CsafDateTime::from("2023-08-22T10:00:00.000Z"),

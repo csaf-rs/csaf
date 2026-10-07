@@ -9,12 +9,12 @@ use crate::{
     validation::{TestFinding, TestFindingData},
 };
 
-static CVSS20_VALIDATOR: LazyLock<Validator> =
-    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v2.0.json")));
-static CVSS30_VALIDATOR: LazyLock<Validator> =
-    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v3.0.json")));
-static CVSS31_VALIDATOR: LazyLock<Validator> =
-    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v3.1.json")));
+static CVSS_20_STRICT_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v2.0_strict.json")));
+static CVSS_30_STRICT_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v3.0_strict.json")));
+static CVSS_31_STRICT_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v3.1_strict.json")));
 static CVSS40_VALIDATOR: LazyLock<Validator> =
     LazyLock::new(|| create_draft_validator(include_str!("../../assets/cvss-v4.0.json")));
 
@@ -31,7 +31,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
                 if let Some(cvss_v2_raw) = content.get_cvss_v2_raw() {
                     evaluate_cvss(
                         cvss_v2_raw,
-                        &CVSS20_VALIDATOR,
+                        &CVSS_20_STRICT_VALIDATOR,
                         &instance_prefix,
                         CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                         &mut errors,
@@ -44,7 +44,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
                         if version == "3.0" {
                             evaluate_cvss(
                                 cvss_v3_raw,
-                                &CVSS30_VALIDATOR,
+                                &CVSS_30_STRICT_VALIDATOR,
                                 &instance_prefix,
                                 metric_type,
                                 &mut errors,
@@ -52,7 +52,7 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
                         } else if version == "3.1" {
                             evaluate_cvss(
                                 cvss_v3_raw,
-                                &CVSS31_VALIDATOR,
+                                &CVSS_31_STRICT_VALIDATOR,
                                 &instance_prefix,
                                 metric_type,
                                 &mut errors,

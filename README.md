@@ -350,6 +350,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.39.13 | ⭕ | ✅ |
 | 6.2.40    | ⭕ | ✅ |
 | 6.2.43    | ⭕ | ✅ |
+| 6.2.46    | ⭕ | ✅ |
 | 6.2.47    | ⭕ | ✅ |
 
 ### Informative Tests

@@ -1,27 +1,21 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "https://www.first.org/cvss/cvss-v3.1.json?20211103",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
   "definitions": {
-    "accessComplexityType": {
+    "attackComplexityType": {
       "enum": [
         "HIGH",
-        "MEDIUM",
         "LOW"
       ],
       "type": "string"
     },
-    "accessVectorType": {
+    "attackVectorType": {
       "enum": [
         "NETWORK",
         "ADJACENT_NETWORK",
-        "LOCAL"
-      ],
-      "type": "string"
-    },
-    "authenticationType": {
-      "enum": [
-        "MULTIPLE",
-        "SINGLE",
-        "NONE"
+        "LOCAL",
+        "PHYSICAL"
       ],
       "type": "string"
     },
@@ -37,29 +31,87 @@
     "ciaType": {
       "enum": [
         "NONE",
-        "PARTIAL",
-        "COMPLETE"
+        "LOW",
+        "HIGH"
       ],
       "type": "string"
     },
-    "collateralDamagePotentialType": {
+    "confidenceType": {
       "enum": [
-        "NONE",
-        "LOW",
-        "LOW_MEDIUM",
-        "MEDIUM_HIGH",
-        "HIGH",
+        "UNKNOWN",
+        "REASONABLE",
+        "CONFIRMED",
         "NOT_DEFINED"
       ],
       "type": "string"
     },
-    "exploitabilityType": {
+    "exploitCodeMaturityType": {
       "enum": [
         "UNPROVEN",
         "PROOF_OF_CONCEPT",
         "FUNCTIONAL",
         "HIGH",
         "NOT_DEFINED"
+      ],
+      "type": "string"
+    },
+    "modifiedAttackComplexityType": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "NOT_DEFINED"
+      ],
+      "type": "string"
+    },
+    "modifiedAttackVectorType": {
+      "enum": [
+        "NETWORK",
+        "ADJACENT_NETWORK",
+        "LOCAL",
+        "PHYSICAL",
+        "NOT_DEFINED"
+      ],
+      "type": "string"
+    },
+    "modifiedCiaType": {
+      "enum": [
+        "NONE",
+        "LOW",
+        "HIGH",
+        "NOT_DEFINED"
+      ],
+      "type": "string"
+    },
+    "modifiedPrivilegesRequiredType": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "NONE",
+        "NOT_DEFINED"
+      ],
+      "type": "string"
+    },
+    "modifiedScopeType": {
+      "enum": [
+        "UNCHANGED",
+        "CHANGED",
+        "NOT_DEFINED"
+      ],
+      "type": "string"
+    },
+    "modifiedUserInteractionType": {
+      "enum": [
+        "NONE",
+        "REQUIRED",
+        "NOT_DEFINED"
+      ],
+      "type": "string"
+    },
+    "privilegesRequiredType": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "NONE"
       ],
       "type": "string"
     },
@@ -73,12 +125,10 @@
       ],
       "type": "string"
     },
-    "reportConfidenceType": {
+    "scopeType": {
       "enum": [
-        "UNCONFIRMED",
-        "UNCORROBORATED",
-        "CONFIRMED",
-        "NOT_DEFINED"
+        "UNCHANGED",
+        "CHANGED"
       ],
       "type": "string"
     },
@@ -87,20 +137,26 @@
       "minimum": 0,
       "type": "number"
     },
-    "targetDistributionType": {
+    "severityType": {
       "enum": [
         "NONE",
         "LOW",
         "MEDIUM",
         "HIGH",
-        "NOT_DEFINED"
+        "CRITICAL"
+      ],
+      "type": "string"
+    },
+    "userInteractionType": {
+      "enum": [
+        "NONE",
+        "REQUIRED"
       ],
       "type": "string"
     }
   },
-  "id": "https://www.first.org/cvss/cvss-v2.0.json?20170531",
   "license": [
-    "Copyright (c) 2017, FIRST.ORG, INC.",
+    "Copyright (c) 2021, FIRST.ORG, INC.",
     "All rights reserved.",
     "",
     "Redistribution and use in source and binary forms, with or without modification, are permitted provided that the ",
@@ -121,14 +177,11 @@
     "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
   ],
   "properties": {
-    "accessComplexity": {
-      "$ref": "#/definitions/accessComplexityType"
+    "attackComplexity": {
+      "$ref": "#/definitions/attackComplexityType"
     },
-    "accessVector": {
-      "$ref": "#/definitions/accessVectorType"
-    },
-    "authentication": {
-      "$ref": "#/definitions/authenticationType"
+    "attackVector": {
+      "$ref": "#/definitions/attackVectorType"
     },
     "availabilityImpact": {
       "$ref": "#/definitions/ciaType"
@@ -139,8 +192,8 @@
     "baseScore": {
       "$ref": "#/definitions/scoreType"
     },
-    "collateralDamagePotential": {
-      "$ref": "#/definitions/collateralDamagePotentialType"
+    "baseSeverity": {
+      "$ref": "#/definitions/severityType"
     },
     "confidentialityImpact": {
       "$ref": "#/definitions/ciaType"
@@ -151,8 +204,11 @@
     "environmentalScore": {
       "$ref": "#/definitions/scoreType"
     },
-    "exploitability": {
-      "$ref": "#/definitions/exploitabilityType"
+    "environmentalSeverity": {
+      "$ref": "#/definitions/severityType"
+    },
+    "exploitCodeMaturity": {
+      "$ref": "#/definitions/exploitCodeMaturityType"
     },
     "integrityImpact": {
       "$ref": "#/definitions/ciaType"
@@ -160,26 +216,59 @@
     "integrityRequirement": {
       "$ref": "#/definitions/ciaRequirementType"
     },
+    "modifiedAttackComplexity": {
+      "$ref": "#/definitions/modifiedAttackComplexityType"
+    },
+    "modifiedAttackVector": {
+      "$ref": "#/definitions/modifiedAttackVectorType"
+    },
+    "modifiedAvailabilityImpact": {
+      "$ref": "#/definitions/modifiedCiaType"
+    },
+    "modifiedConfidentialityImpact": {
+      "$ref": "#/definitions/modifiedCiaType"
+    },
+    "modifiedIntegrityImpact": {
+      "$ref": "#/definitions/modifiedCiaType"
+    },
+    "modifiedPrivilegesRequired": {
+      "$ref": "#/definitions/modifiedPrivilegesRequiredType"
+    },
+    "modifiedScope": {
+      "$ref": "#/definitions/modifiedScopeType"
+    },
+    "modifiedUserInteraction": {
+      "$ref": "#/definitions/modifiedUserInteractionType"
+    },
+    "privilegesRequired": {
+      "$ref": "#/definitions/privilegesRequiredType"
+    },
     "remediationLevel": {
       "$ref": "#/definitions/remediationLevelType"
     },
     "reportConfidence": {
-      "$ref": "#/definitions/reportConfidenceType"
+      "$ref": "#/definitions/confidenceType"
     },
-    "targetDistribution": {
-      "$ref": "#/definitions/targetDistributionType"
+    "scope": {
+      "$ref": "#/definitions/scopeType"
     },
     "temporalScore": {
       "$ref": "#/definitions/scoreType"
     },
+    "temporalSeverity": {
+      "$ref": "#/definitions/severityType"
+    },
+    "userInteraction": {
+      "$ref": "#/definitions/userInteractionType"
+    },
     "vectorString": {
-      "pattern": "^((AV:[NAL]|AC:[LMH]|Au:[MSN]|[CIA]:[NPC]|E:(U|POC|F|H|ND)|RL:(OF|TF|W|U|ND)|RC:(UC|UR|C|ND)|CDP:(N|L|LM|MH|H|ND)|TD:(N|L|M|H|ND)|[CIA]R:(L|M|H|ND))/)*(AV:[NAL]|AC:[LMH]|Au:[MSN]|[CIA]:[NPC]|E:(U|POC|F|H|ND)|RL:(OF|TF|W|U|ND)|RC:(UC|UR|C|ND)|CDP:(N|L|LM|MH|H|ND)|TD:(N|L|M|H|ND)|[CIA]R:(L|M|H|ND))$",
+      "pattern": "^CVSS:3[.]1/((AV:[NALP]|AC:[LH]|PR:[NLH]|UI:[NR]|S:[UC]|[CIA]:[NLH]|E:[XUPFH]|RL:[XOTWU]|RC:[XURC]|[CIA]R:[XLMH]|MAV:[XNALP]|MAC:[XLH]|MPR:[XNLH]|MUI:[XNR]|MS:[XUC]|M[CIA]:[XNLH])/)*(AV:[NALP]|AC:[LH]|PR:[NLH]|UI:[NR]|S:[UC]|[CIA]:[NLH]|E:[XUPFH]|RL:[XOTWU]|RC:[XURC]|[CIA]R:[XLMH]|MAV:[XNALP]|MAC:[XLH]|MPR:[XNLH]|MUI:[XNR]|MS:[XUC]|M[CIA]:[XNLH])$",
       "type": "string"
     },
     "version": {
       "description": "CVSS Version",
       "enum": [
-        "2.0"
+        "3.1"
       ],
       "type": "string"
     }
@@ -187,9 +276,9 @@
   "required": [
     "version",
     "vectorString",
-    "baseScore"
+    "baseScore",
+    "baseSeverity"
   ],
-  "title": "JSON Schema for Common Vulnerability Scoring System version 2.0",
-  "type": "object",
-  "unevaluatedProperties": false
+  "title": "JSON Schema for Common Vulnerability Scoring System version 3.1",
+  "type": "object"
 }

@@ -145,9 +145,8 @@ In addition, warnings in the pipeline are emitted if the commits contained withi
 If you want to build `csaf-validator` on your own, please install Rust (see https://rustup.rs) and then run
 
 ```bash
-# make sure submodules are up-to-date
-git submodule init
-git submodule update --remote
+# make sure local submodules are up-to-date
+git submodule update --init --recursive
 
 # make sure that local assets are in sync with git submodules
 ./scripts/update/update_assets.sh
@@ -340,6 +339,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.39.3  | ⭕ | ✅ |
 | 6.2.39.4  | ⭕ | ✅ |
 | 6.2.39.5  | ⭕ | ✅ |
+| 6.2.39.6  | ⭕ | ✅ |
 | 6.2.39.7  | ⭕ | ✅ |
 | 6.2.39.8  | ⭕ | ✅ |
 | 6.2.39.9  | ⭕ | ✅ |
@@ -359,6 +359,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.3    | ✅ | ✅ |
 | 6.3.4    | ✅ | ✅ |
 | 6.3.5    | ✅ | ✅ |
+| 6.3.9    | ✅ | ✅ |
 | 6.3.10   | ✅ | ✅ |
 | 6.3.11   | ✅ | ✅ |
 | 6.3.14   | ⭕ | ✅ |

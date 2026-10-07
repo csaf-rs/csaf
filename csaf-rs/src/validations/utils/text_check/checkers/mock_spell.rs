@@ -6,6 +6,7 @@ use crate::validations::utils::text_check::checkers::utils::tokenize_words;
 use crate::validations::utils::text_check::checkers::{TemporaryTextCheckQuality, TextChecker};
 use crate::validations::utils::text_check::{TextCheckFinding, TextCheckKind};
 use std::collections::HashSet;
+use std::sync::LazyLock;
 
 /// A mock spell-checker for English text.
 ///
@@ -36,7 +37,6 @@ impl TextChecker for MockSpellChecker {
 }
 
 fn spell_check(text: &str) -> Vec<TextCheckFinding> {
-    let dict = dictionary();
     let mut findings = Vec::new();
 
     for (word, start, end) in tokenize_words(text) {
@@ -46,7 +46,7 @@ fn spell_check(text: &str) -> Vec<TextCheckFinding> {
             continue;
         }
 
-        if !dict.contains(word.to_lowercase().as_str()) {
+        if !DICTIONARY.contains(word.to_lowercase().as_str()) {
             findings.push(TextCheckFinding {
                 fragment: word,
                 start,
@@ -60,7 +60,7 @@ fn spell_check(text: &str) -> Vec<TextCheckFinding> {
 }
 
 // just the words contained in the tests
-fn dictionary() -> HashSet<&'static str> {
+static DICTIONARY: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     [
         "are",
         "going",
@@ -104,7 +104,7 @@ fn dictionary() -> HashSet<&'static str> {
     .iter()
     .copied()
     .collect()
-}
+});
 
 #[cfg(test)]
 mod tests {

@@ -6,3 +6,4 @@ pub(crate) mod raw_json;
 pub(crate) mod rvisc;
 pub(crate) mod ssvc;
 pub(crate) mod text_check;
+pub(crate) mod vulnerability_notes_with_title_and_category;

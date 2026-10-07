@@ -7,9 +7,11 @@ use crate::schema::csaf2_1::schema::Cwe as Cwe21;
 pub struct Cwe {
     /// Holds the ID for the weakness.
     pub id: String,
-    /// Holds the full name of the weakness as given in the CWE specification with `version`.
+    /// Holds the full name of the weakness.
     pub name: String,
     /// Holds the version string of the CWE specification this weakness was extracted from.
+    /// For CSAF 2.0, this field is `None` as the version is not present in that specification.
+    /// For CSAF 2.1, this field is `Some(version)`.
     pub version: Option<String>,
 }
 

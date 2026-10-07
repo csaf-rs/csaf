@@ -8,12 +8,16 @@ use crate::{
     validation::{TestFinding, TestFindingData},
 };
 
+#[allow(clippy::expect_used)]
 fn create_validator(schema_str: &str) -> Validator {
-    jsonschema::validator_for(&serde_json::from_str(schema_str).unwrap()).unwrap()
+    let schema = serde_json::from_str(schema_str).expect("embedded CVSS schema must be valid JSON");
+    jsonschema::validator_for(&schema).expect("embedded CVSS schema must be a valid JSON schema")
 }
 
+#[allow(clippy::expect_used)]
 fn create_draft_validator(schema_str: &str) -> Validator {
-    jsonschema::draft202012::new(&serde_json::from_str(schema_str).unwrap()).unwrap()
+    let schema = serde_json::from_str(schema_str).expect("embedded CVSS schema must be valid JSON");
+    jsonschema::draft202012::new(&schema).expect("embedded CVSS schema must be a valid draft 2020-12 JSON schema")
 }
 
 static CVSS_20_STRICT_VALIDATOR: LazyLock<Validator> =

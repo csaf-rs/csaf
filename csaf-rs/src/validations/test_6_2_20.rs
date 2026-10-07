@@ -21,8 +21,8 @@ struct StrictValidator2_0;
         "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json" => { path = "assets/extension-metaschema.strict.json" },
         "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json" => { path = "assets/extension-content.strict.json" },
         "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0_strict.json" },
-        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0_strict.json"},
-        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1_strict.json"},
+        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"}, // we may not make this strict, otherwise the oneOf does not match
+        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"}, // we may not make this strict, otherwise the oneOf does not match
         "https://www.first.org/cvss/cvss-v4.0.json" => { path = "assets/cvss-v4.0.strict.json" },
         "https://certcc.github.io/SSVC/data/schema/v2/SelectionList_2_0_0.schema.json" => { path = "assets/SelectionList_2_0_0.schema.strict.json" }
     }

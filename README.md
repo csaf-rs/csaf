@@ -308,6 +308,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.60.2 | ⭕  |   |
 | 6.1.60.3 | ⭕  |   |
 | 6.1.61 | ⭕ | ✅ |
+| 6.1.62 | ⭕ | ✅ |
 
 ### Recommended Tests
 

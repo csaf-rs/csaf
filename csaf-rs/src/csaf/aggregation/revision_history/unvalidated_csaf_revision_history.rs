@@ -1,4 +1,4 @@
-use crate::csaf::types::csaf_datetime::CsafDateTime;
+use crate::csaf::types::csaf_datetime::{CsafDateTime, CsafDateTimeParseError};
 use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::RevisionTrait;
 
@@ -18,9 +18,24 @@ impl UnvalidatedCsafRevisionHistory {
     ///
     /// Uses unstable sorting, which might be faster, while not keeping the order of equal keys, which
     /// should be unique anyways, as long the second order key (revision history numbers) are unique
-    pub(crate) fn inplace_sort_by_date_then_number(&mut self) {
-        self.0
-            .sort_unstable_by(|a, b| a.date.cmp(&b.date).then_with(|| a.number.cmp(&b.number)));
+    ///
+    /// Fails, without sorting, if any item has an invalid date, as invalid dates have no order.
+    pub(crate) fn inplace_sort_by_date_then_number(&mut self) -> Result<(), CsafDateTimeParseError> {
+        if let Some(CsafDateTime::Invalid(err)) = self.0.iter().map(|item| &item.date).find(|date| !date.is_valid()) {
+            return Err(err.clone());
+        }
+        self.0.sort_unstable_by(|a, b| {
+            if let CsafDateTime::Valid(a_date) = &a.date
+                && let CsafDateTime::Valid(b_date) = &b.date
+            {
+                a_date.cmp(b_date).then_with(|| a.number.cmp(&b.number))
+            } else {
+                unreachable!(
+                    "The precondition ensures that no invalid dates are contained within the revision history."
+                );
+            }
+        });
+        Ok(())
     }
 
     /// Sorts the revision history items by number

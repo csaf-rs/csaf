@@ -111,6 +111,7 @@ pub static SCANCODE_LICENSEDB: LazyLock<HashMap<String, ScancodeLicenseInfo>> =
     LazyLock::new(scancode_licensedb_entries);
 
 fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
+    #[allow(clippy::unwrap_used)]
     let licenses: Vec<ScancodeLicense> =
         serde_json::from_str(include_str!("../assets/scancode-licensedb.json")).unwrap();
 

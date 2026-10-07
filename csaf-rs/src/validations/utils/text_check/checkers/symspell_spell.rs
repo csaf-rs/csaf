@@ -18,6 +18,7 @@ const MAX_EDIT_DISTANCE: i64 = 2;
 /// Lazy built SymSpell instance(s)
 /// TODO: currently only english
 static SYMSPELL: LazyLock<SymSpell<UnicodeStringStrategy>> = LazyLock::new(|| {
+    #[allow(clippy::expect_used)]
     let mut symspell: SymSpell<UnicodeStringStrategy> = SymSpellBuilder::default()
         .max_dictionary_edit_distance(MAX_EDIT_DISTANCE)
         .build()

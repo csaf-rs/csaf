@@ -1,14 +1,17 @@
 use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
-use crate::csaf::types::version_number::CsafVersionNumber;
+use crate::csaf::types::version_number::ValidCsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, RevisionTrait, TrackingTrait};
 use crate::schema::csaf2_1::schema::DocumentStatus;
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_revision_history_error(status: &DocumentStatus, number: &CsafVersionNumber, index: usize) -> TestFinding {
+fn create_revision_history_error(
+    status: &DocumentStatus,
+    number: &ValidCsafVersionNumber,
+    index: usize,
+) -> TestFinding {
     let reason = match number {
-        CsafVersionNumber::IntVer(_) => "Version 0 is",
-        CsafVersionNumber::SemVer(_) => "Versions 0.y.z are",
-        CsafVersionNumber::Invalid(i) => panic!("Invalid version number '{i}'."), // this is fine as it should only be called with valid version numbers
+        ValidCsafVersionNumber::IntVer(_) => "Version 0 is",
+        ValidCsafVersionNumber::SemVer(_) => "Versions 0.y.z are",
     };
     TestFinding::Error(TestFindingData {
         message: format!(
@@ -34,12 +37,12 @@ pub fn test_6_1_18_released_revision_history(doc: &impl CsafTrait) -> Result<(),
     for (revision_index, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();
         // ToDo #409 maybe return a skipped here or return a warning if the version number is invalid, but for now we just ignore it
-        if let Ok(major) = number.get_major()
-            && major == 0
+        if let Some(valid) = number.as_valid()
+            && valid.get_major() == 0
         {
             errors
                 .get_or_insert_default()
-                .push(create_revision_history_error(&status, &number, revision_index));
+                .push(create_revision_history_error(&status, &valid, revision_index));
         }
     }
 
@@ -51,6 +54,7 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_18, test_6_1_18_rele
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::version_number::CsafVersionNumber;
     use crate::csaf2_0::testcases::ExpectedResults_6_1_18 as ExpectedResults_2_0;
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_18 as ExpectedResults_2_1;
@@ -60,12 +64,12 @@ mod tests {
     fn test_test_6_1_18() {
         let case_intver_zero_status_final = Err(vec![create_revision_history_error(
             &DocumentStatus::Final,
-            &CsafVersionNumber::from("0"),
+            &CsafVersionNumber::from("0").as_valid().unwrap(),
             0,
         )]);
         let case_semver_zero_status_final = Err(vec![create_revision_history_error(
             &DocumentStatus::Final,
-            &CsafVersionNumber::from("0.9.0"),
+            &CsafVersionNumber::from("0.9.0").as_valid().unwrap(),
             0,
         )]);
 

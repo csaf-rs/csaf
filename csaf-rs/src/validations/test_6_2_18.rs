@@ -12,7 +12,10 @@ fn create_product_version_range_without_vers_error(version_range: &str, path: &s
     })
 }
 
-static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^vers:[a-z.\-+][a-z0-9.\-+]*/.+").unwrap());
+static VERS_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    #[allow(clippy::unwrap_used)]
+    Regex::new(r"^vers:[a-z.\-+][a-z0-9.\-+]*/.+").unwrap()
+});
 
 /// 6.2.18 Product Version Range without VERS
 ///

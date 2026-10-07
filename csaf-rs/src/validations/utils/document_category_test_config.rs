@@ -68,34 +68,18 @@ impl DocumentCategoryTestConfig {
         match csaf_version {
             CsafVersion::X20 => self
                 .csaf20_categories
-                .map(|cats| cats.contains(document_category))
-                .unwrap_or_else(|| {
-                    if self.shared_categories.is_none() {
-                        panic!("Test applicability was checked for CSAF 2.0 on a config that does not contain CSAF 2.0-specific categories or shared categories. (This looks like a dev error)")
-                    }
-                    false
-                }),
+                .is_some_and(|cats| cats.contains(document_category)),
             CsafVersion::X21 => self
                 .csaf21_categories
-                .map(|cats| cats.contains(document_category))
-                .unwrap_or_else(|| {
-                    if self.shared_categories.is_none() {
-                        panic!("Test applicability was checked for CSAF 2.1 on a config that does not contain CSAF 2.1-specific categories or shared categories. (This looks like a dev error.)")
-                    }
-                    false
-                }),
+                .is_some_and(|cats| cats.contains(document_category)),
         }
     }
 
     /// Checks if a profile test should run based on the document category only,
     /// irrespective of the CSAF version.
     pub fn matches_category(&self, document_category: &CsafDocumentCategory) -> bool {
-        if let Some(shared) = self.shared_categories {
-            return shared.contains(document_category);
-        }
-        panic!(
-            "Test applicability without a specified CSAF doc version was checked on a config that does not specify version-independent categories. (This looks like a dev error.)"
-        );
+        self.shared_categories
+            .is_some_and(|shared| shared.contains(document_category))
     }
 }
 
@@ -163,10 +147,7 @@ mod tests {
             .csaf20(&[CsafDocumentCategory::CsafVex])
             .csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
-        let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category(&CsafDocumentCategory::CsafSecurityAdvisory);
-        });
-        assert!(result.is_err());
+        assert!(!TEST_CONFIG.matches_category(&CsafDocumentCategory::CsafSecurityAdvisory));
     }
 
     #[test]
@@ -174,10 +155,7 @@ mod tests {
         const TEST_CONFIG: DocumentCategoryTestConfig =
             DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
-        let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X20, &CsafDocumentCategory::CsafVex);
-        });
-        assert!(result.is_err());
+        assert!(!TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X20, &CsafDocumentCategory::CsafVex));
     }
 
     #[test]
@@ -185,9 +163,8 @@ mod tests {
         const TEST_CONFIG: DocumentCategoryTestConfig =
             DocumentCategoryTestConfig::new().csaf20(&[CsafDocumentCategory::CsafVex]);
 
-        let result = std::panic::catch_unwind(|| {
-            TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn);
-        });
-        assert!(result.is_err());
+        assert!(
+            !TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X21, &CsafDocumentCategory::CsafWithdrawn)
+        );
     }
 }

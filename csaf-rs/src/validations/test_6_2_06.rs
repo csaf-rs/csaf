@@ -26,7 +26,9 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
     };
 
     let mut rev_history = doc.get_document().get_tracking().aggregate_revision_history();
-    rev_history.inplace_sort_by_date_then_number();
+    if rev_history.inplace_sort_by_date_then_number().is_err() {
+        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
+    }
     // We can safely unwrap here because empty revision histories would not parse schema validation
     let newest_rev_history_item_date = match rev_history.last() {
         None => return Ok(()), // TODO #409 return a precondition failed here,

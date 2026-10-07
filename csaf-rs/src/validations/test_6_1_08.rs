@@ -95,7 +95,7 @@ fn evaluate_cvss(
     metric: CsafVulnerabilityMetric,
     errors: &mut Option<Vec<TestFinding>>,
 ) {
-    let value = serde_json::to_value(cvss_value).unwrap();
+    let value = Value::Object(cvss_value.clone());
     for error in validator.iter_errors(&value) {
         errors
             .get_or_insert_default()

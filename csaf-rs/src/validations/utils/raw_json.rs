@@ -1,6 +1,7 @@
 use serde_json::Value;
 
 /// Result enum specifying if and how a JSON property is present and set.
+#[derive(Debug, PartialEq)]
 pub(crate) enum JsonValuePresence {
     /// Property is not contained
     Missing,

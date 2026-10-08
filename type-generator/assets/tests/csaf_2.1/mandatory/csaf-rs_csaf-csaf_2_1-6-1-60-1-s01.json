@@ -1,0 +1,99 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_base",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "vendor",
+      "name": "csaf-rs",
+      "namespace": "https://github.com/csaf-rs"
+    },
+    "title": "Invalid extension content in all available extension fields",
+    "tracking": {
+      "current_release_date": "2026-01-01T00:00:00Z",
+      "id": "test-01",
+      "initial_release_date": "2026-01-01T00:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2026-10-07T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    },
+    "x_extensions": [
+      {}
+    ]
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "product_name",
+        "name": "main",
+        "product": {
+          "name": "csaf",
+          "product_id": "csaf@main",
+          "x_extensions": [
+            {}
+          ]
+        }
+      }
+    ],
+    "full_product_names": [
+      {
+        "name": "csaf",
+        "product_id": "csaf",
+        "x_extensions": [
+          {}
+        ]
+      }
+    ],
+    "product_paths": [
+      {
+        "beginning_product_reference": "csaf",
+        "full_product_name": {
+          "name": "csaf",
+          "product_id": "csaf-path",
+          "x_extensions": [
+            {}
+          ]
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "csaf"
+          }
+        ]
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "metrics": [
+        {
+          "content": {
+            "x_extensions": [
+              {}
+            ]
+          },
+          "products": [
+            "csaf"
+          ]
+        }
+      ],
+      "x_extensions": [
+        {}
+      ]
+    }
+  ],
+  "x_extensions": [
+    {}
+  ]
+}

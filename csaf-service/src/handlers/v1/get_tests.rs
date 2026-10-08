@@ -37,8 +37,12 @@ pub(crate) struct TestInPreset {
 pub(crate) async fn get_tests(
     Query(query): Query<LegacyTestsQuery>,
 ) -> Result<Json<Vec<TestInPreset>>, (StatusCode, Json<ErrorResponse>)> {
-    let version = CsafVersion::try_from(query.version.clone().unwrap_or_else(|| "2.0".to_string()))
-        .map_err(|e| error_response(StatusCode::NOT_FOUND, "INVALID_VERSION", e))?;
+    let version = query
+        .version
+        .clone()
+        .unwrap_or_else(|| "2.0".to_string())
+        .parse::<CsafVersion>()
+        .map_err(|e| error_response(StatusCode::NOT_FOUND, "INVALID_VERSION", e.to_string()))?;
     Ok(Json(tests_for_version(&version)))
 }
 

@@ -238,7 +238,7 @@ pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationR
 /// For each test, returns the test number and the primary preset it belongs to.
 #[uniffi::export]
 pub fn get_tests(version: String) -> Result<Vec<TestInPreset>, CsafError> {
-    match CsafVersion::try_from(version.clone()) {
+    match version.parse::<CsafVersion>() {
         Ok(CsafVersion::X20) => Ok(
             csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::get_tests()
                 .iter()
@@ -264,7 +264,7 @@ pub fn get_tests(version: String) -> Result<Vec<TestInPreset>, CsafError> {
 /// Retrieve the test IDs belonging to a preset for a CSAF version.
 #[uniffi::export]
 pub fn get_tests_in_preset(version: String, preset: String) -> Result<Vec<String>, CsafError> {
-    match CsafVersion::try_from(version.clone()) {
+    match version.parse::<CsafVersion>() {
         Ok(CsafVersion::X20) => {
             csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::tests_in_preset(&preset)
                 .map(|tests| tests.into_iter().map(String::from).collect())

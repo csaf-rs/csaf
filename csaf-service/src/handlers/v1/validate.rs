@@ -193,7 +193,9 @@ pub(crate) async fn validate(
     let version = {
         let detected = detect_version(json_value.clone())
             .map_err(|e| error_response(StatusCode::BAD_REQUEST, "PARSE_ERROR", e.to_string()))?;
-        CsafVersion::try_from(detected).map_err(|e| error_response(StatusCode::BAD_REQUEST, "INVALID_VERSION", e))?
+        detected
+            .parse::<CsafVersion>()
+            .map_err(|e| error_response(StatusCode::BAD_REQUEST, "INVALID_VERSION", e.to_string()))?
     };
 
     let mut test_ids: Vec<String> = Vec::new();
@@ -230,7 +232,7 @@ pub(crate) async fn validate(
                     format!("Failed to load CSAF 2.0 document: {e}"),
                 )
             })?;
-            validate_by_tests(&doc, version.as_str(), &test_id_refs)
+            validate_by_tests(&doc, version.as_ref(), &test_id_refs)
         },
         CsafVersion::X21 => {
             let doc = load_2_1(json_value).map_err(|e| {
@@ -240,7 +242,7 @@ pub(crate) async fn validate(
                     format!("Failed to load CSAF 2.1 document: {e}"),
                 )
             })?;
-            validate_by_tests(&doc, version.as_str(), &test_id_refs)
+            validate_by_tests(&doc, version.as_ref(), &test_id_refs)
         },
     };
 

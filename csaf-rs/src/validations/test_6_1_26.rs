@@ -154,7 +154,7 @@ mod tests {
         //        &CsafDocumentCategory::CsafInformationalAdvisory,
         //    )
         //]);
-        let case_24_csaf21 = Err(vec![test_6_1_26_err_generator_too_similar(
+        let case_24_csaf21_invisible_chars = Err(vec![test_6_1_26_err_generator_too_similar(
             &CsafDocumentCategory::from(
                 "cs\u{00AD}\u{034F}\u{180E}\u{200B}\u{200C}\u{200D}\u{2060}\u{2062}\u{2063}\u{2064}\u{FEFF}af_informat\u{00AD}\u{034F}\u{180E}\u{200B}\u{200C}\u{200D}\u{2060}\u{2062}\u{2063}\u{2064}\u{FEFF}ional_advisory",
             ),
@@ -206,7 +206,7 @@ mod tests {
             case_21: case_21_csaf21_white_spaces,
             case_22: Ok(()), // TODO fix this during #99/#359
             case_23: Ok(()), // TODO fix this during #99/#359
-            case_24: case_24_csaf21,
+            case_24: case_24_csaf21_invisible_chars,
         });
     }
 

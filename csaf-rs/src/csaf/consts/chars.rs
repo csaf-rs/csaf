@@ -37,6 +37,13 @@ const HYPHEN_DASH_CHARACTERS: &[char] = &[
     '\u{FE58}', // small em dash U+FE58
     '\u{FE63}', // small hyphen-minus U+FE63
     '\u{FF0D}', // fullwidth hyphen-minus U+FF0D
+    '\u{1BC86}', // Duployan affix high line U+1BC86
+    '\u{1BC03}', // duployan letter t U+1BC03
+    '\u{1BC08}', // duployan letter d U+1BC08
+    '\u{1BC0D}', // duployan letter d s U+1BC0D
+    '\u{1BC11}', // duployan letter th U+1BC11
+    '\u{1BC12}', // duployan letter sloan dh U+1BC12
+    '\u{1BC13}', // duployan letter dh U+1BC13
 ];
 
 const UNDERSCORE_CHARACTERS: &[char] = &[
@@ -44,6 +51,8 @@ const UNDERSCORE_CHARACTERS: &[char] = &[
     '\u{02CD}',  // modifier letter low macron U+02CD
     '\u{FF3F}',  // fullwidth low line U+FF3F
     '\u{1BC96}', // duployan affix low line U+1BC96
+    '\u{1BC97}', // duployan affix low wave U+1BC97
+    '\u{1BC99}', // duployan affix low arrow U+1BC99
     '\u{0332}',  // combining low line U+0332
     '\u{0333}',  // combining double low line U+0333
     '\u{2017}',  // double low line U+2017

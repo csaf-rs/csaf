@@ -65,6 +65,7 @@ Copyright (c) nexB Inc. and others. ScanCode is a trademark of nexB Inc.
 Schema definitions for metric content
 
 - `cvss-v2.0.json` see https://www.first.org/cvss/cvss-v2.0.json
+- `cvss-v2.0_strict.json` is a strict-ified version of the above, with additional properties disallowed.
 
 License as provided in the document
 > Copyright (c) 2017, FIRST.ORG, INC.
@@ -88,6 +89,7 @@ License as provided in the document
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 - `cvss-v3.0.json` see https://www.first.org/cvss/cvss-v3.0.json
+- `cvss-v3.0_strict.json` is a strict-ified version of the above, with additional properties disallowed.
 
 License as provided in the document
 > Copyright (c) 2017, FIRST.ORG, INC.
@@ -111,6 +113,7 @@ License as provided in the document
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 - `cvss-v3.1.json` see https://www.first.org/cvss/cvss-v3.1.json
+- `cvss-v3.1_strict.json` is a strict-ified version of the above, with additional properties disallowed.
 
 License as provided in the document
 > Copyright (c) 2021, FIRST.ORG, INC.
@@ -250,5 +253,4 @@ not allowed, as needed for test 6.2.20.
 - `extension-content.strict.json`
 - `extension-metaschema.strict.json`
 
-- `cvss-v2.0.strict.json`
 - `cvss-v4.0.strict.json`

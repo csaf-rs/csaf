@@ -11,10 +11,6 @@ pub fn get_strict_schemas() -> Vec<StrictSchemaConfig> {
             output: "assets/csaf_2.1_json_schema.strict.json",
         },
         StrictSchemaConfig {
-            input: "assets/cvss-v2.0.json",
-            output: "assets/cvss-v2.0.strict.json",
-        },
-        StrictSchemaConfig {
             input: "assets/cvss-v4.0.json",
             output: "assets/cvss-v4.0.strict.json",
         },

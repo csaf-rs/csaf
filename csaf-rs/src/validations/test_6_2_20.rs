@@ -6,7 +6,7 @@ use serde_json::Value;
     path = "assets/csaf_2.0_json_schema.strict.json",
     validate_formats = true,
     resources = {
-        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.strict.json" },
+        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0_strict.json" },
         "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"},
         "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"}
     }
@@ -20,7 +20,7 @@ struct StrictValidator2_0;
     resources = {
         "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-metaschema.json" => { path = "assets/extension-metaschema.strict.json" },
         "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/extension-content.json" => { path = "assets/extension-content.strict.json" },
-        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0.strict.json" },
+        "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0_strict.json" },
         "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"}, // we may not make this strict, otherwise the oneOf does not match
         "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"}, // we may not make this strict, otherwise the oneOf does not match
         "https://www.first.org/cvss/cvss-v4.0.json" => { path = "assets/cvss-v4.0.strict.json" },
@@ -38,13 +38,17 @@ pub fn test_6_2_20_additional_properties(
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
     for error in iter_errors(json) {
-        if let ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind() {
-            for property in unexpected {
-                errors.get_or_insert_default().push(create_additional_properties_error(
-                    property,
-                    error.instance_path().as_str(),
-                ));
-            }
+        let unexpected = match error.kind() {
+            ValidationErrorKind::AdditionalProperties { unexpected }
+            | ValidationErrorKind::UnevaluatedProperties { unexpected } => unexpected,
+            _ => continue,
+        };
+
+        for property in unexpected {
+            errors.get_or_insert_default().push(create_additional_properties_error(
+                property,
+                error.instance_path().as_str(),
+            ));
         }
     }
 

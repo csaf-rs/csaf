@@ -20,8 +20,11 @@ rsync -c csaf/csaf_2.1/json_schema/extension-content.json csaf-rs/assets/extensi
 rsync -c csaf/csaf_2.1/json_schema/meta.json csaf-rs/assets/meta.json
 
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0.json csaf-rs/assets/cvss-v2.0.json
+rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0_strict.json csaf-rs/assets/cvss-v2.0_strict.json
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.0.json csaf-rs/assets/cvss-v3.0.json
+rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.0_strict.json csaf-rs/assets/cvss-v3.0_strict.json
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.1.json csaf-rs/assets/cvss-v3.1.json
+rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.1_strict.json csaf-rs/assets/cvss-v3.1_strict.json
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v4.0.json csaf-rs/assets/cvss-v4.0.json
 rsync -c csaf/csaf_2.1/referenced_schema/certcc/SelectionList_2_0_0.schema.json csaf-rs/assets/SelectionList_2_0_0.schema.json
 

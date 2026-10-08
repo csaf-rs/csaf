@@ -3,6 +3,12 @@ use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.1.26 Prohibited Document Category Name
+///
+/// It SHALL be tested that the document category is not equal to the (case-insensitive) name (without the prefix csaf_) or value of any other profile than "CSAF Base". A
+/// ny occurrences of dash, hyphen, minus, underscore, white space and invisible characters are removed from the values on both sides before the case-insensitive match.
+///
+/// This applies to both the comparison against the name and value. Also, the value SHALL NOT start with the reserved prefix csaf_ except if the value is exactly csaf_base.
+/// This test does only apply to CSAF documents with the profile "CSAF Base". Therefore, it SHALL be skipped if the document category matches one of the values defined for the profile other than "CSAF Base".
 pub fn test_6_1_26_prohibited_document_category(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_version = doc.get_document().get_csaf_version();
     let doc_category = doc.get_document().get_category();
@@ -17,7 +23,7 @@ fn validate_document_category(
 ) -> Result<(), Vec<TestFinding>> {
     // skip test for known profiles and categories
     if doc_category.is_known_profile(doc_version) {
-        return Ok(());
+        return Ok(()); // #409 this should be skipped
     }
 
     // throw error, as only known profiles are allowed to start with "csaf_"

@@ -38,13 +38,17 @@ pub fn test_6_2_20_additional_properties(
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
     for error in iter_errors(json) {
-        if let ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind() {
-            for property in unexpected {
-                errors.get_or_insert_default().push(create_additional_properties_error(
-                    property,
-                    error.instance_path().as_str(),
-                ));
-            }
+        let unexpected = match error.kind() {
+            ValidationErrorKind::AdditionalProperties { unexpected }
+            | ValidationErrorKind::UnevaluatedProperties { unexpected } => unexpected,
+            _ => continue,
+        };
+
+        for property in unexpected {
+            errors.get_or_insert_default().push(create_additional_properties_error(
+                property,
+                error.instance_path().as_str(),
+            ));
         }
     }
 

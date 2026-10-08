@@ -4,8 +4,8 @@ use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.1.26 Prohibited Document Category Name
 ///
-/// It SHALL be tested that the document category is not equal to the (case-insensitive) name (without the prefix csaf_) or value of any other profile than "CSAF Base". A
-/// ny occurrences of dash, hyphen, minus, underscore, white space and invisible characters are removed from the values on both sides before the case-insensitive match.
+/// It SHALL be tested that the document category is not equal to the (case-insensitive) name (without the prefix csaf_) or value of any other profile than "CSAF Base".
+/// Any occurrences of dash, hyphen, minus, underscore, white space and invisible characters are removed from the values on both sides before the case-insensitive match.
 ///
 /// This applies to both the comparison against the name and value. Also, the value SHALL NOT start with the reserved prefix csaf_ except if the value is exactly csaf_base.
 /// This test does only apply to CSAF documents with the profile "CSAF Base". Therefore, it SHALL be skipped if the document category matches one of the values defined for the profile other than "CSAF Base".

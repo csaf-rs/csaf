@@ -111,7 +111,7 @@ fn create_validation_error(
 ) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message,
-        instance_path: format!("{}/{}{}", csaf_base_path, metric_prop_name, cvss_inner_path),
+        instance_path: format!("{csaf_base_path}/{metric_prop_name}{cvss_inner_path}"),
     })
 }
 

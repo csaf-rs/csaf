@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::csaf::aggregation::revision_history::CsafRevisionHistoryItem;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::version_number::{CsafVersionNumber, CsafVersionNumberError};
+use crate::csaf::types::version_number::CsafVersionNumber;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
@@ -30,10 +30,9 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     let mut missing_versions: HashMap<CsafVersionNumber, MissingVersionMetadata> = HashMap::new();
     rev_history_tuples
         .iter()
-        .fold(None::<&CsafRevisionHistoryItem>, |prev, current| {
-            if let CsafVersionNumber::Invalid(_) = current.number {
-                return prev; // ignore invalid version numbers
-            }
+        // ignore invalid version numbers
+        .filter_map(|item| item.number.get_major().ok().map(|major| (item, major)))
+        .fold(None::<(&CsafRevisionHistoryItem, u64)>, |prev, (current, current_major)| {
             match prev {
                 // checks first item
                 None => {
@@ -60,10 +59,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                     }
                 },
                 // checks subsequent items
-                Some(prev_item) => {
-                    let current_major = current.number.get_major().unwrap();
-                    // we can unwrap prev_item here as we make sure that 'prev' is always a valid version number
-                    let prev_major = prev_item.number.get_major().unwrap();
+                Some((prev_item, prev_major)) => {
                     if current_major < prev_major {
                         // check if the current number was already marked as missing
                         if let Some(previously_missing_version) = missing_versions.get_mut(&current.number) {
@@ -87,22 +83,18 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                         return prev;
                     }
 
-                    let expected = prev_item.number.get_next_major_version();
-                    if expected == Err(CsafVersionNumberError::Overflow) {
+                    let Some(expected) = prev_major.checked_add(1) else {
                         // last checked version was already the maximum version number, so all subsequent version must be lower
                         // and we shouldn't get to this point or any further in this method
-                        return Some(current);
-                    }
-                    // we can safely unwrap the result and the major version here as we already checked for the overflow case above
-                    // and invalid versions are also handled above
-                    let expected = expected.unwrap();
+                        return Some((current, current_major));
+                    };
 
-                    if current_major == expected.get_major().unwrap() {
+                    if current_major == expected {
                         // the current version is the expected next major version, so we can continue checking the next item
-                        return Some(current);
+                        return Some((current, current_major));
                     }
                     // check if the current version is the expected next major version
-                    if current_major > expected.get_major().unwrap() {
+                    if current_major > expected {
                         // there is at least one missing version between the previous and current version
                         let mut start = prev_item.number.clone();
                         while let Ok(next_version) = start.get_next_major_version()
@@ -121,7 +113,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                     }
                 },
             }
-            Some(current)
+            Some((current, current_major))
         });
     for (missing_version, version_metadata) in missing_versions {
         // ToDo aggregate consecutive missing versions into one error message, e.g. "missing revision history items with numbers 2,3,4 between 2026-03-01T11:00:00.000Z and 2026-03-03T11:00:00.000Z"

@@ -1,3 +1,4 @@
+use crate::csaf::enums::version_range::VersionRange;
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
@@ -22,31 +23,10 @@ pub fn test_6_1_59_product_version_range_identifies_single_version(
 
     product_tree.visit_all_branches(&mut |branch, path| {
         if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
-            let version_range = branch.get_name();
-
-            // check if the version is specified as vers or vls
-            let version_range = match version_range.strip_prefix("vers:") {
-                // vers
-                Some(without_vers) => {
-                    match without_vers.split_once('/') {
-                        Some(("all", "*")) => {
-                            // `*` is only allowed in vers, not in vls
-                            return;
-                        },
-                        Some((_type, without_type)) => without_type,
-                        // this is fine as it should only be called with valid vers syntax
-                        None => panic!("product_version_range starts with `vers:` but does not contain `type/`"),
-                    }
-                },
-                // vls
-                None => version_range,
-            };
-
-            // check if version range identifies more than one version
-            let is_multiple_versions = version_range.contains(['|', '<', '>']);
+            let version_range = VersionRange::new(branch.get_name());
 
             // error if the version_range does not identify more than one version
-            if !is_multiple_versions {
+            if version_range.is_single_version() == Some(true) {
                 errors
                     .get_or_insert_default()
                     .push(product_version_range_only_one_version_error(path));

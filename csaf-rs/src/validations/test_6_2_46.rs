@@ -5,7 +5,7 @@ use crate::validation::TestFinding;
 use crate::validations::utils::language_specific_translations::{
     create_no_translation_known_info, get_translation_for_term_license,
 };
-use crate::validations::utils::license_expressions::has_only_listed_license_identifiers_or_is_invalid;
+use crate::validations::utils::license_expressions::try_contains_unlisted_license_identifier_or_exception;
 use crate::validations::utils::license_text::check_for_exactly_one_license_text_note;
 
 /// 6.2.46 Language Specific License Text
@@ -31,11 +31,12 @@ pub fn test_6_2_46_language_specific_license_text(
         Some(CsafLanguage::Valid(valid_lang)) => valid_lang.primary_language().to_string(),
     };
 
-    if document
-        .license_expression
-        .as_ref()
-        .is_some_and(|license_expression| !has_only_listed_license_identifiers_or_is_invalid(license_expression))
-    {
+    if document.license_expression.as_ref().is_some_and(|license_expression| {
+        match try_contains_unlisted_license_identifier_or_exception(license_expression) {
+            Ok(contains_unlisted) => contains_unlisted,
+            Err(_) => false, // TODO #409: Return `PreconditionFailed` once supported
+        }
+    }) {
         let Some(translated_title) = get_translation_for_term_license(&primary_lang) else {
             return Err(vec![create_no_translation_known_info(
                 "License",

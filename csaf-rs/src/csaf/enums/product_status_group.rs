@@ -3,10 +3,10 @@ use strum::{AsRefStr, Display};
 use crate::csaf::enums::product_status::ProductStatus;
 
 /// Enum representing product status groups, as defined in CSAF 2.0 (see 6.1.6) and CSAF 2.1 (see 3.2.4.11).
-/// 
+///
 /// This enum is shared between CSAF 2.0 and 2.1.
 /// CSAF 2.0 and 2.1 have divergent definitions, with 2.1 adding the `Unknown` group, which does not exist in 2.0.
-/// 
+///
 /// For the purpose of this implementation, we also have a "status group" `Recommended`.
 /// This group does not exist in either version of CSAF, but allows us to have exhaustive matching and filtering on product group mappings.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd, Display, AsRefStr)]

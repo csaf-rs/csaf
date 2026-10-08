@@ -135,7 +135,6 @@ mod tests {
 
     #[test]
     fn test_test_6_1_08() {
-        // CSAF 2.0 has 7 test cases (01-03, 11-14)
         TESTS_2_0.test_6_1_8.expect(ExpectedResults_2_0 {
             case_01: Err(vec![create_validation_error_with_path(
                 "\"baseSeverity\" is a required property",
@@ -155,7 +154,6 @@ mod tests {
             case_14: Ok(()),
         });
 
-        // CSAF 2.1 has 13 test cases (01-06, 11-17)
         TESTS_2_1.test_6_1_8.expect(ExpectedResults_2_1 {
             case_01: Err(vec![create_validation_error_with_path(
                 "\"baseSeverity\" is a required property",

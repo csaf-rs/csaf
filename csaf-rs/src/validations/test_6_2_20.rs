@@ -7,8 +7,8 @@ use serde_json::Value;
     validate_formats = true,
     resources = {
         "https://www.first.org/cvss/cvss-v2.0.json" => { path = "assets/cvss-v2.0_strict.json" },
-        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0_strict.json"},
-        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1_strict.json"}
+        "https://www.first.org/cvss/cvss-v3.0.json" => { path = "assets/cvss-v3.0.json"},
+        "https://www.first.org/cvss/cvss-v3.1.json" => { path = "assets/cvss-v3.1.json"}
     }
 )]
 struct StrictValidator2_0;

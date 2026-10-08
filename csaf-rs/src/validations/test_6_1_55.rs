@@ -1,7 +1,7 @@
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::validation::TestFinding;
-use crate::validations::utils::license_expressions::has_only_listed_license_identifiers_or_is_invalid;
+use crate::validations::utils::license_expressions::try_contains_unlisted_license_identifier_or_exception;
 use crate::validations::utils::license_text::check_for_exactly_one_license_text_note;
 
 /// 6.1.55 License Text
@@ -16,10 +16,12 @@ pub fn test_6_1_55_license_text(
     let document = doc.get_document();
 
     if is_english_or_unspecified(doc)
-        && document
-            .license_expression
-            .as_ref()
-            .is_some_and(|license_expression| !has_only_listed_license_identifiers_or_is_invalid(license_expression))
+        && document.license_expression.as_ref().is_some_and(|license_expression| {
+            match try_contains_unlisted_license_identifier_or_exception(license_expression) {
+                Ok(contains_unlisted) => contains_unlisted,
+                Err(_) => false, // TODO #409: Return `PreconditionFailed` once supported
+            }
+        })
     {
         check_for_exactly_one_license_text_note(document.get_notes().map(Vec::as_slice), LICENSE_TITLE)
             .map(|findings| findings.into_iter().map(TestFinding::Error).collect())

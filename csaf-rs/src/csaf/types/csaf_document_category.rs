@@ -3,6 +3,7 @@ use crate::csaf::enums::csaf_version::CsafVersion;
 use crate::schema::csaf2_0::schema::DocumentCategory as DocumentCategory20;
 use crate::schema::csaf2_1::schema::DocumentCategory as DocumentCategory21;
 use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::sync::LazyLock;
 
 /// Shared Enum representing document categories
 /// Contains well-known categories of CSAF version 2.0 and 2.1 as enum variants
@@ -25,6 +26,42 @@ pub enum CsafDocumentCategory {
     // validation (see test 6.1.26).
     CsafBaseOther(String),
 }
+
+/// Well-known CSAF 2.0 profiles
+const CSAF_20_KNOWN_PROFILES: [CsafDocumentCategory; 5] = [
+    CsafDocumentCategory::CsafBase,
+    CsafDocumentCategory::CsafSecurityIncidentResponse,
+    CsafDocumentCategory::CsafInformationalAdvisory,
+    CsafDocumentCategory::CsafSecurityAdvisory,
+    CsafDocumentCategory::CsafVex,
+];
+
+/// Well-known CSAF 2.1 profiles
+const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 9] = [
+    CsafDocumentCategory::CsafBase,
+    CsafDocumentCategory::CsafSecurityIncidentResponse,
+    CsafDocumentCategory::CsafInformationalAdvisory,
+    CsafDocumentCategory::CsafSecurityAdvisory,
+    CsafDocumentCategory::CsafVex,
+    CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
+    CsafDocumentCategory::CsafWithdrawn,
+    CsafDocumentCategory::CsafSuperseded,
+    CsafDocumentCategory::CsafVulnerabilityReport,
+];
+
+static CSAF_20_KNOWN_PROFILES_NORMALIZED: LazyLock<Vec<(String, CsafDocumentCategory)>> = LazyLock::new(|| {
+    CSAF_20_KNOWN_PROFILES
+        .iter()
+        .map(|profile| (profile.normalize(), profile.clone()))
+        .collect()
+});
+
+static CSAF_21_KNOWN_PROFILES_NORMALIZED: LazyLock<Vec<(String, CsafDocumentCategory)>> = LazyLock::new(|| {
+    CSAF_21_KNOWN_PROFILES
+        .iter()
+        .map(|profile| (profile.normalize(), profile.clone()))
+        .collect()
+});
 
 impl From<&str> for CsafDocumentCategory {
     fn from(category: &str) -> Self {
@@ -56,28 +93,6 @@ impl From<&DocumentCategory21> for CsafDocumentCategory {
 }
 
 impl CsafDocumentCategory {
-    /// Well-known CSAF 2.0 profiles
-    const CSAF_20_KNOWN_PROFILES: [CsafDocumentCategory; 5] = [
-        Self::CsafBase,
-        Self::CsafSecurityIncidentResponse,
-        Self::CsafInformationalAdvisory,
-        Self::CsafSecurityAdvisory,
-        Self::CsafVex,
-    ];
-
-    /// Well-known CSAF 2.1 profiles
-    const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 9] = [
-        Self::CsafBase,
-        Self::CsafSecurityIncidentResponse,
-        Self::CsafInformationalAdvisory,
-        Self::CsafSecurityAdvisory,
-        Self::CsafVex,
-        Self::CsafDeprecatedSecurityAdvisory,
-        Self::CsafWithdrawn,
-        Self::CsafSuperseded,
-        Self::CsafVulnerabilityReport,
-    ];
-
     /// Checks if the category is DocumentCategory::CsafBaseOther
     pub fn is_base_other(&self) -> bool {
         matches!(self, Self::CsafBaseOther(_))
@@ -91,16 +106,16 @@ impl CsafDocumentCategory {
     /// Checks if the document category is a known profile for the given CSAF version
     pub fn is_known_profile(&self, version: CsafVersion) -> bool {
         match version {
-            CsafVersion::X20 => Self::CSAF_20_KNOWN_PROFILES.contains(self),
-            CsafVersion::X21 => Self::CSAF_21_KNOWN_PROFILES.contains(self),
+            CsafVersion::X20 => CSAF_20_KNOWN_PROFILES.contains(self),
+            CsafVersion::X21 => CSAF_21_KNOWN_PROFILES.contains(self),
         }
     }
 
     /// Returns a `, ` concatenated string of known profiles for the given CSAF version
     pub fn known_profile_concat(version: CsafVersion) -> String {
         let profiles: &[CsafDocumentCategory] = match version {
-            CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
-            CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,
+            CsafVersion::X20 => &CSAF_20_KNOWN_PROFILES,
+            CsafVersion::X21 => &CSAF_21_KNOWN_PROFILES,
         };
         profiles
             .iter()
@@ -111,14 +126,10 @@ impl CsafDocumentCategory {
 
     /// Returns a vector of tuples containing normalized known profile strings and their original enum values
     pub fn known_profiles_normalized(version: CsafVersion) -> Vec<(String, CsafDocumentCategory)> {
-        let profiles: &[CsafDocumentCategory] = match version {
-            CsafVersion::X20 => &Self::CSAF_20_KNOWN_PROFILES,
-            CsafVersion::X21 => &Self::CSAF_21_KNOWN_PROFILES,
-        };
-        profiles
-            .iter()
-            .map(|profile| (profile.normalize(), profile.clone()))
-            .collect()
+        match version {
+            CsafVersion::X20 => CSAF_20_KNOWN_PROFILES_NORMALIZED.clone(),
+            CsafVersion::X21 => CSAF_21_KNOWN_PROFILES_NORMALIZED.clone(),
+        }
     }
 
     /// Helper function to remove whitespace, underscores and (various unicode) dashes / hyphens from a string

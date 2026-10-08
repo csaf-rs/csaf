@@ -1,14 +1,14 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_cvss_v3_0_used_error(content_path: &str) -> TestFinding {
+fn create_cvss_v3_0_version_used_info(content_path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: "CVSS v3.0 is used (version is '3.0').".to_string(),
         instance_path: format!("{content_path}/cvss_v3/version"),
     })
 }
 
-fn create_cvss_v3_0_vector_string_error(content_path: &str) -> TestFinding {
+fn create_cvss_v3_0_vector_string_info(content_path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: "CVSS v3.0 is used (vectorString prefix is 'CVSS:3.0/').".to_string(),
         instance_path: format!("{content_path}/cvss_v3/vectorString"),
@@ -43,7 +43,7 @@ pub fn test_6_3_2_use_of_cvss_v3_0(doc: &impl CsafTrait) -> Result<(), Vec<TestF
                     {
                         errors
                             .get_or_insert_default()
-                            .push(create_cvss_v3_0_used_error(&content_path));
+                            .push(create_cvss_v3_0_version_used_info(&content_path));
                     }
 
                     // if vectorString starts with "CVSS:3.0/", add an error
@@ -54,7 +54,7 @@ pub fn test_6_3_2_use_of_cvss_v3_0(doc: &impl CsafTrait) -> Result<(), Vec<TestF
                     {
                         errors
                             .get_or_insert_default()
-                            .push(create_cvss_v3_0_vector_string_error(&content_path));
+                            .push(create_cvss_v3_0_vector_string_info(&content_path));
                     }
                 }
             }
@@ -77,25 +77,25 @@ mod tests {
     #[test]
     fn test_test_6_3_2() {
         let case_01_v3_0_used_csaf_20 = Err(vec![
-            create_cvss_v3_0_used_error("/vulnerabilities/0/scores/0"),
-            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/scores/0"),
+            create_cvss_v3_0_version_used_info("/vulnerabilities/0/scores/0"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/0/scores/0"),
         ]);
         let case_01_v3_0_used_csaf_21 = Err(vec![
-            create_cvss_v3_0_used_error("/vulnerabilities/0/metrics/0/content"),
-            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_version_used_info("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/0/metrics/0/content"),
         ]);
 
         let case_02_mixed_some_with_v3_0_csaf_20 = Err(vec![
-            create_cvss_v3_0_used_error("/vulnerabilities/0/scores/0"),
-            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/scores/0"),
-            create_cvss_v3_0_used_error("/vulnerabilities/2/scores/0"),
-            create_cvss_v3_0_vector_string_error("/vulnerabilities/2/scores/0"),
+            create_cvss_v3_0_version_used_info("/vulnerabilities/0/scores/0"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/0/scores/0"),
+            create_cvss_v3_0_version_used_info("/vulnerabilities/2/scores/0"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/2/scores/0"),
         ]);
         let case_02_mixed_some_with_v3_0_csaf_21 = Err(vec![
-            create_cvss_v3_0_used_error("/vulnerabilities/0/metrics/0/content"),
-            create_cvss_v3_0_vector_string_error("/vulnerabilities/0/metrics/0/content"),
-            create_cvss_v3_0_used_error("/vulnerabilities/2/metrics/0/content"),
-            create_cvss_v3_0_vector_string_error("/vulnerabilities/2/metrics/0/content"),
+            create_cvss_v3_0_version_used_info("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_version_used_info("/vulnerabilities/2/metrics/0/content"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/2/metrics/0/content"),
         ]);
 
         // Case 11: 1 vuln with v3.1

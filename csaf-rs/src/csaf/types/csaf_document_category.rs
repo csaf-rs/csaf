@@ -49,21 +49,19 @@ const CSAF_21_KNOWN_PROFILES: [CsafDocumentCategory; 9] = [
     CsafDocumentCategory::CsafVulnerabilityReport,
 ];
 
-static CSAF_20_KNOWN_PROFILES_NORMALIZED: LazyLock<Vec<(String, CsafDocumentCategory)>> =
-    LazyLock::new(|| {
-        CSAF_20_KNOWN_PROFILES
-            .iter()
-            .map(|profile| (profile.normalize(), profile.clone()))
-            .collect()
-    });
+static CSAF_20_KNOWN_PROFILES_NORMALIZED: LazyLock<Vec<(String, CsafDocumentCategory)>> = LazyLock::new(|| {
+    CSAF_20_KNOWN_PROFILES
+        .iter()
+        .map(|profile| (profile.normalize(), profile.clone()))
+        .collect()
+});
 
-static CSAF_21_KNOWN_PROFILES_NORMALIZED: LazyLock<Vec<(String, CsafDocumentCategory)>> =
-    LazyLock::new(|| {
-        CSAF_21_KNOWN_PROFILES
-            .iter()
-            .map(|profile| (profile.normalize(), profile.clone()))
-            .collect()
-    });
+static CSAF_21_KNOWN_PROFILES_NORMALIZED: LazyLock<Vec<(String, CsafDocumentCategory)>> = LazyLock::new(|| {
+    CSAF_21_KNOWN_PROFILES
+        .iter()
+        .map(|profile| (profile.normalize(), profile.clone()))
+        .collect()
+});
 
 impl From<&str> for CsafDocumentCategory {
     fn from(category: &str) -> Self {
@@ -95,8 +93,6 @@ impl From<&DocumentCategory21> for CsafDocumentCategory {
 }
 
 impl CsafDocumentCategory {
-
-
     /// Checks if the category is DocumentCategory::CsafBaseOther
     pub fn is_base_other(&self) -> bool {
         matches!(self, Self::CsafBaseOther(_))

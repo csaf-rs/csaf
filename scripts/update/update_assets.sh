@@ -17,6 +17,7 @@ cd "$REPO_ROOT"
 rsync -c csaf/csaf_2.0/json_schema/csaf_json_schema.json csaf-rs/assets/csaf_2.0_json_schema.json
 rsync -c csaf/csaf_2.1/json_schema/csaf.json csaf-rs/assets/csaf_2.1_json_schema.json
 rsync -c csaf/csaf_2.1/json_schema/extension-content.json csaf-rs/assets/extension-content.json
+rsync -c csaf/csaf_2.1/json_schema/meta.json csaf-rs/assets/meta.json
 
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0.json csaf-rs/assets/cvss-v2.0.json
 rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0_strict.json csaf-rs/assets/cvss-v2.0_strict.json

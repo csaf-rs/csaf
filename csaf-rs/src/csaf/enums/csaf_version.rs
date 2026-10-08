@@ -1,4 +1,4 @@
-/// Enum representing CSAF versions
+/// Enum representing CSAF versions.
 ///
 /// Contrary to other enums that are based on enums in the generated schemas, we are re-defining
 /// this enum in the trait. Each schema only contains an enum with "their" version, and merging them

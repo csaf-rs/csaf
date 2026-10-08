@@ -258,7 +258,7 @@
     }
   },
   "$id": "https://www.first.org/cvss/cvss-v4.0.json?20260226",
-  "$schema": "https://www.first.org/cvss/meta.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "allOf": [
     {
       "anyOf": [

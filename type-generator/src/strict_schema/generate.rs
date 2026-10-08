@@ -6,6 +6,10 @@ use std::path::Path;
 fn make_strict(schema_value: Value) -> Value {
     let mut schema_value = schema_value;
     make_strict_inplace(&mut schema_value);
+    schema_value.as_object_mut().unwrap().insert(
+        "$schema".to_string(),
+        Value::String("https://json-schema.org/draft/2020-12/schema".to_string()),
+    );
     schema_value
 }
 

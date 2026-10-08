@@ -160,7 +160,7 @@ impl CsafDocumentCategory {
 
     /// Checks if the category string starts with `csaf_` (case-insensitive), where the `_` can be
     /// any of the known underscore variant characters from [is_underscore_char].
-    /// Also checks that everything before `csaf_` consists only of whitespace, underscores and hyphens variants.
+    /// Also checks that everything before `csaf_` consists only of whitespace, underscores and hyphens variants or invisible characters.
     ///
     /// Examples:
     /// `csaf_base` -> true
@@ -191,7 +191,7 @@ impl CsafDocumentCategory {
         normalized.strip_prefix("csaf").unwrap_or(&normalized).to_string()
     }
 
-    /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore.
+    /// Normalizes the document category string by removing leading "csaf" and any whitespace, hyphen or underscore or invisible characters.
     ///
     /// Examples:
     /// `csaf_base` -> `base`

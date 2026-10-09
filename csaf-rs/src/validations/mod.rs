@@ -34,7 +34,7 @@ pub mod test_6_1_27_04;
 pub mod test_6_1_27_05;
 pub mod test_6_1_27_06;
 pub mod test_6_1_27_07;
-pub mod test_6_1_27_08;
+pub mod test_6_1_27_08_csaf_20;
 pub mod test_6_1_27_09;
 pub mod test_6_1_27_10;
 pub mod test_6_1_27_11;

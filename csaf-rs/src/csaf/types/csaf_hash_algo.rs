@@ -35,6 +35,24 @@ pub enum CsafHashAlgorithm {
 }
 
 impl CsafHashAlgorithm {
+    /// Returns the expected length of the hexadecimal hash value in characters.
+    ///
+    /// Algorithms with variable-length output, or algorithms not supported by this
+    /// implementation, return `None`.
+    pub fn expected_length(&self) -> Option<usize> {
+        match self.normalize() {
+            Self::Md4 | Self::Md5 | Self::Mdc2 | Self::Ssl3Md5 => Some(32),
+            Self::Ripemd | Self::Ripemd160 | Self::Rmd160 | Self::Sha1 | Self::Ssl3Sha1 => Some(40),
+            Self::Sha224 | Self::Sha3_224 | Self::Sha512_224 => Some(56),
+            Self::Blake2s256 | Self::Sha256 | Self::Sha3_256 | Self::Sha512_256 | Self::Sm3 => Some(64),
+            Self::Md5Sha1 => Some(72),
+            Self::Sha3_384 | Self::Sha384 => Some(96),
+            Self::Blake2b512 | Self::Sha512 | Self::Whirlpool => Some(128),
+            Self::Sha3_512 => Some(128),
+            Self::Shake128 | Self::Shake256 | Self::Other(_) => None,
+        }
+    }
+
     /// Checks if the original algorithm string is lowercase
     pub fn is_lowercase(&self) -> bool {
         if let Self::Other(algo) = self {
@@ -275,6 +293,16 @@ mod tests {
         // Test Display implementation
         assert_eq!(CsafHashAlgorithm::Sha256.to_string(), "sha256");
         assert_eq!(CsafHashAlgorithm::Other("custom".to_string()).to_string(), "custom");
+    }
+
+    #[rstest]
+    #[case(CsafHashAlgorithm::Md5, Some(32))]
+    #[case(CsafHashAlgorithm::Sha256, Some(64))]
+    #[case(CsafHashAlgorithm::Shake128, None)]
+    #[case(CsafHashAlgorithm::Shake256, None)]
+    #[case(CsafHashAlgorithm::Other("hash-algo-nobody-knowns".to_string()), None)]
+    fn test_expected_length(#[case] algorithm: CsafHashAlgorithm, #[case] expected: Option<usize>) {
+        assert_eq!(algorithm.expected_length(), expected);
     }
 
     #[test]

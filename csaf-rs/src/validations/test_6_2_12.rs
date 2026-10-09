@@ -48,14 +48,24 @@ mod tests {
         let unset_document_language = Err(vec![UNSET_DOCUMENT_LANGUAGE_WARNING.clone()]);
         let empty_document_language = unset_document_language.clone();
 
-        // Case 11: document lang "en"
-        // Case 12: document lang is bool true
-        // Case 13: document lang is number 42
+        // Case S02 - S04: document lang is empty, this highlights that we are merging
+        // S02: empty string
+        // S03: empty array
+        // S04: empty object
+        // here. We might need to revisit the empty array / object resulting in the same error.
+
+        // Case S11: document lang "en"
+        // Case S12: document lang is bool true
+        // Case S13: document lang is number 42
+
+        // Note: Cases S01 - 04 and S12 - S13 are all schema-invalid.
 
         TESTS_2_0.test_6_2_12.expect(ExpectedResults_2_0 {
             case_01: missing_document_language_property.clone(),
             case_s01: unset_document_language.clone(),
             case_s02: empty_document_language.clone(),
+            case_s03: empty_document_language.clone(),
+            case_s04: empty_document_language.clone(),
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),
@@ -63,7 +73,9 @@ mod tests {
         TESTS_2_1.test_6_2_12.expect(ExpectedResults_2_1 {
             case_01: missing_document_language_property,
             case_s01: unset_document_language,
-            case_s02: empty_document_language,
+            case_s02: empty_document_language.clone(),
+            case_s03: empty_document_language.clone(),
+            case_s04: empty_document_language,
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),

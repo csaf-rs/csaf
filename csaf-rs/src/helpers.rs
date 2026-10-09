@@ -27,6 +27,7 @@ pub struct CweVersionData {
 /// Maps CWE version (e.g. "4.20") to its release date and its entries
 pub type CweVersionLookup = HashMap<String, CweVersionData>;
 
+#[allow(clippy::expect_used)]
 pub static CWE_ENTRIES: LazyLock<CweVersionLookup> = LazyLock::new(|| {
     let mut versions = HashMap::new();
 
@@ -111,6 +112,7 @@ pub static SCANCODE_LICENSEDB: LazyLock<HashMap<String, ScancodeLicenseInfo>> =
     LazyLock::new(scancode_licensedb_entries);
 
 fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
+    #[allow(clippy::unwrap_used)]
     let licenses: Vec<ScancodeLicense> =
         serde_json::from_str(include_str!("../assets/scancode-licensedb.json")).unwrap();
 

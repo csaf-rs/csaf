@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::csaf::aggregation::revision_history::CsafRevisionHistoryItem;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::version_number::{CsafVersionNumber, CsafVersionNumberError};
+use crate::csaf::types::version_number::{CsafVersionNumber, ValidCsafVersionNumber};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
@@ -30,20 +30,19 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     let mut missing_versions: HashMap<CsafVersionNumber, MissingVersionMetadata> = HashMap::new();
     rev_history_tuples
         .iter()
-        .fold(None::<&CsafRevisionHistoryItem>, |prev, current| {
-            if let CsafVersionNumber::Invalid(_) = current.number {
-                return prev; // ignore invalid version numbers
-            }
+        // ignore invalid version numbers
+        .filter_map(|item| item.number.get_major().ok().map(|major| (item, major)))
+        .fold(None::<(&CsafRevisionHistoryItem, u64)>, |prev, (current, current_major)| {
             match prev {
                 // checks first item
                 None => {
                     let mut first_item = current.number.clone();
-                    if let Ok(major) = first_item.get_major()
-                        && !(major == 0 || major == 1)
+                    if let Some(first_valid) = current.number.as_valid()
+                        && !(current_major == 0 || current_major == 1)
                     {
                         errors
                             .get_or_insert_default()
-                            .push(test_6_1_21_err_wrong_first_version(&first_item));
+                            .push(test_6_1_21_err_wrong_first_version(&first_valid));
                         while let Ok(previous_version) = first_item.get_previous_major_version()
                             && let Some(previous_version) = previous_version
                         {
@@ -60,10 +59,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                     }
                 },
                 // checks subsequent items
-                Some(prev_item) => {
-                    let current_major = current.number.get_major().unwrap();
-                    // we can unwrap prev_item here as we make sure that 'prev' is always a valid version number
-                    let prev_major = prev_item.number.get_major().unwrap();
+                Some((prev_item, prev_major)) => {
                     if current_major < prev_major {
                         // check if the current number was already marked as missing
                         if let Some(previously_missing_version) = missing_versions.get_mut(&current.number) {
@@ -87,22 +83,18 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                         return prev;
                     }
 
-                    let expected = prev_item.number.get_next_major_version();
-                    if expected == Err(CsafVersionNumberError::Overflow) {
+                    let Some(expected) = prev_major.checked_add(1) else {
                         // last checked version was already the maximum version number, so all subsequent version must be lower
                         // and we shouldn't get to this point or any further in this method
-                        return Some(current);
-                    }
-                    // we can safely unwrap the result and the major version here as we already checked for the overflow case above
-                    // and invalid versions are also handled above
-                    let expected = expected.unwrap();
+                        return Some((current, current_major));
+                    };
 
-                    if current_major == expected.get_major().unwrap() {
+                    if current_major == expected {
                         // the current version is the expected next major version, so we can continue checking the next item
-                        return Some(current);
+                        return Some((current, current_major));
                     }
                     // check if the current version is the expected next major version
-                    if current_major > expected.get_major().unwrap() {
+                    if current_major > expected {
                         // there is at least one missing version between the previous and current version
                         let mut start = prev_item.number.clone();
                         while let Ok(next_version) = start.get_next_major_version()
@@ -121,7 +113,7 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
                     }
                 },
             }
-            Some(current)
+            Some((current, current_major))
         });
     for (missing_version, version_metadata) in missing_versions {
         // ToDo aggregate consecutive missing versions into one error message, e.g. "missing revision history items with numbers 2,3,4 between 2026-03-01T11:00:00.000Z and 2026-03-03T11:00:00.000Z"
@@ -149,11 +141,10 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_21, test_6_1_21_miss
 
 const REVISION_HISTORY_PATH: &str = "/document/tracking/revision_history";
 
-fn test_6_1_21_err_wrong_first_version(version: &CsafVersionNumber) -> TestFinding {
+fn test_6_1_21_err_wrong_first_version(version: &ValidCsafVersionNumber) -> TestFinding {
     let expected_version = match version {
-        CsafVersionNumber::IntVer(_) => "`0` or `1`",
-        CsafVersionNumber::SemVer(_) => "`0.y.z` or `1.y.z`",
-        CsafVersionNumber::Invalid(_) => panic!("Invalid version number should not be passed to this function"),
+        ValidCsafVersionNumber::IntVer(_) => "`0` or `1`",
+        ValidCsafVersionNumber::SemVer(_) => "`0.y.z` or `1.y.z`",
     }
     .to_string();
 
@@ -207,14 +198,14 @@ mod tests {
             "2",
         ))]);
         let case_intver_2_3_wrong_first_and_missing_1_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2").as_valid().unwrap()),
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1")),
         ]);
         let case_semver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from(
             "2.0.0",
         ))]);
         let case_semver_2_3_missing_1_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2.0.0")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2.0.0").as_valid().unwrap()),
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1.0.0")),
         ]);
         let case_s03_intver_1_3_2_missing_2_between = Err(vec![test_6_1_21_err_missing_version_between(
@@ -229,7 +220,7 @@ mod tests {
         )]);
 
         let case_s05_intver_3_1_missing_1_before_2_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1"),
                 &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
@@ -237,7 +228,7 @@ mod tests {
             test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("2")),
         ]);
         let case_s06_semver_3_1_missing_1_before_2_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3.0.0")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3.0.0").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1.0.0"),
                 &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
@@ -249,7 +240,7 @@ mod tests {
             &CsafVersionNumber::from("2"),
         )]);
         let case_intver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1"),
                 &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
@@ -266,7 +257,7 @@ mod tests {
         ]);
 
         let case_semver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("4.0.0")),
+            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("4.0.0").as_valid().unwrap()),
             test_6_1_21_err_missing_version_before(
                 &CsafVersionNumber::from("1.0.0"),
                 &CsafDateTime::from("2023-08-22T10:00:00.000Z"),

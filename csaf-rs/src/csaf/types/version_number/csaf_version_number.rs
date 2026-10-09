@@ -33,6 +33,15 @@ impl CsafVersionNumber {
         }
     }
 
+    /// Returns a view on this version number if it is valid, `None` otherwise.
+    pub fn as_valid(&self) -> Option<ValidCsafVersionNumber<'_>> {
+        match self {
+            Self::IntVer(intver) => Some(ValidCsafVersionNumber::IntVer(intver)),
+            Self::SemVer(semver) => Some(ValidCsafVersionNumber::SemVer(semver)),
+            Self::Invalid(_) => None,
+        }
+    }
+
     /// Converts this version to a `semver::Version` for comparison purposes.
     ///
     /// An `IntVer(n)` is treated as `n.0.0`, consistent with the CSAF spec note in 6.1.14:
@@ -140,6 +149,32 @@ impl Display for CsafVersionNumber {
             Self::IntVer(num) => write!(f, "{num}"),
             Self::SemVer(version) => write!(f, "{version}"),
             Self::Invalid(s) => write!(f, "{s}"),
+        }
+    }
+}
+
+/// A borrowed view on a [`CsafVersionNumber`] that is known to be valid, see [`CsafVersionNumber::as_valid`].
+#[derive(Debug, Clone, Copy)]
+pub enum ValidCsafVersionNumber<'a> {
+    IntVer(&'a IntVerVersion),
+    SemVer(&'a SemVerVersion),
+}
+
+impl ValidCsafVersionNumber<'_> {
+    /// Returns the major version number, which is either the integer version or the major version of the semantic version.
+    pub fn get_major(&self) -> u64 {
+        match self {
+            Self::IntVer(intver) => intver.get(),
+            Self::SemVer(semver) => semver.get_major(),
+        }
+    }
+}
+
+impl Display for ValidCsafVersionNumber<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            Self::IntVer(num) => write!(f, "{num}"),
+            Self::SemVer(version) => write!(f, "{version}"),
         }
     }
 }

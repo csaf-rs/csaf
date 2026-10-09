@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, VulnerabilityTrait};
+use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
@@ -27,7 +27,7 @@ fn create_cve_and_ids_are_not_present_error(
 pub fn test_6_1_27_08_vulnerability_id_csaf_20(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let doc_category = doc.get_document().get_category();
 
-    if !PROFILE_TEST_CONFIG.matches_category(&doc_category) {
+    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(CsafVersion::X20, &doc_category) {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 

@@ -48,6 +48,10 @@ mod tests {
         let unset_document_language = Err(vec![UNSET_DOCUMENT_LANGUAGE_WARNING.clone()]);
         let empty_document_language = unset_document_language.clone();
 
+        // Case 11: document lang "en"
+        // Case 12: document lang is bool true
+        // Case 13: document lang is number 42
+
         TESTS_2_0.test_6_2_12.expect(ExpectedResults_2_0 {
             case_01: missing_document_language_property.clone(),
             case_s01: unset_document_language.clone(),

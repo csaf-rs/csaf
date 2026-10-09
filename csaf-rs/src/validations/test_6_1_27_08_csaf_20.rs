@@ -68,6 +68,8 @@ mod tests {
             0,
         )]);
 
+        // Case S11: cve present for vulnerability 0, ids present for vulnerability 1
+
         TESTS_2_0.test_6_1_27_8.expect(ExpectedResults_2_0 {
             case_01: case_vex_without_cve_or_id.clone(),
             case_s11: Ok(()),

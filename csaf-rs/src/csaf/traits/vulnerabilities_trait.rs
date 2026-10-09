@@ -145,7 +145,7 @@ pub trait VulnerabilityTrait {
     /// As a shared interface, this returns `cwe` for  CSAF 2.0 and `cwes` for CSAF 2.1.
     fn get_cwes_property_name(&self) -> &'static str;
 
-    /// Returns the JSON path to a CWE in this CSAF version
+    /// Returns the JSON subpath to a CWE in this CSAF version
     /// The definition diverges between CSAF 2.0 and 2.1.
     /// CSAF 2.0 allowed only a single CWE, CSAF 2.1 allows multiple CWEs to be provided.
     /// As a shared interface, this returns `cwe` for  CSAF 2.0 and `cwes/{cwe_index}` for CSAF 2.1.

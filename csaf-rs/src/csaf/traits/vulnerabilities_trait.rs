@@ -134,10 +134,23 @@ pub trait VulnerabilityTrait {
     fn get_cve(&self) -> Option<&str>;
 
     /// Returns the CWEs associated with the vulnerability.
+    /// The definition diverges between CSAF 2.0 and 2.1.
+    /// CSAF 2.0 allowed only a single CWE, CSAF 2.1 allows multiple CWEs to be provided.
+    /// As a shared interface, the CSAF 2.0 CWE is returned as a Vec with length of 1.
     fn get_cwes(&self) -> Option<Vec<Cwe>>;
 
     /// Returns the JSON property name used for CWE data in this CSAF version
-    fn get_cwe_property_name(&self) -> &'static str;
+    /// The definition diverges between CSAF 2.0 and 2.1.
+    /// CSAF 2.0 allowed only a single CWE, CSAF 2.1 allows multiple CWEs to be provided.
+    /// As a shared interface, this returns `cwe` for  CSAF 2.0 and `cwes` for CSAF 2.1.
+    fn get_cwes_property_name(&self) -> &'static str;
+
+    /// Returns the JSON path to a CWE in this CSAF version
+    /// The definition diverges between CSAF 2.0 and 2.1.
+    /// CSAF 2.0 allowed only a single CWE, CSAF 2.1 allows multiple CWEs to be provided.
+    /// As a shared interface, this returns `cwe` for  CSAF 2.0 and `cwes/{cwe_index}` for CSAF 2.1.
+    /// The `cwe_index` is ignored for CSAF 2.0 since there can be only a single CWE.
+    fn get_cwes_subpath(&self, cwe_index: usize) -> String;
 
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>>;
@@ -237,8 +250,12 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.cwe.as_ref().map(|cwe| vec![Cwe::from(cwe)])
     }
 
-    fn get_cwe_property_name(&self) -> &'static str {
+    fn get_cwes_property_name(&self) -> &'static str {
         "cwe"
+    }
+
+    fn get_cwes_subpath(&self, _cwe_index: usize) -> String {
+        self.get_cwes_property_name().to_string()
     }
 
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {
@@ -324,8 +341,12 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.cwes.as_ref().map(|cwes| cwes.iter().map(Cwe::from).collect())
     }
 
-    fn get_cwe_property_name(&self) -> &'static str {
+    fn get_cwes_property_name(&self) -> &'static str {
         "cwes"
+    }
+
+    fn get_cwes_subpath(&self, cwe_index: usize) -> String {
+        format!("{}/{cwe_index}", self.get_cwes_property_name())
     }
 
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {

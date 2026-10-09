@@ -142,7 +142,7 @@ mod tests {
     }
 
     #[test]
-    fn test_config_without_shared_categories_panic_on_is_ignored_for() {
+    fn test_config_without_shared_categories_returns_false() {
         const TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
             .csaf20(&[CsafDocumentCategory::CsafVex])
             .csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
@@ -151,7 +151,7 @@ mod tests {
     }
 
     #[test]
-    fn test_config_without_shared_or_csaf_20_categories_panics_on_is_ignored_for_on_csaf_version() {
+    fn test_config_without_shared_or_csaf_20_categories_returns_false_for_csaf_version_20() {
         const TEST_CONFIG: DocumentCategoryTestConfig =
             DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafWithdrawn]);
 
@@ -159,7 +159,7 @@ mod tests {
     }
 
     #[test]
-    fn test_config_without_shared_or_csaf_21_categories_panics_on_is_ignored_for_on_csaf_version() {
+    fn test_config_without_shared_or_csaf_21_categories_returns_false_for_csaf_version_21() {
         const TEST_CONFIG: DocumentCategoryTestConfig =
             DocumentCategoryTestConfig::new().csaf20(&[CsafDocumentCategory::CsafVex]);
 

@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_missing_cve_error(vulnerability_index: usize) -> TestFinding {
+fn create_missing_cve_info(vulnerability_index: usize) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: "Vulnerability is missing 'cve' property".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}"),
@@ -23,7 +23,7 @@ pub fn test_6_3_3_missing_cve(doc: &impl CsafTrait) -> Result<(), Vec<TestFindin
 
     for (v_i, vuln) in vulnerabilities.iter().enumerate() {
         if vuln.get_cve().is_none() {
-            errors.get_or_insert_default().push(create_missing_cve_error(v_i));
+            errors.get_or_insert_default().push(create_missing_cve_info(v_i));
         }
     }
 
@@ -42,8 +42,8 @@ mod tests {
 
     #[test]
     fn test_test_6_3_3() {
-        let single_vuln_no_cve = Err(vec![create_missing_cve_error(0)]);
-        let multi_vuln_alternating_no_cve = Err(vec![create_missing_cve_error(0), create_missing_cve_error(2)]);
+        let single_vuln_no_cve = Err(vec![create_missing_cve_info(0)]);
+        let multi_vuln_alternating_no_cve = Err(vec![create_missing_cve_info(0), create_missing_cve_info(2)]);
 
         // Case 11: 1 vuln, with CVE (fixed case 01)
         // Case 12: 3 vuln, all with CVEs (fixed case 02)

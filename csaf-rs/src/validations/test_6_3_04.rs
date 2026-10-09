@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_missing_cwe_error(vulnerability_index: usize, field_name: &str) -> TestFinding {
+fn create_missing_cwe_info(vulnerability_index: usize, field_name: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!("Vulnerability is missing '{field_name}' property"),
         instance_path: format!("/vulnerabilities/{vulnerability_index}"),
@@ -26,7 +26,7 @@ pub fn test_6_3_4_missing_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFindin
         if vuln.get_cwes().is_none() {
             errors
                 .get_or_insert_default()
-                .push(create_missing_cwe_error(v_i, vuln.get_cwe_property_name()));
+                .push(create_missing_cwe_info(v_i, vuln.get_cwe_property_name()));
         }
     }
 
@@ -45,13 +45,13 @@ mod tests {
 
     #[test]
     fn test_test_6_3_4() {
-        let make_cwe_error_20 = |idx| create_missing_cwe_error(idx, "cwe");
-        let make_cwe_error_21 = |idx| create_missing_cwe_error(idx, "cwes");
+        let make_cwe_info_20 = |idx| create_missing_cwe_info(idx, "cwe");
+        let make_cwe_info_21 = |idx| create_missing_cwe_info(idx, "cwes");
 
-        let single_vuln_no_cwe_20 = Err(vec![make_cwe_error_20(0)]);
-        let multi_vuln_alternating_no_cwe_20 = Err(vec![make_cwe_error_20(0), make_cwe_error_20(2)]);
-        let single_vuln_no_cwe_21 = Err(vec![make_cwe_error_21(0)]);
-        let multi_vuln_alternating_no_cwe_21 = Err(vec![make_cwe_error_21(0), make_cwe_error_21(2)]);
+        let single_vuln_no_cwe_20 = Err(vec![make_cwe_info_20(0)]);
+        let multi_vuln_alternating_no_cwe_20 = Err(vec![make_cwe_info_20(0), make_cwe_info_20(2)]);
+        let single_vuln_no_cwe_21 = Err(vec![make_cwe_info_21(0)]);
+        let multi_vuln_alternating_no_cwe_21 = Err(vec![make_cwe_info_21(0), make_cwe_info_21(2)]);
 
         // Case 11: 1 vuln, with CWE (fixed case 01)
         // Case 12: 3 vuln, all with CWEs (fixed case 02)

@@ -3,7 +3,7 @@ use crate::csaf_traits::{
 };
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_short_hash_error(path: &str, hash_index: usize, file_hash_index: usize, hash_length: usize) -> TestFinding {
+fn create_short_hash_info(path: &str, hash_index: usize, file_hash_index: usize, hash_length: usize) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!("Too short hash found (length: {hash_length}), expected to be >= 64 chars"),
         instance_path: format!(
@@ -31,12 +31,9 @@ pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<Test
                     for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
                         let file_hash_len = file_hash.get_hash().len();
                         if file_hash_len < 64 {
-                            errors.get_or_insert_default().push(create_short_hash_error(
-                                path,
-                                h_i,
-                                fh_i,
-                                file_hash_len,
-                            ));
+                            errors
+                                .get_or_insert_default()
+                                .push(create_short_hash_info(path, h_i, fh_i, file_hash_len));
                         }
                     }
                 }
@@ -59,7 +56,7 @@ mod tests {
 
     #[test]
     fn test_test_6_3_5() {
-        let case_01 = Err(vec![create_short_hash_error(
+        let case_01 = Err(vec![create_short_hash_info(
             "/product_tree/full_product_names/0",
             0,
             0,
@@ -67,28 +64,28 @@ mod tests {
         )]);
 
         let case_s01 = Err(vec![
-            create_short_hash_error("/product_tree/branches/0/branches/0/branches/0/product", 0, 1, 32),
-            create_short_hash_error("/product_tree/branches/0/branches/1/product", 0, 1, 40),
-            create_short_hash_error("/product_tree/branches/1/product", 1, 0, 56),
+            create_short_hash_info("/product_tree/branches/0/branches/0/branches/0/product", 0, 1, 32),
+            create_short_hash_info("/product_tree/branches/0/branches/1/product", 0, 1, 40),
+            create_short_hash_info("/product_tree/branches/1/product", 1, 0, 56),
         ]);
 
         let case_s02 = Err(vec![
-            create_short_hash_error("/product_tree/full_product_names/0", 0, 1, 32),
-            create_short_hash_error("/product_tree/full_product_names/1", 1, 0, 40),
+            create_short_hash_info("/product_tree/full_product_names/0", 0, 1, 32),
+            create_short_hash_info("/product_tree/full_product_names/1", 1, 0, 40),
         ]);
 
         let case_s03 = Err(vec![
-            create_short_hash_error("/product_tree/product_paths/0/full_product_name", 0, 1, 32),
-            create_short_hash_error("/product_tree/product_paths/1/full_product_name", 1, 0, 40),
+            create_short_hash_info("/product_tree/product_paths/0/full_product_name", 0, 1, 32),
+            create_short_hash_info("/product_tree/product_paths/1/full_product_name", 1, 0, 40),
         ]);
 
         let case_s04 = Err(vec![
-            create_short_hash_error("/product_tree/branches/0/product", 0, 0, 32),
-            create_short_hash_error("/product_tree/full_product_names/0", 0, 0, 40),
-            create_short_hash_error("/product_tree/product_paths/0/full_product_name", 0, 0, 56),
+            create_short_hash_info("/product_tree/branches/0/product", 0, 0, 32),
+            create_short_hash_info("/product_tree/full_product_names/0", 0, 0, 40),
+            create_short_hash_info("/product_tree/product_paths/0/full_product_name", 0, 0, 56),
         ]);
 
-        let case_s05 = Err(vec![create_short_hash_error(
+        let case_s05 = Err(vec![create_short_hash_info(
             "/product_tree/full_product_names/0",
             0,
             0,

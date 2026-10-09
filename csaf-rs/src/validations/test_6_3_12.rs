@@ -5,7 +5,7 @@ use crate::csaf_traits::{
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn create_missing_cvss_v4_error(instance_path: String, cvss_versions: &[CsafVulnerabilityMetric]) -> TestFinding {
+fn create_missing_cvss_v4_info(instance_path: String, cvss_versions: &[CsafVulnerabilityMetric]) -> TestFinding {
     let versions_str = cvss_versions
         .iter()
         .map(|v| v.to_string())
@@ -17,7 +17,7 @@ fn create_missing_cvss_v4_error(instance_path: String, cvss_versions: &[CsafVuln
     })
 }
 
-fn create_affected_product_not_covered_error(product_id: &str, instance_path: String) -> TestFinding {
+fn create_affected_product_not_covered_info(product_id: &str, instance_path: String) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!("Affected product {product_id} is not covered by any CVSS score."),
         instance_path,
@@ -55,7 +55,7 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<TestF
                         let cvss_types = content.get_cvss_metric_types();
                         errors
                             .get_or_insert_default()
-                            .push(create_missing_cvss_v4_error(path, &cvss_types));
+                            .push(create_missing_cvss_v4_info(path, &cvss_types));
                     }
                 }
             }
@@ -70,7 +70,7 @@ pub fn test_6_3_12_missing_cvss_v4(doc: &impl CsafTrait) -> Result<(), Vec<TestF
                         for entry in entries {
                             errors
                                 .get_or_insert_default()
-                                .push(create_affected_product_not_covered_error(
+                                .push(create_affected_product_not_covered_info(
                                     product_id,
                                     entry.json_path(v_i),
                                 ));
@@ -94,30 +94,30 @@ mod tests {
 
     #[test]
     fn test_test_6_3_12() {
-        let case_01_cvss_v3_1_only = Err(vec![create_missing_cvss_v4_error(
+        let case_01_cvss_v3_1_only = Err(vec![create_missing_cvss_v4_info(
             "/vulnerabilities/0/metrics/0/content".to_string(),
             &[CsafVulnerabilityMetric::CvssV3("3.1".to_string())],
         )]);
 
-        let case_02_cvss_v3_0_only = Err(vec![create_missing_cvss_v4_error(
+        let case_02_cvss_v3_0_only = Err(vec![create_missing_cvss_v4_info(
             "/vulnerabilities/0/metrics/0/content".to_string(),
             &[CsafVulnerabilityMetric::CvssV3("3.0".to_string())],
         )]);
 
-        let case_03_cvss_v2_only = Err(vec![create_missing_cvss_v4_error(
+        let case_03_cvss_v2_only = Err(vec![create_missing_cvss_v4_info(
             "/vulnerabilities/0/metrics/0/content".to_string(),
             &[CsafVulnerabilityMetric::CvssV2("2.0".to_string())],
         )]);
 
         let case_04_multiple_vulns_two_without_cvss_v4 = Err(vec![
-            create_missing_cvss_v4_error(
+            create_missing_cvss_v4_info(
                 "/vulnerabilities/0/metrics/0/content".to_string(),
                 &[
                     CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                     CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                 ],
             ),
-            create_missing_cvss_v4_error(
+            create_missing_cvss_v4_info(
                 "/vulnerabilities/2/metrics/0/content".to_string(),
                 &[
                     CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
@@ -131,24 +131,24 @@ mod tests {
         // Vuln 1: v2,3,4 for 9080700, but affected 9080701 not covered
         // Vuln 2: v2,3 for 9080700, and affected 9080701 not covered
         let case_05_uncovered_affected = Err(vec![
-            create_affected_product_not_covered_error(
+            create_affected_product_not_covered_info(
                 "CSAFPID-9080701",
                 "/vulnerabilities/1/product_status/first_affected/1".to_string(),
             ),
-            create_missing_cvss_v4_error(
+            create_missing_cvss_v4_info(
                 "/vulnerabilities/2/metrics/0/content".to_string(),
                 &[
                     CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
                     CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
                 ],
             ),
-            create_affected_product_not_covered_error(
+            create_affected_product_not_covered_info(
                 "CSAFPID-9080701",
                 "/vulnerabilities/2/product_status/known_affected/1".to_string(),
             ),
         ]);
 
-        let case_s01_last_affected_not_covered = Err(vec![create_affected_product_not_covered_error(
+        let case_s01_last_affected_not_covered = Err(vec![create_affected_product_not_covered_info(
             "CSAFPID-9080701",
             "/vulnerabilities/0/product_status/last_affected/1".to_string(),
         )]);

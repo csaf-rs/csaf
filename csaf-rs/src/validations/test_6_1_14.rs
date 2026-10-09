@@ -20,7 +20,12 @@ pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), V
     let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
 
     // Sort by date and by number
-    rev_history_tuples_sort_by_date.inplace_sort_by_date_then_number();
+    if rev_history_tuples_sort_by_date
+        .inplace_sort_by_date_then_number()
+        .is_err()
+    {
+        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
+    }
     rev_history_tuples_sort_by_number.inplace_sort_by_number();
 
     // Generate an error if revision history items are sorted differently between sort by date and sort by number

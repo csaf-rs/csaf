@@ -22,7 +22,9 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
     }
     // Generate and sort the revision history tuples by date first and by number second
     let mut rev_history_tuples = doc.get_document().get_tracking().aggregate_revision_history();
-    rev_history_tuples.inplace_sort_by_date_then_number();
+    if rev_history_tuples.inplace_sort_by_date_then_number().is_err() {
+        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
+    }
 
     if rev_history_tuples.is_empty() {
         return Ok(()); // ToDo #409 this should be Skipped: Precondition failed

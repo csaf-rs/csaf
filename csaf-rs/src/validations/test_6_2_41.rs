@@ -32,7 +32,9 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Te
 
     // Get sorted revision history and find the newest entry
     let mut revision_history = tracking.aggregate_revision_history();
-    revision_history.inplace_sort_by_date_then_number();
+    if revision_history.inplace_sort_by_date_then_number().is_err() {
+        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
+    }
 
     let newest_revision_date = match revision_history.last() {
         Some(rev) => match &rev.date {

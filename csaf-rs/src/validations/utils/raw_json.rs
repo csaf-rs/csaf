@@ -31,3 +31,47 @@ pub(crate) fn is_present_and_set(path: &str, json: &Value) -> JsonValuePresence 
 pub(crate) fn property_string_value_is(path: &str, expected: &str, json: &Value) -> bool {
     matches!(json.pointer(path), Some(Value::String(value)) if value == expected)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::{fixture, rstest};
+    use serde_json::json;
+
+    #[fixture]
+    #[once]
+    fn test_json() -> Value {
+        json!({
+            "null": null,
+            "empty_array": [],
+            "empty_object": {},
+            "empty_string": "",
+            "with_value": {
+                "array": [1],
+                "object": {"foo": "bar"},
+                "string": "foobar",
+                "number": 0,
+                "bool": false
+            }
+        })
+    }
+
+    #[rstest]
+    #[case("/missing", JsonValuePresence::Missing)]
+    #[case("/null", JsonValuePresence::Unset)]
+    #[case("/empty_array", JsonValuePresence::Empty)]
+    #[case("/empty_object", JsonValuePresence::Empty)]
+    #[case("/empty_string", JsonValuePresence::Empty)]
+    #[case("/with_value/array", JsonValuePresence::Set)]
+    #[case("/with_value/object", JsonValuePresence::Set)]
+    #[case("/with_value/string", JsonValuePresence::Set)]
+    #[case("/with_value/number", JsonValuePresence::Set)]
+    #[case("/with_value/bool", JsonValuePresence::Set)]
+    fn is_present_and_set_generates_json_value_presence(
+        test_json: &Value,
+        #[case] path: &str,
+        #[case] expected: JsonValuePresence,
+    ) {
+        assert_eq!(is_present_and_set(path, test_json), expected);
+    }
+}

@@ -3,11 +3,18 @@ use std::sync::LazyLock;
 use jsonschema::Validator;
 use serde_json::{Map, Value};
 
-use crate::csaf::types::csaf_vuln_metric::CsafVulnerabilityMetric;
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
     validation::{TestFinding, TestFindingData},
 };
+
+fn create_validator(schema_str: &str) -> Validator {
+    jsonschema::validator_for(&serde_json::from_str(schema_str).unwrap()).unwrap()
+}
+
+fn create_draft_validator(schema_str: &str) -> Validator {
+    jsonschema::draft202012::new(&serde_json::from_str(schema_str).unwrap()).unwrap()
+}
 
 static CVSS_20_STRICT_VALIDATOR: LazyLock<Validator> =
     LazyLock::new(|| create_validator(include_str!("../../assets/cvss-v2.0_strict.json")));
@@ -19,7 +26,22 @@ static CVSS40_VALIDATOR: LazyLock<Validator> =
     LazyLock::new(|| create_draft_validator(include_str!("../../assets/cvss-v4.0.json")));
 
 /// 6.1.8 Invalid CVSS
-/// Invalid CVSS object according to scheme
+///
+/// It SHALL be tested that the given CVSS object is valid according to the referenced schema.
+///
+///  This test runs for all CVSS properties in the `scores` items (CSAF 2.0) and `content` object of
+/// each `metrics` item (CSAF 2.1) of each item in the `vulnerabilities` array.
+/// It checks if the CVSS object matches the respective CVSS JSON schema using [`jsonschema`].
+///
+/// For this test, additional properties are not to be allowed. For CVSS v2, v3.0, and v3.1,
+/// the strict schema provided as a referenced schema in the CSAF standard is used, as it does not allow additional properties.
+///
+/// For CVSS v3, the used validator is to be determined by the `version` property of the CVSS object.
+/// If the version is `3.0`, the strict v3.0 schema is used, otherwise
+/// (including for `3.1`, any other version like `3.2` or if the version property is missing) the strict v3.1 schema is used.
+///
+/// It emits an error for each offense, including required properties being missing and unevaluated / additional
+/// properties being present. The error message is taken from the [`jsonschema`] error.
 pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 
@@ -29,43 +51,29 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
                 let content = metric.get_content();
                 let instance_prefix = content.get_content_json_path(i_v, metric_index);
                 if let Some(cvss_v2_raw) = content.get_cvss_v2_raw() {
-                    evaluate_cvss(
+                    evaluate_cvss_with_validator(
                         cvss_v2_raw,
                         &CVSS_20_STRICT_VALIDATOR,
                         &instance_prefix,
-                        CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
+                        "cvss_v2",
                         &mut errors,
                     );
                 }
                 if let Some(cvss_v3_raw) = content.get_cvss_v3_raw() {
-                    // Use as_str because otherwise additional quotation marks would be included
-                    if let Some(version) = cvss_v3_raw.get("version").and_then(|v| v.as_str()) {
-                        let metric_type = CsafVulnerabilityMetric::CvssV3(version.to_string());
-                        if version == "3.0" {
-                            evaluate_cvss(
-                                cvss_v3_raw,
-                                &CVSS_30_STRICT_VALIDATOR,
-                                &instance_prefix,
-                                metric_type,
-                                &mut errors,
-                            );
-                        } else if version == "3.1" {
-                            evaluate_cvss(
-                                cvss_v3_raw,
-                                &CVSS_31_STRICT_VALIDATOR,
-                                &instance_prefix,
-                                metric_type,
-                                &mut errors,
-                            );
-                        }
-                    }
+                    // use the CVSS v3.0 validator if the version is "3.0" , else, use the CVSS v3.1 validator
+                    let validator = if cvss_v3_raw.get("version").and_then(Value::as_str) == Some("3.0") {
+                        &CVSS_30_STRICT_VALIDATOR
+                    } else {
+                        &CVSS_31_STRICT_VALIDATOR
+                    };
+                    evaluate_cvss_with_validator(cvss_v3_raw, validator, &instance_prefix, "cvss_v3", &mut errors);
                 }
                 if let Some(cvss_v4_raw) = content.get_cvss_v4_raw() {
-                    evaluate_cvss(
+                    evaluate_cvss_with_validator(
                         cvss_v4_raw,
                         &CVSS40_VALIDATOR,
                         &instance_prefix,
-                        CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
+                        "cvss_v4",
                         &mut errors,
                     );
                 }
@@ -76,39 +84,38 @@ pub fn test_6_1_08_invalid_cvss(doc: &impl CsafTrait) -> Result<(), Vec<TestFind
     errors.map_or(Ok(()), Err)
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_8, test_6_1_08_invalid_cvss);
-
-fn create_validator(schema_str: &str) -> Validator {
-    jsonschema::validator_for(&serde_json::from_str(schema_str).unwrap()).unwrap()
-}
-
-fn create_draft_validator(schema_str: &str) -> Validator {
-    jsonschema::draft202012::new(&serde_json::from_str(schema_str).unwrap()).unwrap()
-}
-
 /// Run the CVSS through json schema validation, add every error during validation to `errors`
-/// TODO: The metric prop is kinda weird, but this will be removed after CVSS validation is implemented.
-fn evaluate_cvss(
+fn evaluate_cvss_with_validator(
     cvss_value: &Map<String, Value>,
     validator: &Validator,
     base_path: &str,
-    metric: CsafVulnerabilityMetric,
+    property_name: &str,
     errors: &mut Option<Vec<TestFinding>>,
 ) {
     let value = Value::Object(cvss_value.clone());
     for error in validator.iter_errors(&value) {
-        errors
-            .get_or_insert_default()
-            .push(create_validation_error(error.to_string(), base_path, metric.clone()));
+        errors.get_or_insert_default().push(create_validation_error(
+            error.to_string(),
+            base_path,
+            property_name,
+            error.instance_path().as_str(),
+        ));
     }
 }
 
-fn create_validation_error(message: String, base: &str, metric: CsafVulnerabilityMetric) -> TestFinding {
+fn create_validation_error(
+    message: String,
+    csaf_base_path: &str,
+    metric_prop_name: &str,
+    cvss_inner_path: &str,
+) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message,
-        instance_path: format!("{}/{}", base, metric.get_metric_prop_name()),
+        instance_path: format!("{csaf_base_path}/{metric_prop_name}{cvss_inner_path}"),
     })
 }
+
+crate::test_validation::impl_validator!(ValidatorForTest6_1_8, test_6_1_08_invalid_cvss);
 
 #[cfg(test)]
 mod tests {
@@ -118,24 +125,28 @@ mod tests {
     use crate::csaf2_1::testcases::ExpectedResults_6_1_8 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
+    /// Like [`create_validation_error`], but takes the complete instance path directly.
+    fn create_validation_error_with_path(message: impl Into<String>, instance_path: impl Into<String>) -> TestFinding {
+        TestFinding::Error(TestFindingData {
+            message: message.into(),
+            instance_path: instance_path.into(),
+        })
+    }
+
     #[test]
     fn test_test_6_1_08() {
-        // CSAF 2.0 has 7 test cases (01-03, 11-14)
         TESTS_2_0.test_6_1_8.expect(ExpectedResults_2_0 {
-            case_01: Err(vec![create_validation_error(
-                "\"baseSeverity\" is a required property".to_string(),
-                "/vulnerabilities/0/scores/0",
-                CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
+            case_01: Err(vec![create_validation_error_with_path(
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/scores/0/cvss_v3",
             )]),
-            case_02: Err(vec![create_validation_error(
-                "\"baseSeverity\" is a required property".to_string(),
-                "/vulnerabilities/0/scores/0",
-                CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
+            case_02: Err(vec![create_validation_error_with_path(
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/scores/0/cvss_v3",
             )]),
-            case_03: Err(vec![create_validation_error(
-                "\"version\" is a required property".to_string(),
-                "/vulnerabilities/0/scores/0",
-                CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
+            case_03: Err(vec![create_validation_error_with_path(
+                "\"version\" is a required property",
+                "/vulnerabilities/0/scores/0/cvss_v2",
             )]),
             case_11: Ok(()),
             case_12: Ok(()),
@@ -143,42 +154,47 @@ mod tests {
             case_14: Ok(()),
         });
 
-        // CSAF 2.1 has 13 test cases (01-06, 11-17)
         TESTS_2_1.test_6_1_8.expect(ExpectedResults_2_1 {
-            case_01: Err(vec![create_validation_error(
-                "\"baseSeverity\" is a required property".to_string(),
-                "/vulnerabilities/0/metrics/0/content",
-                CsafVulnerabilityMetric::CvssV3("3.1".to_string()),
+            case_01: Err(vec![create_validation_error_with_path(
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
             )]),
-            case_02: Err(vec![create_validation_error(
-                "\"baseSeverity\" is a required property".to_string(),
-                "/vulnerabilities/0/metrics/0/content",
-                CsafVulnerabilityMetric::CvssV3("3.0".to_string()),
+            case_02: Err(vec![create_validation_error_with_path(
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
             )]),
-            case_03: Err(vec![create_validation_error(
-                "\"version\" is a required property".to_string(),
-                "/vulnerabilities/0/metrics/0/content",
-                CsafVulnerabilityMetric::CvssV2("2.0".to_string()),
+            case_03: Err(vec![create_validation_error_with_path(
+                "\"version\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v2",
             )]),
-            case_04: Err(vec![create_validation_error(
-                "\"baseSeverity\" is a required property".to_string(),
-                "/vulnerabilities/0/metrics/0/content",
-                CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
+            case_04: Err(vec![create_validation_error_with_path(
+                "\"baseSeverity\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v4",
             )]),
-            case_05: Err(vec![
-                create_validation_error(
-                    "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
-                ),
-            ]),
-            case_06: Err(vec![
-                create_validation_error(
-                    "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)".to_string(),
-                    "/vulnerabilities/0/metrics/0/content",
-                    CsafVulnerabilityMetric::CvssV4("4.0".to_string()),
-                ),
-            ]),
+            case_05: Err(vec![create_validation_error_with_path(
+                "Unevaluated properties are not allowed ('threatScore', 'threatSeverity' were unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v4",
+            )]),
+            case_06: Err(vec![create_validation_error_with_path(
+                "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v4",
+            )]),
+            case_s01: Err(vec![create_validation_error_with_path(
+                "false is not of type \"number\"",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3/baseScore"
+            )]),
+            case_s02: Err(vec![create_validation_error_with_path(
+                "\"CVSS:3.1/FOO:BAR/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H\" does not match \"^CVSS:3[.]1/((AV:[NALP]|AC:[LH]|PR:[NLH]|UI:[NR]|S:[UC]|[CIA]:[NLH]|E:[XUPFH]|RL:[XOTWU]|RC:[XURC]|[CIA]R:[XLMH]|MAV:[XNALP]|MAC:[XLH]|MPR:[XNLH]|MUI:[XNR]|MS:[XUC]|M[CIA]:[XNLH])/)*(AV:[NALP]|AC:[LH]|PR:[NLH]|UI:[NR]|S:[UC]|[CIA]:[NLH]|E:[XUPFH]|RL:[XOTWU]|RC:[XURC]|[CIA]R:[XLMH]|MAV:[XNALP]|MAC:[XLH]|MPR:[XNLH]|MUI:[XNR]|MS:[XUC]|M[CIA]:[XNLH])$\"",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3/vectorString"
+            )]),
+            case_s03: Err(vec![create_validation_error_with_path(
+                "\"3.2\" is not one of \"3.1\"",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3/version"
+            )]),
+            case_s04: Err(vec![create_validation_error_with_path(
+                "\"version\" is a required property",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
+            )]),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

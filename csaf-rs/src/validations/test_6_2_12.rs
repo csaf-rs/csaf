@@ -7,23 +7,25 @@ use std::sync::LazyLock;
 
 /// 6.2.12 Missing Document Language
 ///
-/// `/document/lang` must be set.
+/// It SHALL be tested that the document language member is present and set.
+/// A CSAF Validator SHALL differentiate in the error message between the key being present
+/// but having no or an empty value and not being present at all.
 pub fn test_6_2_12_missing_document_language(json: &Value) -> Result<(), Vec<TestFinding>> {
     match is_present_and_set("/document/lang", json) {
-        JsonValuePresence::Missing => Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]),
-        JsonValuePresence::Unset | JsonValuePresence::Empty => Err(vec![UNSET_DOCUMENT_LANGUAGE.clone()]),
+        JsonValuePresence::Missing => Err(vec![MISSING_DOCUMENT_LANGUAGE_WARNING.clone()]),
+        JsonValuePresence::Unset | JsonValuePresence::Empty => Err(vec![UNSET_DOCUMENT_LANGUAGE_WARNING.clone()]),
         JsonValuePresence::Set => Ok(()),
     }
 }
 
-static MISSING_DOCUMENT_LANGUAGE: LazyLock<TestFinding> = LazyLock::new(|| {
+static MISSING_DOCUMENT_LANGUAGE_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The document language is not defined".to_string(),
-        instance_path: "/document/lang".to_string(),
+        instance_path: "/document".to_string(),
     })
 });
 
-static UNSET_DOCUMENT_LANGUAGE: LazyLock<TestFinding> = LazyLock::new(|| {
+static UNSET_DOCUMENT_LANGUAGE_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The document language is empty or not set (e.g., `null`)".to_string(),
         instance_path: "/document/lang".to_string(),
@@ -42,8 +44,8 @@ mod tests {
 
     #[test]
     fn test_test_6_2_12() {
-        let missing_document_language_property = Err(vec![MISSING_DOCUMENT_LANGUAGE.clone()]);
-        let unset_document_language = Err(vec![UNSET_DOCUMENT_LANGUAGE.clone()]);
+        let missing_document_language_property = Err(vec![MISSING_DOCUMENT_LANGUAGE_WARNING.clone()]);
+        let unset_document_language = Err(vec![UNSET_DOCUMENT_LANGUAGE_WARNING.clone()]);
         let empty_document_language = unset_document_language.clone();
 
         TESTS_2_0.test_6_2_12.expect(ExpectedResults_2_0 {

@@ -13,9 +13,10 @@ pub(crate) fn tokenize_words(text: &str) -> Vec<(String, usize, usize)> {
 
     for token in text.split_whitespace() {
         // Locate the token's byte offset in the remaining text
-        let offset = text[search_from..]
-            .find(token)
-            .expect("token should be found in remaining text");
+        let Some(offset) = text[search_from..].find(token) else {
+            // can't happen, the token is a subslice of the remaining text; stop rather than produce wrong offsets
+            break;
+        };
         let token_start = search_from + offset;
 
         char_count += text[search_from..token_start].chars().count();

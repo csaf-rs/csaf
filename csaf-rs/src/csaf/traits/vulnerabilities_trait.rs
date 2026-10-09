@@ -96,7 +96,9 @@ pub trait VulnerabilityTrait {
     /// Returns an optional vector of metrics related to the vulnerability.
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>>;
 
-    /// Return the path in the JSON document where the metrics are located, used for error reporting
+    /// Returns the JSON property name used for metrics.
+    /// The definition diverges between CSAF 2.0 and 2.1.
+    /// CSAF 2.0 called this `scores`, CSAF 2.1 renamed it to `metrics`.
     fn get_metrics_prop_name(&self) -> &str;
 
     /// Utility function to get all product IDs referenced in metrics along with their JSON subpaths

@@ -1,5 +1,6 @@
 use vers_rs::{Comparator, schemes::semver::SemVer};
 
+#[derive(Debug)]
 pub enum VersionRange {
     /// A VERS version range
     Vers(vers_rs::GenericVersionRange<SemVer>),

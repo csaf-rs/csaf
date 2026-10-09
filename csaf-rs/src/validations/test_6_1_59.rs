@@ -9,6 +9,13 @@ fn product_version_range_only_one_version_error(instance_path: impl Into<String>
     })
 }
 
+fn product_version_range_invalid_error(instance_path: impl Into<String>, version_range: &VersionRange) -> TestFinding {
+    TestFinding::Error(TestFindingData {
+        message: format!("The version range given is invalid: {version_range:?}"),
+        instance_path: instance_path.into(),
+    })
+}
+
 /// Single Version as Product Version Range
 ///
 /// For each product_version_range, it SHALL be tested that it does not identify only a single version.
@@ -25,8 +32,13 @@ pub fn test_6_1_59_product_version_range_identifies_single_version(
         if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
             let version_range = VersionRange::new(branch.get_name());
 
-            // error if the version_range does not identify more than one version
-            if version_range.is_single_version() == Some(true) {
+            if matches!(version_range, VersionRange::Invalid(_)) {
+                // error if the version range is invalid
+                errors
+                    .get_or_insert_default()
+                    .push(product_version_range_invalid_error(path, &version_range));
+            } else if version_range.is_single_version() == Some(true) {
+                // error if the version_range does not identify more than one version
                 errors
                     .get_or_insert_default()
                     .push(product_version_range_only_one_version_error(path));

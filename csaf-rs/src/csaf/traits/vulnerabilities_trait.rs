@@ -97,17 +97,19 @@ pub trait VulnerabilityTrait {
     fn get_metrics(&self) -> Option<&Vec<Self::MetricType>>;
 
     /// Return the path in the JSON document where the metrics are located, used for error reporting
-    fn get_metrics_path(&self) -> &str;
+    fn get_metrics_prop_name(&self) -> &str;
 
-    /// Utility function to get all product IDs referenced in metrics along with their JSON paths
+    /// Utility function to get all product IDs referenced in metrics along with their JSON subpaths
     fn get_metrics_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();
 
         if let Some(metrics) = self.get_metrics() {
-            let metric_path = self.get_metrics_path();
             for (metric_i, metric) in metrics.iter().enumerate() {
                 for (x_i, x) in metric.get_products().enumerate() {
-                    ids.push((x.to_owned(), format!("{metric_path}/{metric_i}/products/{x_i}")));
+                    ids.push((
+                        x.to_owned(),
+                        format!("{}/{metric_i}/products/{x_i}", self.get_metrics_prop_name()),
+                    ));
                 }
             }
         }
@@ -205,7 +207,7 @@ impl VulnerabilityTrait for Vulnerability20 {
         Some(&self.scores)
     }
 
-    fn get_metrics_path(&self) -> &str {
+    fn get_metrics_prop_name(&self) -> &str {
         "scores"
     }
 
@@ -292,7 +294,7 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.metrics.as_ref()
     }
 
-    fn get_metrics_path(&self) -> &str {
+    fn get_metrics_prop_name(&self) -> &str {
         "metrics"
     }
 

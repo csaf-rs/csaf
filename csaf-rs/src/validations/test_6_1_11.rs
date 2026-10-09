@@ -58,7 +58,7 @@ fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static String> {
     latest.map(|(version, _)| version)
 }
 
-pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<TestFinding>> {
+pub fn test_6_1_11_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
     let mut errors: Option<Vec<TestFinding>> = None;
 
@@ -83,11 +83,7 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Te
                     })
                     .expect("At least one CWE version should be available in the data source.");
 
-                let path = if use_2_1 {
-                    format!("/vulnerabilities/{i_r}/cwes/{i_cwe}")
-                } else {
-                    format!("/vulnerabilities/{i_r}/cwe")
-                };
+                let path = format!("/vulnerabilities/{i_r}/{}", vulnerability.get_cwes_subpath(i_cwe));
                 check_cwe(cwe_item, cwe_version, &path, &mut errors);
             }
         }
@@ -96,27 +92,7 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait, use_2_1: bool) -> Result<(), Vec<Te
     errors.map_or(Ok(()), Err)
 }
 
-impl crate::test_validation::TestValidator<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_0::testcases::ValidatorForTest6_1_11
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<TestFinding>> {
-        test_6_1_11_cwe(doc, false)
-    }
-}
-
-impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>
-    for crate::csaf2_1::testcases::ValidatorForTest6_1_11
-{
-    fn validate(
-        &self,
-        doc: &crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
-    ) -> Result<(), Vec<TestFinding>> {
-        test_6_1_11_cwe(doc, true)
-    }
-}
+crate::test_validation::impl_validator!(ValidatorForTest6_1_11, test_6_1_11_cwe);
 
 #[cfg(test)]
 mod tests {

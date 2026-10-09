@@ -26,7 +26,7 @@ pub fn test_6_3_4_missing_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFindin
         if vuln.get_cwes().is_none() {
             errors
                 .get_or_insert_default()
-                .push(create_missing_cwe_error(v_i, vuln.get_cwe_property_name()));
+                .push(create_missing_cwe_error(v_i, vuln.get_cwes_property_name()));
         }
     }
 

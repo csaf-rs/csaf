@@ -1,3 +1,7 @@
+#![deny(clippy::expect_used)]
+#![deny(clippy::unwrap_used)]
+#![deny(clippy::panic)]
+
 #[cfg(feature = "converter")]
 pub mod converter;
 pub mod csaf;
@@ -8,6 +12,7 @@ pub(crate) mod cvss;
 pub mod helpers;
 pub mod json;
 pub(crate) mod macros;
+#[allow(clippy::unwrap_used)]
 pub mod schema;
 #[cfg(test)]
 pub mod test_result_comparison;

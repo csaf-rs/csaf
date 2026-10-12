@@ -49,7 +49,7 @@ const PRESET_NAME_CONSISTENT_DATE_TIMES: &str = "consistent-date-times";
 const PRESET_NAME_SSVC: &str = "ssvc";
 const PRESET_NAME_VALIDATION_TIME: &str = "validation-time";
 // const PRESET_NAME_EXTENSIONS: &str = "extensions";
-// const PRESET_NAME_EXTENSIONS_EXIST: &str = "extensions-exist";
+const PRESET_NAME_EXTENSIONS_EXIST: &str = "extensions-exist";
 
 #[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
@@ -68,7 +68,7 @@ pub enum Preset {
     Ssvc,
     ValidationTime,
     // Extensions,
-    // ExtensionsExist,
+    ExtensionsExist,
 }
 
 impl Preset {
@@ -88,7 +88,7 @@ impl Preset {
             Preset::Ssvc => PRESET_NAME_SSVC,
             Preset::ValidationTime => PRESET_NAME_VALIDATION_TIME,
             // Preset::Extensions => PRESET_NAME_EXTENSIONS,
-            // Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
+            Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
         }
     }
 }
@@ -117,7 +117,7 @@ impl TryFrom<&str> for Preset {
             PRESET_NAME_SSVC => Ok(Preset::Ssvc),
             PRESET_NAME_VALIDATION_TIME => Ok(Preset::ValidationTime),
             // PRESET_NAME_EXTENSIONS => Ok(Preset::Extensions),
-            // PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
+            PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
             _ => Err(CsafError::InvalidPreset {
                 preset: value.to_string(),
             }),
@@ -159,7 +159,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Preset::Ssvc.as_str(),
             Preset::ValidationTime.as_str(),
             // Preset::Extensions.as_str(),
-            // Preset::ExtensionsExist.as_str(),
+            Preset::ExtensionsExist.as_str(),
         ]
     }
 
@@ -211,9 +211,9 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             //     "6.3.21.1", "6.3.21.2", "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8",
             //     "6.3.21.9", // TODO #1230
             // ]),
-            // Ok(Preset::ExtensionsExist) => Ok(vec![
-            //        "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9" // TODO #1230
-            // ]),
+            Ok(Preset::ExtensionsExist) => Ok(vec![
+                "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9",
+            ]),
             Err(e) => Err(e),
         }
     }

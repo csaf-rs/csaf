@@ -144,13 +144,13 @@ jobs:
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: csaf-validator-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: libcsaf_ffi-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: |
@@ -211,7 +211,7 @@ jobs:
         working-directory: ./wasm
         run: npm publish --dry-run
       - name: Archive UniFFI WASM bindings
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -272,7 +272,7 @@ jobs:
         run: |
           GOOS=$(go env GOOS) GOARCH=${{ matrix.target.go-arch }} CGO_ENABLED=1 go test -v ./csaf_ffi/
       - name: Archive Go static library
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/

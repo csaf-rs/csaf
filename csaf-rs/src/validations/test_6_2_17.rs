@@ -2,21 +2,17 @@ use crate::csaf::consts::chars::is_invisible_char;
 use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::Cve;
 use crate::validation::{TestFinding, TestFindingData};
-use std::str::FromStr;
 
 fn create_cve_in_ids_warning(id_text_with_cve: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
-        message: format!(
-            "`{}` looks like a CVE ID; use the `cve` property instead of `ids`",
-            id_text_with_cve
-        ),
+        message: format!("`{id_text_with_cve}` looks like a CVE ID; use the `cve` property instead of `ids`",),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/text"),
     })
 }
 
 /// 6.2.17 CVE in field IDs
 ///
-/// For each item in $.vulnerabilities[*].ids it SHALL be tested that it is not a CVE ID.
+/// For each item in `$.vulnerabilities[*].ids` it SHALL be tested that it is not a CVE ID.
 ///
 /// To implement this test it is deemed sufficient to check after invisible and white space characters
 /// have been removed from the value of the property text whether it matches the regex `^CVE-[0-9]{4}-[0-9]{4,}$`.
@@ -31,15 +27,15 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Test
             for (i_i, id) in ids.iter().enumerate() {
                 let full_text = id.get_text();
                 // filter whitespace and invisible chars
-                let filtered_text = full_text
+                let filtered_text: String = full_text
                     .chars()
-                    .filter(|&c| !c.is_whitespace() && !is_invisible_char(c))
-                    .collect::<String>();
-                // try to parse the filtered  text as CVE, using the same struct used for the "actual" CVE fields in CSAF 2.0 and 2.1
-                if Cve::from_str(&filtered_text).is_ok() {
+                    .filter(|c| !c.is_whitespace() && !is_invisible_char(*c))
+                    .collect();
+                // try to parse the filtered text as CVE, using the same struct used for the "actual" CVE fields in CSAF 2.0 and 2.1
+                if filtered_text.parse::<Cve>().is_ok() {
                     errors
                         .get_or_insert_default()
-                        .push(create_cve_in_ids_warning(&*full_text, v_i, i_i));
+                        .push(create_cve_in_ids_warning(full_text, v_i, i_i));
                 }
             }
         }
@@ -61,7 +57,11 @@ mod tests {
     #[test]
     fn test_test_6_2_17() {
         let id_with_cve_in_text_field = Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 0)]);
-        let id_with_cve_in_text_field_with_filter_chars = Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 0)]);
+        let id_with_cve_in_text_field_with_filter_chars = Err(vec![create_cve_in_ids_warning(
+            "\u{00AD}\u{034F}\u{180E}\u{200B}\u{200C}\u{200D}\u{2060}\u{2062}\u{2063}\u{2064}\u{FEFF}CVE- 2021\t-44228\u{00AD}\u{034F}\u{180E}\u{200B}\u{200C}\u{200D}\u{2060}\u{2062}\u{2063}\u{2064}\u{FEFF}",
+            0,
+            0,
+        )]);
 
         let multiple_ids_with_cve_in_text_field_fail_distinct = Err(vec![
             create_cve_in_ids_warning("CVE-2021-44228", 0, 0),
@@ -92,7 +92,6 @@ mod tests {
         TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
             case_01: id_with_cve_in_text_field,
             case_02: id_with_cve_in_text_field_with_filter_chars,
-
             case_s01: multiple_ids_with_cve_in_text_field_fail_distinct,
             case_s02: two_vulnerabilities_with_ids_with_cve_in_text_field,
             case_s03: second_id_of_a_vulnerability_with_cve_in_text_field,

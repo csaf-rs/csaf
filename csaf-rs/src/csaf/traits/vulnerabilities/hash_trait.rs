@@ -59,7 +59,7 @@ mod tests_contains_only_hash_algorithm {
     struct MockFileHash(CsafHashAlgorithm);
 
     impl FileHashTrait for MockFileHash {
-        fn get_hash(&self) -> &str {
+        fn get_value(&self) -> &str {
             unimplemented!()
         }
         fn get_algorithm(&self) -> CsafHashAlgorithm {

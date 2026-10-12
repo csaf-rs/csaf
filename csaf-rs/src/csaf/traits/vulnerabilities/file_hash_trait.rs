@@ -5,8 +5,13 @@ use crate::schema::csaf2_1::schema::FileHash as FileHash21;
 
 /// Trait representing a file_hash, identified by the used hash algorithm and the hash
 pub trait FileHashTrait {
-    /// Returns the hash
-    fn get_hash(&self) -> &str;
+    /// Returns the hash value as a hexadecimal string
+    fn get_value(&self) -> &str;
+
+    /// Returns the length of the hexadecimal hash value
+    fn get_value_length(&self) -> usize {
+        self.get_value().len()
+    }
 
     /// Returns the hashing algorithm as HashAlgorithm enum
     fn get_algorithm(&self) -> CsafHashAlgorithm;
@@ -17,11 +22,11 @@ impl FileHashTrait for FileHash20 {
         CsafHashAlgorithm::from(&self.algorithm)
     }
 
-    impl_str_field_getter!(get_hash, value);
+    impl_str_field_getter!(get_value, value);
 }
 
 impl FileHashTrait for FileHash21 {
-    impl_str_field_getter!(get_hash, value);
+    impl_str_field_getter!(get_value, value);
 
     fn get_algorithm(&self) -> CsafHashAlgorithm {
         CsafHashAlgorithm::from(&self.algorithm)

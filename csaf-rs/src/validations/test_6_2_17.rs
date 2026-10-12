@@ -60,7 +60,11 @@ mod tests {
     #[test]
     fn test_test_6_2_17() {
         let id_with_cve_in_text_field = Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 0)]);
-        let id_with_cve_in_text_field_with_filter_chars = Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 0)]);
+        let id_with_cve_in_text_field_with_filter_chars = Err(vec![create_cve_in_ids_warning(
+            "\u{00AD}\u{034F}\u{180E}\u{200B}\u{200C}\u{200D}\u{2060}\u{2062}\u{2063}\u{2064}\u{FEFF}CVE- 2021\t-44228\u{00AD}\u{034F}\u{180E}\u{200B}\u{200C}\u{200D}\u{2060}\u{2062}\u{2063}\u{2064}\u{FEFF}",
+            0,
+            0,
+        )]);
 
         let multiple_ids_with_cve_in_text_field_fail_distinct = Err(vec![
             create_cve_in_ids_warning("CVE-2021-44228", 0, 0),
@@ -91,7 +95,6 @@ mod tests {
         TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
             case_01: id_with_cve_in_text_field,
             case_02: id_with_cve_in_text_field_with_filter_chars,
-
             case_s01: multiple_ids_with_cve_in_text_field_fail_distinct,
             case_s02: two_vulnerabilities_with_ids_with_cve_in_text_field,
             case_s03: second_id_of_a_vulnerability_with_cve_in_text_field,

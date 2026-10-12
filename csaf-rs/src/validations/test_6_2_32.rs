@@ -112,7 +112,7 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
                     for fh in hash_obj.get_file_hashes() {
                         // Safe string conversion without using the Debug {:?} trait token format
                         let alg_str = format!("{}", fh.get_algorithm()).to_lowercase();
-                        let hash_val = fh.get_hash().to_lowercase();
+                        let hash_val = fh.get_value().to_lowercase();
 
                         let specific_hash_key = format!("file:{filename};alg:{alg_str};value:{hash_val}");
                         hash_groups

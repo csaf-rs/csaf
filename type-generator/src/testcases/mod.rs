@@ -27,6 +27,7 @@ pub enum CsafVersion {
     V2_1,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum TestGroup {
     Mandatory,
     OptionalRecommended,

@@ -1,7 +1,14 @@
 use std::collections::HashSet;
 
-use super::{RawTest, RawTestCase};
+use super::{RawTest, RawTestCase, TestGroup};
 use crate::testcases::TestGroup::{Informative, Mandatory, OptionalRecommended};
+
+/// Helper, contains every test id present in both upstream and supplemental testcases.json files, along with the corresponding
+/// [serde_json::Value] for the test entry in both files, if present.
+///
+/// Note: This could be a map, but we rely on the insertion order and I don't want to start using IndexMap for this.
+/// Otherwise, we could parse the test id as semver.
+type TestsById<'a> = Vec<(String, (Option<&'a serde_json::Value>, Option<&'a serde_json::Value>))>;
 
 /// Parses `testcases.json` (and a supplemental `testcases.json` file) and extracts
 /// [RawTest] entries. This function does not do code generation.
@@ -15,28 +22,65 @@ pub(crate) fn extract_test_entries_from_json(
     supplemental_testcases: &serde_json::Value,
 ) -> Vec<RawTest> {
     // extract test collections
-    let tests = testcases["tests"]
+    let upstream_tests = testcases["tests"]
         .as_array()
         .expect("testcases.json should have a 'tests' array");
     let supplemental_tests = supplemental_testcases["tests"]
         .as_array()
         .expect("supplemental testcases.json should have a 'tests' array");
 
+    let mut tests_by_id: TestsById<'_> = Vec::new();
+
+    for test in upstream_tests {
+        let id = test["id"].as_str().expect("test should have 'id' string");
+        tests_by_id.push((id.to_string(), (Some(test), None)));
+    }
+
+    for test in supplemental_tests {
+        let id = test["id"].as_str().expect("supplemental test should have 'id' string");
+        if let Some((_, (_, supplemental))) = tests_by_id.iter_mut().find(|entry| entry.0 == id) {
+            *supplemental = Some(test);
+        } else {
+            tests_by_id.push((id.to_string(), (None, Some(test))));
+        }
+    }
+
     let mut entries = Vec::new();
 
-    for test in tests {
-        let id = test["id"].as_str().expect("test should have 'id' string").to_string();
-        let mut seen = HashSet::new();
-        let group = match test["group"].as_str().expect("test should have 'group' string") {
-            "mandatory" => Mandatory,
-            "optional" | "recommended" => OptionalRecommended,
-            "informative" => Informative,
-            unknown => {
-                panic!(
-                    "test '{id}': unknown group '{unknown}', expected 'mandatory', 'optional', 'recommended' or 'informative'"
-                )
-            },
+    for (id, (upstream_test, supplemental_test)) in tests_by_id {
+        if upstream_test.is_none() && supplemental_test.is_none() {
+            unreachable!("test '{id}' is missing in both upstream and supplemental testcases");
+        }
+
+        let get_group = |test: Option<&serde_json::Value>| -> Option<TestGroup> {
+            test?;
+            match test
+                .and_then(|test| test["group"].as_str())
+                .expect("test should have 'group' string")
+            {
+                "mandatory" => Some(Mandatory),
+                "optional" | "recommended" => Some(OptionalRecommended),
+                "informative" => Some(Informative),
+                unknown => {
+                    panic!(
+                        "test '{id}': unknown group '{unknown}', expected 'mandatory', 'optional', 'recommended' or 'informative'"
+                    )
+                },
+            }
         };
+
+        let upstream_group = get_group(upstream_test);
+        let supplemental_group = get_group(supplemental_test);
+
+        if upstream_group.is_some() && supplemental_group.is_some() && upstream_group != supplemental_group {
+            panic!(
+                "test '{id}': group mismatch between upstream ({upstream_group:?}) and supplemental ({supplemental_group:?})"
+            );
+        }
+
+        let group = upstream_group
+            .or(supplemental_group)
+            .expect("either upstream or supplemental test should have a group");
 
         let mut failures: Vec<RawTestCase> = Vec::new();
         let mut valid: Vec<RawTestCase> = Vec::new();
@@ -50,17 +94,11 @@ pub(crate) fn extract_test_entries_from_json(
             }
         };
 
-        // Collect from upstream test cases
-        collect(test, base_dir);
-
-        // Check for additional test cases in the supplemental testcases.json
-        for additional_test in supplemental_tests {
-            let additional_test_id = additional_test["id"]
-                .as_str()
-                .expect("additional test should have 'id' string");
-            if additional_test_id == id {
-                collect(additional_test, supplemental_base_dir);
-            }
+        if let Some(test) = upstream_test {
+            collect(test, base_dir);
+        }
+        if let Some(test) = supplemental_test {
+            collect(test, supplemental_base_dir);
         }
 
         // Merge failing and valid cases, but have all failing cases from both sources first and
@@ -68,9 +106,14 @@ pub(crate) fn extract_test_entries_from_json(
         let mut docs = failures;
         docs.append(&mut valid);
 
+        let mut seen_test_cases = HashSet::new();
         // Check for duplicate case numbers which would cause compile errors
         // in the generated code output
-        if let Some(dup) = docs.iter().map(|d| &d.case_num).find(|c| !seen.insert((*c).clone())) {
+        if let Some(dup) = docs
+            .iter()
+            .map(|d| &d.case_num)
+            .find(|c| !seen_test_cases.insert((*c).clone()))
+        {
             panic!("duplicate case number '{dup}' in test '{id}'");
         }
 
@@ -194,5 +237,49 @@ mod tests_extract_test_entries {
         });
         let supplemental = json!({ "tests": [] });
         extract_test_entries_from_json("demo", "supp_demo", &testcases, &supplemental);
+    }
+
+    #[test]
+    fn test_merges_upstream_and_supplemental_entries() {
+        let testcases = json!({
+            "tests": [{
+                "id": "6.1.1",
+                "group": "mandatory",
+                "failures": [{"name": "mandatory/upstream-01.json"}]
+            },
+            {
+                "id": "6.1.2",
+                "group": "mandatory",
+                "failures": [{"name": "mandatory/upstream-02.json"}]
+            }]
+        });
+        let supplemental = json!({
+            "tests": [
+                {
+                    "id": "6.1.1",
+                    "group": "mandatory",
+                    "valid": [{"name": "mandatory/supplemental-02.json"}]
+                },
+                {
+                    "id": "6.1.3",
+                    "group": "informative",
+                    "valid": [{"name": "informative/supplemental-03.json"}]
+                }
+            ]
+        });
+
+        let entries = extract_test_entries_from_json("demo", "supp_demo", &testcases, &supplemental);
+
+        assert_eq!(entries.len(), 3);
+        assert_eq!(entries[0].id, "6.1.1");
+        assert_eq!(entries[0].docs.len(), 2);
+        assert_eq!(entries[0].docs[0].base_dir, "demo");
+        assert_eq!(entries[0].docs[1].base_dir, "supp_demo");
+        assert_eq!(entries[1].id, "6.1.2");
+        assert_eq!(entries[1].docs.len(), 1);
+        assert_eq!(entries[1].docs[0].base_dir, "demo");
+        assert_eq!(entries[2].id, "6.1.3");
+        assert_eq!(entries[2].docs.len(), 1);
+        assert_eq!(entries[2].docs[0].base_dir, "supp_demo");
     }
 }

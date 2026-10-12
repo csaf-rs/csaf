@@ -29,7 +29,7 @@ pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<Test
             {
                 for (h_i, hash) in hashes.iter().enumerate() {
                     for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                        let file_hash_len = file_hash.get_hash().len();
+                        let file_hash_len = file_hash.get_value_length();
                         if file_hash_len < 64 {
                             errors.get_or_insert_default().push(create_short_hash_error(
                                 path,
@@ -59,69 +59,52 @@ mod tests {
 
     #[test]
     fn test_test_6_3_5() {
-        let case_01 = Err(vec![create_short_hash_error(
+        let case_01_simple_32_length_hash = Err(vec![create_short_hash_error(
             "/product_tree/full_product_names/0",
             0,
             0,
             32,
         )]);
 
-        let case_s01 = Err(vec![
-            create_short_hash_error("/product_tree/branches/0/branches/0/branches/0/product", 0, 1, 32),
-            create_short_hash_error("/product_tree/branches/0/branches/1/product", 0, 1, 40),
-            create_short_hash_error("/product_tree/branches/1/product", 1, 0, 56),
-        ]);
-
-        let case_s02 = Err(vec![
-            create_short_hash_error("/product_tree/full_product_names/0", 0, 1, 32),
+        let case_02_all_paths_mixed = Err(vec![
+            create_short_hash_error("/product_tree/full_product_names/0", 0, 0, 32),
             create_short_hash_error("/product_tree/full_product_names/1", 1, 0, 40),
+            create_short_hash_error("/product_tree/product_paths/0/full_product_name", 1, 0, 40),
+            create_short_hash_error("/product_tree/product_paths/1/full_product_name", 0, 1, 56),
+            create_short_hash_error("/product_tree/branches/0/branches/0/branches/0/product", 0, 0, 32),
+            create_short_hash_error("/product_tree/branches/0/branches/0/branches/1/product", 1, 0, 32),
         ]);
 
-        let case_s03 = Err(vec![
-            create_short_hash_error("/product_tree/product_paths/0/full_product_name", 0, 1, 32),
-            create_short_hash_error("/product_tree/product_paths/1/full_product_name", 1, 0, 40),
-        ]);
-
-        let case_s04 = Err(vec![
-            create_short_hash_error("/product_tree/branches/0/product", 0, 0, 32),
-            create_short_hash_error("/product_tree/full_product_names/0", 0, 0, 40),
-            create_short_hash_error("/product_tree/product_paths/0/full_product_name", 0, 0, 56),
-        ]);
-
-        let case_s05 = Err(vec![create_short_hash_error(
+        let case_03_hash_length_63 = Err(vec![create_short_hash_error(
             "/product_tree/full_product_names/0",
             0,
             0,
             63,
         )]);
 
+        let case_s01_branch_depth_exhaustive = Err(vec![
+            create_short_hash_error("/product_tree/branches/0/branches/0/branches/0/product", 0, 1, 32),
+            create_short_hash_error("/product_tree/branches/0/branches/1/product", 0, 1, 40),
+            create_short_hash_error("/product_tree/branches/1/product", 1, 0, 56),
+        ]);
+
         // TODO: Add a test case for an empty hash value once lenient parsing is supported
 
-        let case_s11 = Ok(());
-
         TESTS_2_0.test_6_3_5.expect(ExpectedResults_2_0 {
-            case_01: case_01.clone(),
+            case_01: case_01_simple_32_length_hash.clone(),
         });
 
-        // Failing test cases:
-        // 01  - hash value with exactly 32 characters
-        // s01 - multiple short hashes in nested branches, mixed with valid hashes
-        // s02 - multiple short hashes in full product names, mixed with valid hashes
-        // s03 - multiple short hashes in product paths, mixed with valid hashes
-        // s04 - multiple short hashes across all three product tree locations
-        // s05 - hash value with exactly 63 characters
-
         // Valid test cases:
-        // s11 - hash value with exactly 64 characters
+        // 11, 12, 13 are 01, 02, 03 with all hashes >= 64 characters
 
         TESTS_2_1.test_6_3_5.expect(ExpectedResults_2_1 {
-            case_01,
-            case_s01,
-            case_s02,
-            case_s03,
-            case_s04,
-            case_s05,
-            case_s11,
+            case_01: case_01_simple_32_length_hash,
+            case_02: case_02_all_paths_mixed,
+            case_03: case_03_hash_length_63,
+            case_s01: case_s01_branch_depth_exhaustive,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
         });
     }
 }

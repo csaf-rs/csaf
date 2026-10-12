@@ -67,42 +67,12 @@ mod tests {
         )]);
 
         let case_02_all_paths_mixed = Err(vec![
-            create_short_hash_error(
-                "/product_tree/full_product_names/0",
-                0,
-                0,
-                32,
-            ),
-            create_short_hash_error(
-                "/product_tree/full_product_names/1",
-                1,
-                0,
-                40,
-            ),
-            create_short_hash_error(
-                "/product_tree/product_paths/0/full_product_name",
-                1,
-                0,
-                40,
-            ),
-            create_short_hash_error(
-                "/product_tree/product_paths/1/full_product_name",
-                0,
-                1,
-                56,
-            ),
-            create_short_hash_error(
-                "/product_tree/branches/0/branches/0/branches/0/product",
-                0,
-                0,
-                32,
-            ),
-            create_short_hash_error(
-                "/product_tree/branches/0/branches/0/branches/1/product",
-                1,
-                0,
-                32,
-            ),
+            create_short_hash_error("/product_tree/full_product_names/0", 0, 0, 32),
+            create_short_hash_error("/product_tree/full_product_names/1", 1, 0, 40),
+            create_short_hash_error("/product_tree/product_paths/0/full_product_name", 1, 0, 40),
+            create_short_hash_error("/product_tree/product_paths/1/full_product_name", 0, 1, 56),
+            create_short_hash_error("/product_tree/branches/0/branches/0/branches/0/product", 0, 0, 32),
+            create_short_hash_error("/product_tree/branches/0/branches/0/branches/1/product", 1, 0, 32),
         ]);
 
         let case_03_hash_length_63 = Err(vec![create_short_hash_error(

@@ -6,8 +6,7 @@ use crate::validation::{TestFinding, TestFindingData};
 fn create_cve_in_ids_warning(id_text_with_cve: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
-            "`{}` looks like a CVE ID; use the `cve` property instead of `ids`",
-            id_text_with_cve
+            "`{id_text_with_cve}` looks like a CVE ID; use the `cve` property instead of `ids`",
         ),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/text"),
     })

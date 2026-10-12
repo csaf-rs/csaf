@@ -3,6 +3,16 @@ use std::collections::HashSet;
 use super::{RawTest, RawTestCase, TestGroup};
 use crate::testcases::TestGroup::{Informative, Mandatory, OptionalRecommended};
 
+/// Helper, contains every test id present in both upstream and supplemental testcases.json files, along with the corresponding
+/// [serde_json::Value] for the test entry in both files, if present.
+///
+/// Note: This could be a map, but we rely on the insertion order and I don't want to start using IndexMap for this.
+/// Otherwise, we could parse the test id as semver.
+type TestsById<'a> = Vec<(
+    String,
+    (Option<&'a serde_json::Value>, Option<&'a serde_json::Value>),
+)>;
+
 /// Parses `testcases.json` (and a supplemental `testcases.json` file) and extracts
 /// [RawTest] entries. This function does not do code generation.
 ///
@@ -22,8 +32,7 @@ pub(crate) fn extract_test_entries_from_json(
         .as_array()
         .expect("supplemental testcases.json should have a 'tests' array");
 
-    // this could be a map, but we rely on the insertion order and I don't want to start using IndexMap for this
-    let mut tests_by_id: Vec<(String, (Option<&serde_json::Value>, Option<&serde_json::Value>))> = Vec::new();
+    let mut tests_by_id: TestsById<'_> = Vec::new();
 
     for test in upstream_tests {
         let id = test["id"].as_str().expect("test should have 'id' string");
@@ -47,9 +56,7 @@ pub(crate) fn extract_test_entries_from_json(
         }
 
         let get_group = |test: Option<&serde_json::Value>| -> Option<TestGroup> {
-            if test.is_none() {
-                return None;
-            }
+            test?;
             match test
                 .and_then(|test| test["group"].as_str())
                 .expect("test should have 'group' string")

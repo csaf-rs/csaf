@@ -25,9 +25,9 @@ pub fn test_6_2_52_unknown_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Ve
                     for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
                         let algorithm = file_hash.get_algorithm();
                         if !algorithm.is_supported_algorithm() {
-                            errors
-                                .get_or_insert_default()
-                                .push(TestFinding::Warning(create_unknown_hash_algorithm_finding_data(&algorithm, path, h_i, fh_i)));
+                            errors.get_or_insert_default().push(TestFinding::Warning(
+                                create_unknown_hash_algorithm_finding_data(&algorithm, path, h_i, fh_i),
+                            ));
                         }
                     }
                 }

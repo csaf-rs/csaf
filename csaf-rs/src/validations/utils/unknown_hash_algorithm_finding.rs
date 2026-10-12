@@ -1,5 +1,5 @@
 use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
-use crate::validation::{TestFinding, TestFindingData};
+use crate::validation::TestFindingData;
 
 /// Shared function to create a finding about a hash algorithm not being supported by the implementation.
 /// The finding message differentiates between algorithms that are mentioned in the specification and those that are not.

@@ -159,105 +159,51 @@ mod tests {
 
     #[test]
     fn test_6_1_60_1() {
+
+        let missing_prop = Err(vec![extension_invalid_content_schema_missing_property_error(
+            "/x_extensions/0",
+            "critical",
+        )]);
+
+        let additional_prop = Err(vec![extension_invalid_content_schema_unknown_property_error(
+            "/x_extensions/0",
+            "some_additional_property",
+        )]);
+
+        let all_paths_missing = Err(vec![
+            extension_invalid_content_schema_missing_property_error("/x_extensions/0", "critical"),
+            extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "critical"),
+            extension_invalid_content_schema_missing_property_error("/vulnerabilities/0/x_extensions/0", "critical"),
+            extension_invalid_content_schema_missing_property_error(
+                "/vulnerabilities/0/metrics/0/content/x_extensions/0",
+                "critical",
+            ),
+            extension_invalid_content_schema_missing_property_error(
+                "/product_tree/branches/0/product/x_extensions/0",
+                "critical",
+            ),
+            extension_invalid_content_schema_missing_property_error(
+                "/product_tree/full_product_names/0/x_extensions/0",
+                "critical",
+            ),
+            extension_invalid_content_schema_missing_property_error(
+                "/product_tree/product_paths/0/full_product_name/x_extensions/0",
+                "critical",
+            ),
+        ]);
+
+        // Case 11: TODO
+        // Case 12: TODO
         TESTS_2_1.test_6_1_60_1.expect(ExpectedResults {
             // Case 01: Missing property "critical"
-            case_01: Err(vec![extension_invalid_content_schema_missing_property_error(
-                "/x_extensions/0",
-                "critical",
-            )]),
+            case_01: missing_prop,
             // Case 02: Additional unknown property "some_additional_property"
-            case_02: Err(vec![extension_invalid_content_schema_unknown_property_error(
-                "/x_extensions/0",
-                "some_additional_property",
-            )]),
+            case_02: additional_prop,
+            case_s01: all_paths_missing,
             // Case 11:
             case_11: Ok(()),
             // Case 12:
             case_12: Ok(()),
-            case_s01: Err(vec![
-                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "$schema"),
-                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "category"),
-                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "critical"),
-                extension_invalid_content_schema_missing_property_error("/x_extensions/0", "content"),
-                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "$schema"),
-                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "category"),
-                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "critical"),
-                extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "content"),
-                extension_invalid_content_schema_missing_property_error("/vulnerabilities/0/x_extensions/0", "$schema"),
-                extension_invalid_content_schema_missing_property_error(
-                    "/vulnerabilities/0/x_extensions/0",
-                    "category",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/vulnerabilities/0/x_extensions/0",
-                    "critical",
-                ),
-                extension_invalid_content_schema_missing_property_error("/vulnerabilities/0/x_extensions/0", "content"),
-                extension_invalid_content_schema_missing_property_error(
-                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
-                    "$schema",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
-                    "category",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
-                    "critical",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/vulnerabilities/0/metrics/0/content/x_extensions/0",
-                    "content",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/branches/0/product/x_extensions/0",
-                    "$schema",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/branches/0/product/x_extensions/0",
-                    "category",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/branches/0/product/x_extensions/0",
-                    "critical",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/branches/0/product/x_extensions/0",
-                    "content",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/full_product_names/0/x_extensions/0",
-                    "$schema",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/full_product_names/0/x_extensions/0",
-                    "category",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/full_product_names/0/x_extensions/0",
-                    "critical",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/full_product_names/0/x_extensions/0",
-                    "content",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
-                    "$schema",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
-                    "category",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
-                    "critical",
-                ),
-                extension_invalid_content_schema_missing_property_error(
-                    "/product_tree/product_paths/0/full_product_name/x_extensions/0",
-                    "content",
-                ),
-            ]),
         });
     }
 }

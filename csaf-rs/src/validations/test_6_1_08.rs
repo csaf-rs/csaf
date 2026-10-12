@@ -179,9 +179,24 @@ mod tests {
                 "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)",
                 "/vulnerabilities/0/metrics/0/content/cvss_v4",
             )]),
-            case_07: Ok(()),
-            case_08: Ok(()),
-            case_09: Ok(()),
+            case_07: Err(vec![create_validation_error_with_path(
+                "Additional properties are not allowed ('someOtherProperty' was unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
+            )]),
+            case_08: Err(vec![create_validation_error_with_path(
+                "Additional properties are not allowed ('anotherProperty' was unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
+            )]),
+            case_09: Err(vec![
+                create_validation_error_with_path(
+                    "Additional properties are not allowed ('baseSeverity' was unexpected)",
+                    "/vulnerabilities/0/metrics/0/content/cvss_v2",
+                ),
+                create_validation_error_with_path(
+                    "Additional properties are not allowed ('severity' was unexpected)",
+                    "/vulnerabilities/1/metrics/0/content/cvss_v2",
+                ),
+            ]),
             case_s01: Err(vec![create_validation_error_with_path(
                 "false is not of type \"number\"",
                 "/vulnerabilities/0/metrics/0/content/cvss_v3/baseScore"

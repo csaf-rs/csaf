@@ -8,10 +8,7 @@ use crate::testcases::TestGroup::{Informative, Mandatory, OptionalRecommended};
 ///
 /// Note: This could be a map, but we rely on the insertion order and I don't want to start using IndexMap for this.
 /// Otherwise, we could parse the test id as semver.
-type TestsById<'a> = Vec<(
-    String,
-    (Option<&'a serde_json::Value>, Option<&'a serde_json::Value>),
-)>;
+type TestsById<'a> = Vec<(String, (Option<&'a serde_json::Value>, Option<&'a serde_json::Value>))>;
 
 /// Parses `testcases.json` (and a supplemental `testcases.json` file) and extracts
 /// [RawTest] entries. This function does not do code generation.

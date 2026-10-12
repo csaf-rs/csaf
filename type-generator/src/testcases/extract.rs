@@ -74,8 +74,7 @@ pub(crate) fn extract_test_entries_from_json(
 
         if upstream_group.is_some() && supplemental_group.is_some() && upstream_group != supplemental_group {
             panic!(
-                "test '{id}': group mismatch between upstream ({:?}) and supplemental ({:?})",
-                upstream_group, supplemental_group
+                "test '{id}': group mismatch between upstream ({upstream_group:?}) and supplemental ({supplemental_group:?})"
             );
         }
 

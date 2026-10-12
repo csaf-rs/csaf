@@ -14,8 +14,10 @@ pub(crate) fn create_unknown_hash_algorithm_finding_data(
     let message = if algorithm.is_mentioned_in_spec() {
         format!("Hash algorithm '{algorithm}' is listed in the specification but not supported by this implementation")
     } else {
+        // Note: This is so far only called by CSAF 2.1 tests, so the message references the CSAF 2.1 spec.
+        // If the relevant tests are backported, i.e. if this function is used for CSAF 2.0 tests, the message should be adjusted accordingly.
         format!(
-            "Hash algorithm '{algorithm}' is not listed in section 3.1.4.3.2 of the CSAF 2.1 specification \
+            "Hash algorithm '{algorithm}' is not listed in section 3.1.10.3.2 of the CSAF 2.1 specification \
              and not supported by this implementation"
         )
     };

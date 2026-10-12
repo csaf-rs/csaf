@@ -2820,23 +2820,13 @@ crate::macros::define_csaf_test!(
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-03.json",
     "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-03.json"), (case_s01, "s01",
     "../type-generator/assets/tests/csaf_2.1/informative/csaf-rs_csaf-csaf_2_1-6-3-05-s01.json",
-    "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s01.json"), (case_s02, "s02",
-    "../type-generator/assets/tests/csaf_2.1/informative/csaf-rs_csaf-csaf_2_1-6-3-05-s02.json",
-    "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s02.json"), (case_s03, "s03",
-    "../type-generator/assets/tests/csaf_2.1/informative/csaf-rs_csaf-csaf_2_1-6-3-05-s03.json",
-    "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s03.json"), (case_s04, "s04",
-    "../type-generator/assets/tests/csaf_2.1/informative/csaf-rs_csaf-csaf_2_1-6-3-05-s04.json",
-    "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s04.json"), (case_s05, "s05",
-    "../type-generator/assets/tests/csaf_2.1/informative/csaf-rs_csaf-csaf_2_1-6-3-05-s05.json",
-    "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s05.json"), (case_11, "11",
+    "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s01.json"), (case_11, "11",
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-11.json",
     "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-11.json"), (case_12, "12",
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-12.json",
     "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-12.json"), (case_13, "13",
     "../csaf/csaf_2.1/test/validator/data/informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-13.json",
-    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-13.json"), (case_s11, "s11",
-    "../type-generator/assets/tests/csaf_2.1/informative/csaf-rs_csaf-csaf_2_1-6-3-05-s11.json",
-    "informative/csaf-rs_csaf-csaf_2_1-6-3-05-s11.json")]
+    "informative/oasis_csaf_tc-csaf_2_1-2024-6-3-05-13.json")]
 );
 crate::macros::define_csaf_test!(
     Test6_3_6, ValidatorForTest6_3_6, ExpectedResults_6_3_6, id : "6.3.6", doc_type :

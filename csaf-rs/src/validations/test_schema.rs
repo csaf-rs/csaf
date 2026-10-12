@@ -35,10 +35,7 @@ struct Validator2_1;
 fn create_schema_error(err: String, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: err,
-        instance_path: match path.len() {
-            0 => "/".to_string(),
-            _ => path.to_string(),
-        },
+        instance_path: path.to_string(),
     })
 }
 

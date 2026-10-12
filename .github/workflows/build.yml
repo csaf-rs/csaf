@@ -251,7 +251,7 @@ jobs:
             --git https://github.com/NordSecurity/uniffi-bindgen-go \
             --tag v0.7.0+v0.31.0 --locked
       - name: Download libcsaf_ffi
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.target-arch }}/release/
@@ -333,7 +333,7 @@ jobs:
           go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@89b48259fa89ad5fdeb723dc312f20a3b453e24f # v1.14.2
 
       - name: Download all CDX artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: "*_sbom.cdx.json"
           path: sboms/
@@ -401,7 +401,7 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
       - name: Download WASM bindings
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -428,7 +428,7 @@ jobs:
           go-version: "stable"
           cache: false
       - name: Download Go library for verification
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: go-csaf-ffi-lib-Linux-amd64-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
@@ -459,19 +459,19 @@ jobs:
       - publish-go
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: csaf-validator
           pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: csaf-ffi-wasm
           pattern: csaf-ffi-wasm-*
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: go-csaf-ffi-lib
           pattern: go-csaf-ffi-lib-*
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: sboms
           pattern: "*_sbom.*"

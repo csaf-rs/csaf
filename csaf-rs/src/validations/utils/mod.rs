@@ -1,6 +1,7 @@
 pub(crate) mod document_category_test_config;
 pub(crate) mod document_notes_with_title_and_category;
 pub(crate) mod document_references_with_summary_and_category;
+pub(crate) mod unknown_hash_algorithm_finding;
 pub(crate) mod language_specific_translations;
 pub(crate) mod license_expressions;
 pub(crate) mod raw_json;

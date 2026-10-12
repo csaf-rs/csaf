@@ -71,8 +71,11 @@ mod tests {
         });
         TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
             case_01: id_with_cve_in_text_field,
+            case_02: Ok(()),
+
             // Valid test with one vulnerability containing an id with a correctly set text field
             case_11: Ok(()),
+            case_12: Ok(()),
 
             case_s01: multiple_ids_with_cve_in_text_field_fail_distinct,
             case_s02: two_vulnerabilities_with_ids_with_cve_in_text_field,

@@ -179,6 +179,9 @@ mod tests {
                 "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)",
                 "/vulnerabilities/0/metrics/0/content/cvss_v4",
             )]),
+            case_07: Ok(()),
+            case_08: Ok(()),
+            case_09: Ok(()),
             case_s01: Err(vec![create_validation_error_with_path(
                 "false is not of type \"number\"",
                 "/vulnerabilities/0/metrics/0/content/cvss_v3/baseScore"

@@ -116,11 +116,16 @@ mod tests {
 
         TESTS_2_1.test_6_3_5.expect(ExpectedResults_2_1 {
             case_01,
+            case_02: Ok(()),
+            case_03: Ok(()),
             case_s01,
             case_s02,
             case_s03,
             case_s04,
             case_s05,
+            case_11: Ok(()),
+            case_12: Ok(()),
+            case_13: Ok(()),
             case_s11,
         });
     }

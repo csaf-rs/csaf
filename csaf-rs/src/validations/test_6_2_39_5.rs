@@ -78,8 +78,13 @@ mod tests {
         TESTS_2_1.test_6_2_39_5.expect(ExpectedResults {
             case_01: root_extension_superseded,
             case_02: root_extension_withdrawn,
+            case_03: Ok(()),
+            case_04: Ok(()),
+            case_05: Ok(()),
+            case_06: Ok(()),
             case_11: Ok(()),
             case_12: Ok(()),
+            case_13: Ok(()),
         });
     }
 }

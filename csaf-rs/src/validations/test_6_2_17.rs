@@ -2,7 +2,6 @@ use crate::csaf::consts::chars::is_invisible_char;
 use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::Cve;
 use crate::validation::{TestFinding, TestFindingData};
-use std::str::FromStr;
 
 fn create_cve_in_ids_warning(id_text_with_cve: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
@@ -31,15 +30,15 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Test
             for (i_i, id) in ids.iter().enumerate() {
                 let full_text = id.get_text();
                 // filter whitespace and invisible chars
-                let filtered_text = full_text
+                let filtered_text: String = full_text
                     .chars()
-                    .filter(|&c| !c.is_whitespace() && !is_invisible_char(c))
-                    .collect::<String>();
+                    .filter(|c| !c.is_whitespace() && !is_invisible_char(*c))
+                    .collect();
                 // try to parse the filtered  text as CVE, using the same struct used for the "actual" CVE fields in CSAF 2.0 and 2.1
-                if Cve::from_str(&filtered_text).is_ok() {
+                if filtered_text.parse::<Cve>().is_ok() {
                     errors
                         .get_or_insert_default()
-                        .push(create_cve_in_ids_warning(&*full_text, v_i, i_i));
+                        .push(create_cve_in_ids_warning(full_text, v_i, i_i));
                 }
             }
         }

@@ -15,7 +15,7 @@ fn create_cve_in_ids_warning(id_text_with_cve: &str, vuln_index: usize, id_index
 
 /// 6.2.17 CVE in field IDs
 ///
-/// For each item in $.vulnerabilities[*].ids it SHALL be tested that it is not a CVE ID.
+/// For each item in `$.vulnerabilities[*].ids` it SHALL be tested that it is not a CVE ID.
 ///
 /// To implement this test it is deemed sufficient to check after invisible and white space characters
 /// have been removed from the value of the property text whether it matches the regex `^CVE-[0-9]{4}-[0-9]{4,}$`.

@@ -2,8 +2,9 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::Cve;
 use crate::validation::{TestFinding, TestFindingData};
 use std::str::FromStr;
+use crate::csaf::consts::chars::is_invisible_char;
 
-fn create_cve_in_ids_error(id: &str, vuln_index: usize, id_index: usize) -> TestFinding {
+fn create_cve_in_ids_warning(id: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Vulnerability ID text '{id}' matches CVE format"),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/text"),
@@ -19,10 +20,11 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Test
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(ids) = vuln.get_ids() {
             for (i_i, id) in ids.iter().enumerate() {
-                if Cve::from_str(id.get_text()).is_ok() {
+                let text = id.get_text().chars().filter(|&c| !c.is_whitespace() && !is_invisible_char(c)).collect::<String>();
+                if Cve::from_str(&text).is_ok() {
                     errors
                         .get_or_insert_default()
-                        .push(create_cve_in_ids_error(id.get_text(), v_i, i_i));
+                        .push(create_cve_in_ids_warning(&*text, v_i, i_i));
                 }
             }
         }
@@ -43,19 +45,19 @@ mod tests {
 
     #[test]
     fn test_test_6_2_17() {
-        let id_with_cve_in_text_field = Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 0)]);
+        let id_with_cve_in_text_field = Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 0)]);
         let multiple_ids_with_cve_in_text_field_fail_distinct = Err(vec![
-            create_cve_in_ids_error("CVE-2021-44228", 0, 0),
-            create_cve_in_ids_error("CVE-2021-44229", 0, 1),
+            create_cve_in_ids_warning("CVE-2021-44228", 0, 0),
+            create_cve_in_ids_warning("CVE-2021-44229", 0, 1),
         ]);
         let two_vulnerabilities_with_ids_with_cve_in_text_field = Err(vec![
-            create_cve_in_ids_error("CVE-2021-44228", 0, 0),
-            create_cve_in_ids_error("CVE-2021-44229", 1, 0),
+            create_cve_in_ids_warning("CVE-2021-44228", 0, 0),
+            create_cve_in_ids_warning("CVE-2021-44229", 1, 0),
         ]);
         let second_id_of_a_vulnerability_with_cve_in_text_field =
-            Err(vec![create_cve_in_ids_error("CVE-2021-44228", 0, 1)]);
+            Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 1)]);
         let second_vulnerability_with_an_id_with_cve_in_text_field =
-            Err(vec![create_cve_in_ids_error("CVE-2021-44228", 1, 0)]);
+            Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 1, 0)]);
 
         TESTS_2_0.test_6_2_17.expect(ExpectedResults_2_0 {
             case_01: id_with_cve_in_text_field.clone(),

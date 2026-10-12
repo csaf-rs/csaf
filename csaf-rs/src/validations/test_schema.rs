@@ -115,7 +115,11 @@ mod tests {
         )]);
         let format = Err(vec![create_schema_error(
             r#""2025-01-01T01:01:01" is not a "date-time""#.to_string(),
-            "/vulnerabilities/0/disclosure_date",
+            "/vulnerabilities/0/discovery_date",
+        )]);
+        let required_document = Err(vec![create_schema_error(
+            r#""document" is a required property"#.to_string(),
+            "",
         )]);
 
         // checks for CSAF 2.0
@@ -124,6 +128,8 @@ mod tests {
         check_file!(2, 0, "s03", &Validator2_0::iter_errors, min_items);
         check_file!(2, 0, "s04", &Validator2_0::iter_errors, min_length);
         check_file!(2, 0, "s05", &Validator2_0::iter_errors, non_unique);
+        check_file!(2, 0, "s06", &Validator2_0::iter_errors, format);
+        check_file!(2, 0, "s07", &Validator2_0::iter_errors, required_document);
 
         // checks for CSAF 2.1
         check_file!(2, 1, "s01", &Validator2_1::iter_errors, min_properties);
@@ -132,5 +138,6 @@ mod tests {
         check_file!(2, 1, "s04", &Validator2_1::iter_errors, min_length);
         check_file!(2, 1, "s05", &Validator2_1::iter_errors, non_unique);
         check_file!(2, 1, "s06", &Validator2_1::iter_errors, format);
+        check_file!(2, 1, "s07", &Validator2_1::iter_errors, required_document);
     }
 }

@@ -47,8 +47,7 @@ impl CsafHashAlgorithm {
             Self::Blake2s256 | Self::Sha256 | Self::Sha3_256 | Self::Sha512_256 | Self::Sm3 => Some(64),
             Self::Md5Sha1 => Some(72),
             Self::Sha3_384 | Self::Sha384 => Some(96),
-            Self::Blake2b512 | Self::Sha512 | Self::Whirlpool => Some(128),
-            Self::Sha3_512 => Some(128),
+            Self::Blake2b512 | Self::Sha512 | Self::Sha3_512 | Self::Whirlpool => Some(128),
             Self::Shake128 | Self::Shake256 | Self::Other(_) => None,
         }
     }

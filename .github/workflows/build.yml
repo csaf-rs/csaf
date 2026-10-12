@@ -212,7 +212,7 @@ jobs:
           key: uniffi-bindgen-js-0.2.1-${{ runner.os }}-${{ runner.arch }}
       - name: Install uniffi-bindgen-js
         if: steps.uniffi-js-cache.outputs.cache-hit != 'true'
-        run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
+        run: cargo install uniffi-bindgen-js --version 0.2.1 --locked --force
       - name: Build UniFFI WASM bindings
         run: bash scripts/publish/generate_wasm_bindings.sh
       - name: NPM publish dry-run

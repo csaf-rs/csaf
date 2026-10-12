@@ -61,6 +61,8 @@ mod tests {
     #[test]
     fn test_test_6_2_17() {
         let id_with_cve_in_text_field = Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 0)]);
+        let id_with_cve_in_text_field_with_filter_chars = Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 0, 0)]);
+
         let multiple_ids_with_cve_in_text_field_fail_distinct = Err(vec![
             create_cve_in_ids_warning("CVE-2021-44228", 0, 0),
             create_cve_in_ids_warning("CVE-2021-44229", 0, 1),
@@ -74,31 +76,29 @@ mod tests {
         let second_vulnerability_with_an_id_with_cve_in_text_field =
             Err(vec![create_cve_in_ids_warning("CVE-2021-44228", 1, 0)]);
 
+        // Case 11: Valid test with one vulnerability containing an id with a correctly set text field
+        // Case S11: Valid test for two vulnerabilities each with two ids with correctly set text fields
+        // Case 12: "cve" is lowercase, system_name in test case specifies this might be a company-specific registry
+
         TESTS_2_0.test_6_2_17.expect(ExpectedResults_2_0 {
             case_01: id_with_cve_in_text_field.clone(),
-            // Valid test with one vulnerability containing an id with a correctly set text field
-            case_11: Ok(()),
-
             case_s01: multiple_ids_with_cve_in_text_field_fail_distinct.clone(),
             case_s02: two_vulnerabilities_with_ids_with_cve_in_text_field.clone(),
             case_s03: second_id_of_a_vulnerability_with_cve_in_text_field.clone(),
             case_s04: second_vulnerability_with_an_id_with_cve_in_text_field.clone(),
-            // Valid test for two vulnerabilities each with two ids with correctly set text fields
+            case_11: Ok(()),
             case_s11: Ok(()),
         });
         TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
             case_01: id_with_cve_in_text_field,
-            case_02: Ok(()), // #303 will fix this
-
-            // Valid test with one vulnerability containing an id with a correctly set text field
-            case_11: Ok(()),
-            case_12: Ok(()),
+            case_02: id_with_cve_in_text_field_with_filter_chars,
 
             case_s01: multiple_ids_with_cve_in_text_field_fail_distinct,
             case_s02: two_vulnerabilities_with_ids_with_cve_in_text_field,
             case_s03: second_id_of_a_vulnerability_with_cve_in_text_field,
             case_s04: second_vulnerability_with_an_id_with_cve_in_text_field,
-            // Valid test for two vulnerabilities each with two ids with correctly set text fields
+            case_11: Ok(()),
+            case_12: Ok(()),
             case_s11: Ok(()),
         });
     }

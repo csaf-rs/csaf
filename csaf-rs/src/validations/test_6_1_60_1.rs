@@ -92,6 +92,10 @@ mod tests {
                 "critical",
             ),
             extension_invalid_content_schema_missing_property_error(
+                "/product_tree/branches/0/branches/0/product/x_extensions/0",
+                "critical",
+            ),
+            extension_invalid_content_schema_missing_property_error(
                 "/product_tree/full_product_names/0/x_extensions/0",
                 "critical",
             ),
@@ -101,7 +105,7 @@ mod tests {
             ),
         ]);
 
-        // Case 11: Case 01, but with missing critical prop
+        // Case 11: Case 01, without the missing critical property
         // Case 12: Case 02, without additional props and with notes array
 
         TESTS_2_1.test_6_1_60_1.expect(ExpectedResults {

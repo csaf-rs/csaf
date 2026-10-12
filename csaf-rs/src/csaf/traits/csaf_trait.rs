@@ -1,8 +1,7 @@
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities_trait::collect_references;
 use crate::csaf_traits::{
-    BranchTrait, ContentTrait, DocumentTrait, ExtensionsTrait, MetricTrait, ProductPathTrait, ProductTrait,
-    ProductTreeTrait, VulnerabilityTrait,
+    ContentTrait, DocumentTrait, ExtensionsTrait, MetricTrait, ProductTrait, ProductTreeTrait, VulnerabilityTrait,
 };
 use crate::schema::csaf2_0::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework20,
@@ -157,37 +156,15 @@ impl CsafTrait for CommonSecurityAdvisoryFramework21 {
             }
         }
 
+        // $.product_tree..branches[*].product.x_extensions[*]
+        // $.product_tree.full_product_names[*].x_extensions[*]
+        // $.product_tree.product_paths[*].full_product_name.x_extensions[*]
         if let Some(product_tree) = self.get_product_tree() {
-            // $.product_tree.branches[*].product.x_extensions[*]
-            product_tree.get_branches().inspect(|branches| {
-                for (i, branch) in branches.iter().enumerate() {
-                    if let Some(product) = branch.get_product()
-                        && let Some(extensions) = product.get_extensions()
-                    {
-                        visitor(extensions, &format!("/product_tree/branches/{i}/product/x_extensions"));
-                    }
+            product_tree.visit_all_products_generic(&mut |product, path| {
+                if let Some(extensions) = product.get_extensions() {
+                    visitor(extensions, &format!("{path}/x_extensions"));
                 }
             });
-
-            // $.product_tree.full_product_names[*].x_extensions[*]
-            for (i, full_product_name) in product_tree.get_full_product_names().iter().enumerate() {
-                if let Some(extensions) = full_product_name.get_extensions() {
-                    visitor(
-                        extensions,
-                        &format!("/product_tree/full_product_names/{i}/x_extensions"),
-                    );
-                }
-            }
-
-            // $.product_tree.product_paths[*].full_product_name.x_extensions[*]
-            for (i, product_path) in product_tree.get_product_paths().iter().enumerate() {
-                if let Some(extensions) = product_path.get_full_product_name().get_extensions() {
-                    visitor(
-                        extensions,
-                        &format!("/product_tree/product_paths/{i}/full_product_name/x_extensions"),
-                    );
-                }
-            }
         }
     }
 }

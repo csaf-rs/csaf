@@ -368,6 +368,9 @@ mod tests {
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
+            case_s01: Ok(()),
+            case_s02: Ok(()),
+            case_s03: Ok(()),
         });
     }
 }

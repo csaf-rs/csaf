@@ -2525,7 +2525,13 @@ crate::macros::define_csaf_test!(
     "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-42-12.json",
     "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-42-12.json"), (case_13, "13",
     "../csaf/csaf_2.1/test/validator/data/recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-42-13.json",
-    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-42-13.json")]
+    "recommended/oasis_csaf_tc-csaf_2_1-2024-6-2-42-13.json"), (case_s01, "s01",
+    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-42-s01.json",
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-42-s01.json"), (case_s02, "s02",
+    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-42-s02.json",
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-42-s02.json"), (case_s03, "s03",
+    "../type-generator/assets/tests/csaf_2.1/recommended/csaf-rs_csaf-csaf_2_1-6-2-42-s03.json",
+    "recommended/csaf-rs_csaf-csaf_2_1-6-2-42-s03.json")]
 );
 crate::macros::define_csaf_test!(
     Test6_2_43, ValidatorForTest6_2_43, ExpectedResults_6_2_43, id : "6.2.43", doc_type :

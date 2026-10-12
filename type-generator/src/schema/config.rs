@@ -3,6 +3,7 @@ use serde_json::{Value, json};
 
 use super::SchemaConfig;
 use crate::build_errors::BuildError;
+use crate::schema::SchemaVersion;
 
 pub fn get_schemas() -> Vec<SchemaConfig> {
     vec![
@@ -10,11 +11,13 @@ pub fn get_schemas() -> Vec<SchemaConfig> {
             input: "assets/csaf_2.0_json_schema.json",
             output: "csaf2_0/schema.rs",
             patch: Some(&fix_2_0_schema),
+            version: SchemaVersion::V20,
         },
         SchemaConfig {
             input: "assets/csaf_2.1_json_schema.json",
             output: "csaf2_1/schema.rs",
             patch: Some(&fix_2_1_schema),
+            version: SchemaVersion::V21,
         },
     ]
 }
@@ -25,11 +28,13 @@ pub fn get_testcases_schemas() -> Vec<SchemaConfig> {
             input: "assets/csaf_2.0_testcases_json_schema.json",
             output: "csaf2_0/testcases_schema.rs",
             patch: None,
+            version: SchemaVersion::V20,
         },
         SchemaConfig {
             input: "assets/csaf_2.1_testcases_json_schema.json",
             output: "csaf2_1/testcases_schema.rs",
             patch: None,
+            version: SchemaVersion::V21,
         },
     ]
 }

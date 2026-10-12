@@ -16,6 +16,7 @@ use crate::strict_schema::generate_strict_schemas;
 use crate::testcases::{generate_testcases, get_testcase_configs};
 use crate::translation::generate_translations;
 use clap::Parser;
+use schema::generate::generate_ir;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -66,9 +67,13 @@ fn main() -> Result<(), BuildError> {
         && !args.rvisc;
 
     if run_all || args.schema {
-        for schema in &get_schemas() {
-            build_schema(schema, &args.target_folder)?;
+        let schemas = get_schemas();
+        let mut type_spaces = vec![];
+        for schema in &schemas {
+            let type_space = build_schema(schema, &args.target_folder)?;
+            type_spaces.push((schema.version, type_space));
         }
+        generate_ir(&type_spaces, &args.target_folder)?;
     }
 
     if run_all || args.test_schema {

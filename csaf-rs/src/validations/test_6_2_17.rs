@@ -1,12 +1,15 @@
+use crate::csaf::consts::chars::is_invisible_char;
 use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
 use crate::schema::csaf2_1::schema::Cve;
 use crate::validation::{TestFinding, TestFindingData};
 use std::str::FromStr;
-use crate::csaf::consts::chars::is_invisible_char;
 
-fn create_cve_in_ids_warning(id: &str, vuln_index: usize, id_index: usize) -> TestFinding {
+fn create_cve_in_ids_warning(id_text_with_cve: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
-        message: format!("Vulnerability ID text '{id}' matches CVE format"),
+        message: format!(
+            "`{}` looks like a CVE ID; use the `cve` property instead of `ids`",
+            id_text_with_cve
+        ),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/text"),
     })
 }
@@ -26,11 +29,17 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Test
     for (v_i, vuln) in doc.get_vulnerabilities().iter().enumerate() {
         if let Some(ids) = vuln.get_ids() {
             for (i_i, id) in ids.iter().enumerate() {
-                let text = id.get_text().chars().filter(|&c| !c.is_whitespace() && !is_invisible_char(c)).collect::<String>();
-                if Cve::from_str(&text).is_ok() {
+                let full_text = id.get_text();
+                // filter whitespace and invisible chars
+                let filtered_text = full_text
+                    .chars()
+                    .filter(|&c| !c.is_whitespace() && !is_invisible_char(c))
+                    .collect::<String>();
+                // try to parse the filtered  text as CVE, using the same struct used for the "actual" CVE fields in CSAF 2.0 and 2.1
+                if Cve::from_str(&filtered_text).is_ok() {
                     errors
                         .get_or_insert_default()
-                        .push(create_cve_in_ids_warning(&*text, v_i, i_i));
+                        .push(create_cve_in_ids_warning(&*full_text, v_i, i_i));
                 }
             }
         }

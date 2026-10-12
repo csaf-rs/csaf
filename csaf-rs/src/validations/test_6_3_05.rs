@@ -29,7 +29,7 @@ pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<Test
             {
                 for (h_i, hash) in hashes.iter().enumerate() {
                     for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
-                        let file_hash_len = file_hash.get_hash().len();
+                        let file_hash_len = file_hash.get_value_length();
                         if file_hash_len < 64 {
                             errors.get_or_insert_default().push(create_short_hash_error(
                                 path,

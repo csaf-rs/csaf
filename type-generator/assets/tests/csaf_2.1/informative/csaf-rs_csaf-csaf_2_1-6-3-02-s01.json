@@ -32,8 +32,8 @@
   "product_tree": {
     "full_product_names": [
       {
-        "product_id": "CSAFPID-9080700",
-        "name": "Product A"
+        "name": "Product A",
+        "product_id": "CSAFPID-9080700"
       }
     ]
   },
@@ -43,10 +43,10 @@
         {
           "content": {
             "cvss_v3": {
-              "version": "3.0",
-              "vectorString": "CVSS:3.1/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
               "baseScore": 6.5,
-              "baseSeverity": "MEDIUM"
+              "baseSeverity": "MEDIUM",
+              "vectorString": "CVSS:3.1/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
+              "version": "3.0"
             }
           },
           "products": [
@@ -56,10 +56,10 @@
         {
           "content": {
             "cvss_v3": {
-              "version": "3.1",
-              "vectorString": "CVSS:3.0/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
               "baseScore": 6.5,
-              "baseSeverity": "MEDIUM"
+              "baseSeverity": "MEDIUM",
+              "vectorString": "CVSS:3.0/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
+              "version": "3.1"
             }
           },
           "products": [
@@ -73,9 +73,9 @@
         {
           "content": {
             "cvss_v3": {
-              "version": "3.0",
               "baseScore": 6.5,
-              "baseSeverity": "MEDIUM"
+              "baseSeverity": "MEDIUM",
+              "version": "3.0"
             }
           },
           "products": [
@@ -89,9 +89,9 @@
         {
           "content": {
             "cvss_v3": {
-              "vectorString": "CVSS:3.0/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
               "baseScore": 6.5,
-              "baseSeverity": "MEDIUM"
+              "baseSeverity": "MEDIUM",
+              "vectorString": "CVSS:3.0/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H"
             }
           },
           "products": [

@@ -61,7 +61,7 @@ pub fn test_6_1_63_inconsistent_hash_value_length(doc: &impl CsafTrait) -> Resul
                     // check if the hash is the right length for the algorithm
                     let value_length = file_hash.get_value_length();
                     // some algorithms have variable length output, so we skip those (e.g. SHAKE algos)
-                    // algorithms not supported (CsafHashAlgorithm::Other]) are already handled above
+                    // algorithms not supported (CsafHashAlgorithm::Other) are already handled above
                     if let Some(expected_length) = algorithm.expected_length()
                         && value_length != expected_length
                     {

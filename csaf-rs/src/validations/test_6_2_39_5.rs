@@ -15,6 +15,7 @@ fn create_extension_warning(doc_category: &CsafDocumentCategory, instance_path: 
 /// This test only applies to documents with `/document/category` with value `csaf_withdrawn` or `csaf_superseded`.
 ///
 /// It SHALL be tested that the document does not contain an extension.
+///
 /// The relevant paths for this test are:
 /// - `/document/x_extensions`
 /// - `/x_extensions`
@@ -72,16 +73,37 @@ mod tests {
             "/x_extensions",
         )]);
 
+        let document_extension_superseded = Err(vec![create_extension_warning(
+            &CsafDocumentCategory::CsafSuperseded,
+            "/document/x_extensions",
+        )]);
+
+        let document_extension_withdrawn = Err(vec![create_extension_warning(
+            &CsafDocumentCategory::CsafWithdrawn,
+            "/document/x_extensions",
+        )]);
+
+        let document_and_root_extensions_superseded = Err(vec![
+            create_extension_warning(&CsafDocumentCategory::CsafSuperseded, "/document/x_extensions"),
+            create_extension_warning(&CsafDocumentCategory::CsafSuperseded, "/x_extensions"),
+        ]);
+
+        let document_and_root_extensions_withdrawn = Err(vec![
+            create_extension_warning(&CsafDocumentCategory::CsafWithdrawn, "/document/x_extensions"),
+            create_extension_warning(&CsafDocumentCategory::CsafWithdrawn, "/x_extensions"),
+        ]);
+
         // Case 11: withdrawn document without extension
         // Case 12: superseded document without extension
+        // Case 13: extension in root and document, but category is security_advisory
 
         TESTS_2_1.test_6_2_39_5.expect(ExpectedResults {
             case_01: root_extension_superseded,
             case_02: root_extension_withdrawn,
-            case_03: Ok(()),
-            case_04: Ok(()),
-            case_05: Ok(()),
-            case_06: Ok(()),
+            case_03: document_extension_superseded,
+            case_04: document_extension_withdrawn,
+            case_05: document_and_root_extensions_superseded,
+            case_06: document_and_root_extensions_withdrawn,
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

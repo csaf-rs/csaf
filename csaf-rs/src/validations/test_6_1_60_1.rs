@@ -68,7 +68,6 @@ mod tests {
 
     #[test]
     fn test_6_1_60_1() {
-
         let missing_prop = Err(vec![extension_invalid_content_schema_missing_property_error(
             "/x_extensions/0",
             "critical",
@@ -81,10 +80,7 @@ mod tests {
 
         let all_paths_with_missing_root_with_multiple_findings = Err(vec![
             extension_invalid_content_schema_missing_property_error("/x_extensions/0", "critical"),
-            extension_invalid_content_schema_unknown_property_error(
-            "/x_extensions/0",
-            "some_additional_property",
-            ),
+            extension_invalid_content_schema_unknown_property_error("/x_extensions/1", "some_additional_property"),
             extension_invalid_content_schema_missing_property_error("/document/x_extensions/0", "critical"),
             extension_invalid_content_schema_missing_property_error("/vulnerabilities/0/x_extensions/0", "critical"),
             extension_invalid_content_schema_missing_property_error(

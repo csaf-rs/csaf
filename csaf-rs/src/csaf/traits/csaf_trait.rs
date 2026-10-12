@@ -1,6 +1,9 @@
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities_trait::collect_references;
-use crate::csaf_traits::{BranchTrait, ContentTrait, DocumentTrait, ExtensionsTrait, MetricTrait, ProductPathTrait, ProductTrait, ProductTreeTrait, VulnerabilityTrait};
+use crate::csaf_traits::{
+    BranchTrait, ContentTrait, DocumentTrait, ExtensionsTrait, MetricTrait, ProductPathTrait, ProductTrait,
+    ProductTreeTrait, VulnerabilityTrait,
+};
 use crate::schema::csaf2_0::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework20,
     DocumentLevelMetaData as DocumentLevelMetaData20, ProductTree as ProductTree20, Vulnerability as Vulnerability20,
@@ -69,8 +72,8 @@ pub trait CsafTrait {
     fn get_extensions(&self) -> Option<&Self::ExtensionsType>;
 
     /// Visits all extension containers present in the document.
-    /// 
-    /// The provided visitor function is called for each extension trait implementation found, 
+    ///
+    /// The provided visitor function is called for each extension trait implementation found,
     /// along with its corresponding JSON path.
     fn visit_all_extensions(&self, visitor: &mut impl FnMut(&Self::ExtensionsType, &str));
 }
@@ -97,8 +100,7 @@ impl CsafTrait for CommonSecurityAdvisoryFramework20 {
         None
     }
 
-    fn visit_all_extensions(&self, _visitor: &mut impl FnMut(&Self::ExtensionsType, &str)) {
-    }
+    fn visit_all_extensions(&self, _visitor: &mut impl FnMut(&Self::ExtensionsType, &str)) {}
 }
 
 impl CsafTrait for CommonSecurityAdvisoryFramework21 {
@@ -146,7 +148,10 @@ impl CsafTrait for CommonSecurityAdvisoryFramework21 {
             if let Some(metrics) = vuln.get_metrics() {
                 for (m_i, metric) in metrics.iter().enumerate() {
                     if let Some(extensions) = metric.get_content().get_extensions() {
-                        visitor(extensions, &format!("/vulnerabilities/{i}/metrics/{m_i}/content/x_extensions"));
+                        visitor(
+                            extensions,
+                            &format!("/vulnerabilities/{i}/metrics/{m_i}/content/x_extensions"),
+                        );
                     }
                 }
             }
@@ -167,14 +172,20 @@ impl CsafTrait for CommonSecurityAdvisoryFramework21 {
             // $.product_tree.full_product_names[*].x_extensions[*]
             for (i, full_product_name) in product_tree.get_full_product_names().iter().enumerate() {
                 if let Some(extensions) = full_product_name.get_extensions() {
-                    visitor(extensions, &format!("/product_tree/full_product_names/{i}/x_extensions"));
+                    visitor(
+                        extensions,
+                        &format!("/product_tree/full_product_names/{i}/x_extensions"),
+                    );
                 }
             }
 
             // $.product_tree.product_paths[*].full_product_name.x_extensions[*]
             for (i, product_path) in product_tree.get_product_paths().iter().enumerate() {
                 if let Some(extensions) = product_path.get_full_product_name().get_extensions() {
-                    visitor(extensions, &format!("/product_tree/product_paths/{i}/full_product_name/x_extensions"));
+                    visitor(
+                        extensions,
+                        &format!("/product_tree/product_paths/{i}/full_product_name/x_extensions"),
+                    );
                 }
             }
         }

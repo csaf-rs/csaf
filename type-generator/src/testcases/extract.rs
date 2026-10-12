@@ -239,4 +239,48 @@ mod tests_extract_test_entries {
         let supplemental = json!({ "tests": [] });
         extract_test_entries_from_json("demo", "supp_demo", &testcases, &supplemental);
     }
+
+    #[test]
+    fn test_merges_upstream_and_supplemental_entries() {
+        let testcases = json!({
+            "tests": [{
+                "id": "6.1.1",
+                "group": "mandatory",
+                "failures": [{"name": "mandatory/upstream-01.json"}]
+            },
+            {
+                "id": "6.1.2",
+                "group": "mandatory",
+                "failures": [{"name": "mandatory/upstream-02.json"}]
+            }]
+        });
+        let supplemental = json!({
+            "tests": [
+                {
+                    "id": "6.1.1",
+                    "group": "mandatory",
+                    "valid": [{"name": "mandatory/supplemental-02.json"}]
+                },
+                {
+                    "id": "6.1.3",
+                    "group": "informative",
+                    "valid": [{"name": "informative/supplemental-03.json"}]
+                }
+            ]
+        });
+
+        let entries = extract_test_entries_from_json("demo", "supp_demo", &testcases, &supplemental);
+
+        assert_eq!(entries.len(), 3);
+        assert_eq!(entries[0].id, "6.1.1");
+        assert_eq!(entries[0].docs.len(), 2);
+        assert_eq!(entries[0].docs[0].base_dir, "demo");
+        assert_eq!(entries[0].docs[1].base_dir, "supp_demo");
+        assert_eq!(entries[1].id, "6.1.2");
+        assert_eq!(entries[1].docs.len(), 1);
+        assert_eq!(entries[1].docs[0].base_dir, "demo");
+        assert_eq!(entries[2].id, "6.1.3");
+        assert_eq!(entries[2].docs.len(), 1);
+        assert_eq!(entries[2].docs[0].base_dir, "supp_demo");
+    }
 }

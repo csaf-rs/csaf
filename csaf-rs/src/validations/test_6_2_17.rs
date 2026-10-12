@@ -34,7 +34,7 @@ pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<Test
                     .chars()
                     .filter(|c| !c.is_whitespace() && !is_invisible_char(*c))
                     .collect();
-                // try to parse the filtered  text as CVE, using the same struct used for the "actual" CVE fields in CSAF 2.0 and 2.1
+                // try to parse the filtered text as CVE, using the same struct used for the "actual" CVE fields in CSAF 2.0 and 2.1
                 if filtered_text.parse::<Cve>().is_ok() {
                     errors
                         .get_or_insert_default()

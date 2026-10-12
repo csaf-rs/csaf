@@ -71,7 +71,7 @@ mod tests {
         });
         TESTS_2_1.test_6_2_17.expect(ExpectedResults_2_1 {
             case_01: id_with_cve_in_text_field,
-            case_02: Ok(()),
+            case_02: Ok(()), // #303 will fix this
 
             // Valid test with one vulnerability containing an id with a correctly set text field
             case_11: Ok(()),

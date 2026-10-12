@@ -13,7 +13,13 @@ fn create_cve_in_ids_warning(id: &str, vuln_index: usize, id_index: usize) -> Te
 
 /// 6.2.17 CVE in field IDs
 ///
-/// All `/vulnerabilities[]/ids[]` items must not match the CVE ID format in their `text` field.
+/// For each item in $.vulnerabilities[*].ids it SHALL be tested that it is not a CVE ID.
+///
+/// To implement this test it is deemed sufficient to check after invisible and white space characters
+/// have been removed from the value of the property text whether it matches the regex `^CVE-[0-9]{4}-[0-9]{4,}$`.
+///
+/// The informative comment on how to implement this test was added with CSAF 2.1. As this is a) an informative comment and b) just covers
+/// an edge case that was not considered in CSAF 2.0, we apply the same test logic to both CSAF 2.0 and CSAF 2.1 documents.
 pub fn test_6_2_17_cve_in_field_ids(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 

@@ -13,7 +13,7 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Informative Test: Use of CVSS v3.0 (valid supplementary example 2 - CVSS v4 only)",
+    "title": "Informative Test: Use of CVSS v3.0 (valid supplementary example 2 - vuln with CVSS v4 only, vuln without metrics)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-02-S12",

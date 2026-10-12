@@ -1159,16 +1159,6 @@
           "valid": false
         }
       ]
-    },
-    {
-      "id": "6.1.63",
-      "group": "mandatory",
-      "failures": [
-        {
-          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-63-s01.json",
-          "valid": false
-        }
-      ]
     }
   ]
 }

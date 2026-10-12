@@ -204,15 +204,15 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.14", "6.3.15",
             ]),
             Ok(Preset::ValidationTime) => Ok(vec![
-                "6.2.33", "6.3.25"
+                "6.2.33", // "6.3.25" TODO #1190
             ]),
             // Ok(Preset::Extensions) => Ok(vec![
             //     "6.1.60.1", "6.1.60.2", "6.1.60.3", "6.2.39.5", "6.2.54.1", "6.2.54.2", "6.2.54.3", "6.2.54.4",
             //     "6.3.21.1", "6.3.21.2", "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8",
-            //     "6.3.21.9",
+            //     "6.3.21.9", // TODO #1230
             // ]),
             // Ok(Preset::ExtensionsExist) => Ok(vec![
-            //        "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9"
+            //        "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9" // TODO #1230
             // ]),
             Err(e) => Err(e),
         }
@@ -343,7 +343,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.60.3" => None, // Some(ValidatorForTest6_1_60_3.validate(self)),
                 "6.1.61" => Some(ValidatorForTest6_1_61.validate(self)),
                 "6.1.62" => Some(ValidatorForTest6_1_62.validate(self)),
-                "6.1.63" => None,
+                // "6.1.63" => None, #1187
                 // recommended tests
                 "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
                 "6.2.2" => Some(ValidatorForTest6_2_2.validate(self)),

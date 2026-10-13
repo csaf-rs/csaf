@@ -79,8 +79,10 @@ fn has_non_empty_hostname(authority: &str) -> bool {
 
 /// Trait representing document meta-level information
 pub trait DocumentTrait {
+    /// Type representing document acknowledgment information
     type AcknowledgmentType: AcknowledgmentTrait;
 
+    /// Type representing document aggregate severity information
     type AggregateSeverityType: AggregateSeverityTrait;
     /// Type representing document tracking information
     type TrackingType: TrackingTrait;
@@ -88,6 +90,12 @@ pub trait DocumentTrait {
     /// Type representing document distribution information
     type DistributionType: DistributionTrait;
 
+    /// Type representing document involvement information
+    ///
+    /// Note: In CSAF 2.0, involvements worked differently and were present under `vulnerabilities`.
+    ///
+    /// For CSAF 2.0 documents, this type is `NotPresentInCsaf20`.
+    /// For CSAF 2.1 documents, this type has the information described above.
     type InvolvementType: Csaf21InvolvementTrait;
 
     /// Type representing document notes
@@ -96,12 +104,16 @@ pub trait DocumentTrait {
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
+    /// Type representing document references
     type ReferenceType: ReferenceTrait;
 
+    /// Type representing document extensions
     type ExtensionsType: ExtensionsTrait;
 
+    /// Returns the acknowledgments information for this document
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
 
+    /// Returns the aggregate severity information for this document
     fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType>;
 
     /// Returns the tracking information for this document
@@ -139,6 +151,12 @@ pub trait DocumentTrait {
     /// Returns the references of this document
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
 
+    /// Returns the involvement information for this document
+    ///
+    /// Note: In CSAF 2.0, involvements worked differently and were present under `vulnerabilities`.
+    ///
+    /// If called for CSAF 2.0 documents, this method returns `None`.
+    /// If called for CSAF 2.1 documents, this method returns the involvement information if present, or `None` if not present.
     fn get_involvement(&self) -> Option<&Self::InvolvementType>;
 
     /// Returns the canonical URLs from this document's references.
@@ -155,11 +173,13 @@ pub trait DocumentTrait {
             .is_some()
     }
 
+    /// Returns the CSAF version of this document
     fn get_csaf_version(&self) -> CsafVersion;
 
     /// Returns the title of this document
     fn get_title(&self) -> &str;
 
+    /// Returns the extensions of this document
     fn get_extensions(&self) -> Option<&Self::ExtensionsType>;
 }
 

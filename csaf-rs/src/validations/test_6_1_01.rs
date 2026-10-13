@@ -92,6 +92,7 @@ mod tests {
             ]),
             case_11: Ok(()),
             case_12: Ok(()),
+            case_s11: Ok(()),
         });
 
         TESTS_2_1.test_6_1_1.expect(ExpectedResults_2_1 {
@@ -203,6 +204,7 @@ mod tests {
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
+            case_s11: Ok(()),
         });
     }
 }

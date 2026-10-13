@@ -70,6 +70,23 @@ impl V20Node0 {
     pub fn vulnerabilities_mut(&mut self) -> Option<&mut V20Node3> {
         self.0.get_mut("vulnerabilities").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<
+        super::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+        serde_json::Error,
+    > {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_0::schema::CommonSecurityAdvisoryFramework,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -195,6 +212,17 @@ impl V20Node4 {
     pub fn title_mut(&mut self) -> Option<&mut V20Node18> {
         self.0.get_mut("title").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Vulnerability, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Vulnerability) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -276,6 +304,17 @@ impl V20Node21 {
     pub fn product_ids_mut(&mut self) -> Option<&mut V20Node25> {
         self.0.get_mut("product_ids").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Threat, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Threat) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -340,11 +379,13 @@ pub type V20Node8 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node22(serde_json::Value);
 impl V20Node22 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::CategoryOfTheThreat, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::CategoryOfTheThreat) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -392,6 +433,17 @@ impl V20Node32 {
     }
     pub fn products_mut(&mut self) -> Option<&mut V20Node26> {
         self.0.get_mut("products").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Score, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Score) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -493,6 +545,17 @@ impl V20Node34 {
     pub fn url_mut(&mut self) -> Option<&mut V20Node8> {
         self.0.get_mut("url").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Remediation, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Remediation) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -520,6 +583,23 @@ impl V20Node39 {
     pub fn details_mut(&mut self) -> Option<&mut V20Node41> {
         self.0.get_mut("details").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<
+        super::csaf2_0::schema::RestartRequiredByRemediation,
+        serde_json::Error,
+    > {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_0::schema::RestartRequiredByRemediation,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -536,11 +616,13 @@ pub type V20Node42 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node40(serde_json::Value);
 impl V20Node40 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::CategoryOfRestart, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::CategoryOfRestart) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -573,11 +655,13 @@ pub type V20Node36 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node35(serde_json::Value);
 impl V20Node35 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::CategoryOfTheRemediation, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::CategoryOfTheRemediation) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -628,6 +712,17 @@ impl V20Node46 {
     pub fn url_mut(&mut self) -> Option<&mut V20Node20> {
         self.0.get_mut("url").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Reference, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Reference) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -643,11 +738,13 @@ pub type V20Node48 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node47(serde_json::Value);
 impl V20Node47 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::CategoryOfReference, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::CategoryOfReference) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -705,6 +802,17 @@ impl V20Node49 {
     }
     pub fn under_investigation_mut(&mut self) -> Option<&mut V20Node25> {
         self.0.get_mut("under_investigation").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::ProductStatus, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::ProductStatus) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -767,6 +875,15 @@ impl V20Node52 {
     pub fn title_mut(&mut self) -> Option<&mut V20Node56> {
         self.0.get_mut("title").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_0::schema::Note, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Note) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -784,11 +901,13 @@ pub type V20Node55 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node54(serde_json::Value);
 impl V20Node54 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::NoteCategory, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::NoteCategory) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -846,6 +965,17 @@ impl V20Node60 {
     pub fn summary_mut(&mut self) -> Option<&mut V20Node63> {
         self.0.get_mut("summary").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Involvement, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Involvement) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -862,11 +992,13 @@ pub type V20Node64 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node62(serde_json::Value);
 impl V20Node62 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::PartyStatus, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::PartyStatus) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -876,11 +1008,13 @@ impl V20Node62 {
 #[repr(transparent)]
 pub struct V20Node61(serde_json::Value);
 impl V20Node61 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::PartyCategory, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::PartyCategory) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -923,6 +1057,15 @@ impl V20Node66 {
     }
     pub fn text_mut(&mut self) -> Option<&mut V20Node68> {
         self.0.get_mut("text").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_0::schema::Id, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Id) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -986,6 +1129,15 @@ impl V20Node70 {
     pub fn product_ids_mut(&mut self) -> Option<&mut V20Node25> {
         self.0.get_mut("product_ids").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_0::schema::Flag, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Flag) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1000,11 +1152,13 @@ impl V20Node70 {
 #[repr(transparent)]
 pub struct V20Node71(serde_json::Value);
 impl V20Node71 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::LabelOfTheFlag, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::LabelOfTheFlag) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -1026,6 +1180,15 @@ impl V20Node72 {
     }
     pub fn name_mut(&mut self) -> Option<&mut V20Node74> {
         self.0.get_mut("name").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_0::schema::Cwe, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Cwe) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -1091,6 +1254,17 @@ impl V20Node78 {
     }
     pub fn urls_mut(&mut self) -> Option<&mut V20Node82> {
         self.0.get_mut("urls").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Acknowledgment, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Acknowledgment) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -1178,6 +1352,17 @@ impl V20Node86 {
     pub fn relationships_mut(&mut self) -> Option<&mut V20Node90> {
         self.0.get_mut("relationships").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::ProductTree, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::ProductTree) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1241,6 +1426,17 @@ impl V20Node91 {
             .get_mut("relates_to_product_reference")
             .map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Relationship, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Relationship) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1276,6 +1472,17 @@ impl V20Node93 {
         self.0
             .get_mut("product_identification_helper")
             .map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::FullProductNameT, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::FullProductNameT) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -1340,6 +1547,20 @@ impl V20Node96 {
     pub fn x_generic_uris_mut(&mut self) -> Option<&mut V20Node103> {
         self.0.get_mut("x_generic_uris").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::HelperToIdentifyTheProduct, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_0::schema::HelperToIdentifyTheProduct,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1386,6 +1607,17 @@ impl V20Node104 {
     }
     pub fn uri_mut(&mut self) -> Option<&mut V20Node20> {
         self.0.get_mut("uri").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::GenericUri, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::GenericUri) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -1504,6 +1736,17 @@ impl V20Node111 {
     pub fn filename_mut(&mut self) -> Option<&mut V20Node113> {
         self.0.get_mut("filename").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::CryptographicHashes, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::CryptographicHashes) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1552,6 +1795,17 @@ impl V20Node114 {
     pub fn value_mut(&mut self) -> Option<&mut V20Node116> {
         self.0.get_mut("value").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::FileHash, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::FileHash) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1571,11 +1825,13 @@ pub type V20Node94 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node92(serde_json::Value);
 impl V20Node92 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::RelationshipCategory, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::RelationshipCategory) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -1623,6 +1879,17 @@ impl V20Node118 {
     }
     pub fn summary_mut(&mut self) -> Option<&mut V20Node119> {
         self.0.get_mut("summary").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::ProductGroup, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::ProductGroup) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -1708,6 +1975,17 @@ impl V20Node123 {
     pub fn product_mut(&mut self) -> Option<&mut V20Node126> {
         self.0.get_mut("product").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Branch, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Branch) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1724,11 +2002,13 @@ pub type V20Node125 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node124(serde_json::Value);
 impl V20Node124 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::CategoryOfTheBranch, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::CategoryOfTheBranch) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -1810,6 +2090,17 @@ impl V20Node1 {
     pub fn tracking_mut(&mut self) -> Option<&mut V20Node134> {
         self.0.get_mut("tracking").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::DocumentLevelMetaData, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::DocumentLevelMetaData) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1876,6 +2167,17 @@ impl V20Node134 {
     pub fn version_mut(&mut self) -> Option<&mut V20Node140> {
         self.0.get_mut("version").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Tracking, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Tracking) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1891,11 +2193,13 @@ pub type V20Node140 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node139(serde_json::Value);
 impl V20Node139 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::DocumentStatus, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::DocumentStatus) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -1950,6 +2254,17 @@ impl V20Node141 {
     pub fn summary_mut(&mut self) -> Option<&mut V20Node143> {
         self.0.get_mut("summary").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Revision, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Revision) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -1981,6 +2296,17 @@ impl V20Node145 {
     pub fn engine_mut(&mut self) -> Option<&mut V20Node146> {
         self.0.get_mut("engine").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::DocumentGenerator, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::DocumentGenerator) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2006,6 +2332,20 @@ impl V20Node146 {
     }
     pub fn version_mut(&mut self) -> Option<&mut V20Node148> {
         self.0.get_mut("version").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::EngineOfDocumentGeneration, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_0::schema::EngineOfDocumentGeneration,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -2080,6 +2420,17 @@ impl V20Node132 {
     pub fn namespace_mut(&mut self) -> Option<&mut V20Node20> {
         self.0.get_mut("namespace").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::Publisher, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::Publisher) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2099,11 +2450,13 @@ pub type V20Node158 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node153(serde_json::Value);
 impl V20Node153 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::CategoryOfPublisher, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::CategoryOfPublisher) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -2125,6 +2478,20 @@ impl V20Node159 {
     }
     pub fn tlp_mut(&mut self) -> Option<&mut V20Node161> {
         self.0.get_mut("tlp").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::RulesForSharingDocument, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_0::schema::RulesForSharingDocument,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -2153,6 +2520,20 @@ impl V20Node162 {
     pub fn url_mut(&mut self) -> Option<&mut V20Node20> {
         self.0.get_mut("url").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::TrafficLightProtocolTlp, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_0::schema::TrafficLightProtocolTlp,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2167,11 +2548,13 @@ impl V20Node162 {
 #[repr(transparent)]
 pub struct V20Node163(serde_json::Value);
 impl V20Node163 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::LabelOfTlp, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::LabelOfTlp) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -2183,11 +2566,13 @@ pub type V20Node164 = V20Node20;
 #[repr(transparent)]
 pub struct V20Node129(serde_json::Value);
 impl V20Node129 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_0::schema::CsafVersion, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_0::schema::CsafVersion) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -2210,6 +2595,17 @@ impl V20Node165 {
     }
     pub fn text_mut(&mut self) -> Option<&mut V20Node166> {
         self.0.get_mut("text").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_0::schema::AggregateSeverity, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_0::schema::AggregateSeverity) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -2255,6 +2651,23 @@ impl V21Node0 {
     }
     pub fn x_extensions_mut(&mut self) -> Option<&mut V21Node5> {
         self.0.get_mut("x_extensions").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<
+        super::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+        serde_json::Error,
+    > {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -2437,6 +2850,17 @@ impl V21Node9 {
     pub fn x_extensions_mut(&mut self) -> Option<&mut V21Node5> {
         self.0.get_mut("x_extensions").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Vulnerability, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Vulnerability) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2518,6 +2942,17 @@ impl V21Node27 {
     pub fn product_ids_mut(&mut self) -> Option<&mut V21Node31> {
         self.0.get_mut("product_ids").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Threat, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Threat) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2582,11 +3017,13 @@ pub type V21Node13 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node28(serde_json::Value);
 impl V21Node28 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::CategoryOfTheThreat, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::CategoryOfTheThreat) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -2665,6 +3102,17 @@ impl V21Node38 {
     pub fn url_mut(&mut self) -> Option<&mut V21Node13> {
         self.0.get_mut("url").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Remediation, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Remediation) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2692,6 +3140,23 @@ impl V21Node43 {
     pub fn details_mut(&mut self) -> Option<&mut V21Node45> {
         self.0.get_mut("details").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<
+        super::csaf2_1::schema::RestartRequiredByRemediation,
+        serde_json::Error,
+    > {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_1::schema::RestartRequiredByRemediation,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2708,11 +3173,13 @@ pub type V21Node46 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node44(serde_json::Value);
 impl V21Node44 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::CategoryOfRestart, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::CategoryOfRestart) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -2745,11 +3212,13 @@ pub type V21Node40 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node39(serde_json::Value);
 impl V21Node39 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::CategoryOfTheRemediation, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::CategoryOfTheRemediation) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -2800,6 +3269,17 @@ impl V21Node50 {
     pub fn url_mut(&mut self) -> Option<&mut V21Node26> {
         self.0.get_mut("url").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Reference, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Reference) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2815,11 +3295,13 @@ pub type V21Node52 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node51(serde_json::Value);
 impl V21Node51 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::CategoryOfReference, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::CategoryOfReference) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -2883,6 +3365,17 @@ impl V21Node53 {
     }
     pub fn unknown_mut(&mut self) -> Option<&mut V21Node31> {
         self.0.get_mut("unknown").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::ProductStatus, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::ProductStatus) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -2957,6 +3450,15 @@ impl V21Node56 {
     pub fn title_mut(&mut self) -> Option<&mut V21Node60> {
         self.0.get_mut("title").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_1::schema::Note, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Note) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -2974,11 +3476,13 @@ pub type V21Node59 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node58(serde_json::Value);
 impl V21Node58 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::NoteCategory, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::NoteCategory) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -3029,6 +3533,17 @@ impl V21Node64 {
     }
     pub fn source_mut(&mut self) -> Option<&mut V21Node13> {
         self.0.get_mut("source").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Metric, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Metric) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -3096,6 +3611,17 @@ impl V21Node65 {
     pub fn x_extensions_mut(&mut self) -> Option<&mut V21Node5> {
         self.0.get_mut("x_extensions").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Content, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Content) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -3111,11 +3637,13 @@ pub type V21Node67 = V21Node68;
 #[repr(transparent)]
 pub struct V21Node68(serde_json::Value);
 impl V21Node68 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::QualitativeSeverityRating, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(
         &mut self,
         value: super::csaf2_1::schema::QualitativeSeverityRating,
@@ -3146,6 +3674,15 @@ impl V21Node69 {
     }
     pub fn timestamp_mut(&mut self) -> Option<&mut V21Node26> {
         self.0.get_mut("timestamp").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_1::schema::Epss, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Epss) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -3209,6 +3746,15 @@ impl V21Node73 {
     pub fn text_mut(&mut self) -> Option<&mut V21Node75> {
         self.0.get_mut("text").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_1::schema::Id, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Id) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -3271,6 +3817,15 @@ impl V21Node77 {
     pub fn product_ids_mut(&mut self) -> Option<&mut V21Node31> {
         self.0.get_mut("product_ids").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_1::schema::Flag, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Flag) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -3285,11 +3840,13 @@ impl V21Node77 {
 #[repr(transparent)]
 pub struct V21Node78(serde_json::Value);
 impl V21Node78 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::LabelOfTheFlag, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::LabelOfTheFlag) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -3344,6 +3901,20 @@ impl V21Node80 {
     }
     pub fn product_ids_mut(&mut self) -> Option<&mut V21Node31> {
         self.0.get_mut("product_ids").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::FirstKnownExploitationDate, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_1::schema::FirstKnownExploitationDate,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -3400,6 +3971,15 @@ impl V21Node83 {
     }
     pub fn version_mut(&mut self) -> Option<&mut V21Node86> {
         self.0.get_mut("version").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(&self) -> Result<super::csaf2_1::schema::Cwe, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Cwe) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -3467,6 +4047,17 @@ impl V21Node90 {
     pub fn urls_mut(&mut self) -> Option<&mut V21Node94> {
         self.0.get_mut("urls").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Acknowledgment, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Acknowledgment) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -3528,11 +4119,13 @@ pub type V21Node97 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node3(serde_json::Value);
 impl V21Node3 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::JsonSchema, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::JsonSchema) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -3566,6 +4159,17 @@ impl V21Node98 {
     }
     pub fn product_paths_mut(&mut self) -> Option<&mut V21Node102> {
         self.0.get_mut("product_paths").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::ProductTree, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::ProductTree) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -3624,6 +4228,17 @@ impl V21Node103 {
     pub fn subpaths_mut(&mut self) -> Option<&mut V21Node105> {
         self.0.get_mut("subpaths").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::ProductPath, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::ProductPath) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -3673,6 +4288,17 @@ impl V21Node106 {
             .get_mut("next_product_reference")
             .map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::SubpathT, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::SubpathT) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -3687,11 +4313,13 @@ impl V21Node106 {
 #[repr(transparent)]
 pub struct V21Node107(serde_json::Value);
 impl V21Node107 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::RelationshipCategory, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::RelationshipCategory) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -3728,6 +4356,17 @@ impl V21Node104 {
     }
     pub fn x_extensions_mut(&mut self) -> Option<&mut V21Node5> {
         self.0.get_mut("x_extensions").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::FullProductNameT, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::FullProductNameT) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -3792,6 +4431,20 @@ impl V21Node110 {
     pub fn x_generic_uris_mut(&mut self) -> Option<&mut V21Node118> {
         self.0.get_mut("x_generic_uris").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::HelperToIdentifyTheProduct, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_1::schema::HelperToIdentifyTheProduct,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -3839,6 +4492,17 @@ impl V21Node120 {
     }
     pub fn uri_mut(&mut self) -> Option<&mut V21Node26> {
         self.0.get_mut("uri").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::GenericUri, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::GenericUri) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -4002,6 +4666,17 @@ impl V21Node131 {
     pub fn filename_mut(&mut self) -> Option<&mut V21Node133> {
         self.0.get_mut("filename").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::CryptographicHashes, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::CryptographicHashes) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4049,6 +4724,17 @@ impl V21Node134 {
     }
     pub fn value_mut(&mut self) -> Option<&mut V21Node136> {
         self.0.get_mut("value").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::FileHash, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::FileHash) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -4107,6 +4793,17 @@ impl V21Node138 {
     }
     pub fn summary_mut(&mut self) -> Option<&mut V21Node139> {
         self.0.get_mut("summary").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::ProductGroup, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::ProductGroup) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -4192,6 +4889,17 @@ impl V21Node143 {
     pub fn product_mut(&mut self) -> Option<&mut V21Node146> {
         self.0.get_mut("product").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Branch, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Branch) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4208,11 +4916,13 @@ pub type V21Node145 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node144(serde_json::Value);
 impl V21Node144 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::CategoryOfTheBranch, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::CategoryOfTheBranch) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -4312,6 +5022,17 @@ impl V21Node1 {
     pub fn x_extensions_mut(&mut self) -> Option<&mut V21Node5> {
         self.0.get_mut("x_extensions").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::DocumentLevelMetaData, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::DocumentLevelMetaData) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4378,6 +5099,17 @@ impl V21Node156 {
     pub fn version_mut(&mut self) -> Option<&mut V21Node162> {
         self.0.get_mut("version").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Tracking, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Tracking) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4393,11 +5125,13 @@ pub type V21Node162 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node161(serde_json::Value);
 impl V21Node161 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::DocumentStatus, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::DocumentStatus) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -4452,6 +5186,17 @@ impl V21Node163 {
     pub fn summary_mut(&mut self) -> Option<&mut V21Node165> {
         self.0.get_mut("summary").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Revision, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Revision) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4483,6 +5228,17 @@ impl V21Node167 {
     pub fn engine_mut(&mut self) -> Option<&mut V21Node168> {
         self.0.get_mut("engine").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::DocumentGenerator, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::DocumentGenerator) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4508,6 +5264,20 @@ impl V21Node168 {
     }
     pub fn version_mut(&mut self) -> Option<&mut V21Node170> {
         self.0.get_mut("version").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::EngineOfDocumentGeneration, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_1::schema::EngineOfDocumentGeneration,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -4582,6 +5352,17 @@ impl V21Node154 {
     pub fn namespace_mut(&mut self) -> Option<&mut V21Node26> {
         self.0.get_mut("namespace").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Publisher, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Publisher) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4626,6 +5407,17 @@ impl V21Node180 {
     pub fn url_mut(&mut self) -> Option<&mut V21Node184> {
         self.0.get_mut("url").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::ContactT, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::ContactT) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4648,11 +5440,13 @@ pub type V21Node188 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node175(serde_json::Value);
 impl V21Node175 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::CategoryOfPublisher, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::CategoryOfPublisher) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -4682,6 +5476,17 @@ impl V21Node190 {
     }
     pub fn entity_groups_mut(&mut self) -> Option<&mut V21Node193> {
         self.0.get_mut("entity_groups").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Involvement, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Involvement) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -4742,6 +5547,17 @@ impl V21Node195 {
     }
     pub fn summary_mut(&mut self) -> Option<&mut V21Node199> {
         self.0.get_mut("summary").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::EntityGroup, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::EntityGroup) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -4828,6 +5644,17 @@ impl V21Node202 {
     pub fn name_mut(&mut self) -> Option<&mut V21Node204> {
         self.0.get_mut("name").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Entity, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Entity) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4844,11 +5671,13 @@ pub type V21Node205 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node203(serde_json::Value);
 impl V21Node203 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::EntityCategory, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::EntityCategory) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -4949,6 +5778,17 @@ impl V21Node206 {
     pub fn summary_mut(&mut self) -> Option<&mut V21Node214> {
         self.0.get_mut("summary").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::Action, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::Action) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -4965,11 +5805,13 @@ pub type V21Node215 = V21Node26;
 #[repr(transparent)]
 pub struct V21Node213(serde_json::Value);
 impl V21Node213 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::ActionStatus, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::ActionStatus) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -5025,11 +5867,13 @@ impl V21Node217 {
 #[repr(transparent)]
 pub struct V21Node218(serde_json::Value);
 impl V21Node218 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::EntityRefsTItem, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::EntityRefsTItem) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -5061,11 +5905,13 @@ impl V21Node219 {
 #[repr(transparent)]
 pub struct V21Node209(serde_json::Value);
 impl V21Node209 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::ActionCategory, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::ActionCategory) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -5093,6 +5939,20 @@ impl V21Node150 {
     pub fn tlp_mut(&mut self) -> Option<&mut V21Node222> {
         self.0.get_mut("tlp").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::RulesForDocumentSharing, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_1::schema::RulesForDocumentSharing,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -5119,6 +5979,20 @@ impl V21Node222 {
     pub fn url_mut(&mut self) -> Option<&mut V21Node26> {
         self.0.get_mut("url").map(bytemuck::TransparentWrapper::wrap_mut)
     }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::TrafficLightProtocolTlp, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(
+        &mut self,
+        value: super::csaf2_1::schema::TrafficLightProtocolTlp,
+    ) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
     /// Views the node as mutable JSON object
     ///
     /// Caution: this can invalidate the schema despite being in a versioned view
@@ -5133,11 +6007,13 @@ impl V21Node222 {
 #[repr(transparent)]
 pub struct V21Node223(serde_json::Value);
 impl V21Node223 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::LabelOfTlp, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::LabelOfTlp) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -5161,6 +6037,17 @@ impl V21Node225 {
     }
     pub fn name_mut(&mut self) -> Option<&mut V21Node227> {
         self.0.get_mut("name").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::SharingGroup, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::SharingGroup) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///
@@ -5190,11 +6077,13 @@ impl V21Node226 {
 #[repr(transparent)]
 pub struct V21Node149(serde_json::Value);
 impl V21Node149 {
+    /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::CsafVersion, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
+    /// Serializes `value` into JSON and writes into this node
     pub fn set_enum(&mut self, value: super::csaf2_1::schema::CsafVersion) {
         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
             .unwrap();
@@ -5217,6 +6106,17 @@ impl V21Node229 {
     }
     pub fn text_mut(&mut self) -> Option<&mut V21Node230> {
         self.0.get_mut("text").map(bytemuck::TransparentWrapper::wrap_mut)
+    }
+    /// Deserializes the node's content into a struct according to the schema
+    pub fn get_struct(
+        &self,
+    ) -> Result<super::csaf2_1::schema::AggregateSeverity, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    /// Serializes `value` into JSON and writes into this node
+    pub fn set_struct(&mut self, value: super::csaf2_1::schema::AggregateSeverity) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
     }
     /// Views the node as mutable JSON object
     ///

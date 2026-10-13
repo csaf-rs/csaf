@@ -183,10 +183,12 @@ fn generate_ir_ty(
             let schema_mod = version_to_mod_name(schema_version);
             mod_items.push(quote!(
                 impl #ident {
+                    /// Deserializes the node's content into an enum according to the schema
                     pub fn get_enum(&self) -> Result<super::#schema_mod::schema::#schema_ident, serde_json::Error> {
                         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
                     }
 
+                    /// Serializes `value` into JSON and writes into this node
                     pub fn set_enum(&mut self, value: super::#schema_mod::schema::#schema_ident) {
                         *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value).unwrap();
                     }
@@ -220,8 +222,20 @@ fn generate_ir_ty(
                 todo.push(prop_id);
             }
 
+            let schema_ident = new_ident(&ty.name());
+            let schema_mod = version_to_mod_name(schema_version);
             mod_items.push(quote!(impl #ident {
                 #(#methods)*
+
+                /// Deserializes the node's content into a struct according to the schema
+                pub fn get_struct(&self) -> Result<super::#schema_mod::schema::#schema_ident, serde_json::Error> {
+                    serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+                }
+
+                /// Serializes `value` into JSON and writes into this node
+                pub fn set_struct(&mut self, value: super::#schema_mod::schema::#schema_ident) {
+                    *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value).unwrap();
+                }
 
                 /// Views the node as mutable JSON object
                 ///

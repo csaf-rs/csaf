@@ -21,7 +21,10 @@ pub type RevisionHistory = Vec<RevisionHistoryItem>;
 /// Generates the canonical filename for a CSAF document from its tracking ID, per section 5.1:
 /// lowercase, non-`[+\-a-z0-9]` sequences replaced with `_`, `.json` appended.
 fn canonical_filename_from_id(tracking_id: &str) -> String {
-    static INVALID_CHARS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^+\-a-z0-9]+").unwrap());
+    static INVALID_CHARS: LazyLock<Regex> = LazyLock::new(|| {
+        #[allow(clippy::unwrap_used)]
+        Regex::new(r"[^+\-a-z0-9]+").unwrap()
+    });
     let lowercase_id = tracking_id.to_lowercase();
     let cleaned_id = INVALID_CHARS.replace_all(&lowercase_id, "_");
     format!("{cleaned_id}.json")

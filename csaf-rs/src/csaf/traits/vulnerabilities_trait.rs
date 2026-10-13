@@ -8,7 +8,7 @@ use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait, Csaf20InvolvementTrait,
+    AcknowledgmentTrait, Csaf20InvolvementTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait,
     MetricTrait, NoteTrait, ReferenceTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
 };
 use crate::schema::csaf2_0::schema::{

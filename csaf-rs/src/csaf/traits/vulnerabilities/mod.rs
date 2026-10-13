@@ -1,12 +1,12 @@
 pub mod content_trait;
 pub mod cpe_trait;
+pub mod csaf_20_involvement_trait;
 pub mod epss_trait;
 pub mod file_hash_trait;
 pub mod first_known_exploit_date_trait;
 pub mod flag_trait;
 pub mod generic_uri_trait;
 pub mod hash_trait;
-pub mod csaf_20_involvement_trait;
 pub mod metric_trait;
 pub mod product_ident_helper_trait;
 pub mod product_status_trait;

@@ -2,10 +2,10 @@ use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf::types::language::ValidCsafLanguage;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, AggregateSeverityTrait, BranchTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentTrait,
-    EngineTrait, GeneratorTrait, Csaf20InvolvementTrait, NoteTrait, ProductGroupTrait, ProductPathTrait, ProductTrait,
-    ProductTreeTrait, PublisherTrait, ReferenceTrait, RemediationTrait, RestartRequiredTrait, RevisionTrait,
-    ThreatTrait, TrackingTrait, VulnerabilityTrait,
+    AcknowledgmentTrait, AggregateSeverityTrait, BranchTrait, Csaf20InvolvementTrait, CsafTrait, CsafVersion,
+    DistributionTrait, DocumentTrait, EngineTrait, GeneratorTrait, NoteTrait, ProductGroupTrait, ProductPathTrait,
+    ProductTrait, ProductTreeTrait, PublisherTrait, ReferenceTrait, RemediationTrait, RestartRequiredTrait,
+    RevisionTrait, ThreatTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::text_check::{TextCheckKind, TextChecker, TextCheckerMatchingError, select_checker};

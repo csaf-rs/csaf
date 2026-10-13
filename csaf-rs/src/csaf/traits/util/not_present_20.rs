@@ -30,8 +30,6 @@ impl NotPresentInCsaf20 {
     pub fn into_any_optional_iter<T>(self) -> Option<std::iter::Empty<T>> {
         match self {}
     }
-
-
 }
 
 impl WithOptionalProductIds for NotPresentInCsaf20 {

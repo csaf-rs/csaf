@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
@@ -47,7 +48,14 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of full product names in the product tree.
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
 
-    // Aggregator functions for product references
+    /// Utility function to get all product IDs in the product tree.
+    fn get_all_product_ids(&self) -> HashSet<String> {
+        let mut definitions_set = HashSet::new();
+        self.visit_all_products(&mut |fpn, _path| {
+            definitions_set.insert(fpn.get_product_id().to_owned());
+        });
+        definitions_set
+    }
 
     /// Utility function to get all product references in product groups along with their JSON paths
     fn get_product_groups_product_references(&self) -> Vec<(String, String)> {

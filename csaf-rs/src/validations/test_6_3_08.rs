@@ -3,7 +3,7 @@ use crate::csaf::types::language::CsafLanguage;
 use crate::csaf::types::language::ValidCsafLanguage;
 use crate::csaf_traits::{
     AcknowledgmentTrait, AggregateSeverityTrait, BranchTrait, CsafTrait, CsafVersion, DistributionTrait, DocumentTrait,
-    EngineTrait, GeneratorTrait, InvolvementTrait, NoteTrait, ProductGroupTrait, ProductPathTrait, ProductTrait,
+    EngineTrait, GeneratorTrait, Csaf20InvolvementTrait, NoteTrait, ProductGroupTrait, ProductPathTrait, ProductTrait,
     ProductTreeTrait, PublisherTrait, ReferenceTrait, RemediationTrait, RestartRequiredTrait, RevisionTrait,
     ThreatTrait, TrackingTrait, VulnerabilityTrait,
 };

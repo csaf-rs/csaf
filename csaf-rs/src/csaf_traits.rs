@@ -37,7 +37,7 @@ pub use crate::csaf::traits::vulnerabilities::file_hash_trait::FileHashTrait;
 pub use crate::csaf::traits::vulnerabilities::first_known_exploit_date_trait::FirstKnownExploitationDatesTrait;
 pub use crate::csaf::traits::vulnerabilities::flag_trait::FlagTrait;
 pub use crate::csaf::traits::vulnerabilities::hash_trait::HashTrait;
-pub use crate::csaf::traits::vulnerabilities::involvement_trait::InvolvementTrait;
+pub use crate::csaf::traits::vulnerabilities::csaf_20_involvement_trait::Csaf20InvolvementTrait;
 pub use crate::csaf::traits::vulnerabilities::metric_trait::MetricTrait;
 pub use crate::csaf::traits::vulnerabilities::product_ident_helper_trait::ProductIdentificationHelperTrait;
 pub use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;

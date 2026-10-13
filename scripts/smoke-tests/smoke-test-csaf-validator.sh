@@ -37,4 +37,10 @@ INVALID_FILE="csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1
 if "${VALIDATOR}" "${INVALID_FILE}"; then
     echo "csaf-validator accepted an invalid CSAF document!"
     exit 1
+else
+    status=$?
+    if [[ ${status} -ne 1 ]]; then
+        echo "csaf-validator failed with unexpected exit code ${status}; expected 1 for an invalid CSAF document." >&2
+        exit 1
+    fi
 fi

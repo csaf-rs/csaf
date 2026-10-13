@@ -137,9 +137,6 @@ mod tests {
                 generate_undefined_product_id_error("CSAFPID-9080702", "/vulnerabilities/0/metrics/0/products/2"),
                 generate_undefined_product_id_error("CSAFPID-9080701", "/vulnerabilities/0/notes/0/product_ids/1"),
                 generate_undefined_product_id_error("CSAFPID-9080702", "/vulnerabilities/0/notes/0/product_ids/2"),
-                // TODO: Fix during #335
-                // generate_err_msg("CSAFPID-9080701", "/vulnerabilities/0/involvements/0/product_ids/1"),
-                // generate_err_msg("CSAFPID-9080702", "/vulnerabilities/0/involvements/0/product_ids/2"),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080701",
                     "/vulnerabilities/0/first_known_exploitation_dates/0/product_ids/1",
@@ -172,43 +169,6 @@ mod tests {
                 generate_undefined_product_id_error("CSAFPID-9080714", "/vulnerabilities/0/ids/1/product_ids/2"),
                 generate_undefined_product_id_error("CSAFPID-9080715", "/vulnerabilities/0/ids/2/product_ids/0"),
             ]),
-            case_s01: Ok(()), // TODO: Adapt test file to new schema #335
-            // Err(vec![
-            //     generate_err_msg("CSAFPID-9080701", "/document/notes/0/product_ids/0"),
-            //     generate_err_msg(
-            //         "CSAFPID-9080703",
-            //         "/product_tree/product_paths/0/beginning_product_reference",
-            //     ),
-            //     generate_err_msg(
-            //         "CSAFPID-9080704",
-            //         "/product_tree/product_paths/0/subpaths/0/next_product_reference",
-            //     ),
-            //     generate_err_msg("CSAFPID-9080705", "/vulnerabilities/0/involvements/0/product_ids/0"),
-            //     generate_err_msg("CSAFPID-9080706", "/vulnerabilities/0/flags/0/product_ids/0"),
-            //     generate_err_msg("CSAFPID-9080707", "/vulnerabilities/0/metrics/0/products/0"),
-            //     generate_err_msg("CSAFPID-9080708", "/vulnerabilities/0/notes/0/product_ids/0"),
-            //     generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/first_affected/0"),
-            //     generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/first_fixed/0"),
-            //     generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/fixed/0"),
-            //     generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/known_affected/0"),
-            //     generate_err_msg(
-            //         "CSAFPID-9080709",
-            //         "/vulnerabilities/0/product_status/known_not_affected/0",
-            //     ),
-            //     generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/last_affected/0"),
-            //     generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/recommended/0"),
-            //     generate_err_msg(
-            //         "CSAFPID-9080709",
-            //         "/vulnerabilities/0/product_status/under_investigation/0",
-            //     ),
-            //     generate_err_msg("CSAFPID-9080709", "/vulnerabilities/0/product_status/unknown/0"),
-            //     generate_err_msg("CSAFPID-9080710", "/vulnerabilities/0/remediations/0/product_ids/0"),
-            //     generate_err_msg("CSAFPID-9080711", "/vulnerabilities/0/threats/0/product_ids/0"),
-            //     generate_err_msg(
-            //         "CSAFPID-9080712",
-            //         "/vulnerabilities/0/first_known_exploitation_dates/0/product_ids/0",
-            //     ),
-            // ]),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

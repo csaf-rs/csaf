@@ -5,12 +5,6 @@
     {
       "id": "6.1.1",
       "group": "mandatory",
-      "failures": [
-        {
-          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-01-s01.json",
-          "valid": false
-        }
-      ],
       "valid": [
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-01-s11.json",

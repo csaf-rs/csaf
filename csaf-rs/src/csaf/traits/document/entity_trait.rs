@@ -1,5 +1,5 @@
-use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_str_field_getter};
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
+use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_str_field_getter};
 use crate::csaf_traits::ContactTrait;
 use crate::schema::csaf2_1::schema::{ContactT as Contact21, Entity as Entity21, EntityCategory as EntityCategory21};
 
@@ -9,7 +9,6 @@ pub trait EntityTrait {
     fn get_contact(&self) -> Option<&Self::ContactType>;
     fn get_entity_id(&self) -> &str;
     fn get_name(&self) -> Option<&str>;
-
 }
 
 impl EntityTrait for NotPresentInCsaf20 {

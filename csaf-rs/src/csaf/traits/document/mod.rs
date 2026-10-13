@@ -1,7 +1,11 @@
+pub mod action_trait;
 pub mod aggregate_severity_trait;
 pub mod contact_trait;
+pub mod csaf_21_involvement_trait;
 pub mod distribution_trait;
 pub mod engine_trait;
+pub mod entity_group_trait;
+pub mod entity_trait;
 pub mod generator_trait;
 pub mod publisher_trait;
 pub mod revision_trait;

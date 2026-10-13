@@ -1,6 +1,6 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
 use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
-use crate::csaf_traits::{CsafTrait, InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
+use crate::csaf_traits::{CsafTrait, Csaf20InvolvementTrait, VulnerabilityTrait, WithOptionalDate};
 use crate::schema::csaf2_0::schema::PartyCategory;
 use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 use std::collections::HashMap;

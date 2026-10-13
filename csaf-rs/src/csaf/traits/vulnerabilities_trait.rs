@@ -8,7 +8,7 @@ use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait,
+    AcknowledgmentTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait, Csaf20InvolvementTrait,
     MetricTrait, NoteTrait, ReferenceTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
 };
 use crate::schema::csaf2_0::schema::{
@@ -62,7 +62,7 @@ pub trait VulnerabilityTrait {
     type FlagType: FlagTrait;
 
     /// The associated type representing a vulnerability involvement.
-    type InvolvementType: InvolvementTrait;
+    type InvolvementType: Csaf20InvolvementTrait;
 
     /// The associated type representing the vulnerability ID information.
     type VulnerabilityIdType: VulnerabilityIdTrait;

@@ -3,7 +3,7 @@
 # built csaf-validator binary. It checks that a valid CSAF document is accepted
 # and that an invalid CSAF document is rejected.
 #
-# Usage: ./scripts/smoke-tests/csaf-validator.sh PATH_TO_CSAF_VALIDATOR
+# Usage: ./scripts/smoke-tests/smoke-test-csaf-validator.sh PATH_TO_CSAF_VALIDATOR
 
 set -euo pipefail
 

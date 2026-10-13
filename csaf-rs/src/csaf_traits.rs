@@ -12,6 +12,7 @@ pub use crate::csaf::traits::document::aggregate_severity_trait::AggregateSeveri
 pub use crate::csaf::traits::document::contact_trait::ContactTrait;
 pub use crate::csaf::traits::document::distribution_trait::DistributionTrait;
 pub use crate::csaf::traits::document::engine_trait::EngineTrait;
+pub use crate::csaf::traits::document::entity_trait::EntityTrait;
 pub use crate::csaf::traits::document::generator_trait::GeneratorTrait;
 pub use crate::csaf::traits::document::publisher_trait::PublisherTrait;
 pub use crate::csaf::traits::document::revision_trait::RevisionTrait;

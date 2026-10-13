@@ -105,6 +105,14 @@ mod tests {
                 generate_undefined_product_id_error("CSAFPID-9080702", "/document/notes/0/product_ids/2"),
                 generate_undefined_product_id_error("CSAFPID-9080703", "/document/notes/0/product_ids/3"),
                 generate_undefined_product_id_error("CSAFPID-9080704", "/document/notes/0/product_ids/4"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080701",
+                    "/document/involvement/actions/0/product_ids/1",
+                ),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080702",
+                    "/document/involvement/actions/0/product_ids/2",
+                ),
                 generate_undefined_product_id_error("CSAFPID-9080704", "/vulnerabilities/0/flags/0/product_ids/0"),
                 generate_undefined_product_id_error("CSAFPID-9080701", "/vulnerabilities/0/threats/0/product_ids/1"),
                 generate_undefined_product_id_error("CSAFPID-9080701", "/vulnerabilities/0/remediations/0/product_ids/1"),

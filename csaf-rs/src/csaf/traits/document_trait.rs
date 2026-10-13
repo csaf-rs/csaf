@@ -1,8 +1,6 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
 use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
-use crate::csaf::traits::util::extract_references::{
-    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
-};
+use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
@@ -129,11 +127,9 @@ pub trait DocumentTrait {
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 
     define_reference_accessors! {
-        both: [
+        optional_vec: [
             (get_notes_group_references, get_notes_product_references, get_notes, "/document/notes"),
         ],
-        custom_group_extraction: [],
-        custom_product_extraction: [],
     }
 
     /// Returns the language associated with this document.

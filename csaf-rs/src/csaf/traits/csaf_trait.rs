@@ -1,3 +1,4 @@
+use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities_trait::collect_references;
 use crate::csaf_traits::{DocumentTrait, ExtensionsTrait, ProductTreeTrait, VulnerabilityTrait};
@@ -40,6 +41,9 @@ pub trait CsafTrait {
     /// Returns all group IDs referenced in the document along with their JSON paths.
     fn get_all_group_references(&self) -> Vec<(String, String)> {
         let mut ids = self.get_document().get_all_group_references();
+        if let Some(involvement) = self.get_document().get_involvement() {
+            ids.extend(involvement.get_all_group_references());
+        }
         ids.extend(collect_references(self.get_vulnerabilities(), |v| {
             v.get_all_group_references()
         }));
@@ -49,6 +53,9 @@ pub trait CsafTrait {
     /// Returns all product IDs referenced in the document along with their JSON paths.
     fn get_all_product_references(&self) -> Vec<(String, String)> {
         let mut ids = self.get_document().get_all_product_references();
+        if let Some(involvement) = self.get_document().get_involvement() {
+            ids.extend(involvement.get_all_product_references());
+        }
         ids.extend(collect_references(self.get_vulnerabilities(), |v| {
             v.get_all_product_references()
         }));

@@ -1,4 +1,5 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
+use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
@@ -18,9 +19,9 @@ use crate::schema::csaf2_0::schema::{
 use crate::schema::csaf2_1::schema::{
     Acknowledgment as Acknowledgment21, AggregateSeverity as AggregateSeverity21,
     CategoryOfReference as CategoryOfReference21, CsafVersion as CsafVersion21,
-    DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, Note as Note21,
-    Publisher as Publisher21, Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21,
-    Tracking as Tracking21,
+    DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, Involvement as Involvement21,
+    Note as Note21, Publisher as Publisher21, Reference as Reference21,
+    RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
 };
 use crate::validation::{TestFinding, TestFindingData};
 
@@ -87,6 +88,8 @@ pub trait DocumentTrait {
     /// Type representing document distribution information
     type DistributionType: DistributionTrait;
 
+    type InvolvementType: Csaf21InvolvementTrait;
+
     /// Type representing document notes
     type NoteType: NoteTrait;
 
@@ -135,6 +138,8 @@ pub trait DocumentTrait {
 
     /// Returns the references of this document
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
+
+    fn get_involvement(&self) -> Option<&Self::InvolvementType>;
 
     /// Returns the canonical URLs from this document's references.
     fn get_canonical_urls(&self) -> Vec<&str> {
@@ -231,6 +236,12 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         None
     }
+
+    type InvolvementType = NotPresentInCsaf20;
+
+    fn get_involvement(&self) -> Option<&Self::InvolvementType> {
+        None
+    }
 }
 
 impl DocumentTrait for DocumentLevelMetaData21 {
@@ -238,6 +249,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     type AggregateSeverityType = AggregateSeverity21;
     type TrackingType = Tracking21;
     type DistributionType = RulesForDocumentSharing21;
+    type InvolvementType = Involvement21;
     type NoteType = Note21;
     type PublisherType = Publisher21;
     type ReferenceType = Reference21;
@@ -287,6 +299,10 @@ impl DocumentTrait for DocumentLevelMetaData21 {
 
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
+    }
+
+    fn get_involvement(&self) -> Option<&Self::InvolvementType> {
+        self.involvement.as_ref()
     }
 
     fn get_csaf_version(&self) -> CsafVersion {

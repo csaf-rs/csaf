@@ -168,8 +168,12 @@ macro_rules! define_reference_accessors {
                 ),* $(,)?
             ],
         )?
-        custom_group_extraction: [ $( $custom_group_extraction_method:ident ),* $(,)? ],
-        custom_product_extraction: [ $( $custom_product_extraction_method:ident ),* $(,)? ] $(,)?
+        $(
+            custom_group_extraction: [ $( $custom_group_extraction_method:ident ),* $(,)? ],
+        )?
+        $(
+            custom_product_extraction: [ $( $custom_product_extraction_method:ident ),* $(,)? ] $(,)?
+        )?
     ) => {
         $(
             $(
@@ -252,7 +256,7 @@ macro_rules! define_reference_accessors {
             $( $( refs.extend(self.$optional_vec_group_method()); )* )?
             $( $( refs.extend(self.$iter_group_method()); )* )?
             $( $( refs.extend(self.$optional_iter_group_method()); )* )?
-            $( refs.extend(self.$custom_group_extraction_method()); )*
+            $( $( refs.extend(self.$custom_group_extraction_method()); )* )?
             refs
         }
 
@@ -263,7 +267,7 @@ macro_rules! define_reference_accessors {
             $( $( refs.extend(self.$optional_vec_product_method()); )* )?
             $( $( refs.extend(self.$iter_product_method()); )* )?
             $( $( refs.extend(self.$optional_iter_product_method()); )* )?
-            $( refs.extend(self.$custom_product_extraction_method()); )*
+            $( $( refs.extend(self.$custom_product_extraction_method()); )* )?
             refs
         }
     };

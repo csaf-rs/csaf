@@ -4999,12 +4999,47 @@ impl V21Node216 {
 }
 pub type V21Node208 = V21Node26;
 pub type V21Node211 = V21Node207;
-pub type V21Node207 = V21Node125;
-pub type V21Node210 = V21Node217;
+pub type V21Node207 = V21Node217;
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
 pub struct V21Node217(serde_json::Value);
 impl V21Node217 {
+    pub fn as_slice(&self) -> Result<&[V21Node218], SchemaError> {
+        match bytemuck::TransparentWrapper::peel_ref(self) {
+            serde_json::Value::Array(s) => {
+                Ok(bytemuck::TransparentWrapper::wrap_slice(s))
+            }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_slice_mut(&mut self) -> Result<&mut [V21Node218], SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => {
+                Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
+            }
+            _ => Err(SchemaError),
+        }
+    }
+}
+#[derive(bytemuck::TransparentWrapper)]
+#[repr(transparent)]
+pub struct V21Node218(serde_json::Value);
+impl V21Node218 {
+    pub fn get_enum(
+        &self,
+    ) -> Result<super::csaf2_1::schema::EntityRefsTItem, serde_json::Error> {
+        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    }
+    pub fn set_enum(&mut self, value: super::csaf2_1::schema::EntityRefsTItem) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
+            .unwrap();
+    }
+}
+pub type V21Node210 = V21Node219;
+#[derive(bytemuck::TransparentWrapper)]
+#[repr(transparent)]
+pub struct V21Node219(serde_json::Value);
+impl V21Node219 {
     pub fn as_slice(&self) -> Result<&[V21Node81], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -5040,22 +5075,22 @@ impl V21Node209 {
 #[repr(transparent)]
 pub struct V21Node150(serde_json::Value);
 impl V21Node150 {
-    pub fn sharing_group(&self) -> Option<&V21Node218> {
+    pub fn sharing_group(&self) -> Option<&V21Node220> {
         self.0.get("sharing_group").map(bytemuck::TransparentWrapper::wrap_ref)
     }
-    pub fn sharing_group_mut(&mut self) -> Option<&mut V21Node218> {
+    pub fn sharing_group_mut(&mut self) -> Option<&mut V21Node220> {
         self.0.get_mut("sharing_group").map(bytemuck::TransparentWrapper::wrap_mut)
     }
-    pub fn text(&self) -> Option<&V21Node219> {
+    pub fn text(&self) -> Option<&V21Node221> {
         self.0.get("text").map(bytemuck::TransparentWrapper::wrap_ref)
     }
-    pub fn text_mut(&mut self) -> Option<&mut V21Node219> {
+    pub fn text_mut(&mut self) -> Option<&mut V21Node221> {
         self.0.get_mut("text").map(bytemuck::TransparentWrapper::wrap_mut)
     }
-    pub fn tlp(&self) -> Option<&V21Node220> {
+    pub fn tlp(&self) -> Option<&V21Node222> {
         self.0.get("tlp").map(bytemuck::TransparentWrapper::wrap_ref)
     }
-    pub fn tlp_mut(&mut self) -> Option<&mut V21Node220> {
+    pub fn tlp_mut(&mut self) -> Option<&mut V21Node222> {
         self.0.get_mut("tlp").map(bytemuck::TransparentWrapper::wrap_mut)
     }
     /// Views the node as mutable JSON object
@@ -5070,12 +5105,12 @@ impl V21Node150 {
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
-pub struct V21Node220(serde_json::Value);
-impl V21Node220 {
-    pub fn label(&self) -> Option<&V21Node221> {
+pub struct V21Node222(serde_json::Value);
+impl V21Node222 {
+    pub fn label(&self) -> Option<&V21Node223> {
         self.0.get("label").map(bytemuck::TransparentWrapper::wrap_ref)
     }
-    pub fn label_mut(&mut self) -> Option<&mut V21Node221> {
+    pub fn label_mut(&mut self) -> Option<&mut V21Node223> {
         self.0.get_mut("label").map(bytemuck::TransparentWrapper::wrap_mut)
     }
     pub fn url(&self) -> Option<&V21Node26> {
@@ -5096,8 +5131,8 @@ impl V21Node220 {
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
-pub struct V21Node221(serde_json::Value);
-impl V21Node221 {
+pub struct V21Node223(serde_json::Value);
+impl V21Node223 {
     pub fn get_enum(
         &self,
     ) -> Result<super::csaf2_1::schema::LabelOfTlp, serde_json::Error> {
@@ -5108,23 +5143,23 @@ impl V21Node221 {
             .unwrap();
     }
 }
-pub type V21Node219 = V21Node222;
-pub type V21Node222 = V21Node26;
-pub type V21Node218 = V21Node223;
+pub type V21Node221 = V21Node224;
+pub type V21Node224 = V21Node26;
+pub type V21Node220 = V21Node225;
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
-pub struct V21Node223(serde_json::Value);
-impl V21Node223 {
-    pub fn id(&self) -> Option<&V21Node224> {
+pub struct V21Node225(serde_json::Value);
+impl V21Node225 {
+    pub fn id(&self) -> Option<&V21Node226> {
         self.0.get("id").map(bytemuck::TransparentWrapper::wrap_ref)
     }
-    pub fn id_mut(&mut self) -> Option<&mut V21Node224> {
+    pub fn id_mut(&mut self) -> Option<&mut V21Node226> {
         self.0.get_mut("id").map(bytemuck::TransparentWrapper::wrap_mut)
     }
-    pub fn name(&self) -> Option<&V21Node225> {
+    pub fn name(&self) -> Option<&V21Node227> {
         self.0.get("name").map(bytemuck::TransparentWrapper::wrap_ref)
     }
-    pub fn name_mut(&mut self) -> Option<&mut V21Node225> {
+    pub fn name_mut(&mut self) -> Option<&mut V21Node227> {
         self.0.get_mut("name").map(bytemuck::TransparentWrapper::wrap_mut)
     }
     /// Views the node as mutable JSON object
@@ -5137,12 +5172,12 @@ impl V21Node223 {
         }
     }
 }
-pub type V21Node225 = V21Node226;
-pub type V21Node226 = V21Node26;
+pub type V21Node227 = V21Node228;
+pub type V21Node228 = V21Node26;
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
-pub struct V21Node224(serde_json::Value);
-impl V21Node224 {
+pub struct V21Node226(serde_json::Value);
+impl V21Node226 {
     pub fn get(&self) -> Result<::uuid::Uuid, serde_json::Error> {
         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
     }
@@ -5166,21 +5201,21 @@ impl V21Node149 {
     }
 }
 pub type V21Node148 = V21Node26;
-pub type V21Node147 = V21Node227;
+pub type V21Node147 = V21Node229;
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
-pub struct V21Node227(serde_json::Value);
-impl V21Node227 {
+pub struct V21Node229(serde_json::Value);
+impl V21Node229 {
     pub fn namespace(&self) -> Option<&V21Node13> {
         self.0.get("namespace").map(bytemuck::TransparentWrapper::wrap_ref)
     }
     pub fn namespace_mut(&mut self) -> Option<&mut V21Node13> {
         self.0.get_mut("namespace").map(bytemuck::TransparentWrapper::wrap_mut)
     }
-    pub fn text(&self) -> Option<&V21Node228> {
+    pub fn text(&self) -> Option<&V21Node230> {
         self.0.get("text").map(bytemuck::TransparentWrapper::wrap_ref)
     }
-    pub fn text_mut(&mut self) -> Option<&mut V21Node228> {
+    pub fn text_mut(&mut self) -> Option<&mut V21Node230> {
         self.0.get_mut("text").map(bytemuck::TransparentWrapper::wrap_mut)
     }
     /// Views the node as mutable JSON object
@@ -5193,4 +5228,4 @@ impl V21Node227 {
         }
     }
 }
-pub type V21Node228 = V21Node26;
+pub type V21Node230 = V21Node26;

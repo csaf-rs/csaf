@@ -9,7 +9,7 @@ use proc_macro2::Span;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use syn::{Ident, TypePath};
-use typify::{Type, TypeDetails, TypeEnumVariant, TypeId, TypeSpace, TypeSpaceSettings};
+use typify::{Type, TypeDetails, TypeId, TypeSpace, TypeSpaceSettings};
 
 use super::SchemaVersion;
 
@@ -170,14 +170,7 @@ fn generate_ir_ty(
     type_space: &TypeSpace,
 ) {
     match ty.details() {
-        TypeDetails::Enum(type_enum) => {
-            assert!(
-                type_enum
-                    .variants()
-                    .all(|(_, variant)| matches!(variant, TypeEnumVariant::Simple)),
-                "logic needs to be updated to handle ADTs"
-            );
-
+        TypeDetails::Enum(_type_enum) => {
             let ident = node_ident(index, schema_version);
 
             mod_items.push(quote!(

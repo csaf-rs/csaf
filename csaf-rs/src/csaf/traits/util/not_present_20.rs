@@ -17,23 +17,32 @@ impl NotPresentInCsaf20 {
         match self {}
     }
 
+    /// Converts `self` into an empty iterator of any type. `NotPresentInCsaf20` can never be
+    /// instantiated, so this method can never actually be called.
+    #[inline]
+    pub fn into_any_iter<T>(self) -> std::iter::Empty<T> {
+        match self {}
+    }
+
     /// Converts `self` into an empty iterator option of any type. `NotPresentInCsaf20` can never be
     /// instantiated, so this method can never actually be called.
     #[inline]
-    pub fn into_any_iter<T>(self) -> Option<std::iter::Empty<T>> {
+    pub fn into_any_optional_iter<T>(self) -> Option<std::iter::Empty<T>> {
         match self {}
     }
+
+
 }
 
 impl WithOptionalProductIds for NotPresentInCsaf20 {
     fn get_product_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
-        self.into_any_iter()
+        self.into_any_optional_iter()
     }
 }
 
 impl WithOptionalGroupIds for NotPresentInCsaf20 {
     fn get_group_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
-        self.into_any_iter()
+        self.into_any_optional_iter()
     }
 }
 

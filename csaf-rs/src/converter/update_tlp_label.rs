@@ -39,11 +39,10 @@ impl Convert for UpdateTlpLabel {
             .document_mut()
             .and_then(|doc| doc.distribution_mut())
             .and_then(|distribution| distribution.tlp_mut())
+            && let Ok(tlp) = tlp.caution_as_object_mut()
         {
-            if let Ok(tlp) = tlp.caution_as_object_mut() {
-                tlp.insert("label".into(), serde_json::to_value(clear_label).unwrap());
-                diagnostics.warning(Warning::NoTlpLabel);
-            }
+            tlp.insert("label".into(), serde_json::to_value(clear_label).unwrap());
+            diagnostics.warning(Warning::NoTlpLabel);
         }
     }
 }
@@ -121,7 +120,7 @@ mod tests {
             }
         });
 
-        let mut doc = csaf2x::Document::new(input.clone());
+        let mut doc = csaf2x::Document::new(input);
         let mut diagnostics = DiagnosticsSpy::default();
         UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut diagnostics);
         assert!(diagnostics.errors().is_empty());
@@ -140,7 +139,7 @@ mod tests {
         });
         let output = input.clone();
 
-        let mut doc = csaf2x::Document::new(input.clone());
+        let mut doc = csaf2x::Document::new(input);
         UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
         assert_eq!(output, doc.into_raw());
 

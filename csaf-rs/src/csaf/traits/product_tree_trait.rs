@@ -57,6 +57,14 @@ pub trait ProductTreeTrait {
         definitions_set
     }
 
+    /// Utility function to get all product group IDs in the product tree.
+    fn get_all_product_group_ids(&self) -> HashSet<String> {
+        self.get_product_groups()
+            .iter()
+            .map(|product_group| product_group.get_group_id().to_owned())
+            .collect()
+    }
+
     /// Utility function to get all product references in product groups along with their JSON paths
     fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
         let mut ids: Vec<(String, String)> = Vec::new();

@@ -11,8 +11,8 @@ fn generate_undefined_product_id_error(undefined_product_id: &str, instance_path
 ///
 /// For each element of type `$['$defs'].product_id_t` which is not inside a Full Product Name (type: `full_product_name_t`)
 /// and therefore reference an element within the `product_tree` it SHALL be tested that the Full Product Name
-/// element with the matching `product_id` exists. 
-/// 
+/// element with the matching `product_id` exists.
+///
 /// The same applies for all items of elements of type `$['$defs'].products_t`.
 ///
 /// This test is functionally the same between CSAF 2.0 and CSAF 2.1.
@@ -37,13 +37,14 @@ fn test_6_1_1_missing_definition_of_product_id(doc: &impl CsafTrait) -> Result<(
     for (referenced_product_id, referenced_product_id_path) in &doc.get_all_product_references() {
         // if a reference is not defined, generate an error
         if !defined_product_ids.contains(referenced_product_id) {
-            errors.get_or_insert_default().push(generate_undefined_product_id_error(referenced_product_id, referenced_product_id_path));
+            errors.get_or_insert_default().push(generate_undefined_product_id_error(
+                referenced_product_id,
+                referenced_product_id_path,
+            ));
         }
     }
     errors.map_or(Ok(()), Err)
 }
-
-
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_1, test_6_1_1_missing_definition_of_product_id);
 
@@ -67,26 +68,47 @@ mod tests {
                 generate_undefined_product_id_error("CSAFPID-9080702", "/vulnerabilities/1/flags/0/product_ids/0"),
             ]),
             case_s01: Err(vec![
-                generate_undefined_product_id_error("CSAFPID-9080701", "/product_tree/relationships/0/product_reference"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080701",
+                    "/product_tree/relationships/0/product_reference",
+                ),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080702",
                     "/product_tree/relationships/0/relates_to_product_reference",
                 ),
-                generate_undefined_product_id_error("CSAFPID-9080703", "/vulnerabilities/0/product_status/first_affected/0"),
-                generate_undefined_product_id_error("CSAFPID-9080703", "/vulnerabilities/0/product_status/first_fixed/0"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080703",
+                    "/vulnerabilities/0/product_status/first_affected/0",
+                ),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080703",
+                    "/vulnerabilities/0/product_status/first_fixed/0",
+                ),
                 generate_undefined_product_id_error("CSAFPID-9080703", "/vulnerabilities/0/product_status/fixed/0"),
-                generate_undefined_product_id_error("CSAFPID-9080703", "/vulnerabilities/0/product_status/known_affected/0"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080703",
+                    "/vulnerabilities/0/product_status/known_affected/0",
+                ),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080703",
                     "/vulnerabilities/0/product_status/known_not_affected/0",
                 ),
-                generate_undefined_product_id_error("CSAFPID-9080703", "/vulnerabilities/0/product_status/last_affected/0"),
-                generate_undefined_product_id_error("CSAFPID-9080703", "/vulnerabilities/0/product_status/recommended/0"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080703",
+                    "/vulnerabilities/0/product_status/last_affected/0",
+                ),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080703",
+                    "/vulnerabilities/0/product_status/recommended/0",
+                ),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080703",
                     "/vulnerabilities/0/product_status/under_investigation/0",
                 ),
-                generate_undefined_product_id_error("CSAFPID-9080704", "/vulnerabilities/0/remediations/0/product_ids/0"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080704",
+                    "/vulnerabilities/0/remediations/0/product_ids/0",
+                ),
                 generate_undefined_product_id_error("CSAFPID-9080705", "/vulnerabilities/0/scores/0/products/0"),
                 generate_undefined_product_id_error("CSAFPID-9080706", "/vulnerabilities/0/threats/0/product_ids/0"),
             ]),
@@ -105,28 +127,43 @@ mod tests {
                 generate_undefined_product_id_error("CSAFPID-9080702", "/document/notes/0/product_ids/2"),
                 generate_undefined_product_id_error("CSAFPID-9080703", "/document/notes/0/product_ids/3"),
                 generate_undefined_product_id_error("CSAFPID-9080704", "/document/notes/0/product_ids/4"),
+                generate_undefined_product_id_error("CSAFPID-9080701", "/document/involvement/actions/0/product_ids/1"),
+                generate_undefined_product_id_error("CSAFPID-9080702", "/document/involvement/actions/0/product_ids/2"),
+                generate_undefined_product_id_error("CSAFPID-9080704", "/vulnerabilities/0/flags/0/product_ids/0"),
+                generate_undefined_product_id_error("CSAFPID-9080701", "/vulnerabilities/0/threats/0/product_ids/1"),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080701",
-                    "/document/involvement/actions/0/product_ids/1",
+                    "/vulnerabilities/0/remediations/0/product_ids/1",
                 ),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080702",
-                    "/document/involvement/actions/0/product_ids/2",
+                    "/vulnerabilities/0/remediations/0/product_ids/2",
                 ),
-                generate_undefined_product_id_error("CSAFPID-9080704", "/vulnerabilities/0/flags/0/product_ids/0"),
-                generate_undefined_product_id_error("CSAFPID-9080701", "/vulnerabilities/0/threats/0/product_ids/1"),
-                generate_undefined_product_id_error("CSAFPID-9080701", "/vulnerabilities/0/remediations/0/product_ids/1"),
-                generate_undefined_product_id_error("CSAFPID-9080702", "/vulnerabilities/0/remediations/0/product_ids/2"),
-                generate_undefined_product_id_error("CSAFPID-9080710", "/vulnerabilities/0/product_status/first_affected/0"),
-                generate_undefined_product_id_error("CSAFPID-9080703", "/vulnerabilities/0/product_status/first_fixed/0"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080710",
+                    "/vulnerabilities/0/product_status/first_affected/0",
+                ),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080703",
+                    "/vulnerabilities/0/product_status/first_fixed/0",
+                ),
                 generate_undefined_product_id_error("CSAFPID-9080704", "/vulnerabilities/0/product_status/fixed/0"),
-                generate_undefined_product_id_error("CSAFPID-9080701", "/vulnerabilities/0/product_status/known_affected/0"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080701",
+                    "/vulnerabilities/0/product_status/known_affected/0",
+                ),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080715",
                     "/vulnerabilities/0/product_status/known_not_affected/0",
                 ),
-                generate_undefined_product_id_error("CSAFPID-9080702", "/vulnerabilities/0/product_status/last_affected/0"),
-                generate_undefined_product_id_error("CSAFPID-9080704", "/vulnerabilities/0/product_status/recommended/0"),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080702",
+                    "/vulnerabilities/0/product_status/last_affected/0",
+                ),
+                generate_undefined_product_id_error(
+                    "CSAFPID-9080704",
+                    "/vulnerabilities/0/product_status/recommended/0",
+                ),
                 generate_undefined_product_id_error(
                     "CSAFPID-9080706",
                     "/vulnerabilities/0/product_status/under_investigation/0",

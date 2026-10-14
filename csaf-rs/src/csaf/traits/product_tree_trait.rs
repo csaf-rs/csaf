@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
@@ -10,6 +9,7 @@ use crate::schema::csaf2_1::schema::{
     Branch as Branch21, CategoryOfTheBranch as CategoryOfTheBranch21, FullProductNameT as FullProductNameT21,
     ProductGroup as ProductGroup21, ProductPath as ProductPath21, ProductTree as ProductTree21,
 };
+use std::collections::HashSet;
 use std::fmt::Write as _;
 
 /// Trait representing an abstract product tree in a CSAF document.

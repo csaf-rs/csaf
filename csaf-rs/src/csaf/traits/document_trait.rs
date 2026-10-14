@@ -1,5 +1,4 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
-use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
 use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;

@@ -22,7 +22,7 @@ fn generate_undefined_product_id_error(undefined_product_id: &str, instance_path
 /// and compares the two sets.
 ///
 /// Due to the syntax changes between the two versions, the way these sets are derived differs, though.
-/// This is abstracted through the [`ProductTreeTrait::get_all_product_ids`] and [`ProductTreeTrait::get_all_product_references`]
+/// This is abstracted through the [`ProductTreeTrait::get_all_product_ids`] and [`CsafTrait::get_all_product_references`]
 /// functions, which allows the same implementation to work for both CSAF versions.
 fn test_6_1_1_missing_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // check if there is a product tree

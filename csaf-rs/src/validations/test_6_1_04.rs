@@ -8,16 +8,37 @@ fn generate_undefined_product_group_id_error(undefined_product_group_id: &str, i
     })
 }
 
+/// 6.1.4 Missing Definition of Product Group ID
+//
+/// For each element of type `$['$defs'].product_group_id_t` which is not inside a Product Group
+/// (`$.product_tree.product_groups[*]`) and therefore reference an element within the `product_tree`
+/// it SHALL be tested that the Product Group element with the matching `group_id` exists.
+///
+/// The same applies for all items of elements of type `$['$defs'].product_groups_t`.
+///
+/// This test is functionally the same between CSAF 2.0 and CSAF 2.1.
+/// It collects
+/// a) the set of product group IDs defined in the product tree and
+/// b) the set of product group IDs with the paths at which they are found from the entire CSAF document
+/// and compares the two sets.
+///
+/// Due to the syntax changes between the two versions, the way these sets are derived differs, though.
+/// This is abstracted through the [`ProductTreeTrait::get_all_product_group_ids`] and [`CsafTrait::get_all_group_references`]
+/// functions, which allows the same implementation to work for both CSAF versions.
 pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    let mut errors: Option<Vec<TestFinding>> = None;
+    // check if there is a product tree
     let Some(tree) = doc.get_product_tree() else {
         return Ok(()); // #409 wasSkipped
     };
 
+    // get all defined product group IDs from the product tree
     let defined_product_group_ids = tree.get_all_product_group_ids();
 
+    let mut errors: Option<Vec<TestFinding>> = None;
+    // iterate over all product group references
     let product_group_references = doc.get_all_group_references();
     for (referenced_product_group_id, referenced_product_group_path) in &product_group_references {
+        // if a reference is not defined, generate an error
         if !defined_product_group_ids.contains(referenced_product_group_id) {
             errors
                 .get_or_insert_default()

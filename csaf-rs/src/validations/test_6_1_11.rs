@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use chrono::NaiveDate;
 
 use crate::csaf::types::csaf_datetime::CsafDateTime;
@@ -58,6 +60,12 @@ fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static String> {
     latest.map(|(version, _)| version)
 }
 
+/// The latest available CWE version, used as fallback when no version can be determined
+#[allow(clippy::expect_used)]
+static LATEST_CWE_VERSION: LazyLock<&'static String> = LazyLock::new(|| {
+    get_latest_cwe_version(None).expect("At least one CWE version should be available in the data source.")
+});
+
 pub fn test_6_1_11_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
     let mut errors: Option<Vec<TestFinding>> = None;
@@ -66,22 +74,18 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwe) = vulnerability.get_cwes() {
             for (i_cwe, cwe_item) in cwe.iter().enumerate() {
-                let cwe_version = cwe_item
-                    .version
-                    .as_ref()
-                    .or_else(|| {
-                        (match doc.get_document().get_tracking().get_current_release_date() {
-                            // CSAF 2.0 does not require a CWE version, so we need to determine the CWE version
-                            // based on the document's tracking current release date
-                            CsafDateTime::Valid(date) => Some(date.get_as_utc().date_naive()),
-                            // if date is invalid, use latest available CWE version as fallback
-                            _ => None,
-                        })
-                        .and_then(|date| get_latest_cwe_version(Some(date)))
-                        // if no CWE version is available for the given date, use the latest available CWE version as fallback
-                        .or_else(|| get_latest_cwe_version(None))
+                let cwe_version = cwe_item.version.as_ref().unwrap_or_else(|| {
+                    (match doc.get_document().get_tracking().get_current_release_date() {
+                        // CSAF 2.0 does not require a CWE version, so we need to determine the CWE version
+                        // based on the document's tracking current release date
+                        CsafDateTime::Valid(date) => Some(date.get_as_utc().date_naive()),
+                        // if date is invalid, use latest available CWE version as fallback
+                        _ => None,
                     })
-                    .expect("At least one CWE version should be available in the data source.");
+                    .and_then(|date| get_latest_cwe_version(Some(date)))
+                    // if no CWE version is available for the given date, use the latest available CWE version as fallback
+                    .unwrap_or(*LATEST_CWE_VERSION)
+                });
 
                 let path = format!("/vulnerabilities/{i_r}/{}", vulnerability.get_cwes_subpath(i_cwe));
                 check_cwe(cwe_item, cwe_version, &path, &mut errors);

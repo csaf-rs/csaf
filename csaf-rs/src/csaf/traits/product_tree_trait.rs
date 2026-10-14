@@ -239,7 +239,8 @@ pub fn build_leaf_instance_path(indices: &[usize]) -> String {
     path.push_str("/product_tree");
     for idx in indices {
         path.push_str("/branches/");
-        write!(path, "{idx}").expect("Writing to a String should never fail");
+        // Writing to a String should never fail
+        let _ = write!(path, "{idx}");
     }
     path.push_str("/product");
     path

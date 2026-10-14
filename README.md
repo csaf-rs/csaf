@@ -310,6 +310,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.60.3 | ⭕  |   |
 | 6.1.61 | ⭕ | ✅ |
 | 6.1.62 | ⭕ | ✅ |
+| 6.1.63 | ⭕ | ✅ |
 
 ### Recommended Tests
 
@@ -367,7 +368,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.11   | ✅ | ✅ |
 | 6.3.14   | ⭕ | ✅ |
 | 6.3.15   | ⭕ | ✅ |
-| 6.3.21.1 | ⭕ |  |
+| 6.3.21.1 | ⭕ | ✅ |
 | 6.3.21.2 | ⭕ |  |
 | 6.3.21.3 | ⭕ | ✅ |
 | 6.3.21.4 | ⭕ | ✅ |

@@ -13,10 +13,10 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Mandatory Test: Inconsistent Hash Value Length (failing supplementary example 1 - algorithm md4, hash is from sha512)",
+    "title": "Informative Test: Use of CVSS v3.0 (valid supplementary example 2 - vuln with CVSS v4 only, vuln without metrics)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-63-S01",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-02-S12",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {
@@ -33,21 +33,30 @@
     "full_product_names": [
       {
         "name": "Product A",
-        "product_id": "CSAFPID-9080700",
-        "product_identification_helper": {
-          "hashes": [
-            {
-              "file_hashes": [
-                {
-                  "algorithm": "md4",
-                  "value": "fe77f10eddb0f514e465b3ba7365afd598e3686c40975b1d4b135a9dd64bb4d488111e8971321a620be6fe51bd756abaa12783a57bce58eec1b576624da0f082"
-                }
-              ],
-              "filename": "product_a.so"
-            }
-          ]
-        }
+        "product_id": "CSAFPID-9080700"
       }
     ]
-  }
+  },
+  "vulnerabilities": [
+    {
+      "metrics": [
+        {
+          "content": {
+            "cvss_v4": {
+              "baseScore": 7.3,
+              "baseSeverity": "HIGH",
+              "vectorString": "CVSS:4.0/AV:A/AC:L/AT:P/PR:L/UI:A/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
+              "version": "4.0"
+            }
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "cve": "CVE-1900-0002"
+    }
+  ]
 }

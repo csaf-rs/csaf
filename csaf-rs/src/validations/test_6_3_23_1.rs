@@ -6,7 +6,7 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 fn create_missing_involvement_info(category: CsafDocumentCategory) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!(
-            "The document does not contain involvements, which is recommended for document category `{category}`",
+            "The document does not contain `involvement`, which is recommended for document category `{category}`",
         ),
         instance_path: "/document".to_string(),
     })

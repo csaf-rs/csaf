@@ -53,8 +53,11 @@ pub fn find_cycle<'a>(
             match find_cycle(relation_map, next, visited) {
                 None => {},
                 Some((mut cycle, r_i_res)) => {
-                    let first = cycle.first().unwrap();
-                    if cycle.len() == 1 || first != cycle.last().unwrap() {
+                    let (Some(first), Some(last)) = (cycle.first(), cycle.last()) else {
+                        // an empty cycle is not a cycle, continue like in the `None` case
+                        continue;
+                    };
+                    if cycle.len() == 1 || first != last {
                         if first == product_id {
                             // Reverse the cycle when it is complete
                             cycle.push(product_id.to_string());

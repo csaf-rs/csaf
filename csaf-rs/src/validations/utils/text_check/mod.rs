@@ -90,17 +90,9 @@ pub fn select_checker(
     let checkers = filter_checkers(kind, lang)?;
 
     // pick the best quality among the available checkers
-    let best_quality = checkers
-        .iter()
-        .map(|checker| checker.get_quality())
-        // temporary measure, good = 0, poor = 2, min means take the best available
-        .min()
-        .expect("filter_checkers should have returned at least one checker (or an error that none were found)");
-    // pick any of that quality
-    let checker = checkers
+    checkers
         .into_iter()
-        .find(|checker| checker.get_quality() == best_quality)
-        .expect("a checker with this quality should exist");
-
-    Ok(checker)
+        // temporary measure, good = 0, poor = 2, min means take the best available
+        .min_by_key(|checker| checker.get_quality())
+        .ok_or(TextCheckerMatchingError::NoCheckerAvailable(kind))
 }

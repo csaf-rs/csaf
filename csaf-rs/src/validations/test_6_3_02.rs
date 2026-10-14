@@ -98,9 +98,24 @@ mod tests {
             create_cvss_v3_0_vector_string_info("/vulnerabilities/2/metrics/0/content"),
         ]);
 
+        // Case S01: 3 vulns with v3.0, but schema-invalid CVSS v3 objects
+        // Vuln 1: 2 metric objects, mismatch between version and vectorString, one each with v3.0
+        // Vuln 2: version is v3.0, but vectorString is missing
+        // Vuln 3: vectorString is v3.0, but version is missing
+        let case_s01_schema_invalid_cvss_v3 = Err(vec![
+            create_cvss_v3_0_version_used_info("/vulnerabilities/0/metrics/0/content"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/0/metrics/1/content"),
+            create_cvss_v3_0_version_used_info("/vulnerabilities/1/metrics/0/content"),
+            create_cvss_v3_0_vector_string_info("/vulnerabilities/2/metrics/0/content"),
+        ]);
+
         // Case 11: 1 vuln with v3.1
         // Case 12: 3 vulns with v3.1
 
+        // Case S11: 1 vuln with a cvss_v3 object, but version and vectorString are missing
+        // Case S12: 1 vuln with a cvss_v4 object, vuln without metrics
+
+        // Note: S01 and S11 are schema-invalid CVSS v3 objects that violate 6.1.8
         TESTS_2_0.test_6_3_2.expect(ExpectedResults_2_0 {
             case_01: case_01_v3_0_used_csaf_20,
             case_02: case_02_mixed_some_with_v3_0_csaf_20,
@@ -110,8 +125,11 @@ mod tests {
         TESTS_2_1.test_6_3_2.expect(ExpectedResults_2_1 {
             case_01: case_01_v3_0_used_csaf_21,
             case_02: case_02_mixed_some_with_v3_0_csaf_21,
+            case_s01: case_s01_schema_invalid_cvss_v3,
             case_11: Ok(()),
             case_12: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
         });
     }
 }

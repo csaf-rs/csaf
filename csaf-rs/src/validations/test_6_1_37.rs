@@ -10,6 +10,7 @@ use regex::Regex;
 use std::sync::LazyLock;
 
 static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    #[allow(clippy::unwrap_used)]
     Regex::new(r"^((\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:(?:[0-4]\d|5[0-9])(?:\.\d+)?)(Z|[+-]\d{2}:\d{2}))$").unwrap()
 });
 
@@ -121,6 +122,8 @@ fn get_dates(doc: &impl CsafTrait) -> Vec<(CsafDateTime, String)> {
             }
         }
     }
+
+    // TODO #370 involvements are missing
 
     dates
 }
@@ -243,7 +246,7 @@ mod tests {
                 create_invalid_format_error("2016-12-31T23:59:60.0123+00:00", "/vulnerabilities/0/disclosure_date"),
                 create_invalid_format_error("2017-01-01T02:59:60.999999+03:00", "/vulnerabilities/0/discovery_date"),
             ]),
-            case_20: Err(vec![
+            case_21: Err(vec![
                 create_invalid_format_error(
                     "2024-01-24t10:00:00.000Z",
                     "/vulnerabilities/0/first_known_exploitation_dates/0/date",
@@ -253,12 +256,48 @@ mod tests {
                     "/vulnerabilities/0/first_known_exploitation_dates/0/exploitation_date",
                 ),
             ]),
+            // #370 involvements are missing, so we can't test them yet
+            case_22: Err(vec![
+                create_parsing_error(
+                    "2024-01-24T10:00:00.000+25:59",
+                    "Failed to parse '2024-01-24T10:00:00.000+25:59' as RFC3339 with reason 'input is out of range'",
+                    "/document/tracking/initial_release_date",
+                ),
+                create_parsing_error(
+                    "2024-01-24T10:80:00.000Z",
+                    "Failed to parse '2024-01-24T10:80:00.000Z' as RFC3339 with reason 'input is out of range'",
+                    "/document/tracking/current_release_date",
+                ),
+                create_invalid_format_error("2024-01-24T10:00:80.000Z", "/document/tracking/generator/date"),
+                create_invalid_format_error("2024-01-24T10:00:00", "/document/tracking/revision_history/0/date"),
+                create_invalid_format_error("2024-01-24T10:00:00.000z", "/vulnerabilities/0/flags/0/date"),
+                create_parsing_error(
+                    "2024-01-24T10:00:00.000-24:00",
+                    "Failed to parse '2024-01-24T10:00:00.000-24:00' as RFC3339 with reason 'input is out of range'",
+                    "/vulnerabilities/0/remediations/0/date",
+                ),
+                create_parsing_error(
+                    "2024-01-24T10:00:00.000+24:00",
+                    "Failed to parse '2024-01-24T10:00:00.000+24:00' as RFC3339 with reason 'input is out of range'",
+                    "/vulnerabilities/0/threats/0/date",
+                ),
+                create_invalid_format_error(
+                    "2024-01-24t10:00:00.000Z",
+                    "/vulnerabilities/0/first_known_exploitation_dates/0/date",
+                ),
+                create_parsing_error(
+                    "2023-12-32T12:34:56.789Z",
+                    "Failed to parse '2023-12-32T12:34:56.789Z' as RFC3339 with reason 'input is out of range'",
+                    "/vulnerabilities/0/first_known_exploitation_dates/0/exploitation_date",
+                ),
+            ]),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
             case_14: Ok(()),
             case_15: Ok(()),
             case_16: Ok(()),
+            case_17: Ok(()),
             case_s01: Err(vec![create_invalid_format_error(
                 "2024-02-29t14:30:00.000Z",
                 "/vulnerabilities/0/metrics/0/content/epss/timestamp",

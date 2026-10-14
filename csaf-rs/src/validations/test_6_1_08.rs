@@ -8,12 +8,16 @@ use crate::{
     validation::{TestFinding, TestFindingData},
 };
 
+#[allow(clippy::expect_used)]
 fn create_validator(schema_str: &str) -> Validator {
-    jsonschema::validator_for(&serde_json::from_str(schema_str).unwrap()).unwrap()
+    let schema = serde_json::from_str(schema_str).expect("embedded CVSS schema must be valid JSON");
+    jsonschema::validator_for(&schema).expect("embedded CVSS schema must be a valid JSON schema")
 }
 
+#[allow(clippy::expect_used)]
 fn create_draft_validator(schema_str: &str) -> Validator {
-    jsonschema::draft202012::new(&serde_json::from_str(schema_str).unwrap()).unwrap()
+    let schema = serde_json::from_str(schema_str).expect("embedded CVSS schema must be valid JSON");
+    jsonschema::draft202012::new(&schema).expect("embedded CVSS schema must be a valid draft 2020-12 JSON schema")
 }
 
 static CVSS_20_STRICT_VALIDATOR: LazyLock<Validator> =
@@ -179,6 +183,24 @@ mod tests {
                 "Unevaluated properties are not allowed ('threatScore', 'threatSeverity', 'environmentalScore', 'environmentalSeverity' were unexpected)",
                 "/vulnerabilities/0/metrics/0/content/cvss_v4",
             )]),
+            case_07: Err(vec![create_validation_error_with_path(
+                "Additional properties are not allowed ('someOtherProperty' was unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
+            )]),
+            case_08: Err(vec![create_validation_error_with_path(
+                "Additional properties are not allowed ('anotherProperty' was unexpected)",
+                "/vulnerabilities/0/metrics/0/content/cvss_v3",
+            )]),
+            case_09: Err(vec![
+                create_validation_error_with_path(
+                    "Additional properties are not allowed ('baseSeverity' was unexpected)",
+                    "/vulnerabilities/0/metrics/0/content/cvss_v2",
+                ),
+                create_validation_error_with_path(
+                    "Additional properties are not allowed ('severity' was unexpected)",
+                    "/vulnerabilities/1/metrics/0/content/cvss_v2",
+                ),
+            ]),
             case_s01: Err(vec![create_validation_error_with_path(
                 "false is not of type \"number\"",
                 "/vulnerabilities/0/metrics/0/content/cvss_v3/baseScore"

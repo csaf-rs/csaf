@@ -139,18 +139,22 @@ jobs:
       - name: Run tests
         run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
+      - name: Smoke test csaf-validator
+        if: matrix.target.skip-test != true
+        shell: bash
+        run: ./scripts/smoke-tests/smoke-test-csaf-validator.sh target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Build with --no-default-features
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
       - name: Archive csaf-validator (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: csaf-validator-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: libcsaf_ffi-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: |
@@ -211,7 +215,7 @@ jobs:
         working-directory: ./wasm
         run: npm publish --dry-run
       - name: Archive UniFFI WASM bindings
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -251,7 +255,7 @@ jobs:
             --git https://github.com/NordSecurity/uniffi-bindgen-go \
             --tag v0.7.0+v0.31.0 --locked
       - name: Download libcsaf_ffi
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: libcsaf_ffi-${{ matrix.target.target-arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.target-arch }}/release/
@@ -272,7 +276,7 @@ jobs:
         run: |
           GOOS=$(go env GOOS) GOARCH=${{ matrix.target.go-arch }} CGO_ENABLED=1 go test -v ./csaf_ffi/
       - name: Archive Go static library
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: go-csaf-ffi-lib-${{ runner.os }}-${{ matrix.target.go-arch }}-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
@@ -333,7 +337,7 @@ jobs:
           go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@89b48259fa89ad5fdeb723dc312f20a3b453e24f # v1.14.2
 
       - name: Download all CDX artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: "*_sbom.cdx.json"
           path: sboms/
@@ -396,12 +400,12 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
       - name: Download WASM bindings
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: wasm/
@@ -428,7 +432,7 @@ jobs:
           go-version: "stable"
           cache: false
       - name: Download Go library for verification
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: go-csaf-ffi-lib-Linux-amd64-${{ needs.prepare.outputs.git-version }}
           path: go/csaf_ffi/lib/
@@ -459,19 +463,19 @@ jobs:
       - publish-go
     if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: csaf-validator
           pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: csaf-ffi-wasm
           pattern: csaf-ffi-wasm-*
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: go-csaf-ffi-lib
           pattern: go-csaf-ffi-lib-*
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: sboms
           pattern: "*_sbom.*"

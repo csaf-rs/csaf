@@ -1,4 +1,4 @@
-use crate::csaf::consts::chars::is_invisible_char;
+use crate::csaf::consts::chars::{is_hyphen_dash_char, is_invisible_char, is_underscore_char};
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
@@ -13,22 +13,21 @@ fn create_misuse_at_vendor_name_error(vendor_name: &str, path: &str) -> TestFind
     })
 }
 
-/// Checks if a name is `Open Source` (case-insensitive, white space insensitive).
-///
-/// We additionally remove zero-width/invisible chars that would otherwise break the matching ([is_invisible_char])
+/// Checks whether a name matches `Open Source`, ignoring case and removing dashes, hyphens, minuses, underscores, whitespaces, and invisible characters
 #[inline]
 fn is_open_source(name: &str) -> bool {
     let normalized: String = name
         .chars()
-        .filter(|&c| !c.is_whitespace() && !is_invisible_char(c))
+        .filter(|&c| !c.is_whitespace() && !is_hyphen_dash_char(c) && !is_underscore_char(c) && !is_invisible_char(c))
         .collect::<String>()
         .to_lowercase();
     normalized == "opensource"
 }
 /// 6.2.48 Misuse at Vendor Name
 ///
-/// For each item in branches with category `vendor` it MUST be tested that the name is not
-/// `Open Source` (case-insensitive, white space insensitive).
+/// For each item in branches with category `vendor` it SHALL be tested that the `name` is not `Open Source`.
+/// Any occurrences of dash, hyphen, minus, underscore, white space and invisible characters are removed from the value
+/// on both sides before the case insensitive match.
 pub fn test_6_2_48_misuse_at_vendor_name(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let Some(product_tree) = doc.get_product_tree() else {
         return Ok(()); // TODO #409
@@ -98,6 +97,10 @@ mod tests {
     #[case("Open\nSource")]
     #[case("Open\u{00A0}Source")]
     #[case("Open\u{200B}Source")]
+    #[case("-Open-Source-")]
+    #[case("_Open_Source_")]
+    #[case("Open\u{2010}Source")] // Hyphen
+    #[case("Open\u{FF3F}Source")] // Fullwidth low line
     fn test_is_open_source_true(#[case] name: &str) {
         assert!(
             is_open_source(name),

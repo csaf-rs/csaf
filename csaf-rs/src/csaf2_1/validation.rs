@@ -47,8 +47,9 @@ const PRESET_NAME_EXTERNAL_REQUEST_FREE: &str = "external-request-free";
 const PRESET_NAME_CONSISTENT_REVISION_HISTORY: &str = "consistent-revision-history";
 const PRESET_NAME_CONSISTENT_DATE_TIMES: &str = "consistent-date-times";
 const PRESET_NAME_SSVC: &str = "ssvc";
+const PRESET_NAME_VALIDATION_TIME: &str = "validation-time";
 // const PRESET_NAME_EXTENSIONS: &str = "extensions";
-// const PRESET_NAME_EXTENSIONS_EXIST: &str = "extensions-exist";
+const PRESET_NAME_EXTENSIONS_EXIST: &str = "extensions-exist";
 
 #[derive(Clone, serde::Deserialize, serde::Serialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
@@ -65,8 +66,9 @@ pub enum Preset {
     ConsistentRevisionHistory,
     ConsistentDateTimes,
     Ssvc,
+    ValidationTime,
     // Extensions,
-    // ExtensionsExist,
+    ExtensionsExist,
 }
 
 impl Preset {
@@ -84,8 +86,9 @@ impl Preset {
             Preset::ConsistentRevisionHistory => PRESET_NAME_CONSISTENT_REVISION_HISTORY,
             Preset::ConsistentDateTimes => PRESET_NAME_CONSISTENT_DATE_TIMES,
             Preset::Ssvc => PRESET_NAME_SSVC,
+            Preset::ValidationTime => PRESET_NAME_VALIDATION_TIME,
             // Preset::Extensions => PRESET_NAME_EXTENSIONS,
-            // Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
+            Preset::ExtensionsExist => PRESET_NAME_EXTENSIONS_EXIST,
         }
     }
 }
@@ -112,8 +115,9 @@ impl TryFrom<&str> for Preset {
             PRESET_NAME_CONSISTENT_REVISION_HISTORY => Ok(Preset::ConsistentRevisionHistory),
             PRESET_NAME_CONSISTENT_DATE_TIMES => Ok(Preset::ConsistentDateTimes),
             PRESET_NAME_SSVC => Ok(Preset::Ssvc),
+            PRESET_NAME_VALIDATION_TIME => Ok(Preset::ValidationTime),
             // PRESET_NAME_EXTENSIONS => Ok(Preset::Extensions),
-            // PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
+            PRESET_NAME_EXTENSIONS_EXIST => Ok(Preset::ExtensionsExist),
             _ => Err(CsafError::InvalidPreset {
                 preset: value.to_string(),
             }),
@@ -153,8 +157,9 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             Preset::ConsistentRevisionHistory.as_str(),
             Preset::ConsistentDateTimes.as_str(),
             Preset::Ssvc.as_str(),
+            Preset::ValidationTime.as_str(),
             // Preset::Extensions.as_str(),
-            // Preset::ExtensionsExist.as_str(),
+            Preset::ExtensionsExist.as_str(),
         ]
     }
 
@@ -191,19 +196,24 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
                 "6.2.33",
             ]),
-            Ok(Preset::ConsistentDateTimes) => Ok(vec!["6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53"]),
+            Ok(Preset::ConsistentDateTimes) => Ok(vec![
+                "6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53", "6.1.62",
+            ]),
             Ok(Preset::Ssvc) => Ok(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
+            Ok(Preset::ValidationTime) => Ok(vec![
+                "6.2.33", // "6.3.25" TODO #1190
+            ]),
             // Ok(Preset::Extensions) => Ok(vec![
             //     "6.1.60.1", "6.1.60.2", "6.1.60.3", "6.2.39.5", "6.2.54.1", "6.2.54.2", "6.2.54.3", "6.2.54.4",
             //     "6.3.21.1", "6.3.21.2", "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8",
-            //     "6.3.21.9",
+            //     "6.3.21.9", // TODO #1230
             // ]),
-            // Ok(Preset::ExtensionsExist) => Ok(vec![
-            //        "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9"
-            // ]),
+            Ok(Preset::ExtensionsExist) => Ok(vec![
+                "6.3.21.3", "6.3.21.4", "6.3.21.5", "6.3.21.6", "6.3.21.7", "6.3.21.8", "6.3.21.9",
+            ]),
             Err(e) => Err(e),
         }
     }
@@ -333,6 +343,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.60.3" => None, // Some(ValidatorForTest6_1_60_3.validate(self)),
                 "6.1.61" => Some(ValidatorForTest6_1_61.validate(self)),
                 "6.1.62" => Some(ValidatorForTest6_1_62.validate(self)),
+                "6.1.63" => Some(ValidatorForTest6_1_63.validate(self)),
                 // recommended tests
                 "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
                 "6.2.2" => Some(ValidatorForTest6_2_2.validate(self)),
@@ -450,6 +461,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.18" => Some(ValidatorForTest6_3_18.validate(self)),
                 "6.3.19" => None, // Some(ValidatorForTest6_3_19.validate(self)),
                 "6.3.20" => Some(ValidatorForTest6_3_20.validate(self)),
+                "6.3.21.1" => Some(ValidatorForTest6_3_21_1.validate(self)),
                 "6.3.21.3" => Some(ValidatorForTest6_3_21_3.validate(self)),
                 "6.3.21.4" => Some(ValidatorForTest6_3_21_4.validate(self)),
                 "6.3.21.5" => Some(ValidatorForTest6_3_21_5.validate(self)),
@@ -460,6 +472,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.3.22" => None, // Some(ValidatorForTest6_3_22.validate(self)),
                 "6.3.23" => None, // Some(ValidatorForTest6_3_23.validate(self)),
                 "6.3.24" => None, // Some(ValidatorForTest6_3_24.validate(self)),
+                "6.3.25" => None, // Some(ValidatorForTest6_3_25.validate(self)),
                 _ => None,
             },
         )

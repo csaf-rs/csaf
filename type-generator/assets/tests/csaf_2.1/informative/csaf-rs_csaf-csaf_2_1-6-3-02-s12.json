@@ -13,10 +13,10 @@
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Informative Test: Use of Short Hash (failing supplementary example 5 - hash value with exactly 63 characters)",
+    "title": "Informative Test: Use of CVSS v3.0 (valid supplementary example 2 - vuln with CVSS v4 only, vuln without metrics)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-05-S05",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-3-02-S12",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {
@@ -33,21 +33,30 @@
     "full_product_names": [
       {
         "name": "Product A",
-        "product_id": "CSAFPID-0001",
-        "product_identification_helper": {
-          "hashes": [
-            {
-              "file_hashes": [
-                {
-                  "algorithm": "test-63-char-hash-algo",
-                  "value": "133c80200b9dbe30323f51efe05999a8f00b22b2eccd1ebb825463f7742d732"
-                }
-              ],
-              "filename": "product-a.so"
-            }
-          ]
-        }
+        "product_id": "CSAFPID-9080700"
       }
     ]
-  }
+  },
+  "vulnerabilities": [
+    {
+      "metrics": [
+        {
+          "content": {
+            "cvss_v4": {
+              "baseScore": 7.3,
+              "baseSeverity": "HIGH",
+              "vectorString": "CVSS:4.0/AV:A/AC:L/AT:P/PR:L/UI:A/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
+              "version": "4.0"
+            }
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "cve": "CVE-1900-0002"
+    }
+  ]
 }

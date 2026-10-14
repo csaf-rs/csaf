@@ -1,5 +1,4 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
-use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
 use crate::csaf::traits::util::extract_references::{
     ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
 };
@@ -7,10 +6,7 @@ use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
-use crate::csaf_traits::{
-    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, ExtensionsTrait, NoteTrait, PublisherTrait,
-    ReferenceTrait, TrackingTrait,
-};
+use crate::csaf_traits::{AcknowledgmentTrait, AggregateSeverityTrait, Csaf21InvolvementTrait, DistributionTrait, ExtensionsTrait, NoteTrait, PublisherTrait, ReferenceTrait, TrackingTrait};
 use crate::schema::csaf2_0::schema::{
     Acknowledgment as Acknowledgment20, AggregateSeverity as AggregateSeverity20, CsafVersion as CsafVersion20,
     DocumentLevelMetaData as DocumentLevelMetaData20, Note as Note20, Publisher as Publisher20,

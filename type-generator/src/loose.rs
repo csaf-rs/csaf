@@ -60,7 +60,7 @@ pub fn generate(type_space: &TypeSpace, version: SchemaVersion, target_folder: &
     add_ignore_clippy(&mut file);
     add_generated_code_header(&mut file);
 
-    let relative_path = format!("src/schema/loose/{}.rs", version);
+    let relative_path = format!("src/schema/loose/{version}.rs");
     let content = prettyplease::unparse(&file);
     write_generated_file(target_folder, &relative_path, &content, "generated types")?;
 

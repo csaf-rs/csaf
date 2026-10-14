@@ -32,10 +32,8 @@ pub fn test_6_2_46_language_specific_license_text(
     };
 
     if document.license_expression.as_ref().is_some_and(|license_expression| {
-        match try_contains_unlisted_license_identifier_or_exception(license_expression) {
-            Ok(contains_unlisted) => contains_unlisted,
-            Err(_) => false, // TODO #409: Return `PreconditionFailed` once supported
-        }
+        // TODO #409: Return `PreconditionFailed` once supported
+        try_contains_unlisted_license_identifier_or_exception(license_expression).unwrap_or_default()
     }) {
         let Some(translated_title) = get_translation_for_term_license(&primary_lang) else {
             // TODO #1225: Return `Skipped` with an informational message once supported

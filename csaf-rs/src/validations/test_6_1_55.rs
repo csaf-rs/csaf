@@ -17,10 +17,8 @@ pub fn test_6_1_55_license_text(
 
     if is_english_or_unspecified(doc)
         && document.license_expression.as_ref().is_some_and(|license_expression| {
-            match try_contains_unlisted_license_identifier_or_exception(license_expression) {
-                Ok(contains_unlisted) => contains_unlisted,
-                Err(_) => false, // TODO #409: Return `PreconditionFailed` once supported
-            }
+            // TODO #409: Return `PreconditionFailed` once supported
+            try_contains_unlisted_license_identifier_or_exception(license_expression).unwrap_or_default()
         })
     {
         check_for_exactly_one_license_text_note(document.get_notes().map(Vec::as_slice), LICENSE_TITLE)

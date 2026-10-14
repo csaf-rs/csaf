@@ -1,7 +1,7 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_qualitative_severity_rating_error(instance_path: String) -> TestFinding {
+fn create_qualitative_severity_rating_info(instance_path: String) -> TestFinding {
     TestFinding::Information ( TestFindingData {
         message: "The metric uses a qualitative severity rating. The use of qualitative severity ratings is generally discouraged.".to_string(),
         instance_path,
@@ -25,7 +25,7 @@ pub fn test_6_3_18_use_of_qualitative_severity_rating(doc: &impl CsafTrait) -> R
                     );
                     errors
                         .get_or_insert_default()
-                        .push(create_qualitative_severity_rating_error(path));
+                        .push(create_qualitative_severity_rating_info(path));
                 }
             }
         }
@@ -48,7 +48,7 @@ mod tests {
 
     #[test]
     fn test_test_6_3_18() {
-        let case_01 = Err(vec![create_qualitative_severity_rating_error(
+        let case_01 = Err(vec![create_qualitative_severity_rating_info(
             "/vulnerabilities/0/metrics/0/content/qualitative_severity_rating".to_string(),
         )]);
 

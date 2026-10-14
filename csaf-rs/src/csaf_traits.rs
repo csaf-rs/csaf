@@ -10,6 +10,7 @@ pub use crate::csaf::traits::csaf_trait::CsafTrait;
 pub use crate::csaf::traits::document::action_trait::ActionTrait;
 pub use crate::csaf::traits::document::aggregate_severity_trait::AggregateSeverityTrait;
 pub use crate::csaf::traits::document::contact_trait::ContactTrait;
+pub use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
 pub use crate::csaf::traits::document::distribution_trait::DistributionTrait;
 pub use crate::csaf::traits::document::engine_trait::EngineTrait;
 pub use crate::csaf::traits::document::entity_group_trait::EntityGroupTrait;

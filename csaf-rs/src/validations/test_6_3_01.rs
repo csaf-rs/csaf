@@ -3,7 +3,7 @@ use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrai
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::{HashMap, HashSet};
 
-fn create_cvss_v2_only_error(instance_path: String) -> TestFinding {
+fn create_cvss_v2_only_info(instance_path: String) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: "Vulnerability uses CVSS v2 as the only scoring system".to_string(),
         instance_path,
@@ -51,7 +51,7 @@ pub fn test_6_3_1_use_of_cvss_v2_as_only_scoring_system(doc: &impl CsafTrait) ->
                     for path in paths {
                         errors
                             .get_or_insert_default()
-                            .push(create_cvss_v2_only_error(path.clone()));
+                            .push(create_cvss_v2_only_info(path.clone()));
                     }
                 }
             }
@@ -75,29 +75,29 @@ mod tests {
     fn test_test_6_3_1() {
         // CSAF 2.0 has 4 test cases and CSAF 2.1 has 8 test cases
         TESTS_2_0.test_6_3_1.expect(ExpectedResults_2_0 {
-            case_01: Err(vec![create_cvss_v2_only_error(
+            case_01: Err(vec![create_cvss_v2_only_info(
                 "/vulnerabilities/0/scores/0".to_string(),
             )]),
             case_02: Err(vec![
-                create_cvss_v2_only_error("/vulnerabilities/0/scores/0".to_string()),
-                create_cvss_v2_only_error("/vulnerabilities/2/scores/0".to_string()),
+                create_cvss_v2_only_info("/vulnerabilities/0/scores/0".to_string()),
+                create_cvss_v2_only_info("/vulnerabilities/2/scores/0".to_string()),
             ]),
             case_11: Ok(()),
             case_12: Ok(()),
         });
         TESTS_2_1.test_6_3_1.expect(ExpectedResults_2_1 {
-            case_01: Err(vec![create_cvss_v2_only_error(
+            case_01: Err(vec![create_cvss_v2_only_info(
                 "/vulnerabilities/0/metrics/0/content".to_string(),
             )]),
             case_02: Err(vec![
-                create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
-                create_cvss_v2_only_error("/vulnerabilities/2/metrics/0/content".to_string()),
+                create_cvss_v2_only_info("/vulnerabilities/0/metrics/0/content".to_string()),
+                create_cvss_v2_only_info("/vulnerabilities/2/metrics/0/content".to_string()),
             ]),
             case_03: Err(vec![
-                create_cvss_v2_only_error("/vulnerabilities/0/metrics/0/content".to_string()),
-                create_cvss_v2_only_error("/vulnerabilities/3/metrics/0/content".to_string()),
+                create_cvss_v2_only_info("/vulnerabilities/0/metrics/0/content".to_string()),
+                create_cvss_v2_only_info("/vulnerabilities/3/metrics/0/content".to_string()),
             ]),
-            case_04: Err(vec![create_cvss_v2_only_error(
+            case_04: Err(vec![create_cvss_v2_only_info(
                 "/vulnerabilities/2/metrics/0/content".to_string(),
             )]),
             case_11: Ok(()),

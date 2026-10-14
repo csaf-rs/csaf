@@ -1,8 +1,8 @@
-use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
 use crate::csaf_traits::{
     CsafTrait, FileHashTrait, HashTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
 };
-use crate::validation::{TestFinding, TestFindingData};
+use crate::validation::TestFinding;
+use crate::validations::utils::unknown_hash_algorithm_finding::create_unknown_hash_algorithm_finding_data;
 
 /// 6.2.52 Unknown Hash Algorithm
 ///
@@ -25,9 +25,9 @@ pub fn test_6_2_52_unknown_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Ve
                     for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
                         let algorithm = file_hash.get_algorithm();
                         if !algorithm.is_supported_algorithm() {
-                            errors
-                                .get_or_insert_default()
-                                .push(create_unknown_hash_algorithm_error(&algorithm, path, h_i, fh_i));
+                            errors.get_or_insert_default().push(TestFinding::Warning(
+                                create_unknown_hash_algorithm_finding_data(&algorithm, path, h_i, fh_i),
+                            ));
                         }
                     }
                 }
@@ -38,47 +38,23 @@ pub fn test_6_2_52_unknown_hash_algorithm(doc: &impl CsafTrait) -> Result<(), Ve
     errors.map_or(Ok(()), Err)
 }
 
-fn create_unknown_hash_algorithm_error(
-    algorithm: &CsafHashAlgorithm,
-    path: &str,
-    hash_index: usize,
-    file_hash_index: usize,
-) -> TestFinding {
-    let message = match algorithm.is_mentioned_in_spec() {
-        // TODO Right now, is_supported == is_mentioned_in_spec, and this only gets called when
-        // !is_supported, so this can't be reached.
-        true => format!(
-            "Hash algorithm '{algorithm}' is listed in the specification but not supported by this implementation"
-        ),
-        false => format!(
-            "Hash algorithm '{algorithm}' is not listed in section 3.1.4.3.2 of the CSAF 2.1 specification and not supported by this implementation"
-        ),
-    };
-
-    TestFinding::Warning(TestFindingData {
-        message,
-        instance_path: format!(
-            "{path}/product_identification_helper/hashes/{hash_index}/file_hashes/{file_hash_index}/algorithm"
-        ),
-    })
-}
-
 crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_2_52, test_6_2_52_unknown_hash_algorithm);
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::csaf_hash_algo::CsafHashAlgorithm;
     use crate::csaf2_1::testcases::ExpectedResults_6_2_52 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
     #[test]
     fn test_test_6_2_52() {
-        let case_01 = Err(vec![create_unknown_hash_algorithm_error(
+        let case_01 = Err(vec![TestFinding::Warning(create_unknown_hash_algorithm_finding_data(
             &CsafHashAlgorithm::Other("unknown-algorithm".to_string()),
             "/product_tree/full_product_names/0",
             0,
             0,
-        )]);
+        ))]);
 
         // Case 11: "blake2s256" is mentioned in the spec and should be supported
 

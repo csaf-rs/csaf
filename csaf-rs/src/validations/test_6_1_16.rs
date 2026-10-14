@@ -12,7 +12,9 @@ pub fn test_6_1_16_latest_document_version(doc: &impl CsafTrait) -> Result<(), V
     let tracking = doc.get_document().get_tracking();
 
     let mut revision_history = tracking.aggregate_revision_history();
-    revision_history.inplace_sort_by_date_then_number();
+    if revision_history.inplace_sort_by_date_then_number().is_err() {
+        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
+    }
 
     // TODO: Technically, this should never be None, as Revision History has minItems: 1 (#409)
     if let Some(latest_revision_history_item) = revision_history.last() {

@@ -9,7 +9,7 @@ fn is_version_with_v_indicator(version: &str) -> bool {
     matches!(chars.next(), Some('v') | Some('V')) && matches!(chars.next(), Some(c) if c.is_ascii_digit())
 }
 
-fn create_v_version_indicator_error(version: &str, path: &str) -> TestFinding {
+fn create_v_version_indicator_used_info(version: &str, path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!(
             "Product version name {version} starting with 'v' or 'V' as version indicator is not recommended"
@@ -32,7 +32,7 @@ pub fn test_6_3_11_usage_of_v_as_version_indicator(doc: &impl CsafTrait) -> Resu
             {
                 errors
                     .get_or_insert_default()
-                    .push(create_v_version_indicator_error(branch.get_name(), path));
+                    .push(create_v_version_indicator_used_info(branch.get_name(), path));
             }
         });
     }
@@ -75,20 +75,20 @@ mod tests {
 
     #[test]
     fn test_test_6_3_11() {
-        let v_4_2 = Err(vec![create_v_version_indicator_error(
+        let v_4_2 = Err(vec![create_v_version_indicator_used_info(
             "v4.2",
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
         // CSAF 2.1 02 / CSAF 2.0 S11: 2 parallel offending branches, with V (uppercase) and newline
         let multiple_parallel_offending_branches = Err(vec![
-            create_v_version_indicator_error("V4.2", "/product_tree/branches/0/branches/0/branches/1"),
-            create_v_version_indicator_error("V4\\nN2", "/product_tree/branches/0/branches/1/branches/0"),
+            create_v_version_indicator_used_info("V4.2", "/product_tree/branches/0/branches/0/branches/1"),
+            create_v_version_indicator_used_info("V4\\nN2", "/product_tree/branches/0/branches/1/branches/0"),
         ]);
         // Note: Having stacked product version categories violates 6.1.57, making this test file mandatory invalid on
         // CSAF 2.1
         let multiple_nested_branches = Err(vec![
-            create_v_version_indicator_error("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
-            create_v_version_indicator_error(
+            create_v_version_indicator_used_info("v4.2", "/product_tree/branches/0/branches/0/branches/0"),
+            create_v_version_indicator_used_info(
                 "v4.2.2-alpha",
                 "/product_tree/branches/0/branches/0/branches/0/branches/0/branches/0",
             ),

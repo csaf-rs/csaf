@@ -1,7 +1,7 @@
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_product_version_range_error(path: &str) -> TestFinding {
+fn create_product_version_range_used_info(path: &str) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: "Usage of 'product_version_range' branch category is not recommended".to_string(),
         instance_path: path.to_owned(),
@@ -22,7 +22,7 @@ pub fn test_6_3_10_usage_of_product_version_range(doc: &impl CsafTrait) -> Resul
         if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
             errors
                 .get_or_insert_default()
-                .push(create_product_version_range_error(path));
+                .push(create_product_version_range_used_info(path));
         }
     });
 
@@ -41,19 +41,19 @@ mod tests {
 
     #[test]
     fn test_test_6_3_10() {
-        let tree_with_product_version_range = Err(vec![create_product_version_range_error(
+        let tree_with_product_version_range = Err(vec![create_product_version_range_used_info(
             "/product_tree/branches/0/branches/0/branches/0",
         )]);
 
         let tree_with_parallel_product_version_range = Err(vec![
-            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/0"),
-            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/1"),
+            create_product_version_range_used_info("/product_tree/branches/0/branches/0/branches/0"),
+            create_product_version_range_used_info("/product_tree/branches/0/branches/0/branches/1"),
         ]);
 
         // Stacked product categories violate 6.1.57 on CSAF 2.1, making this test file invalid there
         let tree_with_stacked_product_version_range = Err(vec![
-            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/0"),
-            create_product_version_range_error("/product_tree/branches/0/branches/0/branches/0/branches/0"),
+            create_product_version_range_used_info("/product_tree/branches/0/branches/0/branches/0"),
+            create_product_version_range_used_info("/product_tree/branches/0/branches/0/branches/0/branches/0"),
         ]);
 
         // Case 11: product tree without product version range

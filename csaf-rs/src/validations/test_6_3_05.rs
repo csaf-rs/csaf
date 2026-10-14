@@ -3,7 +3,7 @@ use crate::csaf_traits::{
 };
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_short_hash_error(path: &str, hash_index: usize, file_hash_index: usize, hash_length: usize) -> TestFinding {
+fn create_short_hash_info(path: &str, hash_index: usize, file_hash_index: usize, hash_length: usize) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!("Too short hash found (length: {hash_length}), expected to be >= 64 chars"),
         instance_path: format!(
@@ -31,12 +31,9 @@ pub fn test_6_3_5_use_of_short_hash(doc: &impl CsafTrait) -> Result<(), Vec<Test
                     for (fh_i, file_hash) in hash.get_file_hashes().iter().enumerate() {
                         let file_hash_len = file_hash.get_value_length();
                         if file_hash_len < 64 {
-                            errors.get_or_insert_default().push(create_short_hash_error(
-                                path,
-                                h_i,
-                                fh_i,
-                                file_hash_len,
-                            ));
+                            errors
+                                .get_or_insert_default()
+                                .push(create_short_hash_info(path, h_i, fh_i, file_hash_len));
                         }
                     }
                 }
@@ -59,7 +56,7 @@ mod tests {
 
     #[test]
     fn test_test_6_3_5() {
-        let case_01_simple_32_length_hash = Err(vec![create_short_hash_error(
+        let case_01_simple_32_length_hash = Err(vec![create_short_hash_info(
             "/product_tree/full_product_names/0",
             0,
             0,
@@ -67,15 +64,15 @@ mod tests {
         )]);
 
         let case_02_all_paths_mixed = Err(vec![
-            create_short_hash_error("/product_tree/full_product_names/0", 0, 0, 32),
-            create_short_hash_error("/product_tree/full_product_names/1", 1, 0, 40),
-            create_short_hash_error("/product_tree/product_paths/0/full_product_name", 1, 0, 40),
-            create_short_hash_error("/product_tree/product_paths/1/full_product_name", 0, 1, 56),
-            create_short_hash_error("/product_tree/branches/0/branches/0/branches/0/product", 0, 0, 32),
-            create_short_hash_error("/product_tree/branches/0/branches/0/branches/1/product", 1, 0, 32),
+            create_short_hash_info("/product_tree/full_product_names/0", 0, 0, 32),
+            create_short_hash_info("/product_tree/full_product_names/1", 1, 0, 40),
+            create_short_hash_info("/product_tree/product_paths/0/full_product_name", 1, 0, 40),
+            create_short_hash_info("/product_tree/product_paths/1/full_product_name", 0, 1, 56),
+            create_short_hash_info("/product_tree/branches/0/branches/0/branches/0/product", 0, 0, 32),
+            create_short_hash_info("/product_tree/branches/0/branches/0/branches/1/product", 1, 0, 32),
         ]);
 
-        let case_03_hash_length_63 = Err(vec![create_short_hash_error(
+        let case_03_hash_length_63 = Err(vec![create_short_hash_info(
             "/product_tree/full_product_names/0",
             0,
             0,
@@ -83,9 +80,9 @@ mod tests {
         )]);
 
         let case_s01_branch_depth_exhaustive = Err(vec![
-            create_short_hash_error("/product_tree/branches/0/branches/0/branches/0/product", 0, 1, 32),
-            create_short_hash_error("/product_tree/branches/0/branches/1/product", 0, 1, 40),
-            create_short_hash_error("/product_tree/branches/1/product", 1, 0, 56),
+            create_short_hash_info("/product_tree/branches/0/branches/0/branches/0/product", 0, 1, 32),
+            create_short_hash_info("/product_tree/branches/0/branches/1/product", 0, 1, 40),
+            create_short_hash_info("/product_tree/branches/1/product", 1, 0, 56),
         ]);
 
         // TODO: Add a test case for an empty hash value once lenient parsing is supported

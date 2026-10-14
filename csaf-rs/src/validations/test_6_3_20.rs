@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::rvisc;
 
-fn create_unregistered_id_system_error(system_name: &str, vuln_index: usize, id_index: usize) -> TestFinding {
+fn create_unregistered_id_system_info(system_name: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!("The system_name '{system_name}' is not registered in RVISC."),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/system_name"),
@@ -20,7 +20,7 @@ pub fn test_6_3_20_use_of_unregistered_id_system(doc: &impl CsafTrait) -> Result
         if let Some(ids) = vuln.get_ids() {
             for (i_i, id) in ids.iter().enumerate() {
                 if !rvisc::is_registered_id_system(id.get_system_name()) {
-                    errors.get_or_insert_default().push(create_unregistered_id_system_error(
+                    errors.get_or_insert_default().push(create_unregistered_id_system_info(
                         id.get_system_name(),
                         v_i,
                         i_i,
@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn test_test_6_3_20() {
-        let case_01 = Err(vec![create_unregistered_id_system_error(
+        let case_01 = Err(vec![create_unregistered_id_system_info(
             "OASIS Open CSAF TC GitHub Issues",
             0,
             0,

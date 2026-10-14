@@ -28,5 +28,10 @@
       "status": "final",
       "version": "1"
     }
-  }
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-1900-0001"
+    }
+  ]
 }

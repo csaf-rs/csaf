@@ -6,7 +6,7 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 fn create_missing_vulnerabilities_error(document_category: &CsafDocumentCategory) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("Document with category '{document_category}' must have a '/vulnerabilities' element"),
-        instance_path: "/vulnerabilities".to_string(),
+        instance_path: "".to_string(),
     })
 }
 

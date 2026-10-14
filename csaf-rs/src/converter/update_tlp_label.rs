@@ -7,43 +7,31 @@ pub struct UpdateTlpLabel;
 
 impl Convert for UpdateTlpLabel {
     fn convert(&self, doc: &mut csaf2x::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
-        let clear_label = csaf2_1::schema::LabelOfTlp::Clear;
-        if let Some(label) = doc
+        if let Some(tlp) = doc
             .v20_view()
             .document()
             .and_then(|doc| doc.distribution())
-            .and_then(|distribution| distribution.tlp())
-            .and_then(|tlp| tlp.label())
+            .and_then(|dist| dist.tlp())
         {
-            if let Ok(label) = label.get_enum() {
-                if label == csaf2_0::schema::LabelOfTlp::White {
-                    doc.v21_view_mut()
-                        .document_mut()
-                        .unwrap()
-                        .distribution_mut()
-                        .unwrap()
-                        .tlp_mut()
-                        .unwrap()
-                        .label_mut()
-                        .unwrap()
-                        .set_enum(clear_label);
+            if let Some(label) = tlp.label() {
+                if let Ok(label) = label.get_enum() {
+                    if label != csaf2_0::schema::LabelOfTlp::White {
+                        return;
+                    }
+                } else {
+                    diagnostics.warning(Warning::InvalidTlpLabel);
                 }
             } else {
-                // XXX error/warning? invalid value as per CSAF 2.0 schema
+                diagnostics.warning(Warning::TlpIsMissingLabel);
             }
-            return;
         }
 
-        if let Some(tlp) = doc
-            .v21_view_mut()
-            .document_mut()
-            .and_then(|doc| doc.distribution_mut())
-            .and_then(|distribution| distribution.tlp_mut())
-            && let Ok(tlp) = tlp.caution_as_object_mut()
-        {
-            tlp.insert("label".into(), serde_json::to_value(clear_label).unwrap());
-            diagnostics.warning(Warning::NoTlpLabel);
-        }
+        doc.v21_view_mut()
+            .caution_get_or_insert_document()
+            .caution_get_or_insert_distribution()
+            .caution_get_or_insert_tlp()
+            .caution_get_or_insert_label()
+            .set_enum(csaf2_1::schema::LabelOfTlp::Clear);
     }
 }
 
@@ -51,12 +39,12 @@ impl Convert for UpdateTlpLabel {
 mod tests {
     use serde_json::json;
 
-    use crate::converter::tests::{DiagnosticsSpy, NoDiagnostics};
+    use crate::converter::tests::{NoDiagnostics, OnlyWarnings};
 
     use super::*;
 
     #[test]
-    fn has_white_tlp_label() -> serde_json::Result<()> {
+    fn has_white_tlp_label() {
         let input = json!({
             "document": {
                 "distribution": {
@@ -66,24 +54,11 @@ mod tests {
                 }
             }
         });
-        let output = json!({
-            "document": {
-                "distribution": {
-                    "tlp": {
-                        "label": "CLEAR"
-                    }
-                }
-            }
-        });
-        let mut doc = csaf2x::Document::new(input);
-        UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
-        assert_eq!(output, doc.into_raw());
-
-        Ok(())
+        successful_conversion(input);
     }
 
     #[test]
-    fn has_other_tlp_label() -> serde_json::Result<()> {
+    fn has_other_valid_tlp_label() {
         let input = json!({
             "document": {
                 "distribution": {
@@ -97,12 +72,24 @@ mod tests {
         let mut doc = csaf2x::Document::new(input);
         UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
         assert_eq!(output, doc.into_raw());
-
-        Ok(())
     }
 
     #[test]
-    fn no_tlp_label() -> serde_json::Result<()> {
+    fn has_invalid_tlp_label() {
+        let input = json!({
+            "document": {
+                "distribution": {
+                    "tlp": {
+                        "label": "INVALID!"
+                    }
+                }
+            }
+        });
+        conversion_with_warnings(input, &[Warning::InvalidTlpLabel]);
+    }
+
+    #[test]
+    fn no_tlp_label() {
         let input = json!({
             "document": {
                 "distribution": {
@@ -110,7 +97,49 @@ mod tests {
                 }
             }
         });
-        let output = json!({
+        conversion_with_warnings(input, &[Warning::TlpIsMissingLabel]);
+    }
+
+    #[test]
+    fn no_tlp_node() {
+        let input = json!({
+            "document": {
+                "distribution": {}
+            }
+        });
+        successful_conversion(input);
+    }
+
+    #[test]
+    fn no_distribution_node() {
+        let input = json!({
+            "document": {}
+        });
+        successful_conversion(input);
+    }
+
+    #[test]
+    fn no_document_node() {
+        let input = json!({});
+        successful_conversion(input);
+    }
+
+    fn successful_conversion(input: serde_json::Value) {
+        let mut doc = csaf2x::Document::new(input);
+        UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
+        assert_eq!(expected(), doc.into_raw());
+    }
+
+    fn conversion_with_warnings(input: serde_json::Value, warnings: &[Warning]) {
+        let mut doc = csaf2x::Document::new(input);
+        let mut diagnostics = OnlyWarnings::default();
+        UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut diagnostics);
+        assert_eq!(warnings, diagnostics.warnings());
+        assert_eq!(expected(), doc.into_raw());
+    }
+
+    fn expected() -> serde_json::Value {
+        json!({
             "document": {
                 "distribution": {
                     "tlp": {
@@ -118,33 +147,8 @@ mod tests {
                     }
                 }
             }
-        });
-
-        let mut doc = csaf2x::Document::new(input);
-        let mut diagnostics = DiagnosticsSpy::default();
-        UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut diagnostics);
-        assert!(diagnostics.errors().is_empty());
-        assert_eq!([Warning::NoTlpLabel], diagnostics.warnings());
-        assert_eq!(output, doc.into_raw());
-
-        Ok(())
+        })
     }
 
-    #[test]
-    fn no_scope() -> serde_json::Result<()> {
-        let input = json!({
-            "document": {
-                "distribution": {}
-            }
-        });
-        let output = input.clone();
-
-        let mut doc = csaf2x::Document::new(input);
-        UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
-        assert_eq!(output, doc.into_raw());
-
-        Ok(())
-    }
-
-    // TODO implement "SHOULD" logic
+    // TODO(#1067) implement "SHOULD" logic
 }

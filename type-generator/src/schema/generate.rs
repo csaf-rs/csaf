@@ -205,17 +205,32 @@ fn generate_ir_ty(
 
             let mut methods = vec![];
             for (prop_name, prop_id) in type_struct.properties() {
+                let get_or_insert = format_ident!("caution_get_or_insert_{prop_name}");
                 let access = format_ident!("{prop_name}");
                 let access_mut = format_ident!("{prop_name}_mut");
 
                 let child_ident = node_ident(type_id_to_index.get_or_insert(&prop_id), schema_version);
 
                 methods.push(quote!(
+                    /// Grants shared access to the stated node
                     pub fn #access(&self) -> Option<&#child_ident> {
                         self.0.get(#prop_name).map(bytemuck::TransparentWrapper::wrap_ref)
                     }
+                    /// Grants mutable access to the stated node
                     pub fn #access_mut(&mut self) -> Option<&mut #child_ident> {
                         self.0.get_mut(#prop_name).map(bytemuck::TransparentWrapper::wrap_mut)
+                    }
+                    /// Accesses the stated node creating it if it does not exist
+                    ///
+                    /// NOTE: `Null` will be used as a placeholder for the new node
+                    /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
+                    pub fn #get_or_insert(&mut self) -> &mut #child_ident {
+                        if !self.0.is_object() {
+                            self.0 = serde_json::Value::Object(serde_json::Map::default());
+                        }
+                        let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
+                        bytemuck::TransparentWrapper::wrap_mut(map.entry(#prop_name).or_insert(serde_json::Value::Null))
+
                     }
                 ));
 

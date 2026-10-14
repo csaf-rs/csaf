@@ -35,7 +35,10 @@ pub struct Settings {
 
 #[derive(Debug, PartialEq)]
 pub enum Warning {
-    NoTlpLabel,
+    CsafVersionIsMissing,
+    InvalidCsafVersion,
+    InvalidTlpLabel,
+    TlpIsMissingLabel,
 }
 
 #[derive(Debug, PartialEq)]
@@ -60,28 +63,23 @@ mod tests {
     }
 
     #[derive(Default)]
-    pub struct DiagnosticsSpy {
-        errors: Vec<Error>,
+    pub struct OnlyWarnings {
         warnings: Vec<Warning>,
     }
 
-    impl DiagnosticsSpy {
-        pub fn errors(&self) -> &[Error] {
-            &self.errors
-        }
-
-        pub fn warnings(&self) -> &[Warning] {
-            &self.warnings
-        }
-    }
-
-    impl Diagnostics for DiagnosticsSpy {
+    impl Diagnostics for OnlyWarnings {
         fn error(&mut self, error: Error) {
-            self.errors.push(error)
+            panic!("expected no errors; got {error:?}")
         }
 
         fn warning(&mut self, warning: Warning) {
             self.warnings.push(warning)
+        }
+    }
+
+    impl OnlyWarnings {
+        pub fn warnings(&self) -> &[Warning] {
+            &self.warnings
         }
     }
 }

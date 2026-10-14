@@ -16,7 +16,11 @@ PREFIX_2_0="CSAF-RS_CSAF-CSAF_2_0-"
 PREFIX_2_1="CSAF-RS_CSAF-CSAF_2_1-"
 
 # Validate test files tracking ID prefixes
+# *-schema-s07.json tests that schema errors at the document root are correctly reported on by
+# omitting the document property, so they can't have a valid tracking ID, and are therefore ignored in this check
 python3 "$SCRIPT_PATH" \
   "$TEST_ROOT" \
   --prefix-2-0 "$PREFIX_2_0" \
   --prefix-2-1 "$PREFIX_2_1" \
+  --ignore-filename "csaf-rs_csaf-csaf_2_0-schema-s07.json" \
+  --ignore-filename "csaf-rs_csaf-csaf_2_1-schema-s07.json"

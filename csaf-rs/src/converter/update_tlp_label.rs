@@ -1,4 +1,4 @@
-use crate::schema::{csaf2_0, csaf2_1, csaf2x};
+use crate::schema::{csaf2_0, csaf2_1, loose};
 
 use super::{Convert, Diagnostics, Settings, Warning};
 
@@ -6,7 +6,7 @@ use super::{Convert, Diagnostics, Settings, Warning};
 pub struct UpdateTlpLabel;
 
 impl Convert for UpdateTlpLabel {
-    fn convert(&self, doc: &mut csaf2x::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
+    fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
         if let Some(tlp) = doc
             .v20_view()
             .document()
@@ -69,7 +69,7 @@ mod tests {
             }
         });
         let output = input.clone();
-        let mut doc = csaf2x::Document::new(input);
+        let mut doc = loose::Document::new(input);
         UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
         assert_eq!(output, doc.into_raw());
     }
@@ -125,13 +125,13 @@ mod tests {
     }
 
     fn successful_conversion(input: serde_json::Value) {
-        let mut doc = csaf2x::Document::new(input);
+        let mut doc = loose::Document::new(input);
         UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
         assert_eq!(expected(), doc.into_raw());
     }
 
     fn conversion_with_warnings(input: serde_json::Value, warnings: &[Warning]) {
-        let mut doc = csaf2x::Document::new(input);
+        let mut doc = loose::Document::new(input);
         let mut diagnostics = OnlyWarnings::default();
         UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut diagnostics);
         assert_eq!(warnings, diagnostics.warnings());

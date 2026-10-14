@@ -1,4 +1,4 @@
-use crate::schema::{csaf2_1, csaf2x};
+use crate::schema::{csaf2_1, loose};
 
 use super::{Convert, Diagnostics, Settings, Warning};
 
@@ -6,7 +6,7 @@ use super::{Convert, Diagnostics, Settings, Warning};
 pub struct UpdateCsafVersion;
 
 impl Convert for UpdateCsafVersion {
-    fn convert(&self, doc: &mut csaf2x::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
+    fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
         if let Some(csaf_version) = doc.v20_view().document().and_then(|doc| doc.csaf_version()) {
             if csaf_version.get_enum().is_err() {
                 diagnostics.warning(Warning::InvalidCsafVersion);
@@ -37,7 +37,7 @@ mod tests {
                 "csaf_version": "2.0",
             }
         });
-        let mut doc = csaf2x::Document::new(input);
+        let mut doc = loose::Document::new(input);
         UpdateCsafVersion.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
         assert_eq!(expected(), doc.into_raw());
 
@@ -69,7 +69,7 @@ mod tests {
     }
 
     fn conversion_with_warnings(input: serde_json::Value, warnings: &[Warning]) {
-        let mut doc = csaf2x::Document::new(input);
+        let mut doc = loose::Document::new(input);
         let mut diagnostics = OnlyWarnings::default();
         UpdateCsafVersion.convert(&mut doc, &Settings::default(), &mut diagnostics);
         assert_eq!(warnings, diagnostics.warnings());

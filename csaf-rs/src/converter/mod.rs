@@ -1,10 +1,10 @@
-use crate::schema::csaf2x;
+use crate::schema::loose;
 
 mod update_csaf_version;
 mod update_tlp_label;
 
-pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> csaf2x::Document {
-    let mut doc = csaf2x::Document::new(raw);
+pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
+    let mut doc = loose::Document::new(raw);
 
     for conversion in CONVERSIONS {
         conversion.convert(&mut doc, settings, diagnostics)
@@ -20,7 +20,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
 
 /// Incremental v2.0 to v2.1 conversion
 pub trait Convert {
-    fn convert(&self, scope: &mut csaf2x::Document, settings: &Settings, diagnostics: &mut dyn Diagnostics);
+    fn convert(&self, scope: &mut loose::Document, settings: &Settings, diagnostics: &mut dyn Diagnostics);
 }
 
 pub trait Diagnostics {

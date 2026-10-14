@@ -1,5 +1,6 @@
 mod build_errors;
 mod language_tags;
+mod loose;
 mod rvisc;
 mod schema;
 mod strict_schema;
@@ -16,7 +17,6 @@ use crate::strict_schema::generate_strict_schemas;
 use crate::testcases::{generate_testcases, get_testcase_configs};
 use crate::translation::generate_translations;
 use clap::Parser;
-use schema::generate::generate_ir;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -68,12 +68,10 @@ fn main() -> Result<(), BuildError> {
 
     if run_all || args.schema {
         let schemas = get_schemas();
-        let mut type_spaces = vec![];
         for schema in &schemas {
             let type_space = build_schema(schema, &args.target_folder)?;
-            type_spaces.push((schema.version, type_space));
+            loose::generate(&type_space, schema.version, &args.target_folder)?;
         }
-        generate_ir(&type_spaces, &args.target_folder)?;
     }
 
     if run_all || args.test_schema {

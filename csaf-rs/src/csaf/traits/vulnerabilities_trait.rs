@@ -8,7 +8,7 @@ use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait,
+    AcknowledgmentTrait, Csaf20InvolvementTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait,
     MetricTrait, NoteTrait, ReferenceTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
 };
 use crate::schema::csaf2_0::schema::{
@@ -61,8 +61,13 @@ pub trait VulnerabilityTrait {
     /// The associated type representing a vulnerability flag.
     type FlagType: FlagTrait;
 
-    /// The associated type representing a vulnerability involvement.
-    type InvolvementType: InvolvementTrait;
+    /// Type representing vulnerability involvement information
+    ///
+    /// Note: In CSAF 2.1, involvements work differently and are present under `document`.
+    ///
+    /// For CSAF 2.0 documents, this type has the information described above.
+    /// For CSAF 2.1 documents, this type is `NotPresentInCsaf21`.
+    type InvolvementType: Csaf20InvolvementTrait;
 
     /// The associated type representing the vulnerability ID information.
     type VulnerabilityIdType: VulnerabilityIdTrait;
@@ -131,7 +136,12 @@ pub trait VulnerabilityTrait {
     /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> Option<&Vec<Self::FlagType>>;
 
-    /// Returns all involvements associated with this vulnerability.
+    /// Returns the involvement information for this vulnerability
+    ///
+    /// Note: In CSAF 2.1, involvements work differently and are present under `document`.
+    ///
+    /// If called for CSAF 2.0 documents, this method returns the involvement information if present, or `None` if not present.
+    /// If called for CSAF 2.1 documents, this method returns `None`.
     fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>>;
 
     /// Returns the CVE associated with the vulnerability.

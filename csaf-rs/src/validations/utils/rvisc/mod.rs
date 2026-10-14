@@ -9,6 +9,7 @@ static REGISTRY_HASHMAP: LazyLock<HashMap<&'static str, Regex>> = LazyLock::new(
     REGISTRY_ENTRIES
         .iter()
         .map(|&(sn, pattern)| {
+            #[allow(clippy::expect_used)]
             let re = Regex::new(pattern)
                 .expect(
                     "The pattern should be parseable as a regex. This is validated during type generation. Please re-run type generation. (This looks like a dev error)",

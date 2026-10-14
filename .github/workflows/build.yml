@@ -139,6 +139,10 @@ jobs:
       - name: Run tests
         run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
+      - name: Smoke test csaf-validator
+        if: matrix.target.skip-test != true
+        shell: bash
+        run: ./scripts/smoke-tests/smoke-test-csaf-validator.sh target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Build with --no-default-features
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}

@@ -2358,21 +2358,76 @@ impl<'de> ::serde::Deserialize<'de> for EntityIdT {
 ///Specifies a list of entity_ids or entity_group_ids to give context to the parent item.
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
 #[serde(transparent)]
-pub struct EntityRefsT(pub ::std::vec::Vec<::std::string::String>);
+pub struct EntityRefsT(pub ::std::vec::Vec<EntityRefsTItem>);
 impl ::std::ops::Deref for EntityRefsT {
-    type Target = ::std::vec::Vec<::std::string::String>;
-    fn deref(&self) -> &::std::vec::Vec<::std::string::String> {
+    type Target = ::std::vec::Vec<EntityRefsTItem>;
+    fn deref(&self) -> &::std::vec::Vec<EntityRefsTItem> {
         &self.0
     }
 }
-impl ::std::convert::From<EntityRefsT> for ::std::vec::Vec<::std::string::String> {
+impl ::std::convert::From<EntityRefsT> for ::std::vec::Vec<EntityRefsTItem> {
     fn from(value: EntityRefsT) -> Self {
         value.0
     }
 }
-impl ::std::convert::From<::std::vec::Vec<::std::string::String>> for EntityRefsT {
-    fn from(value: ::std::vec::Vec<::std::string::String>) -> Self {
+impl ::std::convert::From<::std::vec::Vec<EntityRefsTItem>> for EntityRefsT {
+    fn from(value: ::std::vec::Vec<EntityRefsTItem>) -> Self {
         Self(value)
+    }
+}
+///`EntityRefsTItem`
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, PartialEq)]
+#[serde(untagged)]
+pub enum EntityRefsTItem {
+    GroupIdT(EntityGroupIdT),
+    IdT(EntityIdT),
+}
+impl ::std::fmt::Display for EntityRefsTItem {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match self {
+            Self::GroupIdT(x) => x.fmt(f),
+            Self::IdT(x) => x.fmt(f),
+        }
+    }
+}
+impl ::std::str::FromStr for EntityRefsTItem {
+    type Err = self::error::ConversionError;
+    fn from_str(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        if let Ok(v) = value.parse() {
+            Ok(Self::GroupIdT(v))
+        } else if let Ok(v) = value.parse() {
+            Ok(Self::IdT(v))
+        } else {
+            Err("string conversion failed for all variants".into())
+        }
+    }
+}
+impl ::std::convert::TryFrom<&str> for EntityRefsTItem {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::TryFrom<::std::string::String> for EntityRefsTItem {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: ::std::string::String,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl ::std::convert::From<EntityGroupIdT> for EntityRefsTItem {
+    fn from(value: EntityGroupIdT) -> Self {
+        Self::GroupIdT(value)
+    }
+}
+impl ::std::convert::From<EntityIdT> for EntityRefsTItem {
+    fn from(value: EntityIdT) -> Self {
+        Self::IdT(value)
     }
 }
 ///Contains the EPSS data.

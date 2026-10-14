@@ -33,14 +33,14 @@ fn validate_default_language(lang: Option<CsafLanguage>, json_path: &str, errors
     if let Some(CsafLanguage::Valid(valid_lang)) = lang
         && valid_lang.is_default()
     {
-        errors.get_or_insert_default().push(create_default_language_error(
+        errors.get_or_insert_default().push(create_default_language_warning(
             valid_lang.as_str().to_string(),
             json_path,
         ));
     }
 }
 
-fn create_default_language_error(lang_tag: String, instance_path: &str) -> TestFinding {
+fn create_default_language_warning(lang_tag: String, instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("The default language tag '{lang_tag}' may not be used"),
         instance_path: instance_path.to_string(),
@@ -59,11 +59,11 @@ mod tests {
 
     #[test]
     fn test_test_6_2_15() {
-        let case_01_default_lang = Err(vec![create_default_language_error(
+        let case_01_default_lang = Err(vec![create_default_language_warning(
             "i-default".to_string(),
             "/document/lang",
         )]);
-        let case_02_default_source_lang = Err(vec![create_default_language_error(
+        let case_02_default_source_lang = Err(vec![create_default_language_warning(
             "i-default".to_string(),
             "/document/source_lang",
         )]);
@@ -71,10 +71,10 @@ mod tests {
         // Having both doc lang and source lang set to the same value violates 6.1.28
         // making this test file mandatory invalid
         let case_s01_default_both_langs = Err(vec![
-            create_default_language_error("i-default".to_string(), "/document/lang"),
-            create_default_language_error("i-default".to_string(), "/document/source_lang"),
+            create_default_language_warning("i-default".to_string(), "/document/lang"),
+            create_default_language_warning("i-default".to_string(), "/document/source_lang"),
         ]);
-        let case_s02_default_lang_uppercase = Err(vec![create_default_language_error(
+        let case_s02_default_lang_uppercase = Err(vec![create_default_language_warning(
             "I-DEFAULT".to_string(),
             "/document/lang",
         )]);

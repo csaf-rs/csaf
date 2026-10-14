@@ -6,7 +6,7 @@ use crate::csaf_traits::{
 use crate::validation::{TestFinding, TestFindingData};
 use chrono::TimeDelta;
 
-fn create_old_epss_timestamp_error(
+fn create_old_epss_timestamp_warning(
     epss_timestamp: &ValidCsafDateTime,
     newest_revision_date: &ValidCsafDateTime,
     content_json_path: &str,
@@ -82,7 +82,7 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Te
                 // if it is 15 days older than the newest revision date, add an error
                 let diff = newest_revision_date.get_as_utc() - newest_epss_timestamp.get_as_utc();
                 if diff > fifteen_days {
-                    errors.get_or_insert_default().push(create_old_epss_timestamp_error(
+                    errors.get_or_insert_default().push(create_old_epss_timestamp_warning(
                         &newest_epss_timestamp,
                         newest_revision_date,
                         &metrics[path_metric_idx]
@@ -108,12 +108,12 @@ mod tests {
 
     #[test]
     fn test_test_6_2_41() {
-        let case_01_old_epss = Err(vec![create_old_epss_timestamp_error(
+        let case_01_old_epss = Err(vec![create_old_epss_timestamp_warning(
             &ValidCsafDateTime::from_str("2023-01-24T10:00:00.000Z").unwrap(),
             &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
             "/vulnerabilities/0/metrics/0/content",
         )]);
-        let case_02_old_epss_with_timezone = Err(vec![create_old_epss_timestamp_error(
+        let case_02_old_epss_with_timezone = Err(vec![create_old_epss_timestamp_warning(
             &ValidCsafDateTime::from_str("2024-03-14T14:30:00.000-19:00").unwrap(),
             &ValidCsafDateTime::from_str("2024-03-30T10:00:00.000Z").unwrap(),
             "/vulnerabilities/0/metrics/0/content",

@@ -92,9 +92,13 @@ pub fn test_6_2_39_4_language_specific_superseding_document(json: &Value) -> Res
         .map(|(reference_idx, reference)| {
             let present_and_set = is_present_and_set("/category", reference);
             if present_and_set != JsonValuePresence::Set {
-                create_external_category_missing_error(reference_idx)
+                create_external_category_missing_warning(reference_idx)
             } else {
-                create_wrong_category_set_for_superseding_document(term, &CategoryOfReference::Self_, reference_idx)
+                create_wrong_category_set_for_superseding_document_warning(
+                    term,
+                    &CategoryOfReference::Self_,
+                    reference_idx,
+                )
             }
         })
         .collect();
@@ -102,14 +106,14 @@ pub fn test_6_2_39_4_language_specific_superseding_document(json: &Value) -> Res
     if findings.is_empty() { Ok(()) } else { Err(findings) }
 }
 
-fn create_external_category_missing_error(idx: usize) -> TestFinding {
+fn create_external_category_missing_warning(idx: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: String::from("Reference entry for a superseding document does not set the category `external`."),
         instance_path: format!("/document/references/{idx}/category"),
     })
 }
 
-fn create_wrong_category_set_for_superseding_document(
+fn create_wrong_category_set_for_superseding_document_warning(
     term: &str,
     wrong_category: &CategoryOfReference,
     idx: usize,
@@ -157,7 +161,7 @@ mod tests {
         ))]);
 
         let reference_entry_to_superseding_doc_missing_external_category = Err(vec![
-            create_external_category_missing_error(0),
+            create_external_category_missing_warning(0),
             TestFinding::Warning(create_incorrect_category_data(
                 de_summary_prefix,
                 &CategoryOfReference::Self_,

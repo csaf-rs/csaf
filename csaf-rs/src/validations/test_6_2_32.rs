@@ -7,7 +7,7 @@ use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::{HashMap, HashSet};
 
-fn generate_duplicate_helper_error(category: &str, value: &str, product_id: &str, base_path: &str) -> TestFinding {
+fn generate_duplicate_helper_warning(category: &str, value: &str, product_id: &str, base_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "The Product Identification Helper property '{category}' contains a duplicate value '{value}' for product '{product_id}'. Helper properties must be pairwise disjoint across all distinct products."
@@ -29,7 +29,7 @@ fn process_violations(
         // Only a violation if shared by 2 or more DISTINCT products
         if unique_products.len() > 1 {
             for (product_id, path) in occurrences {
-                errors.insert(generate_duplicate_helper_error(category, &value, &product_id, &path));
+                errors.insert(generate_duplicate_helper_warning(category, &value, &product_id, &path));
             }
         }
     }
@@ -181,13 +181,13 @@ mod tests {
     fn test_test_6_2_32() {
         // Case 01
         let case_01_errors = vec![
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "serial_numbers",
                 "143-D-354",
                 "CSAFPID-908070601",
                 "/product_tree/branches/0/branches/0/branches/0/product",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "serial_numbers",
                 "143-D-354",
                 "CSAFPID-908070602",
@@ -197,13 +197,13 @@ mod tests {
 
         // Case 02
         let case_02_errors = vec![
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070601",
                 "/product_tree/branches/0/branches/0/branches/0/product",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070602",
@@ -213,31 +213,31 @@ mod tests {
 
         // Case 03
         let case_03_errors = vec![
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070603",
                 "/product_tree/full_product_names/0",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070602",
                 "/product_tree/branches/0/branches/1/branches/0/product",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "model_numbers",
                 "143-D-354",
                 "CSAFPID-908070605",
                 "/product_tree/product_paths/0/full_product_name",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "cpes",
                 "cpe:/a:example:product_d",
                 "CSAFPID-908070604",
                 "/product_tree/full_product_names/1",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "cpes",
                 "cpe:/a:example:product_d",
                 "CSAFPID-908070605",
@@ -250,102 +250,102 @@ mod tests {
 
         let case_s01_errors = vec![
             // Hash collisions
-            generate_duplicate_helper_error("hashes", hash_val, "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("hashes", hash_val, "P2", "/product_tree/full_product_names/1"),
-            generate_duplicate_helper_error("hashes", hash_val, "P3", "/product_tree/branches/0/branches/0/product"),
+            generate_duplicate_helper_warning("hashes", hash_val, "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_warning("hashes", hash_val, "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_warning("hashes", hash_val, "P3", "/product_tree/branches/0/branches/0/product"),
             // PURL collisions
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "purls",
                 "pkg:npm/csaf-validator@0.5.1",
                 "P1",
                 "/product_tree/full_product_names/0",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "purls",
                 "pkg:npm/csaf-validator@0.5.1",
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "purls",
                 "pkg:npm/csaf-validator@0.5.1",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
             // Serial number collisions
-            generate_duplicate_helper_error("serial_numbers", "SN-999", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("serial_numbers", "SN-999", "P2", "/product_tree/full_product_names/1"),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning("serial_numbers", "SN-999", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_warning("serial_numbers", "SN-999", "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_warning(
                 "serial_numbers",
                 "SN-999",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
             // Model number collisions
-            generate_duplicate_helper_error("model_numbers", "MN-888", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("model_numbers", "MN-888", "P2", "/product_tree/full_product_names/1"),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning("model_numbers", "MN-888", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_warning("model_numbers", "MN-888", "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_warning(
                 "model_numbers",
                 "MN-888",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
             // SKU collisions
-            generate_duplicate_helper_error("skus", "SKU-777", "P1", "/product_tree/full_product_names/0"),
-            generate_duplicate_helper_error("skus", "SKU-777", "P2", "/product_tree/full_product_names/1"),
-            generate_duplicate_helper_error("skus", "SKU-777", "P3", "/product_tree/branches/0/branches/0/product"),
+            generate_duplicate_helper_warning("skus", "SKU-777", "P1", "/product_tree/full_product_names/0"),
+            generate_duplicate_helper_warning("skus", "SKU-777", "P2", "/product_tree/full_product_names/1"),
+            generate_duplicate_helper_warning("skus", "SKU-777", "P3", "/product_tree/branches/0/branches/0/product"),
             // CPEs
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "cpes",
                 "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
                 "P1",
                 "/product_tree/full_product_names/0",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "cpes",
                 "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "cpes",
                 "cpe:2.3:a:example:test:1.0:*:*:*:*:*:*:*",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
             // SBOMs
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "sbom_urls",
                 "https://example.com/sbom.json",
                 "P1",
                 "/product_tree/full_product_names/0",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "sbom_urls",
                 "https://example.com/sbom.json",
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "sbom_urls",
                 "https://example.com/sbom.json",
                 "P3",
                 "/product_tree/branches/0/branches/0/product",
             ),
             // X-Generic URIs
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "x_generic_uris",
                 "https://example.com/ns;urn:test:id",
                 "P1",
                 "/product_tree/full_product_names/0",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "x_generic_uris",
                 "https://example.com/ns;urn:test:id",
                 "P2",
                 "/product_tree/full_product_names/1",
             ),
-            generate_duplicate_helper_error(
+            generate_duplicate_helper_warning(
                 "x_generic_uris",
                 "https://example.com/ns;urn:test:id",
                 "P3",

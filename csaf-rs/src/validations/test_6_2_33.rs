@@ -3,7 +3,7 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityT
 use crate::validation::{TestFinding, TestFindingData};
 use chrono::Utc;
 
-fn create_disclosure_date_newer_than_revision_error(
+fn create_disclosure_date_newer_than_revision_warning(
     disclosure_date: &ValidCsafDateTime,
     newest_revision_date: &ValidCsafDateTime,
     i_v: usize,
@@ -60,7 +60,7 @@ pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> 
                     if valid_disclosure_date.get_as_utc() < now && &valid_disclosure_date > newest_revision_date {
                         errors
                             .get_or_insert_default()
-                            .push(create_disclosure_date_newer_than_revision_error(
+                            .push(create_disclosure_date_newer_than_revision_warning(
                                 &valid_disclosure_date,
                                 newest_revision_date,
                                 i_v,
@@ -93,21 +93,21 @@ mod tests {
     #[test]
     fn test_test_6_2_33() {
         let case_01_disclosure_date_newer_than_newest_rev =
-            Err(vec![create_disclosure_date_newer_than_revision_error(
+            Err(vec![create_disclosure_date_newer_than_revision_warning(
                 &ValidCsafDateTime::from_str("2024-02-24T10:00:00.000Z").unwrap(),
                 &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
                 0,
             )]);
 
         let case_02_disclosure_date_newer_than_newest_rev_with_timezone =
-            Err(vec![create_disclosure_date_newer_than_revision_error(
+            Err(vec![create_disclosure_date_newer_than_revision_warning(
                 &ValidCsafDateTime::from_str("2024-02-23T14:00:00.000-21:00").unwrap(),
                 &ValidCsafDateTime::from_str("2024-01-24T10:00:00.000Z").unwrap(),
                 0,
             )]);
 
         let case_03_disclosure_date_newer_than_newest_rev_with_timezone =
-            Err(vec![create_disclosure_date_newer_than_revision_error(
+            Err(vec![create_disclosure_date_newer_than_revision_warning(
                 &ValidCsafDateTime::from_str("2024-02-24T14:00:00.000-07:00").unwrap(),
                 &ValidCsafDateTime::from_str("2024-02-24T10:00:00.000Z").unwrap(),
                 0,

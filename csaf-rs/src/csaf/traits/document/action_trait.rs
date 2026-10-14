@@ -7,7 +7,7 @@ pub trait ActionTrait: WithDate + WithOptionalGroupIds + WithOptionalProductIds 
     fn get_acting_entity_refs(&self) -> impl Iterator<Item = &EntityRefsTItem> + '_;
     fn get_action_id(&self) -> &str;
     fn get_category(&self) -> ActionCategory;
-    fn get_dl_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_>;
+    fn get_document_local_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_>;
     fn get_receiving_entity_refs(&self) -> Option<impl Iterator<Item = &EntityRefsTItem> + '_>;
     fn get_referenced_action_ids(&self) -> Option<impl Iterator<Item = &str> + '_>;
     fn get_summary(&self) -> Option<&str>;
@@ -27,7 +27,7 @@ impl ActionTrait for NotPresentInCsaf20 {
         self.into_any()
     }
 
-    fn get_dl_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
+    fn get_document_local_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
         self.into_any_optional_iter()
     }
 
@@ -58,7 +58,7 @@ impl ActionTrait for Action21 {
         self.category
     }
 
-    fn get_dl_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
+    fn get_document_local_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
         self.dl_vuln_ids.as_ref().map(|ids| ids.iter().map(|id| id.as_str()))
     }
 

@@ -378,8 +378,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.21.8 | ⭕ | ✅ |
 | 6.3.21.9 | ⭕ | ✅ |
 | 6.3.22   | ⭕ |  |
-| 6.3.23.1 | ⭕ |  |
+| 6.3.23.1 | ⭕ | ✅ |
 | 6.3.23.2 | ⭕ | ✅ |
 | 6.3.24   | ⭕ |  |
 | 6.3.25   | ⭕ |  |
-

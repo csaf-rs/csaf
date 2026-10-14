@@ -32,7 +32,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() -> serde_json::Result<()> {
+    fn converter_sets_correct_csaf_version() -> serde_json::Result<()> {
         let input = json!({
             "document": {
                 "csaf_version": "2.0",
@@ -51,7 +51,7 @@ mod tests {
     }
 
     #[test]
-    fn does_not_apply() -> serde_json::Result<()> {
+    fn document_without_version_is_not_changed() -> serde_json::Result<()> {
         let input = json!({
             "document": {}
         });

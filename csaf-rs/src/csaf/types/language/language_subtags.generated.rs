@@ -9460,32 +9460,8 @@ pub fn is_script_private_use(subtag: &str) -> bool {
         .is_some_and(|(_, is_private_use)| is_private_use)
 }
 pub static GRANDFATHERED_SUBTAGS_ARRAY: &[(&str, bool)] = &[
-    ("art-lojban", false),
-    ("cel-gaulish", false),
-    ("en-gb-oed", false),
-    ("i-ami", false),
-    ("i-bnn", false),
     ("i-default", false),
-    ("i-enochian", false),
-    ("i-hak", false),
-    ("i-klingon", false),
-    ("i-lux", false),
     ("i-mingo", false),
-    ("i-navajo", false),
-    ("i-pwn", false),
-    ("i-tao", false),
-    ("i-tay", false),
-    ("i-tsu", false),
-    ("no-bok", false),
-    ("no-nyn", false),
-    ("sgn-be-fr", false),
-    ("sgn-be-nl", false),
-    ("sgn-ch-de", false),
-    ("zh-guoyu", false),
-    ("zh-hakka", false),
-    ("zh-min", false),
-    ("zh-min-nan", false),
-    ("zh-xiang", false),
 ];
 /// Checks if a given subtag is a valid grandfathered subtag. Lowercases the input before checking.
 pub fn is_valid_grandfathered_subtag(subtag: &str) -> bool {

@@ -1,6 +1,9 @@
 use crate::language_tags::{SubtagEntry, SubtagKind};
 use std::collections::HashMap;
 
+// all grandfathered tags deprecated before the release of CSAF 2.0 are to be ignored
+const GRANDFATHERED_DEPRECATION_CUTOFF: &str = "2022-11-24";
+
 /// Convert a character to a 0-based index relative to the base of its case
 #[inline]
 pub(crate) fn char_to_index(c: char) -> u8 {
@@ -37,6 +40,7 @@ pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<S
     let mut current_entry_type: Option<String> = None;
     let mut current_subtag: Option<String> = None;
     let mut current_is_private_use = false;
+    let mut current_deprecated: Option<String> = None;
 
     // parse file line by line
     for line in registry.lines() {
@@ -44,10 +48,17 @@ pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<S
 
         // new block starts
         if line.starts_with("%%") {
-            push_block_into_map(&current_entry_type, &current_subtag, current_is_private_use, map);
+            push_block_into_map(
+                &current_entry_type,
+                &current_subtag,
+                current_is_private_use,
+                current_deprecated.as_deref(),
+                map,
+            );
             current_entry_type = None;
             current_subtag = None;
             current_is_private_use = false;
+            current_deprecated = None;
             continue;
         }
 
@@ -61,11 +72,19 @@ pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<S
             current_subtag = Some(tag.to_string());
         } else if line == "Description: Private use" {
             current_is_private_use = true;
+        } else if let Some(deprecated) = line.strip_prefix("Deprecated: ") {
+            current_deprecated = Some(deprecated.to_string());
         }
     }
 
     // flush the last block, as the file doesn't end with %%
-    push_block_into_map(&current_entry_type, &current_subtag, current_is_private_use, map);
+    push_block_into_map(
+        &current_entry_type,
+        &current_subtag,
+        current_is_private_use,
+        current_deprecated.as_deref(),
+        map,
+    );
 }
 
 /// Handle a parsed registry block and put it into `map`.
@@ -76,12 +95,19 @@ fn push_block_into_map(
     entry_type: &Option<String>,
     subtag: &Option<String>,
     is_private_use: bool,
+    deprecated: Option<&str>,
     map: &mut HashMap<SubtagKind, Vec<SubtagEntry>>,
 ) {
     // if all fields are filled and the entry type is one of the types we want to extract
     if let (Some(entry_type), Some(subtag)) = (entry_type, subtag)
         && let Some(&kind) = SubtagKind::ALL.iter().find(|k| k.registry_key() == entry_type.as_str())
     {
+        // ignore grandfathered tags that were deprecated before the CSAF 2.0 release
+        // deprecation date is YYYY-MM-DD, so string comparison works for this purpose
+        if kind == SubtagKind::Grandfathered && deprecated.is_some_and(|date| date < GRANDFATHERED_DEPRECATION_CUTOFF) {
+            return;
+        }
+
         // the subtag is a range ("qaa..qtz"), expand it
         let entries: Vec<SubtagEntry> = if let Some((start, end)) = subtag.split_once("..") {
             expand_subtag_range(start, end)

@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::ssvc::{
-    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+    SsvcNamespaceAndPath, create_generic_namespace_finding_data, iter_ssvc_namespace_strings, ssvc_base_namespace,
 };
 use ssvc::NamespaceError;
 
@@ -17,9 +17,9 @@ fn create_unregistered_base_namespace_in_tlp_clear_warning(namespace: &str, inst
 
 /// 6.2.35 Usage of Unregistered SSVC Decision Point Base Namespace in TLP:CLEAR Document
 ///
-/// For each SSVC decision point given under `selections`, it MUST be tested that the base
-/// namespace is not an unregistered one if the document is labeled TLP:CLEAR. Namespaces
-/// reserved for special purpose MUST be treated as per their definition.
+/// For each SSVC decision point given under `selections`, it SHALL be tested that the base
+/// `namespace` is not an unregistered one if the document is labeled `TLP:CLEAR`. Namespaces
+/// reserved for special purpose SHALL be treated as per their definition.
 pub fn test_6_2_35_usage_of_unregistered_ssvc_decision_point_base_namespace_in_tlp_clear_document(
     doc: &impl CsafTrait,
     allow_test_namespaces: bool,
@@ -32,18 +32,26 @@ pub fn test_6_2_35_usage_of_unregistered_ssvc_decision_point_base_namespace_in_t
 
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
-        match result {
-            // it's unregistered (prefixed with x_)
+    for SsvcNamespaceAndPath {
+        namespace,
+        instance_path,
+    } in iter_ssvc_namespace_strings(doc)
+    {
+        let base_namespace = ssvc_base_namespace(&namespace);
+
+        match ssvc::validate_namespace(base_namespace, allow_test_namespaces) {
+            // Unregistered base namespace (prefixed with "x_")
             Ok(parsed) if parsed.is_unregistered() => {
                 errors
                     .get_or_insert_default()
                     .push(create_unregistered_base_namespace_in_tlp_clear_warning(
-                        &parsed.to_string(),
+                        &namespace,
                         &instance_path,
                     ));
             },
-            // reserved forbidden namespaces "invalid" or "test" are used
+
+            // TODO: Revisit once reserved namespace handling is clarified: https://github.com/csaf-rs/ssvc/issues/111
+            // Reserved forbidden namespaces "invalid" or "test"
             Err(err)
                 if matches!(
                     err,
@@ -57,8 +65,9 @@ pub fn test_6_2_35_usage_of_unregistered_ssvc_decision_point_base_namespace_in_t
                         &instance_path,
                     )));
             },
-            // it's registered / all other namespace errors
-            Ok(_) | Err(_) => continue,
+
+            // Registered base namespace or other namespace errors
+            _ => continue,
         }
     }
 

@@ -78,6 +78,7 @@ fn entry(subtag: &str, is_private: bool) -> SubtagEntry {
     SubtagEntry {
         subtag: subtag.to_string(),
         is_private,
+        is_deprecated_with_preferred_value: None,
     }
 }
 
@@ -173,5 +174,20 @@ fn parse_registry_drops_old_grandfathered_tags() {
             .map(|entry| entry.subtag.as_str())
             .collect::<Vec<_>>(),
         vec!["cutoff-tag", "current-tag"]
+    );
+}
+
+#[test]
+fn parse_registry_records_preferred_value_for_deprecated_subtag() {
+    let input = "%%\nType: language\nSubtag: bh\nDeprecated: 2026-06-14\nPreferred-Value: bih\n%%\n";
+    let mut map = make_subtags_map();
+    parse_registry(input, &mut map);
+    assert_eq!(
+        map[&SubtagKind::Language],
+        vec![SubtagEntry {
+            subtag: "bh".to_string(),
+            is_private: false,
+            is_deprecated_with_preferred_value: Some("bih".to_string()),
+        }]
     );
 }

@@ -34,13 +34,15 @@ pub(crate) fn make_subtags_map() -> HashMap<SubtagKind, Vec<SubtagEntry>> {
 /// Parses registry line-by-line and populates `map` with the subtags found.
 ///
 /// The registry uses `%%` as a block separator. For each block the fields
-/// `Type:`, `Subtag:`, and `Description: Private use` are extracted.
+/// `Type:`, `Subtag:`, `Description: Private use`, `Deprecated:`, and
+/// `Preferred-Value:` are extracted.
 pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<SubtagEntry>>) {
     // init
     let mut current_entry_type: Option<String> = None;
     let mut current_subtag: Option<String> = None;
     let mut current_is_private_use = false;
     let mut current_deprecated: Option<String> = None;
+    let mut current_preferred_value: Option<String> = None;
 
     // parse file line by line
     for line in registry.lines() {
@@ -53,12 +55,14 @@ pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<S
                 &current_subtag,
                 current_is_private_use,
                 current_deprecated.as_deref(),
+                current_preferred_value.as_deref(),
                 map,
             );
             current_entry_type = None;
             current_subtag = None;
             current_is_private_use = false;
             current_deprecated = None;
+            current_preferred_value = None;
             continue;
         }
 
@@ -74,6 +78,8 @@ pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<S
             current_is_private_use = true;
         } else if let Some(deprecated) = line.strip_prefix("Deprecated: ") {
             current_deprecated = Some(deprecated.to_string());
+        } else if let Some(preferred_value) = line.strip_prefix("Preferred-Value: ") {
+            current_preferred_value = Some(preferred_value.to_string());
         }
     }
 
@@ -83,6 +89,7 @@ pub(crate) fn parse_registry(registry: &str, map: &mut HashMap<SubtagKind, Vec<S
         &current_subtag,
         current_is_private_use,
         current_deprecated.as_deref(),
+        current_preferred_value.as_deref(),
         map,
     );
 }
@@ -96,6 +103,7 @@ fn push_block_into_map(
     subtag: &Option<String>,
     is_private_use: bool,
     deprecated: Option<&str>,
+    preferred_value: Option<&str>,
     map: &mut HashMap<SubtagKind, Vec<SubtagEntry>>,
 ) {
     // if all fields are filled and the entry type is one of the types we want to extract
@@ -108,6 +116,8 @@ fn push_block_into_map(
             return;
         }
 
+        let preferred_value = deprecated.is_some().then(|| preferred_value.map(str::to_owned)).flatten();
+
         // the subtag is a range ("qaa..qtz"), expand it
         let entries: Vec<SubtagEntry> = if let Some((start, end)) = subtag.split_once("..") {
             expand_subtag_range(start, end)
@@ -115,6 +125,7 @@ fn push_block_into_map(
                 .map(|t| SubtagEntry {
                     subtag: t,
                     is_private: is_private_use,
+                    is_deprecated_with_preferred_value: preferred_value.clone(),
                 })
                 .collect()
         }
@@ -123,6 +134,7 @@ fn push_block_into_map(
             vec![SubtagEntry {
                 subtag: subtag.clone(),
                 is_private: is_private_use,
+                is_deprecated_with_preferred_value: preferred_value,
             }]
         };
         // put the entries in the map

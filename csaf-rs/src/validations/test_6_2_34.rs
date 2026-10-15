@@ -1,7 +1,7 @@
 use crate::csaf_traits::CsafTrait;
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::ssvc::{
-    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+    SsvcNamespaceAndPath, create_generic_namespace_finding_data, iter_ssvc_namespace_strings, ssvc_base_namespace,
 };
 use ssvc::NamespaceError;
 
@@ -14,8 +14,8 @@ fn create_unregistered_base_namespace_warning(namespace: &str, instance_path: &s
 
 /// 6.2.34 Usage of Unknown SSVC Decision Point Base Namespace
 ///
-/// For each SSVC decision point given under `selections`, it MUST be tested that the base
-/// namespace is a registered one. Namespaces reserved for special purpose MUST be treated as per
+/// For each SSVC decision point given under `selections`, it SHALL be tested that the base
+/// `namespace` is a registered one. Namespaces reserved for special purpose SHALL be treated as per
 /// their definition.
 ///
 /// This test fails on unregistered namespaces (identified by the `x_` prefix) as well as on
@@ -26,25 +26,28 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
 ) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
-        match result {
-            // it's unregistered (prefixed with x_)
+    for SsvcNamespaceAndPath {
+        namespace,
+        instance_path,
+    } in iter_ssvc_namespace_strings(doc)
+    {
+        let base_namespace = ssvc_base_namespace(&namespace);
+
+        match ssvc::validate_namespace(base_namespace, allow_test_namespaces) {
+            // Unregistered base namespace (prefixed with "x_")
             Ok(parsed) if parsed.is_unregistered() => {
                 errors
                     .get_or_insert_default()
-                    .push(create_unregistered_base_namespace_warning(
-                        &parsed.to_string(),
-                        &instance_path,
-                    ));
+                    .push(create_unregistered_base_namespace_warning(&namespace, &instance_path));
             },
+
             Err(err)
                 if matches!(
                     err,
-                    // not a "known" registered namespace to SSVC
+                    // Unknown registered namespace
                     NamespaceError::InvalidRegisteredNamespace { .. }
-                        //reserved namespaces "invalid"
+                        // Reserved forbidden namespaces "invalid" or "test"
                         | NamespaceError::ReservedForbiddenNamespace { .. }
-                        //reserved namespaces "test"
                         | NamespaceError::ReservedTestNamespace { .. }
                 ) =>
             {
@@ -55,8 +58,9 @@ pub fn test_6_2_34_usage_of_unknown_ssvc_decision_point_base_namespace(
                         &instance_path,
                     )));
             },
-            // it's registered / all other namespace errors
-            Ok(_) | Err(_) => continue,
+
+            // Registered base namespace or other namespace errors
+            _ => continue,
         }
     }
 

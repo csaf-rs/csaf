@@ -55,7 +55,7 @@ pub(crate) fn iter_ssvc_namespace_strings<D: CsafTrait>(doc: &D) -> impl Iterato
         })
 }
 
-// TODO: Consider removing this helper once its remaining consumers (6.2.34, 6.3.14, and 6.3.15) are refactored
+// TODO: Consider removing this helper once its remaining consumers (6.3.14, and 6.3.15) are refactored
 //  to consider '/' for base namespace extraction or extension detection.
 /// Returns an iterator over all SSVC v2 namespace parse results found in the document.
 pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(

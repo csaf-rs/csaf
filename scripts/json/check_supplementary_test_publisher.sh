@@ -20,14 +20,15 @@ EXPECTED_PUBLISHER='{
   "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
 }'
 
-# Schema test schema-07 omits the document property, and 6.1.15 uses category "translator".
 IGNORE_ARGS=(
+  # Schema test schema-07 omits the document property
   --ignore-filename "csaf-rs_csaf-csaf_2_0-schema-s07.json"
   --ignore-filename "csaf-rs_csaf-csaf_2_1-schema-s07.json"
-  --ignore-filename "csaf-rs_csaf-csaf_2_0-6-1-15-s01.json"
-  --ignore-filename "csaf-rs_csaf-csaf_2_0-6-1-15-s02.json"
-  --ignore-filename "csaf-rs_csaf-csaf_2_1-6-1-15-s01.json"
-  --ignore-filename "csaf-rs_csaf-csaf_2_1-6-1-15-s02.json"
+  # 6.1.15 needs to use category "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s01.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s02.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s01.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s02.json" "translator"
 )
 
 # Call Python script with all arguments

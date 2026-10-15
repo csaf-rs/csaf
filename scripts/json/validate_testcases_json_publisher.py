@@ -42,11 +42,23 @@ def main() -> int:
         default=[],
         help="Filename to skip in every directory; may be specified multiple times",
     )
+    parser.add_argument(
+        "--publisher-category-exception",
+        action="append",
+        nargs=2,
+        metavar=("FILENAME", "CATEGORY"),
+        default=[],
+        help=(
+            "Allow a filename-specific publisher category while validating all "
+            "other publisher fields; may be specified multiple times"
+        ),
+    )
     args = parser.parse_args()
 
     tests_root = args.test_root
     expected_publisher = args.publisher
     ignored_filenames = set(args.ignore_filename)
+    category_exceptions = dict(args.publisher_category_exception)
     
     # stats
     has_errors = False
@@ -67,12 +79,19 @@ def main() -> int:
                     with open(file_path, "r", encoding="utf-8") as f:
                         data = json.load(f)
 
+                    # if a publisher exception is present, merge that in
+                    file_expected_publisher = expected_publisher.copy()
+                    if file_path.name in category_exceptions:
+                        file_expected_publisher["category"] = category_exceptions[
+                            file_path.name
+                        ]
+
                     # validate publisher
                     publisher = data.get("document", {}).get("publisher", {})
-                    if publisher != expected_publisher:
+                    if publisher != file_expected_publisher:
                         has_errors = True
                         if args.fix:
-                            data["document"]["publisher"] = expected_publisher
+                            data["document"]["publisher"] = file_expected_publisher
                             with open(file_path, "w", encoding="utf-8") as f:
                                 json.dump(data, f, indent=2, ensure_ascii=False)
                                 f.write("\n")

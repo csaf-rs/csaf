@@ -165,6 +165,12 @@ impl Node7 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -200,6 +206,12 @@ impl Node4 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -631,6 +643,12 @@ impl Node23 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -784,6 +802,12 @@ impl Node32 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -820,6 +844,12 @@ impl Node35 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -907,6 +937,12 @@ impl Node22 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -1237,6 +1273,12 @@ impl Node41 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -1317,6 +1359,12 @@ impl Node49 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -1681,6 +1729,12 @@ impl Node55 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -1917,6 +1971,12 @@ impl Node63 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -2371,6 +2431,12 @@ impl Node72 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -2534,6 +2600,12 @@ impl Node76 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -2678,6 +2750,12 @@ impl Node79 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -2832,6 +2910,12 @@ impl Node82 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -3011,6 +3095,12 @@ impl Node89 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -3141,6 +3231,12 @@ impl Node94 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 pub type Node93 = Node95;
 #[derive(bytemuck::TransparentWrapper)]
@@ -3199,6 +3295,12 @@ impl Node91 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -3365,6 +3467,12 @@ impl Node102 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -3475,6 +3583,12 @@ impl Node105 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -3909,6 +4023,12 @@ impl Node119 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -3998,6 +4118,12 @@ impl Node121 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -4033,6 +4159,12 @@ impl Node123 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -4074,6 +4206,12 @@ impl Node125 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 pub type Node114 = Node126;
 #[derive(bytemuck::TransparentWrapper)]
@@ -4093,6 +4231,12 @@ impl Node126 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -4137,6 +4281,12 @@ impl Node128 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -4172,6 +4322,12 @@ impl Node130 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -4279,6 +4435,12 @@ impl Node132 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -4447,6 +4609,12 @@ impl Node101 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -4576,6 +4744,12 @@ impl Node100 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 pub type Node99 = Node141;
 pub type Node141 = Node142;
@@ -4596,6 +4770,12 @@ impl Node142 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -5340,6 +5520,12 @@ impl Node160 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -5700,6 +5886,12 @@ impl Node172 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -6242,6 +6434,12 @@ impl Node194 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -6408,6 +6606,12 @@ impl Node197 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -6458,6 +6662,12 @@ impl Node192 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -6621,6 +6831,12 @@ impl Node191 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }
@@ -6939,6 +7155,12 @@ impl Node216 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -6978,6 +7200,12 @@ impl Node217 {
             _ => Err(SchemaError),
         }
     }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
+    }
 }
 #[derive(bytemuck::TransparentWrapper)]
 #[repr(transparent)]
@@ -7013,6 +7241,12 @@ impl Node219 {
             serde_json::Value::Array(s) => {
                 Ok(bytemuck::TransparentWrapper::wrap_slice_mut(s))
             }
+            _ => Err(SchemaError),
+        }
+    }
+    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_mut(self) {
+            serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
         }
     }

@@ -257,6 +257,13 @@ fn generate_loose_type(
                             _ => Err(SchemaError)
                         }
                     }
+
+                    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+                        match bytemuck::TransparentWrapper::peel_mut(self) {
+                            serde_json::Value::Array(s) => Ok(s),
+                            _ => Err(SchemaError)
+                        }
+                    }
                 }
 
             ));

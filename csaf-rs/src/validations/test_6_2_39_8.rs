@@ -28,7 +28,7 @@ pub fn test_6_2_39_8_aggregate_severity(doc: &impl CsafTrait) -> Result<(), Vec<
 static MISSING_AGGREGATE_SEVERITY_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The document does not contain the aggregate severity element.".to_string(),
-        instance_path: "/document/aggregate_severity".to_string(),
+        instance_path: "/document".to_string(),
     })
 });
 

@@ -1,6 +1,4 @@
-use crate::csaf::traits::util::extract_references::{
-    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
-};
+use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::impl_optional_str_field_getter;
 
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
@@ -179,16 +177,17 @@ pub trait VulnerabilityTrait {
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
 
     define_reference_accessors! {
-        both: [
+        vec: [
             (get_remediations_group_references,                     get_remediations_product_references,                     get_remediations,                     "remediations"),
             (get_threats_group_references,                          get_threats_product_references,                          get_threats,                          "threats"),
+        ],
+        optional_vec: [
             (get_flags_group_references,                            get_flags_product_references,                            get_flags,                            "flags"),
             (get_involvements_group_references,                     get_involvements_product_references,                     get_involvements,                     "involvements"),
             (get_notes_group_references,                            get_notes_product_references,                            get_notes,                            "notes"),
             (get_first_known_exploitation_dates_group_references,   get_first_known_exploitation_dates_product_references,   get_first_known_exploitation_dates,   "first_known_exploitation_dates"),
             (get_ids_group_references,                              get_ids_product_references,                              get_ids,                              "ids"),
         ],
-        custom_group_extraction: [],
         custom_product_extraction: [
             get_product_status_product_references,
             get_metrics_product_references,

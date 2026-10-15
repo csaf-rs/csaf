@@ -2,7 +2,7 @@ use crate::csaf::consts::chars::{is_hyphen_dash_char, is_invisible_char, is_unde
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_misuse_at_vendor_name_error(vendor_name: &str, path: &str) -> TestFinding {
+fn create_misuse_at_vendor_name_warning(vendor_name: &str, path: &str) -> TestFinding {
     let message: String  = match vendor_name == "Open Source" {
         true => "For vendor branches, the branch name 'Open Source' is banned due to misuse. Please use a more appropriate vendor name for the open source project.".to_string(),
         false => format!("For vendor branches, the branch name 'Open Source' (and similar, provided: '{vendor_name}') is banned due to misuse. Please use a more appropriate vendor name for the open source project."),
@@ -39,7 +39,7 @@ pub fn test_6_2_48_misuse_at_vendor_name(doc: &impl CsafTrait) -> Result<(), Vec
         if branch.get_category() == CategoryOfTheBranch::Vendor && is_open_source(branch.get_name()) {
             errors
                 .get_or_insert_default()
-                .push(create_misuse_at_vendor_name_error(branch.get_name(), path));
+                .push(create_misuse_at_vendor_name_warning(branch.get_name(), path));
         }
     });
 
@@ -57,15 +57,15 @@ mod tests {
 
     #[test]
     fn test_test_6_2_48() {
-        let case_01_open_source_isduba = Err(vec![create_misuse_at_vendor_name_error(
+        let case_01_open_source_isduba = Err(vec![create_misuse_at_vendor_name_warning(
             "Open Source",
             "/product_tree/branches/0",
         )]);
-        let case_02_open_source_curl = Err(vec![create_misuse_at_vendor_name_error(
+        let case_02_open_source_curl = Err(vec![create_misuse_at_vendor_name_warning(
             "Open Source",
             "/product_tree/branches/0",
         )]);
-        let case_03_open_source_case_whitespace = Err(vec![create_misuse_at_vendor_name_error(
+        let case_03_open_source_case_whitespace = Err(vec![create_misuse_at_vendor_name_warning(
             "opensource",
             "/product_tree/branches/0",
         )]);

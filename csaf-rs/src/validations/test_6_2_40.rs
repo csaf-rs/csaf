@@ -8,7 +8,7 @@ use crate::{
     },
 };
 
-fn create_missing_product_reference_in_description(note_idx: usize) -> TestFinding {
+fn create_missing_product_reference_in_description_warning(note_idx: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: String::from("Product description is missing a product reference via product id or group id."),
         instance_path: format!("/document/notes/{note_idx}"),
@@ -57,7 +57,7 @@ pub fn test_6_2_40_product_description_without_product_reference(doc: &impl Csaf
                     .is_some_and(|title| title.contains(product_description_term))
         })
         .filter(|(_, note)| note.get_group_ids().is_none() && note.get_product_ids().is_none())
-        .map(|(note_idx, _)| create_missing_product_reference_in_description(note_idx))
+        .map(|(note_idx, _)| create_missing_product_reference_in_description_warning(note_idx))
         .collect::<Vec<_>>();
 
     if findings.is_empty() { Ok(()) } else { Err(findings) }
@@ -78,11 +78,11 @@ mod tests {
     #[test]
     fn test_test_6_2_40() {
         let simple_title_product_description_with_missing_reference =
-            Err(vec![create_missing_product_reference_in_description(0)]);
+            Err(vec![create_missing_product_reference_in_description_warning(0)]);
         let title_containing_term_is_product_description_with_missing_reference =
-            Err(vec![create_missing_product_reference_in_description(0)]);
+            Err(vec![create_missing_product_reference_in_description_warning(0)]);
         let title_containing_german_term_is_product_description_with_missing_reference =
-            Err(vec![create_missing_product_reference_in_description(0)]);
+            Err(vec![create_missing_product_reference_in_description_warning(0)]);
 
         TESTS_2_1.test_6_2_40.expect(ExpectedResults {
             case_01: simple_title_product_description_with_missing_reference,

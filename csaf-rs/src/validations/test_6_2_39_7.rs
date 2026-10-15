@@ -28,7 +28,7 @@ pub fn test_6_2_39_7_document_acknowledgments(doc: &impl CsafTrait) -> Result<()
 static MISSING_ACKNOWLEDGMENTS_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The document does not contain the acknowledgments element.".to_string(),
-        instance_path: "/document/acknowledgments".to_string(),
+        instance_path: "/document".to_string(),
     })
 });
 

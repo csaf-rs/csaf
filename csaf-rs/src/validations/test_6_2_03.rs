@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, MetricTrait, ProductStatusTrait, Vulnerabili
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn create_missing_metric_error(
+fn create_missing_metric_warning(
     vulnerability_index: usize,
     status_group_name: &str,
     status_group_product_index: usize,
@@ -29,7 +29,7 @@ fn check_product_status_group_for_missing_metrics<'a>(
     // if not, generate an error
     for (sg_p_i, product_id) in status_group_product_ids.enumerate() {
         if !remediation_product_ids.contains(product_id) {
-            errors.get_or_insert_default().push(create_missing_metric_error(
+            errors.get_or_insert_default().push(create_missing_metric_warning(
                 vulnerability_index,
                 status_group_name,
                 sg_p_i,
@@ -113,7 +113,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_03() {
-        let case_01 = Err(vec![create_missing_metric_error(
+        let case_01 = Err(vec![create_missing_metric_warning(
             0,
             "first_affected",
             0,

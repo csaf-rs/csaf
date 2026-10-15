@@ -14,20 +14,23 @@ pub(crate) fn ssvc_decision_point_resources_path(vuln_index: usize, metric_index
     format!("/vulnerabilities/{vuln_index}/metrics/{metric_index}/content/ssvc_v2/decision_point_resources")
 }
 
+/// A single SSVC v2 namespace string with the JSON path at which it was found.
+pub(crate) struct SsvcNamespaceAndPath {
+    pub namespace: String,
+    pub instance_path: String,
+}
+
 /// A single SSVC v2 namespace result with the JSON path at which it was found.
 pub(crate) struct SsvcNamespaceResultAndPath {
     pub result: Result<ParsedNamespace, NamespaceError>,
     pub instance_path: String,
 }
 
-/// Returns an iterator over all SSVC v2 namespace parse results found in the document.
+/// Returns an iterator over all SSVC v2 namespace strings and their JSON paths found in the document.
 ///
 /// The iterator skips SSVC metric objects that fail to deserialize (those are reported by test
-/// 6.1.46). Every remaining selection yields exactly one [`SsvcNamespaceResultAndPath`] item.
-pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
-    doc: &D,
-    allow_test_namespaces: bool,
-) -> impl Iterator<Item = SsvcNamespaceResultAndPath> {
+/// 6.1.46). Every remaining selection yields exactly one [`SsvcNamespaceAndPath`] item.
+pub(crate) fn iter_ssvc_namespace_strings<D: CsafTrait>(doc: &D) -> impl Iterator<Item = SsvcNamespaceAndPath> {
     doc.get_vulnerabilities()
         .iter()
         .enumerate()
@@ -38,18 +41,38 @@ pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
                 .enumerate()
                 .map(move |(metric_index, metric)| (vuln_index, metric_index, metric))
         })
-        .flat_map(move |(vuln_index, metric_index, metric)| {
+        .flat_map(|(vuln_index, metric_index, metric)| {
             metric
                 .get_content()
                 .get_ssvc_v2_typed()
                 .and_then(Result::ok)
                 .into_iter()
                 .flat_map(|selection_list| selection_list.selections.into_iter().enumerate())
-                .map(move |(sl_item_index, sl_item)| SsvcNamespaceResultAndPath {
-                    result: ssvc::validate_namespace(sl_item.namespace.as_str(), allow_test_namespaces),
-                    instance_path: ssvc_selection_namespace_path(vuln_index, metric_index, sl_item_index),
+                .map(move |(selection_index, selection)| SsvcNamespaceAndPath {
+                    namespace: selection.namespace.into(),
+                    instance_path: ssvc_selection_namespace_path(vuln_index, metric_index, selection_index),
                 })
         })
+}
+
+// TODO: Consider removing this helper once its remaining consumers (6.2.34, 6.2.35, 6.3.14, and 6.3.15) are refactored
+//  to consider '/' for base namespace extraction or extension detection.
+/// Returns an iterator over all SSVC v2 namespace parse results found in the document.
+pub(crate) fn iter_ssvc_namespaces<D: CsafTrait>(
+    doc: &D,
+    allow_test_namespaces: bool,
+) -> impl Iterator<Item = SsvcNamespaceResultAndPath> {
+    iter_ssvc_namespace_strings(doc).map(
+        move |SsvcNamespaceAndPath {
+                  namespace,
+                  instance_path,
+              }| {
+            SsvcNamespaceResultAndPath {
+                result: ssvc::validate_namespace(&namespace, allow_test_namespaces),
+                instance_path,
+            }
+        },
+    )
 }
 
 /// Returns a [`TestFindingData`] for a generic SSVC namespace error, using the given JSON instance path.

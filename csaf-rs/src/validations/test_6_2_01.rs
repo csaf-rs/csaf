@@ -3,7 +3,7 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait, ProductTrait, ProductTreeTrai
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
 
-fn create_unused_product_id_error(product_id: &str, path: &str) -> TestFinding {
+fn create_unused_product_id_warning(product_id: &str, path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Product ID '{product_id}' is defined but not referenced in the document"),
         instance_path: format!("{path}/product_id"),
@@ -33,7 +33,7 @@ pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Resu
             if !references.contains(fpn.get_product_id()) {
                 errors
                     .get_or_insert_default()
-                    .push(create_unused_product_id_error(fpn.get_product_id(), path));
+                    .push(create_unused_product_id_warning(fpn.get_product_id(), path));
             }
         });
     }
@@ -53,7 +53,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_01() {
-        let case_01 = Err(vec![create_unused_product_id_error(
+        let case_01 = Err(vec![create_unused_product_id_warning(
             "CSAFPID-9080700",
             "/product_tree/full_product_names/0",
         )]);

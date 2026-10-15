@@ -3,7 +3,7 @@ use crate::csaf_traits::{CsafTrait, DocumentTrait};
 use crate::test_validation::impl_validator;
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_usage_of_deprecated_profile_error(category: &CsafDocumentCategory) -> TestFinding {
+fn create_usage_of_deprecated_profile_warning(category: &CsafDocumentCategory) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Document category '{category}' starts with 'csaf_deprecated_' (or similar)"),
         instance_path: "/document/category".to_string(),
@@ -18,7 +18,7 @@ pub fn test_6_2_38_usage_of_deprecated_profile(doc: &impl CsafTrait) -> Result<(
     let category = doc.get_document().get_category();
 
     if category.to_string().starts_with("csaf_deprecated_") {
-        Err(vec![create_usage_of_deprecated_profile_error(&category)])
+        Err(vec![create_usage_of_deprecated_profile_warning(&category)])
     } else {
         Ok(())
     }
@@ -34,10 +34,10 @@ mod tests {
 
     #[test]
     fn test_test_6_2_38() {
-        let case_01 = Err(vec![create_usage_of_deprecated_profile_error(
+        let case_01 = Err(vec![create_usage_of_deprecated_profile_warning(
             &CsafDocumentCategory::CsafDeprecatedSecurityAdvisory,
         )]);
-        let case_02 = Err(vec![create_usage_of_deprecated_profile_error(
+        let case_02 = Err(vec![create_usage_of_deprecated_profile_warning(
             &CsafDocumentCategory::CsafBaseOther("csaf_deprecated_unknown_type".to_string()),
         )]);
         // Case 11: different profile ("csaf_security_advisory")

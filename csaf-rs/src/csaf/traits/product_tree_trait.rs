@@ -9,6 +9,7 @@ use crate::schema::csaf2_1::schema::{
     Branch as Branch21, CategoryOfTheBranch as CategoryOfTheBranch21, FullProductNameT as FullProductNameT21,
     ProductGroup as ProductGroup21, ProductPath as ProductPath21, ProductTree as ProductTree21,
 };
+use std::collections::HashSet;
 use std::fmt::Write as _;
 
 /// Trait representing an abstract product tree in a CSAF document.
@@ -47,7 +48,22 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of full product names in the product tree.
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
 
-    // Aggregator functions for product references
+    /// Utility function to get all product IDs in the product tree.
+    fn get_all_product_ids(&self) -> HashSet<String> {
+        let mut definitions_set = HashSet::new();
+        self.visit_all_products(&mut |fpn, _path| {
+            definitions_set.insert(fpn.get_product_id().to_owned());
+        });
+        definitions_set
+    }
+
+    /// Utility function to get all product group IDs in the product tree.
+    fn get_all_product_group_ids(&self) -> HashSet<String> {
+        self.get_product_groups()
+            .iter()
+            .map(|product_group| product_group.get_group_id().to_owned())
+            .collect()
+    }
 
     /// Utility function to get all product references in product groups along with their JSON paths
     fn get_product_groups_product_references(&self) -> Vec<(String, String)> {

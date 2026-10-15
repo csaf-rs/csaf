@@ -1,7 +1,7 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_tracking_id_in_title_error(title: &str, tracking_id: &str) -> TestFinding {
+fn create_tracking_id_in_title_warning(title: &str, tracking_id: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("The document title '{title}' contains the document tracking id '{tracking_id}'."),
         instance_path: "/document/title".to_string(),
@@ -17,7 +17,7 @@ pub fn test_6_2_22_document_tracking_id_in_title(doc: &impl CsafTrait) -> Result
     let tracking_id = document.get_tracking().get_id();
 
     if title.contains(tracking_id) {
-        return Err(vec![create_tracking_id_in_title_error(title, tracking_id)]);
+        return Err(vec![create_tracking_id_in_title_warning(title, tracking_id)]);
     }
 
     Ok(())
@@ -37,19 +37,19 @@ mod tests {
 
     #[test]
     fn test_test_6_2_22() {
-        let case_01_starts_with_id_colon_as_sep = Err(vec![create_tracking_id_in_title_error(
+        let case_01_starts_with_id_colon_as_sep = Err(vec![create_tracking_id_in_title_warning(
             "OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-01: Recommended Test: Document Tracking ID in Title (failing example 1)",
             "OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-01",
         )]);
-        let case_02_ends_with_id_in_parenthesis = Err(vec![create_tracking_id_in_title_error(
+        let case_02_ends_with_id_in_parenthesis = Err(vec![create_tracking_id_in_title_warning(
             "Recommended Test: Document Tracking ID in Title (failing example 2) (OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-02)",
             "OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-02",
         )]);
-        let case_03_ends_with_id_colon_sep = Err(vec![create_tracking_id_in_title_error(
+        let case_03_ends_with_id_colon_sep = Err(vec![create_tracking_id_in_title_warning(
             "Recommended Test: Document Tracking ID in Title (failing example 3) - OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-03",
             "OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-03",
         )]);
-        let case_04_starts_with_id_dash_sep = Err(vec![create_tracking_id_in_title_error(
+        let case_04_starts_with_id_dash_sep = Err(vec![create_tracking_id_in_title_warning(
             "OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-04 - Recommended Test: Document Tracking ID in Title (failing example 4)",
             "OASIS_CSAF_TC-CSAF_2.1-2024-6-2-22-04",
         )]);

@@ -352,6 +352,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.39.13 | ⭕ | ✅ |
 | 6.2.40    | ⭕ | ✅ |
 | 6.2.43    | ⭕ | ✅ |
+| 6.2.46    | ⭕ | ✅ |
 | 6.2.47    | ⭕ | ✅ |
 | 6.2.48    | ⭕ | ✅ |
 
@@ -378,8 +379,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.21.8 | ⭕ | ✅ |
 | 6.3.21.9 | ⭕ | ✅ |
 | 6.3.22   | ⭕ |  |
-| 6.3.23.1 | ⭕ |  |
+| 6.3.23.1 | ⭕ | ✅ |
 | 6.3.23.2 | ⭕ | ✅ |
 | 6.3.24   | ⭕ |  |
 | 6.3.25   | ⭕ |  |
-

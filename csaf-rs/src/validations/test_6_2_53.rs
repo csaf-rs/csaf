@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityIdTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::rvisc;
 
-fn create_matching_text_error(system_name: &str, text: &str, vuln_index: usize, id_index: usize) -> TestFinding {
+fn create_matching_text_warning(system_name: &str, text: &str, vuln_index: usize, id_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("The text '{text}' does not match the pattern for registered ID system '{system_name}'"),
         instance_path: format!("/vulnerabilities/{vuln_index}/ids/{id_index}/text"),
@@ -26,7 +26,7 @@ pub fn test_6_2_53_matching_text_for_registered_id_system(doc: &impl CsafTrait) 
                     if regex.find(text).is_none() {
                         errors
                             .get_or_insert_default()
-                            .push(create_matching_text_error(system_name, text, v_i, i_i));
+                            .push(create_matching_text_warning(system_name, text, v_i, i_i));
                     }
                 }
             }
@@ -50,7 +50,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_53() {
-        let case_01 = Err(vec![create_matching_text_error(
+        let case_01 = Err(vec![create_matching_text_warning(
             "https://github.com/oasis-tcs/csaf",
             "Issue 1217",
             0,

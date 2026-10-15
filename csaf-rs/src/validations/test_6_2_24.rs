@@ -56,10 +56,10 @@ fn check_for_non_latest_cwe_version(
         },
     };
 
-    version_mismatch.map(|e_type| create_non_latest_cwe_error(e_type, cwe, version, latest, i_r, i_cwe))
+    version_mismatch.map(|e_type| create_non_latest_cwe_warning(e_type, cwe, version, latest, i_r, i_cwe))
 }
 
-fn create_non_latest_cwe_error(
+fn create_non_latest_cwe_warning(
     e_type: VersionMismatch,
     cwe: &str,
     version: &str,
@@ -162,7 +162,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_24() {
-        let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_error(
+        let case_01_cwe_version_before_latest = Err(vec![create_non_latest_cwe_warning(
             VersionMismatch::NonLatest,
             "CWE-256",
             "4.12",
@@ -171,7 +171,7 @@ mod tests {
             0,
         )]);
 
-        let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_error(
+        let case_02_cwe_version_after_latest = Err(vec![create_non_latest_cwe_warning(
             VersionMismatch::Future,
             "CWE-143",
             "4.15",
@@ -181,15 +181,15 @@ mod tests {
         )]);
 
         let case_03_cwe_version_mismatch = Err(vec![
-            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-262", "1.8.1", "4.13", 0, 0),
-            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-287", "1.0", "4.13", 0, 2),
+            create_non_latest_cwe_warning(VersionMismatch::NonLatest, "CWE-262", "1.8.1", "4.13", 0, 0),
+            create_non_latest_cwe_warning(VersionMismatch::NonLatest, "CWE-287", "1.0", "4.13", 0, 2),
         ]);
 
         let case_04_cwe_version_mismatch_multi_vulnerabilities = Err(vec![
-            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-158", "1.3", "4.13", 0, 0),
-            create_non_latest_cwe_error(VersionMismatch::NonLatest, "CWE-138", "2.1", "4.13", 0, 1),
-            create_non_latest_cwe_error(VersionMismatch::Future, "CWE-318", "4.14", "4.13", 1, 0),
-            create_non_latest_cwe_error(VersionMismatch::Future, "CWE-61", "4.15", "4.13", 2, 0),
+            create_non_latest_cwe_warning(VersionMismatch::NonLatest, "CWE-158", "1.3", "4.13", 0, 0),
+            create_non_latest_cwe_warning(VersionMismatch::NonLatest, "CWE-138", "2.1", "4.13", 0, 1),
+            create_non_latest_cwe_warning(VersionMismatch::Future, "CWE-318", "4.14", "4.13", 1, 0),
+            create_non_latest_cwe_warning(VersionMismatch::Future, "CWE-61", "4.15", "4.13", 2, 0),
         ]);
 
         TESTS_2_1.test_6_2_24.expect(ExpectedResults {

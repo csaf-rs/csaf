@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_deprecated_cwe_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+fn create_deprecated_cwe_warning(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("Weakness '{cwe}' is deprecated in version {version}."),
         instance_path: format!("/vulnerabilities/{i_r}/cwes/{i_cwe}"),
@@ -34,9 +34,12 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
                 if let Some(entry) = CWE_ENTRIES[version].entries.get(&cwe_item.id)
                     && entry.status == "Deprecated"
                 {
-                    errors
-                        .get_or_insert_default()
-                        .push(create_deprecated_cwe_error(&cwe_item.id, version, i_r, i_cwe));
+                    errors.get_or_insert_default().push(create_deprecated_cwe_warning(
+                        &cwe_item.id,
+                        version,
+                        i_r,
+                        i_cwe,
+                    ));
                 }
             }
         }
@@ -56,15 +59,15 @@ mod tests {
     #[test]
     fn test_test_6_2_23() {
         // case 01: CWE-596 deprecated in 4.13
-        let case_01_single_vuln_with_deprecated_cwe = Err(vec![create_deprecated_cwe_error("CWE-596", "4.13", 0, 0)]);
+        let case_01_single_vuln_with_deprecated_cwe = Err(vec![create_deprecated_cwe_warning("CWE-596", "4.13", 0, 0)]);
 
         // case 02: first CWE is CWE-1324 deprecated in 4.10
         let case_02_single_vuln_containing_deprecated_cwe =
-            Err(vec![create_deprecated_cwe_error("CWE-1324", "4.10", 0, 0)]);
+            Err(vec![create_deprecated_cwe_warning("CWE-1324", "4.10", 0, 0)]);
 
         // case 03: the third vulnerability contains CWE-365 deprecated in 4.13
         let case_03_third_multi_vuln_with_deprecated_cwe =
-            Err(vec![create_deprecated_cwe_error("CWE-365", "4.13", 2, 0)]);
+            Err(vec![create_deprecated_cwe_warning("CWE-365", "4.13", 2, 0)]);
 
         TESTS_2_1.test_6_2_23.expect(ExpectedResults {
             case_01: case_01_single_vuln_with_deprecated_cwe,

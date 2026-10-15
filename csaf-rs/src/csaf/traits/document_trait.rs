@@ -1,14 +1,12 @@
 use crate::csaf::enums::csaf_version::CsafVersion;
-use crate::csaf::traits::util::extract_references::{
-    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
-};
+use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf::types::language::CsafLanguage;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, AggregateSeverityTrait, DistributionTrait, ExtensionsTrait, NoteTrait, PublisherTrait,
-    ReferenceTrait, TrackingTrait,
+    AcknowledgmentTrait, AggregateSeverityTrait, Csaf21InvolvementTrait, DistributionTrait, ExtensionsTrait, NoteTrait,
+    PublisherTrait, ReferenceTrait, TrackingTrait,
 };
 use crate::schema::csaf2_0::schema::{
     Acknowledgment as Acknowledgment20, AggregateSeverity as AggregateSeverity20, CsafVersion as CsafVersion20,
@@ -18,9 +16,9 @@ use crate::schema::csaf2_0::schema::{
 use crate::schema::csaf2_1::schema::{
     Acknowledgment as Acknowledgment21, AggregateSeverity as AggregateSeverity21,
     CategoryOfReference as CategoryOfReference21, CsafVersion as CsafVersion21,
-    DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, Note as Note21,
-    Publisher as Publisher21, Reference as Reference21, RulesForDocumentSharing as RulesForDocumentSharing21,
-    Tracking as Tracking21,
+    DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, Involvement as Involvement21,
+    Note as Note21, Publisher as Publisher21, Reference as Reference21,
+    RulesForDocumentSharing as RulesForDocumentSharing21, Tracking as Tracking21,
 };
 use crate::validation::{TestFinding, TestFindingData};
 
@@ -78,8 +76,10 @@ fn has_non_empty_hostname(authority: &str) -> bool {
 
 /// Trait representing document meta-level information
 pub trait DocumentTrait {
+    /// Type representing document acknowledgment information
     type AcknowledgmentType: AcknowledgmentTrait;
 
+    /// Type representing document aggregate severity information
     type AggregateSeverityType: AggregateSeverityTrait;
     /// Type representing document tracking information
     type TrackingType: TrackingTrait;
@@ -87,18 +87,30 @@ pub trait DocumentTrait {
     /// Type representing document distribution information
     type DistributionType: DistributionTrait;
 
+    /// Type representing document involvement information
+    ///
+    /// Note: In CSAF 2.0, involvements worked differently and were present under `vulnerabilities`.
+    ///
+    /// For CSAF 2.0 documents, this type is `NotPresentInCsaf20`.
+    /// For CSAF 2.1 documents, this type has the information described above.
+    type InvolvementType: Csaf21InvolvementTrait;
+
     /// Type representing document notes
     type NoteType: NoteTrait;
 
     /// Type representing document publisher information
     type PublisherType: PublisherTrait;
 
+    /// Type representing document references
     type ReferenceType: ReferenceTrait;
 
+    /// Type representing document extensions
     type ExtensionsType: ExtensionsTrait;
 
+    /// Returns the acknowledgments information for this document
     fn get_acknowledgments(&self) -> Option<&Vec<Self::AcknowledgmentType>>;
 
+    /// Returns the aggregate severity information for this document
     fn get_aggregate_severity(&self) -> Option<&Self::AggregateSeverityType>;
 
     /// Returns the tracking information for this document
@@ -114,11 +126,9 @@ pub trait DocumentTrait {
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 
     define_reference_accessors! {
-        both: [
+        optional_vec: [
             (get_notes_group_references, get_notes_product_references, get_notes, "/document/notes"),
         ],
-        custom_group_extraction: [],
-        custom_product_extraction: [],
     }
 
     /// Returns the language associated with this document.
@@ -136,6 +146,14 @@ pub trait DocumentTrait {
     /// Returns the references of this document
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
 
+    /// Returns the involvement information for this document
+    ///
+    /// Note: In CSAF 2.0, involvements worked differently and were present under `vulnerabilities`.
+    ///
+    /// If called for CSAF 2.0 documents, this method returns `None`.
+    /// If called for CSAF 2.1 documents, this method returns the involvement information if present, or `None` if not present.
+    fn get_involvement(&self) -> Option<&Self::InvolvementType>;
+
     /// Returns the canonical URLs from this document's references.
     fn get_canonical_urls(&self) -> Vec<&str> {
         let expected_filename = self.get_tracking().get_canonical_filename();
@@ -150,11 +168,13 @@ pub trait DocumentTrait {
             .is_some()
     }
 
+    /// Returns the CSAF version of this document
     fn get_csaf_version(&self) -> CsafVersion;
 
     /// Returns the title of this document
     fn get_title(&self) -> &str;
 
+    /// Returns the extensions of this document
     fn get_extensions(&self) -> Option<&Self::ExtensionsType>;
 }
 
@@ -231,6 +251,12 @@ impl DocumentTrait for DocumentLevelMetaData20 {
     fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         None
     }
+
+    type InvolvementType = NotPresentInCsaf20;
+
+    fn get_involvement(&self) -> Option<&Self::InvolvementType> {
+        None
+    }
 }
 
 impl DocumentTrait for DocumentLevelMetaData21 {
@@ -238,6 +264,7 @@ impl DocumentTrait for DocumentLevelMetaData21 {
     type AggregateSeverityType = AggregateSeverity21;
     type TrackingType = Tracking21;
     type DistributionType = RulesForDocumentSharing21;
+    type InvolvementType = Involvement21;
     type NoteType = Note21;
     type PublisherType = Publisher21;
     type ReferenceType = Reference21;
@@ -287,6 +314,10 @@ impl DocumentTrait for DocumentLevelMetaData21 {
 
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>> {
         self.references.as_deref()
+    }
+
+    fn get_involvement(&self) -> Option<&Self::InvolvementType> {
+        self.involvement.as_ref()
     }
 
     fn get_csaf_version(&self) -> CsafVersion {

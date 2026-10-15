@@ -42,7 +42,7 @@ fn test_6_1_27_05_err_generator(document_category: &CsafDocumentCategory, vuln_p
         message: format!(
             "Document with category '{document_category}' must have a notes element in each vulnerability"
         ),
-        instance_path: format!("/vulnerabilities/{vuln_path_index}/notes"),
+        instance_path: format!("/vulnerabilities/{vuln_path_index}"),
     })
 }
 

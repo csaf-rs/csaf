@@ -1,6 +1,4 @@
-use crate::csaf::traits::util::extract_references::{
-    ExtractGroupReferences, ExtractProductReferences, define_reference_accessors,
-};
+use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::impl_optional_str_field_getter;
 
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
@@ -8,7 +6,7 @@ use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
 use crate::csaf::traits::vulnerabilities::product_status_trait::ProductStatusTrait;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    AcknowledgmentTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait, InvolvementTrait,
+    AcknowledgmentTrait, Csaf20InvolvementTrait, Cwe, ExtensionsTrait, FirstKnownExploitationDatesTrait, FlagTrait,
     MetricTrait, NoteTrait, ReferenceTrait, RemediationTrait, ThreatTrait, VulnerabilityIdTrait,
 };
 use crate::schema::csaf2_0::schema::{
@@ -61,8 +59,13 @@ pub trait VulnerabilityTrait {
     /// The associated type representing a vulnerability flag.
     type FlagType: FlagTrait;
 
-    /// The associated type representing a vulnerability involvement.
-    type InvolvementType: InvolvementTrait;
+    /// Type representing vulnerability involvement information
+    ///
+    /// Note: In CSAF 2.1, involvements work differently and are present under `document`.
+    ///
+    /// For CSAF 2.0 documents, this type has the information described above.
+    /// For CSAF 2.1 documents, this type is `NotPresentInCsaf21`.
+    type InvolvementType: Csaf20InvolvementTrait;
 
     /// The associated type representing the vulnerability ID information.
     type VulnerabilityIdType: VulnerabilityIdTrait;
@@ -131,7 +134,12 @@ pub trait VulnerabilityTrait {
     /// Returns all flags associated with this vulnerability.
     fn get_flags(&self) -> Option<&Vec<Self::FlagType>>;
 
-    /// Returns all involvements associated with this vulnerability.
+    /// Returns the involvement information for this vulnerability
+    ///
+    /// Note: In CSAF 2.1, involvements work differently and are present under `document`.
+    ///
+    /// If called for CSAF 2.0 documents, this method returns the involvement information if present, or `None` if not present.
+    /// If called for CSAF 2.1 documents, this method returns `None`.
     fn get_involvements(&self) -> Option<&Vec<Self::InvolvementType>>;
 
     /// Returns the CVE associated with the vulnerability.
@@ -169,16 +177,17 @@ pub trait VulnerabilityTrait {
     fn get_references(&self) -> Option<&Vec<Self::ReferenceType>>;
 
     define_reference_accessors! {
-        both: [
+        vec: [
             (get_remediations_group_references,                     get_remediations_product_references,                     get_remediations,                     "remediations"),
             (get_threats_group_references,                          get_threats_product_references,                          get_threats,                          "threats"),
+        ],
+        optional_vec: [
             (get_flags_group_references,                            get_flags_product_references,                            get_flags,                            "flags"),
             (get_involvements_group_references,                     get_involvements_product_references,                     get_involvements,                     "involvements"),
             (get_notes_group_references,                            get_notes_product_references,                            get_notes,                            "notes"),
             (get_first_known_exploitation_dates_group_references,   get_first_known_exploitation_dates_product_references,   get_first_known_exploitation_dates,   "first_known_exploitation_dates"),
             (get_ids_group_references,                              get_ids_product_references,                              get_ids,                              "ids"),
         ],
-        custom_group_extraction: [],
         custom_product_extraction: [
             get_product_status_product_references,
             get_metrics_product_references,

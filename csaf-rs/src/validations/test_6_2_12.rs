@@ -1,9 +1,30 @@
 use crate::{
     validation::{TestFinding, TestFindingData},
-    validations::utils::raw_json::{JsonValuePresence, is_present_and_set},
+    validations::utils::raw_json_value_helper::{JsonValuePresence, get_json_presence},
 };
 use serde_json::Value;
 use std::sync::LazyLock;
+
+static MISSING_DOCUMENT_LANGUAGE_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The document language `lang` is not defined".to_string(),
+        instance_path: "/document".to_string(),
+    })
+});
+
+static UNSET_DOCUMENT_LANGUAGE_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The document language `lang` is not set (e.g., `null`)".to_string(),
+        instance_path: "/document/lang".to_string(),
+    })
+});
+
+static EMPTY_DOCUMENT_LANGUAGE_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The document language `lang` is empty (e.g., `\"\"`)".to_string(),
+        instance_path: "/document/lang".to_string(),
+    })
+});
 
 /// 6.2.12 Missing Document Language
 ///
@@ -11,26 +32,18 @@ use std::sync::LazyLock;
 /// A CSAF Validator SHALL differentiate in the error message between the key being present
 /// but having no or an empty value and not being present at all.
 pub fn test_6_2_12_missing_document_language(json: &Value) -> Result<(), Vec<TestFinding>> {
-    match is_present_and_set("/document/lang", json) {
+    match get_json_presence("/document/lang", json) {
         JsonValuePresence::Missing => Err(vec![MISSING_DOCUMENT_LANGUAGE_WARNING.clone()]),
-        JsonValuePresence::Unset | JsonValuePresence::Empty => Err(vec![UNSET_DOCUMENT_LANGUAGE_WARNING.clone()]),
+        JsonValuePresence::Unset => Err(vec![UNSET_DOCUMENT_LANGUAGE_WARNING.clone()]),
+        JsonValuePresence::EmptyString => Err(vec![EMPTY_DOCUMENT_LANGUAGE_WARNING.clone()]),
+        // empty array and empty object are schema violations, which are reported by the schema test
+        JsonValuePresence::EmptyArray | JsonValuePresence::EmptyObject |
+        // set is valid
         JsonValuePresence::Set => Ok(()),
     }
 }
 
-static MISSING_DOCUMENT_LANGUAGE_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
-    TestFinding::Warning(TestFindingData {
-        message: "The document language is not defined".to_string(),
-        instance_path: "/document".to_string(),
-    })
-});
 
-static UNSET_DOCUMENT_LANGUAGE_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
-    TestFinding::Warning(TestFindingData {
-        message: "The document language is empty or not set (e.g., `null`)".to_string(),
-        instance_path: "/document/lang".to_string(),
-    })
-});
 
 crate::test_validation::impl_raw_json_validator!(ValidatorForTest6_2_12, test_6_2_12_missing_document_language);
 

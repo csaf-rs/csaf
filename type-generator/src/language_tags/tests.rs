@@ -174,4 +174,11 @@ fn parse_registry_drops_old_grandfathered_tags() {
             .collect::<Vec<_>>(),
         vec!["cutoff-tag", "current-tag"]
     );
+    assert_eq!(
+        map[&SubtagKind::GrandfatheredDeprecatedBeforeCSAF]
+            .iter()
+            .map(|entry| entry.subtag.as_str())
+            .collect::<Vec<_>>(),
+        vec!["old-tag"]
+    );
 }

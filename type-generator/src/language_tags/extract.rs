@@ -100,14 +100,8 @@ fn push_block_into_map(
 ) {
     // if all fields are filled and the entry type is one of the types we want to extract
     if let (Some(entry_type), Some(subtag)) = (entry_type, subtag)
-        && let Some(&kind) = SubtagKind::ALL.iter().find(|k| k.registry_key() == entry_type.as_str())
+        && let Some(&entry_kind) = SubtagKind::ALL.iter().find(|k| k.registry_key() == entry_type.as_str())
     {
-        // ignore grandfathered tags that were deprecated before the CSAF 2.0 release
-        // deprecation date is YYYY-MM-DD, so string comparison works for this purpose
-        if kind == SubtagKind::Grandfathered && deprecated.is_some_and(|date| date < GRANDFATHERED_DEPRECATION_CUTOFF) {
-            return;
-        }
-
         // the subtag is a range ("qaa..qtz"), expand it
         let entries: Vec<SubtagEntry> = if let Some((start, end)) = subtag.split_once("..") {
             expand_subtag_range(start, end)
@@ -125,8 +119,19 @@ fn push_block_into_map(
                 is_private: is_private_use,
             }]
         };
+
+        // ignore grandfathered tags that were deprecated before the CSAF 2.0 release
+        // deprecation date is YYYY-MM-DD, so string comparison works for this purpose
+        let map_kind = if entry_kind == SubtagKind::Grandfathered
+            && deprecated.is_some_and(|date| date < GRANDFATHERED_DEPRECATION_CUTOFF)
+        {
+            SubtagKind::GrandfatheredDeprecatedBeforeCSAF
+        } else {
+            entry_kind
+        };
+
         // put the entries in the map
-        map.get_mut(&kind)
+        map.get_mut(&map_kind)
             .expect("SubtagKind must be present in map – all variants should have been inserted during initialization")
             .extend(entries);
     }

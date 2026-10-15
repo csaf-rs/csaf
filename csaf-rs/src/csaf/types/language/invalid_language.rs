@@ -3,6 +3,8 @@ use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 /// Represents an error that occurred while parsing or validating a language tag in a CSAF document.
 #[derive(Debug, PartialEq, Clone)]
 pub enum CsafLanguageError {
+    /// Grandfathered language subtag is deprecated and invalid for CSAF
+    GrandfatheredTagDeprecatedBeforeCSAF(String),
     /// Oxilangtag parsing failed
     ParserError(String, String),
     /// Primary language subtag does not exist in the IANA registry
@@ -28,6 +30,11 @@ impl IntoTestFindingError for CsafLanguageError {
             Self::InvalidRegionSubtag(invalid_lang_tag, region_sub_tag) => format!(
                 "Invalid language code '{invalid_lang_tag}': region subtag '{region_sub_tag}' is not a valid region subtag"
             ),
+            Self::GrandfatheredTagDeprecatedBeforeCSAF(invalid_lang_tag) => {
+                format!(
+                    "Invalid language code '{invalid_lang_tag}': grandfathered tag was deprecated before CSAF was specified"
+                )
+            },
         };
         TestFinding::Error(TestFindingData {
             message,

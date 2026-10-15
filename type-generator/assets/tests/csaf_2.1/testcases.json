@@ -1092,6 +1092,24 @@
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s02.json",
           "valid": false
         }
+      ],
+      "valid": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s11.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s12.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s13.json",
+          "valid": true
+        },
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s14.json",
+          "valid": true
+        }
       ]
     },
     {

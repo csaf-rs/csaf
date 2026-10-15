@@ -66,12 +66,20 @@ mod tests {
         // Case s01: license expression is set to null (schema invalid)
         // Case s02: license expression is set to empty string (schema invalid)
         // Case 11: license expression is set to a valid value
+        // Case s11: license expression is set to an empty array (schema invalid)
+        // Case s12: license expression is set to an empty object (schema invalid)
+        // Case s13: license expression is set to boolean (schema invalid)
+        // Case s14: license expression is set to number (schema invalid)
 
         TESTS_2_1.test_6_2_43.expect(ExpectedResults_2_1 {
             case_01: missing_license_expression_error,
             case_s01: unset_license_expression,
             case_s02: empty_license_expression,
             case_11: Ok(()),
+            case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+            case_s14: Ok(()),
         });
     }
 }

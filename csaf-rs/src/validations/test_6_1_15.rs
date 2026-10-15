@@ -72,13 +72,15 @@ mod tests {
 
         // case 01: translator category without source_lang
         // case 02: translator category without source_lang, but lang field is present
-        // case s01: translator category with source_lang set to null
-        // case s02: translator category with source_lang set to empty string
+        // case s01: translator category with source_lang set to null (schema invalid)
+        // case s02: translator category with source_lang set to empty string (schema invalid)
         // case 11: translator category with source_lang
         // case 12: translator category with source_lang and lang field is present
         // case S11: source_lang is missing, but category is not translator (should be skipped)
-        // case s12: translator category with source_lang set to an empty array
-        // case s13: translator category with source_lang set to an empty object
+        // case s12: translator category with source_lang set to an empty array (schema invalid)
+        // case s13: translator category with source_lang set to an empty object (schema invalid)
+        // case s14: translator category with source_lang set to a boolean (schema invalid)
+        // case s15: translator category with source_lang set to a number (schema invalid)
 
 
         TESTS_2_0.test_6_1_15.expect(ExpectedResults_2_0 {
@@ -91,7 +93,8 @@ mod tests {
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),
-
+            case_s14: Ok(()),
+            case_s15: Ok(()),
         });
 
         TESTS_2_1.test_6_1_15.expect(ExpectedResults_2_1 {
@@ -104,6 +107,8 @@ mod tests {
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),
+            case_s14: Ok(()),
+            case_s15: Ok(()),
         });
     }
 }

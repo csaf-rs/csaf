@@ -67,8 +67,8 @@ mod tests {
         // Case S11: document lang "en"
         // Case S12: document lang is empty array (schema invalid)
         // Case S13: document lang is empty object (schema invalid)
-        // Case S14: document lang is bool true
-        // Case S15: document lang is number 42
+        // Case S14: document lang is bool true (schema invalid)
+        // Case S15: document lang is number 42 (schema invalid)
 
         // Note: Cases S01 - 04 and S12 - S13 are all schema-invalid.
 

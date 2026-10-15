@@ -62,6 +62,11 @@ mod tests {
         let unset_license_expression = Err(vec![UNSET_LICENSE_EXPRESSION_ERROR.clone()]);
         let empty_license_expression = Err(vec![EMPTY_LICENSE_EXPRESSION_ERROR.clone()]);
 
+        // Case 01: license expression is missing
+        // Case s01: license expression is set to null (schema invalid)
+        // Case s02: license expression is set to empty string (schema invalid)
+        // Case 11: license expression is set to a valid value
+
         TESTS_2_1.test_6_2_43.expect(ExpectedResults_2_1 {
             case_01: missing_license_expression_error,
             case_s01: unset_license_expression,

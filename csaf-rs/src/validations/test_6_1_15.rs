@@ -8,15 +8,15 @@ use std::sync::LazyLock;
 
 static MISSING_SOURCE_LANG_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message: "source_lang is required when the publisher category is 'translator'".to_string(),
-        instance_path: "/document/source_lang".to_string(),
+        message: "`source_lang` is required when the publisher category is 'translator'".to_string(),
+        instance_path: "/document".to_string(),
     })
 });
 
 static UNSET_SOURCE_LANG_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
         message:
-            "source_lang property is empty or not set (e.g., `null`) even though the publisher category is 'translator'"
+            "`source_lang` property is empty or not set (e.g., `null`) even though the publisher category is 'translator'"
                 .to_string(),
         instance_path: "/document/source_lang".to_string(),
     })

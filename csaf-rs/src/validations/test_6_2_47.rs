@@ -2,7 +2,7 @@ use crate::csaf_traits::{ContentTrait, CsafTrait, DocumentTrait, MetricTrait, Vu
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn create_qualitative_severity_rating_error(content_path: &str) -> TestFinding {
+fn create_qualitative_severity_rating_warning(content_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: "A metric provided by the issuing party must not use `qualitative_severity_rating`.".to_string(),
         instance_path: format!("{content_path}/qualitative_severity_rating"),
@@ -50,7 +50,7 @@ pub fn test_6_2_47_use_of_qualitative_severity_rating_by_issuing_party(
                     let content_path = content.get_content_json_path(i_v, i_m);
                     errors
                         .get_or_insert_default()
-                        .push(create_qualitative_severity_rating_error(&content_path));
+                        .push(create_qualitative_severity_rating_warning(&content_path));
                 }
             }
         }
@@ -73,10 +73,10 @@ mod tests {
 
     #[test]
     fn test_test_6_2_47() {
-        let case_01_no_source = Err(vec![create_qualitative_severity_rating_error(
+        let case_01_no_source = Err(vec![create_qualitative_severity_rating_warning(
             "/vulnerabilities/0/metrics/0/content",
         )]);
-        let case_02_source_is_canonical = Err(vec![create_qualitative_severity_rating_error(
+        let case_02_source_is_canonical = Err(vec![create_qualitative_severity_rating_warning(
             "/vulnerabilities/0/metrics/0/content",
         )]);
 

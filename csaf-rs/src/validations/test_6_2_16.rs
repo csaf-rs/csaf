@@ -15,7 +15,7 @@ pub fn test_6_2_16_missing_product_identification_helper(doc: &impl CsafTrait) -
             if fpn.get_product_identification_helper().is_none() {
                 errors
                     .get_or_insert_default()
-                    .push(create_missing_product_identification_helper_error(path));
+                    .push(create_missing_product_identification_helper_warning(path));
             }
         });
     }
@@ -23,7 +23,7 @@ pub fn test_6_2_16_missing_product_identification_helper(doc: &impl CsafTrait) -
     errors.map_or(Ok(()), Err)
 }
 
-fn create_missing_product_identification_helper_error(instance_path: &str) -> TestFinding {
+fn create_missing_product_identification_helper_warning(instance_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: "Product is missing 'product_identification_helper' property".to_string(),
         instance_path: instance_path.to_string(),
@@ -45,43 +45,43 @@ mod tests {
 
     #[test]
     fn test_test_6_2_16() {
-        let case_01 = Err(vec![create_missing_product_identification_helper_error(
+        let case_01 = Err(vec![create_missing_product_identification_helper_warning(
             "/product_tree/full_product_names/0",
         )]);
-        let case_02 = Err(vec![create_missing_product_identification_helper_error(
+        let case_02 = Err(vec![create_missing_product_identification_helper_warning(
             "/product_tree/branches/0/branches/0/branches/0/product",
         )]);
 
         let case_s01 = Err(vec![
-            create_missing_product_identification_helper_error(
+            create_missing_product_identification_helper_warning(
                 "/product_tree/branches/0/branches/0/branches/1/product",
             ),
-            create_missing_product_identification_helper_error(
+            create_missing_product_identification_helper_warning(
                 "/product_tree/branches/0/branches/0/branches/3/product",
             ),
         ]);
 
         let case_s02 = Err(vec![
-            create_missing_product_identification_helper_error("/product_tree/full_product_names/1"),
-            create_missing_product_identification_helper_error("/product_tree/full_product_names/3"),
+            create_missing_product_identification_helper_warning("/product_tree/full_product_names/1"),
+            create_missing_product_identification_helper_warning("/product_tree/full_product_names/3"),
         ]);
 
         let case_s03 = Err(vec![
-            create_missing_product_identification_helper_error("/product_tree/product_paths/1/full_product_name"),
-            create_missing_product_identification_helper_error("/product_tree/product_paths/3/full_product_name"),
+            create_missing_product_identification_helper_warning("/product_tree/product_paths/1/full_product_name"),
+            create_missing_product_identification_helper_warning("/product_tree/product_paths/3/full_product_name"),
         ]);
 
         let case_s04 = Err(vec![
-            create_missing_product_identification_helper_error(
+            create_missing_product_identification_helper_warning(
                 "/product_tree/branches/0/branches/0/branches/0/product",
             ),
-            create_missing_product_identification_helper_error(
+            create_missing_product_identification_helper_warning(
                 "/product_tree/branches/0/branches/0/branches/1/product",
             ),
-            create_missing_product_identification_helper_error("/product_tree/full_product_names/0"),
-            create_missing_product_identification_helper_error("/product_tree/full_product_names/1"),
-            create_missing_product_identification_helper_error("/product_tree/product_paths/0/full_product_name"),
-            create_missing_product_identification_helper_error("/product_tree/product_paths/1/full_product_name"),
+            create_missing_product_identification_helper_warning("/product_tree/full_product_names/0"),
+            create_missing_product_identification_helper_warning("/product_tree/full_product_names/1"),
+            create_missing_product_identification_helper_warning("/product_tree/product_paths/0/full_product_name"),
+            create_missing_product_identification_helper_warning("/product_tree/product_paths/1/full_product_name"),
         ]);
 
         TESTS_2_0.test_6_2_16.expect(ExpectedResults_2_0 {

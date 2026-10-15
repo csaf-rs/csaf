@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_disallowed_cwe_usage_error(cwe: &str, usage: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+fn create_disallowed_cwe_usage_warning(cwe: &str, usage: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "Weakness '{cwe}' has usage '{usage}' in version '{version}', which is not allowed for vulnerability mapping."
@@ -50,7 +50,7 @@ pub fn test_6_2_25_usage_of_cwe_not_allowed_for_vulnerability_mapping(
 
                 // Generate an error if the usage field is not one of the two specified values.
                 if usage != "Allowed" && usage != "Allowed-with-Review" {
-                    errors.get_or_insert_default().push(create_disallowed_cwe_usage_error(
+                    errors.get_or_insert_default().push(create_disallowed_cwe_usage_warning(
                         &cwe_item.id,
                         usage,
                         version,
@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_25() {
-        let case_01_discouraged = Err(vec![create_disallowed_cwe_usage_error(
+        let case_01_discouraged = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-20",
             "Discouraged",
             "4.13",
@@ -87,7 +87,7 @@ mod tests {
             0,
         )]);
 
-        let case_02_prohibited = Err(vec![create_disallowed_cwe_usage_error(
+        let case_02_prohibited = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-1187",
             "Prohibited",
             "4.13",
@@ -95,7 +95,7 @@ mod tests {
             0,
         )]);
 
-        let case_03_multiple_cwes_with_discouraged = Err(vec![create_disallowed_cwe_usage_error(
+        let case_03_multiple_cwes_with_discouraged = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-20",
             "Discouraged",
             "4.13",
@@ -103,7 +103,7 @@ mod tests {
             1,
         )]);
 
-        let case_04_multiple_vulns_cwe_with_discouraged = Err(vec![create_disallowed_cwe_usage_error(
+        let case_04_multiple_vulns_cwe_with_discouraged = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-74",
             "Discouraged",
             "4.13",

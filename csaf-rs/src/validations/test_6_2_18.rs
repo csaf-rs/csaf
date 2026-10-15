@@ -3,7 +3,7 @@ use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
-fn create_product_version_range_without_vers_error(version_range: &str, path: &str) -> TestFinding {
+fn create_product_version_range_without_vers_warning(version_range: &str, path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "Product version range {version_range} does not match VERS syntax. If possible, use VERS syntax for version ranges as VLS is just provided as a fallback solution and in the future CSAF might deprecate the use of VLS"
@@ -31,7 +31,10 @@ pub fn test_6_2_18_product_version_range_without_vers(doc: &impl CsafTrait) -> R
             {
                 errors
                     .get_or_insert_default()
-                    .push(create_product_version_range_without_vers_error(branch.get_name(), path));
+                    .push(create_product_version_range_without_vers_warning(
+                        branch.get_name(),
+                        path,
+                    ));
             }
         });
     }
@@ -51,7 +54,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_18() {
-        let case_01 = Err(vec![create_product_version_range_without_vers_error(
+        let case_01 = Err(vec![create_product_version_range_without_vers_warning(
             ">4.2",
             "/product_tree/branches/0/branches/0/branches/0",
         )]);

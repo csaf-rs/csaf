@@ -21,7 +21,8 @@ impl Node0 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_document(&mut self) -> &mut Node1 {
         if !self.0.is_object() {
@@ -29,7 +30,7 @@ impl Node0 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("document").or_insert(serde_json::Value::Null),
+            map.entry("document").or_insert(Node1::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -42,7 +43,8 @@ impl Node0 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_tree(&mut self) -> &mut Node2 {
         if !self.0.is_object() {
@@ -50,7 +52,7 @@ impl Node0 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_tree").or_insert(serde_json::Value::Null),
+            map.entry("product_tree").or_insert(Node2::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -63,7 +65,8 @@ impl Node0 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_vulnerabilities(&mut self) -> &mut Node3 {
         if !self.0.is_object() {
@@ -71,8 +74,12 @@ impl Node0 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("vulnerabilities").or_insert(serde_json::Value::Null),
+            map.entry("vulnerabilities").or_insert(Node3::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -105,6 +112,10 @@ impl Node0 {
 #[repr(transparent)]
 pub struct Node3(serde_json::Value);
 impl Node3 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node4], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -142,7 +153,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_acknowledgments(&mut self) -> &mut Node5 {
         if !self.0.is_object() {
@@ -150,7 +162,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("acknowledgments").or_insert(serde_json::Value::Null),
+            map.entry("acknowledgments").or_insert(Node5::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -163,7 +175,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_cve(&mut self) -> &mut Node6 {
         if !self.0.is_object() {
@@ -171,7 +184,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("cve").or_insert(serde_json::Value::Null),
+            map.entry("cve").or_insert(Node6::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -184,7 +197,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_cwe(&mut self) -> &mut Node7 {
         if !self.0.is_object() {
@@ -192,7 +206,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("cwe").or_insert(serde_json::Value::Null),
+            map.entry("cwe").or_insert(Node7::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -205,7 +219,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_discovery_date(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -213,7 +228,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("discovery_date").or_insert(serde_json::Value::Null),
+            map.entry("discovery_date").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -226,7 +241,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_flags(&mut self) -> &mut Node9 {
         if !self.0.is_object() {
@@ -234,7 +250,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("flags").or_insert(serde_json::Value::Null),
+            map.entry("flags").or_insert(Node9::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -247,7 +263,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_ids(&mut self) -> &mut Node10 {
         if !self.0.is_object() {
@@ -255,7 +272,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("ids").or_insert(serde_json::Value::Null),
+            map.entry("ids").or_insert(Node10::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -268,7 +285,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_involvements(&mut self) -> &mut Node11 {
         if !self.0.is_object() {
@@ -276,7 +294,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("involvements").or_insert(serde_json::Value::Null),
+            map.entry("involvements").or_insert(Node11::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -289,7 +307,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_notes(&mut self) -> &mut Node12 {
         if !self.0.is_object() {
@@ -297,7 +316,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("notes").or_insert(serde_json::Value::Null),
+            map.entry("notes").or_insert(Node12::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -310,7 +329,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_status(&mut self) -> &mut Node13 {
         if !self.0.is_object() {
@@ -318,7 +338,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_status").or_insert(serde_json::Value::Null),
+            map.entry("product_status").or_insert(Node13::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -331,7 +351,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_references(&mut self) -> &mut Node14 {
         if !self.0.is_object() {
@@ -339,7 +360,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("references").or_insert(serde_json::Value::Null),
+            map.entry("references").or_insert(Node14::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -352,7 +373,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_release_date(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -360,7 +382,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("release_date").or_insert(serde_json::Value::Null),
+            map.entry("release_date").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -373,7 +395,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_remediations(&mut self) -> &mut Node15 {
         if !self.0.is_object() {
@@ -381,7 +404,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("remediations").or_insert(serde_json::Value::Null),
+            map.entry("remediations").or_insert(Node15::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -394,7 +417,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_scores(&mut self) -> &mut Node16 {
         if !self.0.is_object() {
@@ -402,7 +426,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("scores").or_insert(serde_json::Value::Null),
+            map.entry("scores").or_insert(Node16::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -415,7 +439,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_threats(&mut self) -> &mut Node17 {
         if !self.0.is_object() {
@@ -423,7 +448,7 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("threats").or_insert(serde_json::Value::Null),
+            map.entry("threats").or_insert(Node17::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -436,7 +461,8 @@ impl Node4 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_title(&mut self) -> &mut Node18 {
         if !self.0.is_object() {
@@ -444,8 +470,12 @@ impl Node4 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("title").or_insert(serde_json::Value::Null),
+            map.entry("title").or_insert(Node18::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -473,6 +503,10 @@ pub type Node18 = Node19;
 #[repr(transparent)]
 pub struct Node19(serde_json::Value);
 impl Node19 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -489,6 +523,10 @@ impl Node19 {
 #[repr(transparent)]
 pub struct Node17(serde_json::Value);
 impl Node17 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node20], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -526,7 +564,8 @@ impl Node20 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node21 {
         if !self.0.is_object() {
@@ -534,7 +573,7 @@ impl Node20 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node21::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -547,7 +586,8 @@ impl Node20 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_date(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -555,7 +595,7 @@ impl Node20 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("date").or_insert(serde_json::Value::Null),
+            map.entry("date").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -568,7 +608,8 @@ impl Node20 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_details(&mut self) -> &mut Node22 {
         if !self.0.is_object() {
@@ -576,7 +617,7 @@ impl Node20 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("details").or_insert(serde_json::Value::Null),
+            map.entry("details").or_insert(Node22::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -589,7 +630,8 @@ impl Node20 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_group_ids(&mut self) -> &mut Node23 {
         if !self.0.is_object() {
@@ -597,7 +639,7 @@ impl Node20 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("group_ids").or_insert(serde_json::Value::Null),
+            map.entry("group_ids").or_insert(Node23::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -610,7 +652,8 @@ impl Node20 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_ids(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -618,8 +661,12 @@ impl Node20 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_ids").or_insert(serde_json::Value::Null),
+            map.entry("product_ids").or_insert(Node24::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -648,6 +695,10 @@ pub type Node25 = Node26;
 #[repr(transparent)]
 pub struct Node26(serde_json::Value);
 impl Node26 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node27], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -675,6 +726,10 @@ impl Node26 {
 #[repr(transparent)]
 pub struct Node27(serde_json::Value);
 impl Node27 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -693,6 +748,10 @@ pub type Node28 = Node29;
 #[repr(transparent)]
 pub struct Node29(serde_json::Value);
 impl Node29 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node30], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -720,6 +779,10 @@ impl Node29 {
 #[repr(transparent)]
 pub struct Node30(serde_json::Value);
 impl Node30 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -736,6 +799,10 @@ impl Node30 {
 #[repr(transparent)]
 pub struct Node22(serde_json::Value);
 impl Node22 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -753,6 +820,10 @@ pub type Node8 = Node31;
 #[repr(transparent)]
 pub struct Node31(serde_json::Value);
 impl Node31 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -767,6 +838,10 @@ impl Node31 {
 #[repr(transparent)]
 pub struct Node21(serde_json::Value);
 impl Node21 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -786,6 +861,10 @@ impl Node21 {
 #[repr(transparent)]
 pub struct Node16(serde_json::Value);
 impl Node16 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node32], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -823,7 +902,8 @@ impl Node32 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_cvss_v2(&mut self) -> &mut Node33 {
         if !self.0.is_object() {
@@ -831,7 +911,7 @@ impl Node32 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("cvss_v2").or_insert(serde_json::Value::Null),
+            map.entry("cvss_v2").or_insert(Node33::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -844,7 +924,8 @@ impl Node32 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_cvss_v3(&mut self) -> &mut Node33 {
         if !self.0.is_object() {
@@ -852,7 +933,7 @@ impl Node32 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("cvss_v3").or_insert(serde_json::Value::Null),
+            map.entry("cvss_v3").or_insert(Node33::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -865,7 +946,8 @@ impl Node32 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_products(&mut self) -> &mut Node25 {
         if !self.0.is_object() {
@@ -873,8 +955,12 @@ impl Node32 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("products").or_insert(serde_json::Value::Null),
+            map.entry("products").or_insert(Node25::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -901,6 +987,10 @@ impl Node32 {
 #[repr(transparent)]
 pub struct Node33(serde_json::Value);
 impl Node33 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
+    }
     pub fn as_object(&self) -> Result<&Object, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Object(m) => Ok(m),
@@ -918,6 +1008,10 @@ impl Node33 {
 #[repr(transparent)]
 pub struct Node15(serde_json::Value);
 impl Node15 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node34], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -955,7 +1049,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node35 {
         if !self.0.is_object() {
@@ -963,7 +1058,7 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node35::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -976,7 +1071,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_date(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -984,7 +1080,7 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("date").or_insert(serde_json::Value::Null),
+            map.entry("date").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -997,7 +1093,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_details(&mut self) -> &mut Node36 {
         if !self.0.is_object() {
@@ -1005,7 +1102,7 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("details").or_insert(serde_json::Value::Null),
+            map.entry("details").or_insert(Node36::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1018,7 +1115,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_entitlements(&mut self) -> &mut Node37 {
         if !self.0.is_object() {
@@ -1026,7 +1124,7 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("entitlements").or_insert(serde_json::Value::Null),
+            map.entry("entitlements").or_insert(Node37::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1039,7 +1137,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_group_ids(&mut self) -> &mut Node23 {
         if !self.0.is_object() {
@@ -1047,7 +1146,7 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("group_ids").or_insert(serde_json::Value::Null),
+            map.entry("group_ids").or_insert(Node23::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1060,7 +1159,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_ids(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1068,7 +1168,7 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_ids").or_insert(serde_json::Value::Null),
+            map.entry("product_ids").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1081,7 +1181,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_restart_required(&mut self) -> &mut Node38 {
         if !self.0.is_object() {
@@ -1089,7 +1190,7 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("restart_required").or_insert(serde_json::Value::Null),
+            map.entry("restart_required").or_insert(Node38::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1102,7 +1203,8 @@ impl Node34 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_url(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -1110,8 +1212,12 @@ impl Node34 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("url").or_insert(serde_json::Value::Null),
+            map.entry("url").or_insert(Node8::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -1149,7 +1255,8 @@ impl Node39 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node40 {
         if !self.0.is_object() {
@@ -1157,7 +1264,7 @@ impl Node39 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node40::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1170,7 +1277,8 @@ impl Node39 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_details(&mut self) -> &mut Node41 {
         if !self.0.is_object() {
@@ -1178,8 +1286,12 @@ impl Node39 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("details").or_insert(serde_json::Value::Null),
+            map.entry("details").or_insert(Node41::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -1213,6 +1325,10 @@ pub type Node41 = Node42;
 #[repr(transparent)]
 pub struct Node42(serde_json::Value);
 impl Node42 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -1232,6 +1348,10 @@ impl Node42 {
 #[repr(transparent)]
 pub struct Node40(serde_json::Value);
 impl Node40 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -1251,6 +1371,10 @@ impl Node40 {
 #[repr(transparent)]
 pub struct Node37(serde_json::Value);
 impl Node37 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node43], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -1278,6 +1402,10 @@ impl Node37 {
 #[repr(transparent)]
 pub struct Node43(serde_json::Value);
 impl Node43 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -1297,6 +1425,10 @@ impl Node43 {
 #[repr(transparent)]
 pub struct Node36(serde_json::Value);
 impl Node36 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -1316,6 +1448,10 @@ impl Node36 {
 #[repr(transparent)]
 pub struct Node35(serde_json::Value);
 impl Node35 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -1340,6 +1476,10 @@ pub type Node44 = Node45;
 #[repr(transparent)]
 pub struct Node45(serde_json::Value);
 impl Node45 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node46], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -1377,7 +1517,8 @@ impl Node46 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node47 {
         if !self.0.is_object() {
@@ -1385,7 +1526,7 @@ impl Node46 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node47::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1398,7 +1539,8 @@ impl Node46 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_summary(&mut self) -> &mut Node48 {
         if !self.0.is_object() {
@@ -1406,7 +1548,7 @@ impl Node46 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("summary").or_insert(serde_json::Value::Null),
+            map.entry("summary").or_insert(Node48::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1419,7 +1561,8 @@ impl Node46 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_url(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -1427,8 +1570,12 @@ impl Node46 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("url").or_insert(serde_json::Value::Null),
+            map.entry("url").or_insert(Node31::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -1455,6 +1602,10 @@ impl Node46 {
 #[repr(transparent)]
 pub struct Node48(serde_json::Value);
 impl Node48 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -1471,6 +1622,10 @@ impl Node48 {
 #[repr(transparent)]
 pub struct Node47(serde_json::Value);
 impl Node47 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -1501,7 +1656,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_first_affected(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1509,7 +1665,7 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("first_affected").or_insert(serde_json::Value::Null),
+            map.entry("first_affected").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1522,7 +1678,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_first_fixed(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1530,7 +1687,7 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("first_fixed").or_insert(serde_json::Value::Null),
+            map.entry("first_fixed").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1543,7 +1700,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_fixed(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1551,7 +1709,7 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("fixed").or_insert(serde_json::Value::Null),
+            map.entry("fixed").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1564,7 +1722,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_known_affected(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1572,7 +1731,7 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("known_affected").or_insert(serde_json::Value::Null),
+            map.entry("known_affected").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1585,7 +1744,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_known_not_affected(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1593,7 +1753,7 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("known_not_affected").or_insert(serde_json::Value::Null),
+            map.entry("known_not_affected").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1606,7 +1766,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_last_affected(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1614,7 +1775,7 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("last_affected").or_insert(serde_json::Value::Null),
+            map.entry("last_affected").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1627,7 +1788,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_recommended(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1635,7 +1797,7 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("recommended").or_insert(serde_json::Value::Null),
+            map.entry("recommended").or_insert(Node24::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1648,7 +1810,8 @@ impl Node49 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_under_investigation(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -1656,8 +1819,12 @@ impl Node49 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("under_investigation").or_insert(serde_json::Value::Null),
+            map.entry("under_investigation").or_insert(Node24::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -1686,6 +1853,10 @@ pub type Node50 = Node51;
 #[repr(transparent)]
 pub struct Node51(serde_json::Value);
 impl Node51 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node52], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -1723,7 +1894,8 @@ impl Node52 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_audience(&mut self) -> &mut Node53 {
         if !self.0.is_object() {
@@ -1731,7 +1903,7 @@ impl Node52 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("audience").or_insert(serde_json::Value::Null),
+            map.entry("audience").or_insert(Node53::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1744,7 +1916,8 @@ impl Node52 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node54 {
         if !self.0.is_object() {
@@ -1752,7 +1925,7 @@ impl Node52 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node54::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1765,7 +1938,8 @@ impl Node52 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_text(&mut self) -> &mut Node55 {
         if !self.0.is_object() {
@@ -1773,7 +1947,7 @@ impl Node52 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("text").or_insert(serde_json::Value::Null),
+            map.entry("text").or_insert(Node55::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1786,7 +1960,8 @@ impl Node52 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_title(&mut self) -> &mut Node56 {
         if !self.0.is_object() {
@@ -1794,8 +1969,12 @@ impl Node52 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("title").or_insert(serde_json::Value::Null),
+            map.entry("title").or_insert(Node56::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -1823,6 +2002,10 @@ pub type Node56 = Node57;
 #[repr(transparent)]
 pub struct Node57(serde_json::Value);
 impl Node57 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -1839,6 +2022,10 @@ impl Node57 {
 #[repr(transparent)]
 pub struct Node55(serde_json::Value);
 impl Node55 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -1855,6 +2042,10 @@ impl Node55 {
 #[repr(transparent)]
 pub struct Node54(serde_json::Value);
 impl Node54 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -1872,6 +2063,10 @@ pub type Node53 = Node58;
 #[repr(transparent)]
 pub struct Node58(serde_json::Value);
 impl Node58 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -1889,6 +2084,10 @@ pub type Node11 = Node59;
 #[repr(transparent)]
 pub struct Node59(serde_json::Value);
 impl Node59 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node60], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -1926,7 +2125,8 @@ impl Node60 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_date(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -1934,7 +2134,7 @@ impl Node60 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("date").or_insert(serde_json::Value::Null),
+            map.entry("date").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1947,7 +2147,8 @@ impl Node60 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_party(&mut self) -> &mut Node61 {
         if !self.0.is_object() {
@@ -1955,7 +2156,7 @@ impl Node60 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("party").or_insert(serde_json::Value::Null),
+            map.entry("party").or_insert(Node61::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1968,7 +2169,8 @@ impl Node60 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_status(&mut self) -> &mut Node62 {
         if !self.0.is_object() {
@@ -1976,7 +2178,7 @@ impl Node60 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("status").or_insert(serde_json::Value::Null),
+            map.entry("status").or_insert(Node62::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -1989,7 +2191,8 @@ impl Node60 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_summary(&mut self) -> &mut Node63 {
         if !self.0.is_object() {
@@ -1997,8 +2200,12 @@ impl Node60 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("summary").or_insert(serde_json::Value::Null),
+            map.entry("summary").or_insert(Node63::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -2026,6 +2233,10 @@ pub type Node63 = Node64;
 #[repr(transparent)]
 pub struct Node64(serde_json::Value);
 impl Node64 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2045,6 +2256,10 @@ impl Node64 {
 #[repr(transparent)]
 pub struct Node62(serde_json::Value);
 impl Node62 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -2061,6 +2276,10 @@ impl Node62 {
 #[repr(transparent)]
 pub struct Node61(serde_json::Value);
 impl Node61 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -2078,6 +2297,10 @@ pub type Node10 = Node65;
 #[repr(transparent)]
 pub struct Node65(serde_json::Value);
 impl Node65 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node66], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -2115,7 +2338,8 @@ impl Node66 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_system_name(&mut self) -> &mut Node67 {
         if !self.0.is_object() {
@@ -2123,7 +2347,7 @@ impl Node66 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("system_name").or_insert(serde_json::Value::Null),
+            map.entry("system_name").or_insert(Node67::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2136,7 +2360,8 @@ impl Node66 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_text(&mut self) -> &mut Node68 {
         if !self.0.is_object() {
@@ -2144,8 +2369,12 @@ impl Node66 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("text").or_insert(serde_json::Value::Null),
+            map.entry("text").or_insert(Node68::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -2172,6 +2401,10 @@ impl Node66 {
 #[repr(transparent)]
 pub struct Node68(serde_json::Value);
 impl Node68 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2188,6 +2421,10 @@ impl Node68 {
 #[repr(transparent)]
 pub struct Node67(serde_json::Value);
 impl Node67 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2205,6 +2442,10 @@ pub type Node9 = Node69;
 #[repr(transparent)]
 pub struct Node69(serde_json::Value);
 impl Node69 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node70], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -2242,7 +2483,8 @@ impl Node70 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_date(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -2250,7 +2492,7 @@ impl Node70 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("date").or_insert(serde_json::Value::Null),
+            map.entry("date").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2263,7 +2505,8 @@ impl Node70 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_group_ids(&mut self) -> &mut Node23 {
         if !self.0.is_object() {
@@ -2271,7 +2514,7 @@ impl Node70 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("group_ids").or_insert(serde_json::Value::Null),
+            map.entry("group_ids").or_insert(Node23::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2284,7 +2527,8 @@ impl Node70 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_label(&mut self) -> &mut Node71 {
         if !self.0.is_object() {
@@ -2292,7 +2536,7 @@ impl Node70 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("label").or_insert(serde_json::Value::Null),
+            map.entry("label").or_insert(Node71::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2305,7 +2549,8 @@ impl Node70 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_ids(&mut self) -> &mut Node24 {
         if !self.0.is_object() {
@@ -2313,8 +2558,12 @@ impl Node70 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_ids").or_insert(serde_json::Value::Null),
+            map.entry("product_ids").or_insert(Node24::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -2341,6 +2590,10 @@ impl Node70 {
 #[repr(transparent)]
 pub struct Node71(serde_json::Value);
 impl Node71 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -2368,7 +2621,8 @@ impl Node72 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_id(&mut self) -> &mut Node73 {
         if !self.0.is_object() {
@@ -2376,7 +2630,7 @@ impl Node72 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("id").or_insert(serde_json::Value::Null),
+            map.entry("id").or_insert(Node73::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2389,7 +2643,8 @@ impl Node72 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_name(&mut self) -> &mut Node74 {
         if !self.0.is_object() {
@@ -2397,8 +2652,12 @@ impl Node72 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("name").or_insert(serde_json::Value::Null),
+            map.entry("name").or_insert(Node74::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -2425,6 +2684,10 @@ impl Node72 {
 #[repr(transparent)]
 pub struct Node74(serde_json::Value);
 impl Node74 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2441,6 +2704,10 @@ impl Node74 {
 #[repr(transparent)]
 pub struct Node73(serde_json::Value);
 impl Node73 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2458,6 +2725,10 @@ pub type Node6 = Node75;
 #[repr(transparent)]
 pub struct Node75(serde_json::Value);
 impl Node75 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2476,6 +2747,10 @@ pub type Node76 = Node77;
 #[repr(transparent)]
 pub struct Node77(serde_json::Value);
 impl Node77 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node78], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -2513,7 +2788,8 @@ impl Node78 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_names(&mut self) -> &mut Node79 {
         if !self.0.is_object() {
@@ -2521,7 +2797,7 @@ impl Node78 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("names").or_insert(serde_json::Value::Null),
+            map.entry("names").or_insert(Node79::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2534,7 +2810,8 @@ impl Node78 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_organization(&mut self) -> &mut Node80 {
         if !self.0.is_object() {
@@ -2542,7 +2819,7 @@ impl Node78 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("organization").or_insert(serde_json::Value::Null),
+            map.entry("organization").or_insert(Node80::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2555,7 +2832,8 @@ impl Node78 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_summary(&mut self) -> &mut Node81 {
         if !self.0.is_object() {
@@ -2563,7 +2841,7 @@ impl Node78 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("summary").or_insert(serde_json::Value::Null),
+            map.entry("summary").or_insert(Node81::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2576,7 +2854,8 @@ impl Node78 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_urls(&mut self) -> &mut Node82 {
         if !self.0.is_object() {
@@ -2584,8 +2863,12 @@ impl Node78 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("urls").or_insert(serde_json::Value::Null),
+            map.entry("urls").or_insert(Node82::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -2612,6 +2895,10 @@ impl Node78 {
 #[repr(transparent)]
 pub struct Node82(serde_json::Value);
 impl Node82 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node31], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -2640,6 +2927,10 @@ pub type Node81 = Node83;
 #[repr(transparent)]
 pub struct Node83(serde_json::Value);
 impl Node83 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2660,6 +2951,10 @@ pub type Node80 = Node84;
 #[repr(transparent)]
 pub struct Node84(serde_json::Value);
 impl Node84 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2679,6 +2974,10 @@ impl Node84 {
 #[repr(transparent)]
 pub struct Node79(serde_json::Value);
 impl Node79 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node85], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -2706,6 +3005,10 @@ impl Node79 {
 #[repr(transparent)]
 pub struct Node85(serde_json::Value);
 impl Node85 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -2733,7 +3036,8 @@ impl Node86 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_branches(&mut self) -> &mut Node87 {
         if !self.0.is_object() {
@@ -2741,7 +3045,7 @@ impl Node86 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("branches").or_insert(serde_json::Value::Null),
+            map.entry("branches").or_insert(Node87::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2754,7 +3058,8 @@ impl Node86 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_full_product_names(&mut self) -> &mut Node88 {
         if !self.0.is_object() {
@@ -2762,7 +3067,7 @@ impl Node86 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("full_product_names").or_insert(serde_json::Value::Null),
+            map.entry("full_product_names").or_insert(Node88::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2775,7 +3080,8 @@ impl Node86 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_groups(&mut self) -> &mut Node89 {
         if !self.0.is_object() {
@@ -2783,7 +3089,7 @@ impl Node86 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_groups").or_insert(serde_json::Value::Null),
+            map.entry("product_groups").or_insert(Node89::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2796,7 +3102,8 @@ impl Node86 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_relationships(&mut self) -> &mut Node90 {
         if !self.0.is_object() {
@@ -2804,8 +3111,12 @@ impl Node86 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("relationships").or_insert(serde_json::Value::Null),
+            map.entry("relationships").or_insert(Node90::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -2832,6 +3143,10 @@ impl Node86 {
 #[repr(transparent)]
 pub struct Node90(serde_json::Value);
 impl Node90 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node91], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -2869,7 +3184,8 @@ impl Node91 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node92 {
         if !self.0.is_object() {
@@ -2877,7 +3193,7 @@ impl Node91 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node92::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2890,7 +3206,8 @@ impl Node91 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_full_product_name(&mut self) -> &mut Node93 {
         if !self.0.is_object() {
@@ -2898,7 +3215,7 @@ impl Node91 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("full_product_name").or_insert(serde_json::Value::Null),
+            map.entry("full_product_name").or_insert(Node93::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2911,7 +3228,8 @@ impl Node91 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_reference(&mut self) -> &mut Node27 {
         if !self.0.is_object() {
@@ -2919,7 +3237,7 @@ impl Node91 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_reference").or_insert(serde_json::Value::Null),
+            map.entry("product_reference").or_insert(Node27::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -2936,7 +3254,8 @@ impl Node91 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_relates_to_product_reference(&mut self) -> &mut Node27 {
         if !self.0.is_object() {
@@ -2944,8 +3263,14 @@ impl Node91 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("relates_to_product_reference").or_insert(serde_json::Value::Null),
+            map
+                .entry("relates_to_product_reference")
+                .or_insert(Node27::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -2982,7 +3307,8 @@ impl Node93 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_name(&mut self) -> &mut Node94 {
         if !self.0.is_object() {
@@ -2990,7 +3316,7 @@ impl Node93 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("name").or_insert(serde_json::Value::Null),
+            map.entry("name").or_insert(Node94::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3003,7 +3329,8 @@ impl Node93 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_id(&mut self) -> &mut Node27 {
         if !self.0.is_object() {
@@ -3011,7 +3338,7 @@ impl Node93 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_id").or_insert(serde_json::Value::Null),
+            map.entry("product_id").or_insert(Node27::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3028,7 +3355,8 @@ impl Node93 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_identification_helper(
         &mut self,
@@ -3038,8 +3366,14 @@ impl Node93 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_identification_helper").or_insert(serde_json::Value::Null),
+            map
+                .entry("product_identification_helper")
+                .or_insert(Node95::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -3080,7 +3414,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_cpe(&mut self) -> &mut Node97 {
         if !self.0.is_object() {
@@ -3088,7 +3423,7 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("cpe").or_insert(serde_json::Value::Null),
+            map.entry("cpe").or_insert(Node97::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3101,7 +3436,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_hashes(&mut self) -> &mut Node98 {
         if !self.0.is_object() {
@@ -3109,7 +3445,7 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("hashes").or_insert(serde_json::Value::Null),
+            map.entry("hashes").or_insert(Node98::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3122,7 +3458,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_model_numbers(&mut self) -> &mut Node99 {
         if !self.0.is_object() {
@@ -3130,7 +3467,7 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("model_numbers").or_insert(serde_json::Value::Null),
+            map.entry("model_numbers").or_insert(Node99::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3143,7 +3480,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_purl(&mut self) -> &mut Node100 {
         if !self.0.is_object() {
@@ -3151,7 +3489,7 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("purl").or_insert(serde_json::Value::Null),
+            map.entry("purl").or_insert(Node100::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3164,7 +3502,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_sbom_urls(&mut self) -> &mut Node82 {
         if !self.0.is_object() {
@@ -3172,7 +3511,7 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("sbom_urls").or_insert(serde_json::Value::Null),
+            map.entry("sbom_urls").or_insert(Node82::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3185,7 +3524,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_serial_numbers(&mut self) -> &mut Node101 {
         if !self.0.is_object() {
@@ -3193,7 +3533,7 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("serial_numbers").or_insert(serde_json::Value::Null),
+            map.entry("serial_numbers").or_insert(Node101::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3206,7 +3546,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_skus(&mut self) -> &mut Node102 {
         if !self.0.is_object() {
@@ -3214,7 +3555,7 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("skus").or_insert(serde_json::Value::Null),
+            map.entry("skus").or_insert(Node102::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3227,7 +3568,8 @@ impl Node96 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_x_generic_uris(&mut self) -> &mut Node103 {
         if !self.0.is_object() {
@@ -3235,8 +3577,12 @@ impl Node96 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("x_generic_uris").or_insert(serde_json::Value::Null),
+            map.entry("x_generic_uris").or_insert(Node103::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -3269,6 +3615,10 @@ impl Node96 {
 #[repr(transparent)]
 pub struct Node103(serde_json::Value);
 impl Node103 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node104], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3306,7 +3656,8 @@ impl Node104 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_namespace(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -3314,7 +3665,7 @@ impl Node104 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("namespace").or_insert(serde_json::Value::Null),
+            map.entry("namespace").or_insert(Node31::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3327,7 +3678,8 @@ impl Node104 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_uri(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -3335,8 +3687,12 @@ impl Node104 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("uri").or_insert(serde_json::Value::Null),
+            map.entry("uri").or_insert(Node31::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -3363,6 +3719,10 @@ impl Node104 {
 #[repr(transparent)]
 pub struct Node102(serde_json::Value);
 impl Node102 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node105], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3390,6 +3750,10 @@ impl Node102 {
 #[repr(transparent)]
 pub struct Node105(serde_json::Value);
 impl Node105 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3407,6 +3771,10 @@ pub type Node101 = Node106;
 #[repr(transparent)]
 pub struct Node106(serde_json::Value);
 impl Node106 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node107], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3434,6 +3802,10 @@ impl Node106 {
 #[repr(transparent)]
 pub struct Node107(serde_json::Value);
 impl Node107 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3451,6 +3823,10 @@ pub type Node100 = Node108;
 #[repr(transparent)]
 pub struct Node108(serde_json::Value);
 impl Node108 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3471,6 +3847,10 @@ pub type Node99 = Node109;
 #[repr(transparent)]
 pub struct Node109(serde_json::Value);
 impl Node109 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node110], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3498,6 +3878,10 @@ impl Node109 {
 #[repr(transparent)]
 pub struct Node110(serde_json::Value);
 impl Node110 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3514,6 +3898,10 @@ impl Node110 {
 #[repr(transparent)]
 pub struct Node98(serde_json::Value);
 impl Node98 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node111], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3551,7 +3939,8 @@ impl Node111 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_file_hashes(&mut self) -> &mut Node112 {
         if !self.0.is_object() {
@@ -3559,7 +3948,7 @@ impl Node111 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("file_hashes").or_insert(serde_json::Value::Null),
+            map.entry("file_hashes").or_insert(Node112::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3572,7 +3961,8 @@ impl Node111 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_filename(&mut self) -> &mut Node113 {
         if !self.0.is_object() {
@@ -3580,8 +3970,12 @@ impl Node111 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("filename").or_insert(serde_json::Value::Null),
+            map.entry("filename").or_insert(Node113::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -3611,6 +4005,10 @@ impl Node111 {
 #[repr(transparent)]
 pub struct Node113(serde_json::Value);
 impl Node113 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3627,6 +4025,10 @@ impl Node113 {
 #[repr(transparent)]
 pub struct Node112(serde_json::Value);
 impl Node112 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node114], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3664,7 +4066,8 @@ impl Node114 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_algorithm(&mut self) -> &mut Node115 {
         if !self.0.is_object() {
@@ -3672,7 +4075,7 @@ impl Node114 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("algorithm").or_insert(serde_json::Value::Null),
+            map.entry("algorithm").or_insert(Node115::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3685,7 +4088,8 @@ impl Node114 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_value(&mut self) -> &mut Node116 {
         if !self.0.is_object() {
@@ -3693,8 +4097,12 @@ impl Node114 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("value").or_insert(serde_json::Value::Null),
+            map.entry("value").or_insert(Node116::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -3721,6 +4129,10 @@ impl Node114 {
 #[repr(transparent)]
 pub struct Node116(serde_json::Value);
 impl Node116 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3740,6 +4152,10 @@ impl Node116 {
 #[repr(transparent)]
 pub struct Node115(serde_json::Value);
 impl Node115 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3760,6 +4176,10 @@ pub type Node97 = Node117;
 #[repr(transparent)]
 pub struct Node117(serde_json::Value);
 impl Node117 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3779,6 +4199,10 @@ impl Node117 {
 #[repr(transparent)]
 pub struct Node94(serde_json::Value);
 impl Node94 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3798,6 +4222,10 @@ impl Node94 {
 #[repr(transparent)]
 pub struct Node92(serde_json::Value);
 impl Node92 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -3820,6 +4248,10 @@ impl Node92 {
 #[repr(transparent)]
 pub struct Node89(serde_json::Value);
 impl Node89 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node118], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3857,7 +4289,8 @@ impl Node118 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_group_id(&mut self) -> &mut Node30 {
         if !self.0.is_object() {
@@ -3865,7 +4298,7 @@ impl Node118 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("group_id").or_insert(serde_json::Value::Null),
+            map.entry("group_id").or_insert(Node30::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3878,7 +4311,8 @@ impl Node118 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product_ids(&mut self) -> &mut Node26 {
         if !self.0.is_object() {
@@ -3886,7 +4320,7 @@ impl Node118 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product_ids").or_insert(serde_json::Value::Null),
+            map.entry("product_ids").or_insert(Node26::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -3899,7 +4333,8 @@ impl Node118 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_summary(&mut self) -> &mut Node119 {
         if !self.0.is_object() {
@@ -3907,8 +4342,12 @@ impl Node118 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("summary").or_insert(serde_json::Value::Null),
+            map.entry("summary").or_insert(Node119::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -3936,6 +4375,10 @@ pub type Node119 = Node120;
 #[repr(transparent)]
 pub struct Node120(serde_json::Value);
 impl Node120 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -3955,6 +4398,10 @@ impl Node120 {
 #[repr(transparent)]
 pub struct Node88(serde_json::Value);
 impl Node88 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node93], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -3984,6 +4431,10 @@ pub type Node121 = Node122;
 #[repr(transparent)]
 pub struct Node122(serde_json::Value);
 impl Node122 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node123], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -4021,7 +4472,8 @@ impl Node123 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_branches(&mut self) -> &mut Node87 {
         if !self.0.is_object() {
@@ -4029,7 +4481,7 @@ impl Node123 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("branches").or_insert(serde_json::Value::Null),
+            map.entry("branches").or_insert(Node87::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4042,7 +4494,8 @@ impl Node123 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node124 {
         if !self.0.is_object() {
@@ -4050,7 +4503,7 @@ impl Node123 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node124::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4063,7 +4516,8 @@ impl Node123 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_name(&mut self) -> &mut Node125 {
         if !self.0.is_object() {
@@ -4071,7 +4525,7 @@ impl Node123 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("name").or_insert(serde_json::Value::Null),
+            map.entry("name").or_insert(Node125::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4084,7 +4538,8 @@ impl Node123 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_product(&mut self) -> &mut Node126 {
         if !self.0.is_object() {
@@ -4092,8 +4547,12 @@ impl Node123 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("product").or_insert(serde_json::Value::Null),
+            map.entry("product").or_insert(Node126::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -4121,6 +4580,10 @@ pub type Node126 = Node93;
 #[repr(transparent)]
 pub struct Node125(serde_json::Value);
 impl Node125 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -4137,6 +4600,10 @@ impl Node125 {
 #[repr(transparent)]
 pub struct Node124(serde_json::Value);
 impl Node124 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -4166,7 +4633,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_acknowledgments(&mut self) -> &mut Node5 {
         if !self.0.is_object() {
@@ -4174,7 +4642,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("acknowledgments").or_insert(serde_json::Value::Null),
+            map.entry("acknowledgments").or_insert(Node5::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4187,7 +4655,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_aggregate_severity(&mut self) -> &mut Node127 {
         if !self.0.is_object() {
@@ -4195,7 +4664,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("aggregate_severity").or_insert(serde_json::Value::Null),
+            map.entry("aggregate_severity").or_insert(Node127::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4208,7 +4677,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node128 {
         if !self.0.is_object() {
@@ -4216,7 +4686,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node128::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4229,7 +4699,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_csaf_version(&mut self) -> &mut Node129 {
         if !self.0.is_object() {
@@ -4237,7 +4708,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("csaf_version").or_insert(serde_json::Value::Null),
+            map.entry("csaf_version").or_insert(Node129::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4250,7 +4721,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_distribution(&mut self) -> &mut Node130 {
         if !self.0.is_object() {
@@ -4258,7 +4730,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("distribution").or_insert(serde_json::Value::Null),
+            map.entry("distribution").or_insert(Node130::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4271,7 +4743,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_lang(&mut self) -> &mut Node131 {
         if !self.0.is_object() {
@@ -4279,7 +4752,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("lang").or_insert(serde_json::Value::Null),
+            map.entry("lang").or_insert(Node131::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4292,7 +4765,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_notes(&mut self) -> &mut Node12 {
         if !self.0.is_object() {
@@ -4300,7 +4774,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("notes").or_insert(serde_json::Value::Null),
+            map.entry("notes").or_insert(Node12::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4313,7 +4787,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_publisher(&mut self) -> &mut Node132 {
         if !self.0.is_object() {
@@ -4321,7 +4796,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("publisher").or_insert(serde_json::Value::Null),
+            map.entry("publisher").or_insert(Node132::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4334,7 +4809,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_references(&mut self) -> &mut Node14 {
         if !self.0.is_object() {
@@ -4342,7 +4818,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("references").or_insert(serde_json::Value::Null),
+            map.entry("references").or_insert(Node14::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4355,7 +4831,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_source_lang(&mut self) -> &mut Node131 {
         if !self.0.is_object() {
@@ -4363,7 +4840,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("source_lang").or_insert(serde_json::Value::Null),
+            map.entry("source_lang").or_insert(Node131::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4376,7 +4853,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_title(&mut self) -> &mut Node133 {
         if !self.0.is_object() {
@@ -4384,7 +4862,7 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("title").or_insert(serde_json::Value::Null),
+            map.entry("title").or_insert(Node133::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4397,7 +4875,8 @@ impl Node1 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_tracking(&mut self) -> &mut Node134 {
         if !self.0.is_object() {
@@ -4405,8 +4884,12 @@ impl Node1 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("tracking").or_insert(serde_json::Value::Null),
+            map.entry("tracking").or_insert(Node134::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -4449,7 +4932,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_aliases(&mut self) -> &mut Node135 {
         if !self.0.is_object() {
@@ -4457,7 +4941,7 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("aliases").or_insert(serde_json::Value::Null),
+            map.entry("aliases").or_insert(Node135::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4472,7 +4956,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_current_release_date(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -4480,7 +4965,7 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("current_release_date").or_insert(serde_json::Value::Null),
+            map.entry("current_release_date").or_insert(Node31::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4493,7 +4978,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_generator(&mut self) -> &mut Node136 {
         if !self.0.is_object() {
@@ -4501,7 +4987,7 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("generator").or_insert(serde_json::Value::Null),
+            map.entry("generator").or_insert(Node136::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4514,7 +5000,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_id(&mut self) -> &mut Node137 {
         if !self.0.is_object() {
@@ -4522,7 +5009,7 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("id").or_insert(serde_json::Value::Null),
+            map.entry("id").or_insert(Node137::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4537,7 +5024,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_initial_release_date(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -4545,7 +5033,7 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("initial_release_date").or_insert(serde_json::Value::Null),
+            map.entry("initial_release_date").or_insert(Node31::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4558,7 +5046,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_revision_history(&mut self) -> &mut Node138 {
         if !self.0.is_object() {
@@ -4566,7 +5055,7 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("revision_history").or_insert(serde_json::Value::Null),
+            map.entry("revision_history").or_insert(Node138::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4579,7 +5068,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_status(&mut self) -> &mut Node139 {
         if !self.0.is_object() {
@@ -4587,7 +5077,7 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("status").or_insert(serde_json::Value::Null),
+            map.entry("status").or_insert(Node139::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4600,7 +5090,8 @@ impl Node134 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_version(&mut self) -> &mut Node140 {
         if !self.0.is_object() {
@@ -4608,8 +5099,12 @@ impl Node134 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("version").or_insert(serde_json::Value::Null),
+            map.entry("version").or_insert(Node140::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -4636,6 +5131,10 @@ impl Node134 {
 #[repr(transparent)]
 pub struct Node140(serde_json::Value);
 impl Node140 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -4652,6 +5151,10 @@ impl Node140 {
 #[repr(transparent)]
 pub struct Node139(serde_json::Value);
 impl Node139 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -4668,6 +5171,10 @@ impl Node139 {
 #[repr(transparent)]
 pub struct Node138(serde_json::Value);
 impl Node138 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node141], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -4705,7 +5212,8 @@ impl Node141 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_date(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -4713,7 +5221,7 @@ impl Node141 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("date").or_insert(serde_json::Value::Null),
+            map.entry("date").or_insert(Node31::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4726,7 +5234,8 @@ impl Node141 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_legacy_version(&mut self) -> &mut Node142 {
         if !self.0.is_object() {
@@ -4734,7 +5243,7 @@ impl Node141 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("legacy_version").or_insert(serde_json::Value::Null),
+            map.entry("legacy_version").or_insert(Node142::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4747,7 +5256,8 @@ impl Node141 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_number(&mut self) -> &mut Node140 {
         if !self.0.is_object() {
@@ -4755,7 +5265,7 @@ impl Node141 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("number").or_insert(serde_json::Value::Null),
+            map.entry("number").or_insert(Node140::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4768,7 +5278,8 @@ impl Node141 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_summary(&mut self) -> &mut Node143 {
         if !self.0.is_object() {
@@ -4776,8 +5287,12 @@ impl Node141 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("summary").or_insert(serde_json::Value::Null),
+            map.entry("summary").or_insert(Node143::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -4804,6 +5319,10 @@ impl Node141 {
 #[repr(transparent)]
 pub struct Node143(serde_json::Value);
 impl Node143 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -4821,6 +5340,10 @@ pub type Node142 = Node144;
 #[repr(transparent)]
 pub struct Node144(serde_json::Value);
 impl Node144 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -4840,6 +5363,10 @@ impl Node144 {
 #[repr(transparent)]
 pub struct Node137(serde_json::Value);
 impl Node137 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -4870,7 +5397,8 @@ impl Node145 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_date(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -4878,7 +5406,7 @@ impl Node145 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("date").or_insert(serde_json::Value::Null),
+            map.entry("date").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4891,7 +5419,8 @@ impl Node145 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_engine(&mut self) -> &mut Node146 {
         if !self.0.is_object() {
@@ -4899,8 +5428,12 @@ impl Node145 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("engine").or_insert(serde_json::Value::Null),
+            map.entry("engine").or_insert(Node146::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -4940,7 +5473,8 @@ impl Node146 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_name(&mut self) -> &mut Node147 {
         if !self.0.is_object() {
@@ -4948,7 +5482,7 @@ impl Node146 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("name").or_insert(serde_json::Value::Null),
+            map.entry("name").or_insert(Node147::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -4961,7 +5495,8 @@ impl Node146 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_version(&mut self) -> &mut Node148 {
         if !self.0.is_object() {
@@ -4969,8 +5504,12 @@ impl Node146 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("version").or_insert(serde_json::Value::Null),
+            map.entry("version").or_insert(Node148::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -5004,6 +5543,10 @@ pub type Node148 = Node149;
 #[repr(transparent)]
 pub struct Node149(serde_json::Value);
 impl Node149 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5020,6 +5563,10 @@ impl Node149 {
 #[repr(transparent)]
 pub struct Node147(serde_json::Value);
 impl Node147 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5037,6 +5584,10 @@ pub type Node135 = Node150;
 #[repr(transparent)]
 pub struct Node150(serde_json::Value);
 impl Node150 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Array(vec![])
+    }
     pub fn as_slice(&self) -> Result<&[Node151], SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::Array(s) => {
@@ -5064,6 +5615,10 @@ impl Node150 {
 #[repr(transparent)]
 pub struct Node151(serde_json::Value);
 impl Node151 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5080,6 +5635,10 @@ impl Node151 {
 #[repr(transparent)]
 pub struct Node133(serde_json::Value);
 impl Node133 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5097,6 +5656,10 @@ pub type Node131 = Node152;
 #[repr(transparent)]
 pub struct Node152(serde_json::Value);
 impl Node152 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5123,7 +5686,8 @@ impl Node132 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_category(&mut self) -> &mut Node153 {
         if !self.0.is_object() {
@@ -5131,7 +5695,7 @@ impl Node132 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("category").or_insert(serde_json::Value::Null),
+            map.entry("category").or_insert(Node153::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -5144,7 +5708,8 @@ impl Node132 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_contact_details(&mut self) -> &mut Node154 {
         if !self.0.is_object() {
@@ -5152,7 +5717,7 @@ impl Node132 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("contact_details").or_insert(serde_json::Value::Null),
+            map.entry("contact_details").or_insert(Node154::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -5165,7 +5730,8 @@ impl Node132 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_issuing_authority(&mut self) -> &mut Node155 {
         if !self.0.is_object() {
@@ -5173,7 +5739,7 @@ impl Node132 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("issuing_authority").or_insert(serde_json::Value::Null),
+            map.entry("issuing_authority").or_insert(Node155::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -5186,7 +5752,8 @@ impl Node132 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_name(&mut self) -> &mut Node156 {
         if !self.0.is_object() {
@@ -5194,7 +5761,7 @@ impl Node132 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("name").or_insert(serde_json::Value::Null),
+            map.entry("name").or_insert(Node156::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -5207,7 +5774,8 @@ impl Node132 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_namespace(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -5215,8 +5783,12 @@ impl Node132 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("namespace").or_insert(serde_json::Value::Null),
+            map.entry("namespace").or_insert(Node31::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -5243,6 +5815,10 @@ impl Node132 {
 #[repr(transparent)]
 pub struct Node156(serde_json::Value);
 impl Node156 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5260,6 +5836,10 @@ pub type Node155 = Node157;
 #[repr(transparent)]
 pub struct Node157(serde_json::Value);
 impl Node157 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5277,6 +5857,10 @@ pub type Node154 = Node158;
 #[repr(transparent)]
 pub struct Node158(serde_json::Value);
 impl Node158 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5293,6 +5877,10 @@ impl Node158 {
 #[repr(transparent)]
 pub struct Node153(serde_json::Value);
 impl Node153 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -5323,7 +5911,8 @@ impl Node159 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_text(&mut self) -> &mut Node160 {
         if !self.0.is_object() {
@@ -5331,7 +5920,7 @@ impl Node159 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("text").or_insert(serde_json::Value::Null),
+            map.entry("text").or_insert(Node160::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -5344,7 +5933,8 @@ impl Node159 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_tlp(&mut self) -> &mut Node161 {
         if !self.0.is_object() {
@@ -5352,8 +5942,12 @@ impl Node159 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("tlp").or_insert(serde_json::Value::Null),
+            map.entry("tlp").or_insert(Node161::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -5397,7 +5991,8 @@ impl Node162 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_label(&mut self) -> &mut Node163 {
         if !self.0.is_object() {
@@ -5405,7 +6000,7 @@ impl Node162 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("label").or_insert(serde_json::Value::Null),
+            map.entry("label").or_insert(Node163::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -5418,7 +6013,8 @@ impl Node162 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_url(&mut self) -> &mut Node31 {
         if !self.0.is_object() {
@@ -5426,8 +6022,12 @@ impl Node162 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("url").or_insert(serde_json::Value::Null),
+            map.entry("url").or_insert(Node31::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -5460,6 +6060,10 @@ impl Node162 {
 #[repr(transparent)]
 pub struct Node163(serde_json::Value);
 impl Node163 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -5477,6 +6081,10 @@ pub type Node160 = Node164;
 #[repr(transparent)]
 pub struct Node164(serde_json::Value);
 impl Node164 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5493,6 +6101,10 @@ impl Node164 {
 #[repr(transparent)]
 pub struct Node129(serde_json::Value);
 impl Node129 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     /// Deserializes the node's content into an enum according to the schema
     pub fn get_enum(
         &self,
@@ -5509,6 +6121,10 @@ impl Node129 {
 #[repr(transparent)]
 pub struct Node128(serde_json::Value);
 impl Node128 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),
@@ -5536,7 +6152,8 @@ impl Node165 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_namespace(&mut self) -> &mut Node8 {
         if !self.0.is_object() {
@@ -5544,7 +6161,7 @@ impl Node165 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("namespace").or_insert(serde_json::Value::Null),
+            map.entry("namespace").or_insert(Node8::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node
@@ -5557,7 +6174,8 @@ impl Node165 {
     }
     /// Accesses the stated node creating it if it does not exist
     ///
-    /// NOTE: `Null` will be used as a placeholder for the new node
+    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+    /// and `Null` for all other node types
     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
     pub fn caution_get_or_insert_text(&mut self) -> &mut Node166 {
         if !self.0.is_object() {
@@ -5565,8 +6183,12 @@ impl Node165 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("text").or_insert(serde_json::Value::Null),
+            map.entry("text").or_insert(Node166::default_raw_value()),
         )
+    }
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Object(super::Object::new())
     }
     /// Deserializes the node's content into a struct according to the schema
     pub fn get_struct(
@@ -5596,6 +6218,10 @@ impl Node165 {
 #[repr(transparent)]
 pub struct Node166(serde_json::Value);
 impl Node166 {
+    #[allow(dead_code)]
+    fn default_raw_value() -> serde_json::Value {
+        serde_json::Value::Null
+    }
     pub fn get_str(&self) -> Result<&str, SchemaError> {
         match bytemuck::TransparentWrapper::peel_ref(self) {
             serde_json::Value::String(s) => Ok(s),

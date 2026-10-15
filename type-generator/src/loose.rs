@@ -90,6 +90,11 @@ fn generate_loose_type(
             let schema_mod = version_to_mod_name(schema_version);
             mod_items.push(quote!(
                 impl #ident {
+                    #[allow(dead_code)]
+                    fn default_raw_value() -> serde_json::Value {
+                        serde_json::Value::Null
+                    }
+
                     /// Deserializes the node's content into an enum according to the schema
                     pub fn get_enum(&self) -> Result<crate::schema::#schema_mod::schema::#schema_ident, serde_json::Error> {
                         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
@@ -129,14 +134,15 @@ fn generate_loose_type(
                     }
                     /// Accesses the stated node creating it if it does not exist
                     ///
-                    /// NOTE: `Null` will be used as a placeholder for the new node
+                    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
+                    /// and `Null` for all other node types
                     /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
                     pub fn #get_or_insert(&mut self) -> &mut #child_ident {
                         if !self.0.is_object() {
                             self.0 = serde_json::Value::Object(serde_json::Map::default());
                         }
                         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
-                        bytemuck::TransparentWrapper::wrap_mut(map.entry(#prop_name).or_insert(serde_json::Value::Null))
+                        bytemuck::TransparentWrapper::wrap_mut(map.entry(#prop_name).or_insert(#child_ident::default_raw_value()))
 
                     }
                 ));
@@ -148,6 +154,11 @@ fn generate_loose_type(
             let schema_mod = version_to_mod_name(schema_version);
             mod_items.push(quote!(impl #ident {
                 #(#methods)*
+
+                #[allow(dead_code)]
+                fn default_raw_value() -> serde_json::Value {
+                    serde_json::Value::Object(super::Object::new())
+                }
 
                 /// Deserializes the node's content into a struct according to the schema
                 pub fn get_struct(&self) -> Result<crate::schema::#schema_mod::schema::#schema_ident, serde_json::Error> {
@@ -190,6 +201,11 @@ fn generate_loose_type(
 
                 mod_items.push(quote!(
                     impl #ident {
+                        #[allow(dead_code)]
+                        fn default_raw_value() -> serde_json::Value {
+                            serde_json::Value::Null
+                        }
+
                         pub fn get_str(&self) -> Result<&str, SchemaError> {
                             match bytemuck::TransparentWrapper::peel_ref(self) {
                                 serde_json::Value::String(s) => Ok(s),
@@ -240,6 +256,11 @@ fn generate_loose_type(
 
             mod_items.push(quote!(
                 impl #ident {
+                    #[allow(dead_code)]
+                    fn default_raw_value() -> serde_json::Value {
+                        serde_json::Value::Array(vec![])
+                    }
+
                     pub fn as_slice(&self) -> Result<&[#element_ident], SchemaError> {
                         match bytemuck::TransparentWrapper::peel_ref(self) {
                             serde_json::Value::Array(s) => {
@@ -291,6 +312,11 @@ fn generate_loose_type(
                 pub struct #ident(serde_json::Value);
 
                 impl #ident {
+                    #[allow(dead_code)]
+                    fn default_raw_value() -> serde_json::Value {
+                        serde_json::Value::Object(super::Object::new())
+                    }
+
                     pub fn as_object(&self) -> Result<&Object, SchemaError> {
                         match bytemuck::TransparentWrapper::peel_ref(self) {
                             serde_json::Value::Object(m) => Ok(m),
@@ -319,6 +345,11 @@ fn generate_loose_type(
 
             mod_items.push(quote!(
                 impl #ident {
+                    #[allow(dead_code)]
+                    fn default_raw_value() -> serde_json::Value {
+                        serde_json::Value::Null
+                    }
+
                     pub fn get_str(&self) -> Result<&str, SchemaError> {
                         match bytemuck::TransparentWrapper::peel_ref(self) {
                             serde_json::Value::String(s) => Ok(s),
@@ -343,6 +374,11 @@ fn generate_loose_type(
                 pub struct #ident(serde_json::Value);
 
                 impl #ident {
+                    #[allow(dead_code)]
+                    fn default_raw_value() -> serde_json::Value {
+                        serde_json::Value::Null
+                    }
+
                     pub fn get(&self) -> Result<#path, serde_json::Error> {
                         serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
                     }

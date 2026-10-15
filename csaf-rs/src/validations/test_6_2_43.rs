@@ -2,20 +2,27 @@ use serde_json::Value;
 
 use crate::{
     validation::{TestFinding, TestFindingData},
-    validations::utils::raw_json::{JsonValuePresence, is_present_and_set},
+    validations::utils::raw_json_value_helper::{JsonValuePresence, get_json_presence},
 };
 use std::sync::LazyLock;
 
 static MISSING_LICENSE_EXPRESSION_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The document's license expression is missing".to_string(),
-        instance_path: "/document/license_expression".to_string(),
+        instance_path: "/document".to_string(),
     })
 });
 
 static UNSET_LICENSE_EXPRESSION_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
-        message: "The document's license expression is empty or not set (e.g., `null`)".to_string(),
+        message: "The document's license expression is not set (e.g., `null`)".to_string(),
+        instance_path: "/document/license_expression".to_string(),
+    })
+});
+
+static EMPTY_LICENSE_EXPRESSION_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+    TestFinding::Warning(TestFindingData {
+        message: "The document's license expression is empty (e.g., `\"\"`)".to_string(),
         instance_path: "/document/license_expression".to_string(),
     })
 });
@@ -26,10 +33,14 @@ static UNSET_LICENSE_EXPRESSION_ERROR: LazyLock<TestFinding> = LazyLock::new(|| 
 /// A CSAF Validator SHALL differentiate in the error message between the key being present but
 /// having no or an empty value and not being present at all.
 pub fn test_6_2_43_missing_license_expression(json: &Value) -> Result<(), Vec<TestFinding>> {
-    match is_present_and_set("/document/license_expression", json) {
+    match get_json_presence("/document/license_expression", json) {
         JsonValuePresence::Missing => Err(vec![MISSING_LICENSE_EXPRESSION_ERROR.clone()]),
-        JsonValuePresence::Unset | JsonValuePresence::Empty => Err(vec![UNSET_LICENSE_EXPRESSION_ERROR.clone()]),
-        JsonValuePresence::Set => Ok(()),
+        JsonValuePresence::Unset => Err(vec![UNSET_LICENSE_EXPRESSION_ERROR.clone()]),
+        JsonValuePresence::EmptyString => Err(vec![EMPTY_LICENSE_EXPRESSION_ERROR.clone()]),
+        // empty array and empty object are schema violations, which are reported by the schema test
+        JsonValuePresence::EmptyArray | JsonValuePresence::EmptyObject |
+        // set is valid
+        JsonValuePresence::Set => Ok(())
     }
 }
 
@@ -49,7 +60,7 @@ mod tests {
     fn test_test_6_2_43() {
         let missing_license_expression_error = Err(vec![MISSING_LICENSE_EXPRESSION_ERROR.clone()]);
         let unset_license_expression = Err(vec![UNSET_LICENSE_EXPRESSION_ERROR.clone()]);
-        let empty_license_expression = unset_license_expression.clone();
+        let empty_license_expression = Err(vec![EMPTY_LICENSE_EXPRESSION_ERROR.clone()]);
 
         TESTS_2_1.test_6_2_43.expect(ExpectedResults_2_1 {
             case_01: missing_license_expression_error,

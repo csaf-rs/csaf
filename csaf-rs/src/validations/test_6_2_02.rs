@@ -4,7 +4,7 @@ use crate::csaf_traits::{
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn create_missing_remediation_error(
+fn create_missing_remediation_warning(
     vulnerability_index: usize,
     product_id: &str,
     status_path: ProductStatusAndPath,
@@ -49,7 +49,7 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
                 for (product_id, status_with_path) in product_ids_map {
                     if !remediation_product_ids.contains(&product_id) {
                         for status_path in status_with_path {
-                            errors.get_or_insert_default().push(create_missing_remediation_error(
+                            errors.get_or_insert_default().push(create_missing_remediation_warning(
                                 v_i,
                                 &product_id,
                                 status_path,
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_02() {
-        let case_01 = Err(vec![create_missing_remediation_error(
+        let case_01 = Err(vec![create_missing_remediation_warning(
             0,
             "CSAFPID-9080700",
             ProductStatusAndPath {

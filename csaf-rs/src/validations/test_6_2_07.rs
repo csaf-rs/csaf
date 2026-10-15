@@ -15,7 +15,7 @@ pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<
                 if involvement.get_date().is_none() {
                     errors
                         .get_or_insert_default()
-                        .push(create_missing_date_in_involvements_error(v_i, inv_i));
+                        .push(create_missing_date_in_involvements_warning(v_i, inv_i));
                 }
             }
         }
@@ -24,7 +24,7 @@ pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<
     errors.map_or(Ok(()), Err)
 }
 
-fn create_missing_date_in_involvements_error(vulnerability_index: usize, involvement_index: usize) -> TestFinding {
+fn create_missing_date_in_involvements_warning(vulnerability_index: usize, involvement_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: "Involvement item is missing required 'date' field".to_string(),
         instance_path: format!("/vulnerabilities/{vulnerability_index}/involvements/{involvement_index}"),
@@ -41,12 +41,12 @@ mod tests {
 
     #[test]
     fn test_test_6_2_07() {
-        let case_01 = Err(vec![create_missing_date_in_involvements_error(0, 0)]);
+        let case_01 = Err(vec![create_missing_date_in_involvements_warning(0, 0)]);
         let case_s01 = Err(vec![
-            create_missing_date_in_involvements_error(0, 1),
-            create_missing_date_in_involvements_error(0, 3),
-            create_missing_date_in_involvements_error(1, 1),
-            create_missing_date_in_involvements_error(1, 3),
+            create_missing_date_in_involvements_warning(0, 1),
+            create_missing_date_in_involvements_warning(0, 3),
+            create_missing_date_in_involvements_warning(1, 1),
+            create_missing_date_in_involvements_warning(1, 3),
         ]);
 
         // Failing test cases:

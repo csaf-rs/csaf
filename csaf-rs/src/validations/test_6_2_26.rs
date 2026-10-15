@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
 use crate::helpers::CWE_ENTRIES;
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_allowed_with_review_error(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+fn create_allowed_with_review_warning(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "Weakness '{cwe}' has usage 'Allowed-with-Review' in version {version}, which requires a thorough review."
@@ -49,7 +49,7 @@ pub fn test_6_2_26_usage_of_cwe_allowed_with_review_for_vulnerability_mapping(
 
                 // Generate an error if the usage field is "Allowed-with-Review"
                 if usage == "Allowed-with-Review" {
-                    errors.get_or_insert_default().push(create_allowed_with_review_error(
+                    errors.get_or_insert_default().push(create_allowed_with_review_warning(
                         &cwe_item.id,
                         version,
                         i_r,
@@ -77,11 +77,11 @@ mod tests {
 
     #[test]
     fn test_test_6_2_26() {
-        let case_01_allowed_with_review = Err(vec![create_allowed_with_review_error("CWE-1023", "4.13", 0, 0)]);
+        let case_01_allowed_with_review = Err(vec![create_allowed_with_review_warning("CWE-1023", "4.13", 0, 0)]);
 
-        let case_02_multiple_cwes = Err(vec![create_allowed_with_review_error("CWE-1038", "4.13", 0, 1)]);
+        let case_02_multiple_cwes = Err(vec![create_allowed_with_review_warning("CWE-1038", "4.13", 0, 1)]);
 
-        let case_03_multiple_vulns = Err(vec![create_allowed_with_review_error("CWE-1039", "4.13", 3, 0)]);
+        let case_03_multiple_vulns = Err(vec![create_allowed_with_review_warning("CWE-1039", "4.13", 3, 0)]);
 
         TESTS_2_1.test_6_2_26.expect(ExpectedResults {
             case_01: case_01_allowed_with_review,

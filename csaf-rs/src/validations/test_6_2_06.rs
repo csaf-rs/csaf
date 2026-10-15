@@ -2,7 +2,7 @@ use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_older_current_release_date_error(
+fn create_older_current_release_date_warning(
     current_release_date: impl std::fmt::Display,
     newest_rev_history_release_date: impl std::fmt::Display,
 ) -> TestFinding {
@@ -38,7 +38,7 @@ pub fn test_6_2_06_older_current_release_than_rev_history(doc: &impl CsafTrait) 
         return Ok(()); // TODO #409 return a precondition failed here
     };
     if current_release_date.get_as_utc() < newest_rev_history_item_date.get_as_utc() {
-        return Err(vec![create_older_current_release_date_error(
+        return Err(vec![create_older_current_release_date_warning(
             current_release_date.get_raw_string(),
             newest_rev_history_item_date.get_raw_string(),
         )]);
@@ -63,21 +63,21 @@ mod tests {
     fn test_test_6_2_06() {
         // Both CSAF 2.0 and 2.1 have test cases
         TESTS_2_0.test_6_2_6.expect(ExpectedResults_2_0 {
-            case_01: Err(vec![create_older_current_release_date_error(
+            case_01: Err(vec![create_older_current_release_date_warning(
                 "2021-05-06T10:00:00.000Z",
                 "2021-07-21T11:00:00.000Z",
             )]),
         });
         TESTS_2_1.test_6_2_6.expect(ExpectedResults_2_1 {
-            case_01: Err(vec![create_older_current_release_date_error(
+            case_01: Err(vec![create_older_current_release_date_warning(
                 "2023-09-06T10:00:00.000Z",
                 "2024-01-21T11:00:00.000Z",
             )]),
-            case_02: Err(vec![create_older_current_release_date_error(
+            case_02: Err(vec![create_older_current_release_date_warning(
                 "2024-01-21T11:00:00.000+11:00",
                 "2024-01-21T11:00:00.000+10:00",
             )]),
-            case_03: Err(vec![create_older_current_release_date_error(
+            case_03: Err(vec![create_older_current_release_date_warning(
                 "2024-01-22T11:00:00.000+11:30",
                 "2024-01-21T13:00:00.000-11:30",
             )]),

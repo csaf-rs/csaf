@@ -45,17 +45,19 @@ pub fn test_6_2_20_additional_properties(
         };
 
         for property in unexpected {
-            errors.get_or_insert_default().push(create_additional_properties_error(
-                property,
-                error.instance_path().as_str(),
-            ));
+            errors
+                .get_or_insert_default()
+                .push(create_additional_properties_warning(
+                    property,
+                    error.instance_path().as_str(),
+                ));
         }
     }
 
     errors.map_or(Ok(()), Err)
 }
 
-fn create_additional_properties_error(key: &str, path: &str) -> TestFinding {
+fn create_additional_properties_warning(key: &str, path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!("The key '{key}' is not defined in the JSON schema."),
         instance_path: path.to_string(),
@@ -85,14 +87,17 @@ mod tests {
     fn test_test_6_2_20() {
         // Both CSAF 2.0 and 2.1 have 1 test cases
         TESTS_2_0.test_6_2_20.expect(ExpectedResults_2_0 {
-            case_01: Err(vec![create_additional_properties_error("custom_property", "/document")]),
+            case_01: Err(vec![create_additional_properties_warning(
+                "custom_property",
+                "/document",
+            )]),
         });
         TESTS_2_1.test_6_2_20.expect(ExpectedResults_2_1 {
-            case_01: Err(vec![create_additional_properties_error(
+            case_01: Err(vec![create_additional_properties_warning(
                 "custom_property",
                 "/vulnerabilities/0/metrics/0/content/cvss_v3",
             )]),
-            case_02: Err(vec![create_additional_properties_error(
+            case_02: Err(vec![create_additional_properties_warning(
                 "custom_property",
                 "/vulnerabilities/0/metrics/0/content/cvss_v4",
             )]),

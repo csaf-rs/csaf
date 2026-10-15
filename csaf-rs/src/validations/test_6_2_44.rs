@@ -56,7 +56,7 @@ pub fn test_6_2_44_deprecated_license_identifier(
 
         if is_deprecated {
             // Preserve the identifier exactly as written in the license expression for the warning text
-            let identifier = &license_expression.as_str()[lexer_token.span.clone()];
+            let identifier = &license_expression.as_str()[lexer_token.span];
             warnings.push(create_deprecated_license_identifier_or_exception_warning(identifier));
         }
     }

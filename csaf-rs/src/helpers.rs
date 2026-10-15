@@ -118,7 +118,8 @@ fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
 
     let mut entries = HashMap::new();
 
-    for license in licenses {
+    // Insert canonical ScanCode identifiers first
+    for license in &licenses {
         let info = ScancodeLicenseInfo {
             is_exception: license.is_exception,
             is_deprecated: license.is_deprecated,
@@ -129,6 +130,14 @@ fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
         let scancode_license_key = format!("scancode-{}", license.license_key).to_lowercase();
 
         entries.insert(scancode_license_key, info);
+    }
+
+    // Add LicenseRef aliases without overwriting canonical identifiers
+    for license in licenses {
+        let info = ScancodeLicenseInfo {
+            is_exception: license.is_exception,
+            is_deprecated: license.is_deprecated,
+        };
 
         for key in license
             .spdx_license_key
@@ -138,7 +147,7 @@ fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
             // TODO #1169: Revisit ScanCode exception identifier handling once
             //  non-SPDX exceptions use the "AdditionRef-" prefix instead of "LicenseRef-".
             if let Some(key) = key.strip_prefix("LicenseRef-") {
-                entries.insert(key.to_lowercase(), info);
+                entries.entry(key.to_lowercase()).or_insert(info);
             }
         }
     }

@@ -48,6 +48,8 @@ pub enum Error {
 
 #[cfg(test)]
 mod tests {
+    use serde_json::json;
+
     use super::*;
 
     pub struct NoDiagnostics;
@@ -81,5 +83,28 @@ mod tests {
         pub fn warnings(&self) -> &[Warning] {
             &self.warnings
         }
+    }
+
+    // Sanity check that all the `CONVERSIONS` are executed, without
+    // attempting to test interaction between conversions
+    #[test]
+    fn end_to_end() {
+        let input = json!({
+            "document": {
+                "csaf_version": "2.0"
+            }
+        });
+        let output = json!({
+            "document": {
+                "csaf_version": "2.1",
+                "distribution": {
+                    "tlp": {
+                        "label": "CLEAR"
+                    }
+                }
+            },
+        });
+        let doc = convert(input, &Settings::default(), &mut NoDiagnostics);
+        assert_eq!(output, doc.into_raw());
     }
 }

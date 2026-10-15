@@ -173,16 +173,46 @@ fn generate_loose_type(
             }));
         },
 
-        // we "peel off" the newtype using a type alias between the outer node and the inner node
         TypeDetails::Newtype(type_newtype) => {
             let inner_id = type_newtype.inner();
-            let src = node_ident(index);
-            let dest = node_ident(type_id_to_index.get_or_insert(&inner_id));
-            todo.push(inner_id);
+            let inner_ty = type_space.get_type(&inner_id).unwrap();
+            if let TypeDetails::String = inner_ty.details() {
+                let ident = node_ident(index);
+                let schema_ident = new_ident(&ty.name());
+                let schema_mod = version_to_mod_name(schema_version);
+                // if this is a newtype over a string it likely performs string validation so
+                // we prefer using the schema type in the setter; for the getter we cannot assume
+                // that the input is valid so we return the raw string
+                mod_items.push(quote!(
+                    #[derive(bytemuck::TransparentWrapper)]
+                    #[repr(transparent)]
+                    pub struct #ident(serde_json::Value);));
 
-            mod_items.push(quote!(
-                pub type #src = #dest;
-            ));
+                mod_items.push(quote!(
+                    impl #ident {
+                        pub fn get_str(&self) -> Result<&str, SchemaError> {
+                            match bytemuck::TransparentWrapper::peel_ref(self) {
+                                serde_json::Value::String(s) => Ok(s),
+                                _ => Err(SchemaError)
+                            }
+                        }
+
+                        pub fn set_str(&mut self, s: crate::schema::#schema_mod::schema::#schema_ident) {
+                            *bytemuck::TransparentWrapper::peel_mut(self) =
+                                serde_json::Value::String(s.into());
+                        }
+                    }
+                ))
+            } else {
+                // we "peel off" the newtype using a type alias between the outer node and the inner node
+                let src = node_ident(index);
+                let dest = node_ident(type_id_to_index.get_or_insert(&inner_id));
+                todo.push(inner_id);
+
+                mod_items.push(quote!(
+                    pub type #src = #dest;
+                ));
+            }
         },
 
         // the API is already fallible so the accessor that returned this node already wrapped it in an `Option`

@@ -370,7 +370,11 @@ crate::macros::define_csaf_test!(
     "../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-15-12.json",
     "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-15-12.json"), (case_s11, "s11",
     "../type-generator/assets/tests/csaf_2.1/mandatory/csaf-rs_csaf-csaf_2_1-6-1-15-s11.json",
-    "mandatory/csaf-rs_csaf-csaf_2_1-6-1-15-s11.json")]
+    "mandatory/csaf-rs_csaf-csaf_2_1-6-1-15-s11.json"), (case_s12, "s12",
+    "../type-generator/assets/tests/csaf_2.1/mandatory/csaf-rs_csaf-csaf_2_1-6-1-15-s12.json",
+    "mandatory/csaf-rs_csaf-csaf_2_1-6-1-15-s12.json"), (case_s13, "s13",
+    "../type-generator/assets/tests/csaf_2.1/mandatory/csaf-rs_csaf-csaf_2_1-6-1-15-s13.json",
+    "mandatory/csaf-rs_csaf-csaf_2_1-6-1-15-s13.json")]
 );
 crate::macros::define_csaf_test!(
     Test6_1_16, ValidatorForTest6_1_16, ExpectedResults_6_1_16, id : "6.1.16", doc_type :

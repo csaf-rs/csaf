@@ -66,35 +66,44 @@ mod tests {
 
     #[test]
     fn test_test_6_1_15() {
-        // Error cases
         let missing_source_lang_error = Err(vec![MISSING_SOURCE_LANG_ERROR.clone()]);
         let unset_source_language = Err(vec![UNSET_SOURCE_LANG_ERROR.clone()]);
-        let empty_source_language = unset_source_language.clone();
+        let empty_source_language = Err(vec![EMPTY_SOURCE_LANG_ERROR.clone()]);
 
         // case 01: translator category without source_lang
         // case 02: translator category without source_lang, but lang field is present
+        // case s01: translator category with source_lang set to null
+        // case s02: translator category with source_lang set to empty string
         // case 11: translator category with source_lang
         // case 12: translator category with source_lang and lang field is present
         // case S11: source_lang is missing, but category is not translator (should be skipped)
+        // case s12: translator category with source_lang set to an empty array
+        // case s13: translator category with source_lang set to an empty object
+
 
         TESTS_2_0.test_6_1_15.expect(ExpectedResults_2_0 {
             case_01: missing_source_lang_error.clone(),
             case_02: missing_source_lang_error.clone(),
-            case_11: Ok(()),
-            case_12: Ok(()),
             case_s01: unset_source_language.clone(),
             case_s02: empty_source_language.clone(),
+            case_11: Ok(()),
+            case_12: Ok(()),
             case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
+            
         });
 
         TESTS_2_1.test_6_1_15.expect(ExpectedResults_2_1 {
             case_01: missing_source_lang_error.clone(),
             case_02: missing_source_lang_error,
-            case_11: Ok(()),
-            case_12: Ok(()),
             case_s01: unset_source_language,
             case_s02: empty_source_language,
+            case_11: Ok(()),
+            case_12: Ok(()),
             case_s11: Ok(()),
+            case_s12: Ok(()),
+            case_s13: Ok(()),
         });
     }
 }

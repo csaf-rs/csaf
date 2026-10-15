@@ -7,20 +7,52 @@ pub(crate) enum JsonValuePresence {
     Missing,
     /// Property is contained, but set to `null`
     Unset,
-    /// Property is contained but empty, e.g. String: "", Array: [], Object: {}
-    Empty,
+    /// Property is contained, but an empty string (`""`)
+    EmptyString,
+    /// Property is contained, but an empty array (`[]`)
+    EmptyArray,
+    /// Property is contained, but an empty object (`{}`)
+    EmptyObject,
     /// Property is contained and has a non-empty value
     Set,
 }
 
+impl JsonValuePresence {
+    /// Returns `true` if the property is not contained in the JSON data.
+    pub(crate) fn is_missing(&self) -> bool {
+        matches!(self, JsonValuePresence::Missing)
+    }
+
+    /// Returns `true` if the property is contained in the JSON data, regardless of its value.
+    pub(crate) fn is_present(&self) -> bool {
+        !matches!(self, JsonValuePresence::Missing)
+    }
+
+    /// Returns `true` if the property is contained in the JSON data and is empty
+    /// (i.e., an empty string, array, or object).
+    pub(crate) fn is_empty(&self) -> bool {
+        matches!(
+            self,
+            JsonValuePresence::EmptyString
+                | JsonValuePresence::EmptyArray
+                | JsonValuePresence::EmptyObject
+        )
+    }
+
+    /// Returns `true` if the property is contained in the JSON data and has a non-empty value.
+    pub(crate) fn is_present_and_set(&self) -> bool {
+        matches!(self, JsonValuePresence::Set)
+    }
+}
+
 /// Checks whether the property specified by `path` is present and set in the provided JSON data.
-/// Returns a [JsonValuePresence].
-pub(crate) fn is_present_and_set(path: &str, json: &Value) -> JsonValuePresence {
+/// Returns a [`JsonValuePresence`].
+pub(crate) fn get_json_presence(path: &str, json: &Value) -> JsonValuePresence {
     match json.pointer(path) {
         Some(Value::Null) => JsonValuePresence::Unset,
-        Some(Value::Array(t)) if t.is_empty() => JsonValuePresence::Empty,
-        Some(Value::String(t)) if t.is_empty() => JsonValuePresence::Empty,
-        Some(Value::Object(t)) if t.is_empty() => JsonValuePresence::Empty,
+        Some(Value::Array(t)) if t.is_empty() => JsonValuePresence::EmptyArray,
+        Some(Value::String(t)) if t.is_empty() => JsonValuePresence::EmptyString,
+        Some(Value::Object(t)) if t.is_empty() => JsonValuePresence::EmptyObject,
         Some(_) => JsonValuePresence::Set,
         None => JsonValuePresence::Missing,
     }
@@ -59,9 +91,9 @@ mod tests {
     #[rstest]
     #[case("/missing", JsonValuePresence::Missing)]
     #[case("/null", JsonValuePresence::Unset)]
-    #[case("/empty_array", JsonValuePresence::Empty)]
-    #[case("/empty_object", JsonValuePresence::Empty)]
-    #[case("/empty_string", JsonValuePresence::Empty)]
+    #[case("/empty_array", JsonValuePresence::EmptyArray)]
+    #[case("/empty_object", JsonValuePresence::EmptyObject)]
+    #[case("/empty_string", JsonValuePresence::EmptyString)]
     #[case("/with_value/array", JsonValuePresence::Set)]
     #[case("/with_value/object", JsonValuePresence::Set)]
     #[case("/with_value/string", JsonValuePresence::Set)]
@@ -72,6 +104,6 @@ mod tests {
         #[case] path: &str,
         #[case] expected: JsonValuePresence,
     ) {
-        assert_eq!(is_present_and_set(path, test_json), expected);
+        assert_eq!(get_json_presence(path, test_json), expected);
     }
 }

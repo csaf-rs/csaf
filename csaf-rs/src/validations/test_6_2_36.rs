@@ -2,7 +2,7 @@ use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, TlpTrait};
 use crate::schema::csaf2_1::schema::LabelOfTlp;
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::ssvc::{
-    SsvcNamespaceResultAndPath, create_generic_namespace_finding_data, iter_ssvc_namespaces,
+    SsvcNamespaceAndPath, create_generic_namespace_finding_data, iter_ssvc_namespace_strings,
 };
 use ssvc::NamespaceError;
 
@@ -17,9 +17,9 @@ fn create_namespace_extension_in_tlp_clear_warning(namespace: &str, instance_pat
 
 /// 6.2.36 Usage of SSVC Decision Point Namespace with Extension in TLP:CLEAR Document
 ///
-/// For each SSVC decision point given under `selections`, it MUST be tested that the namespace
-/// does not use an extension if the document is labeled TLP:CLEAR. Namespaces reserved for
-/// special purpose MUST be treated as per their definition.
+/// For each SSVC decision point given under `selections`, it SHALL be tested that the `namespace`
+/// does not use an extension if the document is labeled `TLP:CLEAR`. Namespaces reserved for
+/// special purpose SHALL be treated as per their definition.
 pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_clear_document(
     doc: &impl CsafTrait,
     allow_test_namespaces: bool,
@@ -34,18 +34,13 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
 
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for SsvcNamespaceResultAndPath { instance_path, result } in iter_ssvc_namespaces(doc, allow_test_namespaces) {
-        match result {
-            // check if an extension exists on a valid namespace
-            Ok(parsed_namespace) if parsed_namespace.extensions.is_some() => {
-                errors
-                    .get_or_insert_default()
-                    .push(create_namespace_extension_in_tlp_clear_warning(
-                        &parsed_namespace.to_string(),
-                        &instance_path,
-                    ))
-            },
-            // reserved forbidden namespaces "invalid" or "test" are used
+    for SsvcNamespaceAndPath {
+        namespace,
+        instance_path,
+    } in iter_ssvc_namespace_strings(doc)
+    {
+        match ssvc::validate_namespace(&namespace, allow_test_namespaces) {
+            // TODO: Revisit once reserved namespace handling is clarified: https://github.com/csaf-rs/ssvc/issues/111
             Err(err)
                 if matches!(
                     err,
@@ -59,8 +54,19 @@ pub fn test_6_2_36_usage_of_ssvc_decision_point_namespace_with_extension_in_tlp_
                         &instance_path,
                     )));
             },
-            // there is no extension / all other namespace errors
-            Ok(_) | Err(_) => continue,
+
+            // The presence of '/' is sufficient to detect an extension, regardless of whether namespace validation succeeds
+            _ if namespace.contains('/') => {
+                errors
+                    .get_or_insert_default()
+                    .push(create_namespace_extension_in_tlp_clear_warning(
+                        &namespace,
+                        &instance_path,
+                    ));
+            },
+
+            // No extension or relevant reserved namespace error
+            _ => continue,
         }
     }
 

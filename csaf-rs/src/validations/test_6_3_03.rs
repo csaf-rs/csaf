@@ -69,26 +69,33 @@ mod tests {
     fn test_test_6_3_3() {
         let single_vuln_no_cve = Err(vec![create_missing_cve_info(0)]);
         let multi_vuln_alternating_no_cve = Err(vec![create_missing_cve_info(0), create_missing_cve_info(2)]);
+        let two_vulns_one_cve_null_one_cve_empty = Err(vec![create_unset_cve_info(0), create_empty_cve_info(1)]);
 
         // Case 01: 1 vuln, no CVE
-        // Case 02: 3 vuln, alternating cve presence
+        // Case 02: 3 vulns, alternating cve presence
+        // Case S03: 2 vulns, one with cve null, one with cve empty (schema invalid)
         // Case 11: 1 vuln, with CVE (fixed case 01)
         // Case 12: 3 vuln, all with CVEs (fixed case 02)
         // Case S11: no vulns at all
+        // Case S12: cve is empty array, empty object, bool, number (schema invalid)
 
         TESTS_2_0.test_6_3_3.expect(ExpectedResults_2_0 {
             case_01: single_vuln_no_cve.clone(),
             case_02: multi_vuln_alternating_no_cve.clone(),
+            case_s03: two_vulns_one_cve_null_one_cve_empty.clone(),
             case_11: Ok(()),
             case_12: Ok(()),
             case_s11: Ok(()),
+            case_s12: Ok(()),
         });
         TESTS_2_1.test_6_3_3.expect(ExpectedResults_2_1 {
             case_01: single_vuln_no_cve,
             case_02: multi_vuln_alternating_no_cve,
+            case_s03: two_vulns_one_cve_null_one_cve_empty,
             case_11: Ok(()),
             case_12: Ok(()),
             case_s11: Ok(()),
+            case_s12: Ok(()),
         });
     }
 }

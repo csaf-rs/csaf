@@ -8,16 +8,16 @@
         "label": "CLEAR"
       }
     },
-    "lang": [],
+    "lang": 42,
     "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Recommended test: Missing Document Language (failing supplementary example 3 - empty array in document language)",
+    "title": "Recommended Test: Missing Document Language (valid supplementary example 5 - lang is number)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-12-S03",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-12-S15",
       "initial_release_date": "2024-01-24T10:00:00.000Z",
       "revision_history": [
         {

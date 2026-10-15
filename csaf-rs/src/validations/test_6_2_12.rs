@@ -57,41 +57,40 @@ mod tests {
 
     #[test]
     fn test_test_6_2_12() {
-        let missing_document_language_property = Err(vec![MISSING_DOCUMENT_LANGUAGE_WARNING.clone()]);
+        let missing_document_language = Err(vec![MISSING_DOCUMENT_LANGUAGE_WARNING.clone()]);
         let unset_document_language = Err(vec![UNSET_DOCUMENT_LANGUAGE_WARNING.clone()]);
-        let empty_document_language = unset_document_language.clone();
+        let empty_document_language = Err(vec![EMPTY_DOCUMENT_LANGUAGE_WARNING.clone()]);
 
-        // Case S02 - S04: document lang is empty, this highlights that we are merging
-        // S02: empty string
-        // S03: empty array
-        // S04: empty object
-        // here. We might need to revisit the empty array / object resulting in the same error.
-
+        // Case 01: document lang is missing
+        // Case S01: document lang set to null (schema invalid)
+        // Case S02: document lang is empty string (schema invalid)
         // Case S11: document lang "en"
-        // Case S12: document lang is bool true
-        // Case S13: document lang is number 42
+        // Case S12: document lang is empty array (schema invalid)
+        // Case S13: document lang is empty object (schema invalid)
+        // Case S14: document lang is bool true
+        // Case S15: document lang is number 42
 
         // Note: Cases S01 - 04 and S12 - S13 are all schema-invalid.
 
         TESTS_2_0.test_6_2_12.expect(ExpectedResults_2_0 {
-            case_01: missing_document_language_property.clone(),
+            case_01: missing_document_language.clone(),
             case_s01: unset_document_language.clone(),
             case_s02: empty_document_language.clone(),
-            case_s03: empty_document_language.clone(),
-            case_s04: empty_document_language.clone(),
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),
+            case_s14: Ok(()),
+            case_s15: Ok(()),
         });
         TESTS_2_1.test_6_2_12.expect(ExpectedResults_2_1 {
-            case_01: missing_document_language_property,
+            case_01: missing_document_language,
             case_s01: unset_document_language,
-            case_s02: empty_document_language.clone(),
-            case_s03: empty_document_language.clone(),
-            case_s04: empty_document_language,
+            case_s02: empty_document_language,
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),
+            case_s14: Ok(()),
+            case_s15: Ok(()),
         });
     }
 }

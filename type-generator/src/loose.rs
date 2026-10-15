@@ -279,7 +279,8 @@ fn generate_loose_type(
                         }
                     }
 
-                    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+                    /// Allows adding and removing arbitrary JSON children nodes into this node
+                    pub fn caution_as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
                         match bytemuck::TransparentWrapper::peel_mut(self) {
                             serde_json::Value::Array(s) => Ok(s),
                             _ => Err(SchemaError)

@@ -178,7 +178,10 @@ impl Node7 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -230,7 +233,10 @@ impl Node4 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -693,7 +699,10 @@ impl Node23 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -865,7 +874,10 @@ impl Node32 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -918,7 +930,10 @@ impl Node35 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -1031,7 +1046,10 @@ impl Node22 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -1394,7 +1412,10 @@ impl Node41 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -1499,7 +1520,10 @@ impl Node49 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -1898,7 +1922,10 @@ impl Node55 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -2173,7 +2200,10 @@ impl Node63 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -2674,7 +2704,10 @@ impl Node72 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -2863,7 +2896,10 @@ impl Node76 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -3032,7 +3068,10 @@ impl Node79 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -3208,7 +3247,10 @@ impl Node82 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -3417,7 +3459,10 @@ impl Node89 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -3565,7 +3610,10 @@ impl Node94 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -3644,7 +3692,10 @@ impl Node91 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -3833,7 +3884,10 @@ impl Node102 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -3965,7 +4019,10 @@ impl Node105 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4438,7 +4495,10 @@ impl Node119 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4543,7 +4603,10 @@ impl Node121 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4595,7 +4658,10 @@ impl Node123 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4647,7 +4713,10 @@ impl Node125 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4679,7 +4748,10 @@ impl Node126 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4734,7 +4806,10 @@ impl Node128 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4786,7 +4861,10 @@ impl Node130 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -4913,7 +4991,10 @@ impl Node132 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -5110,7 +5191,10 @@ impl Node101 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -5260,7 +5344,10 @@ impl Node100 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -5293,7 +5380,10 @@ impl Node142 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -6099,7 +6189,10 @@ impl Node160 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -6512,7 +6605,10 @@ impl Node172 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -7129,7 +7225,10 @@ impl Node194 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -7321,7 +7420,10 @@ impl Node197 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -7392,7 +7494,10 @@ impl Node192 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -7581,7 +7686,10 @@ impl Node191 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -7929,7 +8037,10 @@ impl Node216 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -7982,7 +8093,10 @@ impl Node217 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),
@@ -8034,7 +8148,10 @@ impl Node219 {
             _ => Err(SchemaError),
         }
     }
-    pub fn as_vec_mut(&mut self) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
+    /// Allows adding and removing arbitrary JSON children nodes into this node
+    pub fn caution_as_vec_mut(
+        &mut self,
+    ) -> Result<&mut Vec<serde_json::Value>, SchemaError> {
         match bytemuck::TransparentWrapper::peel_mut(self) {
             serde_json::Value::Array(s) => Ok(s),
             _ => Err(SchemaError),

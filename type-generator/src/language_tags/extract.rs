@@ -110,7 +110,10 @@ fn push_block_into_map(
     if let (Some(entry_type), Some(subtag)) = (entry_type, subtag)
         && let Some(&entry_kind) = SubtagKind::ALL.iter().find(|k| k.registry_key() == entry_type.as_str())
     {
-        let preferred_value = deprecated.is_some().then(|| preferred_value.map(str::to_owned)).flatten();
+        let preferred_value = deprecated
+            .is_some()
+            .then(|| preferred_value.map(str::to_owned))
+            .flatten();
 
         // the subtag is a range ("qaa..qtz"), expand it
         let entries: Vec<SubtagEntry> = if let Some((start, end)) = subtag.split_once("..") {

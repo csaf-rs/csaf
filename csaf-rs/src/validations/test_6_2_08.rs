@@ -19,7 +19,7 @@ pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<
                     if hash.contains_only_hash_algorithm(CsafHashAlgorithm::Md5) {
                         errors
                             .get_or_insert_default()
-                            .push(create_md5_only_hash_error(path, h_i));
+                            .push(create_md5_only_hash_warning(path, h_i));
                     }
                 }
             }
@@ -29,7 +29,7 @@ pub fn test_6_2_08_use_of_md5_as_only_hash_algo(doc: &impl CsafTrait) -> Result<
     errors.map_or(Ok(()), Err)
 }
 
-fn create_md5_only_hash_error(path: &str, hash_index: usize) -> TestFinding {
+fn create_md5_only_hash_warning(path: &str, hash_index: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: "Product identification helper uses hashes with `md5` as the only hash algorithm".to_string(),
         instance_path: format!("{path}/product_identification_helper/hashes/{hash_index}/file_hashes",),
@@ -48,7 +48,7 @@ mod tests {
 
     #[test]
     fn test_test_6_2_08() {
-        let case_01_and_02 = Err(vec![create_md5_only_hash_error(
+        let case_01_and_02 = Err(vec![create_md5_only_hash_warning(
             "/product_tree/full_product_names/0",
             0,
         )]);

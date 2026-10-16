@@ -3,7 +3,7 @@ use crate::csaf_traits::{CsafTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::HashSet;
 
-fn generate_hardware_software_mix_error(product_id: &str, base_path: &str) -> TestFinding {
+fn generate_hardware_software_mix_warning(product_id: &str, base_path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "Product '{product_id}' contains serial_numbers or model_numbers but lacks a valid product path. This indicates a potential hardware and software mix in the product tree."
@@ -30,7 +30,7 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
             let has_model = helper.get_model_numbers().is_some_and(|mn| !mn.is_empty());
 
             if (has_serial || has_model) && !valid_path_references.contains(product.get_product_id()) {
-                errors.push(generate_hardware_software_mix_error(
+                errors.push(generate_hardware_software_mix_warning(
                     product.get_product_id(),
                     instance_path,
                 ));
@@ -52,7 +52,7 @@ mod tests {
     #[test]
     fn test_test_6_2_31() {
         // Case 01: Baseline failure from OASIS specification
-        let case_01 = vec![generate_hardware_software_mix_error(
+        let case_01 = vec![generate_hardware_software_mix_warning(
             "CSAFPID-908070601",
             "/product_tree/branches/0/branches/0/branches/0/product",
         )];
@@ -60,12 +60,12 @@ mod tests {
         // S01: Edge case for 6.2.31
         // These are the 6 failing cases defined in your updated JSON
         let s01_errors = vec![
-            generate_hardware_software_mix_error("CSAFPID-B2", "/product_tree/branches/0/product"),
-            generate_hardware_software_mix_error("CSAFPID-F1", "/product_tree/full_product_names/0"),
-            generate_hardware_software_mix_error("CSAFPID-F2", "/product_tree/full_product_names/1"),
-            generate_hardware_software_mix_error("CSAFPID-F3", "/product_tree/full_product_names/2"),
-            generate_hardware_software_mix_error("CSAFPID-F4", "/product_tree/full_product_names/3"),
-            generate_hardware_software_mix_error("CSAFPID-F5", "/product_tree/product_paths/0/full_product_name"),
+            generate_hardware_software_mix_warning("CSAFPID-B2", "/product_tree/branches/0/product"),
+            generate_hardware_software_mix_warning("CSAFPID-F1", "/product_tree/full_product_names/0"),
+            generate_hardware_software_mix_warning("CSAFPID-F2", "/product_tree/full_product_names/1"),
+            generate_hardware_software_mix_warning("CSAFPID-F3", "/product_tree/full_product_names/2"),
+            generate_hardware_software_mix_warning("CSAFPID-F4", "/product_tree/full_product_names/3"),
+            generate_hardware_software_mix_warning("CSAFPID-F5", "/product_tree/product_paths/0/full_product_name"),
         ];
 
         // Case 01: Invalid - Product has serial numbers but no matching path entry or inline declaration

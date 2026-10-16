@@ -116,21 +116,41 @@ fn scancode_licensedb_entries() -> HashMap<String, ScancodeLicenseInfo> {
     let licenses: Vec<ScancodeLicense> =
         serde_json::from_str(include_str!("../assets/scancode-licensedb.json")).unwrap();
 
-    licenses
-        .into_iter()
-        .flat_map(|license| {
-            let info = ScancodeLicenseInfo {
-                is_exception: license.is_exception,
-                is_deprecated: license.is_deprecated,
-            };
+    let mut entries = HashMap::new();
 
-            std::iter::once(&license.spdx_license_key)
-                .filter_map(|key| key.as_ref())
-                .chain(license.other_spdx_license_keys.iter())
-                .filter_map(|key| {
-                    key.strip_prefix("LicenseRef-").map(|key| (key.to_lowercase(), info)) // TODO #1169: Revisit ScanCode exception identifier handling once non-SPDX exceptions use the 'AdditionRef-' prefix instead of 'LicenseRef-'
-                })
-                .collect::<Vec<_>>()
-        })
-        .collect()
+    // Insert canonical ScanCode identifiers first
+    for license in &licenses {
+        let info = ScancodeLicenseInfo {
+            is_exception: license.is_exception,
+            is_deprecated: license.is_deprecated,
+        };
+
+        // CSAF 2.1 section 3.2.2.8 requires ScanCode license identifiers to use the "LicenseRef-scancode-" prefix.
+        // The lexer strips "LicenseRef-", so the lookup key uses the remaining "scancode-" prefix.
+        let scancode_license_key = format!("scancode-{}", license.license_key).to_lowercase();
+
+        entries.insert(scancode_license_key, info);
+    }
+
+    // Add LicenseRef aliases without overwriting canonical identifiers
+    for license in licenses {
+        let info = ScancodeLicenseInfo {
+            is_exception: license.is_exception,
+            is_deprecated: license.is_deprecated,
+        };
+
+        for key in license
+            .spdx_license_key
+            .into_iter()
+            .chain(license.other_spdx_license_keys)
+        {
+            // TODO #1169: Revisit ScanCode exception identifier handling once
+            //  non-SPDX exceptions use the "AdditionRef-" prefix instead of "LicenseRef-".
+            if let Some(key) = key.strip_prefix("LicenseRef-") {
+                entries.entry(key.to_lowercase()).or_insert(info);
+            }
+        }
+    }
+
+    entries
 }

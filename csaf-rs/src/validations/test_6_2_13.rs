@@ -18,7 +18,7 @@ fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<Tes
                 if a > b {
                     errors
                         .get_or_insert_default()
-                        .push(create_unsorted_keys_error(format!("{path}/{a}").as_str()));
+                        .push(create_unsorted_keys_warning(format!("{path}/{a}").as_str()));
                 }
             }
 
@@ -38,7 +38,7 @@ fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<Tes
     }
 }
 
-fn create_unsorted_keys_error(path: &str) -> TestFinding {
+fn create_unsorted_keys_warning(path: &str) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: "This key does not adhere to the alphabetical sorting of JSON keys".to_string(),
         instance_path: path.to_string(),
@@ -57,17 +57,17 @@ mod tests {
 
     #[test]
     fn test_test_6_2_13() {
-        let simple_unordered_key = Err(vec![create_unsorted_keys_error("/document/csaf_version")]);
+        let simple_unordered_key = Err(vec![create_unsorted_keys_warning("/document/csaf_version")]);
 
         // Multiple errors:
         // 2x document level (csaf_version, tracking)
         // nested in correctly sorted key (publisher -> namespace)
         // nested in incorrectly sorted key (tracking -> revision_history -> ...)
         let multiple_unordered_keys_with_nesting = Err(vec![
-            create_unsorted_keys_error("/document/csaf_version"),
-            create_unsorted_keys_error("/document/tracking"),
-            create_unsorted_keys_error("/document/publisher/namespace"),
-            create_unsorted_keys_error("/document/tracking/revision_history/0/summary"),
+            create_unsorted_keys_warning("/document/csaf_version"),
+            create_unsorted_keys_warning("/document/tracking"),
+            create_unsorted_keys_warning("/document/publisher/namespace"),
+            create_unsorted_keys_warning("/document/tracking/revision_history/0/summary"),
         ]);
 
         // Case S11: Passing case with all keys sorted (just 01 fixed)

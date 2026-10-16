@@ -36,6 +36,7 @@ pub use crate::csaf::traits::util::generic_with::{
     WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };
 pub use crate::csaf::traits::util::resolve_product_groups::resolve_product_groups;
+pub use crate::csaf::traits::util::canonical_url::filter_canonical_url_candidates;
 pub use crate::csaf::traits::vulnerabilities::content_trait::ContentTrait;
 pub use crate::csaf::traits::vulnerabilities::csaf_20_involvement_trait::Csaf20InvolvementTrait;
 pub use crate::csaf::traits::vulnerabilities::epss_trait::EpssTrait;

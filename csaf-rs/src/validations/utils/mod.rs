@@ -4,7 +4,7 @@ pub(crate) mod document_references_with_summary_and_category;
 pub(crate) mod language_specific_translations;
 pub(crate) mod license_expressions;
 pub(crate) mod license_text;
-pub(crate) mod raw_json;
+pub(crate) mod raw_json_value_helper;
 pub(crate) mod rvisc;
 pub(crate) mod ssvc;
 pub(crate) mod text_check;

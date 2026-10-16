@@ -27,8 +27,16 @@ IGNORE_ARGS=(
   # 6.1.15 needs to use category "translator"
   --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s01.json" "translator"
   --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s02.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s12.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s13.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s14.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_0-6-1-15-s15.json" "translator"
   --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s01.json" "translator"
   --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s02.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s12.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s13.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s14.json" "translator"
+  --publisher-category-exception "csaf-rs_csaf-csaf_2_1-6-1-15-s15.json" "translator"
 )
 
 # Call Python script with all arguments

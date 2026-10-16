@@ -14,7 +14,7 @@ use crate::{
         language_specific_translations::{
             create_no_translation_known_info, get_translation_for_term_superseding_document,
         },
-        raw_json::{JsonValuePresence, is_present_and_set, property_string_value_is},
+        raw_json_value_helper::{JsonValuePresence, get_json_presence, property_string_value_is},
     },
 };
 
@@ -90,7 +90,7 @@ pub fn test_6_2_39_4_language_specific_superseding_document(json: &Value) -> Res
             !property_string_value_is("/category", &CategoryOfReference::External.to_string(), reference)
         })
         .map(|(reference_idx, reference)| {
-            let present_and_set = is_present_and_set("/category", reference);
+            let present_and_set = get_json_presence("/category", reference);
             if present_and_set != JsonValuePresence::Set {
                 create_external_category_missing_warning(reference_idx)
             } else {

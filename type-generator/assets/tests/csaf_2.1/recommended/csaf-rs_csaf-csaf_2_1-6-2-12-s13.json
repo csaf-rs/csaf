@@ -8,13 +8,13 @@
         "label": "CLEAR"
       }
     },
-    "lang": 42,
+    "lang": {},
     "publisher": {
       "category": "other",
       "name": "CSAF-RS Test Files",
       "namespace": "https://github.com/csaf-rs/csaf/tree/main/type-generator/assets/tests"
     },
-    "title": "Recommended Test: Missing Document Language (valid supplementary example 3 - file with a numeric lang item contained)",
+    "title": "Recommended test: Missing Document Language (valid supplementary example 3 - empty object in document language)",
     "tracking": {
       "current_release_date": "2024-01-24T10:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-2-12-S13",

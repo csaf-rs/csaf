@@ -1,5 +1,6 @@
-use std::fs;
 use std::path::PathBuf;
+use std::process::Command;
+use std::{env, fs};
 
 use csaf::converter::{self, Diagnostics, Error, Settings, Warning};
 use jsonpath_rust::JsonPath as _;
@@ -367,4 +368,16 @@ impl Diagnostics for DiagnosticsSpy {
     fn warning(&mut self, warning: Warning) {
         self.warnings.push(warning)
     }
+}
+
+// As more features are implemented in the converter, more conformance tests will start passing.
+// This unit test ensures that conformance tests that just started passing are not left `#[ignored]`
+// effectively turning this test suite into a "ratchet mechanism"
+#[test]
+fn did_not_forget_to_unignore_a_test() -> TestResult<()> {
+    let test_runner = env::current_exe()?;
+    let output = Command::new(test_runner).arg("--ignored").output()?;
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("0 passed"));
+    Ok(())
 }

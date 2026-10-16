@@ -3,7 +3,7 @@ use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
 /// Represents an error that occurred while parsing or validating a language tag in a CSAF document.
 #[derive(Debug, PartialEq, Clone)]
 pub enum CsafLanguageError {
-    /// Grandfathered language subtag that were deprecated before CSAF was specified are invalid
+    /// Grandfathered language tags that were deprecated before CSAF was specified are invalid
     GrandfatheredTagDeprecatedBeforeCSAF(String),
     /// Oxilangtag parsing failed
     ParserError(String, String),

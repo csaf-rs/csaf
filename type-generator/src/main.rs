@@ -1,5 +1,6 @@
 mod build_errors;
 mod language_tags;
+mod loose;
 mod rvisc;
 mod schema;
 mod strict_schema;
@@ -66,8 +67,10 @@ fn main() -> Result<(), BuildError> {
         && !args.rvisc;
 
     if run_all || args.schema {
-        for schema in &get_schemas() {
-            build_schema(schema, &args.target_folder)?;
+        let schemas = get_schemas();
+        for schema in &schemas {
+            let type_space = build_schema(schema, &args.target_folder)?;
+            loose::generate(&type_space, schema.version, &args.target_folder)?;
         }
     }
 

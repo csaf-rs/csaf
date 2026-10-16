@@ -283,7 +283,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.21" => Some(ValidatorForTest6_1_21.validate(self)),
                 "6.1.22" => Some(ValidatorForTest6_1_22.validate(self)),
                 "6.1.23" => Some(ValidatorForTest6_1_23.validate(self)),
-                "6.1.24" => None, // TODO: #1091, this test needs to be re-implemented
+                "6.1.24" => Some(ValidatorForTest6_1_24.validate(self)),
                 "6.1.25" => Some(ValidatorForTest6_1_25.validate(self)),
                 "6.1.26" => Some(ValidatorForTest6_1_26.validate(self)),
                 "6.1.27.1" => Some(ValidatorForTest6_1_27_1.validate(self)),
@@ -427,7 +427,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                     };
                 },
                 "6.2.44" => Some(ValidatorForTest6_2_44.validate(self)),
-                "6.2.45" => None, // Some(ValidatorForTest6_2_45.validate(self)),
+                "6.2.45" => Some(ValidatorForTest6_2_45.validate(self)),
                 "6.2.46" => Some(ValidatorForTest6_2_46.validate(self)),
                 "6.2.47" => Some(ValidatorForTest6_2_47.validate(self)),
                 "6.2.48" => Some(ValidatorForTest6_2_48.validate(self)),
@@ -443,7 +443,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 // informative tests
                 "6.3.1" => Some(ValidatorForTest6_3_1.validate(self)),
                 "6.3.2" => Some(ValidatorForTest6_3_2.validate(self)),
-                "6.3.3" => Some(ValidatorForTest6_3_3.validate(self)),
+                "6.3.3" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.3.4" => Some(ValidatorForTest6_3_4.validate(self)),
                 "6.3.5" => Some(ValidatorForTest6_3_5.validate(self)),
                 "6.3.6" => None, // Some(ValidatorForTest6_3_6.validate(self)),
@@ -493,6 +499,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
                 "6.2.20" => Some(ValidatorForTest6_2_20.validate(self)),
                 "6.2.39.4" => Some(ValidatorForTest6_2_39_4.validate(self)),
                 "6.2.43" => Some(ValidatorForTest6_2_43.validate(self)),
+                "6.3.3" => Some(ValidatorForTest6_3_3.validate(self)),
                 _ => None,
             },
         )

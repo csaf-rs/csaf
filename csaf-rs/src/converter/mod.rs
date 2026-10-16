@@ -1,37 +1,110 @@
-use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait};
+use crate::schema::loose;
 
-/// Checks if a CSAF document is version 2.0
-///
-/// Works with any type implementing CsafTrait
-pub fn is_csaf_2_0<Doc: CsafTrait>(doc: &Doc) -> bool {
-    doc.get_document().get_csaf_version() == CsafVersion::X20
+mod update_csaf_version;
+mod update_tlp_label;
+
+pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
+    let mut doc = loose::Document::new(raw);
+
+    for conversion in CONVERSIONS {
+        conversion.convert(&mut doc, settings, diagnostics)
+    }
+
+    doc
+}
+
+const CONVERSIONS: &[&dyn Convert] = &[
+    &update_csaf_version::UpdateCsafVersion,
+    &update_tlp_label::UpdateTlpLabel,
+];
+
+/// Incremental v2.0 to v2.1 conversion
+pub trait Convert {
+    fn convert(&self, scope: &mut loose::Document, settings: &Settings, diagnostics: &mut dyn Diagnostics);
+}
+
+pub trait Diagnostics {
+    fn error(&mut self, error: Error);
+    fn warning(&mut self, warning: Warning);
+}
+
+#[derive(Default)]
+pub struct Settings {
+    // TODO
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Warning {
+    CsafVersionIsMissing,
+    InvalidCsafVersion,
+    InvalidTlpLabel,
+    TlpIsMissingLabel,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Error {
+    Todo,
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::csaf::raw::HasParsed;
-    use crate::csaf2_0::loader::load_document as load_document_2_0;
-    use crate::csaf2_1::loader::load_document as load_document_2_1;
-    use std::path::Path;
+    use serde_json::json;
 
-    #[test]
-    fn test_is_csaf_2_0_returns_true_for_v20() {
-        let doc = load_document_2_0(Path::new(
-            "../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json",
-        ))
-        .expect("Failed to load CSAF 2.0 test document");
-        let parsed = doc.get_parsed().as_ref().expect("Failed to parse CSAF 2.0 document");
-        assert!(is_csaf_2_0(parsed));
+    use super::*;
+
+    pub struct NoDiagnostics;
+
+    impl Diagnostics for NoDiagnostics {
+        fn error(&mut self, error: Error) {
+            panic!("expected no diagnostics; got {error:?}")
+        }
+
+        fn warning(&mut self, warning: Warning) {
+            panic!("expected no diagnostics; got {warning:?}")
+        }
     }
 
+    #[derive(Default)]
+    pub struct OnlyWarnings {
+        warnings: Vec<Warning>,
+    }
+
+    impl Diagnostics for OnlyWarnings {
+        fn error(&mut self, error: Error) {
+            panic!("expected no errors; got {error:?}")
+        }
+
+        fn warning(&mut self, warning: Warning) {
+            self.warnings.push(warning)
+        }
+    }
+
+    impl OnlyWarnings {
+        pub fn warnings(&self) -> &[Warning] {
+            &self.warnings
+        }
+    }
+
+    // Sanity check that all the `CONVERSIONS` are executed, without
+    // attempting to test interaction between conversions
     #[test]
-    fn test_is_csaf_2_0_returns_false_for_v21() {
-        let doc = load_document_2_1(Path::new(
-            "../csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-06-11.json",
-        ))
-        .expect("Failed to load CSAF 2.1 test document");
-        let parsed = doc.get_parsed().as_ref().expect("Failed to parse CSAF 2.1 document");
-        assert!(!is_csaf_2_0(parsed));
+    fn end_to_end() {
+        let input = json!({
+            "document": {
+                "csaf_version": "2.0"
+            }
+        });
+        let output = json!({
+            "document": {
+                "csaf_version": "2.1",
+                "distribution": {
+                    "tlp": {
+                        "label": "CLEAR"
+                    }
+                }
+            },
+        });
+        let doc = convert(input, &Settings::default(), &mut NoDiagnostics);
+        assert_eq!(output, doc.into_raw());
     }
 }

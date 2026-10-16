@@ -54,6 +54,10 @@ jobs:
         run: ./scripts/json/check_json_formatting.sh --quiet
       - name: Check JSON sorting
         run: ./scripts/json/check_json_sorting.sh --quiet
+      - name: Check supplementary test tracking IDs
+        run: ./scripts/json/check_supplementary_test_tracking_id.sh
+      - name: Check supplementary test publishers
+        run: ./scripts/json/check_supplementary_test_publisher.sh
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Run shared format and doc checks

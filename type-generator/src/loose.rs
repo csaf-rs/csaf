@@ -151,13 +151,14 @@ pub fn generate_cast_api(
     add_ignore_clippy(&mut file);
     add_generated_code_header(&mut file);
 
-    let relative_path = format!("src/schema/loose/cast.rs");
+    let relative_path = "src/schema/loose/cast.rs";
     let content = prettyplease::unparse(&file);
-    write_generated_file(target_folder, &relative_path, &content, "generated types")?;
+    write_generated_file(target_folder, relative_path, &content, "generated types")?;
 
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 fn generate_loose_type(
     index: NodeIndex,
     schema_version: SchemaVersion,

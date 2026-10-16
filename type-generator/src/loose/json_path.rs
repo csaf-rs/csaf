@@ -99,13 +99,7 @@ impl JsonPathMapper {
     }
 
     fn aliases_of(&self, index: NodeIndex) -> Option<&BTreeSet<NodeIndex>> {
-        for set in &self.aliases {
-            if set.contains(&index) {
-                return Some(set);
-            }
-        }
-
-        None
+        self.aliases.iter().find(|set| set.contains(&index))
     }
 
     /// "Resolves" a node index into the alias with the smallest value

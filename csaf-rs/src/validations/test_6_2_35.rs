@@ -94,18 +94,35 @@ mod tests {
 
     #[test]
     fn test_test_6_2_35() {
-        let case_01_unregistered_ns_in_tlp_clear = Err(vec![create_unregistered_base_namespace_in_tlp_clear_warning(
+        let unregistered_namespace_in_tlp_clear = Err(vec![create_unregistered_base_namespace_in_tlp_clear_warning(
             "x_example.unregistered#namespace",
             &ssvc_selection_namespace_path(0, 0, 0),
         )]);
 
+        let unregistered_namespace_with_extension = Err(vec![create_unregistered_base_namespace_in_tlp_clear_warning(
+            "x_example.org#namespace/en-US",
+            &ssvc_selection_namespace_path(0, 0, 0),
+        )]);
+
+        let reserved_forbidden_namespace_with_extension =
+            Err(vec![TestFinding::Warning(create_generic_namespace_finding_data(
+                &NamespaceError::ReservedForbiddenNamespace {
+                    namespace: "invalid".to_string(),
+                },
+                &ssvc_selection_namespace_path(0, 0, 0),
+            ))]);
+
         // Case 11: TLP:CLEAR, registered namespace
         // Case 12: TLP:RED, unregistered namespace
+        // Case S11: TLP:CLEAR, registered namespace with extension
 
         TESTS_2_1.test_6_2_35.expect(ExpectedResults {
-            case_01: case_01_unregistered_ns_in_tlp_clear,
+            case_01: unregistered_namespace_in_tlp_clear,
+            case_s01: unregistered_namespace_with_extension,
+            case_s02: reserved_forbidden_namespace_with_extension,
             case_11: Ok(()),
             case_12: Ok(()),
+            case_s11: Ok(()),
         });
     }
 }

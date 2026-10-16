@@ -5,7 +5,7 @@ use std::sync::LazyLock;
 /// 6.2.11 Missing Canonical URL
 ///
 /// It SHALL be tested that the CSAF document has a canonical URL.
-/// 
+///
 /// [`filter_canonical_url_candidates`](crate::csaf_traits::filter_canonical_url_candidates)
 /// is used to determine whether a canonical URL is present in the document's references.
 ///

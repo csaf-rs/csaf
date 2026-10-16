@@ -426,7 +426,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                         status: TestResultStatus::Skipped,
                     };
                 },
-                "6.2.44" => None, // Some(ValidatorForTest6_2_44.validate(self)),
+                "6.2.44" => Some(ValidatorForTest6_2_44.validate(self)),
                 "6.2.45" => None, // Some(ValidatorForTest6_2_45.validate(self)),
                 "6.2.46" => Some(ValidatorForTest6_2_46.validate(self)),
                 "6.2.47" => Some(ValidatorForTest6_2_47.validate(self)),

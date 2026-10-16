@@ -1096,19 +1096,19 @@
       "valid": [
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s11.json",
-          "valid": true
+          "valid": false
         },
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s12.json",
-          "valid": true
+          "valid": false
         },
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s13.json",
-          "valid": true
+          "valid": false
         },
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-43-s14.json",
-          "valid": true
+          "valid": false
         }
       ]
     },

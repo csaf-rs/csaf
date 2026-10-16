@@ -15,22 +15,19 @@ static MISSING_SOURCE_LANG_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
 
 static UNSET_SOURCE_LANG_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message:
-            "`source_lang` property not set (e.g., `null`) even though the publisher category is 'translator'"
-                .to_string(),
+        message: "`source_lang` property not set (e.g., `null`) even though the publisher category is 'translator'"
+            .to_string(),
         instance_path: "/document/source_lang".to_string(),
     })
 });
 
 static EMPTY_SOURCE_LANG_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message:
-        "`source_lang` property is empty (e.g., `\"\"`) even though the publisher category is 'translator'"
+        message: "`source_lang` property is empty (e.g., `\"\"`) even though the publisher category is 'translator'"
             .to_string(),
         instance_path: "/document/source_lang".to_string(),
     })
 });
-
 
 /// 6.1.15 Translator
 ///
@@ -81,7 +78,6 @@ mod tests {
         // case s13: translator category with source_lang set to an empty object (schema invalid)
         // case s14: translator category with source_lang set to a boolean (schema invalid)
         // case s15: translator category with source_lang set to a number (schema invalid)
-
 
         TESTS_2_0.test_6_1_15.expect(ExpectedResults_2_0 {
             case_01: missing_source_lang_error.clone(),

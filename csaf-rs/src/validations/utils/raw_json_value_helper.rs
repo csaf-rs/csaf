@@ -33,9 +33,7 @@ impl JsonValuePresence {
     pub(crate) fn is_empty(&self) -> bool {
         matches!(
             self,
-            JsonValuePresence::EmptyString
-                | JsonValuePresence::EmptyArray
-                | JsonValuePresence::EmptyObject
+            JsonValuePresence::EmptyString | JsonValuePresence::EmptyArray | JsonValuePresence::EmptyObject
         )
     }
 

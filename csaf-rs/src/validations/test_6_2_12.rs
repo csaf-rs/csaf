@@ -43,8 +43,6 @@ pub fn test_6_2_12_missing_document_language(json: &Value) -> Result<(), Vec<Tes
     }
 }
 
-
-
 crate::test_validation::impl_raw_json_validator!(ValidatorForTest6_2_12, test_6_2_12_missing_document_language);
 
 #[cfg(test)]

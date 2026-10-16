@@ -1,7 +1,6 @@
 use crate::language_tags::{SubtagEntry, SubtagKind};
 use std::collections::HashMap;
 
-// all grandfathered tags deprecated before the release of CSAF 2.0 are to be ignored
 const GRANDFATHERED_DEPRECATION_CUTOFF: &str = "2022-11-24";
 
 /// Convert a character to a 0-based index relative to the base of its case
@@ -135,7 +134,9 @@ fn push_block_into_map(
             }]
         };
 
-        // ignore grandfathered tags that were deprecated before the CSAF 2.0 release
+        // ignore grandfathered tags that were deprecated before the time of writing of the specification
+        // this implements the CSAF spec requirement found in CSAF 2.0 3.1.4 and CSAF 2.1 3.11
+        // as the "youngest" deprecation happened in 2015, there is no functional difference between CSAF 2.0 and 2.1 here
         // deprecation date is YYYY-MM-DD, so string comparison works for this purpose
         let map_kind = if entry_kind == SubtagKind::Grandfathered
             && deprecated.is_some_and(|date| date < GRANDFATHERED_DEPRECATION_CUTOFF)

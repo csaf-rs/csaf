@@ -5,11 +5,11 @@ use quote::{format_ident, quote};
 pub(crate) fn generate_kind_section(kind: &SubtagKind, subtags: &[SubtagEntry]) -> proc_macro2::TokenStream {
     let kind_str = kind.registry_key();
     let array_ident = format_ident!("{}_SUBTAGS_ARRAY", kind_str.to_uppercase());
-    let is_valid_fn = format_ident!("is_valid_{}_subtag", kind_str);
+    let is_valid_fn = format_ident!("is_{}_subtag", kind_str);
     let is_private_fn = format_ident!("is_{}_private_use", kind_str);
 
     let is_valid_doc =
-        format!(" Checks if a given subtag is a valid {kind_str} subtag. Lowercases the input before checking.");
+        format!(" Checks if a given subtag is a known {kind_str} subtag. Lowercases the input before checking.");
     let is_private_doc = format!(
         " Checks if a given {kind_str} subtag is registered as private use. Lowercases the input before checking."
     );

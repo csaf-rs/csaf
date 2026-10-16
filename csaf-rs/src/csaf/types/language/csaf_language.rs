@@ -1,7 +1,8 @@
 use super::invalid_language::CsafLanguageError;
 use super::valid_language::ValidCsafLanguage;
 use crate::csaf::types::language::language_subtags::{
-    is_valid_grandfathered_subtag, is_valid_language_subtag, is_valid_region_subtag, is_valid_script_subtag,
+    is_grandfathered_deprecated_before_csaf_subtag, is_grandfathered_subtag, is_language_subtag, is_region_subtag,
+    is_script_subtag,
 };
 use crate::schema::csaf2_0::schema::LangT as LangT20;
 use crate::schema::csaf2_1::schema::LangT as LangT21;
@@ -60,8 +61,16 @@ impl From<&String> for CsafLanguage {
 
         // Grandfathered tags are valid and skip further validation
         // This includes the default language (i-default) tags
-        if is_valid_grandfathered_subtag(parsed_lang_tag.as_str()) {
+        if is_grandfathered_subtag(parsed_lang_tag.as_str()) {
             return Self::Valid(ValidCsafLanguage::new(parsed_lang_tag));
+        }
+
+        // Grandfathered tags deprecated before CSAF was specified are invalid per spec
+        if is_grandfathered_deprecated_before_csaf_subtag(parsed_lang_tag.as_str()) {
+            return Self::Invalid(
+                input_lang_tag.clone(),
+                CsafLanguageError::GrandfatheredTagDeprecatedBeforeCSAF(input_lang_tag.clone()),
+            );
         }
 
         // A bit of a wonky workaround: If the language code is just a private use tag ("x-private"),
@@ -75,7 +84,7 @@ impl From<&String> for CsafLanguage {
         // TODO: Also discuss if we want this precedence of primary -> script -> region,
         // or if we want to expose everything "wrong" with the tag to the consumers.
         // Validate primary language subtag
-        if !is_valid_language_subtag(parsed_lang_tag.primary_language()) {
+        if !is_language_subtag(parsed_lang_tag.primary_language()) {
             return Self::Invalid(
                 input_lang_tag.clone(),
                 CsafLanguageError::InvalidPrimaryLanguageSubtag(
@@ -87,7 +96,7 @@ impl From<&String> for CsafLanguage {
 
         // Validate script subtag
         if let Some(script) = parsed_lang_tag.script()
-            && !is_valid_script_subtag(script)
+            && !is_script_subtag(script)
         {
             return Self::Invalid(
                 input_lang_tag.clone(),
@@ -97,7 +106,7 @@ impl From<&String> for CsafLanguage {
 
         // Validate region subtag
         if let Some(region) = parsed_lang_tag.region()
-            && !is_valid_region_subtag(region)
+            && !is_region_subtag(region)
         {
             return Self::Invalid(
                 input_lang_tag.clone(),
@@ -131,7 +140,7 @@ mod tests {
     #[case("qtx")]
     #[case("en-x-foo-bar")]
     // grandfathered
-    #[case("en-GB-oed")]
+    #[case("i-mingo")]
     // extlangs are not validated
     #[case("zh-cmn-Hans-CN")]
     // variants are not validated
@@ -179,6 +188,19 @@ mod tests {
                 if std::mem::discriminant(e) == std::mem::discriminant(&expected_error(String::new(), String::new()))),
             "Expected error variant {:?} for '{input}', got: {lang:?}",
             expected_error(String::new(), String::new())
+        );
+    }
+    #[rstest]
+
+    fn test_deprecated_grandfathered_tag_throws_error() {
+        let input = "en-GB-oed".to_string();
+        let lang = CsafLanguage::from(&input);
+        assert!(
+            matches!(
+                &lang,
+                CsafLanguage::Invalid(_, CsafLanguageError::GrandfatheredTagDeprecatedBeforeCSAF(_))
+            ),
+            "Expected GrandfatheredTagDeprecatedBeforeCSAF error for '{input}', got: {lang:?}"
         );
     }
 

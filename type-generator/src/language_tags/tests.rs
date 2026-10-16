@@ -149,3 +149,36 @@ fn parse_registry_private_use_resets_between_blocks() {
     parse_registry(input, &mut map);
     assert_eq!(map[&SubtagKind::Language], vec![entry("qaa", true), entry("en", false)]);
 }
+
+#[test]
+fn parse_registry_drops_old_grandfathered_tags() {
+    let input = "%%\n\
+        Type: grandfathered\n\
+        Tag: old-tag\n\
+        Deprecated: 2022-11-23\n\
+        %%\n\
+        Type: grandfathered\n\
+        Tag: cutoff-tag\n\
+        Deprecated: 2022-11-24\n\
+        %%\n\
+        Type: grandfathered\n\
+        Tag: current-tag\n\
+        %%\n";
+    let mut map = make_subtags_map();
+    parse_registry(input, &mut map);
+
+    assert_eq!(
+        map[&SubtagKind::Grandfathered]
+            .iter()
+            .map(|entry| entry.subtag.as_str())
+            .collect::<Vec<_>>(),
+        vec!["cutoff-tag", "current-tag"]
+    );
+    assert_eq!(
+        map[&SubtagKind::GrandfatheredDeprecatedBeforeCSAF]
+            .iter()
+            .map(|entry| entry.subtag.as_str())
+            .collect::<Vec<_>>(),
+        vec!["old-tag"]
+    );
+}

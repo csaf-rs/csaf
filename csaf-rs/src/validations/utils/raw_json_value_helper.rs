@@ -18,18 +18,21 @@ pub(crate) enum JsonValuePresence {
 }
 
 impl JsonValuePresence {
+    #[allow(unused)]
     /// Returns `true` if the property is not contained in the JSON data.
     pub(crate) fn is_missing(&self) -> bool {
         matches!(self, JsonValuePresence::Missing)
     }
 
     /// Returns `true` if the property is contained in the JSON data, regardless of its value.
+    #[allow(unused)]
     pub(crate) fn is_present(&self) -> bool {
         !matches!(self, JsonValuePresence::Missing)
     }
 
     /// Returns `true` if the property is contained in the JSON data and is empty
     /// (i.e., an empty string, array, or object).
+    #[allow(unused)]
     pub(crate) fn is_empty(&self) -> bool {
         matches!(
             self,
@@ -38,6 +41,7 @@ impl JsonValuePresence {
     }
 
     /// Returns `true` if the property is contained in the JSON data and has a non-empty value.
+    #[allow(unused)]
     pub(crate) fn is_present_and_set(&self) -> bool {
         matches!(self, JsonValuePresence::Set)
     }

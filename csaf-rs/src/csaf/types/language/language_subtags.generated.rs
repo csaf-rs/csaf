@@ -8811,8 +8811,8 @@ pub static LANGUAGE_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("zza", false),
     ("zzj", false),
 ];
-/// Checks if a given subtag is a valid language subtag. Lowercases the input before checking.
-pub fn is_valid_language_subtag(subtag: &str) -> bool {
+/// Checks if a given subtag is a known language subtag. Lowercases the input before checking.
+pub fn is_language_subtag(subtag: &str) -> bool {
     lookup(LANGUAGE_SUBTAGS_ARRAY, &subtag.to_ascii_lowercase()).is_some()
 }
 /// Checks if a given language subtag is registered as private use. Lowercases the input before checking.
@@ -9165,8 +9165,8 @@ pub static REGION_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("zw", false),
     ("zz", true),
 ];
-/// Checks if a given subtag is a valid region subtag. Lowercases the input before checking.
-pub fn is_valid_region_subtag(subtag: &str) -> bool {
+/// Checks if a given subtag is a known region subtag. Lowercases the input before checking.
+pub fn is_region_subtag(subtag: &str) -> bool {
     lookup(REGION_SUBTAGS_ARRAY, &subtag.to_ascii_lowercase()).is_some()
 }
 /// Checks if a given region subtag is registered as private use. Lowercases the input before checking.
@@ -9450,8 +9450,8 @@ pub static SCRIPT_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("zyyy", false),
     ("zzzz", false),
 ];
-/// Checks if a given subtag is a valid script subtag. Lowercases the input before checking.
-pub fn is_valid_script_subtag(subtag: &str) -> bool {
+/// Checks if a given subtag is a known script subtag. Lowercases the input before checking.
+pub fn is_script_subtag(subtag: &str) -> bool {
     lookup(SCRIPT_SUBTAGS_ARRAY, &subtag.to_ascii_lowercase()).is_some()
 }
 /// Checks if a given script subtag is registered as private use. Lowercases the input before checking.
@@ -9460,17 +9460,28 @@ pub fn is_script_private_use(subtag: &str) -> bool {
         .is_some_and(|(_, is_private_use)| is_private_use)
 }
 pub static GRANDFATHERED_SUBTAGS_ARRAY: &[(&str, bool)] = &[
+    ("i-default", false),
+    ("i-mingo", false),
+];
+/// Checks if a given subtag is a known grandfathered subtag. Lowercases the input before checking.
+pub fn is_grandfathered_subtag(subtag: &str) -> bool {
+    lookup(GRANDFATHERED_SUBTAGS_ARRAY, &subtag.to_ascii_lowercase()).is_some()
+}
+/// Checks if a given grandfathered subtag is registered as private use. Lowercases the input before checking.
+pub fn is_grandfathered_private_use(subtag: &str) -> bool {
+    lookup(GRANDFATHERED_SUBTAGS_ARRAY, &subtag.to_ascii_lowercase())
+        .is_some_and(|(_, is_private_use)| is_private_use)
+}
+pub static GRANDFATHERED_DEPRECATED_BEFORE_CSAF_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("art-lojban", false),
     ("cel-gaulish", false),
     ("en-gb-oed", false),
     ("i-ami", false),
     ("i-bnn", false),
-    ("i-default", false),
     ("i-enochian", false),
     ("i-hak", false),
     ("i-klingon", false),
     ("i-lux", false),
-    ("i-mingo", false),
     ("i-navajo", false),
     ("i-pwn", false),
     ("i-tao", false),
@@ -9487,12 +9498,19 @@ pub static GRANDFATHERED_SUBTAGS_ARRAY: &[(&str, bool)] = &[
     ("zh-min-nan", false),
     ("zh-xiang", false),
 ];
-/// Checks if a given subtag is a valid grandfathered subtag. Lowercases the input before checking.
-pub fn is_valid_grandfathered_subtag(subtag: &str) -> bool {
-    lookup(GRANDFATHERED_SUBTAGS_ARRAY, &subtag.to_ascii_lowercase()).is_some()
+/// Checks if a given subtag is a known grandfathered_deprecated_before_csaf subtag. Lowercases the input before checking.
+pub fn is_grandfathered_deprecated_before_csaf_subtag(subtag: &str) -> bool {
+    lookup(
+            GRANDFATHERED_DEPRECATED_BEFORE_CSAF_SUBTAGS_ARRAY,
+            &subtag.to_ascii_lowercase(),
+        )
+        .is_some()
 }
-/// Checks if a given grandfathered subtag is registered as private use. Lowercases the input before checking.
-pub fn is_grandfathered_private_use(subtag: &str) -> bool {
-    lookup(GRANDFATHERED_SUBTAGS_ARRAY, &subtag.to_ascii_lowercase())
+/// Checks if a given grandfathered_deprecated_before_csaf subtag is registered as private use. Lowercases the input before checking.
+pub fn is_grandfathered_deprecated_before_csaf_private_use(subtag: &str) -> bool {
+    lookup(
+            GRANDFATHERED_DEPRECATED_BEFORE_CSAF_SUBTAGS_ARRAY,
+            &subtag.to_ascii_lowercase(),
+        )
         .is_some_and(|(_, is_private_use)| is_private_use)
 }

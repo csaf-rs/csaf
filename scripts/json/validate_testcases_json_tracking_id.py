@@ -61,9 +61,16 @@ def main() -> int:
         required=True,
         help="Expected tracking ID prefix for CSAF 2.1",
     )
+    parser.add_argument(
+        "--ignore-filename",
+        action="append",
+        default=[],
+        help="Filename to skip in every directory; may be specified multiple times",
+    )
     args = parser.parse_args()
 
     tests_root = args.test_root
+    ignored_filenames = set(args.ignore_filename)
 
     # stats
     has_errors = False
@@ -80,6 +87,8 @@ def main() -> int:
 
             # iterate all files
             for file_path in sorted(directory.glob("*.json")):
+                if file_path.name in ignored_filenames:
+                    continue
                 try:
                     with open(file_path, "r", encoding="utf-8") as f:
                         data = json.load(f)

@@ -29,11 +29,19 @@ pub(crate) enum SubtagKind {
     Script,
     #[strum(serialize = "grandfathered")]
     Grandfathered,
+    #[strum(serialize = "grandfathered_deprecated_before_csaf")]
+    GrandfatheredDeprecatedBeforeCSAF,
 }
 
 impl SubtagKind {
     /// All variants in a fixed order.
-    pub const ALL: &[SubtagKind] = &[Self::Language, Self::Region, Self::Script, Self::Grandfathered];
+    pub const ALL: &[SubtagKind] = &[
+        Self::Language,
+        Self::Region,
+        Self::Script,
+        Self::Grandfathered,
+        Self::GrandfatheredDeprecatedBeforeCSAF,
+    ];
 
     /// Returns the registry `Type:` value that corresponds to this kind.
     pub fn registry_key(&self) -> &str {

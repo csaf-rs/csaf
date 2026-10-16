@@ -5,6 +5,8 @@ use quote::{format_ident, quote};
 use syn::{Ident, TypePath};
 use typify::{Type, TypeDetails, TypeId, TypeSpace};
 
+use json_path::{JsonPath, JsonPathComponent, JsonPathMapper};
+
 use crate::build_errors::BuildError;
 use crate::schema::SchemaVersion;
 use crate::utils::codegen_snippets::{
@@ -12,7 +14,13 @@ use crate::utils::codegen_snippets::{
 };
 use crate::utils::read_write_fs::write_generated_file;
 
-pub fn generate(type_space: &TypeSpace, version: SchemaVersion, target_folder: &str) -> Result<(), BuildError> {
+mod json_path;
+
+pub fn generate(
+    type_space: &TypeSpace,
+    version: SchemaVersion,
+    target_folder: &str,
+) -> Result<JsonPathMapper, BuildError> {
     const ROOT: &str = "CommonSecurityAdvisoryFramework";
 
     let mut mod_items = vec![quote!(
@@ -25,6 +33,8 @@ pub fn generate(type_space: &TypeSpace, version: SchemaVersion, target_folder: &
     let mut done = BTreeSet::new();
     let mut todo = vec![];
     let mut type_id_to_index = TypeIdToIndex::default();
+    let mut json_paths = JsonPathMapper::default();
+    json_paths.insert(0, JsonPath::root());
     generate_loose_type(
         0,
         version,
@@ -33,6 +43,7 @@ pub fn generate(type_space: &TypeSpace, version: SchemaVersion, target_folder: &
         &mut todo,
         &mut type_id_to_index,
         type_space,
+        &mut json_paths,
     );
     while let Some(type_id) = todo.pop() {
         if done.contains(&type_id) {
@@ -49,6 +60,7 @@ pub fn generate(type_space: &TypeSpace, version: SchemaVersion, target_folder: &
             &mut todo,
             &mut type_id_to_index,
             type_space,
+            &mut json_paths,
         );
         done.insert(type_id);
     }
@@ -64,6 +76,85 @@ pub fn generate(type_space: &TypeSpace, version: SchemaVersion, target_folder: &
     let content = prettyplease::unparse(&file);
     write_generated_file(target_folder, &relative_path, &content, "generated types")?;
 
+    Ok(json_paths)
+}
+
+pub fn generate_cast_api(
+    versioned_json_paths: Vec<(SchemaVersion, JsonPathMapper)>,
+    target_folder: &str,
+) -> Result<(), BuildError> {
+    let [(ver_a, paths_a), (ver_b, paths_b)] = versioned_json_paths.try_into().ok().unwrap();
+    let paths_b = paths_b.non_trivial_paths();
+
+    let mut mod_items = vec![];
+    let mut seen_a = BTreeSet::new();
+    let ver_a_ident = format_ident!("{ver_a}");
+    let ver_b_ident = format_ident!("{ver_b}");
+    for (path_a, indices_a) in paths_a.non_trivial_paths() {
+        let index_a = indices_a.first().unwrap();
+        if let Some(indices_b) = paths_b.get(&path_a) {
+            let index_b = indices_b.first().unwrap();
+            if seen_a.contains(index_a) {
+                continue;
+            }
+            seen_a.extend(indices_a.iter().copied());
+
+            let node_a = node_ident(*index_a);
+            let node_b = node_ident(*index_b);
+
+            let a_to_b = format_ident!("as_{ver_b}");
+            let a_to_b_mut = format_ident!("caution_as_{ver_b}_mut");
+            mod_items.push(quote!(
+                impl super::#ver_a_ident::#node_a {
+                    /// Views this node as if it were in the other version of the schema
+                    ///
+                    /// This implies that the position of this node is the same on both schemas
+                    pub fn #a_to_b(&self) -> &super::#ver_b_ident::#node_b {
+                        let val = bytemuck::TransparentWrapper::peel_ref(self);
+                        bytemuck::TransparentWrapper::wrap_ref(val)
+                    }
+
+                    /// Mutable version of the other `as_v*` method
+                    pub fn #a_to_b_mut(&mut self) -> &mut super::#ver_b_ident::#node_b {
+                        let val = bytemuck::TransparentWrapper::peel_mut(self);
+                        bytemuck::TransparentWrapper::wrap_mut(val)
+                    }
+                }
+            ));
+
+            let b_to_a = format_ident!("as_{ver_a}");
+            let b_to_a_mut = format_ident!("caution_as_{ver_a}_mut");
+            mod_items.push(quote!(
+                impl super::#ver_b_ident::#node_b {
+                    /// Views this node as if it were in the other version of the schema
+                    ///
+                    /// This implies that the position of this node is the same on both schemas
+                    pub fn #b_to_a(&self) -> &super::#ver_a_ident::#node_a {
+                        let val = bytemuck::TransparentWrapper::peel_ref(self);
+                        bytemuck::TransparentWrapper::wrap_ref(val)
+                    }
+
+                    /// Mutable version of the other `as_v*` method
+                    pub fn #b_to_a_mut(&mut self) -> &mut super::#ver_a_ident::#node_a {
+                        let val = bytemuck::TransparentWrapper::peel_mut(self);
+                        bytemuck::TransparentWrapper::wrap_mut(val)
+                    }
+                }
+            ));
+        }
+    }
+
+    let mut file = syn::parse2::<syn::File>(quote!(#(#mod_items)*))?;
+
+    add_ignore_rustdoc(&mut file);
+    add_ignore_rustfmt(&mut file);
+    add_ignore_clippy(&mut file);
+    add_generated_code_header(&mut file);
+
+    let relative_path = format!("src/schema/loose/cast.rs");
+    let content = prettyplease::unparse(&file);
+    write_generated_file(target_folder, &relative_path, &content, "generated types")?;
+
     Ok(())
 }
 
@@ -75,6 +166,7 @@ fn generate_loose_type(
     todo: &mut Vec<TypeId>,
     type_id_to_index: &mut TypeIdToIndex,
     type_space: &TypeSpace,
+    json_paths: &mut JsonPathMapper,
 ) {
     match ty.details() {
         TypeDetails::Enum(_type_enum) => {
@@ -115,6 +207,7 @@ fn generate_loose_type(
                 #[repr(transparent)]
                 pub struct #ident(serde_json::Value);));
 
+            let base_paths = json_paths.get(index).to_vec();
             let mut methods = vec![];
             for (prop_name, prop_id) in type_struct.properties() {
                 let json_prop_name = if prop_name == "schema" { "$schema" } else { prop_name };
@@ -122,7 +215,14 @@ fn generate_loose_type(
                 let access = format_ident!("{prop_name}");
                 let access_mut = format_ident!("{prop_name}_mut");
 
-                let child_ident = node_ident(type_id_to_index.get_or_insert(&prop_id));
+                let child_index = type_id_to_index.get_or_insert(&prop_id);
+                let child_ident = node_ident(child_index);
+
+                for path in base_paths.clone() {
+                    let mut path = path.clone();
+                    path.push(JsonPathComponent::Field(prop_name.to_string()));
+                    json_paths.insert(child_index, path);
+                }
 
                 methods.push(quote!(
                     /// Grants shared access to the stated node
@@ -222,12 +322,14 @@ fn generate_loose_type(
                 ))
             } else {
                 // we "peel off" the newtype using a type alias between the outer node and the inner node
-                let src = node_ident(index);
-                let dest = node_ident(type_id_to_index.get_or_insert(&inner_id));
+                let dest = node_ident(index);
+                let src_index = type_id_to_index.get_or_insert(&inner_id);
+                let src = node_ident(src_index);
                 todo.push(inner_id);
+                json_paths.alias(src_index, index);
 
                 mod_items.push(quote!(
-                    pub type #src = #dest;
+                    pub type #dest = #src;
                 ));
             }
         },
@@ -235,12 +337,14 @@ fn generate_loose_type(
         // the API is already fallible so the accessor that returned this node already wrapped it in an `Option`
         // therefere we need to "pass through" the inner type
         TypeDetails::Option(inner_id) => {
-            let src = node_ident(index);
-            let dest = node_ident(type_id_to_index.get_or_insert(&inner_id));
+            let dest = node_ident(index);
+            let src_index = type_id_to_index.get_or_insert(&inner_id);
+            let src = node_ident(src_index);
             todo.push(inner_id);
+            json_paths.alias(src_index, index);
 
             mod_items.push(quote!(
-                pub type #src = #dest;
+                pub type #dest = #src;
             ));
         },
 
@@ -252,8 +356,16 @@ fn generate_loose_type(
                 #[repr(transparent)]
                 pub struct #ident(serde_json::Value);));
 
-            let element_ident = node_ident(type_id_to_index.get_or_insert(&type_id));
+            let element_index = type_id_to_index.get_or_insert(&type_id);
+            let element_ident = node_ident(element_index);
             todo.push(type_id);
+            let base_paths = json_paths.get(index).to_vec();
+            for mut path in base_paths {
+                path.push(JsonPathComponent::Element);
+                json_paths.insert(element_index, path);
+            }
+            // skip the cast on the vector/slice; we prefer to have it at the element level
+            json_paths.trivial(index);
 
             mod_items.push(quote!(
                 impl #ident {
@@ -338,6 +450,9 @@ fn generate_loose_type(
         },
 
         TypeDetails::String => {
+            // skip the cast API on leaf nodes that are strings
+            json_paths.trivial(index);
+
             let ident = node_ident(index);
 
             mod_items.push(quote!(
@@ -367,6 +482,9 @@ fn generate_loose_type(
         },
 
         TypeDetails::Builtin(path) => {
+            // skip the cast API on leaf nodes that are strings
+            json_paths.trivial(index);
+
             let path: TypePath = syn::parse_str(path).unwrap();
             let ident = node_ident(index);
 

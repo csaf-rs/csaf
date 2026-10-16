@@ -9,7 +9,7 @@ use std::sync::LazyLock;
 /// [`filter_canonical_url_candidates`](crate::csaf_traits::filter_canonical_url_candidates)
 /// is used to determine whether a canonical URL is present in the document's references.
 ///
-/// The warning message and instance path distinguish between there being no references at all and 
+/// The warning message and instance path distinguish between there being no references at all and
 /// there being references but none of them fulfilling the canonical URL requirements.
 pub fn test_6_2_11_missing_canonical_url(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let document = doc.get_document();

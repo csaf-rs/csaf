@@ -9,7 +9,7 @@ pub fn generate_from_schema(
     schema: schemars::schema::RootSchema,
     output: &str,
     target_folder: &str,
-) -> Result<(), BuildError> {
+) -> Result<TypeSpace, BuildError> {
     let mut type_space = TypeSpace::new(
         TypeSpaceSettings::default()
             .with_struct_builder(true)
@@ -33,5 +33,5 @@ pub fn generate_from_schema(
 
     write_generated_file(target_folder, &relative_path, &content, "generated types")?;
 
-    Ok(())
+    Ok(type_space)
 }

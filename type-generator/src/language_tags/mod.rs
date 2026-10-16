@@ -54,6 +54,7 @@ impl SubtagKind {
 pub(crate) struct SubtagEntry {
     pub subtag: String,
     pub is_private: bool,
+    pub is_deprecated_with_preferred_value: Option<String>,
 }
 
 /// Generates the language subtags array from the registry text file.
@@ -83,11 +84,14 @@ pub fn generate_language_tags(target_folder: &str) -> Result<(), BuildError> {
 
     let tokens = quote! {
 
-        /// Looks up a subtag in a sorted `&[(&str, bool)]` array by key.
-        /// Returns the matching `(tag, is_private_use)` tuple if found.
-        fn lookup(array: &'static [(&'static str, bool)], key: &str) -> Option<(&'static str, bool)> {
+        /// Looks up a subtag in a sorted `&[(&str, bool, Option<&str>)]` array by key.
+        /// Returns the matching `(tag, is_private_use, is_deprecated_with_preferred_value)` tuple if found.
+        fn lookup(
+            array: &'static [(&'static str, bool, Option<&'static str>)],
+            key: &str,
+        ) -> Option<(&'static str, bool, Option<&'static str>)> {
             array
-                .binary_search_by_key(&key, |(tag, _)| tag)
+                .binary_search_by_key(&key, |(tag, _, _)| tag)
                 .ok()
                 .map(|idx| array[idx])
         }

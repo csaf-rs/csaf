@@ -7,21 +7,29 @@ pub(crate) fn generate_kind_section(kind: &SubtagKind, subtags: &[SubtagEntry]) 
     let array_ident = format_ident!("{}_SUBTAGS_ARRAY", kind_str.to_uppercase());
     let is_valid_fn = format_ident!("is_{}_subtag", kind_str);
     let is_private_fn = format_ident!("is_{}_private_use", kind_str);
+    let is_deprecated_with_preferred_value_fn = format_ident!("is_deprecated_{}_with_preferred_value", kind_str);
 
     let is_valid_doc =
         format!(" Checks if a given subtag is a known {kind_str} subtag. Lowercases the input before checking.");
     let is_private_doc = format!(
         " Checks if a given {kind_str} subtag is registered as private use. Lowercases the input before checking."
     );
+    let is_deprecated_with_preferred_value_doc = format!(
+        " Checks if a given {kind_str} subtag is deprecated with a preferred value provided. Lowercases the input before checking."
+    );
 
     let entries = subtags.iter().map(|e| {
         let tag = e.subtag.as_str();
         let is_private = e.is_private;
-        quote! { (#tag, #is_private) }
+        let preferred_value = match e.is_deprecated_with_preferred_value.as_deref() {
+            Some(value) => quote! { Some(#value) },
+            None => quote! { None },
+        };
+        quote! { (#tag, #is_private, #preferred_value) }
     });
 
     quote! {
-        pub static #array_ident: &[(&str, bool)] = &[
+        pub static #array_ident: &[(&str, bool, Option<&str>)] = &[
             #(#entries),*
         ];
 
@@ -32,7 +40,12 @@ pub(crate) fn generate_kind_section(kind: &SubtagKind, subtags: &[SubtagEntry]) 
 
         #[doc = #is_private_doc]
         pub fn #is_private_fn(subtag: &str) -> bool {
-            lookup(#array_ident, &subtag.to_ascii_lowercase()).is_some_and(|(_, is_private_use)| is_private_use)
+            lookup(#array_ident, &subtag.to_ascii_lowercase()).is_some_and(|(_, is_private_use, _)| is_private_use)
+        }
+
+        #[doc = #is_deprecated_with_preferred_value_doc]
+        pub fn #is_deprecated_with_preferred_value_fn(subtag: &str) -> Option<&'static str> {
+            lookup(#array_ident, &subtag.to_ascii_lowercase()).and_then(|(_, _, preferred_value)| preferred_value)
         }
     }
 }

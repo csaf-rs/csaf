@@ -82,7 +82,7 @@ mod tests {
             case_03: no_canonical_url.clone(),
             case_04: no_canonical_url.clone(),
             case_05: no_canonical_url.clone(),
-            case_s01: no_refs.clone(),
+            case_s01: no_refs,
             case_s02: no_canonical_url.clone(),
             case_s03: no_canonical_url.clone(),
             case_s04: no_canonical_url.clone(),

@@ -42,6 +42,8 @@ symspell = "0.5.2"
 thiserror = { version = "2" }
 utoipa = { version = "6", optional = true }
 bytemuck = { version = "1.25.2", features = ["derive"] }
+cpe = { git = "https://github.com/Gronner/cpe-rs", branch = "add_formatted_strings" }
+purl = "0.1.6"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1.17.0", features = ["v7", "serde", "js"] }

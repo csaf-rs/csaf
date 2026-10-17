@@ -19,27 +19,27 @@ pub fn test_6_2_10_missing_tlp_label(json: &Value) -> Result<(), Vec<TestFinding
 
     // if the distribution property is missing, the tlp label is missing
     let Some(distribution) = json.pointer("/document/distribution") else {
-        return Err(vec![MISSING_TLP_LABEL_NO_DISTRIBUTION_ERROR.clone()]);
+        return Err(vec![MISSING_TLP_LABEL_NO_DISTRIBUTION_WARNING.clone()]);
     };
     // if the tlp property is missing, the tlp label is missing
     let Some(tlp) = distribution.get("tlp") else {
-        return Err(vec![MISSING_TLP_LABEL_NO_TLP_ERROR.clone()]);
+        return Err(vec![MISSING_TLP_LABEL_NO_TLP_WARNING.clone()]);
     };
     // tlp label is missing
     let Some(label) = tlp.get("label") else {
-        return Err(vec![MISSING_TLP_LABEL_NO_LABEL_ERROR.clone()]);
+        return Err(vec![MISSING_TLP_LABEL_NO_LABEL_WARNING.clone()]);
     };
     // tlp label is not a valid TLP 1.0 label
     if serde_json::from_value::<LabelOfTlp20>(label.clone()).is_err() {
         let value = label.as_str().map(str::to_owned).unwrap_or_else(|| label.to_string());
-        return Err(vec![invalid_tlp_label_error(&value)]);
+        return Err(vec![invalid_tlp_label_warning(&value)]);
     }
 
     Ok(())
 }
 
-fn invalid_tlp_label_error(value: &str) -> TestFinding {
-    TestFinding::Error(TestFindingData {
+fn invalid_tlp_label_warning(value: &str) -> TestFinding {
+    TestFinding::Warning(TestFindingData {
         message: format!(
             "The CSAF document has an invalid TLP label value `{value}`, expected one of: `WHITE`, `GREEN`, `AMBER`, `RED`."
         ),
@@ -47,21 +47,21 @@ fn invalid_tlp_label_error(value: &str) -> TestFinding {
     })
 }
 
-static MISSING_TLP_LABEL_NO_LABEL_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+static MISSING_TLP_LABEL_NO_LABEL_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The CSAF document has no TLP label (there is no `label` property)".to_string(),
         instance_path: "/document/distribution/tlp".to_string(),
     })
 });
 
-static MISSING_TLP_LABEL_NO_TLP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+static MISSING_TLP_LABEL_NO_TLP_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The CSAF document has no TLP label (there is no `tlp` property)".to_string(),
         instance_path: "/document/distribution".to_string(),
     })
 });
 
-static MISSING_TLP_LABEL_NO_DISTRIBUTION_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
+static MISSING_TLP_LABEL_NO_DISTRIBUTION_WARNING: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Warning(TestFindingData {
         message: "The CSAF document has no TLP label (there is no `distribution` property)".to_string(),
         instance_path: "/document".to_string(),
@@ -78,12 +78,12 @@ mod tests {
 
     #[test]
     fn test_test_6_2_10() {
-        let err_no_label = Err(vec![MISSING_TLP_LABEL_NO_LABEL_ERROR.clone()]);
-        let err_no_tlp = Err(vec![MISSING_TLP_LABEL_NO_TLP_ERROR.clone()]);
-        let err_no_distribution = Err(vec![MISSING_TLP_LABEL_NO_DISTRIBUTION_ERROR.clone()]);
-        let err_invalid_tlp_label = Err(vec![invalid_tlp_label_error("FOOBAR")]);
-        let err_invalid_tlp_clear_label = Err(vec![invalid_tlp_label_error("CLEAR")]);
-        let err_invalid_amber_strict_label = Err(vec![invalid_tlp_label_error("AMBER+STRICT")]);
+        let err_no_label = Err(vec![MISSING_TLP_LABEL_NO_LABEL_WARNING.clone()]);
+        let err_no_tlp = Err(vec![MISSING_TLP_LABEL_NO_TLP_WARNING.clone()]);
+        let err_no_distribution = Err(vec![MISSING_TLP_LABEL_NO_DISTRIBUTION_WARNING.clone()]);
+        let err_invalid_tlp_label = Err(vec![invalid_tlp_label_warning("FOOBAR")]);
+        let err_invalid_tlp_clear_label = Err(vec![invalid_tlp_label_warning("CLEAR")]);
+        let err_invalid_amber_strict_label = Err(vec![invalid_tlp_label_warning("AMBER+STRICT")]);
 
         // Case S11-14: A CSAF 2.0 document with a valid TLP label WHITE/GREEN/AMBER/RED
         // Note: Case S02-S05 are schema-invalid

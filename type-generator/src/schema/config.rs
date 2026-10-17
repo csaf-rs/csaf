@@ -75,6 +75,7 @@ fn fix_2_1_schema(value: &mut Value) -> Result<(), BuildError> {
     )?;
     remove_format(value, "date-time");
     remove_format(value, "uri");
+    remove_format(value, "uuid");
     Ok(())
 }
 

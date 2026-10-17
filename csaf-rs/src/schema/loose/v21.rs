@@ -8502,12 +8502,16 @@ impl Node226 {
     fn default_raw_value() -> serde_json::Value {
         serde_json::Value::Null
     }
-    pub fn get(&self) -> Result<::uuid::Uuid, serde_json::Error> {
-        serde_json::from_value(bytemuck::TransparentWrapper::peel_ref(self).clone())
+    pub fn get_str(&self) -> Result<&str, SchemaError> {
+        match bytemuck::TransparentWrapper::peel_ref(self) {
+            serde_json::Value::String(s) => Ok(s),
+            _ => Err(SchemaError),
+        }
     }
-    pub fn set(&mut self, value: ::uuid::Uuid) {
-        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::to_value(&value)
-            .unwrap();
+    pub fn set_str(&mut self, s: crate::schema::csaf2_1::schema::SharingGroupId) {
+        *bytemuck::TransparentWrapper::peel_mut(self) = serde_json::Value::String(
+            s.into(),
+        );
     }
 }
 #[derive(bytemuck::TransparentWrapper)]

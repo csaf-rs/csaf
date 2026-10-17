@@ -85,10 +85,9 @@ mod tests {
         let err_invalid_tlp_clear_label = Err(vec![invalid_tlp_label_error("CLEAR")]);
         let err_invalid_amber_strict_label = Err(vec![invalid_tlp_label_error("AMBER+STRICT")]);
 
-
         // Case S11-14: A CSAF 2.0 document with a valid TLP label WHITE/GREEN/AMBER/RED
         // Note: Case S02-S05 are schema-invalid
-        
+
         TESTS_2_0.test_6_2_10.expect(ExpectedResults {
             case_01: err_no_tlp,
             case_s01: err_no_distribution,

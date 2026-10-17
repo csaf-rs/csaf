@@ -1,8 +1,6 @@
 use crate::schema::csaf2_1::schema::SharingGroupName as SharingGroupName21;
 use std::fmt;
 
-
-
 /// A sharing-group name with the defined CSAF semantics, or another name.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SharingGroupName {
@@ -12,10 +10,9 @@ pub enum SharingGroupName {
 }
 
 impl SharingGroupName {
-
     const SG_NAME_PUBLIC: &str = "Public";
     const SG_NAME_PRIVATE: &str = "No sharing allowed";
-    
+
     pub fn is_public(&self) -> bool {
         matches!(self, Self::Public)
     }

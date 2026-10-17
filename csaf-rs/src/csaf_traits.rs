@@ -8,7 +8,7 @@ pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
 pub use crate::csaf::traits::csaf_trait::CsafTrait;
 
 pub use crate::csaf::enums::sharing_group_id::SharingGroupId;
-pub use crate::csaf::enums::sharing_group_name::{SharingGroupName};
+pub use crate::csaf::enums::sharing_group_name::SharingGroupName;
 pub use crate::csaf::traits::document::action_trait::ActionTrait;
 pub use crate::csaf::traits::document::aggregate_severity_trait::AggregateSeverityTrait;
 pub use crate::csaf::traits::document::contact_trait::ContactTrait;

@@ -1,6 +1,6 @@
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
-use crate::schema::csaf2_1::schema::{SharingGroup as SharingGroup21};
 use crate::csaf_traits::{SharingGroupId, SharingGroupName};
+use crate::schema::csaf2_1::schema::SharingGroup as SharingGroup21;
 
 /// Trait representing sharing group information
 pub trait SharingGroupTrait {

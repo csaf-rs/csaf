@@ -1,4 +1,5 @@
 use crate::schema::csaf2_1::schema::SharingGroupId as SharingGroupId21;
+use std::fmt;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum SharingGroupId {
@@ -8,8 +9,8 @@ pub enum SharingGroupId {
 }
 
 impl SharingGroupId {
-    pub const MAX_UUID: &str = "ffffffff-ffff-ffff-ffff-ffffffffffff";
-    pub const NIL_UUID: &str = "00000000-0000-0000-0000-000000000000";
+    const MAX_UUID: &str = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+    const NIL_UUID: &str = "00000000-0000-0000-0000-000000000000";
 
     pub fn is_max(&self) -> bool {
         matches!(self, Self::Max)
@@ -17,6 +18,16 @@ impl SharingGroupId {
 
     pub fn is_nil(&self) -> bool {
         matches!(self, Self::Nil)
+    }
+}
+
+impl fmt::Display for SharingGroupId {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Max => formatter.write_str(Self::MAX_UUID),
+            Self::Nil => formatter.write_str(Self::NIL_UUID),
+            Self::Other(value) => formatter.write_str(value),
+        }
     }
 }
 

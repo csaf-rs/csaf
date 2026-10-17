@@ -1,20 +1,24 @@
 use std::sync::LazyLock;
 
-use crate::csaf_traits::{
-    CsafTrait, DistributionTrait, DocumentTrait, SG_NAME_PRIVATE, SG_NAME_PUBLIC, SharingGroupTrait,
-};
+use crate::csaf_traits::{CsafTrait, DistributionTrait, DocumentTrait, SharingGroupName, SharingGroupTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
 static PUBLIC_SHARING_GROUP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message: format!("Sharing group name \"{SG_NAME_PUBLIC}\" is prohibited without max UUID."),
+        message: format!(
+            "Sharing group name \"{}\" is prohibited without max UUID.",
+            SharingGroupName::Public
+        ),
         instance_path: "/document/distribution/sharing_group/name".to_string(),
     })
 });
 
 static PRIVATE_SHARING_GROUP_ERROR: LazyLock<TestFinding> = LazyLock::new(|| {
     TestFinding::Error(TestFindingData {
-        message: format!("Sharing group name \"{SG_NAME_PRIVATE}\" is prohibited without nil UUID."),
+        message: format!(
+            "Sharing group name \"{}\" is prohibited without nil UUID.",
+            SharingGroupName::Private
+        ),
         instance_path: "/document/distribution/sharing_group/name".to_string(),
     })
 });
@@ -43,11 +47,11 @@ pub fn test_6_1_40_invalid_sharing_group_name(doc: &impl CsafTrait) -> Result<()
 
     if let Some(sharing_group) = distribution.get_sharing_group() {
         // If the sharing group name is "Public", the ID must be max UUID
-        if sharing_group.is_name_public() && !sharing_group.get_id().is_max() {
+        if sharing_group.get_name().is_some_and(|name| name.is_public()) && !sharing_group.get_id().is_max() {
             return Err(vec![PUBLIC_SHARING_GROUP_ERROR.clone()]);
         }
         // If the sharing group name is "No sharing allowed", the ID must be nil UUID
-        else if sharing_group.is_name_private() && !sharing_group.get_id().is_nil() {
+        else if sharing_group.get_name().is_some_and(|name| name.is_private()) && !sharing_group.get_id().is_nil() {
             return Err(vec![PRIVATE_SHARING_GROUP_ERROR.clone()]);
         }
     }

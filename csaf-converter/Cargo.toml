@@ -17,3 +17,4 @@ workspace = true
 csaf-rs = { path = "../csaf-rs", version = "0.5.2", features = ["default", "converter"] }
 anyhow = "1.0.93"
 clap = { version = "4.5.23", features = ["derive"] }
+serde_json = { version = "1.0.131", features = ["preserve_order"] }

@@ -212,9 +212,8 @@ fn _32_canonicalize_known_hash_algorithm_spelling() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
-fn _33() -> TestResult<()> {
+fn _33_schema_is_updated_to_the_csaf_2_dot_1_schema_uri() -> TestResult<()> {
     run!()
 }
 

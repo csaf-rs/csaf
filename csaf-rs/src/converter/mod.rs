@@ -1,3 +1,5 @@
+use core::fmt;
+
 use crate::schema::loose;
 
 mod update_csaf_version;
@@ -41,9 +43,32 @@ pub enum Warning {
     TlpIsMissingLabel,
 }
 
+impl fmt::Display for Warning {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Warning::CsafVersionIsMissing => "/document/csaf_version node is missing",
+            Warning::InvalidCsafVersion => "/document/csaf_version contained an invalid value",
+            Warning::InvalidTlpLabel => "/document/distribution/tlp/label contained an invalid value",
+            Warning::TlpIsMissingLabel => {
+                "/document/distribution/tlp was present but it did not contain the `label` property"
+            },
+        };
+        f.write_str(s)
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum Error {
     Todo,
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Error::Todo => "TODO",
+        };
+        f.write_str(s)
+    }
 }
 
 #[cfg(test)]

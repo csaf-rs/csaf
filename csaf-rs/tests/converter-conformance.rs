@@ -297,7 +297,7 @@ fn run_by_index(index: usize) -> TestResult<()> {
             },
 
             Assert::JsonPath { query, expected_result } => {
-                let matches = output.query(&query)?;
+                let matches = output.query(query)?;
 
                 for (expected, got) in expected_result.iter().zip(&matches) {
                     assert_eq!(expected, *got);

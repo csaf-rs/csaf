@@ -43,7 +43,7 @@ static INTVER_DOCUMENT_VERSION_WITH_SEMVER_REVISION_HISTORY_ITEMS_ERROR: LazyLoc
 /// and emit an error if so. If the document version is invalid, we ignore it.
 ///
 /// This means that if the revision history is inconsistent (i.e. contains integer and semantic versioning), and the
-/// document version is not invalid,  document version will also be reported as inconsistent, so both errors will be emitted.
+/// document version is not invalid, document version will also be reported as inconsistent, so both errors will be emitted.
 pub fn test_6_1_30_mixed_integer_and_semantic_versioning(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let tracking = doc.get_document().get_tracking();
     let mut errors: Option<Vec<TestFinding>> = None;

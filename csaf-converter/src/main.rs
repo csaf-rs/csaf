@@ -39,7 +39,7 @@ fn main() -> Result<(), anyhow::Error> {
         std::fs::write(path.clone(), result)?;
         println!("Wrote converted file to {path}.");
     } else {
-        println!("{}", result);
+        println!("{result}");
     }
     Ok(())
 }

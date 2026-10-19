@@ -1,3 +1,4 @@
+pub mod canonical_url;
 pub mod extract_references;
 pub mod generic_with;
 pub mod impl_macros;

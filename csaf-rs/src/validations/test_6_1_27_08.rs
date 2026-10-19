@@ -16,7 +16,7 @@ fn create_no_cve_no_ids_error(document_category: &CsafDocumentCategory, vuln_pat
     })
 }
 
-fn create_product_status_without_cwe_or_refed_ids_error(product_id: &str, vuln_path_index: usize) -> TestFinding {
+fn create_product_status_without_cve_or_refed_ids_error(product_id: &str, vuln_path_index: usize) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("Product '{product_id}' in product_status is not assigned to a vulnerability ID"),
         instance_path: format!("/vulnerabilities/{vuln_path_index}/product_status"),
@@ -97,7 +97,7 @@ pub fn test_6_1_27_08_vulnerability_id(doc: &impl CsafTrait) -> Result<(), Vec<T
                 {
                     errors
                         .get_or_insert_default()
-                        .push(create_product_status_without_cwe_or_refed_ids_error(&product_id, v_i));
+                        .push(create_product_status_without_cve_or_refed_ids_error(&product_id, v_i));
                 }
             }
         }
@@ -135,10 +135,10 @@ mod tests {
             &0,
         )]);
         let case_products_without_vulnerability_ids = Err(vec![
-            create_product_status_without_cwe_or_refed_ids_error("CSAFPID-9080700", 0),
-            create_product_status_without_cwe_or_refed_ids_error("CSAFPID-9080701", 0),
-            create_product_status_without_cwe_or_refed_ids_error("CSAFPID-9080703", 1),
-            create_product_status_without_cwe_or_refed_ids_error("CSAFPID-9080703", 2),
+            create_product_status_without_cve_or_refed_ids_error("CSAFPID-9080700", 0),
+            create_product_status_without_cve_or_refed_ids_error("CSAFPID-9080701", 0),
+            create_product_status_without_cve_or_refed_ids_error("CSAFPID-9080703", 1),
+            create_product_status_without_cve_or_refed_ids_error("CSAFPID-9080703", 2),
         ]);
 
         // Note: For simplicity, this file does not contain product tree or notes elements for the two vulns, which violates 6.1.27.4 and 6.1.27.5

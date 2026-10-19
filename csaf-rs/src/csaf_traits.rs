@@ -7,6 +7,8 @@ pub use crate::csaf::enums::product_status::ProductStatus;
 pub use crate::csaf::enums::product_status_group::ProductStatusGroup;
 pub use crate::csaf::traits::csaf_trait::CsafTrait;
 
+pub use crate::csaf::enums::sharing_group_id::SharingGroupId;
+pub use crate::csaf::enums::sharing_group_name::SharingGroupName;
 pub use crate::csaf::traits::document::action_trait::ActionTrait;
 pub use crate::csaf::traits::document::aggregate_severity_trait::AggregateSeverityTrait;
 pub use crate::csaf::traits::document::contact_trait::ContactTrait;
@@ -18,7 +20,7 @@ pub use crate::csaf::traits::document::entity_trait::EntityTrait;
 pub use crate::csaf::traits::document::generator_trait::GeneratorTrait;
 pub use crate::csaf::traits::document::publisher_trait::PublisherTrait;
 pub use crate::csaf::traits::document::revision_trait::RevisionTrait;
-pub use crate::csaf::traits::document::sharing_group_trait::{SG_NAME_PRIVATE, SG_NAME_PUBLIC, SharingGroupTrait};
+pub use crate::csaf::traits::document::sharing_group_trait::SharingGroupTrait;
 pub use crate::csaf::traits::document::tlp_trait::TlpTrait;
 pub use crate::csaf::traits::document::tracking_trait::{
     RevisionHistory, RevisionHistoryItem, RevisionHistorySortable, TrackingTrait,

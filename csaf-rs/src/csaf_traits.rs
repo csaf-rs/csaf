@@ -34,6 +34,7 @@ pub use crate::csaf::traits::shared::acknowledgment_trait::AcknowledgmentTrait;
 pub use crate::csaf::traits::shared::extension_trait::ExtensionsTrait;
 pub use crate::csaf::traits::shared::note_trait::NoteTrait;
 pub use crate::csaf::traits::shared::references_trait::ReferenceTrait;
+pub use crate::csaf::traits::util::canonical_url::filter_canonical_url_candidates;
 pub use crate::csaf::traits::util::generic_with::{
     WithDate, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds,
 };

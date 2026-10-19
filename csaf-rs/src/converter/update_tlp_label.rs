@@ -7,11 +7,11 @@ pub struct UpdateTlpLabel;
 
 impl Convert for UpdateTlpLabel {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
-        if let Some(tlp) = doc
-            .v20_view()
-            .document()
-            .and_then(|doc| doc.distribution())
-            .and_then(|dist| dist.tlp())
+        let tlp = if let Some(tlp) = doc
+            .v20_view_mut()
+            .document_mut()
+            .and_then(|doc| doc.distribution_mut())
+            .and_then(|dist| dist.tlp_mut())
         {
             if let Some(label) = tlp.label() {
                 if let Ok(label) = label.get_enum() {
@@ -24,13 +24,15 @@ impl Convert for UpdateTlpLabel {
             } else {
                 diagnostics.warning(Warning::TlpIsMissingLabel);
             }
-        }
+            tlp.caution_as_v21_mut()
+        } else {
+            doc.v21_view_mut()
+                .caution_get_or_insert_document()
+                .caution_get_or_insert_distribution()
+                .caution_get_or_insert_tlp()
+        };
 
-        doc.v21_view_mut()
-            .caution_get_or_insert_document()
-            .caution_get_or_insert_distribution()
-            .caution_get_or_insert_tlp()
-            .caution_get_or_insert_label()
+        tlp.caution_get_or_insert_label()
             .set_enum(csaf2_1::schema::LabelOfTlp::Clear);
     }
 }

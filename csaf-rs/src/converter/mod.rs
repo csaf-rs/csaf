@@ -1,4 +1,5 @@
 use core::fmt;
+use std::borrow::Cow;
 
 use crate::schema::loose;
 
@@ -26,8 +27,8 @@ pub trait Convert {
 }
 
 pub trait Diagnostics {
-    fn error(&mut self, error: Error);
-    fn warning(&mut self, warning: Warning);
+    fn error(&mut self, path: Cow<'static, str>, error: Error);
+    fn warning(&mut self, path: Cow<'static, str>, warning: Warning);
 }
 
 #[derive(Default)]
@@ -46,12 +47,10 @@ pub enum Warning {
 impl fmt::Display for Warning {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
-            Warning::CsafVersionIsMissing => "/document/csaf_version node is missing",
-            Warning::InvalidCsafVersion => "/document/csaf_version contained an invalid value",
-            Warning::InvalidTlpLabel => "/document/distribution/tlp/label contained an invalid value",
-            Warning::TlpIsMissingLabel => {
-                "/document/distribution/tlp was present but it did not contain the `label` property"
-            },
+            Warning::CsafVersionIsMissing => "CSAF version node is missing",
+            Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
+            Warning::InvalidTlpLabel => "TLP label contained an invalid value",
+            Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
         };
         f.write_str(s)
     }
@@ -80,32 +79,32 @@ mod tests {
     pub struct NoDiagnostics;
 
     impl Diagnostics for NoDiagnostics {
-        fn error(&mut self, error: Error) {
+        fn error(&mut self, _path: Cow<'static, str>, error: Error) {
             panic!("expected no diagnostics; got {error:?}")
         }
 
-        fn warning(&mut self, warning: Warning) {
+        fn warning(&mut self, _path: Cow<'static, str>, warning: Warning) {
             panic!("expected no diagnostics; got {warning:?}")
         }
     }
 
     #[derive(Default)]
     pub struct OnlyWarnings {
-        warnings: Vec<Warning>,
+        warnings: Vec<(Cow<'static, str>, Warning)>,
     }
 
     impl Diagnostics for OnlyWarnings {
-        fn error(&mut self, error: Error) {
+        fn error(&mut self, _path: Cow<'static, str>, error: Error) {
             panic!("expected no errors; got {error:?}")
         }
 
-        fn warning(&mut self, warning: Warning) {
-            self.warnings.push(warning)
+        fn warning(&mut self, path: Cow<'static, str>, warning: Warning) {
+            self.warnings.push((path, warning))
         }
     }
 
     impl OnlyWarnings {
-        pub fn warnings(&self) -> &[Warning] {
+        pub fn warnings(&self) -> &[(Cow<'static, str>, Warning)] {
             &self.warnings
         }
     }

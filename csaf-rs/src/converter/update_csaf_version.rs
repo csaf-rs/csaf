@@ -9,10 +9,10 @@ impl Convert for UpdateCsafVersion {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
         if let Some(csaf_version) = doc.v20_view().document().and_then(|doc| doc.csaf_version()) {
             if csaf_version.get_enum().is_err() {
-                diagnostics.warning(Warning::InvalidCsafVersion);
+                diagnostics.warning("/document/csaf_version".into(), Warning::InvalidCsafVersion);
             }
         } else {
-            diagnostics.warning(Warning::CsafVersionIsMissing);
+            diagnostics.warning("/document".into(), Warning::CsafVersionIsMissing);
         }
 
         doc.v21_view_mut()
@@ -24,6 +24,8 @@ impl Convert for UpdateCsafVersion {
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use serde_json::json;
 
     use crate::converter::tests::{NoDiagnostics, OnlyWarnings};
@@ -51,7 +53,7 @@ mod tests {
                 "csaf_version": "1.0",
             }
         });
-        conversion_with_warnings(input, &[Warning::InvalidCsafVersion]);
+        conversion_with_warnings(input, &[("/document/csaf_version".into(), Warning::InvalidCsafVersion)]);
     }
 
     #[test]
@@ -59,16 +61,16 @@ mod tests {
         let input = json!({
             "document": {}
         });
-        conversion_with_warnings(input, &[Warning::CsafVersionIsMissing]);
+        conversion_with_warnings(input, &[("/document".into(), Warning::CsafVersionIsMissing)]);
     }
 
     #[test]
     fn no_document_node() {
         let input = json!({});
-        conversion_with_warnings(input, &[Warning::CsafVersionIsMissing]);
+        conversion_with_warnings(input, &[("/document".into(), Warning::CsafVersionIsMissing)]);
     }
 
-    fn conversion_with_warnings(input: serde_json::Value, warnings: &[Warning]) {
+    fn conversion_with_warnings(input: serde_json::Value, warnings: &[(Cow<'static, str>, Warning)]) {
         let mut doc = loose::Document::new(input);
         let mut diagnostics = OnlyWarnings::default();
         UpdateCsafVersion.convert(&mut doc, &Settings::default(), &mut diagnostics);

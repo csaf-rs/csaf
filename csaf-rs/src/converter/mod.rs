@@ -2,6 +2,7 @@ use core::fmt;
 
 use crate::schema::loose;
 
+mod convert_release_date_to_disclosure_date;
 mod update_csaf_version;
 mod update_tlp_label;
 
@@ -17,6 +18,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 
 const CONVERSIONS: &[&dyn Convert] = &[
     &update_csaf_version::UpdateCsafVersion,
+    &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
     &update_tlp_label::UpdateTlpLabel,
 ];
 

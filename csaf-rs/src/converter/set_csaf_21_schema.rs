@@ -2,9 +2,9 @@ use crate::schema::{csaf2_1, loose};
 
 use super::{Convert, Diagnostics, Settings};
 
-pub struct UpdateCsafSchema;
+pub struct SetCsaf21Schema;
 
-impl Convert for UpdateCsafSchema {
+impl Convert for SetCsaf21Schema {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, _diagnostics: &mut dyn Diagnostics) {
         doc.v21_view_mut()
             .caution_get_or_insert_schema()
@@ -21,10 +21,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn converter_adds_missing_csaf_schema() {
+    fn converter_sets_csaf_21_schema() {
         let mut doc = loose::Document::new(json!({ "document": {} }));
 
-        UpdateCsafSchema.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
+        SetCsaf21Schema.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
 
         assert_eq!(
             json!({

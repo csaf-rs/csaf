@@ -2,7 +2,7 @@ use core::fmt;
 
 use crate::schema::loose;
 
-mod update_csaf_schema;
+mod set_csaf_21_schema;
 mod update_csaf_version;
 mod update_tlp_label;
 
@@ -17,7 +17,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 }
 
 const CONVERSIONS: &[&dyn Convert] = &[
-    &update_csaf_schema::UpdateCsafSchema,
+    &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
 ];

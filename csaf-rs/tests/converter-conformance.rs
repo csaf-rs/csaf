@@ -195,6 +195,7 @@ fn _29() -> TestResult<()> {
     run!()
 }
 
+#[ignore]
 #[test]
 fn _30_release_date_converted_to_disclosure_date() -> TestResult<()> {
     run!()

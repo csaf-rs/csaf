@@ -117,6 +117,7 @@ fn generate_loose_type(
 
             let mut methods = vec![];
             for (prop_name, prop_id) in type_struct.properties() {
+                let json_prop_name = if prop_name == "schema" { "$schema" } else { prop_name };
                 let get_or_insert = format_ident!("caution_get_or_insert_{prop_name}");
                 let access = format_ident!("{prop_name}");
                 let access_mut = format_ident!("{prop_name}_mut");
@@ -126,11 +127,11 @@ fn generate_loose_type(
                 methods.push(quote!(
                     /// Grants shared access to the stated node
                     pub fn #access(&self) -> Option<&#child_ident> {
-                        self.0.get(#prop_name).map(bytemuck::TransparentWrapper::wrap_ref)
+                        self.0.get(#json_prop_name).map(bytemuck::TransparentWrapper::wrap_ref)
                     }
                     /// Grants mutable access to the stated node
                     pub fn #access_mut(&mut self) -> Option<&mut #child_ident> {
-                        self.0.get_mut(#prop_name).map(bytemuck::TransparentWrapper::wrap_mut)
+                        self.0.get_mut(#json_prop_name).map(bytemuck::TransparentWrapper::wrap_mut)
                     }
                     /// Accesses the stated node creating it if it does not exist
                     ///
@@ -142,7 +143,7 @@ fn generate_loose_type(
                             self.0 = serde_json::Value::Object(serde_json::Map::default());
                         }
                         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
-                        bytemuck::TransparentWrapper::wrap_mut(map.entry(#prop_name).or_insert(#child_ident::default_raw_value()))
+                        bytemuck::TransparentWrapper::wrap_mut(map.entry(#json_prop_name).or_insert(#child_ident::default_raw_value()))
 
                     }
                 ));

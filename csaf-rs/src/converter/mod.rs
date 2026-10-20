@@ -2,6 +2,8 @@ use core::fmt;
 
 use crate::schema::loose;
 
+mod convert_release_date_to_disclosure_date;
+mod set_csaf_21_schema;
 mod update_csaf_version;
 mod update_tlp_label;
 
@@ -16,7 +18,9 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 }
 
 const CONVERSIONS: &[&dyn Convert] = &[
+    &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
+    &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
     &update_tlp_label::UpdateTlpLabel,
 ];
 
@@ -117,9 +121,15 @@ mod tests {
         let input = json!({
             "document": {
                 "csaf_version": "2.0"
-            }
+            },
+            "vulnerabilities": [
+                {
+                    "release_date": "2025-03-11T15:12:00.000Z"
+                }
+            ],
         });
         let output = json!({
+            "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
             "document": {
                 "csaf_version": "2.1",
                 "distribution": {
@@ -128,6 +138,11 @@ mod tests {
                     }
                 }
             },
+            "vulnerabilities": [
+                {
+                    "disclosure_date": "2025-03-11T15:12:00.000Z"
+                }
+            ],
         });
         let doc = convert(input, &Settings::default(), &mut NoDiagnostics);
         assert_eq!(output, doc.into_raw());

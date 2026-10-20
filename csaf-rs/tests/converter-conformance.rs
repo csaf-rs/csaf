@@ -197,7 +197,7 @@ fn _29() -> TestResult<()> {
 
 #[ignore]
 #[test]
-fn _30() -> TestResult<()> {
+fn _30_release_date_converted_to_disclosure_date() -> TestResult<()> {
     run!()
 }
 
@@ -214,7 +214,7 @@ fn _32_canonicalize_known_hash_algorithm_spelling() -> TestResult<()> {
 
 #[ignore]
 #[test]
-fn _33() -> TestResult<()> {
+fn _33_schema_is_set_to_the_csaf_2_1_schema_uri() -> TestResult<()> {
     run!()
 }
 

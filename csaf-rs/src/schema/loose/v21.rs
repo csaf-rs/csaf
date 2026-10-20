@@ -57,11 +57,11 @@ impl Node0 {
     }
     /// Grants shared access to the stated node
     pub fn schema(&self) -> Option<&Node3> {
-        self.0.get("schema").map(bytemuck::TransparentWrapper::wrap_ref)
+        self.0.get("$schema").map(bytemuck::TransparentWrapper::wrap_ref)
     }
     /// Grants mutable access to the stated node
     pub fn schema_mut(&mut self) -> Option<&mut Node3> {
-        self.0.get_mut("schema").map(bytemuck::TransparentWrapper::wrap_mut)
+        self.0.get_mut("$schema").map(bytemuck::TransparentWrapper::wrap_mut)
     }
     /// Accesses the stated node creating it if it does not exist
     ///
@@ -74,7 +74,7 @@ impl Node0 {
         }
         let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
         bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("schema").or_insert(Node3::default_raw_value()),
+            map.entry("$schema").or_insert(Node3::default_raw_value()),
         )
     }
     /// Grants shared access to the stated node

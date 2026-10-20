@@ -108,7 +108,6 @@ fn _14_canonicalize_hash_algorithm() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _15_lowercase_hash_value() -> TestResult<()> {
     run!()

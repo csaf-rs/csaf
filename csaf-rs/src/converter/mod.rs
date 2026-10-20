@@ -5,6 +5,7 @@ use crate::schema::loose;
 
 mod convert_release_date_to_disclosure_date;
 mod helpers;
+mod lowercase_hash_value;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
 mod update_csaf_version;
@@ -21,6 +22,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 }
 
 const CONVERSIONS: &[&dyn Convert] = &[
+    &lowercase_hash_value::LowercaseHashValue,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,

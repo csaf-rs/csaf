@@ -119,7 +119,12 @@ mod tests {
         let input = json!({
             "document": {
                 "csaf_version": "2.0"
-            }
+            },
+            "vulnerabilities": [
+                {
+                    "release_date": "2025-03-11T15:12:00.000Z"
+                }
+            ],
         });
         let output = json!({
             "document": {
@@ -130,6 +135,11 @@ mod tests {
                     }
                 }
             },
+            "vulnerabilities": [
+                {
+                    "disclosure_date": "2025-03-11T15:12:00.000Z"
+                }
+            ],
         });
         let doc = convert(input, &Settings::default(), &mut NoDiagnostics);
         assert_eq!(output, doc.into_raw());

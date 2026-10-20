@@ -25,217 +25,430 @@ fn _0_removal_of_additional_property() -> TestResult<()> {
 
 #[ignore]
 #[test]
-fn _1() -> TestResult<()> {
+fn _1_replace_leap_second_and_warn() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _2() -> TestResult<()> {
+fn _2_identify_invalid_leap_second() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _3() -> TestResult<()> {
+fn _3_replace_legacy_product_category() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _4() -> TestResult<()> {
+fn _4_reject_unresolvable_stacked_product_tree() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _5() -> TestResult<()> {
+fn _5_resolve_stacked_product_tree() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _6() -> TestResult<()> {
+fn _6_warn_on_other_publisher_category() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _7() -> TestResult<()> {
+fn _7_resolve_product_version_range() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _8() -> TestResult<()> {
+fn _8_resolve_product_version_before_range() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _9() -> TestResult<()> {
+fn _9_resolve_upper_open_ended_range() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _10() -> TestResult<()> {
+fn _10_resolve_multi_constraint_upper_range() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _11() -> TestResult<()> {
+fn _11_resolve_vers_single_version_range() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _12() -> TestResult<()> {
+fn _12_resolve_vls_single_version_range() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _13() -> TestResult<()> {
+fn _13_remove_invalid_cpe() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _14() -> TestResult<()> {
+fn _14_canonicalize_hash_algorithm() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _15() -> TestResult<()> {
+fn _15_lowercase_hash_value() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _16() -> TestResult<()> {
+fn _16_convert_single_purl_to_array() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _17() -> TestResult<()> {
+fn _17_add_model_number_wildcard() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _18() -> TestResult<()> {
+fn _18_add_serial_number_wildcard() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _19() -> TestResult<()> {
+fn _19_add_sku_wildcard() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _20() -> TestResult<()> {
+fn _20_remove_invalid_model_number_wildcards() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _21() -> TestResult<()> {
+fn _21_escape_model_number_backslashes() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _22() -> TestResult<()> {
+fn _22_remove_invalid_serial_number_wildcards() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _23() -> TestResult<()> {
+fn _23_escape_serial_number_backslashes() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _24() -> TestResult<()> {
+fn _24_remove_invalid_sku_wildcards() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _25() -> TestResult<()> {
+fn _25_escape_sku_backslashes() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _26() -> TestResult<()> {
-    run!()
-}
-
-#[test]
-fn _27_document_version_is_updated_to_2_dot_1() -> TestResult<()> {
-    run!()
-}
-
-#[test]
-fn _28_tlp_updated_from_white_to_clear() -> TestResult<()> {
+fn _26_default_missing_tlp_to_clear() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _29() -> TestResult<()> {
+fn _27_remove_tracking_id_from_title() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _30_release_date_converted_to_disclosure_date() -> TestResult<()> {
+fn _28_convert_vendor_fix_for_not_affected_product() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _31() -> TestResult<()> {
-    run!()
-}
-
-#[test]
-fn _32_canonicalize_known_hash_algorithm_spelling() -> TestResult<()> {
+fn _29_classify_superseded_document() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _33_schema_is_set_to_the_csaf_2_1_schema_uri() -> TestResult<()> {
+fn _30_classify_withdrawn_document() -> TestResult<()> {
     run!()
 }
 
 #[test]
-fn _34_tlp_green_label_is_preserved() -> TestResult<()> {
+fn _31_update_document_version() -> TestResult<()> {
     run!()
 }
 
 #[test]
-fn _35_tlp_amber_label_is_preserved() -> TestResult<()> {
-    run!()
-}
-
-#[test]
-fn _36_tlp_red_label_is_preserved() -> TestResult<()> {
+fn _32_update_white_tlp_to_clear() -> TestResult<()> {
     run!()
 }
 
 #[ignore]
 #[test]
-fn _37() -> TestResult<()> {
+fn _33_convert_license_expression() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _34_release_date_converted_to_disclosure_date() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _35_convert_none_available_to_fix_planned() -> TestResult<()> {
+    run!()
+}
+
+#[test]
+fn _36_canonicalize_known_hash_algorithm_spelling() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _37_schema_is_set_to_the_csaf_2_1_schema_uri() -> TestResult<()> {
+    run!()
+}
+
+#[test]
+fn _38_preserve_tlp_green() -> TestResult<()> {
+    run!()
+}
+
+#[test]
+fn _39_preserve_tlp_amber() -> TestResult<()> {
+    run!()
+}
+
+#[test]
+fn _40_preserve_tlp_red() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _41_remove_none_available_when_vendor_fix_known() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _42_repair_stacked_product_version_tree() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _43_add_missing_fixed_product() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _44_convert_missing_known_affected() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _45_assign_product_specific_document_notes() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _46_leave_unassigned_document_note() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _47_convert_product_relationships() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _48_convert_cwe_with_matching_name() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _49_select_cwe_version_matching_name() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _50_preserve_cvss_v4() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _51_preserve_invalid_cvss_v4_as_note() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _52_assign_vulnerability_note_to_product() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _53_leave_unassigned_vulnerability_note() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _54_convert_valid_ssvc_vector() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _55_preserve_invalid_ssvc_vector_as_note() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _56_preserve_ssvc_context_as_note() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _57_split_mixed_remediation_products() -> TestResult<()> {
+    run!()
+}
+
+#[test]
+fn _58_preserve_vendor_fix_for_affected_product() -> TestResult<()> {
+    run!()
+}
+
+#[test]
+fn _59_preserve_none_available_remediation() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _60_normalize_superseded_category() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _61_normalize_withdrawn_category() -> TestResult<()> {
+    run!()
+}
+
+#[test]
+fn _62_preserve_registered_vulnerability_id() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _63_convert_registered_vulnerability_id() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _64_preserve_unconvertible_registered_id() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _65_convert_legacy_vulnerability_id() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _66_preserve_unconvertible_legacy_id() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _67_preserve_unregistered_vulnerability_id() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _68_move_multiple_license_expressions_to_notes() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _69_move_publisher_contact_details() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _70_preserve_publisher_openpgp_key() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _71_preserve_publisher_email() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _72_preserve_first_publisher_email() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _73_move_invalid_publisher_key_to_contact_details() -> TestResult<()> {
     run!()
 }
 
@@ -261,7 +474,9 @@ fn run_by_index(index: usize) -> TestResult<()> {
         remark,
         asserts,
     } = &converter_tests[index];
-    eprintln!("remark: {remark}");
+    if let Some(remark) = remark {
+        eprintln!("remark: {remark}");
+    }
 
     let input = fs::read_to_string(testsuite_root.join("input").join(filename))?;
     let value: serde_json::Value = serde_json::from_str(&input)?;
@@ -328,7 +543,7 @@ struct Schema {
 #[derive(Deserialize)]
 struct ConverterTest {
     input: String,
-    remark: String,
+    remark: Option<String>,
     asserts: Vec<Assert>,
 }
 

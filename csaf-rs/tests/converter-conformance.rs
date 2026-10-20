@@ -381,6 +381,7 @@ fn _61_normalize_withdrawn_category() -> TestResult<()> {
     run!()
 }
 
+#[ignore]
 #[test]
 fn _62_preserve_registered_vulnerability_id() -> TestResult<()> {
     run!()

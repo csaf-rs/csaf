@@ -4,6 +4,8 @@ use std::borrow::Cow;
 use crate::schema::loose;
 
 mod convert_release_date_to_disclosure_date;
+mod helpers;
+mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
 mod update_csaf_version;
 mod update_tlp_label;
@@ -21,6 +23,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 const CONVERSIONS: &[&dyn Convert] = &[
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
+    &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
     &update_tlp_label::UpdateTlpLabel,
 ];
@@ -121,6 +124,17 @@ mod tests {
             "document": {
                 "csaf_version": "2.0"
             },
+            "product_tree": {
+                "full_product_names": [
+                    {
+                        "name": "Product A",
+                        "product_id": "CSAFPID-0001",
+                        "product_identification_helper": {
+                            "purl": "pkg:maven/com.example/product-A"
+                        }
+                    }
+                ],
+            },
             "vulnerabilities": [
                 {
                     "release_date": "2025-03-11T15:12:00.000Z"
@@ -136,6 +150,17 @@ mod tests {
                         "label": "CLEAR"
                     }
                 }
+            },
+             "product_tree": {
+                "full_product_names": [
+                    {
+                        "name": "Product A",
+                        "product_id": "CSAFPID-0001",
+                        "product_identification_helper": {
+                            "purls": ["pkg:maven/com.example/product-A"]
+                        }
+                    }
+                ],
             },
             "vulnerabilities": [
                 {

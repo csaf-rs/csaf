@@ -114,9 +114,8 @@ fn _15_lowercase_hash_value() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
-fn _16_convert_single_purl_to_array() -> TestResult<()> {
+fn _16_move_single_purl_to_purls_array() -> TestResult<()> {
     run!()
 }
 

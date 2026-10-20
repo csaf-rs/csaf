@@ -359,13 +359,11 @@ fn _57_split_mixed_remediation_products() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _58_preserve_vendor_fix_for_affected_product() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _59_preserve_none_available_remediation() -> TestResult<()> {
     run!()
@@ -383,7 +381,6 @@ fn _61_normalize_withdrawn_category() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _62_preserve_registered_vulnerability_id() -> TestResult<()> {
     run!()

@@ -200,6 +200,8 @@ jobs:
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: wasm-bindings
+          # we use specific version pinned caching of the binaries further down
+          cache-bin: "false"
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Prepare target
@@ -212,7 +214,7 @@ jobs:
           key: uniffi-bindgen-js-0.2.1-${{ runner.os }}-${{ runner.arch }}
       - name: Install uniffi-bindgen-js
         if: steps.uniffi-js-cache.outputs.cache-hit != 'true'
-        run: cargo install uniffi-bindgen-js --version 0.2.1 --locked --force
+        run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
       - name: Build UniFFI WASM bindings
         run: bash scripts/publish/generate_wasm_bindings.sh
       - name: NPM publish dry-run

@@ -45,6 +45,7 @@ pub struct Settings {
 
 #[derive(Debug, PartialEq)]
 pub enum Warning {
+    ValidationWarning(String),
     CsafVersionIsMissing,
     InvalidCsafVersion,
     InvalidTlpLabel,
@@ -54,6 +55,7 @@ pub enum Warning {
 impl fmt::Display for Warning {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
+            Warning::ValidationWarning(message) => message,
             Warning::CsafVersionIsMissing => "CSAF version node is missing",
             Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
             Warning::InvalidTlpLabel => "TLP label contained an invalid value",
@@ -65,12 +67,14 @@ impl fmt::Display for Warning {
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
+    ValidationError(String),
     Todo,
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
+            Error::ValidationError(message) => message,
             Error::Todo => "TODO",
         };
         f.write_str(s)

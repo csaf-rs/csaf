@@ -46,6 +46,7 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    ValidationWarning(String),
 }
 
 impl fmt::Display for Warning {
@@ -63,6 +64,7 @@ impl fmt::Display for Warning {
 #[derive(Debug, PartialEq)]
 pub enum Error {
     Todo,
+    ValidationError(String),
 }
 
 impl fmt::Display for Error {

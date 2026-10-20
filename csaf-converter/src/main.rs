@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{borrow::Cow, path::PathBuf};
 
 use anyhow::bail;
 use clap::Parser;
@@ -34,13 +34,13 @@ pub struct VerboseDiagnostics {
     has_errors: bool,
 }
 impl Diagnostics for VerboseDiagnostics {
-    fn error(&mut self, error: Error) {
+    fn error(&mut self, path: Cow<'static, str>, error: Error) {
         self.has_errors = true;
-        eprintln!("Error: {error:?}");
+        eprintln!("Error: {error} ({path})");
     }
 
-    fn warning(&mut self, warning: Warning) {
-        eprintln!("Warning: {warning:?}");
+    fn warning(&mut self, path: Cow<'static, str>, warning: Warning) {
+        eprintln!("Warning: {warning} ({path})");
     }
 }
 
@@ -65,15 +65,21 @@ fn main() -> Result<(), anyhow::Error> {
                 warnings,
                 infos: _,
             } => {
-                errors
-                    .iter()
-                    .for_each(|error| diag.error(ValidationError(error.message.clone())));
-                warnings
-                    .iter()
-                    .for_each(|warning| diag.warning(ValidationWarning(warning.message.clone())));
+                errors.iter().for_each(|error| {
+                    diag.error(
+                        error.instance_path.clone().into(),
+                        ValidationError(error.message.clone()),
+                    );
+                });
+                warnings.iter().for_each(|warning| {
+                    diag.warning(
+                        warning.instance_path.clone().into(),
+                        ValidationWarning(warning.message.clone()),
+                    );
+                });
             },
             TestResultStatus::NotFound => {
-                diag.error(ValidationError("Validation preset not found.".into()));
+                diag.error("".into(), ValidationError("Validation preset not found.".into()));
             },
             _ => {},
         });

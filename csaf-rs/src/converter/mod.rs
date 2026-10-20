@@ -2,6 +2,7 @@ use core::fmt;
 
 use crate::schema::loose;
 
+mod set_csaf_21_schema;
 mod update_csaf_version;
 mod update_tlp_label;
 
@@ -16,6 +17,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 }
 
 const CONVERSIONS: &[&dyn Convert] = &[
+    &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
 ];
@@ -120,6 +122,7 @@ mod tests {
             }
         });
         let output = json!({
+            "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
             "document": {
                 "csaf_version": "2.1",
                 "distribution": {

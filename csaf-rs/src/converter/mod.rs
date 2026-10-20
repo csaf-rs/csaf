@@ -4,6 +4,9 @@ use std::borrow::Cow;
 use crate::schema::loose;
 
 mod convert_release_date_to_disclosure_date;
+mod deduplicate_sbom_urls;
+mod deduplicate_skus;
+mod deduplicate_x_generic_uris;
 mod helpers;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
@@ -25,6 +28,9 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &update_csaf_version::UpdateCsafVersion,
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
+    &deduplicate_sbom_urls::DeduplicateSbomUrls,
+    &deduplicate_skus::DeduplicateSkus,
+    &deduplicate_x_generic_uris::DeduplicateXGenericUris,
     &update_tlp_label::UpdateTlpLabel,
 ];
 
@@ -130,7 +136,22 @@ mod tests {
                         "name": "Product A",
                         "product_id": "CSAFPID-0001",
                         "product_identification_helper": {
-                            "purl": "pkg:maven/com.example/product-A"
+                            "purl": "pkg:maven/com.example/product-A",
+                            "sbom_urls": [
+                                "https://example.com/sbom-a.json",
+                                "https://example.com/sbom-a.json"
+                            ],
+                            "skus": ["AAA", "AAA"],
+                            "x_generic_uris": [
+                                {
+                                    "namespace": "https://example.com",
+                                    "uri": "https://example.com/uri-a"
+                                },
+                                {
+                                    "namespace": "https://example.com",
+                                    "uri": "https://example.com/uri-a"
+                                }
+                            ]
                         }
                     }
                 ],
@@ -157,7 +178,17 @@ mod tests {
                         "name": "Product A",
                         "product_id": "CSAFPID-0001",
                         "product_identification_helper": {
-                            "purls": ["pkg:maven/com.example/product-A"]
+                            "purls": ["pkg:maven/com.example/product-A"],
+                            "sbom_urls": [
+                                "https://example.com/sbom-a.json",
+                            ],
+                            "skus": ["AAA"],
+                            "x_generic_uris": [
+                                {
+                                    "namespace": "https://example.com",
+                                    "uri": "https://example.com/uri-a"
+                                }
+                            ]
                         }
                     }
                 ],

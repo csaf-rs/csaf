@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::path::PathBuf;
 use std::process::Command;
 use std::{env, fs};
@@ -575,11 +576,11 @@ impl DiagnosticsSpy {
 }
 
 impl Diagnostics for DiagnosticsSpy {
-    fn error(&mut self, error: Error) {
+    fn error(&mut self, _path: Cow<'static, str>, error: Error) {
         self.errors.push(error)
     }
 
-    fn warning(&mut self, warning: Warning) {
+    fn warning(&mut self, _path: Cow<'static, str>, warning: Warning) {
         self.warnings.push(warning)
     }
 }

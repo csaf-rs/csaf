@@ -19,10 +19,10 @@ impl Convert for UpdateTlpLabel {
                         return;
                     }
                 } else {
-                    diagnostics.warning(Warning::InvalidTlpLabel);
+                    diagnostics.warning("/document/distribution/tlp/label".into(), Warning::InvalidTlpLabel);
                 }
             } else {
-                diagnostics.warning(Warning::TlpIsMissingLabel);
+                diagnostics.warning("/document/distribution/tlp".into(), Warning::TlpIsMissingLabel);
             }
         }
 
@@ -37,6 +37,8 @@ impl Convert for UpdateTlpLabel {
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use serde_json::json;
 
     use crate::converter::tests::{NoDiagnostics, OnlyWarnings};
@@ -85,7 +87,10 @@ mod tests {
                 }
             }
         });
-        conversion_with_warnings(input, &[Warning::InvalidTlpLabel]);
+        conversion_with_warnings(
+            input,
+            &[("/document/distribution/tlp/label".into(), Warning::InvalidTlpLabel)],
+        );
     }
 
     #[test]
@@ -97,7 +102,10 @@ mod tests {
                 }
             }
         });
-        conversion_with_warnings(input, &[Warning::TlpIsMissingLabel]);
+        conversion_with_warnings(
+            input,
+            &[("/document/distribution/tlp".into(), Warning::TlpIsMissingLabel)],
+        );
     }
 
     #[test]
@@ -130,7 +138,7 @@ mod tests {
         assert_eq!(expected(), doc.into_raw());
     }
 
-    fn conversion_with_warnings(input: serde_json::Value, warnings: &[Warning]) {
+    fn conversion_with_warnings(input: serde_json::Value, warnings: &[(Cow<'static, str>, Warning)]) {
         let mut doc = loose::Document::new(input);
         let mut diagnostics = OnlyWarnings::default();
         UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut diagnostics);

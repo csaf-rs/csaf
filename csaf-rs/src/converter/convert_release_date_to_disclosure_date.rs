@@ -1,53 +1,29 @@
+use super::{Convert, Diagnostics, Settings};
 use crate::schema::loose;
 
-use super::{Convert, Diagnostics, Settings};
 pub struct ConvertReleaseDateToDisclosureDate;
 
 impl Convert for ConvertReleaseDateToDisclosureDate {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, _diagnostics: &mut dyn Diagnostics) {
-        // get the vulns from the CSAF 2.0 view, skip if there aren't any
-        let Some(vulnerabilities_20) = doc
-            .v20_view()
-            .vulnerabilities()
-            .and_then(|vulnerabilities| vulnerabilities.as_slice().ok())
+        // if there are any vulnerabilities
+        let Some(vulnerabilities) = doc
+            .v20_view_mut()
+            .vulnerabilities_mut()
+            .and_then(|vulnerabilities| vulnerabilities.as_slice_mut().ok())
         else {
             return;
         };
 
-        // collect the optional release dates from the vulnerabilities
-        let release_dates = vulnerabilities_20
-            .iter()
-            .map(|vulnerability| {
-                vulnerability
-                    .release_date()
-                    .and_then(|release_date| release_date.get_str().ok())
-                    .map(str::to_owned)
-            })
-            .collect::<Vec<_>>();
+        for vulnerability in vulnerabilities {
+            // get object
+            let Ok(object) = vulnerability.caution_as_object_mut() else {
+                continue;
+            };
 
-        // get mut vulns from the CSAF 2.1 view, this should always succeed if the CSAF 2.0 view had vulns
-        let Some(vulnerabilities_21) = doc
-            .v21_view_mut()
-            .vulnerabilities_mut()
-            .and_then(|vulnerabilities| vulnerabilities.as_slice_mut().ok())
-        else {
-            unreachable!("Vulnerabilities should be present in CSAF 2.1 if they were present in CSAF 2.0");
-        };
-
-        // sanity check, this should not happen
-        if vulnerabilities_21.len() != release_dates.len() {
-            unreachable!("Vulnerabilities CSAF 2.1 and extracted release dates should have the same length");
-        }
-
-        // zip the
-        for (vulnerability, release_date) in vulnerabilities_21.iter_mut().zip(release_dates) {
-            if let Some(release_date) = release_date {
-                vulnerability
-                    .caution_get_or_insert_disclosure_date()
-                    .set_str(release_date);
-                if let Ok(object) = vulnerability.caution_as_object_mut() {
-                    object.remove("release_date");
-                }
+            // remove release date if present
+            if let Some(release_date) = object.remove("release_date") {
+                // add disclosure date with same value
+                object.insert("disclosure_date".to_string(), release_date);
             }
         }
     }

@@ -7,6 +7,7 @@ mod convert_release_date_to_disclosure_date;
 mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
+mod replace_legacy_branch_category;
 mod set_csaf_21_schema;
 mod sort_json_keys;
 mod update_csaf_version;
@@ -25,6 +26,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 const CONVERSIONS: &[&dyn Convert] = &[
     // conversions that work on leaf nodes
     &lowercase_hash_value::LowercaseHashValue,
+    &replace_legacy_branch_category::ReplaceLegacyBranchCategory,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
@@ -58,6 +60,7 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    LegacyBranchCategoryReplaced,
 }
 
 impl fmt::Display for Warning {
@@ -68,6 +71,13 @@ impl fmt::Display for Warning {
             Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
             Warning::InvalidTlpLabel => "TLP label contained an invalid value",
             Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
+            Warning::LegacyBranchCategoryReplaced => {
+                "Branch category 'legacy' does not exist in CSAF 2.1 \
+                and was replaced with 'product_name'. This replacement \
+                may be incorrect or another category may be a better fit. \
+                Please review the converted document to ensure the \
+                conversion is correct and not misleading."
+            },
         };
         f.write_str(s)
     }

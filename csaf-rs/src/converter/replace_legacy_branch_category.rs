@@ -1,6 +1,6 @@
-use serde_json::Value;
-
+use crate::converter::helpers::for_each_branch_mut;
 use crate::schema::loose;
+use serde_json::Value;
 
 use super::{Convert, Diagnostics, Settings, Warning};
 
@@ -8,44 +8,15 @@ pub struct ReplaceLegacyBranchCategory;
 
 impl Convert for ReplaceLegacyBranchCategory {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
-        let Some(product_tree) = doc.v20_view_mut().product_tree_mut() else {
-            return;
-        };
+        for_each_branch_mut(doc, |branch, path| {
+            if let Some(Value::String(category)) = branch.get_mut("category")
+                && category == "legacy"
+            {
+                *category = "product_name".to_string();
 
-        let Ok(product_tree) = product_tree.caution_as_object_mut() else {
-            return;
-        };
-
-        let Some(Value::Array(branches)) = product_tree.get_mut("branches") else {
-            return;
-        };
-
-        replace_legacy_in_branches(branches, "/product_tree/branches", diagnostics);
-    }
-}
-
-fn replace_legacy_in_branches(branches: &mut [Value], path: &str, diagnostics: &mut dyn Diagnostics) {
-    for (index, branch) in branches.iter_mut().enumerate() {
-        let Value::Object(branch) = branch else {
-            continue;
-        };
-
-        let branch_path = format!("{path}/{index}");
-
-        if let Some(Value::String(category)) = branch.get_mut("category")
-            && category == "legacy"
-        {
-            *category = "product_name".to_string();
-
-            diagnostics.warning(
-                format!("{branch_path}/category").into(),
-                Warning::LegacyBranchCategoryReplaced,
-            );
-        }
-
-        if let Some(Value::Array(children)) = branch.get_mut("branches") {
-            replace_legacy_in_branches(children, &format!("{branch_path}/branches"), diagnostics);
-        }
+                diagnostics.warning(format!("{path}/category").into(), Warning::LegacyBranchCategoryReplaced);
+            }
+        });
     }
 }
 

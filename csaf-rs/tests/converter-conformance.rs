@@ -172,7 +172,6 @@ fn _25_escape_sku_backslashes() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _26_default_missing_tlp_to_clear() -> TestResult<()> {
     run!()

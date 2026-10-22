@@ -167,6 +167,9 @@ pub trait VulnerabilityTrait {
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>>;
 
+    /// Returns the document-local vulnerability ID associated with this vulnerability.
+    fn get_document_local_vuln_id(&self) -> Option<&str>;
+
     /// Returns the notes associated with this vulnerability.
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
 
@@ -275,6 +278,10 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.ids.as_ref()
     }
 
+    fn get_document_local_vuln_id(&self) -> Option<&str> {
+        None
+    }
+
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
         self.notes.as_deref()
     }
@@ -364,6 +371,10 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>> {
         self.ids.as_ref()
+    }
+
+    fn get_document_local_vuln_id(&self) -> Option<&str> {
+        self.dl_vuln_id.as_deref().map(|id| id.as_str())
     }
 
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {

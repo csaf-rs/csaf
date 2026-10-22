@@ -140,17 +140,17 @@ mod tests {
 
         TESTS_2_1.test_6_1_64_4.expect(ExpectedResults {
             case_01: Err(vec![
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(0, "EID-0001"),
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(1, "EID-0001"),
+                create_actor_and_recipient_entity_id_overlap_error(0, "EID-0001"),
+                create_actor_and_recipient_entity_id_overlap_error(1, "EID-0001"),
             ]),
             case_02: Err(vec![
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(0, "EID-0001"),
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(1, "EID-0001"),
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(1, "EID-0002"),
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(1, "EID-0003"),
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(1, "EID-0004"),
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(2, "EID-0002"),
-                create_actor_and_recipient_unresolvable_entity_group_id_overlap_error(2, "EID-0003"),
+                create_actor_and_recipient_entity_id_overlap_error(0, "EID-0001"),
+                create_actor_and_recipient_entity_id_overlap_error(1, "EID-0001"),
+                create_actor_and_recipient_entity_id_overlap_error(1, "EID-0002"),
+                create_actor_and_recipient_entity_id_overlap_error(1, "EID-0003"),
+                create_actor_and_recipient_entity_id_overlap_error(1, "EID-0004"),
+                create_actor_and_recipient_entity_id_overlap_error(2, "EID-0002"),
+                create_actor_and_recipient_entity_id_overlap_error(2, "EID-0003"),
             ]),
             case_11: Ok(()),
             case_12: Ok(()),

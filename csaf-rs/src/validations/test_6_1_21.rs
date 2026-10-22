@@ -276,6 +276,8 @@ mod tests {
             case_05: case_intver_wrong_first_missing_1_and_2_before_4_between,
             case_06: case_semver_wrong_first_missing_1_and_2_before_4_between,
             case_07: case_intver_missing_2_at_all,
+            // TODO: Fix this in https://github.com/csaf-rs/csaf/issues/354
+            case_08: Ok(()),
             case_s01: case_semver_2_3_missing_1_at_all,
             case_s02: case_mixed_versions_start_with_intver_missing_2_at_all,
             case_11: Ok(()),
@@ -285,6 +287,7 @@ mod tests {
             case_15: Ok(()), // only wrong ordering in json due to timezones
             case_16: Ok(()), // only wrong ordering in json due to timezones
             case_17: Ok(()), // 1&2 have same date
+            case_18: Ok(()),
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),

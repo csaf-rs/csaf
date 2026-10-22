@@ -4,7 +4,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn create_missing_entity_group_id_error(id: &str, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Missing definition of an entity group id (`entity_group_id`): {id}"),
+        message: format!("Missing definition of entity group ID `{id}`"),
         instance_path: path.to_owned(),
     })
 }
@@ -27,9 +27,9 @@ pub fn test_6_1_64_7_missing_definition_of_entity_group_id(doc: &impl CsafTrait)
     // for each involvement action
     for (action_index, action) in involvement.get_actions().enumerate() {
         // for each acting entity reference
-        for (reference_index, entity_ref) in action.get_acting_entity_refs().enumerate() {
+        for (acting_reference_index, acting_entity_ref) in action.get_acting_entity_refs().enumerate() {
             // if it is entity group ID
-            if let EntityRefsTItem::GroupIdT(group_id) = entity_ref {
+            if let EntityRefsTItem::GroupIdT(group_id) = acting_entity_ref {
                 let group_id = group_id.to_string();
                 // if there are defined group IDs and the current group ID is in the defined group IDs, continue
                 if let Some(defined_group_ids) = &defined_group_ids
@@ -43,7 +43,9 @@ pub fn test_6_1_64_7_missing_definition_of_entity_group_id(doc: &impl CsafTrait)
                     .get_or_insert_default()
                     .push(create_missing_entity_group_id_error(
                         &group_id,
-                        &format!("/document/involvement/actions/{action_index}/acting_entity_refs/{reference_index}"),
+                        &format!(
+                            "/document/involvement/actions/{action_index}/acting_entity_refs/{acting_reference_index}"
+                        ),
                     ));
             }
         }
@@ -90,6 +92,9 @@ mod tests {
 
     #[test]
     fn test_test_6_1_64_7() {
+        // TODO: Evaluate test coverage
+        // TODO: Document test cases properly
+
         TESTS_2_1.test_6_1_64_7.expect(ExpectedResults {
             case_01: Err(vec![
                 create_missing_entity_group_id_error(

@@ -4,7 +4,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn create_missing_entity_id_error(id: &str, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Missing definition of an entity id (`entity_id`): {id}"),
+        message: format!("Missing definition of entity ID `{id}`"),
         instance_path: path.to_owned(),
     })
 }
@@ -91,7 +91,7 @@ mod tests {
     fn test_test_6_1_64_5() {
         // TODO: Evaluate test coverage
         // TODO: Document test cases properly
-        
+
         TESTS_2_1.test_6_1_64_5.expect(ExpectedResults {
             case_01: Err(vec![
                 create_missing_entity_id_error("EID-0002", "/document/involvement/actions/0/receiving_entity_refs/0"),

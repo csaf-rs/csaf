@@ -5,7 +5,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn generate_multiple_document_local_vuln_id_error(id: &str, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Duplicate definition for document-local vuln ID `{id}"),
+        message: format!("Multiple definition of document-local vulnerability ID `{id}`"),
         instance_path: path.to_owned(),
     })
 }
@@ -19,7 +19,7 @@ pub fn test_6_1_65_2_multiple_definition_of_document_local_vuln_id(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<TestFinding>> {
     let mut definitions: HashMap<String, Vec<String>> = HashMap::new();
-    for (id, path) in doc.get_all_document_local_vuln_id_definitions() {
+    for (id, path) in doc.get_all_document_local_vuln_ids_with_path() {
         definitions.entry(id).or_default().push(path);
     }
 

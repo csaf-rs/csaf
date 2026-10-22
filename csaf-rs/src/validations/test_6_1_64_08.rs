@@ -3,10 +3,10 @@ use std::collections::BTreeMap;
 use crate::csaf_traits::{Csaf21InvolvementTrait, CsafTrait, DocumentTrait, EntityGroupTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_multiple_entity_group_id_error(id: &str, path: &str) -> TestFinding {
+fn create_multiple_entity_group_id_error(id: &str, entity_group_index: usize) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Duplicate definition for entity group ID `{id}`"),
-        instance_path: path.to_owned(),
+        message: format!("Multiple definition of entity group ID `{id}`"),
+        instance_path: format!("/document/involvement/entity_groups/{entity_group_index}/entity_group_id"),
     })
 }
 
@@ -21,32 +21,34 @@ pub fn test_6_1_64_8_multiple_definition_of_entity_group_id(doc: &impl CsafTrait
     };
 
     // collect all entity group IDs and their paths
-    let mut entity_group_id_occurrence_map: Option<BTreeMap<String, Vec<String>>> = None;
+    let mut entity_group_id_to_indices_map: Option<BTreeMap<String, Vec<usize>>> = None;
+
     if let Some(entity_groups) = involvement.get_entity_groups() {
         for (entity_group_index, entity_group) in entity_groups.enumerate() {
-            entity_group_id_occurrence_map
+            entity_group_id_to_indices_map
                 .get_or_insert_default()
                 .entry(entity_group.get_entity_group_id().to_owned())
                 .or_default()
-                .push(format!(
-                    "/document/involvement/entity_groups/{entity_group_index}/entity_group_id"
-                ));
+                .push(entity_group_index);
         }
     }
 
-    let Some(entity_group_id_occurrence_map) = &entity_group_id_occurrence_map else {
+    let Some(entity_group_id_occurrence_map) = entity_group_id_to_indices_map else {
         return Ok(()); // no entity groups, no duplicates
     };
 
     let mut findings: Option<Vec<TestFinding>> = None;
     // for each defined group id
-    for (entity_group_id, paths) in entity_group_id_occurrence_map {
+    for (entity_group_id, entity_group_indices) in entity_group_id_occurrence_map {
         // if there are multiple definitions, add an error for each occurrence
-        if paths.len() > 1 {
-            for path in paths {
+        if entity_group_indices.len() > 1 {
+            for entity_group_index in entity_group_indices {
                 findings
                     .get_or_insert_default()
-                    .push(create_multiple_entity_group_id_error(entity_group_id, path));
+                    .push(create_multiple_entity_group_id_error(
+                        &entity_group_id,
+                        entity_group_index,
+                    ));
             }
         }
     }
@@ -68,16 +70,13 @@ mod tests {
 
     #[test]
     fn test_test_6_1_64_8() {
+        // TODO: Evaluate test coverage
+        // TODO: Document test cases properly
+
         TESTS_2_1.test_6_1_64_8.expect(ExpectedResults {
             case_01: Err(vec![
-                create_multiple_entity_group_id_error(
-                    "EGID-9001",
-                    "/document/involvement/entity_groups/0/entity_group_id",
-                ),
-                create_multiple_entity_group_id_error(
-                    "EGID-9001",
-                    "/document/involvement/entity_groups/1/entity_group_id",
-                ),
+                create_multiple_entity_group_id_error("EGID-9001", 0),
+                create_multiple_entity_group_id_error("EGID-9001", 1),
             ]),
             case_11: Ok(()),
         });

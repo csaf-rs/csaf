@@ -3,7 +3,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn generate_undefined_document_local_vuln_id_error(id: &str, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Missing definition of a document-local vulnerability id (`dl_vuln_id`): {id}"),
+        message: format!("Missing definition of document-local vulnerability ID `{id}`"),
         instance_path: path.to_owned(),
     })
 }
@@ -16,6 +16,7 @@ fn generate_undefined_document_local_vuln_id_error(id: &str, path: &str) -> Test
 pub fn test_6_1_65_1_missing_definition_of_document_local_vuln_id(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<TestFinding>> {
+    // TODO improve naming and comments
     let defined_ids = doc.get_all_document_local_vuln_ids();
 
     let mut errors: Option<Vec<TestFinding>> = None;

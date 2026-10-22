@@ -5,7 +5,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn create_multiple_action_id_error(id: &str, action_index: usize) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Duplicate definition for action ID `{id}`"),
+        message: format!("Multiple definition of action ID `{id}`"),
         instance_path: format!("/document/involvement/actions/{action_index}/action_id"),
     })
 }
@@ -60,6 +60,9 @@ mod tests {
     #[test]
     fn test_test_6_1_64_10() {
         TESTS_2_1.test_6_1_64_10.expect(ExpectedResults {
+            // TODO: Evaluate test coverage
+            // TODO: Document test cases properly
+
             case_01: Err(vec![
                 create_multiple_action_id_error("ACN-1", 0),
                 create_multiple_action_id_error("ACN-1", 1),

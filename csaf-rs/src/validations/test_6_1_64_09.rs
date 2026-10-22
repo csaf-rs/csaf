@@ -3,7 +3,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn create_missing_action_id_error(id: &str, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Missing definition of an action id (`action_id`): {id}"),
+        message: format!("Missing definition of action ID `{id}`"),
         instance_path: path.to_owned(),
     })
 }
@@ -27,6 +27,7 @@ pub fn test_6_1_64_9_missing_definition_of_action_id(doc: &impl CsafTrait) -> Re
         if let Some(referenced_action_ids) = action.get_referenced_action_ids() {
             for (reference_index, action_id) in referenced_action_ids.enumerate() {
                 if !defined_action_ids.contains(action_id) {
+                    // TODO move path in erro gen function
                     findings.get_or_insert_default().push(create_missing_action_id_error(
                         action_id,
                         &format!(
@@ -56,6 +57,8 @@ mod tests {
     #[test]
     fn test_test_6_1_64_9() {
         TESTS_2_1.test_6_1_64_9.expect(ExpectedResults {
+            // TODO: Evaluate test coverage
+            // TODO: Document test cases properly
             case_01: Err(vec![create_missing_action_id_error(
                 "ACN-1",
                 "/document/involvement/actions/0/referenced_action_ids/0",

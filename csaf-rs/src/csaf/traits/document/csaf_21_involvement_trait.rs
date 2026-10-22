@@ -40,16 +40,19 @@ pub trait Csaf21InvolvementTrait {
     /// If [`get_entity_groups`] returns `None`, this method will also return `None`.
     /// Otherwise, it will return a `HashMap` where the keys are entity group IDs and
     /// the values are `BTreeSet`s of entity IDs.
+    ///
+    /// In case of multiple definitions of the same entity group ID, which violates 6.1.64.8,
+    /// the entity IDs from all definitions are merged.
     fn get_entity_groups_map(&self) -> Option<HashMap<String, BTreeSet<String>>> {
         self.get_entity_groups().map(|groups| {
-            groups
-                .map(|group| {
-                    (
-                        group.get_entity_group_id().to_owned(),
-                        group.get_entity_ids().map(str::to_owned).collect(),
-                    )
-                })
-                .collect()
+            let mut entity_groups = HashMap::new();
+            for group in groups {
+                entity_groups
+                    .entry(group.get_entity_group_id().to_owned())
+                    .or_insert_with(BTreeSet::new)
+                    .extend(group.get_entity_ids().map(str::to_owned));
+            }
+            entity_groups
         })
     }
 

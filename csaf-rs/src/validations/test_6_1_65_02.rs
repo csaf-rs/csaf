@@ -64,6 +64,7 @@ mod tests {
             generate_multiple_document_local_vuln_id_error("VULN-3", "/vulnerabilities/2/dl_vuln_id"),
             generate_multiple_document_local_vuln_id_error("VULN-4", "/vulnerabilities/1/dl_vuln_id"),
             generate_multiple_document_local_vuln_id_error("VULN-4", "/vulnerabilities/3/dl_vuln_id"),
+            generate_multiple_document_local_vuln_id_error("VULN-4", "/vulnerabilities/4/dl_vuln_id"),
         ]);
 
         TESTS_2_1.test_6_1_65_2.expect(ExpectedResults {

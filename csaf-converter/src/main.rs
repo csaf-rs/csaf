@@ -28,6 +28,14 @@ struct Args {
     /// Allow (partial) processing and output of invalid CSAF documents
     #[arg(long)]
     allow_invalid: bool,
+
+    /// Suppress the warning when publisher category is 'other'
+    #[arg(long)]
+    suppress_publisher_category_other_warning: bool,
+
+    /// Convert publisher category 'other' to 'multiplier'
+    #[arg(long)]
+    convert_publisher_category_other_to_multiplier: bool,
 }
 
 pub struct VerboseDiagnostics {
@@ -90,7 +98,12 @@ fn main() -> Result<(), anyhow::Error> {
         );
     }
 
-    let result = csaf_rs::converter::convert(raw, &csaf_rs::converter::Settings::default(), &mut diag);
+    let settings = csaf_rs::converter::Settings {
+        suppress_publisher_category_other_warning: args.suppress_publisher_category_other_warning,
+        convert_publisher_category_other_to_multiplier: args.convert_publisher_category_other_to_multiplier,
+    };
+
+    let result = csaf_rs::converter::convert(raw, &settings, &mut diag);
     if diag.has_errors {
         if args.allow_invalid {
             eprintln!("Conversion completed with errors, but allowed due to --allow-invalid.");

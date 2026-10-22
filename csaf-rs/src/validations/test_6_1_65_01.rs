@@ -29,3 +29,45 @@ pub fn test_6_1_65_1_missing_definition_of_document_local_vuln_id(
 
     errors.map_or(Ok(()), Err)
 }
+
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_65_1,
+    test_6_1_65_1_missing_definition_of_document_local_vuln_id
+);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_65_1 as ExpectedResults;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+
+    #[test]
+    fn test_test_6_1_65_1() {
+        // TODO: Evaluate test coverage
+        // TODO: Document test cases properly
+        
+        let case_01 = Err(vec![generate_undefined_document_local_vuln_id_error(
+            "VULN-1",
+            "/document/involvement/actions/0/dl_vuln_ids/0",
+        )]);
+
+        let case_02 = Err(vec![
+            generate_undefined_document_local_vuln_id_error("VULN-1", "/document/involvement/actions/0/dl_vuln_ids/0"),
+            generate_undefined_document_local_vuln_id_error("VULN-2", "/document/involvement/actions/0/dl_vuln_ids/1"),
+            generate_undefined_document_local_vuln_id_error("VULN-3", "/document/involvement/actions/0/dl_vuln_ids/2"),
+            generate_undefined_document_local_vuln_id_error("VULN-4", "/document/involvement/actions/0/dl_vuln_ids/3"),
+            generate_undefined_document_local_vuln_id_error("VULN-11", "/document/involvement/actions/1/dl_vuln_ids/0"),
+            generate_undefined_document_local_vuln_id_error("VULN-12", "/document/involvement/actions/1/dl_vuln_ids/1"),
+            generate_undefined_document_local_vuln_id_error("VULN-13", "/document/involvement/actions/1/dl_vuln_ids/2"),
+            generate_undefined_document_local_vuln_id_error("VULN-14", "/document/involvement/actions/1/dl_vuln_ids/3"),
+        ]);
+
+        TESTS_2_1.test_6_1_65_1.expect(ExpectedResults {
+            case_01,
+            case_02,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+    }
+}

@@ -36,3 +36,41 @@ pub fn test_6_1_65_2_multiple_definition_of_document_local_vuln_id(
 
     errors.map_or(Ok(()), Err)
 }
+
+crate::test_validation::impl_validator!(
+    csaf2_1,
+    ValidatorForTest6_1_65_2,
+    test_6_1_65_2_multiple_definition_of_document_local_vuln_id
+);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::csaf2_1::testcases::ExpectedResults_6_1_65_2 as ExpectedResults;
+    use crate::csaf2_1::testcases::TESTS_2_1;
+
+    #[test]
+    fn test_test_6_1_65_2() {
+        // TODO: Evaluate test coverage
+        // TODO: Document test cases properly
+
+        let case_01 = Err(vec![
+            generate_multiple_document_local_vuln_id_error("VULN-1", "/vulnerabilities/0/dl_vuln_id"),
+            generate_multiple_document_local_vuln_id_error("VULN-1", "/vulnerabilities/1/dl_vuln_id"),
+        ]);
+
+        let case_02 = Err(vec![
+            generate_multiple_document_local_vuln_id_error("VULN-3", "/vulnerabilities/0/dl_vuln_id"),
+            generate_multiple_document_local_vuln_id_error("VULN-3", "/vulnerabilities/2/dl_vuln_id"),
+            generate_multiple_document_local_vuln_id_error("VULN-4", "/vulnerabilities/1/dl_vuln_id"),
+            generate_multiple_document_local_vuln_id_error("VULN-4", "/vulnerabilities/3/dl_vuln_id"),
+        ]);
+
+        TESTS_2_1.test_6_1_65_2.expect(ExpectedResults {
+            case_01,
+            case_02,
+            case_11: Ok(()),
+            case_12: Ok(()),
+        });
+    }
+}

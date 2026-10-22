@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
 use crate::validation::{TestFinding, TestFindingData};
 

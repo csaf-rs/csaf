@@ -40,7 +40,7 @@ pub fn test_6_1_64_8_multiple_definition_of_entity_group_id(doc: &impl CsafTrait
 
     let mut findings: Option<Vec<TestFinding>> = None;
     // for each defined group id
-    for (entity_group_id, paths) in entity_group_id_occurrence_map.iter() {
+    for (entity_group_id, paths) in entity_group_id_occurrence_map {
         // if there are multiple definitions, add an error for each occurrence
         if paths.len() > 1 {
             for path in paths {

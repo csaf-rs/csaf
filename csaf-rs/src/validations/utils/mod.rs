@@ -10,3 +10,4 @@ pub(crate) mod ssvc;
 pub(crate) mod text_check;
 pub(crate) mod unknown_hash_algorithm_finding;
 pub(crate) mod vulnerability_notes_with_title_and_category;
+pub(crate) mod resolve_entity_group_ids;

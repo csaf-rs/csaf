@@ -1,4 +1,4 @@
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use crate::csaf::traits::document::entity_group_trait::EntityGroupTrait;
 use crate::csaf::traits::util::extract_references::define_reference_accessors;
@@ -37,6 +37,14 @@ pub trait Csaf21InvolvementTrait {
                 })
                 .collect()
         })
+    }
+
+    /// Returns all defined entity group IDs as a `HashSet<String>`.
+    ///
+    /// If [`get_entity_groups`] returns `None`, this method will also return `None`.
+    fn get_entity_group_ids(&self) -> Option<HashSet<String>> {
+        self.get_entity_groups()
+            .map(|groups| groups.map(|group| group.get_entity_group_id().to_owned()).collect())
     }
 
     define_reference_accessors! {

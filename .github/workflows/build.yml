@@ -200,6 +200,8 @@ jobs:
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: wasm-bindings
+          # we use specific version pinned caching of the binaries further down
+          cache-bin: "false"
       - name: Update rustup
         run: rustup update stable --no-self-update
       - name: Prepare target

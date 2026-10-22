@@ -1,6 +1,6 @@
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::resolve_entity_group_ids::resolve_ref_groups_to_ref_ids;
+use crate::csaf::traits::util::resolve_entity_groups::resolve_ref_groups_to_ref_ids;
 
 fn create_actor_and_recipient_entity_id_overlap_error(action_index: usize, entity_id: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {

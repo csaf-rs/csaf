@@ -1,3 +1,5 @@
+use std::collections::{BTreeSet, HashMap};
+
 use crate::csaf::traits::document::entity_group_trait::EntityGroupTrait;
 use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
@@ -18,6 +20,24 @@ pub trait Csaf21InvolvementTrait {
     fn get_entities(&self) -> impl Iterator<Item = &Self::EntityType> + '_;
 
     fn get_entity_groups(&self) -> Option<impl Iterator<Item = &Self::EntityGroupType> + '_>;
+
+    /// Returns the entity group IDs and their corresponding entity IDs as a map.
+    ///
+    /// If [`get_entity_groups`] returns `None`, this method will also return `None`.
+    /// Otherwise, it will return a `HashMap` where the keys are entity group IDs and
+    /// the values are `BTreeSet`s of entity IDs.
+    fn get_entity_groups_map(&self) -> Option<HashMap<String, BTreeSet<String>>> {
+        self.get_entity_groups().map(|groups| {
+            groups
+                .map(|group| {
+                    (
+                        group.get_entity_group_id().to_owned(),
+                        group.get_entity_ids().map(str::to_owned).collect(),
+                    )
+                })
+                .collect()
+        })
+    }
 
     define_reference_accessors! {
         iter: [

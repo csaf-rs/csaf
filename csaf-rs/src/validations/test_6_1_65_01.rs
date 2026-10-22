@@ -47,10 +47,10 @@ mod tests {
         // TODO: Evaluate test coverage
         // TODO: Document test cases properly
 
-        let case_01 = Err(vec![generate_undefined_document_local_vuln_id_error(
-            "VULN-1",
-            "/document/involvement/actions/0/dl_vuln_ids/0",
-        )]);
+        let case_01 = Err(vec![
+            generate_undefined_document_local_vuln_id_error("VULN-1", "/document/involvement/actions/0/dl_vuln_ids/0"),
+            generate_undefined_document_local_vuln_id_error("VULN-1", "/document/involvement/actions/1/dl_vuln_ids/0"),
+        ]);
 
         let case_02 = Err(vec![
             generate_undefined_document_local_vuln_id_error("VULN-1", "/document/involvement/actions/0/dl_vuln_ids/0"),

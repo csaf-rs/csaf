@@ -9,6 +9,7 @@ mod lowercase_hash_value;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
 mod update_csaf_version;
+mod update_publisher_category;
 mod update_tlp_label;
 
 pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
@@ -28,6 +29,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
     &update_tlp_label::UpdateTlpLabel,
+    &update_publisher_category::UpdatePublisherCategory,
 ];
 
 /// Incremental v2.0 to v2.1 conversion
@@ -42,7 +44,8 @@ pub trait Diagnostics {
 
 #[derive(Default)]
 pub struct Settings {
-    // TODO
+    pub suppress_publisher_category_other_warning: bool,
+    pub convert_publisher_category_other_to_multiplier: bool,
 }
 
 #[derive(Debug, PartialEq)]
@@ -52,6 +55,7 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    PublisherCategoryOther,
 }
 
 impl fmt::Display for Warning {
@@ -62,6 +66,10 @@ impl fmt::Display for Warning {
             Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
             Warning::InvalidTlpLabel => "TLP label contained an invalid value",
             Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
+            Warning::PublisherCategoryOther => {
+                "Some publishers previously categorized as 'other' \
+                have been regrouped into the new 'multiplier' category"
+            },
         };
         f.write_str(s)
     }

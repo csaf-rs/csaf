@@ -1496,11 +1496,14 @@ impl ::std::str::FromStr for CweVersion {
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
-            ::regress::Regex::new("^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$").unwrap()
+            ::regress::Regex::new(
+                    "^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.([0-9]|([1-9]\\d+)))?$",
+                )
+                .unwrap()
         });
         if PATTERN.find(value).is_none() {
             return Err(
-                "doesn't match pattern \"^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$\""
+                "doesn't match pattern \"^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.([0-9]|([1-9]\\d+)))?$\""
                     .into(),
             );
         }
@@ -5649,7 +5652,7 @@ pub struct Vulnerability {
     ///Holds the date and time the vulnerability was originally discovered.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub discovery_date: ::std::option::Option<::std::string::String>,
-    ///Contains the local IDs referring to this vulnerability from another part of the same document.
+    ///Contains the local ID referring to this vulnerability from another part of the same document.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub dl_vuln_id: ::std::option::Option<DlVulnIdT>,
     ///Contains a list of dates of first known exploitations.

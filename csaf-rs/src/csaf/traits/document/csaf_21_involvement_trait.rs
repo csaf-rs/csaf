@@ -17,6 +17,13 @@ pub trait Csaf21InvolvementTrait {
 
     fn get_actions(&self) -> impl Iterator<Item = &Self::ActionType> + '_;
 
+    /// Returns all defined action IDs as a `HashSet<String>`.
+    fn get_action_ids(&self) -> HashSet<String> {
+        self.get_actions()
+            .map(|action| action.get_action_id().to_owned())
+            .collect()
+    }
+
     fn get_entities(&self) -> impl Iterator<Item = &Self::EntityType> + '_;
 
     fn get_entity_groups(&self) -> Option<impl Iterator<Item = &Self::EntityGroupType> + '_>;

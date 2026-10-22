@@ -62,7 +62,6 @@ mod tests {
         TESTS_2_1.test_6_1_64_10.expect(ExpectedResults {
             // TODO: Evaluate test coverage
             // TODO: Document test cases properly
-
             case_01: Err(vec![
                 create_multiple_action_id_error("ACN-1", 0),
                 create_multiple_action_id_error("ACN-1", 1),

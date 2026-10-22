@@ -46,7 +46,7 @@ mod tests {
     fn test_test_6_1_65_1() {
         // TODO: Evaluate test coverage
         // TODO: Document test cases properly
-        
+
         let case_01 = Err(vec![generate_undefined_document_local_vuln_id_error(
             "VULN-1",
             "/document/involvement/actions/0/dl_vuln_ids/0",

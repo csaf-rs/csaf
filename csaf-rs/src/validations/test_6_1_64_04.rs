@@ -45,6 +45,7 @@ pub fn test_6_1_64_4_actor_and_recipient(doc: &impl CsafTrait) -> Result<(), Vec
         let Some(receiving_entity_refs) = action.get_receiving_entity_refs() else {
             continue;
         };
+
         // resolve the acting entity refs
         let actors = resolve_ref_groups_to_ref_ids(action.get_acting_entity_refs(), &entity_groups);
         // resolve the receiving entity refs
@@ -96,7 +97,7 @@ mod tests {
     fn test_test_6_1_64_4() {
         // TODO: Evaluate test coverage
         // TODO: Document test cases properly
-        // TODO: This does not cover comparing the unresolvable group ids
+        // TODO: This does not cover comparing the unresolvable group ids (see https://github.com/csaf-rs/csaf/issues/1343)
 
         TESTS_2_1.test_6_1_64_4.expect(ExpectedResults {
             case_01: Err(vec![

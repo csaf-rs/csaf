@@ -87,6 +87,7 @@ pub mod test_6_1_64_01;
 // pub mod test_6_1_64_02;
 pub mod test_6_1_64_03;
 pub mod test_6_1_64_04;
+pub mod test_6_1_64_06;
 pub mod test_6_1_64_07;
 pub mod test_6_1_64_08;
 pub mod test_6_1_64_09;

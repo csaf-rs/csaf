@@ -5,7 +5,7 @@ use crate::validation::{TestFinding, TestFindingData};
 fn create_missing_receiving_entity_refs_error(action_index: usize, category: ActionCategory) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("Action with category '{category}' must have a 'receiving_entity_refs' element present"),
-        instance_path: format!("/document/involvement/actions/{action_index}/receiving_entity_refs"),
+        instance_path: format!("/document/involvement/actions/{action_index}"),
     })
 }
 

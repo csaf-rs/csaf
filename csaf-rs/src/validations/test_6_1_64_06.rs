@@ -5,7 +5,7 @@ use crate::validation::{TestFinding, TestFindingData};
 
 fn create_multiple_entity_id_error(id: &str, entity_index: usize) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Duplicate definition for entity ID `{id}`"),
+        message: format!("Multiple definition for entity ID `{id}`"),
         instance_path: format!("/document/involvement/entities/{entity_index}/entity_id"),
     })
 }
@@ -58,6 +58,9 @@ mod tests {
 
     #[test]
     fn test_test_6_1_64_6() {
+        // TODO: Evaluate test coverage
+        // TODO: Document test cases properly
+        
         TESTS_2_1.test_6_1_64_6.expect(ExpectedResults {
             case_01: Err(vec![
                 create_multiple_entity_id_error("EID-0001", 0),

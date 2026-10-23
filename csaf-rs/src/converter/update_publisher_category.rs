@@ -13,11 +13,11 @@ impl Convert for UpdatePublisherCategory {
             .and_then(|publisher| publisher.category_mut())
             && let Ok(csaf2_1::schema::CategoryOfPublisher::Other) = category.get_enum()
         {
-            if !settings.suppress_publisher_category_other_warning {
+            if !settings.publisher_category_other.suppress_warning {
                 diagnostics.warning("/document/publisher/category".into(), Warning::PublisherCategoryOther);
             }
 
-            if settings.convert_publisher_category_other_to_multiplier {
+            if settings.publisher_category_other.convert_to_multiplier {
                 category.set_enum(csaf2_1::schema::CategoryOfPublisher::Multiplier);
             }
         }
@@ -63,8 +63,10 @@ mod tests {
         });
 
         let settings = Settings {
-            suppress_publisher_category_other_warning: suppress_warning,
-            convert_publisher_category_other_to_multiplier: convert_to_multiplier,
+            publisher_category_other: crate::converter::PublisherCategoryOtherSettings {
+                suppress_warning,
+                convert_to_multiplier,
+            },
         };
 
         let mut doc = loose::Document::new(input);

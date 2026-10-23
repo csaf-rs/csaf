@@ -44,8 +44,13 @@ pub trait Diagnostics {
 
 #[derive(Default)]
 pub struct Settings {
-    pub suppress_publisher_category_other_warning: bool,
-    pub convert_publisher_category_other_to_multiplier: bool,
+    pub publisher_category_other: PublisherCategoryOtherSettings,
+}
+
+#[derive(Default)]
+pub struct PublisherCategoryOtherSettings {
+    pub suppress_warning: bool,
+    pub convert_to_multiplier: bool,
 }
 
 #[derive(Debug, PartialEq)]
@@ -68,7 +73,9 @@ impl fmt::Display for Warning {
             Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
             Warning::PublisherCategoryOther => {
                 "Some publishers previously categorized as 'other' \
-                have been regrouped into the new 'multiplier' category"
+                have been regrouped into the new 'multiplier' category in CSAF 2.1. \
+                Please manually check whether the publisher category should be changed to 'multiplier'. \
+                The converter provides options to perform this change automatically or suppress this warning."
             },
         };
         f.write_str(s)

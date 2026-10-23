@@ -98,6 +98,8 @@ impl Action {
     PartialOrd
 )]
 pub enum ActionCategory {
+    #[serde(rename = "assessment")]
+    Assessment,
     #[serde(rename = "confirmation")]
     Confirmation,
     #[serde(rename = "coordination")]
@@ -106,6 +108,8 @@ pub enum ActionCategory {
     Discovery,
     #[serde(rename = "dispute")]
     Dispute,
+    #[serde(rename = "embargo")]
+    Embargo,
     #[serde(rename = "exploitation")]
     Exploitation,
     #[serde(rename = "fix_deployment")]
@@ -114,21 +118,23 @@ pub enum ActionCategory {
     FixRelease,
     #[serde(rename = "notification")]
     Notification,
-    #[serde(rename = "triage")]
-    Triage,
+    #[serde(rename = "observation")]
+    Observation,
 }
 impl ::std::fmt::Display for ActionCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
+            Self::Assessment => f.write_str("assessment"),
             Self::Confirmation => f.write_str("confirmation"),
             Self::Coordination => f.write_str("coordination"),
             Self::Discovery => f.write_str("discovery"),
             Self::Dispute => f.write_str("dispute"),
+            Self::Embargo => f.write_str("embargo"),
             Self::Exploitation => f.write_str("exploitation"),
             Self::FixDeployment => f.write_str("fix_deployment"),
             Self::FixRelease => f.write_str("fix_release"),
             Self::Notification => f.write_str("notification"),
-            Self::Triage => f.write_str("triage"),
+            Self::Observation => f.write_str("observation"),
         }
     }
 }
@@ -138,15 +144,17 @@ impl ::std::str::FromStr for ActionCategory {
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         match value {
+            "assessment" => Ok(Self::Assessment),
             "confirmation" => Ok(Self::Confirmation),
             "coordination" => Ok(Self::Coordination),
             "discovery" => Ok(Self::Discovery),
             "dispute" => Ok(Self::Dispute),
+            "embargo" => Ok(Self::Embargo),
             "exploitation" => Ok(Self::Exploitation),
             "fix_deployment" => Ok(Self::FixDeployment),
             "fix_release" => Ok(Self::FixRelease),
             "notification" => Ok(Self::Notification),
-            "triage" => Ok(Self::Triage),
+            "observation" => Ok(Self::Observation),
             _ => Err("invalid value".into()),
         }
     }

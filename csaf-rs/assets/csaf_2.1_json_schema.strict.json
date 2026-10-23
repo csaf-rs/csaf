@@ -889,15 +889,17 @@
                   "category": {
                     "description": "Specifies the category which this action belongs to.",
                     "enum": [
+                      "assessment",
                       "confirmation",
                       "coordination",
                       "discovery",
                       "dispute",
+                      "embargo",
                       "exploitation",
                       "fix_deployment",
                       "fix_release",
                       "notification",
-                      "triage"
+                      "observation"
                     ],
                     "title": "Action category",
                     "type": "string"

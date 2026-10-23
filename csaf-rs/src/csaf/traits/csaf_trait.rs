@@ -2,7 +2,8 @@ use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementT
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities_trait::collect_references;
 use crate::csaf_traits::{
-    ContentTrait, DocumentTrait, ExtensionsTrait, MetricTrait, ProductTrait, ProductTreeTrait, VulnerabilityTrait,
+    ActionTrait, ContentTrait, DocumentTrait, ExtensionsTrait, MetricTrait, ProductTrait, ProductTreeTrait,
+    VulnerabilityTrait,
 };
 use crate::schema::csaf2_0::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework20,
@@ -13,6 +14,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, ProductTree as ProductTree21,
     Vulnerability as Vulnerability21,
 };
+use std::collections::HashSet;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -72,6 +74,57 @@ pub trait CsafTrait {
         self.get_all_product_references()
             .iter()
             .map(|(id, _)| id.to_owned())
+            .collect()
+    }
+
+    /// Returns all document-local vulnerability IDs referenced by document involvement actions
+    /// along with their JSON paths.
+    fn get_all_document_local_vuln_id_references_with_path(&self) -> Vec<(String, String)> {
+        let Some(involvement) = self.get_document().get_involvement() else {
+            return Vec::new();
+        };
+
+        involvement
+            .get_actions()
+            .enumerate()
+            .flat_map(|(action_index, action)| {
+                action
+                    .get_document_local_vuln_ids()
+                    .into_iter()
+                    .flatten()
+                    .enumerate()
+                    .map(move |(id_index, id)| {
+                        (
+                            id.to_owned(),
+                            format!("/document/involvement/actions/{action_index}/dl_vuln_ids/{id_index}"),
+                        )
+                    })
+            })
+            .collect()
+    }
+
+    /// Returns all document-local vulnerability IDs defined by vulnerabilities in the document.
+    fn get_all_document_local_vuln_ids(&self) -> HashSet<String> {
+        self.get_vulnerabilities()
+            .iter()
+            .filter_map(VulnerabilityTrait::get_document_local_vuln_id)
+            .map(ToOwned::to_owned)
+            .collect()
+    }
+
+    /// Returns all document-local vulnerability ID definitions along with their JSON paths.
+    fn get_all_document_local_vuln_ids_with_path(&self) -> Vec<(String, String)> {
+        self.get_vulnerabilities()
+            .iter()
+            .enumerate()
+            .filter_map(|(vulnerability_index, vulnerability)| {
+                vulnerability.get_document_local_vuln_id().map(|id| {
+                    (
+                        id.to_owned(),
+                        format!("/vulnerabilities/{vulnerability_index}/dl_vuln_id"),
+                    )
+                })
+            })
             .collect()
     }
 

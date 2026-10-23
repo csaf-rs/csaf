@@ -69,12 +69,30 @@ mod tests {
                 "LicenseRef-www.example.org#Example-CSAF-License-3.0",
                 "Error at position 26: invalid character(s)",
             )]),
-            case_07: Ok(()), // TODO: clarify if licenseref-... should be allowed, #672
-            case_08: Ok(()), // TODO: clarify if licenseREF-... should be allowed, #672
+            case_07: Ok(()), // TODO: clarify if licenseref-... should be allowed, #672, revisit during #387
+            case_08: Ok(()), // TODO: clarify if licenseREF-... should be allowed, #672  revisit during #387
+            case_09: Ok(()), // TODO: revisit during #387
+            case_21: Ok(()), // TODO: revisit during #387
+            case_22: Ok(()), // TODO: revisit during #387
+            case_23: Err(
+                vec![create_invalid_license_expression_error(
+                    "MIT or )any-OSI WITH NONE)",
+                    r#"Error at position 7: expected one of `<license>`, `(` here"#,
+                )],
+            ), // TODO: revisit during #387
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
             case_14: Ok(()),
+            case_15: Err(
+                vec![create_invalid_license_expression_error(
+                    "A.SPDX-License-ID-that.technically.could.exist-but-obviously-does-not.including+",
+                    r#"Error at position 79: expected one of `AND`, `OR`, `WITH`, `)`, `+` here"#,
+                )],
+            ), // TODO: revisit during #387
+            case_16: Ok(()), // TODO: revisit during #387
+            case_17: Ok(()), // TODO: revisit during #387
+            case_18: Ok(()), // TODO: revisit during #387
         });
     }
 }

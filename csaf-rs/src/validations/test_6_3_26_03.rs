@@ -51,18 +51,18 @@ pub fn test_6_3_26_5_multiple_use_of_same_entity_group_name(doc: &impl CsafTrait
 
 crate::test_validation::impl_validator!(
     csaf2_1,
-    ValidatorForTest6_3_26_5,
+    ValidatorForTest6_3_26_3,
     test_6_3_26_5_multiple_use_of_same_entity_group_name
 );
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::csaf2_1::testcases::{ExpectedResults_6_3_26_5, TESTS_2_1};
+    use crate::csaf2_1::testcases::{ExpectedResults_6_3_26_3, TESTS_2_1};
 
     #[test]
     fn test_test_6_3_26_5() {
-        TESTS_2_1.test_6_3_26_5.expect(ExpectedResults_6_3_26_5 {
+        TESTS_2_1.test_6_3_26_3.expect(ExpectedResults_6_3_26_3 {
             case_01: Err(vec![
                 create_multiple_entity_group_name_info("JJ Research", 0),
                 create_multiple_entity_group_name_info("JJ Research", 1),

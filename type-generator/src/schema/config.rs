@@ -72,6 +72,8 @@ fn fix_2_1_schema(value: &mut Value) -> Result<(), BuildError> {
           { "$ref": "#/$defs/entity_id_t" }
         ]}),
     )?;
+    patch_const_as_enum(value, "properties.$schema")?;
+    patch_const_as_enum(value, "properties.document.properties.csaf_version")?;
     remove_format(value, "date-time");
     remove_format(value, "uri");
     remove_format(value, "uuid");
@@ -86,6 +88,28 @@ fn patch_dot_set(value: &mut Value, path: &str, replacement: Value) -> Result<()
              The upstream schema structure may have changed."
         ))
     })
+}
+
+/// Converts a known constant field to a single-value enum for Typify.
+/// This should be revisited during #1372
+fn patch_const_as_enum(value: &mut Value, path: &str) -> Result<(), BuildError> {
+    let schema = value.dot_get_mut(path).map_err(|e| {
+        BuildError::SchemaPatch(format!(
+            "failed to find schema at path '{path}': {e}. \
+             The upstream schema structure may have changed."
+        ))
+    })?;
+    let object = schema
+        .as_object_mut()
+        .ok_or_else(|| BuildError::SchemaPatch(format!("schema at path '{path}' is not an object")))?;
+    let const_value = object.remove("const").ok_or_else(|| {
+        BuildError::SchemaPatch(format!(
+            "schema at path '{path}' has no const value. \
+             The upstream schema structure may have changed."
+        ))
+    })?;
+    object.insert("enum".to_string(), Value::Array(vec![const_value]));
+    Ok(())
 }
 
 /// Recursively searches for a specific "format" value and removes it.

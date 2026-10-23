@@ -706,10 +706,8 @@
   "description": "Representation of security advisory information as a JSON document.",
   "properties": {
     "$schema": {
+      "const": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
       "description": "Contains the URL of the CSAF JSON schema which the document promises to be valid for.",
-      "enum": [
-        "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json"
-      ],
       "format": "uri",
       "title": "JSON schema",
       "type": "string"
@@ -767,10 +765,8 @@
           "type": "string"
         },
         "csaf_version": {
+          "const": "2.1",
           "description": "Gives the version of the CSAF specification which the document was generated for.",
-          "enum": [
-            "2.1"
-          ],
           "title": "CSAF version",
           "type": "string"
         },

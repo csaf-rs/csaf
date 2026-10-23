@@ -354,6 +354,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.64.8" => Some(ValidatorForTest6_1_64_8.validate(self)),
                 "6.1.64.9" => Some(ValidatorForTest6_1_64_9.validate(self)),
                 "6.1.64.10" => Some(ValidatorForTest6_1_64_10.validate(self)),
+                "6.1.64.13" => Some(ValidatorForTest6_1_64_13.validate(self)),
                 "6.1.65.1" => Some(ValidatorForTest6_1_65_1.validate(self)),
                 "6.1.65.2" => Some(ValidatorForTest6_1_65_2.validate(self)),
                 // recommended tests

@@ -16,15 +16,14 @@ fn generate_undefined_document_local_vuln_id_error(id: &str, path: &str) -> Test
 pub fn test_6_1_65_1_missing_definition_of_document_local_vuln_id(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<TestFinding>> {
-    // TODO improve naming and comments
-    let defined_ids = doc.get_all_document_local_vuln_ids();
+    let defined_doc_local_vuln_ids = doc.get_all_document_local_vuln_ids();
 
     let mut errors: Option<Vec<TestFinding>> = None;
-    for (id, path) in doc.get_all_document_local_vuln_id_references() {
-        if !defined_ids.contains(&id) {
+    for (doc_local_vuln_id, doc_local_vuln_id_path) in doc.get_all_document_local_vuln_id_references_with_path() {
+        if !defined_doc_local_vuln_ids.contains(&doc_local_vuln_id) {
             errors
                 .get_or_insert_default()
-                .push(generate_undefined_document_local_vuln_id_error(&id, &path));
+                .push(generate_undefined_document_local_vuln_id_error(&doc_local_vuln_id, &doc_local_vuln_id_path));
         }
     }
 

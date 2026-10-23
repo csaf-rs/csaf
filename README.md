@@ -401,3 +401,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.23.2 | ⭕ | ✅ |
 | 6.3.24   | ⭕ |  |
 | 6.3.25   | ⭕ |  |
+| 6.3.26.1   | ⭕ |  |
+| 6.3.26.2   | ⭕ |  |
+| 6.3.26.3   | ⭕ | ✅ |
+| 6.3.26.4   | ⭕ | ✅ |

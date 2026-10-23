@@ -16,7 +16,7 @@ pub(crate) struct Args {
     #[arg(long)]
     pub allow_invalid: bool,
 
-    #[command(flatten, next_help_heading = "Publisher category")]
+    #[command(flatten, next_help_heading = "Publisher category options")]
     pub publisher_category_other: PublisherCategoryOtherArgs,
 }
 

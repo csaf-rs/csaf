@@ -8,9 +8,12 @@ mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
+mod settings;
 mod update_csaf_version;
 mod update_publisher_category;
 mod update_tlp_label;
+
+pub use settings::{PublisherCategoryOtherSettings, Settings};
 
 pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
     let mut doc = loose::Document::new(raw);
@@ -40,17 +43,6 @@ pub trait Convert {
 pub trait Diagnostics {
     fn error(&mut self, path: Cow<'static, str>, error: Error);
     fn warning(&mut self, path: Cow<'static, str>, warning: Warning);
-}
-
-#[derive(Default)]
-pub struct Settings {
-    pub publisher_category_other: PublisherCategoryOtherSettings,
-}
-
-#[derive(Default)]
-pub struct PublisherCategoryOtherSettings {
-    pub suppress_warning: bool,
-    pub convert_to_multiplier: bool,
 }
 
 #[derive(Debug, PartialEq)]

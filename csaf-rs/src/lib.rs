@@ -8,7 +8,7 @@ pub mod csaf;
 pub mod csaf2_0;
 pub mod csaf2_1;
 pub mod csaf_traits;
-pub(crate) mod cvss;
+pub mod cvss;
 pub mod helpers;
 pub mod json;
 pub(crate) mod macros;

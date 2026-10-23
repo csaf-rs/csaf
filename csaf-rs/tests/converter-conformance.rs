@@ -218,7 +218,6 @@ fn _33_convert_license_expression() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _34_release_date_converted_to_disclosure_date() -> TestResult<()> {
     run!()

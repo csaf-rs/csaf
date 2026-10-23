@@ -23,7 +23,10 @@ pub fn test_6_1_65_1_missing_definition_of_document_local_vuln_id(
         if !defined_doc_local_vuln_ids.contains(&doc_local_vuln_id) {
             errors
                 .get_or_insert_default()
-                .push(generate_undefined_document_local_vuln_id_error(&doc_local_vuln_id, &doc_local_vuln_id_path));
+                .push(generate_undefined_document_local_vuln_id_error(
+                    &doc_local_vuln_id,
+                    &doc_local_vuln_id_path,
+                ));
         }
     }
 

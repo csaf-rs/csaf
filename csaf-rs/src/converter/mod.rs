@@ -42,7 +42,9 @@ pub trait Diagnostics {
 
 #[derive(Default)]
 pub struct Settings {
-    // TODO
+    /// Prefer the first valid TLP v2.0 label found in
+    /// document.distribution.text over the standard conversion.
+    pub allow_tlp_from_distribution_text: bool,
 }
 
 #[derive(Debug, PartialEq)]
@@ -52,6 +54,8 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    DefaultTlpLabelSet,
+    TlpLabelFromDistributionText { converted: String, from_text: String },
 }
 
 impl fmt::Display for Warning {
@@ -62,6 +66,14 @@ impl fmt::Display for Warning {
             Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
             Warning::InvalidTlpLabel => "TLP label contained an invalid value",
             Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
+            Warning::DefaultTlpLabelSet => "default TLP has been set to CLEAR",
+            Warning::TlpLabelFromDistributionText { converted, from_text } => {
+                return write!(
+                    f,
+                    "TLP label was taken from distribution text \
+                     (converted value: {converted}, text value: {from_text})"
+                );
+            },
         };
         f.write_str(s)
     }
@@ -128,7 +140,12 @@ mod tests {
     fn end_to_end() {
         let input = json!({
             "document": {
-                "csaf_version": "2.0"
+                "csaf_version": "2.0",
+                "distribution": {
+                    "tlp": {
+                        "label": "WHITE"
+                    }
+                }
             },
             "product_tree": {
                 "full_product_names": [

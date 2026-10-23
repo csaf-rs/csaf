@@ -28,6 +28,10 @@ struct Args {
     /// Allow (partial) processing and output of invalid CSAF documents
     #[arg(long)]
     allow_invalid: bool,
+
+    /// Allow a valid TLP v2.0 label from distribution.text
+    #[arg(long)]
+    allow_tlp_from_distribution_text: bool,
 }
 
 pub struct VerboseDiagnostics {
@@ -90,7 +94,11 @@ fn main() -> Result<(), anyhow::Error> {
         );
     }
 
-    let result = csaf::converter::convert(raw, &csaf::converter::Settings::default(), &mut diag);
+    let settings = csaf::converter::Settings {
+        allow_tlp_from_distribution_text: args.allow_tlp_from_distribution_text,
+    };
+    let result = csaf::converter::convert(raw, &settings, &mut diag);
+
     if diag.has_errors {
         if args.allow_invalid {
             eprintln!("Conversion completed with errors, but allowed due to --allow-invalid.");

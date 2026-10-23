@@ -1,6 +1,9 @@
-use std::{borrow::Cow, path::PathBuf};
+mod args;
+
+use std::borrow::Cow;
 
 use anyhow::bail;
+use args::Args;
 use clap::Parser;
 use csaf_rs::{
     converter::{
@@ -12,31 +15,6 @@ use csaf_rs::{
     json::JsonSource,
     validation::TestResultStatus,
 };
-
-/// A converter for CSAF 2.0 to 2.1 documents
-#[derive(clap::Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args {
-    /// Path to CSAF document to convert
-    #[arg()]
-    path: PathBuf,
-
-    /// Path to the output file, stdout when omitted
-    #[arg(short = 'o')]
-    output: Option<PathBuf>,
-
-    /// Allow (partial) processing and output of invalid CSAF documents
-    #[arg(long)]
-    allow_invalid: bool,
-
-    /// Suppress the warning when publisher category is 'other'
-    #[arg(long)]
-    suppress_publisher_category_other_warning: bool,
-
-    /// Convert publisher category 'other' to 'multiplier'
-    #[arg(long)]
-    convert_publisher_category_other_to_multiplier: bool,
-}
 
 pub struct VerboseDiagnostics {
     has_errors: bool,
@@ -99,8 +77,10 @@ fn main() -> Result<(), anyhow::Error> {
     }
 
     let settings = csaf_rs::converter::Settings {
-        suppress_publisher_category_other_warning: args.suppress_publisher_category_other_warning,
-        convert_publisher_category_other_to_multiplier: args.convert_publisher_category_other_to_multiplier,
+        publisher_category_other: csaf::converter::PublisherCategoryOtherSettings {
+            suppress_warning: args.publisher_category_other.suppress_warning,
+            convert_to_multiplier: args.publisher_category_other.convert_to_multiplier,
+        },
     };
 
     let result = csaf_rs::converter::convert(raw, &settings, &mut diag);

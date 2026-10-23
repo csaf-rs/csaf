@@ -91,7 +91,7 @@ fn patch_dot_set(value: &mut Value, path: &str, replacement: Value) -> Result<()
 }
 
 /// Converts a known constant field to a single-value enum for Typify.
-/// This should be revisited during https://github.com/csaf-rs/csaf/issues/1372
+/// This should be revisited during #1372
 fn patch_const_as_enum(value: &mut Value, path: &str) -> Result<(), BuildError> {
     let schema = value.dot_get_mut(path).map_err(|e| {
         BuildError::SchemaPatch(format!(

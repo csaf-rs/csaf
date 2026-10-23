@@ -4,6 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 1
+      include:
+        - "csaf"
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:

@@ -8,6 +8,7 @@ mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
+mod sort_json_keys;
 mod update_csaf_version;
 mod update_tlp_label;
 
@@ -22,12 +23,17 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 }
 
 const CONVERSIONS: &[&dyn Convert] = &[
+    // conversions that work on leaf nodes
     &lowercase_hash_value::LowercaseHashValue,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
+    &update_tlp_label::UpdateTlpLabel,
+    // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
-    &update_tlp_label::UpdateTlpLabel,
+    // conversions that move subtrees
+    // sorting keys should be last
+    &sort_json_keys::SortJsonKeys,
 ];
 
 /// Incremental v2.0 to v2.1 conversion

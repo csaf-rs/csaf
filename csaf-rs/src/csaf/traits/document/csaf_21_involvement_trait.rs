@@ -37,7 +37,7 @@ pub trait Csaf21InvolvementTrait {
 
     /// Returns the entity group IDs and their corresponding entity IDs as a map.
     ///
-    /// If [`get_entity_groups`] returns `None`, this method will also return `None`.
+    /// If [`Self::get_entity_groups`] returns `None`, this method will also return `None`.
     /// Otherwise, it will return a `HashMap` where the keys are entity group IDs and
     /// the values are `BTreeSet`s of entity IDs.
     ///
@@ -58,7 +58,7 @@ pub trait Csaf21InvolvementTrait {
 
     /// Returns all defined entity group IDs as a `HashSet<String>`.
     ///
-    /// If [`get_entity_groups`] returns `None`, this method will also return `None`.
+    /// If [`Self::get_entity_groups`] returns `None`, this method will also return `None`.
     fn get_entity_group_ids(&self) -> Option<HashSet<String>> {
         self.get_entity_groups()
             .map(|groups| groups.map(|group| group.get_entity_group_id().to_owned()).collect())

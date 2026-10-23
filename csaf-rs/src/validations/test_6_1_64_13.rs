@@ -11,7 +11,7 @@ fn create_missing_referenced_action_ids_error(action_index: usize, category: Act
 
 /// 6.1.64.13 Missing Referenced Action IDs
 ///
-/// For each item in `$.document.involvement.actions` which has one of the categories `confirmation` 
+/// For each item in `$.document.involvement.actions` which has one of the categories `confirmation`
 /// or `dispute` it SHALL be tested that the element `referenced_action_ids` exists.
 pub fn test_6_1_64_13_missing_referenced_action_ids(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // check if involvement is present, if not, skip the test
@@ -58,7 +58,7 @@ mod tests {
     fn test_test_6_1_64_13() {
         // TODO: Evaluate test coverage
         // TODO: Document test cases properly
-        
+
         TESTS_2_1.test_6_1_64_13.expect(ExpectedResults {
             case_01: Err(vec![create_missing_referenced_action_ids_error(
                 1,

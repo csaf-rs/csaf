@@ -23,7 +23,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 }
 
 const CONVERSIONS: &[&dyn Convert] = &[
-    // conversions hat work on leaf nodes
+    // conversions that work on leaf nodes
     &lowercase_hash_value::LowercaseHashValue,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,

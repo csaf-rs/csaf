@@ -15,11 +15,8 @@ impl Convert for SortJsonKeys {
 }
 
 fn sort_object_deep(map: &mut serde_json::Map<String, serde_json::Value>) {
-    for value in map.values_mut() {
-        if let serde_json::Value::Object(inner_map) = value {
-            sort_object_deep(inner_map);
-        }
-    }
+    map.values_mut().for_each(sort_value_deep);
+
     let mut keys: Vec<_> = map.keys().cloned().collect();
     keys.sort();
     let mut sorted_map = serde_json::Map::new();
@@ -29,6 +26,18 @@ fn sort_object_deep(map: &mut serde_json::Map<String, serde_json::Value>) {
         }
     }
     *map = sorted_map;
+}
+
+fn sort_value_deep(value: &mut serde_json::Value) {
+    match value {
+        serde_json::Value::Array(values) => {
+            values.iter_mut().for_each(sort_value_deep);
+        },
+        serde_json::Value::Object(inner_map) => {
+            sort_object_deep(inner_map);
+        },
+        _ => {},
+    }
 }
 
 #[cfg(test)]
@@ -41,10 +50,13 @@ mod tests {
 
     #[test]
     fn converter_sort_json_keys() {
-        let mut doc = loose::Document::new(json!({ "b": {"c": true, "a": false}, "a": 1 }));
+        let mut doc = loose::Document::new(json!({ "b": {"c": true, "$": 1}, "a": [1, {"b": true, "a": false}] }));
 
         SortJsonKeys.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
 
-        assert_eq!(json!({"a": 1, "b": {"a": false, "c": true}}), doc.into_raw());
+        assert_eq!(
+            r#"{"a":[1,{"a":false,"b":true}],"b":{"$":1,"c":true}}"#,
+            serde_json::to_string(&doc.into_raw()).unwrap()
+        );
     }
 }

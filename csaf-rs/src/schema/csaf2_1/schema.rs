@@ -1279,8 +1279,6 @@ pub struct Content {
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub qualitative_severity_rating: ::std::option::Option<QualitativeSeverityRating>,
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
-    pub ssvc_v1: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub ssvc_v2: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     ///Contains a list of extensions valid at the metrics-content-level of the CSAF document and associated with this metric element.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -6556,10 +6554,6 @@ pub mod builder {
             ::std::option::Option<super::QualitativeSeverityRating>,
             ::std::string::String,
         >,
-        ssvc_v1: ::std::result::Result<
-            ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            ::std::string::String,
-        >,
         ssvc_v2: ::std::result::Result<
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             ::std::string::String,
@@ -6577,7 +6571,6 @@ pub mod builder {
                 cvss_v4: Ok(Default::default()),
                 epss: Ok(Default::default()),
                 qualitative_severity_rating: Ok(Default::default()),
-                ssvc_v1: Ok(Default::default()),
                 ssvc_v2: Ok(Default::default()),
                 x_extensions: Ok(Default::default()),
             }
@@ -6652,20 +6645,6 @@ pub mod builder {
                 });
             self
         }
-        pub fn ssvc_v1<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            >,
-            T::Error: ::std::fmt::Display,
-        {
-            self.ssvc_v1 = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for ssvc_v1: {e}")
-                });
-            self
-        }
         pub fn ssvc_v2<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<
@@ -6704,7 +6683,6 @@ pub mod builder {
                 cvss_v4: value.cvss_v4?,
                 epss: value.epss?,
                 qualitative_severity_rating: value.qualitative_severity_rating?,
-                ssvc_v1: value.ssvc_v1?,
                 ssvc_v2: value.ssvc_v2?,
                 x_extensions: value.x_extensions?,
             })
@@ -6718,7 +6696,6 @@ pub mod builder {
                 cvss_v4: Ok(value.cvss_v4),
                 epss: Ok(value.epss),
                 qualitative_severity_rating: Ok(value.qualitative_severity_rating),
-                ssvc_v1: Ok(value.ssvc_v1),
                 ssvc_v2: Ok(value.ssvc_v2),
                 x_extensions: Ok(value.x_extensions),
             }

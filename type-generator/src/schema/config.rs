@@ -58,7 +58,6 @@ fn fix_2_1_schema(value: &mut Value) -> Result<(), BuildError> {
         format!("{prefix}.cvss_v2"),
         format!("{prefix}.cvss_v3"),
         format!("{prefix}.cvss_v4"),
-        format!("{prefix}.ssvc_v1"),
         format!("{prefix}.ssvc_v2"),
         "$defs.extensions_t.items".to_string(),
     ];

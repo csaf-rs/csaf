@@ -77,7 +77,7 @@ fn main() -> Result<(), anyhow::Error> {
     }
 
     let settings = csaf_rs::converter::Settings {
-        publisher_category_other: csaf::converter::PublisherCategoryOtherSettings {
+        publisher_category_other: csaf_rs::converter::PublisherCategoryOtherSettings {
             suppress_warning: args.publisher_category_other.suppress_warning,
             convert_to_multiplier: args.publisher_category_other.convert_to_multiplier,
         },

@@ -1,7 +1,6 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
-pub use crate::validations::utils::cycle_detection::find_cycle;
-use std::collections::{HashMap, HashSet};
+use crate::validations::utils::cycle_detection::{RelationMap, find_cycle};
 
 fn generate_self_reference_product_error(version: CsafVersion, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -36,11 +35,19 @@ fn generate_cycle_error(version: CsafVersion, cycle: &[String], path: String) ->
     })
 }
 
+/// 6.1.3 Circular Definition of Product ID
+///
+/// For each new defined Product ID (type `$['$defs'].product_id_t`) in items of product paths (`$.product_tree.product_paths`) it
+/// SHALL be tested that the `product_id` does not end up in a circle.
+///
+/// As this can be quite complex a program for large CSAF documents, a program could check first whether
+/// a Product ID defined in a product path item is used as `beginning_product_reference` or `next_product_reference`.
+/// Only for those which fulfill this condition it is necessary to run the full check following the references.
 pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let version = doc.get_document().get_csaf_version();
     let mut errors: Option<Vec<TestFinding>> = None;
     if let Some(tree) = doc.get_product_tree() {
-        let mut relation_map = HashMap::<String, HashMap<String, String>>::new();
+        let mut relation_map = RelationMap::new();
         for (pp_i, pp) in tree.get_product_paths().iter().enumerate() {
             let rel_prod_id = pp.get_full_product_name().get_product_id();
             if pp.get_beginning_product_reference() == rel_prod_id {
@@ -62,38 +69,17 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                         &pp.get_json_path_for_product_path_subpath_product_reference(pp_i, sp_i),
                     ));
             } else {
-                match relation_map.get_mut(rel_prod_id) {
-                    Some(v) => {
-                        v.insert(
-                            pp.get_beginning_product_reference().to_owned(),
-                            pp.get_json_path_for_product_path(pp_i),
-                        );
-                        pp.get_subpath_product_references().iter().for_each(|next| {
-                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
-                        });
-                    },
-                    None => {
-                        let mut v = HashMap::new();
-                        v.insert(
-                            pp.get_beginning_product_reference().to_owned(),
-                            pp.get_json_path_for_product_path(pp_i),
-                        );
-                        pp.get_subpath_product_references().iter().for_each(|next| {
-                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
-                        });
-                        relation_map.insert(rel_prod_id.to_owned(), v);
-                    },
-                }
+                let path = pp.get_json_path_for_product_path(pp_i);
+                relation_map.add_relation(rel_prod_id, pp.get_beginning_product_reference(), path.clone());
+                pp.get_subpath_product_references().iter().for_each(|next| {
+                    relation_map.add_relation(rel_prod_id, next, path.clone());
+                });
             }
         }
 
-        // Find all products that are part of any product path (either as beginning or next reference)
-        let products_in_product_path: HashSet<&String> =
-            relation_map.values().flat_map(|referenced| referenced.keys()).collect();
-
         // Perform cycle check
-        for product_id in products_in_product_path {
-            if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id) {
+        for product_id in relation_map.referenced_nodes() {
+            if let Some((cycle, relation_index)) = find_cycle(&relation_map, &product_id) {
                 errors
                     .get_or_insert_default()
                     .push(generate_cycle_error(version, &cycle, relation_index));

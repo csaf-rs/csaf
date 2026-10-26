@@ -126,9 +126,9 @@ pub trait VulnerabilityTrait {
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
 
     fn get_disclosure_date_property_name(&self) -> &'static str;
-    
+
     /// Returns the date when this vulnerability was initially disclosed.
-    /// 
+    ///
     /// This property was renamed in CSAF 2.1 from `release_date` to `disclosure_date`.
     /// This accessor will return the appropriate date based on the CSAF version being used.
     fn get_disclosure_date(&self) -> Option<CsafDateTime>;

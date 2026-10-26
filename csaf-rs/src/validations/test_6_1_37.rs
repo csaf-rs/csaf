@@ -1,5 +1,4 @@
-use crate::csaf::types::csaf_datetime::CsafDateTime;
-use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
+use crate::csaf::types::csaf_datetime::CsafDateTime::Invalid;
 use crate::csaf_traits::CsafTrait;
 use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
@@ -17,7 +16,6 @@ static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     #[allow(clippy::unwrap_used)]
     Regex::new(r"^((\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:(?:[0-4]\d|5[0-9])(?:\.\d+)?)(Z|[+-]\d{2}:\d{2}))$").unwrap()
 });
-
 
 /// 6.1.37 Date and Time
 ///
@@ -41,12 +39,16 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<TestFin
         let date_raw = date_parsed.get_raw_string();
         // regex that ensures the additional section 2.3 requirements
         if !CSAF_RFC3339_REGEX.is_match(date_raw) {
-            errors.get_or_insert_default().push(create_invalid_format_error(date_raw, &instance_path));
+            errors
+                .get_or_insert_default()
+                .push(create_invalid_format_error(date_raw, &instance_path));
             continue;
         }
         // Add chrono-based check for RFC 3339 requirements not covered by regex
         if let Invalid(err) = &date_parsed {
-            errors.get_or_insert_default().push(create_parsing_error(date_raw, err, &instance_path));
+            errors
+                .get_or_insert_default()
+                .push(create_parsing_error(date_raw, err, &instance_path));
         }
     }
 

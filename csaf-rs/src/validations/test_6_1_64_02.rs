@@ -117,7 +117,21 @@ fn contradicting_action_error(action_ids_with_status: &[(&str, ActionStatus)], a
     })
 }
 
-/// Test 6.1.64.2: Contradicting Definition in Actions.
+/// Test 6.1.64.2: Contradicting Definition in Actions
+///
+/// It SHALL be tested that items of the list of actions do not contradict each other.
+///
+/// Ignoring the `action_id`, two items in the list of actions contradict each other, if:
+///
+/// 1. all of the following fields contain the same value: `category`, `date`
+/// 2. and all of the following sets contain the same values: `acting_entity_refs`, `dl_vuln_ids`, `group_ids`, `product_ids`, `receiving_entity_refs`, `referenced_action_ids`
+/// 3. but have different values for `status`.
+///
+/// A `dl_vuln_ids` mentioning all vulnerabilities in the document is equivalent to the element missing.
+///
+/// All groups have to be expanded to their definitions for the test.
+///
+/// As the timestamps might use different timezones, the comparison SHALL take timezones into account.
 pub fn test_6_1_64_2_contradicting_definition_in_actions(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // check if involvement is present, if not, skip the test
     let Some(involvement) = doc.get_document().get_involvement() else {

@@ -112,6 +112,12 @@ pub trait CsafTrait {
             .collect()
     }
 
+    fn all_vulnerabilities_have_document_local_vuln_ids(&self) -> bool {
+        self.get_vulnerabilities()
+            .iter()
+            .all(|v| v.get_document_local_vuln_id().is_some())
+    }
+
     /// Returns all document-local vulnerability ID definitions along with their JSON paths.
     fn get_all_document_local_vuln_ids_with_path(&self) -> Vec<(String, String)> {
         self.get_vulnerabilities()

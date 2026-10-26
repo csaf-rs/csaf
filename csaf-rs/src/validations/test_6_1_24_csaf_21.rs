@@ -107,13 +107,19 @@ fn resolve_product_refs(doc: &impl CsafTrait, action: &impl ActionTrait) -> (BTr
 
 /// Creates the comparison key for an action, excluding its `action_id`.
 ///
-/// Optional reference arrays that are absent are treated as empty sets. Acting and receiving
-/// entity references are expanded through the document's entity-group definitions before being
-/// compared. Product-group references are expanded into product IDs.
+/// Optional reference arrays that are absent are treated as empty sets.
+///
+/// Acting and receiving entity references are expanded through the document's entity-group definitions before being
+/// compared.
+///
+/// Product-group references are expanded into product IDs.
+///
+/// Document-local vulnerability IDs are treated as absent if they contain the ids of all vulnerabilities in the document, if every vulnerability in
+/// the document has a document-local vulnerability ID.
 fn action_key(
-    doc: &impl CsafTrait,
     action: &impl ActionTrait,
-    all_document_local_vuln_ids: &BTreeSet<String>,
+    doc: &impl CsafTrait,
+    all_document_local_vuln_ids: Option<&BTreeSet<String>>,
     all_document_entity_groups: &HashMap<String, BTreeSet<String>>,
 ) -> ActionKey {
     // put the `dl_vuln_ids` into a BTreeSet
@@ -123,11 +129,15 @@ fn action_key(
         .flatten()
         .map(ToString::to_string)
         .collect();
-    // if `dl_vuln_ids` contains all vulnerabilities in the document, treat it as if it were absent
-    // the BTreeSet ensures this ignores order and the values are deduplicated
-    if dl_vuln_ids == *all_document_local_vuln_ids {
-        dl_vuln_ids.clear();
+
+    if let Some(all_document_local_vuln_ids) = all_document_local_vuln_ids {
+        // if `dl_vuln_ids` contains all vulnerabilities in the document, treat it as if it were absent
+        // the BTreeSet ensures this ignores order and the values are deduplicated
+        if dl_vuln_ids == *all_document_local_vuln_ids {
+            dl_vuln_ids.clear();
+        }
     }
+
     let (product_ids_including_resolved_product_group_ids, unresolvable_product_group_ids) =
         resolve_product_refs(doc, action);
 
@@ -183,8 +193,13 @@ pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Resul
         return Ok(()); // TODO #409 wasSkipped
     };
 
-    // get all document defined local vuln ids
-    let all_document_local_vuln_ids = doc.get_all_document_local_vuln_ids();
+    // get all document defined local vuln ids, if all vulnerabilities have a document local vuln id
+    let all_document_local_vuln_ids = if doc.all_vulnerabilities_have_document_local_vuln_ids() {
+        Some(&doc.get_all_document_local_vuln_ids())
+    } else {
+        None
+    };
+
     // get all document defined entity groups
     let all_document_entity_groups = involvement.get_entity_groups_map().unwrap_or_default();
 
@@ -193,9 +208,9 @@ pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Resul
     for (action_i, action) in involvement.get_actions().enumerate() {
         actions
             .entry(action_key(
-                doc,
                 action,
-                &all_document_local_vuln_ids,
+                doc,
+                all_document_local_vuln_ids,
                 &all_document_entity_groups,
             ))
             .or_default()

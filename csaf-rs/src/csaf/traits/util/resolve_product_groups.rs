@@ -36,7 +36,10 @@ pub fn resolve_product_groups_with_unresolvable(
     doc: &impl CsafTrait,
     product_groups_to_be_resolved: impl IntoIterator<Item = impl AsRef<str>>,
 ) -> ResolvedProductGroupIds {
-    let product_group_ids_to_be_resolved: HashSet<String> = product_groups_to_be_resolved.into_iter().map(|s| s.as_ref().to_owned()).collect();
+    let product_group_ids_to_be_resolved: HashSet<String> = product_groups_to_be_resolved
+        .into_iter()
+        .map(|s| s.as_ref().to_owned())
+        .collect();
     if product_group_ids_to_be_resolved.is_empty() {
         return ResolvedProductGroupIds {
             resolved_product_ids: None,
@@ -61,7 +64,10 @@ pub fn resolve_product_groups_with_unresolvable(
                 .extend(product_group.get_product_ids().map(str::to_owned));
         }
     }
-    let unresolvable_group_ids: BTreeSet<String> = product_group_ids_to_be_resolved.difference(&matched_group_ids).cloned().collect();
+    let unresolvable_group_ids: BTreeSet<String> = product_group_ids_to_be_resolved
+        .difference(&matched_group_ids)
+        .cloned()
+        .collect();
 
     ResolvedProductGroupIds {
         resolved_product_ids,

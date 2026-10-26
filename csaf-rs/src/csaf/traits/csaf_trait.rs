@@ -77,6 +77,23 @@ pub trait CsafTrait {
             .collect()
     }
 
+    fn get_all_document_local_vuln_id_references(&self) -> HashSet<String> {
+        let Some(involvement) = self.get_document().get_involvement() else {
+            return HashSet::new();
+        };
+
+        involvement
+            .get_actions()
+            .flat_map(|action| {
+                action
+                    .get_document_local_vuln_ids()
+                    .into_iter()
+                    .flatten()
+                    .map(ToOwned::to_owned)
+            })
+            .collect()
+    }
+
     /// Returns all document-local vulnerability IDs referenced by document involvement actions
     /// along with their JSON paths.
     fn get_all_document_local_vuln_id_references_with_path(&self) -> Vec<(String, String)> {

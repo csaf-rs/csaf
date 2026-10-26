@@ -195,7 +195,7 @@ pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Resul
 
     // get all document defined local vuln ids, if all vulnerabilities have a document local vuln id
     let all_document_local_vuln_ids = if doc.all_vulnerabilities_have_document_local_vuln_ids() {
-        Some(&doc.get_all_document_local_vuln_ids())
+        Some(doc.get_all_document_local_vuln_ids())
     } else {
         None
     };
@@ -210,7 +210,7 @@ pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Resul
             .entry(action_key(
                 action,
                 doc,
-                all_document_local_vuln_ids,
+                all_document_local_vuln_ids.as_ref(),
                 &all_document_entity_groups,
             ))
             .or_default()

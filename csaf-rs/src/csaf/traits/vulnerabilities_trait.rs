@@ -125,7 +125,12 @@ pub trait VulnerabilityTrait {
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
 
+    fn get_disclosure_date_property_name(&self) -> &'static str;
+    
     /// Returns the date when this vulnerability was initially disclosed.
+    /// 
+    /// This property was renamed in CSAF 2.1 from `release_date` to `disclosure_date`.
+    /// This accessor will return the appropriate date based on the CSAF version being used.
     fn get_disclosure_date(&self) -> Option<CsafDateTime>;
 
     /// Returns the date when this vulnerability was initially discovered.
@@ -297,6 +302,10 @@ impl VulnerabilityTrait for Vulnerability20 {
     fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         None
     }
+
+    fn get_disclosure_date_property_name(&self) -> &'static str {
+        "release_date"
+    }
 }
 
 impl VulnerabilityTrait for Vulnerability21 {
@@ -393,5 +402,9 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         self.x_extensions.as_ref()
+    }
+
+    fn get_disclosure_date_property_name(&self) -> &'static str {
+        "disclosure_date"
     }
 }

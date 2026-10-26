@@ -169,7 +169,7 @@ pub trait CsafTrait {
             if let Some(date) = vuln.get_disclosure_date() {
                 dates.push((
                     date.clone(),
-                    format!("/vulnerabilities/{i_v}/disclosure_date").to_string(),
+                    format!("/vulnerabilities/{i_v}/{}", vuln.get_disclosure_date_property_name()).to_string(),
                 ));
             }
             if let Some(date) = vuln.get_discovery_date() {

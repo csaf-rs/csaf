@@ -1,146 +1,56 @@
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::csaf_datetime::CsafDateTime::{Invalid, Valid};
-use crate::csaf_traits::{ContentTrait, EpssTrait};
-use crate::csaf_traits::{
-    CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, MetricTrait, TrackingTrait, VulnerabilityTrait,
-    WithDate, WithOptionalDate,
-};
+use crate::csaf_traits::CsafTrait;
 use crate::validation::{TestFinding, TestFindingData};
 use regex::Regex;
 use std::sync::LazyLock;
 
+/// This regex realizes the requirements for timestamps in CSAF 2.1. See [`test_6_1_37_date_and_time`] for details.
+///
+/// The letter T separating the date and time SHALL be upper case: Ensured by `T` in `...\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}...`
+/// The separator between date and time SHALL be the letter T: Same as above.
+/// The letter Z indicating the timezone UTC SHALL be upper case: Ensured by `Z` in `...(Z|[+-]\d{2}...`
+/// Fractions of seconds are allowed as specified in the standards mention above with the full stop (.) as separator: Ensured by `.` in `...(?:\.\d+)...`
+/// Empty timezones SHALL NOT be used: Ensured by `(Z|[+-]\d{2}:\d{2})`, i.e. either a timezone or a offset must be present.
+/// Leap seconds SHALL NOT be used: The expression `...5[0-9]...` ensures that leap seconds are rejected.
 static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     #[allow(clippy::unwrap_used)]
     Regex::new(r"^((\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:(?:[0-4]\d|5[0-9])(?:\.\d+)?)(Z|[+-]\d{2}:\d{2}))$").unwrap()
 });
 
-fn get_dates(doc: &impl CsafTrait) -> Vec<(CsafDateTime, String)> {
-    let mut dates = Vec::new();
 
-    let tracking = doc.get_document().get_tracking();
-    dates.push((
-        tracking.get_initial_release_date(),
-        "/document/tracking/initial_release_date".to_string(),
-    ));
-    dates.push((
-        tracking.get_current_release_date(),
-        "/document/tracking/current_release_date".to_string(),
-    ));
-    if let Some(generator) = tracking.get_generator()
-        && let Some(date) = generator.get_date()
-    {
-        dates.push((date, "/document/tracking/generator/date".to_string()));
-    }
-    for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
-        dates.push((
-            revision.get_date().clone(),
-            format!("/document/tracking/revision_history/{i_r}/date").to_string(),
-        ));
-    }
-
-    let vulnerabilities = doc.get_vulnerabilities();
-    for (i_v, vuln) in vulnerabilities.iter().enumerate() {
-        if let Some(date) = vuln.get_disclosure_date() {
-            dates.push((
-                date.clone(),
-                format!("/vulnerabilities/{i_v}/disclosure_date").to_string(),
-            ));
-        }
-        if let Some(date) = vuln.get_discovery_date() {
-            dates.push((
-                date.clone(),
-                format!("/vulnerabilities/{i_v}/discovery_date").to_string(),
-            ));
-        }
-        if let Some(flags) = vuln.get_flags() {
-            for (i_f, flag) in flags.iter().enumerate() {
-                if let Some(date) = flag.get_date() {
-                    dates.push((
-                        date.clone(),
-                        format!("/vulnerabilities/{i_v}/flags/{i_f}/date").to_string(),
-                    ));
-                }
-            }
-        }
-        // ToDo refactor after merging latest revision history -> moved to document instead of vulnerability
-        // also there are actions now
-        if let Some(involvements) = vuln.get_involvements() {
-            for (i_i, involvement) in involvements.iter().enumerate() {
-                if let Some(date) = involvement.get_date() {
-                    dates.push((
-                        date.clone(),
-                        format!("/vulnerabilities/{i_v}/involvements/{i_i}/date").to_string(),
-                    ));
-                }
-            }
-        }
-        for (i_r, remediation) in vuln.get_remediations().iter().enumerate() {
-            if let Some(date) = remediation.get_date() {
-                dates.push((
-                    date.clone(),
-                    format!("/vulnerabilities/{i_v}/remediations/{i_r}/date").to_string(),
-                ));
-            }
-        }
-        for (i_t, threat) in vuln.get_threats().iter().enumerate() {
-            if let Some(date) = threat.get_date() {
-                dates.push((
-                    date.clone(),
-                    format!("/vulnerabilities/{i_v}/threats/{i_t}/date").to_string(),
-                ));
-            }
-        }
-        if let Some(first_known_exploitation_dates) = vuln.get_first_known_exploitation_dates() {
-            for (i_d, date) in first_known_exploitation_dates.iter().enumerate() {
-                dates.push((
-                    date.get_date().clone(),
-                    format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/date").to_string(),
-                ));
-                dates.push((
-                    date.get_exploitation_date().clone(),
-                    format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/exploitation_date")
-                        .to_string(),
-                ));
-            }
-        }
-        if let Some(metrics) = vuln.get_metrics() {
-            for (i_m, metric) in metrics.iter().enumerate() {
-                if let Some(epss) = metric.get_content().get_epss() {
-                    dates.push((
-                        epss.get_timestamp().clone(),
-                        format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/epss/timestamp").to_string(),
-                    ));
-                }
-                if let Some(ssvc_map) = metric.get_content().get_ssvc_v2_raw()
-                    && let Some(timestamp) = ssvc_map.get("timestamp").and_then(serde_json::Value::as_str)
-                {
-                    dates.push((
-                        CsafDateTime::from(timestamp),
-                        format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp").to_string(),
-                    ))
-                }
-            }
-        }
-    }
-
-    // TODO #370 involvements are missing
-
-    dates
-}
-
-/// Validates that all date/time fields in the CSAF document conform to the required format
-/// (ISO 8601 format with time zone or UTC).
+/// 6.1.37 Date and Time
 ///
-/// This function checks all date/time fields in the document, including tracking dates,
-/// vulnerability disclosure/discovery dates, remediation dates, threat dates, etc.
+/// For each item of type string and format date-time it SHALL be tested that it conforms to the rules given in section 2.3.
+///
+/// Section 2.3:
+/// This standard uses the date-time format as defined in JSON Schema Draft 2020-12 Section 7.3.1. In accordance with RFC3339 and ISO8601-1, the following rules apply:
+//
+/// * The letter T separating the date and time SHALL be upper case.
+/// * The separator between date and time SHALL be the letter T.
+/// * The letter Z indicating the timezone UTC SHALL be upper case.
+/// * Fractions of seconds are allowed as specified in the standards mention above with the full stop (.) as separator.
+/// * Empty timezones SHALL NOT be used.
+/// * The ABNF of RFC 3339, section 5.6 applies.
+///
+/// In contrast to the aforementioned standards, leap seconds SHALL NOT be used.
 pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    let mut errors: Vec<TestFinding> = Vec::new();
+    let mut errors: Option<Vec<TestFinding>> = None;
 
-    for (date, instance_path) in get_dates(doc) {
-        check_datetime(&date, instance_path.as_str(), &mut errors);
+    for (date_parsed, instance_path) in doc.get_all_dates() {
+        let date_raw = date_parsed.get_raw_string();
+        // regex that ensures the additional section 2.3 requirements
+        if !CSAF_RFC3339_REGEX.is_match(date_raw) {
+            errors.get_or_insert_default().push(create_invalid_format_error(date_raw, &instance_path));
+            continue;
+        }
+        // Add chrono-based check for RFC 3339 requirements not covered by regex
+        if let Invalid(err) = &date_parsed {
+            errors.get_or_insert_default().push(create_parsing_error(date_raw, err, &instance_path));
+        }
     }
 
-    if errors.is_empty() { Ok(()) } else { Err(errors) }
+    errors.map_or(Ok(()), Err)
 }
 
 fn create_invalid_format_error(date_time: &str, instance_path: &str) -> TestFinding {
@@ -157,21 +67,6 @@ fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance
         message: format!("Date-time string {date_time} matched RFC3339 regex but failed chrono parsing: {error}"),
         instance_path: instance_path.to_string(),
     })
-}
-
-fn check_datetime(date_time: &CsafDateTime, instance_path: &str, errors: &mut Vec<TestFinding>) {
-    let date = match date_time {
-        Valid(date) => date.get_raw_string(),
-        Invalid(err) => err.get_raw_string(),
-    };
-    if CSAF_RFC3339_REGEX.is_match(date) {
-        // Add chrono-based plausibility check
-        if let CsafDateTime::Invalid(err) = date_time {
-            errors.push(create_parsing_error(date, err, instance_path));
-        }
-    } else {
-        errors.push(create_invalid_format_error(date, instance_path));
-    }
 }
 
 crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_37, test_6_1_37_date_and_time);
@@ -256,7 +151,6 @@ mod tests {
                     "/vulnerabilities/0/first_known_exploitation_dates/0/exploitation_date",
                 ),
             ]),
-            // #370 involvements are missing, so we can't test them yet
             case_22: Err(vec![
                 create_parsing_error(
                     "2024-01-24T10:00:00.000+25:59",
@@ -270,6 +164,16 @@ mod tests {
                 ),
                 create_invalid_format_error("2024-01-24T10:00:80.000Z", "/document/tracking/generator/date"),
                 create_invalid_format_error("2024-01-24T10:00:00", "/document/tracking/revision_history/0/date"),
+                create_parsing_error(
+                    "2023-02-30T09:00:00Z",
+                    "Failed to parse '2023-02-30T09:00:00Z' as RFC3339 with reason 'input is out of range'",
+                    "/document/involvement/actions/0/date",
+                ),
+                create_parsing_error(
+                    "2023-03-00T15:00:00Z",
+                    "Failed to parse '2023-03-00T15:00:00Z' as RFC3339 with reason 'input is out of range'",
+                    "/document/involvement/actions/1/date",
+                ),
                 create_invalid_format_error("2024-01-24T10:00:00.000z", "/vulnerabilities/0/flags/0/date"),
                 create_parsing_error(
                     "2024-01-24T10:00:00.000-24:00",

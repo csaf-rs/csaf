@@ -1,5 +1,3 @@
-use std::collections::BTreeSet;
-
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::cycle_detection::{RelationMap, find_cycle};
@@ -43,7 +41,7 @@ pub fn test_6_1_64_11_circular_reference_of_action_id(doc: &impl CsafTrait) -> R
 
     let mut findings: Option<Vec<TestFinding>> = None;
     for action_id in relation_map.referenced_nodes() {
-        if let Some((cycle, instance_path)) = find_cycle(&relation_map, &action_id) {
+        if let Some((cycle, instance_path)) = find_cycle(&relation_map, action_id) {
             findings
                 .get_or_insert_default()
                 .push(create_circular_reference_error(&cycle, &instance_path));

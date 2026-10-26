@@ -79,7 +79,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
 
         // Perform cycle check
         for product_id in relation_map.referenced_nodes() {
-            if let Some((cycle, relation_index)) = find_cycle(&relation_map, &product_id) {
+            if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id) {
                 errors
                     .get_or_insert_default()
                     .push(generate_cycle_error(version, &cycle, relation_index));

@@ -42,23 +42,20 @@ pub fn resolve_product_groups_with_unresolvable(
         };
     };
 
-    let mut resolved_product_ids = BTreeSet::new();
-    let mut unresolvable_group_ids = BTreeSet::new();
-    for product_group_id in product_group_ids {
-        let mut matching_group = false;
-        for product_group in product_tree.get_product_groups() {
-            if product_group.get_group_id() == product_group_id {
-                matching_group = true;
-                resolved_product_ids.extend(product_group.get_product_ids().map(str::to_owned));
-            }
-        }
-        if !matching_group {
-            unresolvable_group_ids.insert(product_group_id);
+    let mut resolved_product_ids: Option<BTreeSet<String>> = None;
+    let mut matched_group_ids = HashSet::new();
+    for product_group in product_tree.get_product_groups() {
+        if product_group_ids.contains(product_group.get_group_id()) {
+            matched_group_ids.insert(product_group.get_group_id().to_owned());
+            resolved_product_ids
+                .get_or_insert_default()
+                .extend(product_group.get_product_ids().map(str::to_owned));
         }
     }
+    let unresolvable_group_ids: BTreeSet<String> = product_group_ids.difference(&matched_group_ids).cloned().collect();
 
     ResolvedProductGroupIds {
-        resolved_product_ids: (!resolved_product_ids.is_empty()).then_some(resolved_product_ids),
+        resolved_product_ids,
         unresolvable_group_ids: (!unresolvable_group_ids.is_empty()).then_some(unresolvable_group_ids),
     }
 }

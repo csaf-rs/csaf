@@ -34,27 +34,34 @@ pub fn resolve_product_groups(
 /// TODO: Refactor to be more ergonomic and align this with the resolve_entity_groups function (#1384)
 pub fn resolve_product_groups_with_unresolvable(
     doc: &impl CsafTrait,
-    product_groups: impl IntoIterator<Item = impl AsRef<str>>,
+    product_groups_to_be_resolved: impl IntoIterator<Item = impl AsRef<str>>,
 ) -> ResolvedProductGroupIds {
-    let product_group_ids: HashSet<String> = product_groups.into_iter().map(|s| s.as_ref().to_owned()).collect();
+    let product_group_ids_to_be_resolved: HashSet<String> = product_groups_to_be_resolved.into_iter().map(|s| s.as_ref().to_owned()).collect();
+    if product_group_ids_to_be_resolved.is_empty() {
+        return ResolvedProductGroupIds {
+            resolved_product_ids: None,
+            unresolvable_group_ids: None,
+        };
+    }
+
     let Some(product_tree) = doc.get_product_tree() else {
         return ResolvedProductGroupIds {
             resolved_product_ids: None,
-            unresolvable_group_ids: Some(product_group_ids.into_iter().collect()),
+            unresolvable_group_ids: Some(product_group_ids_to_be_resolved.into_iter().collect()),
         };
     };
 
     let mut resolved_product_ids: Option<BTreeSet<String>> = None;
     let mut matched_group_ids = HashSet::new();
     for product_group in product_tree.get_product_groups() {
-        if product_group_ids.contains(product_group.get_group_id()) {
+        if product_group_ids_to_be_resolved.contains(product_group.get_group_id()) {
             matched_group_ids.insert(product_group.get_group_id().to_owned());
             resolved_product_ids
                 .get_or_insert_default()
                 .extend(product_group.get_product_ids().map(str::to_owned));
         }
     }
-    let unresolvable_group_ids: BTreeSet<String> = product_group_ids.difference(&matched_group_ids).cloned().collect();
+    let unresolvable_group_ids: BTreeSet<String> = product_group_ids_to_be_resolved.difference(&matched_group_ids).cloned().collect();
 
     ResolvedProductGroupIds {
         resolved_product_ids,

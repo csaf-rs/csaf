@@ -1,18 +1,40 @@
 use std::collections::{HashMap, HashSet};
 
-/// Finds the first cycle reachable from `node` in a directed graph.
+/// A directed graph whose edges retain the JSON path of their definitions.
 ///
 /// The outer map contains a node and its outgoing edges. Each inner-map key is
 /// the destination node, and its value is the JSON path where that edge is
 /// defined.
-/// The returned tuple contains the cycle, with its starting node repeated at
+pub struct RelationMap {
+    relations: HashMap<String, HashMap<String, String>>,
+}
+
+impl RelationMap {
+    pub fn new() -> Self {
+        Self {
+            relations: HashMap::new(),
+        }
+    }
+
+    pub fn add_relation(&mut self, source: &str, target: &str, json_path: String) {
+        self.relations
+            .entry(source.to_owned())
+            .or_default()
+            .insert(target.to_owned(), json_path);
+    }
+
+    pub fn referenced_nodes(&self) -> impl Iterator<Item = &String> {
+        self.relations.values().flat_map(|relations| relations.keys())
+    }
+}
+
+/// Finds the first cycle reachable from `node` in a direct graph, provided as a [`RelationMap`].
+///
+/// The returned tuple contains the first cycle, with its starting node repeated at
 /// the end, and the path of the edge that starts / closes the cycle. If
 /// `node` is not part of a reachable cycle, `None` is returned.
-pub fn find_cycle<'a>(
-    relation_map: &'a HashMap<String, HashMap<String, String>>,
-    node: &'a str,
-) -> Option<(Vec<String>, String)> {
-    find_cycle_inner(relation_map, node, &mut HashSet::new())
+pub fn find_cycle(relation_map: &RelationMap, node: &str) -> Option<(Vec<String>, String)> {
+    find_cycle_inner(&relation_map.relations, node, &mut HashSet::new())
 }
 
 fn find_cycle_inner<'a>(
@@ -57,20 +79,15 @@ mod tests {
 
     #[test]
     fn test_find_cycle() {
-        let mut relation_map = HashMap::new();
-
-        relation_map.insert("A".to_string(), HashMap::from([("B".to_string(), "0".to_string())]));
-        relation_map.insert(
-            "B".to_string(),
-            HashMap::from([("C".to_string(), "1".to_string()), ("E".to_string(), "2".to_string())]),
-        );
-        relation_map.insert(
-            "C".to_string(),
-            HashMap::from([("D".to_string(), "3".to_string()), ("F".to_string(), "4".to_string())]),
-        );
-        relation_map.insert("D".to_string(), HashMap::from([("B".to_string(), "5".to_string())]));
-        relation_map.insert("E".to_string(), HashMap::from([("F".to_string(), "6".to_string())]));
-        relation_map.insert("F".to_string(), HashMap::from([("G".to_string(), "7".to_string())]));
+        let mut relation_map = RelationMap::new();
+        relation_map.add_relation("A", "B", "0".to_string());
+        relation_map.add_relation("B", "C", "1".to_string());
+        relation_map.add_relation("B", "E", "2".to_string());
+        relation_map.add_relation("C", "D", "3".to_string());
+        relation_map.add_relation("C", "F", "4".to_string());
+        relation_map.add_relation("D", "B", "5".to_string());
+        relation_map.add_relation("E", "F", "6".to_string());
+        relation_map.add_relation("F", "G", "7".to_string());
 
         let result = find_cycle(&relation_map, "A");
         assert_eq!(
@@ -87,5 +104,17 @@ mod tests {
         assert_eq!(find_cycle(&relation_map, "E"), None);
 
         assert_eq!(find_cycle(&relation_map, "Z"), None);
+    }
+
+    #[test]
+    fn test_find_self_cycle() {
+        let mut relation_map = RelationMap::new();
+        relation_map.add_relation("A", "A", "0".to_string());
+
+        let result = find_cycle(&relation_map, "A");
+        assert_eq!(
+            result,
+            Some((vec!["A".into(), "A".into()], "0".into()))
+        );
     }
 }

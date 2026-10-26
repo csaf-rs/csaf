@@ -1,8 +1,9 @@
+use crate::csaf::traits::util::resolve_entity_groups::resolve_ref_groups_to_ref_ids;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
-use crate::schema::csaf2_1::schema::{ActionCategory, ActionStatus};
+use crate::schema::csaf2_1::schema::{ActionCategory, ActionStatus, EntityRefsTItem};
 use crate::validation::{TestFinding, TestFindingData};
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap};
 use std::hash::{Hash, Hasher};
 
 /// Representation of an action for duplicate detection.
@@ -70,10 +71,30 @@ impl PartialEq for ActionKey {
     }
 }
 
+/// Resolves entity and entity-group references to a canonical set for comparison.
+///
+/// Resolvable groups contribute their member entity IDs. An unresolvable group ID is retained so
+/// that two actions using the same unresolvable reference still compare as equal.
+fn resolve_entity_refs<'a>(
+    refs: impl Iterator<Item = &'a EntityRefsTItem>,
+    all_document_entity_groups: &HashMap<String, BTreeSet<String>>,
+) -> BTreeSet<String> {
+    let resolved = resolve_ref_groups_to_ref_ids(refs, all_document_entity_groups);
+    let mut entity_ids = resolved.resolved_entity_ids.unwrap_or_default();
+    entity_ids.extend(resolved.unresolvable_group_ids.unwrap_or_default());
+    entity_ids
+}
+
 /// Creates the comparison key for an action, excluding its `action_id`.
 ///
-/// Optional reference arrays that are absent are treated as empty sets.
-fn action_key(action: &impl ActionTrait, all_document_local_vuln_ids: &BTreeSet<String>) -> ActionKey {
+/// Optional reference arrays that are absent are treated as empty sets. Acting and receiving
+/// entity references are expanded through the document's entity-group definitions before being
+/// compared.
+fn action_key(
+    action: &impl ActionTrait,
+    all_document_local_vuln_ids: &BTreeSet<String>,
+    all_document_entity_groups: &HashMap<String, BTreeSet<String>>,
+) -> ActionKey {
     // put the `dl_vuln_ids` into a BTreeSet
     let mut dl_vuln_ids: BTreeSet<String> = action
         .get_document_local_vuln_ids()
@@ -92,7 +113,7 @@ fn action_key(action: &impl ActionTrait, all_document_local_vuln_ids: &BTreeSet<
         category: action.get_category(),
         status: action.get_status(),
         summary: action.get_summary().map(str::to_owned),
-        acting_entity_refs: action.get_acting_entity_refs().map(ToString::to_string).collect(),
+        acting_entity_refs: resolve_entity_refs(action.get_acting_entity_refs(), all_document_entity_groups),
         dl_vuln_ids,
         group_ids: action
             .get_group_ids()
@@ -106,12 +127,10 @@ fn action_key(action: &impl ActionTrait, all_document_local_vuln_ids: &BTreeSet<
             .flatten()
             .map(ToString::to_string)
             .collect(),
-        receiving_entity_refs: action
-            .get_receiving_entity_refs()
-            .into_iter()
-            .flatten()
-            .map(ToString::to_string)
-            .collect(),
+        receiving_entity_refs: resolve_entity_refs(
+            action.get_receiving_entity_refs().into_iter().flatten(),
+            all_document_entity_groups,
+        ),
         referenced_action_ids: action
             .get_referenced_action_ids()
             .into_iter()
@@ -151,13 +170,20 @@ pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Resul
         return Ok(()); // TODO #409 wasSkipped
     };
 
+    // get all document defined local vuln ids
     let all_document_local_vuln_ids = doc.get_all_document_local_vuln_ids();
+    // get all document defined entity groups
+    let all_document_entity_groups = involvement.get_entity_groups_map().unwrap_or_default();
 
     // create a reverse lookup of action content to the action_ids with that content and their index in the actions array.
     let mut actions = HashMap::<ActionKey, Vec<(&str, usize)>>::new();
     for (action_i, action) in involvement.get_actions().enumerate() {
         actions
-            .entry(action_key(action, &all_document_local_vuln_ids))
+            .entry(action_key(
+                action,
+                &all_document_local_vuln_ids,
+                &all_document_entity_groups,
+            ))
             .or_default()
             .push((action.get_action_id(), action_i));
     }

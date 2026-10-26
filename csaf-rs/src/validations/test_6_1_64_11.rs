@@ -1,39 +1,40 @@
-use std::collections::{BTreeSet, HashMap};
+use std::collections::BTreeSet;
 
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::cycle_detection::find_cycle;
+use crate::validations::utils::cycle_detection::{find_cycle, RelationMap};
 
 fn create_circular_reference_error(cycle: &[String], instance_path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Found circular reference of action IDs: `{}`", cycle.join(" -> ")),
+        message: format!("Found circular reference of action IDs: {}", cycle.join(" -> ")),
         instance_path: instance_path.to_owned(),
     })
 }
 
-/// 6.1.64.11 Circular Reference of Action ID
+/// Checks 6.1.64.11, Circular Reference of Action ID.
 ///
 /// For each action containing at least one referenced action id (type `$['$defs'].action_id_t`)
 /// it SHALL be tested that the action does not end up in a circle.
 /// This also includes actions containing their own `action_id` in the `referenced_action_ids`.
+///
+/// The test reports the first detected cycle for each action and includes the circular path in the
+/// message of the finding.
 pub fn test_6_1_64_11_circular_reference_of_action_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    // check if involvement is present, if not, skip the test
+    // The test only applies when the optional involvement section is present.
     let Some(involvement) = doc.get_document().get_involvement() else {
         return Ok(());
     };
 
-    let mut relation_map = HashMap::<String, HashMap<String, String>>::new();
-    let mut referenced_action_ids = BTreeSet::new();
+    let mut relation_map = RelationMap::new();
 
     for (action_index, action) in involvement.get_actions().enumerate() {
         let action_id = action.get_action_id().to_owned();
 
         if let Some(references) = action.get_referenced_action_ids() {
-            let outgoing_edges = relation_map.entry(action_id).or_default();
             for referenced_action_id in references {
-                referenced_action_ids.insert(referenced_action_id.to_owned());
-                outgoing_edges.insert(
-                    referenced_action_id.to_owned(),
+                relation_map.add_relation(
+                    &action_id,
+                    referenced_action_id,
                     format!("/document/involvement/actions/{action_index}"),
                 );
             }
@@ -41,7 +42,7 @@ pub fn test_6_1_64_11_circular_reference_of_action_id(doc: &impl CsafTrait) -> R
     }
 
     let mut findings: Option<Vec<TestFinding>> = None;
-    for action_id in referenced_action_ids {
+    for action_id in relation_map.referenced_nodes() {
         if let Some((cycle, instance_path)) = find_cycle(&relation_map, &action_id) {
             findings
                 .get_or_insert_default()

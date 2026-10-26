@@ -1,15 +1,16 @@
+use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
 use crate::schema::csaf2_1::schema::{ActionCategory, ActionStatus};
 use crate::validation::{TestFinding, TestFindingData};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeSet, HashMap, HashSet};
+use std::hash::{Hash, Hasher};
 
 /// Representation of an action for duplicate detection.
 ///
 /// Reference arrays are represented as `BTreeSet`s so their order and repeated
 /// values do not affect equality.
-#[derive(Eq, Ord, PartialEq, PartialOrd)]
 struct ActionKey {
-    date: String,
+    date: CsafDateTime,
     category: ActionCategory,
     status: ActionStatus,
     summary: Option<String>,
@@ -21,22 +22,78 @@ struct ActionKey {
     referenced_action_ids: BTreeSet<String>,
 }
 
+impl Hash for ActionKey {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // hash valid dates as their UTC representation
+        // hash invalid dates as their raw string
+        match &self.date {
+            CsafDateTime::Valid(date) => {
+                0_u8.hash(state);
+                date.get_as_utc().hash(state);
+            },
+            CsafDateTime::Invalid(date) => {
+                1_u8.hash(state);
+                date.get_raw_string().hash(state);
+            },
+        }
+        self.category.hash(state);
+        self.status.hash(state);
+        self.summary.hash(state);
+        self.acting_entity_refs.hash(state);
+        self.dl_vuln_ids.hash(state);
+        self.group_ids.hash(state);
+        self.product_ids.hash(state);
+        self.receiving_entity_refs.hash(state);
+        self.referenced_action_ids.hash(state);
+    }
+}
+
+impl Eq for ActionKey {}
+
+impl PartialEq for ActionKey {
+    fn eq(&self, other: &Self) -> bool {
+        // compare raw date strings first, if they are unequal, compare the parsed dates
+        (self.date.get_raw_string() == other.date.get_raw_string()
+            || matches!(
+                (&self.date, &other.date),
+                (CsafDateTime::Valid(first), CsafDateTime::Valid(second)) if first == second
+            ))
+            && self.category == other.category
+            && self.status == other.status
+            && self.summary == other.summary
+            && self.acting_entity_refs == other.acting_entity_refs
+            && self.dl_vuln_ids == other.dl_vuln_ids
+            && self.group_ids == other.group_ids
+            && self.product_ids == other.product_ids
+            && self.receiving_entity_refs == other.receiving_entity_refs
+            && self.referenced_action_ids == other.referenced_action_ids
+    }
+}
+
 /// Creates the comparison key for an action, excluding its `action_id`.
 ///
 /// Optional reference arrays that are absent are treated as empty sets.
-fn action_key(action: &impl ActionTrait) -> ActionKey {
+fn action_key(action: &impl ActionTrait, all_document_local_vuln_ids: &BTreeSet<String>) -> ActionKey {
+    // put the `dl_vuln_ids` into a BTreeSet
+    let mut dl_vuln_ids: BTreeSet<String> = action
+        .get_document_local_vuln_ids()
+        .into_iter()
+        .flatten()
+        .map(ToString::to_string)
+        .collect();
+    // if `dl_vuln_ids` contains all vulnerabilities in the document, treat it as if it were absent
+    // the BTreeSet ensures this ignores order and the values are deduplicated
+    if dl_vuln_ids == *all_document_local_vuln_ids {
+        dl_vuln_ids.clear();
+    }
+
     ActionKey {
-        date: action.get_date().get_raw_string().to_owned(),
+        date: action.get_date(),
         category: action.get_category(),
         status: action.get_status(),
         summary: action.get_summary().map(str::to_owned),
         acting_entity_refs: action.get_acting_entity_refs().map(ToString::to_string).collect(),
-        dl_vuln_ids: action
-            .get_document_local_vuln_ids()
-            .into_iter()
-            .flatten()
-            .map(ToString::to_string)
-            .collect(),
+        dl_vuln_ids,
         group_ids: action
             .get_group_ids()
             .into_iter()
@@ -76,19 +133,31 @@ fn duplicate_action_error(action_ids: &[&str], action_i: usize) -> TestFinding {
 
 /// Test 6.1.24: Multiple Definition in Actions
 ///
-/// Items in `/document/involvement/actions` must differ in more values than
-/// only their `action_id`.
+/// It SHALL be tested that items of the list of actions do differ in more values than just the `action_id`.
+//
+/// Ignoring the `action_id`, two items in the list of actions are the same, if:
+///
+/// 1. all of the following fields contain the same value: `category`, `date`, `status`, `summary`
+/// 2. and all of the following sets contain the same values: `acting_entity_refs`, `dl_vuln_ids`, `group_ids`, `product_ids`, `receiving_entity_refs`, `referenced_action_ids`
+///
+/// A `dl_vuln_ids` mentioning all vulnerabilities in the document is equivalent to the element missing.
+///
+/// All groups have to be expanded to their definitions for the test.
+///
+/// As the timestamps might use different timezones, the comparison SHALL take timezones into account.
 pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    // check if there is a involvement section
+    // check if there is an involvement section
     let Some(involvement) = doc.get_document().get_involvement() else {
         return Ok(()); // TODO #409 wasSkipped
     };
 
+    let all_document_local_vuln_ids = doc.get_all_document_local_vuln_ids();
+
     // create a reverse lookup of action content to the action_ids with that content and their index in the actions array.
-    let mut actions = BTreeMap::<ActionKey, Vec<(&str, usize)>>::new();
+    let mut actions = HashMap::<ActionKey, Vec<(&str, usize)>>::new();
     for (action_i, action) in involvement.get_actions().enumerate() {
         actions
-            .entry(action_key(action))
+            .entry(action_key(action, &all_document_local_vuln_ids))
             .or_default()
             .push((action.get_action_id(), action_i));
     }

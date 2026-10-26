@@ -2,9 +2,20 @@ use std::collections::{HashMap, HashSet};
 
 /// Finds the first cycle reachable from `node` in a directed graph.
 ///
-/// The inner map associates an outgoing edge with the JSON path of its
-/// definition.
+/// The outer map contains a node and its outgoing edges. Each inner-map key is
+/// the destination node, and its value is the JSON path where that edge is
+/// defined.
+/// The returned tuple contains the cycle, with its starting node repeated at
+/// the end, and the path of the edge that starts / closes the cycle. If
+/// `node` is not part of a reachable cycle, `None` is returned.
 pub fn find_cycle<'a>(
+    relation_map: &'a HashMap<String, HashMap<String, String>>,
+    node: &'a str,
+) -> Option<(Vec<String>, String)> {
+    find_cycle_inner(relation_map, node, &mut HashSet::new())
+}
+
+fn find_cycle_inner<'a>(
     relation_map: &'a HashMap<String, HashMap<String, String>>,
     node: &'a str,
     visited: &mut HashSet<&'a str>,
@@ -15,7 +26,7 @@ pub fn find_cycle<'a>(
 
     if let Some(next_nodes) = relation_map.get(node) {
         for (next, path) in next_nodes {
-            match find_cycle(relation_map, next, visited) {
+            match find_cycle_inner(relation_map, next, visited) {
                 None => {},
                 Some((mut cycle, detected_path)) => {
                     let (Some(first), Some(last)) = (cycle.first(), cycle.last()) else {
@@ -61,24 +72,20 @@ mod tests {
         relation_map.insert("E".to_string(), HashMap::from([("F".to_string(), "6".to_string())]));
         relation_map.insert("F".to_string(), HashMap::from([("G".to_string(), "7".to_string())]));
 
-        let mut visited = HashSet::new();
-        let result = find_cycle(&relation_map, "A", &mut visited);
+        let result = find_cycle(&relation_map, "A");
         assert_eq!(
             result,
             Some((vec!["B".into(), "C".into(), "D".into(), "B".into()], "1".into()))
         );
 
-        let mut visited = HashSet::new();
-        let result = find_cycle(&relation_map, "C", &mut visited);
+        let result = find_cycle(&relation_map, "C");
         assert_eq!(
             result,
             Some((vec!["C".into(), "D".into(), "B".into(), "C".into()], "3".into()))
         );
 
-        let mut visited = HashSet::new();
-        assert_eq!(find_cycle(&relation_map, "E", &mut visited), None);
+        assert_eq!(find_cycle(&relation_map, "E"), None);
 
-        let mut visited = HashSet::new();
-        assert_eq!(find_cycle(&relation_map, "Z", &mut visited), None);
+        assert_eq!(find_cycle(&relation_map, "Z"), None);
     }
 }

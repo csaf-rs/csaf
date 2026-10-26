@@ -450,6 +450,120 @@ fn _73_move_invalid_publisher_key_to_contact_details() -> TestResult<()> {
     run!()
 }
 
+#[ignore]
+#[test]
+fn _74_reject_product_version_range_followed_by_product_version() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _75_reject_invalid_upper_open_ended_range() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _76_preserve_file_hashes() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _77_preserve_multiple_file_hash_algorithms() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _78_preserve_sbom_urls() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _79_preserve_skus() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _80_preserve_generic_uris() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _81_convert_withdrawn_category_from_title() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _82_convert_withdrawn_category() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _83_convert_superseded_category_from_title() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _84_convert_superseded_category() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _85_split_vendor_fix_remediation() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _86_convert_none_available_remediation() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _87_resolve_stacked_product_tree_branches() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _88_resolve_multiple_product_tree_paths() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _89_resolve_product_version_branches() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _90_convert_multiple_license_expressions() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _91_convert_product_relationships_to_paths() -> TestResult<()> {
+    run!()
+}
+
+#[ignore]
+#[test]
+fn _92_convert_multiple_registered_vulnerability_ids() -> TestResult<()> {
+    run!()
+}
+
 fn run_by_name(tyname: &str) -> TestResult<()> {
     // example `tyname`: "csaf_converter::tests::conformance::_123_test_name::S"
     let mut parts = tyname.rsplit("::");

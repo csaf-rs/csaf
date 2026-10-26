@@ -6,6 +6,7 @@ use csaf::{
     converter::{
         Diagnostics,
         Error::{self, ValidationError},
+        Settings,
         Warning::{self, ValidationWarning},
     },
     csaf::raw::RawDocument,
@@ -90,7 +91,13 @@ fn main() -> Result<(), anyhow::Error> {
         );
     }
 
-    let result = csaf::converter::convert(raw, &csaf::converter::Settings::default(), &mut diag);
+    let settings = Settings {
+        collapse_actions: true,
+        collapse_entities: true,
+        ..Default::default()
+    };
+
+    let result = csaf::converter::convert(raw, &settings, &mut diag);
     if diag.has_errors {
         if args.allow_invalid {
             eprintln!("Conversion completed with errors, but allowed due to --allow-invalid.");

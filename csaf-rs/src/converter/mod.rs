@@ -1,12 +1,13 @@
 use core::fmt;
-use std::borrow::Cow;
+use std::{borrow::Cow, collections::HashMap};
 
-use crate::schema::loose;
+use crate::schema::{csaf2_1::schema::EntityCategory, loose};
 
 mod convert_release_date_to_disclosure_date;
 mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
+mod refactor_involvement;
 mod set_csaf_21_schema;
 mod sort_json_keys;
 mod update_csaf_version;
@@ -32,6 +33,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
     // conversions that move subtrees
+    &refactor_involvement::RefactorInvolvement,
     // sorting keys should be last
     &sort_json_keys::SortJsonKeys,
 ];
@@ -48,7 +50,22 @@ pub trait Diagnostics {
 
 #[derive(Default)]
 pub struct Settings {
-    // TODO
+    /// User-provided involvement element
+    pub involvement: Option<serde_json::Value>,
+    /// Disable warning for involvement category 'other' usage
+    pub disable_involvement_category_other_warning: bool,
+    /// User-provided entity category for `other` parties
+    pub involvement_category_other: Option<EntityCategory>,
+    /// User-provided entity mapping
+    pub entities: Option<HashMap<String, serde_json::Value>>,
+    /// Create incomplete actions (e.g. no date) if necessary
+    pub create_incomplete_actions: bool,
+    /// Extract further entity details from involvement elements
+    pub involvement_extract_entity_details: bool,
+    /// Collapse entities during conversion
+    pub collapse_entities: bool,
+    /// Collapse actions during conversion
+    pub collapse_actions: bool,
 }
 
 #[derive(Debug, PartialEq)]
@@ -58,6 +75,11 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    VulnerabililtyInvolvementsIgnored,
+    InvolvementCategoryOtherUsed,
+    VulnerabililtyInvolvementsConversionFailed(Cow<'static, str>),
+    InvolvementWithoutDateSkipped,
+    InvolvementWithoutDateOutputAsActionWithEmptyDate,
 }
 
 impl fmt::Display for Warning {
@@ -68,6 +90,19 @@ impl fmt::Display for Warning {
             Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
             Warning::InvalidTlpLabel => "TLP label contained an invalid value",
             Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
+            Warning::VulnerabililtyInvolvementsIgnored => {
+                "Vulnerability involvements were ignored due to user-provided involvement"
+            },
+            Warning::InvolvementCategoryOtherUsed => {
+                "Involvement category 'other' was used. Note that some parties have been regrouped into new category values"
+            },
+            Warning::VulnerabililtyInvolvementsConversionFailed(reason) => &format!(
+                "Vulnerability involvements could not be converted automatically and have been removed. Reason: {reason}"
+            ),
+            Warning::InvolvementWithoutDateSkipped => "Vulnerability involvement without date was not converted",
+            Warning::InvolvementWithoutDateOutputAsActionWithEmptyDate => {
+                "Vulnerability involvement without date was output as an action with an empty date, please add missing dates from other sources"
+            },
         };
         f.write_str(s)
     }

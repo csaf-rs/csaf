@@ -234,7 +234,6 @@ fn _36_canonicalize_known_hash_algorithm_spelling() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _37_schema_is_set_to_the_csaf_2_1_schema_uri() -> TestResult<()> {
     run!()

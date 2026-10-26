@@ -4,10 +4,9 @@ use std::{
     str::FromStr,
 };
 
-use jsonschema::json::Node;
-
 use crate::{
     converter::{Convert, Warning},
+    csaf_traits::TrackingTrait,
     schema::{
         csaf2_0::schema::PartyStatus,
         csaf2_1::schema::{
@@ -62,18 +61,23 @@ impl Convert for RefactorInvolvement {
                     format!("/vulnerabilities/{}/involvements", involvements[0].0).into(),
                     Warning::VulnerabililtyInvolvementsIgnored,
                 );
-                return;
-            }
-
-            // Convert involvements
-            let conversion_result = convert_involvements(scope, settings, diagnostics, &involvements);
-            if let Err(error) = conversion_result {
-                diagnostics.warning(
-                    "/vulnerabilities".into(),
-                    Warning::VulnerabililtyInvolvementsConversionFailed(error),
-                );
+            } else {
+                // Convert involvements
+                let conversion_result = convert_involvements(scope, settings, diagnostics, &involvements);
+                if let Err(error) = conversion_result {
+                    scope
+                        .v21_view_mut()
+                        .document_mut()
+                        .and_then(|doc| doc.caution_as_object_mut().ok())
+                        .and_then(|doc| doc.remove("involvement"));
+                    diagnostics.warning(
+                        "/vulnerabilities".into(),
+                        Warning::VulnerabililtyInvolvementsConversionFailed(error),
+                    );
+                }
             }
         }
+        remove_vulnerability_involvements(scope);
     }
 }
 
@@ -131,7 +135,6 @@ fn convert_involvements(
     collapse_entities(scope, settings, diagnostics)?;
     collapse_actions(scope, settings, diagnostics)?;
 
-    remove_vulnerability_involvements(scope)?;
     Ok(())
 }
 
@@ -152,7 +155,7 @@ fn assign_vulnerability_ids(scope: &mut crate::schema::loose::Document) -> HashM
         .enumerate()
     {
         if vuln.involvements().is_some() {
-            let vuln_id = format!("VULN-{:04}", counter);
+            let vuln_id = format!("VULN-{counter:04}");
             vuln_ids.insert(v_id, vuln_id.clone());
 
             // TODO: use cast API once available
@@ -180,26 +183,28 @@ fn assign_conversion_ids(
     involvements: &[(usize, usize, crate::schema::csaf2_0::schema::Involvement)],
     vuln_ids: &HashMap<usize, String>,
 ) -> Result<HashMap<(usize, usize), String>, ErrorString> {
-    let tracking_id = &scope
+    let canonical_filename = &scope
         .v20_view()
         .document()
         .and_then(|d| d.tracking())
-        .and_then(|t| t.id())
-        .and_then(|id| id.get_str().ok())
+        .and_then(|t| t.get_struct().ok())
+        .map(|tracking| tracking.get_canonical_filename())
         .ok_or("Could not get document tracking ID")?;
 
     let mut conversion_ids: HashMap<(usize, usize), String> = HashMap::new();
-    let base_filename = tracking_id.replace('+', "_").trim_end_matches(".json").to_string();
+    let base_filename = canonical_filename
+        .replace('+', "_")
+        .trim_end_matches(".json")
+        .to_string();
     for (v_id, item_number, _) in involvements {
         conversion_ids.insert(
             (*v_id, *item_number),
             format!(
-                "{}-{}-{:04}",
-                base_filename,
+                "{base_filename}-{}-{:04}",
                 vuln_ids
                     .get(v_id)
                     .ok_or("Could not get document local vulnerability id")?,
-                item_number
+                item_number + 1
             ),
         );
     }
@@ -326,15 +331,16 @@ fn apply_entity_mapping(
         .map_err(|_| "Failed to get list of involvement entitites")?;
 
     for entity in entities {
-        if let Some(entity_id) = entity.get("entity_id").and_then(|eid| eid.as_string())
-            && let Some(mapping) = &settings.entities
-            && let Some(mapping) = mapping.get(&*entity_id)
-            && let Some(mapped) = mapping.as_object()
+        if let Some(entity_id) = entity
+            .get("entity_id")
+            .and_then(|eid| eid.as_str())
+            .map(|eid| eid.to_string())
+            && let Some(serde_json::Value::Array(entities)) = &settings.entities
+            && let Some(replacement_entity) = entities.iter().find(|entity| entity["entity_id"] == entity_id)
+            && let Some(replacement_data) = replacement_entity.as_object()
             && let Some(entity) = entity.as_object_mut()
         {
-            for (key, value) in mapped {
-                entity[key] = value.clone();
-            }
+            *entity = replacement_data.clone();
         }
     }
     Ok(())
@@ -400,12 +406,21 @@ fn convert_involvement(
         return Ok(());
     }
     let (status, category) = map_involvement_status(involvement.status);
-    let (acting_entity_refs, receiving_entity_refs, referenced_action_ids) = find_referenced_entities_and_actions(
+
+    let (acting_entity_refs, receiving_entity_refs, referenced_action_ids) = match find_referenced_entities_and_actions(
         (v_id, i_id, involvement),
         &category,
         entity_ids.get(&(*v_id, *i_id)).ok_or("Entity ID not found")?,
-    )?;
-    // TODO: Add warning for unsuccessful action conversion
+    ) {
+        Ok(referenced) => referenced,
+        Err(message) => {
+            diagnostics.warning(
+                format!("/vulnerabilitites/{v_id}/involvements/{i_id}").into(),
+                super::Warning::InvolvementActionParticipantsIndeterminable(message),
+            );
+            return Ok(());
+        },
+    };
     // TODO: Support output of incomplete actions
 
     let action: Action = Action::builder()
@@ -515,15 +530,19 @@ fn find_referenced_entities_and_actions(
     let first = EntityIdT::from_str(entity_id).map_err(|_| "Invalid entity ID")?;
 
     // TODO: derive from context
-    let other = EntityIdT::from_str("EID-Publisher").map_err(|_| "Invalid entity ID")?;
+    // let default_other = EntityIdT::from_str("EID-Publisher").map_err(|_| "Invalid entity ID")?;
 
     match category {
         // TODO: Determine receiving entity and referenced action
-        ActionCategory::Confirmation | ActionCategory::Dispute => Ok((vec![first], Some(vec![other]), None)),
+        ActionCategory::Confirmation | ActionCategory::Dispute => {
+            Err("Could not determine receiving entity and referenced action".into())
+            // Ok((vec![first], Some(vec![default_other]), None)),
+        },
 
         // TODO: Determine receiving entity
         ActionCategory::Coordination | ActionCategory::Notification | ActionCategory::Embargo => {
-            Ok((vec![first], Some(vec![other]), None))
+            Err("Could not determine receiving entity".into())
+            // Ok((vec![first], Some(vec![default_other]), None))
         },
 
         // These categories do not need additional receiving entities or actions.
@@ -689,7 +708,14 @@ fn collapse_actions(
             if referenced_actions.contains(&action_id) {
                 return true;
             }
-            if let Some(replacement) = action_vuln_ids_by_content.get(action_content) {
+            // don't collapse actions without date
+            if action_content
+                .get("date")
+                .is_some_and(|date| !date.as_str().unwrap_or_default().is_empty())
+            {
+                return true;
+            }
+            if let Some(replacement) = action_vuln_ids_by_content.get(&action_relevant_properties) {
                 if let Some(ids) = combined_vuln_ids.get_mut(replacement) {
                     ids.append(&mut vuln_ids);
                 }
@@ -716,7 +742,7 @@ fn collapse_actions(
 
 /// Remove the involvements part of the CSAF 2.0 vulnerability.
 /// (Not specified by the standard, because it assumes re-creation instead of in-place modification.)
-fn remove_vulnerability_involvements(scope: &mut crate::schema::loose::Document) -> Result<(), ErrorString> {
+fn remove_vulnerability_involvements(scope: &mut crate::schema::loose::Document) {
     for vulnerability in scope
         .v20_view_mut()
         .vulnerabilities_mut()
@@ -727,5 +753,4 @@ fn remove_vulnerability_involvements(scope: &mut crate::schema::loose::Document)
             vuln_obj.remove("involvements");
         }
     }
-    Ok(())
 }

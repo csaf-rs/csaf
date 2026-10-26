@@ -130,12 +130,12 @@ fn action_key(
         .map(ToString::to_string)
         .collect();
 
-    if let Some(all_document_local_vuln_ids) = all_document_local_vuln_ids {
-        // if `dl_vuln_ids` contains all vulnerabilities in the document, treat it as if it were absent
-        // the BTreeSet ensures this ignores order and the values are deduplicated
-        if dl_vuln_ids == *all_document_local_vuln_ids {
-            dl_vuln_ids.clear();
-        }
+    // if `dl_vuln_ids` contains all vulnerabilities in the document, treat it as if it were absent
+    // the BTreeSet ensures this ignores order and the values are deduplicated
+    if let Some(all_document_local_vuln_ids) = all_document_local_vuln_ids
+        && dl_vuln_ids == *all_document_local_vuln_ids
+    {
+        dl_vuln_ids.clear();
     }
 
     let (product_ids_including_resolved_product_group_ids, unresolvable_product_group_ids) =

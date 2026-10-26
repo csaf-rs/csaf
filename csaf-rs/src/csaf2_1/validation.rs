@@ -193,8 +193,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
             .filter(|id| !external_request.contains(id))
             .collect()),
             Ok(Preset::ConsistentRevisionHistory) => Ok(vec![
-                "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.2.4", "6.2.5", "6.2.6", "6.2.21",
-                "6.2.33",
+                "6.1.14", "6.1.18", "6.1.19", "6.1.21", "6.1.22", "6.1.37", "6.1.66", "6.2.4", "6.2.5", "6.2.6",
+                "6.2.21", "6.2.33",
             ]),
             Ok(Preset::ConsistentDateTimes) => Ok(vec![
                 "6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53", "6.1.62",
@@ -359,7 +359,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.64.13" => Some(ValidatorForTest6_1_64_13.validate(self)),
                 "6.1.65.1" => Some(ValidatorForTest6_1_65_1.validate(self)),
                 "6.1.65.2" => Some(ValidatorForTest6_1_65_2.validate(self)),
-                "6.1.66" => None, //Some(ValidatorForTest6_1_66.validate(self)),
+                "6.1.66" => Some(ValidatorForTest6_1_66.validate(self)),
                 // recommended tests
                 "6.2.1" => Some(ValidatorForTest6_2_1.validate(self)),
                 "6.2.2" => Some(ValidatorForTest6_2_2.validate(self)),

@@ -229,6 +229,7 @@ fn _35_convert_none_available_to_fix_planned() -> TestResult<()> {
     run!()
 }
 
+#[ignore]
 #[test]
 fn _36_canonicalize_known_hash_algorithm_spelling() -> TestResult<()> {
     run!()

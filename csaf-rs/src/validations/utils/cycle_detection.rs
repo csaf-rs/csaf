@@ -23,8 +23,11 @@ impl RelationMap {
             .insert(target.to_owned(), json_path);
     }
 
-    pub fn referenced_nodes(&self) -> impl Iterator<Item = &String> {
-        self.relations.values().flat_map(|relations| relations.keys())
+    pub fn referenced_nodes(&self) -> HashSet<&String> {
+        self.relations
+            .values()
+            .flat_map(|relations| relations.keys())
+            .collect::<HashSet<_>>()
     }
 }
 
@@ -76,7 +79,6 @@ fn find_cycle_inner<'a>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::BTreeSet;
 
     #[test]
     fn test_referenced_nodes() {
@@ -86,12 +88,11 @@ mod tests {
         relation_map.add_relation("D", "B", "2".to_string());
         relation_map.add_relation("E", "E", "3".to_string());
 
-        let referenced_nodes: BTreeSet<String> = relation_map.referenced_nodes().cloned().collect();
+        let referenced_nodes = relation_map.referenced_nodes();
+        let expected_nodes = ["B".to_string(), "C".to_string(), "E".to_string()];
 
-        assert_eq!(
-            referenced_nodes,
-            BTreeSet::from(["B".to_string(), "C".to_string(), "E".to_string()])
-        );
+        assert_eq!(referenced_nodes.len(), 3);
+        assert_eq!(referenced_nodes, expected_nodes.iter().collect());
     }
 
     #[test]

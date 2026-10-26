@@ -1,4 +1,5 @@
 use crate::csaf::traits::util::resolve_entity_groups::resolve_ref_groups_to_ref_ids;
+use crate::csaf::traits::util::resolve_product_groups::resolve_product_groups_with_unresolvable;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
 use crate::schema::csaf2_1::schema::{ActionCategory, ActionStatus, EntityRefsTItem};
@@ -17,8 +18,8 @@ struct ActionKey {
     summary: Option<String>,
     acting_entity_refs: BTreeSet<String>,
     dl_vuln_ids: BTreeSet<String>,
-    group_ids: BTreeSet<String>,
-    product_ids: BTreeSet<String>,
+    unresolvable_product_group_ids: BTreeSet<String>,
+    product_ids_including_resolved_product_group_ids: BTreeSet<String>,
     receiving_entity_refs: BTreeSet<String>,
     referenced_action_ids: BTreeSet<String>,
 }
@@ -42,8 +43,8 @@ impl Hash for ActionKey {
         self.summary.hash(state);
         self.acting_entity_refs.hash(state);
         self.dl_vuln_ids.hash(state);
-        self.group_ids.hash(state);
-        self.product_ids.hash(state);
+        self.product_ids_including_resolved_product_group_ids.hash(state);
+        self.unresolvable_product_group_ids.hash(state);
         self.receiving_entity_refs.hash(state);
         self.referenced_action_ids.hash(state);
     }
@@ -64,8 +65,9 @@ impl PartialEq for ActionKey {
             && self.summary == other.summary
             && self.acting_entity_refs == other.acting_entity_refs
             && self.dl_vuln_ids == other.dl_vuln_ids
-            && self.group_ids == other.group_ids
-            && self.product_ids == other.product_ids
+            && self.product_ids_including_resolved_product_group_ids
+                == other.product_ids_including_resolved_product_group_ids
+            && self.unresolvable_product_group_ids == other.unresolvable_product_group_ids
             && self.receiving_entity_refs == other.receiving_entity_refs
             && self.referenced_action_ids == other.referenced_action_ids
     }
@@ -85,12 +87,31 @@ fn resolve_entity_refs<'a>(
     entity_ids
 }
 
+/// Resolves product-group references into product IDs for comparison.
+///
+/// Groups that cannot be resolved are retained so an unresolved reference is not treated as an
+/// absent reference.
+fn resolve_product_refs(doc: &impl CsafTrait, action: &impl ActionTrait) -> (BTreeSet<String>, BTreeSet<String>) {
+    let mut product_ids: BTreeSet<String> = action
+        .get_product_ids()
+        .into_iter()
+        .flatten()
+        .map(ToString::to_string)
+        .collect();
+    let resolved = resolve_product_groups_with_unresolvable(doc, action.get_group_ids().into_iter().flatten());
+    product_ids.extend(resolved.resolved_product_ids.into_iter().flatten());
+    let unresolved_group_ids = resolved.unresolvable_group_ids.unwrap_or_default();
+
+    (product_ids, unresolved_group_ids)
+}
+
 /// Creates the comparison key for an action, excluding its `action_id`.
 ///
 /// Optional reference arrays that are absent are treated as empty sets. Acting and receiving
 /// entity references are expanded through the document's entity-group definitions before being
-/// compared.
+/// compared. Product-group references are expanded into product IDs.
 fn action_key(
+    doc: &impl CsafTrait,
     action: &impl ActionTrait,
     all_document_local_vuln_ids: &BTreeSet<String>,
     all_document_entity_groups: &HashMap<String, BTreeSet<String>>,
@@ -107,6 +128,8 @@ fn action_key(
     if dl_vuln_ids == *all_document_local_vuln_ids {
         dl_vuln_ids.clear();
     }
+    let (product_ids_including_resolved_product_group_ids, unresolvable_product_group_ids) =
+        resolve_product_refs(doc, action);
 
     ActionKey {
         date: action.get_date(),
@@ -115,18 +138,8 @@ fn action_key(
         summary: action.get_summary().map(str::to_owned),
         acting_entity_refs: resolve_entity_refs(action.get_acting_entity_refs(), all_document_entity_groups),
         dl_vuln_ids,
-        group_ids: action
-            .get_group_ids()
-            .into_iter()
-            .flatten()
-            .map(ToString::to_string)
-            .collect(),
-        product_ids: action
-            .get_product_ids()
-            .into_iter()
-            .flatten()
-            .map(ToString::to_string)
-            .collect(),
+        unresolvable_product_group_ids,
+        product_ids_including_resolved_product_group_ids,
         receiving_entity_refs: resolve_entity_refs(
             action.get_receiving_entity_refs().into_iter().flatten(),
             all_document_entity_groups,
@@ -180,6 +193,7 @@ pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Resul
     for (action_i, action) in involvement.get_actions().enumerate() {
         actions
             .entry(action_key(
+                doc,
                 action,
                 &all_document_local_vuln_ids,
                 &all_document_entity_groups,
@@ -218,6 +232,10 @@ mod tests {
 
     #[test]
     fn test_test_6_1_24() {
+        // TODO: Evaluate test coverage
+        // TODO: Document test cases properly
+        // TODO: No coverage for timezone awareness, dl_vuln_ids removal, group resolution
+
         let action_ids = ["ACN-1", "ACN-2"];
         let duplicate_actions = Err(vec![
             duplicate_action_error(&action_ids, 0),

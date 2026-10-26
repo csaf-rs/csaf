@@ -6,6 +6,7 @@ pub struct ResolvedEntityGroupIds {
     pub unresolvable_group_ids: Option<BTreeSet<String>>,
 }
 
+/// TODO: Refactor to be more ergonomic and align this with the resolve_product_groups function (#1384)
 pub fn resolve_ref_groups_to_ref_ids<'a>(
     group_references: impl Iterator<Item = &'a EntityRefsTItem>,
     entity_groups: &HashMap<String, BTreeSet<String>>,

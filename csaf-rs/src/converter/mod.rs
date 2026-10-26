@@ -7,6 +7,7 @@ mod convert_release_date_to_disclosure_date;
 mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
+mod remove_invalid_cpe;
 mod set_csaf_21_schema;
 mod sort_json_keys;
 mod update_csaf_version;
@@ -25,6 +26,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 const CONVERSIONS: &[&dyn Convert] = &[
     // conversions that work on leaf nodes
     &lowercase_hash_value::LowercaseHashValue,
+    &remove_invalid_cpe::RemoveInvalidCpe,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
@@ -51,9 +53,10 @@ pub struct Settings {
     // TODO
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Warning {
     ValidationWarning(String),
+    InvalidCpeRemoved(String),
     CsafVersionIsMissing,
     InvalidCsafVersion,
     InvalidTlpLabel,
@@ -64,6 +67,7 @@ impl fmt::Display for Warning {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
             Warning::ValidationWarning(message) => message,
+            Warning::InvalidCpeRemoved(cpe) => &format!("invalid CPE detected and removed: {cpe}"),
             Warning::CsafVersionIsMissing => "CSAF version node is missing",
             Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
             Warning::InvalidTlpLabel => "TLP label contained an invalid value",
@@ -142,7 +146,8 @@ mod tests {
                         "name": "Product A",
                         "product_id": "CSAFPID-0001",
                         "product_identification_helper": {
-                            "purl": "pkg:maven/com.example/product-A"
+                            "purl": "pkg:maven/com.example/product-A",
+                            "cpe": "NOTAVALIDCPEcpe:/o:example:a:42::anyother"
                         }
                     }
                 ],
@@ -180,7 +185,15 @@ mod tests {
                 }
             ],
         });
-        let doc = convert(input, &Settings::default(), &mut NoDiagnostics);
+        let mut diagnostics = OnlyWarnings::default();
+        let doc = convert(input, &Settings::default(), &mut diagnostics);
         assert_eq!(output, doc.into_raw());
+        assert_eq!(
+            vec![(
+                "/product_tree/full_product_names/0/product_identification_helper/cpe".into(),
+                Warning::InvalidCpeRemoved("NOTAVALIDCPEcpe:/o:example:a:42::anyother".to_string())
+            )],
+            diagnostics.warnings()
+        );
     }
 }

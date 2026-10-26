@@ -10,6 +10,13 @@ pub(super) fn for_each_product_identification_helper_via_as_object_mut(
     doc: &mut loose::Document,
     mut callback: impl FnMut(&mut Map<String, Value>),
 ) {
+    for_each_product_identification_helper_with_path_via_as_object_mut(doc, |helper, _| callback(helper));
+}
+
+pub(super) fn for_each_product_identification_helper_with_path_via_as_object_mut(
+    doc: &mut loose::Document,
+    mut callback: impl FnMut(&mut Map<String, Value>, &str),
+) {
     let product_tree = match doc.v20_view_mut().product_tree_mut() {
         Some(product_tree) => product_tree,
         None => return,
@@ -19,25 +26,25 @@ pub(super) fn for_each_product_identification_helper_via_as_object_mut(
         return;
     };
 
-    for value in product_tree.values_mut() {
-        visit_product_tree_value(value, &mut callback);
+    for (key, value) in product_tree.iter_mut() {
+        visit_product_tree_value(value, &format!("/product_tree/{key}"), &mut callback);
     }
 }
 
-fn visit_product_tree_value(value: &mut Value, callback: &mut impl FnMut(&mut Map<String, Value>)) {
+fn visit_product_tree_value(value: &mut Value, path: &str, callback: &mut impl FnMut(&mut Map<String, Value>, &str)) {
     match value {
         Value::Object(object) => {
             if let Some(Value::Object(helper)) = object.get_mut("product_identification_helper") {
-                callback(helper);
+                callback(helper, &format!("{path}/product_identification_helper"));
             }
 
-            for child in object.values_mut() {
-                visit_product_tree_value(child, callback);
+            for (key, child) in object.iter_mut() {
+                visit_product_tree_value(child, &format!("{path}/{key}"), callback);
             }
         },
         Value::Array(array) => {
-            for child in array {
-                visit_product_tree_value(child, callback);
+            for (index, child) in array.iter_mut().enumerate() {
+                visit_product_tree_value(child, &format!("{path}/{index}"), callback);
             }
         },
         _ => {},

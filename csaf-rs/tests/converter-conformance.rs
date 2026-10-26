@@ -96,6 +96,7 @@ fn _12_resolve_vls_single_version_range() -> TestResult<()> {
     run!()
 }
 
+// TODO: #1394
 #[ignore]
 #[test]
 fn _13_remove_invalid_cpe() -> TestResult<()> {

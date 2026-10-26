@@ -24,7 +24,9 @@ pub fn resolve_product_groups(
     doc: &impl CsafTrait,
     product_groups: impl IntoIterator<Item = impl AsRef<str>>,
 ) -> Option<BTreeSet<String>> {
-    resolve_product_groups_with_unresolvable(doc, product_groups).resolved_product_ids
+    resolve_product_groups_with_unresolvable(doc, product_groups)
+        .resolved_product_ids
+        .filter(|product_ids| !product_ids.is_empty())
 }
 
 /// Resolves product group IDs while retaining group IDs that cannot be resolved.

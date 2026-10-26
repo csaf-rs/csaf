@@ -129,9 +129,6 @@ mod tests {
         relation_map.add_relation("A", "A", "0".to_string());
 
         let result = find_cycle(&relation_map, "A");
-        assert_eq!(
-            result,
-            Some((vec!["A".into(), "A".into()], "0".into()))
-        );
+        assert_eq!(result, Some((vec!["A".into(), "A".into()], "0".into())));
     }
 }

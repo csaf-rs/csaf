@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::cycle_detection::{find_cycle, RelationMap};
+use crate::validations::utils::cycle_detection::{RelationMap, find_cycle};
 
 fn create_circular_reference_error(cycle: &[String], instance_path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {

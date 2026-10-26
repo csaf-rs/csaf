@@ -76,6 +76,23 @@ fn find_cycle_inner<'a>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::BTreeSet;
+
+    #[test]
+    fn test_referenced_nodes() {
+        let mut relation_map = RelationMap::new();
+        relation_map.add_relation("A", "B", "0".to_string());
+        relation_map.add_relation("A", "C", "1".to_string());
+        relation_map.add_relation("D", "B", "2".to_string());
+        relation_map.add_relation("E", "E", "3".to_string());
+
+        let referenced_nodes: BTreeSet<String> = relation_map.referenced_nodes().cloned().collect();
+
+        assert_eq!(
+            referenced_nodes,
+            BTreeSet::from(["B".to_string(), "C".to_string(), "E".to_string()])
+        );
+    }
 
     #[test]
     fn test_find_cycle() {

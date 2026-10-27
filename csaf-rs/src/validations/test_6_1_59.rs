@@ -32,16 +32,20 @@ pub fn test_6_1_59_product_version_range_identifies_single_version(
         if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
             let version_range = VersionRange::new(branch.get_name());
 
-            if matches!(version_range, VersionRange::Invalid(_)) {
-                // error if the version range is invalid
-                errors
-                    .get_or_insert_default()
-                    .push(product_version_range_invalid_error(path, &version_range));
-            } else if version_range.is_single_version() == Some(true) {
-                // error if the version_range does not identify more than one version
-                errors
-                    .get_or_insert_default()
-                    .push(product_version_range_only_one_version_error(path));
+            match version_range {
+                VersionRange::DynamicVers(_) | VersionRange::Vls(_) => {
+                    // error if the version_range does not identify more than one version
+                    if version_range.is_single_version() == Some(true) {
+                        errors
+                            .get_or_insert_default()
+                            .push(product_version_range_only_one_version_error(path));
+                    }
+                },
+                VersionRange::Invalid(_) => {
+                    errors
+                        .get_or_insert_default()
+                        .push(product_version_range_invalid_error(path, &version_range));
+                },
             }
         }
     });
@@ -58,8 +62,10 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::product_version_range_only_one_version_error;
+    use crate::csaf::enums::version_range::VersionRange;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_59 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
+    use crate::validations::test_6_1_59::product_version_range_invalid_error;
 
     #[test]
     fn test_6_1_59() {
@@ -78,6 +84,10 @@ mod tests {
             case_12: Ok(()),
             // Case 13: valid vls (`<4.2.0`)
             case_13: Ok(()),
+            case_s01: Err(vec![product_version_range_invalid_error(
+                "/product_tree/branches/0/branches/0/branches/0",
+                &VersionRange::Invalid("invalid version".to_string()),
+            )]),
         });
     }
 }

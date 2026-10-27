@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
+use crate::csaf_traits::{ActionTrait, CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use std::collections::{BTreeSet, HashSet};
 
 pub struct ResolvedProductGroupIds {
@@ -73,4 +73,19 @@ pub fn resolve_product_groups_with_unresolvable(
         resolved_product_ids,
         unresolvable_group_ids: (!unresolvable_group_ids.is_empty()).then_some(unresolvable_group_ids),
     }
+}
+
+/// Resolves product-group references into product IDs for comparison.
+pub fn resolve_product_refs(doc: &impl CsafTrait, action: &impl ActionTrait) -> (BTreeSet<String>, BTreeSet<String>) {
+    let mut product_ids: BTreeSet<String> = action
+        .get_product_ids()
+        .into_iter()
+        .flatten()
+        .map(ToString::to_string)
+        .collect();
+    let resolved = resolve_product_groups_with_unresolvable(doc, action.get_group_ids().into_iter().flatten());
+    product_ids.extend(resolved.resolved_product_ids.into_iter().flatten());
+    let unresolved_group_ids = resolved.unresolvable_group_ids.unwrap_or_default();
+
+    (product_ids, unresolved_group_ids)
 }

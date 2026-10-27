@@ -1,8 +1,8 @@
-use crate::csaf::traits::util::resolve_entity_groups::resolve_ref_groups_to_ref_ids;
-use crate::csaf::traits::util::resolve_product_groups::resolve_product_groups_with_unresolvable;
+use crate::csaf::traits::util::resolve_entity_groups::resolve_entity_refs;
+use crate::csaf::traits::util::resolve_product_groups::resolve_product_refs;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{ActionTrait, Csaf21InvolvementTrait, CsafTrait, DocumentTrait};
-use crate::schema::csaf2_1::schema::{ActionCategory, ActionStatus, EntityRefsTItem};
+use crate::schema::csaf2_1::schema::{ActionCategory, ActionStatus};
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::{BTreeSet, HashMap};
 use std::hash::{Hash, Hasher};
@@ -71,38 +71,6 @@ impl PartialEq for ActionKey {
             && self.receiving_entity_refs == other.receiving_entity_refs
             && self.referenced_action_ids == other.referenced_action_ids
     }
-}
-
-/// Resolves entity and entity-group references to a canonical set for comparison.
-///
-/// Resolvable groups contribute their member entity IDs. An unresolvable group ID is retained so
-/// that two actions using the same unresolvable reference still compare as equal.
-fn resolve_entity_refs<'a>(
-    refs: impl Iterator<Item = &'a EntityRefsTItem>,
-    all_document_entity_groups: &HashMap<String, BTreeSet<String>>,
-) -> BTreeSet<String> {
-    let resolved = resolve_ref_groups_to_ref_ids(refs, all_document_entity_groups);
-    let mut entity_ids = resolved.resolved_entity_ids.unwrap_or_default();
-    entity_ids.extend(resolved.unresolvable_group_ids.unwrap_or_default());
-    entity_ids
-}
-
-/// Resolves product-group references into product IDs for comparison.
-///
-/// Groups that cannot be resolved are retained so an unresolved reference is not treated as an
-/// absent reference.
-fn resolve_product_refs(doc: &impl CsafTrait, action: &impl ActionTrait) -> (BTreeSet<String>, BTreeSet<String>) {
-    let mut product_ids: BTreeSet<String> = action
-        .get_product_ids()
-        .into_iter()
-        .flatten()
-        .map(ToString::to_string)
-        .collect();
-    let resolved = resolve_product_groups_with_unresolvable(doc, action.get_group_ids().into_iter().flatten());
-    product_ids.extend(resolved.resolved_product_ids.into_iter().flatten());
-    let unresolved_group_ids = resolved.unresolvable_group_ids.unwrap_or_default();
-
-    (product_ids, unresolved_group_ids)
 }
 
 /// Creates the comparison key for an action, excluding its `action_id`.

@@ -16,7 +16,7 @@
     "title": "Mandatory Test: Single Version as Product Version Range (failing supplementary example 1)",
     "tracking": {
       "current_release_date": "2026-10-07T10:00:00.000Z",
-      "id": "CSAF-RS_CSAF-CSAF_2.1-6-1-59-S01",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-59-S01",
       "initial_release_date": "2026-10-07T10:00:00.000Z",
       "revision_history": [
         {

@@ -1,5 +1,5 @@
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
-use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_str_field_getter};
+use crate::csaf::traits::util::{impl_into_any_getter, impl_optional_str_field_getter, impl_str_field_getter};
 use crate::csaf_traits::{WithDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_1::schema::{Action as Action21, ActionCategory, ActionStatus, EntityRefsTItem};
 
@@ -19,13 +19,8 @@ impl ActionTrait for NotPresentInCsaf20 {
         self.into_any_iter()
     }
 
-    fn get_action_id(&self) -> &str {
-        self.into_any()
-    }
-
-    fn get_category(&self) -> ActionCategory {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_action_id, &str);
+    impl_into_any_getter!(get_category, ActionCategory);
 
     fn get_document_local_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
         self.into_any_optional_iter()
@@ -39,13 +34,8 @@ impl ActionTrait for NotPresentInCsaf20 {
         self.into_any_optional_iter()
     }
 
-    fn get_summary(&self) -> Option<&str> {
-        self.into_any()
-    }
-
-    fn get_status(&self) -> ActionStatus {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_summary, Option<&str>);
+    impl_into_any_getter!(get_status, ActionStatus);
 }
 
 impl ActionTrait for Action21 {

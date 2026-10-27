@@ -322,7 +322,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.64.10 | ⭕ | ✅ |
 | 6.1.64.10 | ⭕ | ✅ |
 | 6.1.64.11 | ⭕ |  |
-| 6.1.64.12 | ⭕ |  |
+| 6.1.64.12 | ⭕ | ✅ |
 | 6.1.64.13 | ⭕ | ✅ |
 | 6.1.65.1 | ⭕ | ✅ |
 | 6.1.65.2 | ⭕ | ✅ |

@@ -14,7 +14,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, ProductTree as ProductTree21,
     Vulnerability as Vulnerability21,
 };
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -104,12 +104,18 @@ pub trait CsafTrait {
     }
 
     /// Returns all document-local vulnerability IDs defined by vulnerabilities in the document.
-    fn get_all_document_local_vuln_ids(&self) -> HashSet<String> {
+    fn get_all_document_local_vuln_ids(&self) -> BTreeSet<String> {
         self.get_vulnerabilities()
             .iter()
             .filter_map(VulnerabilityTrait::get_document_local_vuln_id)
             .map(ToOwned::to_owned)
             .collect()
+    }
+
+    fn all_vulnerabilities_have_document_local_vuln_ids(&self) -> bool {
+        self.get_vulnerabilities()
+            .iter()
+            .all(|v| v.get_document_local_vuln_id().is_some())
     }
 
     /// Returns all document-local vulnerability ID definitions along with their JSON paths.

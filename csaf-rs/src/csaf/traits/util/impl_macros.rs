@@ -25,6 +25,24 @@ macro_rules! impl_into_any_getter {
     };
 }
 
+/// Macro to implement a getter method by converting an uninhabited receiver into an empty iterator.
+macro_rules! impl_into_any_iter_getter {
+    ($method:ident, $return_type:ty) => {
+        fn $method(&self) -> $return_type {
+            self.into_any_iter()
+        }
+    };
+}
+
+/// Macro to implement a getter method by converting an uninhabited receiver into an optional empty iterator.
+macro_rules! impl_into_any_optional_iter_getter {
+    ($method:ident, $return_type:ty) => {
+        fn $method(&self) -> $return_type {
+            self.into_any_optional_iter()
+        }
+    };
+}
+
 /// Macro to implement a getter method that returns an `Option<impl Iterator<Item = &str>>`
 /// from an `Option<Vec<T>>` or `Option<Newtype>` that derefs to `Vec<T>`, where `T` derefs to `str`-like.
 macro_rules! impl_optional_str_iter_field_getter {
@@ -46,6 +64,8 @@ macro_rules! impl_str_iter_field_getter {
 }
 
 pub(crate) use impl_into_any_getter;
+pub(crate) use impl_into_any_iter_getter;
+pub(crate) use impl_into_any_optional_iter_getter;
 pub(crate) use impl_optional_str_field_getter;
 pub(crate) use impl_optional_str_iter_field_getter;
 pub(crate) use impl_str_field_getter;

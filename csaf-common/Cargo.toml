@@ -1,7 +1,7 @@
 [package]
 name = "csaf-common"
 description = "This crate proves functionality to work with CSAF files."
-version.workspace = true
+version = "0.5.1"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true

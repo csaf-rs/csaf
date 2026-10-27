@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use spdx::error::{ParseError, Reason};
 use spdx::lexer::{Lexer, LexerToken, Token};
 
@@ -5,6 +7,20 @@ use crate::csaf_traits::CsafTrait;
 use crate::schema::csaf2_1::schema::LicenseExpression;
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::license_expressions::{CSAF_PARSE_MODE, parse_csaf_license_expression};
+
+const AND: &str = "AND";
+const OR: &str = "OR";
+const WITH: &str = "WITH";
+
+/// Operators that have to be spelled in uppercase.
+const OPERATORS: [&str; 3] = [AND, OR, WITH];
+
+/// Identifiers that represent an entire expression instead of naming a license.
+const SPECIAL_IDENTIFIERS: [&str; 2] = ["NONE", "NOASSERTION"];
+
+/// Prefixes that are reserved for references and therefore must not be
+/// accepted as ordinary unknown license identifiers.
+const REFERENCE_PREFIXES: [&str; 3] = ["DocumentRef-", "LicenseRef-", "AdditionRef-"];
 
 fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -47,29 +63,16 @@ pub fn test_6_1_54_invalid_license_expression(
 /// 2. Normalization of permitted unknown identifier '+' suffixes
 /// 3. Existing SPDX parser
 /// 4. Structural restrictions for NONE and NOASSERTION
-fn validate_license_expression(license: &LicenseExpression) -> Result<(), ParseError> {
-    let original = license.as_str();
-
+fn validate_license_expression(original: &str) -> Result<(), ParseError> {
     // Step 1 + 2:
-    // Validate original tokens and create a normalized copy.
-    let normalized = validate_and_normalize(original)?;
+    // Validate the original tokens and create a normalized copy.
+    // The tokens are reused by step 4, so the input is lexed exactly once.
+    let (tokens, normalized) = validate_and_normalize(original)?;
 
     // Step 3:
-    // Convert the normalized copy to the existing schema type.
-    //
-    // LicenseExpression requires only a non-empty string, which
-    // is already guaranteed for the original schema value.
-    let normalized_license: LicenseExpression = normalized.parse().map_err(|_| {
-        license_expression_error(
-            original,
-            0..original.len(),
-            Reason::Unexpected(&["non-empty license expression"]),
-        )
-    })?;
-
     // Reuse the existing parser, including CSAF's DocumentRef
     // restrictions. We only need it for syntax validation.
-    if let Err(mut error) = parse_csaf_license_expression(&normalized_license) {
+    if let Err(mut error) = parse_csaf_license_expression(&normalized) {
         // Normalization preserves string length and byte offsets.
         // Replace the parser's normalized input with the original
         // expression so diagnostics show what the user supplied.
@@ -81,18 +84,26 @@ fn validate_license_expression(license: &LicenseExpression) -> Result<(), ParseE
     // Step 4:
     // Validate NONE/NOASSERTION with operator precedence
     // and parentheses taken into account.
-    validate_special_identifier_structure(original)?;
-
-    Ok(())
+    validate_special_identifier_structure(original, &tokens)
 }
 
 /// Creates an SPDX-compatible parsing error referring to the original
 /// license expression and the original byte position.
-fn license_expression_error(original: &str, span: std::ops::Range<usize>, reason: Reason) -> ParseError {
+fn license_expression_error(original: &str, span: Range<usize>, reason: Reason) -> ParseError {
     ParseError {
         original: original.to_string(),
         span,
         reason,
+    }
+}
+
+/// Returns the canonical spelling of an operator token, or `None` for any other token.
+fn canonical_operator(token: &Token<'_>) -> Option<&'static str> {
+    match token {
+        Token::And => Some(AND),
+        Token::Or => Some(OR),
+        Token::With => Some(WITH),
+        _ => None,
     }
 }
 
@@ -111,10 +122,13 @@ fn is_valid_idstring(value: &str) -> bool {
 /// The SPDX lexer may classify these special identifiers as Unknown,
 /// because it primarily recognizes license and exception identifiers.
 /// Therefore, we inspect the original token text instead.
+///
+/// Lexical validation rejects non-canonical casing before any caller runs,
+/// so an exact match is sufficient here.
 fn is_special_identifier(original: &str, token: &LexerToken<'_>) -> bool {
     let text = &original[token.span.clone()];
 
-    text.eq_ignore_ascii_case("NONE") || text.eq_ignore_ascii_case("NOASSERTION")
+    SPECIAL_IDENTIFIERS.contains(&text)
 }
 
 /// Checks an unknown identifier for reserved words and prefixes.
@@ -124,7 +138,7 @@ fn is_special_identifier(original: &str, token: &LexerToken<'_>) -> bool {
 fn validate_unknown_identifier(original: &str, token: &LexerToken<'_>, identifier: &str) -> Result<(), ParseError> {
     // Operators and special identifiers must use their canonical
     // spelling under the strict casing policy chosen for this test.
-    for reserved in ["AND", "OR", "WITH", "NONE", "NOASSERTION"] {
+    for reserved in OPERATORS.into_iter().chain(SPECIAL_IDENTIFIERS) {
         if identifier.eq_ignore_ascii_case(reserved) {
             if identifier != reserved {
                 return Err(license_expression_error(
@@ -143,7 +157,7 @@ fn validate_unknown_identifier(original: &str, token: &LexerToken<'_>, identifie
 
     // A token beginning with a reserved reference prefix must not
     // be silently interpreted as an ordinary unknown license ID.
-    for prefix in ["DocumentRef-", "LicenseRef-", "AdditionRef-"] {
+    for prefix in REFERENCE_PREFIXES {
         if let Some(actual_prefix) = identifier.get(..prefix.len())
             && actual_prefix.eq_ignore_ascii_case(prefix)
         {
@@ -172,13 +186,55 @@ fn validate_unknown_identifier(original: &str, token: &LexerToken<'_>, identifie
     Ok(())
 }
 
+/// Validates the casing of an operator token and the single separating
+/// space that is required on both of its sides.
+fn validate_operator(
+    original: &str,
+    tokens: &[LexerToken<'_>],
+    index: usize,
+    expected: &str,
+) -> Result<(), ParseError> {
+    let token = &tokens[index];
+
+    // Enforce uppercase operators under the chosen strict casing policy.
+    if &original[token.span.clone()] != expected {
+        return Err(license_expression_error(
+            original,
+            token.span.clone(),
+            Reason::Unexpected(&["uppercase operator"]),
+        ));
+    }
+
+    // Operators require a separating space on both sides.
+    // The previous whitespace check already guarantees
+    // that such a gap cannot contain multiple spaces.
+    let has_space_before = index > 0 && original.get(tokens[index - 1].span.end..token.span.start) == Some(" ");
+
+    let has_space_after = tokens
+        .get(index + 1)
+        .is_some_and(|next| original.get(token.span.end..next.span.start) == Some(" "));
+
+    if has_space_before && has_space_after {
+        Ok(())
+    } else {
+        Err(license_expression_error(
+            original,
+            token.span.clone(),
+            Reason::Unexpected(&["space on both sides of operator"]),
+        ))
+    }
+}
+
 /// Performs lexical checks on the original expression and creates
 /// a normalized copy suitable for the existing SPDX parser.
 ///
 /// The original expression is never modified. Normalization only
 /// replaces permitted '+' characters with single spaces, preserving
 /// the original byte offsets.
-fn validate_and_normalize(original: &str) -> Result<String, ParseError> {
+///
+/// Returns the tokens of the original expression together with the
+/// normalized copy as a [`LicenseExpression`], so that later validation steps do not have to lex again.
+fn validate_and_normalize(original: &str) -> Result<(Vec<LexerToken<'_>>, LicenseExpression), ParseError> {
     // Reject leading and trailing spaces.
     if original.starts_with(' ') || original.ends_with(' ') {
         let position = if original.starts_with(' ') {
@@ -233,46 +289,14 @@ fn validate_and_normalize(original: &str) -> Result<String, ParseError> {
     let mut plus_positions = Vec::new();
 
     for (index, token) in tokens.iter().enumerate() {
-        let token_text = &original[token.span.clone()];
+        // Operators are handled first so their canonical spelling can be bound directly.
+        if let Some(expected) = canonical_operator(&token.token) {
+            validate_operator(original, &tokens, index, expected)?;
+
+            continue;
+        }
 
         match &token.token {
-            Token::And | Token::Or | Token::With => {
-                // Enforce uppercase operators under the chosen
-                // strict casing policy.
-                let expected = match &token.token {
-                    Token::And => "AND",
-                    Token::Or => "OR",
-                    Token::With => "WITH",
-                    _ => unreachable!(),
-                };
-
-                if token_text != expected {
-                    return Err(license_expression_error(
-                        original,
-                        token.span.clone(),
-                        Reason::Unexpected(&["uppercase operator"]),
-                    ));
-                }
-
-                // Operators require a separating space on both sides.
-                // The previous whitespace check already guarantees
-                // that such a gap cannot contain multiple spaces.
-                let has_space_before =
-                    index > 0 && original.get(tokens[index - 1].span.end..token.span.start) == Some(" ");
-
-                let has_space_after = tokens
-                    .get(index + 1)
-                    .is_some_and(|next| original.get(token.span.end..next.span.start) == Some(" "));
-
-                if !has_space_before || !has_space_after {
-                    return Err(license_expression_error(
-                        original,
-                        token.span.clone(),
-                        Reason::Unexpected(&["space on both sides of operator"]),
-                    ));
-                }
-            },
-
             Token::Unknown(identifier) => {
                 // Prevent incorrectly cased reserved words and
                 // malformed reference identifiers from being
@@ -312,9 +336,13 @@ fn validate_and_normalize(original: &str) -> Result<String, ParseError> {
                     ));
                 }
 
-                // This unknown license ID may legally have '+'.
-                // Remember the position for later normalization.
-                plus_positions.push(next.span.start);
+                // NONE and NOASSERTION are not license IDs and therefore must never
+                // be normalized. The dedicated `Token::Plus` arm below rejects them.
+                if !is_special_identifier(original, token) {
+                    // This unknown license ID may legally have '+'.
+                    // Remember the position for later normalization.
+                    plus_positions.push(next.span.start);
+                }
             },
 
             Token::LicenseRef { lic_ref, .. } => {
@@ -363,7 +391,15 @@ fn validate_and_normalize(original: &str) -> Result<String, ParseError> {
         normalized.replace_range(position..position + 1, " ");
     }
 
-    Ok(normalized)
+    let normalized = LicenseExpression::try_from(normalized).map_err(|_| {
+        license_expression_error(
+            original,
+            0..original.len(),
+            Reason::Unexpected(&["non-empty license expression"]),
+        )
+    })?;
+
+    Ok((tokens, normalized))
 }
 
 /// Operators needed for structural validation.
@@ -393,25 +429,25 @@ impl StructuralOperator {
 fn apply_structural_operator(
     original: &str,
     operator: StructuralOperator,
-    position: usize,
+    span: Range<usize>,
     values: &mut Vec<bool>,
 ) -> Result<(), ParseError> {
     // Syntax has already been checked by the main SPDX parser.
     // Therefore, a binary operator should have two operands.
-    let right = values.pop().ok_or_else(|| {
-        license_expression_error(original, position..position + 1, Reason::Unexpected(&["right operand"]))
-    })?;
+    let right = values
+        .pop()
+        .ok_or_else(|| license_expression_error(original, span.clone(), Reason::Unexpected(&["right operand"])))?;
 
-    let left = values.pop().ok_or_else(|| {
-        license_expression_error(original, position..position + 1, Reason::Unexpected(&["left operand"]))
-    })?;
+    let left = values
+        .pop()
+        .ok_or_else(|| license_expression_error(original, span.clone(), Reason::Unexpected(&["left operand"])))?;
 
     // SPDX permits NONE/NOASSERTION in AND combinations,
     // but not in OR combinations.
     if operator == StructuralOperator::Or && (left || right) {
         return Err(license_expression_error(
             original,
-            position..position + 2,
+            span,
             Reason::Unexpected(&["OR operands without NONE or NOASSERTION"]),
         ));
     }
@@ -433,10 +469,11 @@ fn apply_structural_operator(
 ///
 /// Uses an iterative, stack-based approach rather than recursive AST
 /// traversal, so deeply nested expressions do not cause recursion.
-fn validate_special_identifier_structure(original: &str) -> Result<(), ParseError> {
-    let tokens: Vec<LexerToken<'_>> = Lexer::new_mode(original, CSAF_PARSE_MODE).collect::<Result<_, _>>()?;
-
-    let mut operators: Vec<(StructuralOperator, usize)> = Vec::new();
+///
+/// Operates on the tokens produced by [`validate_and_normalize`], which
+/// already guarantees that the expression lexes without errors.
+fn validate_special_identifier_structure(original: &str, tokens: &[LexerToken<'_>]) -> Result<(), ParseError> {
+    let mut operators: Vec<(StructuralOperator, Range<usize>)> = Vec::new();
     let mut values: Vec<bool> = Vec::new();
 
     // The identifier immediately following WITH is an exception/addition,
@@ -446,43 +483,44 @@ fn validate_special_identifier_structure(original: &str) -> Result<(), ParseErro
     for (index, token) in tokens.iter().enumerate() {
         match &token.token {
             Token::OpenParen => {
-                operators.push((StructuralOperator::OpenParen, token.span.start));
+                operators.push((StructuralOperator::OpenParen, token.span.clone()));
             },
 
             Token::CloseParen => {
                 // Evaluate everything belonging to the current
                 // parenthesized expression.
-                while let Some((operator, position)) = operators.pop() {
+                while let Some((operator, span)) = operators.pop() {
                     if operator == StructuralOperator::OpenParen {
                         break;
                     }
 
-                    apply_structural_operator(original, operator, position, &mut values)?;
+                    apply_structural_operator(original, operator, span, &mut values)?;
                 }
             },
 
             Token::And | Token::Or => {
-                let current = match &token.token {
-                    Token::And => StructuralOperator::And,
-                    Token::Or => StructuralOperator::Or,
-                    _ => unreachable!(),
+                let current = if matches!(&token.token, Token::And) {
+                    StructuralOperator::And
+                } else {
+                    StructuralOperator::Or
                 };
 
                 // AND has higher precedence than OR.
                 //
                 // Evaluate preceding operators only if they have
                 // equal or higher precedence, stopping at '('.
-                while let Some(&(top, position)) = operators.last() {
+                while let Some((top, span)) = operators.pop() {
                     if top == StructuralOperator::OpenParen || top.precedence() < current.precedence() {
+                        // The operator binds less tightly, so it stays on the stack.
+                        operators.push((top, span));
+
                         break;
                     }
 
-                    operators.pop();
-
-                    apply_structural_operator(original, top, position, &mut values)?;
+                    apply_structural_operator(original, top, span, &mut values)?;
                 }
 
-                operators.push((current, token.span.start));
+                operators.push((current, token.span.clone()));
             },
 
             Token::With => {
@@ -530,16 +568,12 @@ fn validate_special_identifier_structure(original: &str) -> Result<(), ParseErro
     }
 
     // Apply any remaining operators after all tokens have been read.
-    while let Some((operator, position)) = operators.pop() {
+    while let Some((operator, span)) = operators.pop() {
         if operator == StructuralOperator::OpenParen {
-            return Err(license_expression_error(
-                original,
-                position..position + 1,
-                Reason::UnclosedParens,
-            ));
+            return Err(license_expression_error(original, span, Reason::UnclosedParens));
         }
 
-        apply_structural_operator(original, operator, position, &mut values)?;
+        apply_structural_operator(original, operator, span, &mut values)?;
     }
 
     Ok(())
@@ -549,21 +583,15 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_54, test_6_
 
 #[cfg(test)]
 mod tests {
+    use rstest::rstest;
+
     use super::*;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_54 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
-    /// Checks the new validation helper without constructing
-    /// a complete CSAF document.
-    fn validate_expression(expression: &str) -> Result<(), ParseError> {
-        let license = LicenseExpression::try_from(expression).unwrap();
-
-        validate_license_expression(&license)
-    }
-
-    #[test]
-    fn valid_license_expressions() {
-        let expressions = [
+    #[rstest]
+    fn valid_license_expressions(
+        #[values(
             // Regular SPDX expressions.
             "MIT",
             "MIT AND Apache-2.0",
@@ -596,20 +624,19 @@ mod tests {
             "LicenseRef-Custom",
             "MIT AND LicenseRef-Custom",
             "LicenseRef-..Custom--",
-            "MIT WITH AdditionRef-Custom",
-        ];
-
-        for expression in expressions {
-            assert!(
-                validate_expression(expression).is_ok(),
-                "Expected valid expression: {expression}"
-            );
-        }
+            "MIT WITH AdditionRef-Custom"
+        )]
+        expression: &str,
+    ) {
+        assert!(
+            validate_license_expression(expression).is_ok(),
+            "Expected valid expression: {expression}"
+        );
     }
 
-    #[test]
-    fn invalid_license_expressions() {
-        let expressions = [
+    #[rstest]
+    fn invalid_license_expressions(
+        #[values(
             // Invalid combinations with special identifiers.
             "NONE OR MIT",
             "MIT OR NONE",
@@ -675,22 +702,21 @@ mod tests {
             // Invalid: '+' must immediately follow the license identifier.
             "Unknown-License +",
             "Unknown-License + AND MIT",
-            "MIT WITH Unknown-Exception +",
-        ];
-
-        for expression in expressions {
-            assert!(
-                validate_expression(expression).is_err(),
-                "Expected invalid expression: {expression}"
-            );
-        }
+            "MIT WITH Unknown-Exception +"
+        )]
+        expression: &str,
+    ) {
+        assert!(
+            validate_license_expression(expression).is_err(),
+            "Expected invalid expression: {expression}"
+        );
     }
 
     #[test]
     fn parser_error_preserves_original_expression() {
         let expression = "Unknown-License+ AND )";
 
-        let error = validate_expression(expression).unwrap_err();
+        let error = validate_license_expression(expression).unwrap_err();
 
         // The error must refer to the original string, not the
         // normalized version where '+' has been replaced.
@@ -700,10 +726,10 @@ mod tests {
     #[test]
     fn structural_validation_respects_operator_precedence() {
         // OR is entirely within the right operand of AND.
-        assert!(validate_expression("NONE AND (MIT OR Apache-2.0)").is_ok());
+        assert!(validate_license_expression("NONE AND (MIT OR Apache-2.0)").is_ok());
 
         // OR combines an expression containing NONE.
-        assert!(validate_expression("(NONE AND MIT) OR Apache-2.0").is_err());
+        assert!(validate_license_expression("(NONE AND MIT) OR Apache-2.0").is_err());
     }
 
     #[test]
@@ -712,7 +738,7 @@ mod tests {
 
         let expression = format!("{}NONE AND MIT{}", "(".repeat(depth), ")".repeat(depth));
 
-        assert!(validate_expression(&expression).is_ok());
+        assert!(validate_license_expression(&expression).is_ok());
     }
 
     #[test]

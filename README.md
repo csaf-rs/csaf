@@ -290,7 +290,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.42 | ⭕ | ✅ |
 | 6.1.43 | ⭕ | ✅ |
 | 6.1.44 | ⭕ | ✅ |
-| 6.1.45 | ⭕ |   |
+| 6.1.45 | ⭕ | ✅ |
 | 6.1.46 | ⭕ | ✅ |
 | 6.1.47 | ⭕ | ✅ |
 | 6.1.48 | ⭕ |   |
@@ -305,7 +305,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.57 | ⭕ | ✅ |
 | 6.1.58 | ⭕ | ✅ |
 | 6.1.59 | ⭕ |   |
-| 6.1.60.1 | ⭕  |   |
+| 6.1.60.1 | ⭕  | ✅ |
 | 6.1.60.2 | ⭕  |   |
 | 6.1.60.3 | ⭕  |   |
 | 6.1.61 | ⭕ | ✅ |

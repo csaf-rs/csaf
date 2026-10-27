@@ -197,14 +197,18 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.21", "6.2.33",
             ]),
             Ok(Preset::ConsistentDateTimes) => Ok(vec![
-                "6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53", "6.1.62",
+                "6.1.37", "6.1.45", "6.1.49", "6.1.51", "6.1.52", "6.1.53",
+                "6.1.62",
+                // TODO #1347 "6.2.56.1"
+                // TODO #1351 "6.2.56.5"
             ]),
             Ok(Preset::Ssvc) => Ok(vec![
                 "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
             Ok(Preset::ValidationTime) => Ok(vec![
-                "6.2.33", // "6.3.25" TODO #1190
+                "6.2.33",
+                // TODO #1190 "6.3.25"
             ]),
             // Ok(Preset::Extensions) => Ok(vec![
             //     "6.1.60.1", "6.1.60.2", "6.1.60.3", "6.2.39.5", "6.2.54.1", "6.2.54.2", "6.2.54.3", "6.2.54.4",
@@ -345,7 +349,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.62" => Some(ValidatorForTest6_1_62.validate(self)),
                 "6.1.63" => Some(ValidatorForTest6_1_63.validate(self)),
                 "6.1.64.1" => Some(ValidatorForTest6_1_64_1.validate(self)),
-                "6.1.64.2" => None, // Some(ValidatorForTest6_1_64_2.validate(self)),
+                "6.1.64.2" => Some(ValidatorForTest6_1_64_2.validate(self)),
                 "6.1.64.3" => Some(ValidatorForTest6_1_64_3.validate(self)),
                 "6.1.64.4" => Some(ValidatorForTest6_1_64_4.validate(self)),
                 "6.1.64.5" => Some(ValidatorForTest6_1_64_5.validate(self)),

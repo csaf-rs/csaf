@@ -14,9 +14,15 @@ fn create_revision_history_error() -> TestFinding {
 /// must be in the same order as when sorted by their `/document/tracking/revision_history[]/number` field.
 /// If the version numbers are mixed between semantic versioning and non-semantic versioning,
 /// the non-semantic versioning numbers are interpreted as semantic versioning numbers.
+/// Any value that is neither a valid integer nor a valid semantic version is ignored
+/// in this test, as it is already covered by schema validation.
 pub fn test_6_1_14_sorted_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // Generate tuples of (revision history path index, date, number)
     let mut rev_history_tuples_sort_by_date = doc.get_document().get_tracking().aggregate_revision_history();
+
+    // Ignore invalid version numbers
+    rev_history_tuples_sort_by_date.retain_valid_version_numbers();
+
     let mut rev_history_tuples_sort_by_number = rev_history_tuples_sort_by_date.clone();
 
     // Sort by date and by number

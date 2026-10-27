@@ -10,17 +10,17 @@
     },
     "publisher": {
       "category": "other",
-      "name": "OASIS CSAF TC",
+      "name": "CSAF-RS Test Files",
       "namespace": "https://csaf.io"
     },
     "title": "Mandatory Test: Single Version as Product Version Range (failing supplementary example 1)",
     "tracking": {
-      "current_release_date": "2024-01-24T10:00:00.000Z",
-      "id": "OASIS_CSAF_TC-CSAF_2.1-2024-6-1-59-01",
-      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "current_release_date": "2026-10-07T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2.1-6-1-59-S01",
+      "initial_release_date": "2026-10-07T10:00:00.000Z",
       "revision_history": [
         {
-          "date": "2024-01-24T10:00:00.000Z",
+          "date": "2026-10-07T10:00:00.000Z",
           "number": "1",
           "summary": "Initial version."
         }

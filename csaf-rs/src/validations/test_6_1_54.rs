@@ -15,7 +15,9 @@ const WITH: &str = "WITH";
 /// Operators that have to be spelled in uppercase.
 const OPERATORS: [&str; 3] = [AND, OR, WITH];
 
-/// Identifiers that represent an entire expression instead of naming a license.
+/// Identifiers that denote the absence of license information instead of
+/// naming a license. SPDX treats them as `simple-expression`s, but only
+/// AND may be used in conjunction with them.
 const SPECIAL_IDENTIFIERS: [&str; 2] = ["NONE", "NOASSERTION"];
 
 /// Prefixes that are reserved for references and therefore must not be
@@ -34,7 +36,8 @@ fn create_invalid_license_expression_error(license_expression: &str, error: &str
 /// It SHALL be tested that the license expression is valid.
 /// To implement this test, it is deemed sufficient to check for the ABNF defined
 /// in annex B of [SPDX](https://spdx.github.io/spdx-spec/v3.1-dev/) and the restriction
-/// on the `DocumentRef` part given in 3.2.2.8. Although a match against the SPDX License List (`license-id`)
+/// on the `DocumentRef` part and case sensitivity given in 3.2.2.8.
+/// Although a match against the SPDX License List (`license-id`)
 /// or a specific `LicenseRef` or `AdditionalRef` list is not in scope for this test,
 /// it checks all other constraints given in the ABNF.
 pub fn test_6_1_54_invalid_license_expression(
@@ -425,7 +428,9 @@ impl StructuralOperator {
 
 /// Applies one binary operator to the two most recent expression values.
 ///
-/// Each value indicates whether its corresponding subexpression contains NONE or NOASSERTION.
+/// Each value indicates whether the corresponding operand *is* NONE or
+/// NOASSERTION. Parentheses are transparent, because `( NONE )` denotes
+/// the same thing as `NONE`.
 fn apply_structural_operator(
     original: &str,
     operator: StructuralOperator,
@@ -442,8 +447,8 @@ fn apply_structural_operator(
         .pop()
         .ok_or_else(|| license_expression_error(original, span.clone(), Reason::Unexpected(&["left operand"])))?;
 
-    // SPDX permits NONE/NOASSERTION in AND combinations,
-    // but not in OR combinations.
+    // SPDX v3.1-dev: AND is the only operator that may be used in conjunction
+    // with NONE or NOASSERTION. Only the direct operands count.
     if operator == StructuralOperator::Or && (left || right) {
         return Err(license_expression_error(
             original,
@@ -452,15 +457,13 @@ fn apply_structural_operator(
         ));
     }
 
-    // Propagate the information upwards to enclosing expressions.
+    // The result is a compound expression, never a special identifier,
+    // so an enclosing OR is not combined with NONE or NOASSERTION.
     //
     // Example:
-    //   NONE AND MIT          => true
-    //   MIT OR Apache-2.0     => false
-    //
-    // A later OR operation must know whether either of its operands
-    // contains a special identifier, even inside parentheses.
-    values.push(left || right);
+    //   NONE AND MIT          => false, `(NONE AND MIT) OR MIT` is valid
+    //   (NONE)                => true,  `(NONE) OR MIT` is not valid
+    values.push(false);
 
     Ok(())
 }
@@ -624,7 +627,16 @@ mod tests {
             "LicenseRef-Custom",
             "MIT AND LicenseRef-Custom",
             "LicenseRef-..Custom--",
-            "MIT WITH AdditionRef-Custom"
+            "MIT WITH AdditionRef-Custom",
+            // Special identifiers are only restricted as direct operands.
+            "NONE AND MIT OR Apache-2.0",
+            "((NONE AND MIT)) OR Apache-2.0",
+            "(NONE AND MIT) OR (NOASSERTION AND Apache-2.0)",
+            "(MIT OR Apache-2.0) AND NONE",
+            "NONE AND MIT AND NOASSERTION",
+            "Apache-2.0 OR (MIT AND NOASSERTION)",
+            // AND binds tighter than OR, so NONE is an operand of AND only.
+            "MIT OR NONE AND Apache-2.0"
         )]
         expression: &str,
     ) {
@@ -645,10 +657,10 @@ mod tests {
             "NONE WITH LLVM-exception",
             "MIT WITH NOASSERTION",
             // Invalid combinations with parentheses.
-            "(NONE AND MIT) OR Apache-2.0",
-            "Apache-2.0 OR (MIT AND NOASSERTION)",
             "MIT AND (NONE OR Apache-2.0)",
             "NONE AND (MIT OR NOASSERTION)",
+            "((NONE)) OR MIT",
+            "MIT OR (NONE)",
             // Invalid '+' usage.
             "NONE+",
             "NOASSERTION+",
@@ -728,8 +740,11 @@ mod tests {
         // OR is entirely within the right operand of AND.
         assert!(validate_license_expression("NONE AND (MIT OR Apache-2.0)").is_ok());
 
-        // OR combines an expression containing NONE.
-        assert!(validate_license_expression("(NONE AND MIT) OR Apache-2.0").is_err());
+        // AND binds tighter, so NONE is an operand of AND, not of OR.
+        assert!(validate_license_expression("MIT OR NONE AND Apache-2.0").is_ok());
+
+        // Parentheses are transparent: NONE is still a direct OR operand.
+        assert!(validate_license_expression("(NONE) OR Apache-2.0").is_err());
     }
 
     #[test]

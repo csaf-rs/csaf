@@ -1,10 +1,16 @@
-use crate::csaf_traits::{CsafTrait, VulnerabilityTrait, WithOptionalDate};
+use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait, VulnerabilityTrait, WithOptionalDate};
 use crate::validation::{TestFinding, TestFindingData};
 
 /// 6.2.7 Missing Date in Involvements
 ///
 /// Each involvement item must have the `date` field set.
+/// 
+/// This test does not exist in CSAF 2.1, as the involvements were refactored completely.
 pub fn test_6_2_07_missing_date_in_involvements(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
+    if doc.get_document().get_csaf_version() == CsafVersion::X21 {
+        return Ok(()); // TODO #409 wasSkipped
+    }
+    
     let mut errors: Option<Vec<TestFinding>> = None;
 
     // for each vuln and each of its involvements, check if date is set

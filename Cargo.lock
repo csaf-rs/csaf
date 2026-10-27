@@ -576,6 +576,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "csaf-common"
+version = "0.1.0"
+
+[[package]]
 name = "csaf-converter"
 version = "0.5.2"
 dependencies = [

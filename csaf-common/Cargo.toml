@@ -1,0 +1,14 @@
+[package]
+name = "csaf-common"
+description = "This crate proves functionality to work with CSAF files."
+version = "0.1.0"
+edition.workspace = true
+rust-version= "1.88.0"
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]

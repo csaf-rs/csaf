@@ -311,7 +311,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.61 | ⭕ | ✅ |
 | 6.1.62 | ⭕ | ✅ |
 | 6.1.64.1 | ⭕ | ✅ |
-| 6.1.64.2 | ⭕ |  |
+| 6.1.64.2 | ⭕ | ✅ |
 | 6.1.64.3 | ⭕ | ✅ |
 | 6.1.64.4 | ⭕ | ✅ |
 | 6.1.64.5 | ⭕ | ✅ |

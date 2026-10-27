@@ -1,5 +1,10 @@
-use crate::csaf_traits::{CsafTrait, ProductGroupTrait, ProductTreeTrait};
+use crate::csaf_traits::{ActionTrait, CsafTrait, ProductGroupTrait, ProductTreeTrait};
 use std::collections::{BTreeSet, HashSet};
+
+pub struct ResolvedProductGroupIds {
+    pub resolved_product_ids: Option<BTreeSet<String>>,
+    pub unresolvable_group_ids: Option<BTreeSet<String>>,
+}
 
 /// Resolves a set of product group IDs to the individual product IDs they contain.
 ///
@@ -19,25 +24,68 @@ pub fn resolve_product_groups(
     doc: &impl CsafTrait,
     product_groups: impl IntoIterator<Item = impl AsRef<str>>,
 ) -> Option<BTreeSet<String>> {
-    // early return if there isn't a product tree
-    let product_tree = doc.get_product_tree()?;
+    resolve_product_groups_with_unresolvable(doc, product_groups)
+        .resolved_product_ids
+        .filter(|product_ids| !product_ids.is_empty())
+}
 
-    // collect requested group IDs into a hashset for O(1) lookup
-    let product_groups: HashSet<String> = product_groups.into_iter().map(|s| s.as_ref().to_owned()).collect();
+/// Resolves product group IDs while retaining group IDs that cannot be resolved.
+///
+/// TODO: Refactor to be more ergonomic and align this with the resolve_entity_groups function (#1384)
+pub fn resolve_product_groups_with_unresolvable(
+    doc: &impl CsafTrait,
+    product_groups_to_be_resolved: impl IntoIterator<Item = impl AsRef<str>>,
+) -> ResolvedProductGroupIds {
+    let product_group_ids_to_be_resolved: HashSet<String> = product_groups_to_be_resolved
+        .into_iter()
+        .map(|s| s.as_ref().to_owned())
+        .collect();
+    if product_group_ids_to_be_resolved.is_empty() {
+        return ResolvedProductGroupIds {
+            resolved_product_ids: None,
+            unresolvable_group_ids: None,
+        };
+    }
 
-    let product_ids: BTreeSet<String> = product_tree
-        .get_product_groups()
-        .iter()
-        // filter out all non-queried group ids
-        .filter(|x| product_groups.contains(x.get_group_id()))
-        // resolve the group into its product ids
-        .flat_map(|x| x.get_product_ids())
-        .map(|id| id.to_owned())
+    let Some(product_tree) = doc.get_product_tree() else {
+        return ResolvedProductGroupIds {
+            resolved_product_ids: None,
+            unresolvable_group_ids: Some(product_group_ids_to_be_resolved.into_iter().collect()),
+        };
+    };
+
+    let mut resolved_product_ids: Option<BTreeSet<String>> = None;
+    let mut matched_group_ids = HashSet::new();
+    for product_group in product_tree.get_product_groups() {
+        if product_group_ids_to_be_resolved.contains(product_group.get_group_id()) {
+            matched_group_ids.insert(product_group.get_group_id().to_owned());
+            resolved_product_ids
+                .get_or_insert_default()
+                .extend(product_group.get_product_ids().map(str::to_owned));
+        }
+    }
+    let unresolvable_group_ids: BTreeSet<String> = product_group_ids_to_be_resolved
+        .difference(&matched_group_ids)
+        .cloned()
         .collect();
 
-    if product_ids.is_empty() {
-        None
-    } else {
-        Some(product_ids)
+    ResolvedProductGroupIds {
+        resolved_product_ids,
+        unresolvable_group_ids: (!unresolvable_group_ids.is_empty()).then_some(unresolvable_group_ids),
     }
+}
+
+/// Resolves product-group references into product IDs for comparison.
+pub fn resolve_product_refs(doc: &impl CsafTrait, action: &impl ActionTrait) -> (BTreeSet<String>, BTreeSet<String>) {
+    let mut product_ids: BTreeSet<String> = action
+        .get_product_ids()
+        .into_iter()
+        .flatten()
+        .map(ToString::to_string)
+        .collect();
+    let resolved = resolve_product_groups_with_unresolvable(doc, action.get_group_ids().into_iter().flatten());
+    product_ids.extend(resolved.resolved_product_ids.into_iter().flatten());
+    let unresolved_group_ids = resolved.unresolvable_group_ids.unwrap_or_default();
+
+    (product_ids, unresolved_group_ids)
 }

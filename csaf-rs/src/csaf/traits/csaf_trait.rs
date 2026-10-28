@@ -12,8 +12,8 @@ use crate::schema::csaf2_0::schema::{
 };
 use crate::schema::csaf2_1::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework21,
-    DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, ProductTree as ProductTree21,
-    Vulnerability as Vulnerability21,
+    DocumentLevelMetaData as DocumentLevelMetaData21, EntityRefsTItem, ExtensionsT as Extensions21,
+    ProductTree as ProductTree21, Vulnerability as Vulnerability21,
 };
 use std::collections::BTreeSet;
 
@@ -133,6 +133,28 @@ pub trait CsafTrait {
                 })
             })
             .collect()
+    }
+
+    fn get_all_entity_group_id_references(&self) -> HashSet<String> {
+        let mut referenced_entity_group_ids = HashSet::new();
+        if let Some(involvement) = self.get_document().get_involvement() {
+            for action in involvement.get_actions() {
+                for entity_ref in action.get_acting_entity_refs() {
+                    if let EntityRefsTItem::GroupIdT(group_id) = entity_ref {
+                        referenced_entity_group_ids.insert(group_id.to_string());
+                    }
+                }
+                if let Some(entity_refs) = action.get_receiving_entity_refs() {
+                    for entity_ref in entity_refs {
+                        if let EntityRefsTItem::GroupIdT(group_id) = entity_ref {
+                            referenced_entity_group_ids.insert(group_id.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        referenced_entity_group_ids
     }
 
     fn get_extensions(&self) -> Option<&Self::ExtensionsType>;

@@ -1,3 +1,4 @@
+use std::fmt::{Debug, Display};
 use vers_like_specifier::{Vls, VlsError};
 use vers_rs::{Comparator, DynamicVersionRange, VersError, VersionConstraint, VersionRange as VersRange};
 
@@ -11,6 +12,16 @@ pub enum VersionRange {
     Invalid(VersionRangeError),
 }
 
+impl Display for VersionRange {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            VersionRange::DynamicVers(vers) => write!(f, "{}", vers),
+            VersionRange::Vls(vls) => write!(f, "{}", vls),
+            VersionRange::Invalid(err) => write!(f, "Invalid version range: {:?}", err),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum VersionRangeError {
     InvalidVers(VersError),
@@ -19,23 +30,24 @@ pub enum VersionRangeError {
 
 impl VersionRange {
     pub fn parse(s: &str) -> Self {
-        // parse as vers
-        match s.parse::<DynamicVersionRange>() {
-            // valid vers
-            Ok(vers_parsed) => return Self::DynamicVers(vers_parsed),
-            // the string was prefixed with "vers:", we report the version error
-            Err(vers_error) if !matches!(vers_error, VersError::InvalidScheme) => {
-                return Self::Invalid(VersionRangeError::InvalidVers(vers_error));
-            },
-            // the string was not prefix with "vers:", maybe its vls
-            Err(_) => {},
-        }
-        // parse as vls
-        match s.parse::<Vls>() {
-            // valid vls
-            Ok(vls_parsed) => Self::Vls(vls_parsed),
-            // invalid vers, invalid vls, so its not a valid version range
-            Err(vls_error) => Self::Invalid(VersionRangeError::InvalidVls(vls_error)),
+        if s.starts_with("vers:") {
+            // parse as vers
+            match s.parse::<DynamicVersionRange>() {
+                // valid vers
+                Ok(vers_parsed) => return Self::DynamicVers(vers_parsed),
+                // invalid vers
+                Err(vers_error) => {
+                    return Self::Invalid(VersionRangeError::InvalidVers(vers_error));
+                },
+            }
+        } else {
+            // parse as vls
+            match s.parse::<Vls>() {
+                // valid vls
+                Ok(vls_parsed) => Self::Vls(vls_parsed),
+                // invalid vls
+                Err(vls_error) => Self::Invalid(VersionRangeError::InvalidVls(vls_error)),
+            }
         }
     }
 

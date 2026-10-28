@@ -14,25 +14,25 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 }
 cd "$REPO_ROOT"
 
-rsync -c csaf/csaf_2.0/json_schema/csaf_json_schema.json csaf-rs/assets/csaf_2.0_json_schema.json
-rsync -c csaf/csaf_2.1/json_schema/csaf.json csaf-rs/assets/csaf_2.1_json_schema.json
-rsync -c csaf/csaf_2.1/json_schema/extension-content.json csaf-rs/assets/extension-content.json
-rsync -c csaf/csaf_2.1/json_schema/meta.json csaf-rs/assets/meta.json
+rsync -c oasis-csaf/csaf_2.0/json_schema/csaf_json_schema.json csaf-rs/assets/csaf_2.0_json_schema.json
+rsync -c oasis-csaf/csaf_2.1/json_schema/csaf.json csaf-rs/assets/csaf_2.1_json_schema.json
+rsync -c oasis-csaf/csaf_2.1/json_schema/extension-content.json csaf-rs/assets/extension-content.json
+rsync -c oasis-csaf/csaf_2.1/json_schema/meta.json csaf-rs/assets/meta.json
 
-rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0.json csaf-rs/assets/cvss-v2.0.json
-rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v2.0_strict.json csaf-rs/assets/cvss-v2.0_strict.json
-rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.0.json csaf-rs/assets/cvss-v3.0.json
-rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.0_strict.json csaf-rs/assets/cvss-v3.0_strict.json
-rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.1.json csaf-rs/assets/cvss-v3.1.json
-rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v3.1_strict.json csaf-rs/assets/cvss-v3.1_strict.json
-rsync -c csaf/csaf_2.1/referenced_schema/first/cvss-v4.0.json csaf-rs/assets/cvss-v4.0.json
-rsync -c csaf/csaf_2.1/referenced_schema/certcc/SelectionList_2_0_0.schema.json csaf-rs/assets/SelectionList_2_0_0.schema.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/first/cvss-v2.0.json csaf-rs/assets/cvss-v2.0.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/first/cvss-v2.0_strict.json csaf-rs/assets/cvss-v2.0_strict.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/first/cvss-v3.0.json csaf-rs/assets/cvss-v3.0.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/first/cvss-v3.0_strict.json csaf-rs/assets/cvss-v3.0_strict.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/first/cvss-v3.1.json csaf-rs/assets/cvss-v3.1.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/first/cvss-v3.1_strict.json csaf-rs/assets/cvss-v3.1_strict.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/first/cvss-v4.0.json csaf-rs/assets/cvss-v4.0.json
+rsync -c oasis-csaf/csaf_2.1/referenced_schema/certcc/SelectionList_2_0_0.schema.json csaf-rs/assets/SelectionList_2_0_0.schema.json
 
-rsync -c csaf/csaf_2.0/json_schema/csaf_json_schema.json type-generator/assets/csaf_2.0_json_schema.json
-rsync -c csaf/csaf_2.1/json_schema/csaf.json type-generator/assets/csaf_2.1_json_schema.json
-rsync -c csaf/csaf_2.0/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.0_testcases_json_schema.json
-rsync -c csaf/csaf_2.1/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.1_testcases_json_schema.json
+rsync -c oasis-csaf/csaf_2.0/json_schema/csaf_json_schema.json type-generator/assets/csaf_2.0_json_schema.json
+rsync -c oasis-csaf/csaf_2.1/json_schema/csaf.json type-generator/assets/csaf_2.1_json_schema.json
+rsync -c oasis-csaf/csaf_2.0/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.0_testcases_json_schema.json
+rsync -c oasis-csaf/csaf_2.1/test/validator/testcases_json_schema.json type-generator/assets/csaf_2.1_testcases_json_schema.json
 
-rsync -c csaf/csaf_2.1/language_specific_translation/translations.json type-generator/assets/language_specific_translations/translations.json
+rsync -c oasis-csaf/csaf_2.1/language_specific_translation/translations.json type-generator/assets/language_specific_translations/translations.json
 
-rsync -c csaf/registry/id/registry.json type-generator/assets/rvisc/registry.json
+rsync -c oasis-csaf/registry/id/registry.json type-generator/assets/rvisc/registry.json

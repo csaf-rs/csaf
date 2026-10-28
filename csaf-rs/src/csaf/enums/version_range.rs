@@ -1,24 +1,42 @@
-use vers_rs::{Comparator, VersionConstraint, VersionRange as VersRange};
+use vers_like_specifier::{Vls, VlsError};
+use vers_rs::{Comparator, DynamicVersionRange, VersError, VersionConstraint, VersionRange as VersRange};
 
 #[derive(Debug)]
 pub enum VersionRange {
     /// A dynamic VERS version range
-    DynamicVers(vers_rs::DynamicVersionRange),
+    DynamicVers(DynamicVersionRange),
     /// A vers-like version range
-    Vls(vers_like_specifier::Vls),
-    /// An invalid version range
-    Invalid(String),
+    Vls(Vls),
+    /// An invalid version range, containing the error
+    Invalid(VersionRangeError),
+}
+
+#[derive(Debug)]
+pub enum VersionRangeError {
+    InvalidVers(VersError),
+    InvalidVls(VlsError),
 }
 
 impl VersionRange {
-    pub fn new(s: &str) -> Self {
-        if let Ok(vers) = s.parse() {
-            Self::DynamicVers(vers)
-        } else if let Ok(vers_like) = s.parse() {
-            Self::Vls(vers_like)
-        } else {
-            Self::Invalid(s.into())
+    pub fn parse(s: &str) -> Self {
+        // parse as vers
+        match s.parse::<DynamicVersionRange>() {
+            // valid vers
+            Ok(vers_parsed) => return Self::DynamicVers(vers_parsed),
+            // the string was prefixed with "vers:", we report the version error
+            Err(vers_error) if !matches!(vers_error, VersError::InvalidScheme) => {
+                return Self::Invalid(VersionRangeError::InvalidVers(vers_error));
+            },
+            // the string was not prefix with "vers:", maybe its vls
+            Err(_) => {},
         }
+        // parse as vls
+        return match s.parse::<Vls>() {
+            // valid vls
+            Ok(vls_parsed) => Self::Vls(vls_parsed),
+            // invalid vers, invalid vls, so its not a valid version range
+            Err(vls_error) => Self::Invalid(VersionRangeError::InvalidVls(vls_error)),
+        };
     }
 
     /// Returns `Some(true)` if the given version range only matches to a single version.

@@ -1,5 +1,5 @@
-use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
+use crate::csaf::traits::util::{impl_into_any_getter, impl_optional_str_field_getter};
 use crate::schema::csaf2_1::schema::ContactT as Contact21;
 
 /// Trait representing contact information (CSAF 2.1)
@@ -17,17 +17,9 @@ pub trait ContactTrait {
 }
 
 impl ContactTrait for NotPresentInCsaf20 {
-    fn get_details(&self) -> Option<&str> {
-        self.into_any()
-    }
-
-    fn get_email(&self) -> Option<&str> {
-        self.into_any()
-    }
-
-    fn get_public_openpgp_key_url(&self) -> Option<&str> {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_details, Option<&str>);
+    impl_into_any_getter!(get_email, Option<&str>);
+    impl_into_any_getter!(get_public_openpgp_key_url, Option<&str>);
 }
 
 impl ContactTrait for Contact21 {

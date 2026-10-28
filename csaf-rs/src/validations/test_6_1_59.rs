@@ -11,7 +11,9 @@ fn product_version_range_only_one_version_error(instance_path: impl Into<String>
 
 fn product_version_range_invalid_error(instance_path: impl Into<String>, version_range: &VersionRange) -> TestFinding {
     TestFinding::Information(TestFindingData {
-        message: format!("The version range given is invalid: {version_range:?}, we can't determine if it identifies a single version or not."),
+        message: format!(
+            "The version range given is invalid: {version_range:?}, we can't determine if it identifies a single version or not."
+        ),
         instance_path: instance_path.into(),
     })
 }

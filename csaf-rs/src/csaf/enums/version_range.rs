@@ -31,12 +31,12 @@ impl VersionRange {
             Err(_) => {},
         }
         // parse as vls
-        return match s.parse::<Vls>() {
+        match s.parse::<Vls>() {
             // valid vls
             Ok(vls_parsed) => Self::Vls(vls_parsed),
             // invalid vers, invalid vls, so its not a valid version range
             Err(vls_error) => Self::Invalid(VersionRangeError::InvalidVls(vls_error)),
-        };
+        }
     }
 
     /// Returns `Some(true)` if the given version range only matches to a single version.

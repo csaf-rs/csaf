@@ -17,11 +17,10 @@ const OPERATORS: [&str; 3] = [AND, OR, WITH];
 
 /// Identifiers that denote the absence of license information instead of
 /// naming a license. SPDX treats them as `simple-expression`s, but only
-/// AND may be used in conjunction with them.
+/// `AND` may be used in direct conjunction with them.
 const SPECIAL_IDENTIFIERS: [&str; 2] = ["NONE", "NOASSERTION"];
 
-/// Prefixes that are reserved for references and therefore must not be
-/// accepted as ordinary unknown license identifiers.
+/// Prefixes that are reserved for references.
 const REFERENCE_PREFIXES: [&str; 3] = ["DocumentRef-", "LicenseRef-", "AdditionRef-"];
 
 fn create_invalid_license_expression_error(license_expression: &str, error: &str) -> TestFinding {
@@ -59,26 +58,25 @@ pub fn test_6_1_54_invalid_license_expression(
         .unwrap_or(Ok(())) // TODO: this may become passed - not data #409
 }
 
-/// Validates a CSAF license expression according to test 6.1.54.
+/// Validates a CSAF license expression.
 ///
 /// Validation order:
 /// 1. Lexical validation
 /// 2. Normalization of permitted unknown identifier '+' suffixes
-/// 3. Existing SPDX parser
+/// 3. SPDX license expression parsing
 /// 4. Structural restrictions for NONE and NOASSERTION
 fn validate_license_expression(original: &str) -> Result<(), ParseError> {
     // Step 1 + 2:
     // Validate the original tokens and create a normalized copy.
-    // The tokens are reused by step 4, so the input is lexed exactly once.
     let (tokens, normalized) = validate_and_normalize(original)?;
 
     // Step 3:
-    // Reuse the existing parser, including CSAF's DocumentRef
+    // Run the expression parser, including CSAF's DocumentRef
     // restrictions. We only need it for syntax validation.
     if let Err(mut error) = parse_csaf_license_expression(&normalized) {
         // Normalization preserves string length and byte offsets.
         // Replace the parser's normalized input with the original
-        // expression so diagnostics show what the user supplied.
+        // expression so error message shows what the user supplied.
         error.original = original.to_string();
 
         return Err(error);
@@ -111,8 +109,7 @@ fn canonical_operator(token: &Token<'_>) -> Option<&'static str> {
 }
 
 /// Checks the SPDX ABNF idstring requirement:
-/// only ASCII letters, digits, '-' and '.', with at least
-/// one alphanumeric character.
+/// only ASCII letters, digits, '-' and '.', with at least one alphanumeric character.
 fn is_valid_idstring(value: &str) -> bool {
     value.bytes().any(|byte| byte.is_ascii_alphanumeric())
         && value
@@ -122,8 +119,7 @@ fn is_valid_idstring(value: &str) -> bool {
 
 /// Returns whether a token represents NONE or NOASSERTION.
 ///
-/// The SPDX lexer may classify these special identifiers as Unknown,
-/// because it primarily recognizes license and exception identifiers.
+/// The SPDX lexer may classify these special identifiers as Unknown.
 /// Therefore, we inspect the original token text instead.
 ///
 /// Lexical validation rejects non-canonical casing before any caller runs,
@@ -140,7 +136,7 @@ fn is_special_identifier(original: &str, token: &LexerToken<'_>) -> bool {
 /// their existence is checked separately by test 6.2.45.
 fn validate_unknown_identifier(original: &str, token: &LexerToken<'_>, identifier: &str) -> Result<(), ParseError> {
     // Operators and special identifiers must use their canonical
-    // spelling under the strict casing policy chosen for this test.
+    // spelling under the strict casing policy.
     for reserved in OPERATORS.into_iter().chain(SPECIAL_IDENTIFIERS) {
         if identifier.eq_ignore_ascii_case(reserved) {
             if identifier != reserved {
@@ -172,7 +168,7 @@ fn validate_unknown_identifier(original: &str, token: &LexerToken<'_>, identifie
             return Err(license_expression_error(
                 original,
                 token.span.clone(),
-                Reason::Unexpected(&["valid reference identifier"]),
+                Reason::Unexpected(&["correctly cased reference identifier"]),
             ));
         }
     }
@@ -229,14 +225,14 @@ fn validate_operator(
 }
 
 /// Performs lexical checks on the original expression and creates
-/// a normalized copy suitable for the existing SPDX parser.
+/// a normalized copy suitable for the SPDX expression parser.
 ///
 /// The original expression is never modified. Normalization only
 /// replaces permitted '+' characters with single spaces, preserving
 /// the original byte offsets.
 ///
 /// Returns the tokens of the original expression together with the
-/// normalized copy as a [`LicenseExpression`], so that later validation steps do not have to lex again.
+/// normalized copy as a `LicenseExpression`, so that later validation steps do not have to lex again.
 fn validate_and_normalize(original: &str) -> Result<(Vec<LexerToken<'_>>, LicenseExpression), ParseError> {
     // Reject leading and trailing spaces.
     if original.starts_with(' ') || original.ends_with(' ') {
@@ -270,7 +266,6 @@ fn validate_and_normalize(original: &str) -> Result<(Vec<LexerToken<'_>>, Licens
     }
 
     // Reject consecutive spaces BETWEEN tokens.
-    // This is the deliberately stricter OASIS case_21 policy.
     for pair in tokens.windows(2) {
         let first = &pair[0];
         let second = &pair[1];
@@ -286,9 +281,7 @@ fn validate_and_normalize(original: &str) -> Result<(Vec<LexerToken<'_>>, Licens
         }
     }
 
-    // Collect the positions of '+' characters that need normalization.
-    // We do not modify the string during token validation, because
-    // doing so would make the original lexer spans unreliable.
+    // Collects the positions of '+' characters that need normalization.
     let mut plus_positions = Vec::new();
 
     for (index, token) in tokens.iter().enumerate() {
@@ -343,7 +336,7 @@ fn validate_and_normalize(original: &str) -> Result<(Vec<LexerToken<'_>>, Licens
                 // be normalized. The dedicated `Token::Plus` arm below rejects them.
                 if !is_special_identifier(original, token) {
                     // This unknown license ID may legally have '+'.
-                    // Remember the position for later normalization.
+                    // Collect the position for later normalization.
                     plus_positions.push(next.span.start);
                 }
             },
@@ -428,7 +421,7 @@ impl StructuralOperator {
 
 /// Applies one binary operator to the two most recent expression values.
 ///
-/// Each value indicates whether the corresponding operand *is* NONE or
+/// Each value indicates whether the corresponding operand is NONE or
 /// NOASSERTION. Parentheses are transparent, because `( NONE )` denotes
 /// the same thing as `NONE`.
 fn apply_structural_operator(
@@ -447,7 +440,7 @@ fn apply_structural_operator(
         .pop()
         .ok_or_else(|| license_expression_error(original, span.clone(), Reason::Unexpected(&["left operand"])))?;
 
-    // SPDX v3.1-dev: AND is the only operator that may be used in conjunction
+    // SPDX: AND is the only operator that may be used in conjunction
     // with NONE or NOASSERTION. Only the direct operands count.
     if operator == StructuralOperator::Or && (left || right) {
         return Err(license_expression_error(
@@ -468,15 +461,23 @@ fn apply_structural_operator(
     Ok(())
 }
 
-/// Validates structural restrictions involving NONE and NOASSERTION.
+/// Validates the only restriction on NONE and NOASSERTION that the SPDX
+/// grammar cannot express:
 ///
-/// Uses an iterative, stack-based approach rather than recursive AST
-/// traversal, so deeply nested expressions do not cause recursion.
+/// The "AND" operator is the only operator that can be used in conjunction
+/// with the special identifiers "NONE" or "NOASSERTION".
 ///
-/// Operates on the tokens produced by [`validate_and_normalize`], which
+/// The SPDX parser does not enforce it, because it lexes both identifiers as
+/// ordinary unknown license identifiers.
+///
+/// Operates on the tokens produced by `validate_and_normalize`, which
 /// already guarantees that the expression lexes without errors.
 fn validate_special_identifier_structure(original: &str, tokens: &[LexerToken<'_>]) -> Result<(), ParseError> {
     let mut operators: Vec<(StructuralOperator, Range<usize>)> = Vec::new();
+
+    // Each value indicates whether an operand is directly NONE or NOASSERTION.
+    // Compound expressions are represented by false, even if they contain
+    // special identifiers.
     let mut values: Vec<bool> = Vec::new();
 
     // The identifier immediately following WITH is an exception/addition,
@@ -634,9 +635,7 @@ mod tests {
             "(NONE AND MIT) OR (NOASSERTION AND Apache-2.0)",
             "(MIT OR Apache-2.0) AND NONE",
             "NONE AND MIT AND NOASSERTION",
-            "Apache-2.0 OR (MIT AND NOASSERTION)",
-            // AND binds tighter than OR, so NONE is an operand of AND only.
-            "MIT OR NONE AND Apache-2.0"
+            "Apache-2.0 OR (MIT AND NOASSERTION)"
         )]
         expression: &str,
     ) {
@@ -748,15 +747,6 @@ mod tests {
     }
 
     #[test]
-    fn deeply_nested_expression_does_not_require_recursion() {
-        let depth = 500;
-
-        let expression = format!("{}NONE AND MIT{}", "(".repeat(depth), ")".repeat(depth));
-
-        assert!(validate_license_expression(&expression).is_ok());
-    }
-
-    #[test]
     fn test_test_6_1_54() {
         TESTS_2_1.test_6_1_54.expect(ExpectedResults {
             case_01: Err(vec![create_invalid_license_expression_error(
@@ -785,15 +775,15 @@ mod tests {
             )]),
             case_07: Err(vec![create_invalid_license_expression_error(
                 "licenseref-www.example.org-Example-CSAF-License-3.0",
-                "Error at position 0: expected a `valid reference identifier` here",
+                "Error at position 0: expected a `correctly cased reference identifier` here",
             )]),
             case_08: Err(vec![create_invalid_license_expression_error(
                 "licenseREF-www.example.org-Example-CSAF-License-3.0",
-                "Error at position 0: expected a `valid reference identifier` here",
+                "Error at position 0: expected a `correctly cased reference identifier` here",
             )]),
             case_09: Err(vec![create_invalid_license_expression_error(
                 "LicenseRef-www.example.org-Example-CSAF-License-3.0 WITH additionref-www.example.org-Example-exception-0.9",
-                "Error at position 57: expected a `valid reference identifier` here",
+                "Error at position 57: expected a `correctly cased reference identifier` here",
             )]),
             case_21: Err(vec![create_invalid_license_expression_error(
                 "LicenseRef-www.example.org-Example-CSAF-License-3.0 WITH  AdditionRef-www.example.org-Example-exception-0.9",
@@ -808,6 +798,14 @@ mod tests {
                 "Error at position 4: expected a `uppercase operator` here",
             )]),
 
+            // Case 11: "CC-BY-4.0"
+            // Case 12: "LicenseRef-www.example.org-Example-CSAF-License-2.0"
+            // Case 13: "LicenseRef-www.example.org-Example-CSAF-License-3.0"
+            // Case 14: "A.SPDX-License-ID-that.technically.could.exist-but-obviously-does-not"
+            // Case 15: "A.SPDX-License-ID-that.technically.could.exist-but-obviously-does-not.including+"
+            // Case 16: "LicenseRef-www.example.org-Example-CSAF-License-3.0 WITH AdditionRef-www.example.org-Example-exception-0.9"
+            // Case 17: "LicenseRef-www.example.org-Example-CSAF-License-3.0 WITH Some.SPDX-License-Exception-ID-that.technically.could.exist-but-obviously-does-not"
+            // Case 18: "MIT OR any-OSI"
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

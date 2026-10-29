@@ -528,6 +528,16 @@ fn validate_special_identifier_structure(original: &str, tokens: &[LexerToken<'_
             },
 
             Token::With => {
+                // Reject a second WITH applied to the same license requirement.
+                // The SPDX parser may accept it after an unknown addition.
+                if index >= 2 && matches!(&tokens[index - 2].token, Token::With) {
+                    return Err(license_expression_error(
+                        original,
+                        token.span.clone(),
+                        Reason::Unexpected(&["AND", "OR", ")"]),
+                    ));
+                }
+
                 // WITH may not use NONE or NOASSERTION as either
                 // its license operand or its addition operand.
                 let left_is_special = values.last().copied().unwrap_or(false);
@@ -713,7 +723,11 @@ mod tests {
             // Invalid: '+' must immediately follow the license identifier.
             "Unknown-License +",
             "Unknown-License + AND MIT",
-            "MIT WITH Unknown-Exception +"
+            "MIT WITH Unknown-Exception +",
+            // Multiple WITH clauses on the same license requirement.
+            "MIT WITH Unknown-Exception WITH LLVM-exception",
+            "Unknown-License+ WITH Unknown-Exception WITH LLVM-exception",
+            "MIT WITH Unknown-Exception WITH Another-Exception"
         )]
         expression: &str,
     ) {

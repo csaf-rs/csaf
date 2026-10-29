@@ -13,15 +13,16 @@ fn create_uncovered_vulnerability_info(vulnerability_index: usize) -> TestFindin
 /// Each vulnerability must be covered by at least one involvement action.
 /// An action without `dl_vuln_ids` implicitly covers every vulnerability.
 pub fn test_6_3_26_1_vulnerability_not_covered_by_involvement(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    // check if involvement is present, if not, skip the test
-    let Some(involvement) = doc.get_document().get_involvement() else {
-        return Ok(());
-    };
-
-    // if there is any action without `dl_vuln_ids`, then all vulnerabilities are implicitly covered
-    let implicitly_covered = involvement
-        .get_actions()
-        .any(|action| action.get_document_local_vuln_ids().is_none());
+    // if there is an involvement section and if there is any action without `dl_vuln_ids`, then all vulnerabilities are implicitly covered
+    // as this action applies to all vulnerabilities
+    let implicitly_covered = doc
+        .get_document()
+        .get_involvement()
+        .is_some_and(|involvement| {
+            involvement
+                .get_actions()
+                .any(|action| action.get_document_local_vuln_ids().is_none())
+        });
     if implicitly_covered {
         return Ok(());
     }
@@ -39,13 +40,19 @@ pub fn test_6_3_26_1_vulnerability_not_covered_by_involvement(doc: &impl CsafTra
         };
 
         // check if any action covers this vulnerability, if not, generate a finding
-        if !involvement.get_actions().any(|action| {
-            action
-                .get_document_local_vuln_ids()
-                .into_iter()
-                .flatten()
-                .any(|action_dl_vuln_id| action_dl_vuln_id == vuln_dl_vuln_id)
-        }) {
+        let covered = doc
+            .get_document()
+            .get_involvement()
+            .into_iter()
+            .flat_map(|involvement| involvement.get_actions())
+            .any(|action| {
+                action
+                    .get_document_local_vuln_ids()
+                    .into_iter()
+                    .flatten()
+                    .any(|action_dl_vuln_id| action_dl_vuln_id == vuln_dl_vuln_id)
+            });
+        if !covered {
             findings
                 .get_or_insert_default()
                 .push(create_uncovered_vulnerability_info(vulnerability_index));
@@ -70,6 +77,8 @@ mod tests {
     fn test_test_6_3_26_1() {
         // TODO: Evaluate test coverage
         // TODO: Document test cases properly
+        // TODO: Add case for no involvement, no vulnerabilites with vuln ids
+        // TODO: Add case for no involvement, some vulns with vuln ids
 
         TESTS_2_1.test_6_3_26_1.expect(ExpectedResults_6_3_26_1 {
             case_01: Err(vec![create_uncovered_vulnerability_info(1)]),

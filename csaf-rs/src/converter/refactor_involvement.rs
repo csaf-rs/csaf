@@ -139,8 +139,8 @@ fn convert_involvements(
         .document()
         .and_then(|d| d.involvement())
         .is_some_and(|i| {
-            i.actions().is_some_and(|a| a.as_slice().is_ok_and(|a| a.is_empty()))
-                || i.entities().is_some_and(|e| e.as_slice().is_ok_and(|e| e.is_empty()))
+            i.actions().is_none_or(|a| a.as_slice().is_ok_and(|a| a.is_empty()))
+                || i.entities().is_none_or(|e| e.as_slice().is_ok_and(|e| e.is_empty()))
         })
     {
         return Err("Involvement conversion yielded no actions or entities".into());
@@ -441,7 +441,6 @@ fn convert_involvement(
         {
             "dl_vuln_ids": [vuln_ids.get(v_id).ok_or("Vulnerability ID not found")?],
             "action_id": format!("ACN-{}", conversion_ids.get(&(*v_id, *i_id)).ok_or("Conversion ID not found")?),
-            "summary": involvement.summary.as_ref().map(|s| s.as_str()).unwrap_or(""),
             "date": involvement.date.clone().unwrap_or_else(|| {
                 diagnostics.warning(
                     format!("/vulnerabilitites/{v_id}/involvements/{i_id}").into(),
@@ -454,6 +453,9 @@ fn convert_involvement(
             "acting_entity_refs": acting_entity_refs,
         }
     );
+    if let Some(summary) = &involvement.summary {
+        action["summary"] = json!(summary.as_str());
+    }
     if let Some(refs) = receiving_entity_refs {
         action["receiving_entity_refs"] = json!(refs);
     }

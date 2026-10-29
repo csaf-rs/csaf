@@ -5,13 +5,15 @@ use clap::Parser;
 use csaf::{
     converter::{
         Diagnostics,
-        Error::{self, ValidationError},
+        Error::{self, InputValidationError, OutputValidationError},
         Settings,
         Warning::{self, ValidationWarning},
     },
     csaf::raw::RawDocument,
     json::JsonSource,
+    schema::csaf2_1::schema::EntityCategory,
     validation::TestResultStatus,
+    validations::test_schema::validate_schema_csaf_2_1,
 };
 
 /// A converter for CSAF 2.0 to 2.1 documents
@@ -29,6 +31,38 @@ struct Args {
     /// Allow (partial) processing and output of invalid CSAF documents
     #[arg(long)]
     allow_invalid: bool,
+
+    /// User-provided involvement element
+    #[arg(long)]
+    involvement: Option<serde_json::Value>,
+
+    /// Disable warning for involvement category 'other' usage
+    #[arg(long)]
+    disable_involvement_category_other_warning: bool,
+
+    /// User-provided entity category for `other` parties
+    #[arg(long)]
+    involvement_category_other: Option<EntityCategory>,
+
+    /// User-provided entity mapping
+    #[arg(long)]
+    entities: Option<serde_json::Value>,
+
+    /// Create incomplete actions (e.g. no date) if necessary
+    #[arg(long)]
+    create_incomplete_actions: bool,
+
+    /// Extract further entity details from involvement elements
+    #[arg(long)]
+    involvement_extract_entity_details: bool,
+
+    /// Collapse entities during conversion
+    #[arg(long)]
+    collapse_entities: bool,
+
+    /// Collapse actions during conversion
+    #[arg(long)]
+    collapse_actions: bool,
 }
 
 pub struct VerboseDiagnostics {
@@ -69,7 +103,7 @@ fn main() -> Result<(), anyhow::Error> {
                 errors.iter().for_each(|error| {
                     diag.error(
                         error.instance_path.clone().into(),
-                        ValidationError(error.message.clone()),
+                        InputValidationError(error.message.clone()),
                     );
                 });
                 warnings.iter().for_each(|warning| {
@@ -80,7 +114,7 @@ fn main() -> Result<(), anyhow::Error> {
                 });
             },
             TestResultStatus::NotFound => {
-                diag.error("".into(), ValidationError("Validation preset not found.".into()));
+                diag.error("".into(), InputValidationError("Validation preset not found.".into()));
             },
             _ => {},
         });
@@ -92,13 +126,30 @@ fn main() -> Result<(), anyhow::Error> {
     }
 
     let settings = Settings {
-        collapse_actions: true,
-        collapse_entities: true,
-        create_incomplete_actions: true,
-        ..Default::default()
+        collapse_actions: args.collapse_actions,
+        collapse_entities: args.collapse_entities,
+        create_incomplete_actions: args.create_incomplete_actions,
+        involvement_extract_entity_details: args.involvement_extract_entity_details,
+        disable_involvement_category_other_warning: args.disable_involvement_category_other_warning,
+        involvement_category_other: args.involvement_category_other,
+        entities: args.entities,
+        involvement: args.involvement,
     };
 
-    let result = csaf::converter::convert(raw, &settings, &mut diag);
+    let result = csaf::converter::convert(raw, &settings, &mut diag).into_raw();
+
+    if let Err(errors) = validate_schema_csaf_2_1(&RawDocument::<
+        csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework,
+    >::new(result.clone()))
+    {
+        errors.iter().for_each(|error| {
+            diag.error(
+                error.get_data().instance_path.clone().into(),
+                OutputValidationError(error.get_data().message.clone()),
+            );
+        });
+    }
+
     if diag.has_errors {
         if args.allow_invalid {
             eprintln!("Conversion completed with errors, but allowed due to --allow-invalid.");
@@ -107,7 +158,7 @@ fn main() -> Result<(), anyhow::Error> {
         }
     }
 
-    let result = serde_json::to_string_pretty(&result.into_raw())?;
+    let result = serde_json::to_string_pretty(&result)?;
     if let Some(path) = args.output {
         std::fs::write(path.as_path(), result)?;
         println!("Wrote converted file to {}.", path.display());

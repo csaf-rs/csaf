@@ -118,14 +118,16 @@ impl fmt::Display for Warning {
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
-    ValidationError(String),
+    InputValidationError(String),
+    OutputValidationError(String),
     Todo,
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
-            Error::ValidationError(message) => message,
+            Error::InputValidationError(message) => &format!("Input file: {message}"),
+            Error::OutputValidationError(message) => &format!("Output file: {message}"),
             Error::Todo => "TODO",
         };
         f.write_str(s)

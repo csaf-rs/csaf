@@ -37,7 +37,7 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_10 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validations::utils::cvss::validate_consistency::errors::create_field_value_mismatch_error;
+    use crate::validations::utils::cvss::validate_consistency::utils::create_field_value_mismatch_error;
 
     #[test]
     fn test_test_6_1_10() {

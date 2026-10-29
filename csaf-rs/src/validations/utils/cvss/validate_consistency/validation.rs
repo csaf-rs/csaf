@@ -1,7 +1,7 @@
 use crate::validation::TestFinding;
 
 use crate::validations::utils::cvss::deserialize_vector::deserialize_vector;
-use crate::validations::utils::cvss::validate_consistency::{
+use crate::validations::utils::cvss::validate_consistency::utils::{
     check_optional_field_mismatch, check_required_field_mismatch,
 };
 use cvss_rs::Version;

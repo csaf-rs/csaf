@@ -15,7 +15,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentLevelMetaData as DocumentLevelMetaData21, EntityRefsTItem, ExtensionsT as Extensions21,
     ProductTree as ProductTree21, Vulnerability as Vulnerability21,
 };
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///

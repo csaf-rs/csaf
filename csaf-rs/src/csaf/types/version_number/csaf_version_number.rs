@@ -168,6 +168,19 @@ impl ValidCsafVersionNumber<'_> {
             Self::SemVer(semver) => semver.get_major(),
         }
     }
+
+    /// Returns the version core `(Major, Minor, Patch)`.
+    ///
+    /// Integer versions are mapped to `(n, 0, 0)` as required by 6.1.21:
+    /// implementations *"SHALL map items with integer versioning to semantic versioning
+    /// by appending `.0.0`"*.
+    /// Pre-release and build metadata are not part of the version core and are ignored.
+    pub fn get_version_core(&self) -> (u64, u64, u64) {
+        match self {
+            Self::IntVer(intver) => (intver.get(), 0, 0),
+            Self::SemVer(semver) => (semver.get_major(), semver.get_minor(), semver.get_patch()),
+        }
+    }
 }
 
 impl Display for ValidCsafVersionNumber<'_> {

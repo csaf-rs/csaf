@@ -1,99 +1,100 @@
-use std::cmp::Ordering;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::version_number::{CsafVersionNumber, ValidCsafVersionNumber};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
+/// The version core `(Major, Minor, Patch)` of a revision history item.
+///
+/// Pre-release and build metadata are not part of the version core and are ignored by this test.
+type VersionCore = (u64, u64, u64);
+
+/// The highest Major version a revision history may start with.
+const MAX_FIRST_MAJOR_VERSION: u64 = 1;
+
+/// Upper bound of individually reported missing revision history items.
+///
+/// A single gap can span an arbitrary number of versions (e.g. `1.0.0` followed by `999999.0.0`),
+/// so all findings are summarized into a single error once this limit is exceeded.
+const MAX_MISSING_ITEMS: usize = 100;
+
+/// A revision history item with a valid version number, reduced to the data this test operates on.
+struct Item<'a> {
+    date: &'a CsafDateTime,
+    number: ValidCsafVersionNumber<'a>,
+    core: VersionCore,
+}
+
+impl<'a> Item<'a> {
+    fn new(date: &'a CsafDateTime, number: ValidCsafVersionNumber<'a>) -> Self {
+        Self {
+            date,
+            number,
+            core: number.get_version_core(),
+        }
+    }
+}
+
+/// A version that is omitted in front of or between items of the revision history sorted by date.
+struct Gap<'a> {
+    /// date of the item before the gap, `None` if the version is missing in front of the first item
+    from: Option<&'a CsafDateTime>,
+    /// date of the item after the gap
+    to: &'a CsafDateTime,
+    /// decides whether the missing version is rendered as integer or semantic version
+    template: ValidCsafVersionNumber<'a>,
+}
+
 /// 6.1.21 Missing Item in Revision History
 ///
-/// It MUST be tested that items of the revision history do not omit a version number when the items are sorted ascending by date.
-/// In the case of semantic versioning, this applies only to the Major version.
+/// It MUST be tested that items of the revision history do not omit a version number when the items are
+/// sorted ascending by `date` and as a second level criteria by `number`.
+///
+/// Items with integer versioning are mapped to semantic versioning by appending `.0.0`, so Major, Minor and
+/// Patch versions all have to be contiguous. Minor and Patch versions MAY end at any point if the next item
+/// has a higher Major respectively Minor version. Pre-release and build metadata are ignored.
+///
 /// It MUST also be tested that the first item in such a sorted list has either the version number 0 or 1 in
-/// the case of integer versioning or a Major version of 0 or 1 in the case of semantic versioning.
+/// the case of integer versioning or a Major version of 0 or 1 in the case of semantic versioning. Only the
+/// Major version of the first item is constrained, so a revision history may start at e.g. `1.99.9`. If it
+/// starts at a higher Major version, the whole chain from the initial release `1.0.0` is reported as missing.
 pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    /// A major version that was skipped at some point in the revision history.
-    struct Gap<'a> {
-        /// date of the item before the version was skipped, `None` if it was skipped by the first item
-        from: Option<&'a CsafDateTime>,
-        /// date of the item that skipped the version
-        to: &'a CsafDateTime,
-        /// decides whether the missing version is rendered as integer or semantic version
-        template: &'a CsafVersionNumber,
-        /// the version showed up later in the revision history, so it is out of order rather than missing at all
-        found: bool,
-    }
-
     // Generate and sort the revision history tuples by date first and by number second
     let mut rev_history_tuples = doc.get_document().get_tracking().aggregate_revision_history();
     if rev_history_tuples.inplace_sort_by_date_then_number().is_err() {
         return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
     }
 
-    // resolve the major version once, ignoring invalid version numbers
-    let mut items = rev_history_tuples
+    // resolve the version cores once, ignoring invalid version numbers
+    let items = rev_history_tuples
         .iter()
-        .filter_map(|item| item.number.as_valid().map(|valid| (item, valid.get_major(), valid)));
+        .filter_map(|item| item.number.as_valid().map(|number| Item::new(&item.date, number)))
+        .collect::<Vec<_>>();
 
-    let Some((first, first_major, first_valid)) = items.next() else {
+    let Some(first) = items.first() else {
         return Ok(()); // ToDo #409 this should be Skipped: Precondition failed
     };
 
     let mut errors = Vec::new();
-    let mut gaps: BTreeMap<u64, Gap> = BTreeMap::new();
-
-    if first_major > 1 {
-        errors.push(test_6_1_21_err_wrong_first_version(&first_valid));
-        for major in 1..first_major {
-            gaps.insert(
-                major,
-                Gap {
-                    from: None,
-                    to: &first.date,
-                    template: &first.number,
-                    found: false,
-                },
-            );
-        }
+    // this condition is the complement of the `None` arm of `test_6_1_21_missing_versions`, both have to
+    // agree on which entry points into the revision history are acceptable
+    if first.core.0 > MAX_FIRST_MAJOR_VERSION {
+        errors.push(test_6_1_21_err_wrong_first_version(&first.number));
     }
 
-    // the first item which reached the highest major version seen so far
-    let (mut head, mut head_major) = (first, first_major);
-    for (item, major, _) in items {
-        match major.cmp(&head_major) {
-            Ordering::Less => {
-                // a lower version showing up later only matters if it was skipped before
-                if let Some(gap) = gaps.get_mut(&major) {
-                    gap.found = true;
-                }
-            },
-            Ordering::Equal => {},
-            Ordering::Greater => {
-                // skip(1) instead of `head_major + 1`, so this can't overflow
-                for missing in (head_major..major).skip(1) {
-                    gaps.insert(
-                        missing,
-                        Gap {
-                            from: Some(&head.date),
-                            to: &item.date,
-                            template: &head.number,
-                            found: false,
-                        },
-                    );
-                }
-                (head, head_major) = (item, major);
-            },
-        }
-    }
+    let Some(gaps) = test_6_1_21_collect_gaps(&items) else {
+        errors.push(test_6_1_21_err_too_many_missing_versions());
+        return Err(errors);
+    };
 
-    // ToDo aggregate consecutive missing versions into one error message, e.g. "missing revision history items with numbers 2,3,4 between 2026-03-01T11:00:00.000Z and 2026-03-03T11:00:00.000Z"
-    for (major, gap) in gaps {
-        let missing_version = match gap.template {
-            CsafVersionNumber::SemVer(_) => CsafVersionNumber::from(format!("{major}.0.0").as_str()),
-            _ => CsafVersionNumber::from(major.to_string().as_str()),
-        };
-        errors.push(match (gap.found, gap.from) {
+    // Every version core documented somewhere. Versions published in front of their gap were already
+    // filtered out, so a hit here means the version exists but only later in the sorted list.
+    let documented = items.iter().map(|item| item.core).collect::<BTreeSet<_>>();
+
+    for (core, gap) in gaps {
+        let missing_version = test_6_1_21_missing_version_number(core, gap.template);
+        errors.push(match (documented.contains(&core), gap.from) {
             (false, _) => test_6_1_21_err_missing_version_at_all(&missing_version),
             (true, Some(from)) => test_6_1_21_err_missing_version_between(&missing_version, from, gap.to),
             (true, None) => test_6_1_21_err_missing_version_before(&missing_version, gap.to),
@@ -104,6 +105,90 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
 }
 
 crate::test_validation::impl_validator!(ValidatorForTest6_1_21, test_6_1_21_missing_item_in_revision_history);
+
+/// Walks the sorted revision history pairwise and maps each missing version to the first gap it occurred in.
+///
+/// The walk starts with the virtual gap in front of the first item. Items that are not greater than their
+/// predecessor do not open a gap themselves, their wrong placement is reported by 6.1.14 and 6.1.22.
+///
+/// A version that was already published at an earlier position of the sorted list is not missing from a
+/// later gap either, it is merely out of order, so it is skipped as well.
+///
+/// Returns `None` if more than [`MAX_MISSING_ITEMS`] versions are missing.
+fn test_6_1_21_collect_gaps<'a>(items: &[Item<'a>]) -> Option<BTreeMap<VersionCore, Gap<'a>>> {
+    let mut gaps = BTreeMap::new();
+    // the version cores of all items in front of the current one
+    let mut published = BTreeSet::new();
+    let predecessors = std::iter::once(None).chain(items.iter().map(Some));
+
+    for (predecessor, item) in predecessors.zip(items) {
+        if let Some(predecessor) = predecessor {
+            published.insert(predecessor.core);
+            if predecessor.core >= item.core {
+                continue;
+            }
+        }
+        for missing in test_6_1_21_missing_versions(predecessor.map(|predecessor| predecessor.core), item.core) {
+            if published.contains(&missing) {
+                continue;
+            }
+            gaps.entry(missing).or_insert(Gap {
+                from: predecessor.map(|predecessor| predecessor.date),
+                to: item.date,
+                template: predecessor.unwrap_or(item).number,
+            });
+            if gaps.len() > MAX_MISSING_ITEMS {
+                return None;
+            }
+        }
+    }
+
+    Some(gaps)
+}
+
+/// Returns the version cores that have to be documented between two items of the sorted revision history.
+///
+/// `previous` is `None` for the gap in front of the first item. A revision history may start at any version
+/// with Major version 0 or 1, so nothing is omitted in that case. Any other entry point omits the whole
+/// chain from the initial release `1.0.0` up to the first item.
+///
+/// The caller has to ensure that `next` is greater than `previous`, otherwise the result is meaningless.
+fn test_6_1_21_missing_versions(previous: Option<VersionCore>, next: VersionCore) -> impl Iterator<Item = VersionCore> {
+    let (major, minor, patch) = next;
+    let (majors, minors, patches) = match previous {
+        // a Patch release only omits the Patch versions in between
+        Some((prev_major, prev_minor, prev_patch)) if (prev_major, prev_minor) == (major, minor) => {
+            (0..0, 0..0, prev_patch.saturating_add(1)..patch)
+        },
+        // a Minor release may end the Patch versions of the previous Minor version at any point
+        Some((prev_major, prev_minor, _)) if prev_major == major => {
+            (0..0, prev_minor.saturating_add(1)..minor, 0..patch)
+        },
+        // a Major release may end the Minor and Patch versions of the previous Major version at any point
+        Some((prev_major, _, _)) => (prev_major.saturating_add(1)..major, 0..minor, 0..patch),
+        // initial development (`0.y.z`) and the initial release (`1.y.z`) are both valid entry points
+        None if major <= MAX_FIRST_MAJOR_VERSION => (0..0, 0..0, 0..0),
+        // any other entry point omits the whole chain from the initial release `1.0.0` onwards
+        None => (1..major, 0..minor, 0..patch),
+    };
+
+    majors
+        .map(|missing| (missing, 0, 0))
+        .chain(minors.map(move |missing| (major, missing, 0)))
+        .chain(patches.map(move |missing| (major, minor, missing)))
+}
+
+/// Renders a missing version core as integer version if the neighboring item uses integer versioning and the
+/// missing version has no Minor or Patch part, as semantic version otherwise.
+fn test_6_1_21_missing_version_number(core: VersionCore, template: ValidCsafVersionNumber<'_>) -> CsafVersionNumber {
+    let (major, minor, patch) = core;
+    match template {
+        ValidCsafVersionNumber::IntVer(_) if (minor, patch) == (0, 0) => {
+            CsafVersionNumber::from(major.to_string().as_str())
+        },
+        _ => CsafVersionNumber::from(format!("{major}.{minor}.{patch}").as_str()),
+    }
+}
 
 const REVISION_HISTORY_PATH: &str = "/document/tracking/revision_history";
 
@@ -150,6 +235,16 @@ fn test_6_1_21_err_missing_version_between(
     })
 }
 
+fn test_6_1_21_err_too_many_missing_versions() -> TestFinding {
+    TestFinding::Error(TestFindingData {
+        instance_path: REVISION_HISTORY_PATH.to_string(),
+        message: format!(
+            "more than {MAX_MISSING_ITEMS} revision history items are missing, they are not listed individually \
+            to avoid flooding the report."
+        ),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -158,140 +253,247 @@ mod tests {
     use crate::csaf2_1::testcases::ExpectedResults_6_1_21 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
 
+    fn wrong_first(version: &str) -> TestFinding {
+        test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from(version).as_valid().unwrap())
+    }
+
+    fn at_all(version: &str) -> TestFinding {
+        test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from(version))
+    }
+
+    fn before(version: &str, start: &str) -> TestFinding {
+        test_6_1_21_err_missing_version_before(&CsafVersionNumber::from(version), &CsafDateTime::from(start))
+    }
+
+    fn between(version: &str, start: &str, end: &str) -> TestFinding {
+        test_6_1_21_err_missing_version_between(
+            &CsafVersionNumber::from(version),
+            &CsafDateTime::from(start),
+            &CsafDateTime::from(end),
+        )
+    }
+
+    #[test]
+    fn test_6_1_21_missing_versions_entry_point() {
+        let missing = |previous, next| test_6_1_21_missing_versions(previous, next).collect::<Vec<_>>();
+
+        // a revision history may start at any version with Major version 0 or 1
+        assert!(missing(None, (0, 0, 0)).is_empty());
+        assert!(missing(None, (0, 5, 0)).is_empty());
+        assert!(missing(None, (1, 0, 0)).is_empty());
+        assert!(missing(None, (1, 99, 9)).is_empty());
+
+        // any other entry point omits the whole chain from the initial release `1.0.0` onwards
+        assert_eq!(missing(None, (2, 0, 0)), [(1, 0, 0)]);
+        assert_eq!(missing(None, (3, 0, 0)), [(1, 0, 0), (2, 0, 0)]);
+        assert_eq!(
+            missing(None, (3, 2, 2)),
+            [(1, 0, 0), (2, 0, 0), (3, 0, 0), (3, 1, 0), (3, 2, 0), (3, 2, 1)]
+        );
+    }
+
+    #[test]
+    fn test_6_1_21_missing_versions_chain() {
+        let missing = |previous, next| test_6_1_21_missing_versions(previous, next).collect::<Vec<_>>();
+
+        // consecutive Major, Minor and Patch releases have no gap
+        assert!(missing(Some((1, 0, 0)), (2, 0, 0)).is_empty());
+        assert!(missing(Some((1, 0, 0)), (1, 1, 0)).is_empty());
+        assert!(missing(Some((1, 0, 0)), (1, 0, 1)).is_empty());
+
+        // Minor and Patch versions may end at any point if the next version has a higher Major resp. Minor
+        assert!(missing(Some((1, 2, 3)), (2, 0, 0)).is_empty());
+        assert!(missing(Some((1, 2, 3)), (1, 3, 0)).is_empty());
+        assert!(missing(Some((0, 9, 3)), (1, 0, 0)).is_empty());
+
+        // Major, Minor and Patch versions have to be contiguous
+        assert_eq!(missing(Some((4, 0, 1)), (4, 0, 3)), [(4, 0, 2)]);
+        assert_eq!(missing(Some((4, 0, 3)), (5, 2, 0)), [(5, 0, 0), (5, 1, 0)]);
+        assert_eq!(
+            missing(Some((2, 0, 0)), (4, 1, 2)),
+            [(3, 0, 0), (4, 0, 0), (4, 1, 0), (4, 1, 1)]
+        );
+        // initial development versions have to be contiguous as well
+        assert_eq!(missing(Some((0, 9, 0)), (0, 9, 3)), [(0, 9, 1), (0, 9, 2)]);
+        assert_eq!(missing(Some((0, 1, 0)), (0, 3, 0)), [(0, 2, 0)]);
+    }
+
+    #[test]
+    fn test_6_1_21_collect_gaps_entry_points() {
+        let dates = [
+            "2026-03-09T11:00:00.000Z",
+            "2026-03-09T12:00:00.000Z",
+            "2026-03-09T13:00:00.000Z",
+        ]
+        .map(CsafDateTime::from);
+        let collect_gaps = |numbers: [&str; 3]| {
+            let numbers = numbers.map(CsafVersionNumber::from);
+            let items = [
+                Item::new(&dates[0], numbers[0].as_valid().unwrap()),
+                Item::new(&dates[1], numbers[1].as_valid().unwrap()),
+                Item::new(&dates[2], numbers[2].as_valid().unwrap()),
+            ];
+            let gaps = test_6_1_21_collect_gaps(&items).unwrap();
+            // no pair opens a gap here, so everything is missing in front of the first item
+            assert!(gaps.values().all(|gap| gap.from.is_none()));
+            gaps.into_keys().collect::<Vec<_>>()
+        };
+
+        assert_eq!(
+            collect_gaps(["3.2.2", "0.5.0", "1.0.0"]),
+            [(1, 0, 0), (2, 0, 0), (3, 0, 0), (3, 1, 0), (3, 2, 0), (3, 2, 1)]
+        );
+        assert!(collect_gaps(["1.99.9", "0.5.0", "1.0.0"]).is_empty());
+    }
+
+    #[test]
+    fn test_6_1_21_collect_gaps_is_limited() {
+        let date = CsafDateTime::from("2026-03-09T11:00:00.000Z");
+        let first = CsafVersionNumber::from("1.0.0");
+        let collect_gaps = |last: &CsafVersionNumber| {
+            let items = [
+                Item::new(&date, first.as_valid().unwrap()),
+                Item::new(&date, last.as_valid().unwrap()),
+            ];
+            test_6_1_21_collect_gaps(&items).map(|gaps| gaps.len())
+        };
+
+        // 2.0.0 up to 100.0.0 are missing
+        assert_eq!(collect_gaps(&CsafVersionNumber::from("101.0.0")), Some(99));
+        assert_eq!(
+            collect_gaps(&CsafVersionNumber::from("102.0.0")),
+            Some(MAX_MISSING_ITEMS)
+        );
+        assert_eq!(collect_gaps(&CsafVersionNumber::from("103.0.0")), None);
+        assert_eq!(collect_gaps(&CsafVersionNumber::from("999999.0.0")), None);
+    }
+
+    #[test]
+    fn test_6_1_21_collect_gaps_skips_already_published_versions() {
+        let dates = [
+            "2026-03-09T11:00:00.000Z",
+            "2026-03-09T12:00:00.000Z",
+            "2026-03-09T13:00:00.000Z",
+            "2026-03-09T14:00:00.000Z",
+        ]
+        .map(CsafDateTime::from);
+        let collect_gaps = |numbers: [&str; 4]| {
+            let numbers = numbers.map(CsafVersionNumber::from);
+            let items = [
+                Item::new(&dates[0], numbers[0].as_valid().unwrap()),
+                Item::new(&dates[1], numbers[1].as_valid().unwrap()),
+                Item::new(&dates[2], numbers[2].as_valid().unwrap()),
+                Item::new(&dates[3], numbers[3].as_valid().unwrap()),
+            ];
+            test_6_1_21_collect_gaps(&items)
+                .unwrap()
+                .into_keys()
+                .collect::<Vec<_>>()
+        };
+
+        // 1.0.0 and 2.0.0 are missing in front of 3.0.0, and 3.0.0 is already published when 1.0.0 jumps to 5.0.0
+        assert_eq!(
+            collect_gaps(["3.0.0", "2.0.0", "1.0.0", "5.0.0"]),
+            [(1, 0, 0), (2, 0, 0), (4, 0, 0)]
+        );
+        // a later gap below an already published version is still reported
+        assert_eq!(
+            collect_gaps(["1.0.0", "1.3.0", "1.1.0", "1.1.3"]),
+            [(1, 1, 0), (1, 1, 1), (1, 1, 2), (1, 2, 0)]
+        );
+    }
+
     #[test]
     fn test_test_6_1_21() {
-        let case_intver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from(
-            "2",
-        ))]);
-        let case_intver_2_3_wrong_first_and_missing_1_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2").as_valid().unwrap()),
-            test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1")),
-        ]);
-        let case_semver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from(
-            "2.0.0",
-        ))]);
-        let case_semver_2_3_missing_1_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("2.0.0").as_valid().unwrap()),
-            test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("1.0.0")),
-        ]);
-        let case_s03_intver_1_3_2_missing_2_between = Err(vec![test_6_1_21_err_missing_version_between(
-            &CsafVersionNumber::from("2"),
-            &CsafDateTime::from("2026-03-01T11:00:00.000Z"),
-            &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
-        )]);
-        let case_s04_semver_1_3_2_missing_2_between = Err(vec![test_6_1_21_err_missing_version_between(
-            &CsafVersionNumber::from("2.0.0"),
-            &CsafDateTime::from("2026-03-01T11:00:00.000Z"),
-            &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
-        )]);
-
-        let case_s05_intver_3_1_missing_1_before_2_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3").as_valid().unwrap()),
-            test_6_1_21_err_missing_version_before(
-                &CsafVersionNumber::from("1"),
-                &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
-            ),
-            test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("2")),
-        ]);
-        let case_s06_semver_3_1_missing_1_before_2_at_all = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3.0.0").as_valid().unwrap()),
-            test_6_1_21_err_missing_version_before(
-                &CsafVersionNumber::from("1.0.0"),
-                &CsafDateTime::from("2026-03-03T11:00:00.000Z"),
-            ),
-            test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("2.0.0")),
-        ]);
-
-        let case_mixed_versions_start_with_intver_missing_2_at_all = Err(vec![test_6_1_21_err_missing_version_at_all(
-            &CsafVersionNumber::from("2"),
-        )]);
-        let case_intver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("3").as_valid().unwrap()),
-            test_6_1_21_err_missing_version_before(
-                &CsafVersionNumber::from("1"),
-                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
-            ),
-            test_6_1_21_err_missing_version_before(
-                &CsafVersionNumber::from("2"),
-                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
-            ),
-            test_6_1_21_err_missing_version_between(
-                &CsafVersionNumber::from("4"),
-                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
-                &CsafDateTime::from("2024-01-21T11:00:00.000Z"),
-            ),
-        ]);
-
-        let case_semver_wrong_first_missing_1_and_2_before_4_between = Err(vec![
-            test_6_1_21_err_wrong_first_version(&CsafVersionNumber::from("4.0.0").as_valid().unwrap()),
-            test_6_1_21_err_missing_version_before(
-                &CsafVersionNumber::from("1.0.0"),
-                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
-            ),
-            test_6_1_21_err_missing_version_before(
-                &CsafVersionNumber::from("2.0.0"),
-                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
-            ),
-            test_6_1_21_err_missing_version_at_all(&CsafVersionNumber::from("3.0.0")),
-            test_6_1_21_err_missing_version_between(
-                &CsafVersionNumber::from("5.0.0"),
-                &CsafDateTime::from("2023-08-22T10:00:00.000Z"),
-                &CsafDateTime::from("2024-01-21T11:00:00.000Z"),
-            ),
-        ]);
-
-        // Valid cases for both 2.0 and 2.1
-        // case 11: valid intver final start with 1
-        // case 12: valid intver draft start with 0
-        // case 13: valid semver final start with 1.0.0
-        // case s11: empty revision history
-        // case s12: valid intver interim start with 1
-        // case s13: mixed versioning 1,2,3
-        // case s14: repeated lower version 1,2,1
-
         TESTS_2_0.test_6_1_21.expect(ExpectedResults_2_0 {
-            case_01: case_intver_missing_2_at_all.clone(),
-            case_02: case_intver_2_3_wrong_first_and_missing_1_at_all.clone(),
-            case_s01: case_semver_missing_2_at_all.clone(),
-            case_s02: case_semver_2_3_missing_1_at_all.clone(),
-            case_s03: case_s03_intver_1_3_2_missing_2_between,
-            case_s04: case_s04_semver_1_3_2_missing_2_between,
-            case_s05: case_s05_intver_3_1_missing_1_before_2_at_all,
-            case_s06: case_s06_semver_3_1_missing_1_before_2_at_all,
-            case_s07: case_mixed_versions_start_with_intver_missing_2_at_all.clone(),
-            case_11: Ok(()),
-            case_12: Ok(()),
-            case_13: Ok(()),
-            case_s11: Ok(()),
-            case_s12: Ok(()),
-            case_s13: Ok(()),
-            case_s14: Ok(()),
+            // 1, 3
+            case_01: Err(vec![at_all("2")]),
+            // 2, 3
+            case_02: Err(vec![wrong_first("2"), at_all("1")]),
+            // 1.0.0, 3.0.0
+            case_s01: Err(vec![at_all("2.0.0")]),
+            // 2.0.0, 3.0.0
+            case_s02: Err(vec![wrong_first("2.0.0"), at_all("1.0.0")]),
+            // 1, 3, 2 - 2 is documented, but dated after 3
+            case_s03: Err(vec![between(
+                "2",
+                "2026-03-01T11:00:00.000Z",
+                "2026-03-03T11:00:00.000Z",
+            )]),
+            // 1.0.0, 3.0.0, 2.0.0
+            case_s04: Err(vec![between(
+                "2.0.0",
+                "2026-03-01T11:00:00.000Z",
+                "2026-03-03T11:00:00.000Z",
+            )]),
+            // 3, 1 - 1 is documented, but dated after 3
+            case_s05: Err(vec![
+                wrong_first("3"),
+                before("1", "2026-03-03T11:00:00.000Z"),
+                at_all("2"),
+            ]),
+            // 3.0.0, 1.0.0
+            case_s06: Err(vec![
+                wrong_first("3.0.0"),
+                before("1.0.0", "2026-03-03T11:00:00.000Z"),
+                at_all("2.0.0"),
+            ]),
+            // 1, 3.0.0 - the integer predecessor decides the rendering of the missing version
+            case_s07: Err(vec![at_all("2")]),
+            case_11: Ok(()),  // 1, 2
+            case_12: Ok(()),  // 0, 1
+            case_13: Ok(()),  // 1.0.0, 1.1.0
+            case_s11: Ok(()), // empty revision history
+            case_s12: Ok(()), // 1, 2, 3
+            case_s13: Ok(()), // mixed versioning 1.1.0, 2, 2.0.1, 3.0.0
+            case_s14: Ok(()), // 1, 2, 1 - a repeated lower version is not missing
         });
 
         TESTS_2_1.test_6_1_21.expect(ExpectedResults_2_1 {
-            case_01: case_intver_missing_2_at_all.clone(),
-            case_02: case_intver_2_3_wrong_first_and_missing_1_at_all,
-            case_03: case_intver_missing_2_at_all.clone(),
-            case_04: case_semver_missing_2_at_all,
-            case_05: case_intver_wrong_first_missing_1_and_2_before_4_between,
-            case_06: case_semver_wrong_first_missing_1_and_2_before_4_between,
-            case_07: case_intver_missing_2_at_all,
-            // TODO: Fix this in https://github.com/csaf-rs/csaf/issues/354
-            case_08: Ok(()),
-            case_s01: case_semver_2_3_missing_1_at_all,
-            case_s02: case_mixed_versions_start_with_intver_missing_2_at_all,
-            case_11: Ok(()),
-            case_12: Ok(()),
-            case_13: Ok(()),
-            case_14: Ok(()), // only wrong ordering in json
-            case_15: Ok(()), // only wrong ordering in json due to timezones
-            case_16: Ok(()), // only wrong ordering in json due to timezones
-            case_17: Ok(()), // 1&2 have same date
-            case_18: Ok(()),
-            case_s11: Ok(()),
-            case_s12: Ok(()),
-            case_s13: Ok(()),
-            case_s14: Ok(()),
+            // 1, 3
+            case_01: Err(vec![at_all("2")]),
+            // 2, 3
+            case_02: Err(vec![wrong_first("2"), at_all("1")]),
+            // 1, 3, 4
+            case_03: Err(vec![at_all("2")]),
+            // 1.0.0, 3.0.0
+            case_04: Err(vec![at_all("2.0.0")]),
+            // 3, 2, 1, 5, 4 - 1 and 2 are missing in front of 3, only 4 is missing between 1 and 5,
+            // because 2 and 3 were already published earlier in the sorted list
+            case_05: Err(vec![
+                wrong_first("3"),
+                before("1", "2023-08-22T10:00:00.000Z"),
+                before("2", "2023-08-22T10:00:00.000Z"),
+                between("4", "2024-01-21T10:00:00.000Z", "2024-01-21T11:00:00.000Z"),
+            ]),
+            // 4.0.0, 1.0.0, 2.0.0, 6.0.0, 5.0.0 - 4.0.0 was already published in front of 6.0.0
+            case_06: Err(vec![
+                wrong_first("4.0.0"),
+                before("1.0.0", "2023-08-22T10:00:00.000Z"),
+                before("2.0.0", "2023-08-22T10:00:00.000Z"),
+                at_all("3.0.0"),
+                between("5.0.0", "2024-01-21T10:00:00.000Z", "2024-01-21T11:00:00.000Z"),
+            ]),
+            // 1, 3
+            case_07: Err(vec![at_all("2")]),
+            // 1.0.0, 2, 3.0.0, 4.0.0, 4.0.1, 4.0.3, 5.2.0 - the Patch and Minor chains are interrupted
+            case_08: Err(vec![at_all("4.0.2"), at_all("5.0.0"), at_all("5.1.0")]),
+            // 2.0.0, 3.0.0
+            case_s01: Err(vec![wrong_first("2.0.0"), at_all("1.0.0")]),
+            // 1, 3.0.0 on the same date
+            case_s02: Err(vec![at_all("2")]),
+            case_11: Ok(()),  // 1, 2
+            case_12: Ok(()),  // 0, 1
+            case_13: Ok(()),  // 1.0.0, 1.1.0
+            case_14: Ok(()),  // only wrong ordering in json
+            case_15: Ok(()),  // only wrong ordering in json due to timezones
+            case_16: Ok(()),  // only wrong ordering in json due to timezones
+            case_17: Ok(()),  // 1&2 have same date
+            case_18: Ok(()),  // complete Major, Minor and Patch chain
+            case_s11: Ok(()), // empty revision history
+            case_s12: Ok(()), // 1, 2, 3
+            case_s13: Ok(()), // mixed versioning 1.1.0, 2, 2.0.1, 3.0.0
+            case_s14: Ok(()), // 1, 2, 1 - a repeated lower version is not missing
         });
     }
 }

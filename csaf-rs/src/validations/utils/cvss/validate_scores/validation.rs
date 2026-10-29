@@ -92,36 +92,33 @@ pub fn validate_v3_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Opti
     }
 
     // Validate severities
-    if let Some(calculated) = map_score_to_severity(calculated_base) {
-        if let Some(mismatch) = check_severity_mismatch(
+    if let Some(calculated) = map_score_to_severity(calculated_base)
+        && let Some(mismatch) = check_severity_mismatch(
             &to_unified(&cvss3.base_severity),
             &calculated,
             ScoreType::Base,
             instance_path,
-        ) {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+        )
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
     if let Some(actual) = &cvss3.temporal_severity
         && let Some(calculated) = map_score_to_severity(calculated_temporal)
-    {
-        if let Some(mismatch) =
+        && let Some(mismatch) =
             check_severity_mismatch(&to_unified(actual), &calculated, ScoreType::Temporal, instance_path)
-        {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
     if let Some(actual) = &cvss3.environmental_severity
         && let Some(calculated) = map_score_to_severity(calculated_environmental)
-    {
-        if let Some(mismatch) = check_severity_mismatch(
+        && let Some(mismatch) = check_severity_mismatch(
             &to_unified(actual),
             &calculated,
             ScoreType::Environmental,
             instance_path,
-        ) {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+        )
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
 }
 
@@ -144,18 +141,17 @@ pub fn validate_v4_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Opti
     let calculated_full = parsed.calculated_full_score();
 
     // Validate base score (using full score which includes threat metric E if present)
-    if let Some(calculated) = calculated_full {
-        if let Some(mismatch) = check_score_mismatch(cvss4.base_score, calculated, ScoreType::Base, instance_path) {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+    if let Some(calculated) = calculated_full
+        && let Some(mismatch) = check_score_mismatch(cvss4.base_score, calculated, ScoreType::Base, instance_path)
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
 
     // Validate base severity using base_severity() which converts to unified Severity
     if let Some(calculated) = map_score_to_severity(calculated_full)
         && let Some(actual) = cvss4.base_severity()
+        && let Some(mismatch) = check_severity_mismatch(&actual, &calculated, ScoreType::Base, instance_path)
     {
-        if let Some(mismatch) = check_severity_mismatch(&actual, &calculated, ScoreType::Base, instance_path) {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
 }

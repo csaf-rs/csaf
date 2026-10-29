@@ -114,7 +114,7 @@ fn convert_involvements(
     diagnostics: &mut dyn super::Diagnostics,
     involvements: &[(usize, usize, crate::schema::csaf2_0::schema::Involvement)],
 ) -> Result<(), ErrorString> {
-    let vuln_ids = assign_vulnerability_ids(scope);
+    let vuln_ids = assign_vulnerability_ids(scope)?;
     let conversion_ids = assign_conversion_ids(scope, involvements, &vuln_ids)?;
 
     let entity_ids = create_entitites(scope, settings, diagnostics, involvements, &conversion_ids)?;
@@ -143,7 +143,9 @@ fn convert_involvements(
 ///        The counter starts with `1` and is zero-padded to four digits before appended to the prefix.
 ///
 ///        > If the counter is at `1000` no additional padding is needed anymore.
-fn assign_vulnerability_ids(scope: &mut crate::schema::loose::Document) -> HashMap<usize, String> {
+fn assign_vulnerability_ids(
+    scope: &mut crate::schema::loose::Document,
+) -> Result<HashMap<usize, String>, Cow<'static, str>> {
     let mut vuln_ids: HashMap<usize, String> = HashMap::new();
     let mut counter = 1;
     for (v_id, vuln) in scope
@@ -158,14 +160,13 @@ fn assign_vulnerability_ids(scope: &mut crate::schema::loose::Document) -> HashM
             let vuln_id = format!("VULN-{counter:04}");
             vuln_ids.insert(v_id, vuln_id.clone());
 
-            // TODO: use cast API once available
-            vuln.caution_as_object_mut()
-                .ok()
-                .and_then(|vuln| vuln.insert("dl_vuln_id".to_string(), serde_json::Value::String(vuln_id)));
+            vuln.caution_as_v21_mut()
+                .caution_get_or_insert_dl_vuln_id()
+                .set_str(DlVulnIdT::from_str(&vuln_id).map_err(|_| "Failed to create dl_vuln_id")?);
             counter += 1;
         }
     }
-    vuln_ids
+    Ok(vuln_ids)
 }
 
 ///     2. The CSAF 2.0 to CSAF 2.1 Converter SHALL create for each `involvements` item a conversion ID which is constructed as follows:

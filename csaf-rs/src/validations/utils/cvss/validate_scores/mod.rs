@@ -1,5 +1,5 @@
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::cvss::ScoreType;
+use crate::validations::utils::cvss::errors::ScoreType;
 
 pub mod validation;
 

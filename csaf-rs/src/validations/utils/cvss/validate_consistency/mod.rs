@@ -1,10 +1,10 @@
 use crate::validation::TestFinding;
-use crate::validations::utils::cvss::ScoreType;
 use crate::validations::utils::cvss::validate_consistency::errors::{
     create_field_missing_in_object_error, create_field_missing_in_vector_error, create_field_value_mismatch_error,
     create_severity_mismatch_error,
 };
 use cvss_rs::{Defined, Severity};
+use crate::validations::utils::cvss::errors::ScoreType;
 
 pub mod errors;
 pub mod validation;

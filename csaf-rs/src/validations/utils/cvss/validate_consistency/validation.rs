@@ -142,50 +142,50 @@ pub fn validate_v3_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut
     };
 
     // Base metrics
-    check_optional_field_mismatch(
+    check_required_field_mismatch(
         "attackVector",
         &cvss3.attack_vector,
         &parsed.attack_vector,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_required_field_mismatch(
         "attackComplexity",
         &cvss3.attack_complexity,
         &parsed.attack_complexity,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_required_field_mismatch(
         "privilegesRequired",
         &cvss3.privileges_required,
         &parsed.privileges_required,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_required_field_mismatch(
         "userInteraction",
         &cvss3.user_interaction,
         &parsed.user_interaction,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch("scope", &cvss3.scope, &parsed.scope, instance_path, errors);
-    check_optional_field_mismatch(
+    check_required_field_mismatch("scope", &cvss3.scope, &parsed.scope, instance_path, errors);
+    check_required_field_mismatch(
         "confidentialityImpact",
         &cvss3.confidentiality_impact,
         &parsed.confidentiality_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_required_field_mismatch(
         "integrityImpact",
         &cvss3.integrity_impact,
         &parsed.integrity_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_required_field_mismatch(
         "availabilityImpact",
         &cvss3.availability_impact,
         &parsed.availability_impact,

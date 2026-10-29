@@ -2,7 +2,7 @@ use crate::validation::TestFinding;
 
 use crate::validations::utils::cvss::deserialize_vector::deserialize_vector;
 use crate::validations::utils::cvss::validate_consistency::utils::{
-    check_optional_field_mismatch, check_required_field_mismatch,
+    check_field_mismatch_with_not_defined, check_required_field_mismatch,
 };
 use cvss_rs::Version;
 use cvss_rs::v2_0::CvssV2;
@@ -68,56 +68,56 @@ pub fn validate_v2_consistency(cvss2: &CvssV2, instance_path: &str, errors: &mut
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "exploitability",
         &cvss2.exploitability,
         &parsed.exploitability,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "remediationLevel",
         &cvss2.remediation_level,
         &parsed.remediation_level,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "reportConfidence",
         &cvss2.report_confidence,
         &parsed.report_confidence,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "collateralDamagePotential",
         &cvss2.collateral_damage_potential,
         &parsed.collateral_damage_potential,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "targetDistribution",
         &cvss2.target_distribution,
         &parsed.target_distribution,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "confidentialityRequirement",
         &cvss2.confidentiality_requirement,
         &parsed.confidentiality_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "integrityRequirement",
         &cvss2.integrity_requirement,
         &parsed.integrity_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "availabilityRequirement",
         &cvss2.availability_requirement,
         &parsed.availability_requirement,
@@ -194,21 +194,21 @@ pub fn validate_v3_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut
     );
 
     // Temporal metrics
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "exploitCodeMaturity",
         &cvss3.exploit_code_maturity,
         &parsed.exploit_code_maturity,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "remediationLevel",
         &cvss3.remediation_level,
         &parsed.remediation_level,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "reportConfidence",
         &cvss3.report_confidence,
         &parsed.report_confidence,
@@ -217,77 +217,77 @@ pub fn validate_v3_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut
     );
 
     // Environmental metrics
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "confidentialityRequirement",
         &cvss3.confidentiality_requirement,
         &parsed.confidentiality_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "integrityRequirement",
         &cvss3.integrity_requirement,
         &parsed.integrity_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "availabilityRequirement",
         &cvss3.availability_requirement,
         &parsed.availability_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedAttackVector",
         &cvss3.modified_attack_vector,
         &parsed.modified_attack_vector,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedAttackComplexity",
         &cvss3.modified_attack_complexity,
         &parsed.modified_attack_complexity,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedPrivilegesRequired",
         &cvss3.modified_privileges_required,
         &parsed.modified_privileges_required,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedUserInteraction",
         &cvss3.modified_user_interaction,
         &parsed.modified_user_interaction,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedScope",
         &cvss3.modified_scope,
         &parsed.modified_scope,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedConfidentialityImpact",
         &cvss3.modified_confidentiality_impact,
         &parsed.modified_confidentiality_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedIntegrityImpact",
         &cvss3.modified_integrity_impact,
         &parsed.modified_integrity_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedAvailabilityImpact",
         &cvss3.modified_availability_impact,
         &parsed.modified_availability_impact,
@@ -391,7 +391,7 @@ pub fn validate_v4_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut
     );
 
     // Threat metric
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "exploitMaturity",
         &cvss4.exploit_maturity,
         &parsed.exploit_maturity,
@@ -400,98 +400,98 @@ pub fn validate_v4_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut
     );
 
     // Environmental metrics
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "confidentialityRequirement",
         &cvss4.confidentiality_requirement,
         &parsed.confidentiality_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "integrityRequirement",
         &cvss4.integrity_requirement,
         &parsed.integrity_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "availabilityRequirement",
         &cvss4.availability_requirement,
         &parsed.availability_requirement,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedAttackVector",
         &cvss4.modified_attack_vector,
         &parsed.modified_attack_vector,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedAttackComplexity",
         &cvss4.modified_attack_complexity,
         &parsed.modified_attack_complexity,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedAttackRequirements",
         &cvss4.modified_attack_requirements,
         &parsed.modified_attack_requirements,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedPrivilegesRequired",
         &cvss4.modified_privileges_required,
         &parsed.modified_privileges_required,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedUserInteraction",
         &cvss4.modified_user_interaction,
         &parsed.modified_user_interaction,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedVulnConfidentialityImpact",
         &cvss4.modified_vuln_confidentiality_impact,
         &parsed.modified_vuln_confidentiality_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedVulnIntegrityImpact",
         &cvss4.modified_vuln_integrity_impact,
         &parsed.modified_vuln_integrity_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedVulnAvailabilityImpact",
         &cvss4.modified_vuln_availability_impact,
         &parsed.modified_vuln_availability_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedSubConfidentialityImpact",
         &cvss4.modified_sub_confidentiality_impact,
         &parsed.modified_sub_confidentiality_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedSubIntegrityImpact",
         &cvss4.modified_sub_integrity_impact,
         &parsed.modified_sub_integrity_impact,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "modifiedSubAvailabilityImpact",
         &cvss4.modified_sub_availability_impact,
         &parsed.modified_sub_availability_impact,
@@ -501,30 +501,30 @@ pub fn validate_v4_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut
 
     // Supplemental metrics
     // Safety, Automatable and Recovery are capitalized in the JSON schema
-    check_optional_field_mismatch("Safety", &cvss4.safety, &parsed.safety, instance_path, errors);
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined("Safety", &cvss4.safety, &parsed.safety, instance_path, errors);
+    check_field_mismatch_with_not_defined(
         "Automatable",
         &cvss4.automatable,
         &parsed.automatable,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch("Recovery", &cvss4.recovery, &parsed.recovery, instance_path, errors);
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined("Recovery", &cvss4.recovery, &parsed.recovery, instance_path, errors);
+    check_field_mismatch_with_not_defined(
         "valueDensity",
         &cvss4.value_density,
         &parsed.value_density,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "vulnerabilityResponseEffort",
         &cvss4.vulnerability_response_effort,
         &parsed.vulnerability_response_effort,
         instance_path,
         errors,
     );
-    check_optional_field_mismatch(
+    check_field_mismatch_with_not_defined(
         "providerUrgency",
         &cvss4.provider_urgency,
         &parsed.provider_urgency,

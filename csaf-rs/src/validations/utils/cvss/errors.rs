@@ -17,10 +17,3 @@ pub fn create_vector_parse_error(
         instance_path: instance_path.to_string(),
     })
 }
-
-pub fn create_deserialization_error(error_message: String, instance_path: String) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("Error deserializing CVSS metric: {error_message}"),
-        instance_path,
-    })
-}

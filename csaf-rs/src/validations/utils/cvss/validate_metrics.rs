@@ -1,10 +1,10 @@
-use super::{create_deserialization_error, deserialize_cvss};
+use super::deserialize_into_cvss::{create_deserialization_error, deserialize_cvss};
 use crate::csaf_traits::ContentTrait;
 use crate::validation::TestFinding;
 use cvss_rs::{Cvss, Version};
 use serde_json::Value;
 
-/// Validates the CVSS scores and severities (for v3.x and v4) of all CVSS metrics (v2, v3.x, v4) present
+/// Validates the CVSS scores (for v2, v3.x and v4) and severities (for v3.x and v4) of all CVSS metrics (v2, v3.x and v4) present
 /// in the vulnerability scores / metric content object.
 ///
 /// For each present metric, the scores and severities stated in the JSON object are compared
@@ -20,15 +20,7 @@ pub fn validate_content_scores(
     instance_path: &str,
     errors: &mut Option<Vec<TestFinding>>,
 ) {
-    if let Some(cvss_v2_map) = content.get_cvss_v2_raw() {
-        validate_scores(cvss_v2_map, instance_path, errors, Version::V2);
-    }
-    if let Some(cvss_v3_map) = content.get_cvss_v3_raw() {
-        validate_scores(cvss_v3_map, instance_path, errors, Version::V3_0);
-    }
-    if let Some(cvss_v4_map) = content.get_cvss_v4_raw() {
-        validate_scores(cvss_v4_map, instance_path, errors, Version::V4);
-    }
+    validate_content_metrics(content, instance_path, errors, validate_scores);
 }
 
 /// Validates the consistency of all CVSS metrics (v2, v3.x, v4) present in `content`.
@@ -46,14 +38,24 @@ pub fn validate_content_consistency(
     instance_path: &str,
     errors: &mut Option<Vec<TestFinding>>,
 ) {
+    validate_content_metrics(content, instance_path, errors, validate_consistency);
+}
+
+/// Dispatch validate function for each CVSS metric present.
+fn validate_content_metrics(
+    content: &impl ContentTrait,
+    instance_path: &str,
+    errors: &mut Option<Vec<TestFinding>>,
+    validate: impl Fn(&serde_json::Map<String, Value>, &str, &mut Option<Vec<TestFinding>>, Version),
+) {
     if let Some(cvss_map) = content.get_cvss_v2_raw() {
-        validate_consistency(cvss_map, instance_path, errors, Version::V2);
+        validate(cvss_map, instance_path, errors, Version::V2);
     }
     if let Some(cvss_map) = content.get_cvss_v3_raw() {
-        validate_consistency(cvss_map, instance_path, errors, Version::V3_0);
+        validate(cvss_map, instance_path, errors, Version::V3_0);
     }
     if let Some(cvss_map) = content.get_cvss_v4_raw() {
-        validate_consistency(cvss_map, instance_path, errors, Version::V4);
+        validate(cvss_map, instance_path, errors, Version::V4);
     }
 }
 

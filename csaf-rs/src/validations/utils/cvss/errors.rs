@@ -10,7 +10,6 @@ pub enum ScoreType {
     Environmental,
 }
 
-
 pub fn create_vector_parse_error(
     vector_string: &str,
     version: Version,

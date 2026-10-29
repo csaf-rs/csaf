@@ -1,12 +1,20 @@
 use super::deserialize::deserialize_and_version_match_cvss_map;
 use crate::csaf_traits::ContentTrait;
-use crate::validation::{TestFinding};
+use crate::validation::TestFinding;
 use cvss_rs::{Cvss, Version};
 use serde_json::Value;
 
 /// Wrapper type for a CVSS value whose version matches the expected CSAF score/metric version property.
 #[derive(Debug)]
-pub(crate) struct VersionMatchedCvss(Cvss);
+pub(crate) struct VersionMatchedCvss(pub Cvss);
+
+impl VersionMatchedCvss {
+    /// Returns the version of the contained CVSS value.
+    #[cfg(test)]
+    pub fn into_cvss(self) -> Cvss {
+        self.0
+    }
+}
 
 /// Dispatch validate function for each CVSS metric present (`cvss_v2`, `cvss_v3`, `cvss_v4`).
 pub(crate) fn validate_content_metrics(
@@ -27,7 +35,7 @@ pub(crate) fn validate_content_metrics(
 }
 
 /// Try to dispatch the validate function for the expected version.
-/// 
+///
 /// Will add an error to `errors` if the CVSS metric cannot be deserialized or if the deserialized version does not match the expected version.
 pub(crate) fn validate_metric(
     cvss_map: &serde_json::Map<String, Value>,
@@ -43,7 +51,6 @@ pub(crate) fn validate_metric(
         },
     }
 }
-
 
 /// Deserializes and extracts the expected CVSS variant, and validates scores and severities.
 ///
@@ -103,4 +110,3 @@ pub(crate) fn validate_consistency(
         },
     );
 }
-

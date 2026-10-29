@@ -1,8 +1,7 @@
 use std::str::FromStr;
 
 use crate::validation::TestFinding;
-use crate::validations::utils::cvss::ScoreType;
-use crate::validations::utils::cvss::errors::create_vector_parse_error;
+use crate::validations::utils::cvss::errors::{create_vector_parse_error, ScoreType};
 use crate::validations::utils::cvss::validate_consistency::{check_severity_mismatch, map_score_to_severity};
 use crate::validations::utils::cvss::validate_scores::check_score_mismatch;
 use cvss_rs::v2_0::CvssV2;

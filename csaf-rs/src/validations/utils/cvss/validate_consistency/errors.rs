@@ -1,6 +1,6 @@
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::cvss::ScoreType;
 use cvss_rs::Severity;
+use crate::validations::utils::cvss::errors::ScoreType;
 
 pub fn create_severity_mismatch_error(
     calculated: &Severity,

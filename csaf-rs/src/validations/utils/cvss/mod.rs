@@ -1,17 +1,12 @@
 pub mod deserialize;
+pub mod dispatch;
 pub mod errors;
 pub mod validate_consistency;
-pub mod dispatch;
 pub mod validate_scores;
 
-use cvss_rs::Cvss;
 
-use serde::Deserialize;
-use strum::{AsRefStr, Display};
 use crate::csaf_traits::ContentTrait;
 use crate::validation::TestFinding;
-
-
 
 /// Validates the CVSS scores (for v2, v3.x and v4) and severities (for v3.x and v4) of all CVSS metrics (v2, v3.x and v4) present
 /// in the vulnerability scores / metric content object.
@@ -49,6 +44,3 @@ pub fn validate_content_consistency(
 ) {
     dispatch::validate_content_metrics(content, instance_path, errors, dispatch::validate_consistency);
 }
-
-
-

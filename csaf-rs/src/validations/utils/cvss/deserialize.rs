@@ -1,11 +1,11 @@
 use crate::validation::TestFindingData;
+use crate::validations::utils::cvss::dispatch::VersionMatchedCvss;
 use crate::validations::utils::cvss::errors::{
     create_deserialization_finding_data, create_deserialized_cvss_expected_version_mismatch_finding_data,
 };
 use cvss_rs::{Cvss, Version};
 use serde::Deserialize;
 use serde_json::{Map, Value};
-use crate::validations::utils::cvss::dispatch::VersionMatchedCvss;
 
 /// Attempts to deserialize a csaf-rs/csaf CVSS JSON map into a scm-rs/cvss-rs [`Cvss`] enum, checking
 /// if the expected version defined by the CSAF property matches the deserialized version.

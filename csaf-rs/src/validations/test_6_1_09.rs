@@ -1,6 +1,6 @@
+use crate::validations::utils::cvss;
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
-    cvss,
     validation::TestFinding,
 };
 
@@ -35,8 +35,10 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_9 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::cvss::{ScoreType, create_score_mismatch_error, create_severity_mismatch_error};
+    use crate::validations::utils::cvss::{ScoreType};
     use cvss_rs::Severity;
+    use crate::validations::utils::cvss::validate_consistency::errors::create_severity_mismatch_error;
+    use crate::validations::utils::cvss::validate_scores::create_score_mismatch_error;
 
     #[test]
     fn test_test_6_1_09() {

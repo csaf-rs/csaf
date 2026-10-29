@@ -4,15 +4,14 @@ use std::{
     str::FromStr,
 };
 
+use serde_json::json;
+
 use crate::{
     converter::{Convert, Warning},
     csaf_traits::TrackingTrait,
     schema::{
         csaf2_0::schema::PartyStatus,
-        csaf2_1::schema::{
-            Action, ActionCategory, ActionIdT, ActionStatus, DlVulnIdT, Entity, EntityCategory, EntityIdT, EntityRefsT,
-            EntityRefsTItem, NameOfTheEntity, SummaryOfTheAction,
-        },
+        csaf2_1::schema::{ActionCategory, ActionStatus, DlVulnIdT, Entity, EntityCategory, NameOfTheEntity},
     },
 };
 
@@ -134,6 +133,18 @@ fn convert_involvements(
 
     collapse_entities(scope, settings, diagnostics)?;
     collapse_actions(scope, settings, diagnostics)?;
+
+    if scope
+        .v21_view()
+        .document()
+        .and_then(|d| d.involvement())
+        .is_some_and(|i| {
+            i.actions().is_some_and(|a| a.as_slice().is_ok_and(|a| a.is_empty()))
+                || i.entities().is_some_and(|e| e.as_slice().is_ok_and(|e| e.is_empty()))
+        })
+    {
+        return Err("Involvement conversion yielded no actions or entities".into());
+    }
 
     Ok(())
 }
@@ -389,7 +400,8 @@ fn apply_entity_mapping(
 ///             and discard the `action` unless the user instructed the tool to add the action with partial data.
 ///             In the first case, the CSAF 2.0 to CSAF 2.1 Converter SHALL issue a warning that an involvement without sufficient data was
 ///             detected, could not be converted automatically and therefore was removed.
-///             If the CSAF 2.0 to CSAF 2.1 Converter was instructed to add the action with partial data, it SHALL issue a warning that an involvement without sufficient data was detected and only partially converted.
+///             If the CSAF 2.0 to CSAF 2.1 Converter was instructed to add the action with partial data, it SHALL issue a warning that an
+///             involvement without sufficient data was detected and only partially converted.
 fn convert_involvement(
     scope: &mut crate::schema::loose::Document,
     (v_id, i_id, involvement): (&usize, &usize, &crate::schema::csaf2_0::schema::Involvement),
@@ -412,69 +424,51 @@ fn convert_involvement(
         (v_id, i_id, involvement),
         &category,
         entity_ids.get(&(*v_id, *i_id)).ok_or("Entity ID not found")?,
+        settings.create_incomplete_actions,
+        diagnostics,
     ) {
         Ok(referenced) => referenced,
         Err(message) => {
             diagnostics.warning(
                 format!("/vulnerabilitites/{v_id}/involvements/{i_id}").into(),
-                super::Warning::InvolvementActionParticipantsIndeterminable(message),
+                super::Warning::InvolvementActionParticipantsIndeterminableSkipped(message),
             );
             return Ok(());
         },
     };
-    // TODO: Support output of incomplete actions
 
-    let action: Action = Action::builder()
-        .dl_vuln_ids(Some(vec![
-            DlVulnIdT::from_str(vuln_ids.get(v_id).ok_or("Vulnerability ID not found")?)
-                .map_err(|_| "Invalid Vulnerability ID")?,
-        ]))
-        .action_id(
-            format!(
-                "ACN-{}",
-                conversion_ids.get(&(*v_id, *i_id)).ok_or("Conversion ID not found")?
-            )
-            .as_str(),
-        )
-        .summary(
-            involvement
-                .summary
-                .as_ref()
-                .map(|s| SummaryOfTheAction::from_str(s.as_str()).map_err(|_| "Invalid Summary"))
-                .transpose()?,
-        )
-        .date(involvement.date.clone().unwrap_or_else(|| {
-            diagnostics.warning(
-                format!("/vulnerabilitites/{v_id}/involvements/{i_id}").into(),
-                Warning::InvolvementWithoutDateOutputAsActionWithEmptyDate,
-            );
-            "".to_string()
-        }))
-        .category(category)
-        .status(status)
-        .acting_entity_refs(EntityRefsT(
-            acting_entity_refs
-                .into_iter()
-                .map(EntityRefsTItem::IdT)
-                .collect::<Vec<_>>(),
-        ))
-        .receiving_entity_refs(
-            receiving_entity_refs
-                .map(|entity_ids| EntityRefsT(entity_ids.into_iter().map(EntityRefsTItem::IdT).collect::<Vec<_>>())),
-        )
-        .referenced_action_ids(referenced_action_ids)
-        .try_into()
-        .map_err(|_| "Failed to create action")?;
+    let mut action = json!(
+        {
+            "dl_vuln_ids": [vuln_ids.get(v_id).ok_or("Vulnerability ID not found")?],
+            "action_id": format!("ACN-{}", conversion_ids.get(&(*v_id, *i_id)).ok_or("Conversion ID not found")?),
+            "summary": involvement.summary.as_ref().map(|s| s.as_str()).unwrap_or(""),
+            "date": involvement.date.clone().unwrap_or_else(|| {
+                diagnostics.warning(
+                    format!("/vulnerabilitites/{v_id}/involvements/{i_id}").into(),
+                    Warning::InvolvementWithoutDateOutputAsActionWithEmptyDate,
+                );
+                "".to_string()
+            }),
+            "status": status.to_string(),
+            "category": category.to_string(),
+            "acting_entity_refs": acting_entity_refs,
+        }
+    );
+    if let Some(refs) = receiving_entity_refs {
+        action["receiving_entity_refs"] = json!(refs);
+    }
+    if let Some(refs) = referenced_action_ids {
+        action["referenced_action_ids"] = json!(refs);
+    }
 
-    let actions = scope
+    scope
         .v21_view_mut()
         .caution_get_or_insert_document()
         .caution_get_or_insert_involvement()
         .caution_get_or_insert_actions()
         .caution_as_vec_mut()
-        .map_err(|_| "Failed to insert list of involvement actions")?;
-
-    actions.push(serde_json::to_value(action).map_err(|_| "Failed to serialize action")?);
+        .map_err(|_| "Failed to insert list of involvement actions")?
+        .push(action);
 
     extract_involvement_entity_details(scope, (v_id, i_id, involvement), settings, diagnostics);
     Ok(())
@@ -501,7 +495,7 @@ fn map_involvement_status(status: PartyStatus) -> (ActionStatus, ActionCategory)
     }
 }
 
-type ReferencedEntitiesAndActions = (Vec<EntityIdT>, Option<Vec<EntityIdT>>, Option<Vec<ActionIdT>>);
+type ReferencedEntitiesAndActions = (Vec<String>, Option<Vec<String>>, Option<Vec<String>>);
 ///        - The CSAF 2.0 to CSAF 2.1 Converter SHALL set the `acting_entity_refs` and `receiving_entity_refs` according to the content
 ///          of the current `involvements` item using the corresponding entry from the list of entities.
 ///          As default, the entity that corresponds to the `party` is referenced in the `acting_entity_refs`.
@@ -524,26 +518,41 @@ type ReferencedEntitiesAndActions = (Vec<EntityIdT>, Option<Vec<EntityIdT>>, Opt
 ///             detected, could not be converted automatically and therefore was removed.
 ///             If the CSAF 2.0 to CSAF 2.1 Converter was instructed to add the action with partial data, it SHALL issue a warning that an involvement without sufficient data was detected and only partially converted.
 fn find_referenced_entities_and_actions(
-    (_v_id, _i_id, _involvement): (&usize, &usize, &crate::schema::csaf2_0::schema::Involvement),
+    (v_id, i_id, _involvement): (&usize, &usize, &crate::schema::csaf2_0::schema::Involvement),
     category: &ActionCategory,
     entity_id: &str,
+    create_incomplete_actions: bool,
+    diagnostics: &mut dyn super::Diagnostics,
 ) -> Result<ReferencedEntitiesAndActions, ErrorString> {
-    let first = EntityIdT::from_str(entity_id).map_err(|_| "Invalid entity ID")?;
-
-    // TODO: derive from context
-    // let default_other = EntityIdT::from_str("EID-Publisher").map_err(|_| "Invalid entity ID")?;
-
     match category {
         // TODO: Determine receiving entity and referenced action
         ActionCategory::Confirmation | ActionCategory::Dispute => {
-            Err("Could not determine receiving entity and referenced action".into())
-            // Ok((vec![first], Some(vec![default_other]), None)),
+            if create_incomplete_actions {
+                diagnostics.warning(
+                    format!("/vulnerabilitites/{v_id}/involvements/{i_id}").into(),
+                    super::Warning::InvolvementActionParticipantsIndeterminableOutputEmpty,
+                );
+                Ok((
+                    vec![entity_id.to_string()],
+                    Some(vec!["".to_string()]),
+                    Some(vec!["".to_string()]),
+                ))
+            } else {
+                Err("Could not determine receiving entity and referenced action".into())
+            }
         },
 
         // TODO: Determine receiving entity
         ActionCategory::Coordination | ActionCategory::Notification | ActionCategory::Embargo => {
-            Err("Could not determine receiving entity".into())
-            // Ok((vec![first], Some(vec![default_other]), None))
+            if create_incomplete_actions {
+                diagnostics.warning(
+                    format!("/vulnerabilitites/{v_id}/involvements/{i_id}").into(),
+                    super::Warning::InvolvementActionParticipantsIndeterminableOutputEmpty,
+                );
+                Ok((vec![entity_id.to_string()], Some(vec!["".to_string()]), None))
+            } else {
+                Err("Could not determine receiving entity".into())
+            }
         },
 
         // These categories do not need additional receiving entities or actions.
@@ -552,7 +561,7 @@ fn find_referenced_entities_and_actions(
         | ActionCategory::Exploitation
         | ActionCategory::FixDeployment
         | ActionCategory::FixRelease
-        | ActionCategory::Observation => Ok((vec![first], None, None)),
+        | ActionCategory::Observation => Ok((vec![entity_id.to_string()], None, None)),
     }
 }
 
@@ -631,7 +640,7 @@ fn collapse_entities(
                 }
             });
         }
-        if let Some(refs) = action.referenced_action_ids_mut()
+        if let Some(refs) = action.receiving_entity_refs_mut()
             && let Ok(ref_list) = refs.caution_as_vec_mut()
         {
             ref_list.iter_mut().for_each(|entity_ref| {
@@ -702,7 +711,7 @@ fn collapse_actions(
                 .map(|id| id.as_str().map(|id| id.to_string()))
                 .unwrap_or_default()
                 .unwrap_or_default();
-            let mut vuln_ids = action_relevant_properties
+            let vuln_ids = action_relevant_properties
                 .remove("dl_vuln_ids")
                 .and_then(|ids| ids.as_array().cloned())
                 .unwrap_or_default();
@@ -712,13 +721,17 @@ fn collapse_actions(
             // don't collapse actions without date
             if action_content
                 .get("date")
-                .is_some_and(|date| !date.as_str().unwrap_or_default().is_empty())
+                .is_some_and(|date| date.as_str().unwrap_or_default().is_empty())
             {
                 return true;
             }
             if let Some(replacement) = action_vuln_ids_by_content.get(&action_relevant_properties) {
                 if let Some(ids) = combined_vuln_ids.get_mut(replacement) {
-                    ids.append(&mut vuln_ids);
+                    for vuln_id in vuln_ids {
+                        if !ids.contains(&vuln_id) {
+                            ids.push(vuln_id);
+                        }
+                    }
                 }
                 return false;
             } else {

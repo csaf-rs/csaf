@@ -80,7 +80,8 @@ pub enum Warning {
     VulnerabililtyInvolvementsConversionFailed(Cow<'static, str>),
     InvolvementWithoutDateSkipped,
     InvolvementWithoutDateOutputAsActionWithEmptyDate,
-    InvolvementActionParticipantsIndeterminable(Cow<'static, str>),
+    InvolvementActionParticipantsIndeterminableSkipped(Cow<'static, str>),
+    InvolvementActionParticipantsIndeterminableOutputEmpty,
 }
 
 impl fmt::Display for Warning {
@@ -104,8 +105,11 @@ impl fmt::Display for Warning {
             Warning::InvolvementWithoutDateOutputAsActionWithEmptyDate => {
                 "Vulnerability involvement without date was output as an action with an empty date, please add missing dates from other sources"
             },
-            Warning::InvolvementActionParticipantsIndeterminable(message) => {
-                &format!("Involvement action participants could not be determined automatically: {message}")
+            Warning::InvolvementActionParticipantsIndeterminableSkipped(message) => &format!(
+                "Involvement action participants could not be determined automatically. Action conversion has been skipped. Reason: {message}"
+            ),
+            Warning::InvolvementActionParticipantsIndeterminableOutputEmpty => {
+                "Involvement action participants could not be determined automatically, action was only partially converted"
             },
         };
         f.write_str(s)

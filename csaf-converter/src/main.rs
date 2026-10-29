@@ -94,6 +94,7 @@ fn main() -> Result<(), anyhow::Error> {
     let settings = Settings {
         collapse_actions: true,
         collapse_entities: true,
+        create_incomplete_actions: true,
         ..Default::default()
     };
 

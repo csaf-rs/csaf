@@ -15,7 +15,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentLevelMetaData as DocumentLevelMetaData21, EntityRefsTItem, ExtensionsT as Extensions21,
     ProductTree as ProductTree21, Vulnerability as Vulnerability21,
 };
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -75,6 +75,23 @@ pub trait CsafTrait {
         self.get_all_product_references()
             .iter()
             .map(|(id, _)| id.to_owned())
+            .collect()
+    }
+
+    fn get_all_document_local_vuln_id_references(&self) -> HashSet<String> {
+        let Some(involvement) = self.get_document().get_involvement() else {
+            return HashSet::new();
+        };
+
+        involvement
+            .get_actions()
+            .flat_map(|action| {
+                action
+                    .get_document_local_vuln_ids()
+                    .into_iter()
+                    .flatten()
+                    .map(ToOwned::to_owned)
+            })
             .collect()
     }
 

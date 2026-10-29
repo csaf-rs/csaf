@@ -1,6 +1,4 @@
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::cvss::errors::ScoreType;
-use cvss_rs::Severity;
 
 pub fn create_field_value_mismatch_error<T: std::fmt::Display>(
     field_name: &str,

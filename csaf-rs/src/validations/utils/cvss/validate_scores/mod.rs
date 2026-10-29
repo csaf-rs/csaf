@@ -3,7 +3,7 @@ use crate::validations::utils::cvss::dispatch::validate_metric;
 use cvss_rs::{Cvss, Version};
 use serde_json::Value;
 
-mod utils;
+pub mod utils;
 pub mod validation;
 
 /// Deserializes and extracts the expected CVSS variant, and validates scores and severities.

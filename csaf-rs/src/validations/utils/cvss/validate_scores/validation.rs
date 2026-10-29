@@ -1,14 +1,13 @@
-use std::str::FromStr;
-
 use crate::validation::TestFinding;
-use crate::validations::utils::cvss::errors::{ScoreType, create_vector_parse_error};
+use crate::validations::utils::cvss::ScoreType;
+use crate::validations::utils::cvss::deserialize_vector::deserialize_vector;
 use crate::validations::utils::cvss::validate_scores::utils::{
     check_score_mismatch, check_severity_mismatch, map_score_to_severity, to_unified,
 };
+use cvss_rs::Version;
 use cvss_rs::v2_0::CvssV2;
-use cvss_rs::v3::{CvssV3};
+use cvss_rs::v3::CvssV3;
 use cvss_rs::v4_0::CvssV4;
-use cvss_rs::{Version};
 use serde_json::Value;
 
 /// Validates CVSS v2 scores.
@@ -24,15 +23,10 @@ pub fn validate_v2_scores(
     errors: &mut Option<Vec<TestFinding>>,
 ) {
     // Parse vector string to get a struct with populated metrics for calculation
-    let parsed = match CvssV2::from_str(&cvss2.vector_string) {
-        Ok(p) => p,
-        Err(e) => {
-            errors.get_or_insert_default().push(create_vector_parse_error(
-                &cvss2.vector_string,
-                Version::V2,
-                &e,
-                instance_path,
-            ));
+    let parsed = match deserialize_vector::<CvssV2>(&cvss2.vector_string, Version::V2, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
             return;
         },
     };
@@ -67,15 +61,10 @@ pub fn validate_v2_scores(
 /// Checked severity fields: `baseSeverity`, `temporalSeverity`, `environmentalSeverity`
 pub fn validate_v3_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
-    let parsed = match CvssV3::from_str(&cvss3.vector_string) {
-        Ok(p) => p,
-        Err(e) => {
-            errors.get_or_insert_default().push(create_vector_parse_error(
-                &cvss3.vector_string,
-                Version::V3_0,
-                &e,
-                instance_path,
-            ));
+    let parsed = match deserialize_vector::<CvssV3>(&cvss3.vector_string, Version::V3_0, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
             return;
         },
     };
@@ -84,25 +73,24 @@ pub fn validate_v3_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Opti
     let calculated_temporal = parsed.calculated_temporal_score();
     let calculated_environmental = parsed.calculated_environmental_score();
 
-    // Validate scores
-    if let Some(calculated) = calculated_base {
-        if let Some(mismatch) = check_score_mismatch(cvss3.base_score, calculated, ScoreType::Base, instance_path) {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+    // if the score calculation did not fail
+    if let Some(calculated) = calculated_base
+        && let Some(mismatch) = check_score_mismatch(cvss3.base_score, calculated, ScoreType::Base, instance_path)
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
+
     if let Some(actual) = cvss3.temporal_score
         && let Some(calculated) = calculated_temporal
+        && let Some(mismatch) = check_score_mismatch(actual, calculated, ScoreType::Temporal, instance_path)
     {
-        if let Some(mismatch) = check_score_mismatch(actual, calculated, ScoreType::Temporal, instance_path) {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
     if let Some(actual) = cvss3.environmental_score
         && let Some(calculated) = calculated_environmental
+        && let Some(mismatch) = check_score_mismatch(actual, calculated, ScoreType::Environmental, instance_path)
     {
-        if let Some(mismatch) = check_score_mismatch(actual, calculated, ScoreType::Environmental, instance_path) {
-            errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-        }
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
 
     // Validate severities
@@ -147,15 +135,10 @@ pub fn validate_v3_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Opti
 /// Checked fields: `baseScore`, `baseSeverity`
 pub fn validate_v4_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
-    let parsed = match CvssV4::from_str(&cvss4.vector_string) {
-        Ok(p) => p,
-        Err(e) => {
-            errors.get_or_insert_default().push(create_vector_parse_error(
-                &cvss4.vector_string,
-                Version::V4,
-                &e,
-                instance_path,
-            ));
+    let parsed = match deserialize_vector::<CvssV4>(&cvss4.vector_string, Version::V4, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
             return;
         },
     };

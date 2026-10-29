@@ -1,7 +1,6 @@
 pub mod deserialize_json;
-mod deserialize_vector;
+pub mod deserialize_vector;
 pub mod dispatch;
-pub mod errors;
 pub mod validate_consistency;
 pub mod validate_scores;
 
@@ -10,6 +9,15 @@ use crate::validation::TestFinding;
 use crate::validations::utils::cvss::dispatch::validate_content_metrics;
 use crate::validations::utils::cvss::validate_consistency::validate_consistency;
 use crate::validations::utils::cvss::validate_scores::validate_scores;
+use strum::{AsRefStr, Display};
+
+/// The type of CVSS score being validated, use for error messages.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Display, AsRefStr)]
+pub enum ScoreType {
+    Base,
+    Temporal,
+    Environmental,
+}
 
 /// Validates the CVSS scores (for v2, v3.x and v4) and severities (for v3.x and v4) of all CVSS metrics (v2, v3.x and v4) present
 /// in the vulnerability scores / metric content object.

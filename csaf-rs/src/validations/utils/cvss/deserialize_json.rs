@@ -1,8 +1,5 @@
 use crate::validation::TestFindingData;
 use crate::validations::utils::cvss::dispatch::VersionMatchedCvss;
-use crate::validations::utils::cvss::errors::{
-    create_deserialization_finding_data, create_deserialized_cvss_expected_version_mismatch_finding_data,
-};
 use cvss_rs::{Cvss, Version};
 use serde::Deserialize;
 use serde_json::{Map, Value};
@@ -42,6 +39,24 @@ pub(crate) fn deserialize_and_version_match_cvss_map(
             expected_version,
             instance_path,
         ))
+    }
+}
+
+pub fn create_deserialization_finding_data(error_message: String, instance_path: String) -> TestFindingData {
+    TestFindingData {
+        message: format!("Error deserializing CVSS metric: {error_message}"),
+        instance_path,
+    }
+}
+
+pub fn create_deserialized_cvss_expected_version_mismatch_finding_data(
+    found_version: Version,
+    expected_version: Version,
+    instance_path: &str,
+) -> TestFindingData {
+    TestFindingData {
+        message: format!("Deserialized CVSS metric {found_version} does not match expected version {expected_version}"),
+        instance_path: instance_path.to_string(),
     }
 }
 

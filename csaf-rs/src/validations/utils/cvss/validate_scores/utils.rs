@@ -1,9 +1,7 @@
 use crate::validation::TestFindingData;
-use crate::validations::utils::cvss::errors::{
-    ScoreType, create_score_mismatch_finding_data, create_severity_mismatch_finding_data,
-};
-use cvss_rs::Severity as UnifiedSeverity;
+use crate::validations::utils::cvss::ScoreType;
 use cvss_rs::v3::Severity as V3Severity;
+use cvss_rs::{Severity as UnifiedSeverity, Severity};
 
 /// Maps a CVSS v3 / v4 score to its severity rating.
 ///
@@ -66,5 +64,35 @@ pub fn check_severity_mismatch(
         ))
     } else {
         None
+    }
+}
+
+pub fn create_severity_mismatch_finding_data(
+    calculated: &Severity,
+    actual: &Severity,
+    score_type: ScoreType,
+    instance_path: &str,
+) -> TestFindingData {
+    TestFindingData {
+        message: format!(
+            "{score_type} severity does not match the expected value calculated from the vector. \
+             Expected: {calculated:?}, found: {actual:?}"
+        ),
+        instance_path: instance_path.to_string(),
+    }
+}
+
+pub fn create_score_mismatch_finding_data(
+    calculated: f64,
+    actual: f64,
+    score_type: ScoreType,
+    instance_path: &str,
+) -> TestFindingData {
+    TestFindingData {
+        message: format!(
+            "{score_type} score does not match the expected value calculated from the vector. \
+             Expected: {calculated}, found: {actual}"
+        ),
+        instance_path: instance_path.to_string(),
     }
 }

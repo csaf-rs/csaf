@@ -1,8 +1,6 @@
-use std::str::FromStr;
-
 use crate::validation::TestFinding;
 
-use crate::validations::utils::cvss::errors::create_vector_parse_error;
+use crate::validations::utils::cvss::deserialize_vector::deserialize_vector;
 use crate::validations::utils::cvss::validate_consistency::{
     check_optional_field_mismatch, check_required_field_mismatch,
 };
@@ -18,15 +16,10 @@ use cvss_rs::v4_0::CvssV4;
 /// Mismatches include the value being present in either the JSON or vector string and missing in the other.
 pub fn validate_v2_consistency(cvss2: &CvssV2, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
-    let parsed = match CvssV2::from_str(&cvss2.vector_string) {
-        Ok(p) => p,
-        Err(e) => {
-            errors.get_or_insert_default().push(create_vector_parse_error(
-                &cvss2.vector_string,
-                Version::V2,
-                &e,
-                instance_path,
-            ));
+    let parsed = match deserialize_vector::<CvssV2>(&cvss2.vector_string, Version::V2, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
             return;
         },
     };
@@ -140,15 +133,10 @@ pub fn validate_v2_consistency(cvss2: &CvssV2, instance_path: &str, errors: &mut
 /// Mismatches include the value being present in either the JSON or vector string and missing in the other.
 pub fn validate_v3_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
-    let parsed = match CvssV3::from_str(&cvss3.vector_string) {
-        Ok(p) => p,
-        Err(e) => {
-            errors.get_or_insert_default().push(create_vector_parse_error(
-                &cvss3.vector_string,
-                Version::V3_0,
-                &e,
-                instance_path,
-            ));
+    let parsed = match deserialize_vector::<CvssV3>(&cvss3.vector_string, Version::V3_0, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
             return;
         },
     };
@@ -315,15 +303,10 @@ pub fn validate_v3_consistency(cvss3: &CvssV3, instance_path: &str, errors: &mut
 /// Mismatches include the value being present in either the JSON or vector string and missing in the other.
 pub fn validate_v4_consistency(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
-    let parsed = match CvssV4::from_str(&cvss4.vector_string) {
-        Ok(p) => p,
-        Err(e) => {
-            errors.get_or_insert_default().push(create_vector_parse_error(
-                &cvss4.vector_string,
-                Version::V4,
-                &e,
-                instance_path,
-            ));
+    let parsed = match deserialize_vector::<CvssV4>(&cvss4.vector_string, Version::V4, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
             return;
         },
     };

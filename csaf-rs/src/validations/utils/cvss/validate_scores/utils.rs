@@ -1,3 +1,4 @@
+use crate::validation::TestFinding;
 use crate::validation::TestFindingData;
 use crate::validations::utils::cvss::ScoreType;
 use cvss_rs::v3::Severity as V3Severity;
@@ -30,55 +31,24 @@ pub fn to_unified(severity: &V3Severity) -> UnifiedSeverity {
     }
 }
 
-/// Compares an actual score against a calculated score, returning a validation error if they differ.
-/// The scores are compared as scaled integers to avoid floating-point precision issues.
-pub fn check_score_mismatch(
-    actual: f64,
-    calculated: f64,
+pub fn check_optional_score_mismatch(
+    actual: Option<f64>,
+    calculated: Option<f64>,
     score_type: ScoreType,
     instance_path: &str,
-) -> Option<TestFindingData> {
-    // compare scores as scaled integers
-    if (actual * 10.0).round() as i8 != (calculated * 10.0).round() as i8 {
-        create_score_mismatch_finding_data(calculated, actual, score_type, instance_path).into()
-    } else {
-        None
-    }
-}
-
-/// Compares an actual severity against a calculated severity, returning a validation error if they
-/// differ.
-pub fn check_severity_mismatch(
-    actual: &UnifiedSeverity,
-    calculated: &UnifiedSeverity,
-    score_type: ScoreType,
-    instance_path: &str,
-) -> Option<TestFindingData> {
-    // compare severities
-    if actual != calculated {
-        Some(create_severity_mismatch_finding_data(
-            calculated,
-            actual,
-            score_type,
-            instance_path,
-        ))
-    } else {
-        None
-    }
-}
-
-pub fn create_severity_mismatch_finding_data(
-    calculated: &Severity,
-    actual: &Severity,
-    score_type: ScoreType,
-    instance_path: &str,
-) -> TestFindingData {
-    TestFindingData {
-        message: format!(
-            "{score_type} severity does not match the expected value calculated from the vector. \
-             Expected: {calculated:?}, found: {actual:?}"
-        ),
-        instance_path: instance_path.to_string(),
+    errors: &mut Option<Vec<TestFinding>>,
+) {
+    if let (Some(actual), Some(calculated)) = (actual, calculated)
+        && (actual * 10.0).round() as i8 != (calculated * 10.0).round() as i8
+    {
+        errors
+            .get_or_insert_default()
+            .push(TestFinding::Error(create_score_mismatch_finding_data(
+                calculated,
+                actual,
+                score_type,
+                instance_path,
+            )));
     }
 }
 
@@ -92,6 +62,42 @@ pub fn create_score_mismatch_finding_data(
         message: format!(
             "{score_type} score does not match the expected value calculated from the vector. \
              Expected: {calculated}, found: {actual}"
+        ),
+        instance_path: instance_path.to_string(),
+    }
+}
+
+pub fn check_optional_severity_mismatch(
+    actual: Option<UnifiedSeverity>,
+    calculated: Option<UnifiedSeverity>,
+    score_type: ScoreType,
+    instance_path: &str,
+    errors: &mut Option<Vec<TestFinding>>,
+) {
+    if let (Some(actual), Some(calculated)) = (actual, calculated)
+        && actual != calculated
+    {
+        errors
+            .get_or_insert_default()
+            .push(TestFinding::Error(create_severity_mismatch_finding_data(
+                &calculated,
+                &actual,
+                score_type,
+                instance_path,
+            )));
+    }
+}
+
+pub fn create_severity_mismatch_finding_data(
+    calculated: &Severity,
+    actual: &Severity,
+    score_type: ScoreType,
+    instance_path: &str,
+) -> TestFindingData {
+    TestFindingData {
+        message: format!(
+            "{score_type} severity does not match the expected value calculated from the vector. \
+             Expected: {calculated:?}, found: {actual:?}"
         ),
         instance_path: instance_path.to_string(),
     }

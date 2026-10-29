@@ -1,45 +1,42 @@
 use crate::validation::TestFinding;
-use crate::validations::utils::cvss::errors::ScoreType;
+use crate::validations::utils::cvss::dispatch::validate_metric;
 use crate::validations::utils::cvss::validate_consistency::errors::{
     create_field_missing_in_object_error, create_field_missing_in_vector_error, create_field_value_mismatch_error,
-    create_severity_mismatch_error,
 };
-use cvss_rs::{Defined, Severity};
+use cvss_rs::{Cvss, Defined, Severity, Version};
+use serde_json::Value;
 
 pub mod errors;
 pub mod validation;
-/// Maps a CVSS v3 / v4 score to its severity rating.
-///
-/// The severity ranges follow the CVSS v3/v4 specification.
-pub fn map_score_to_severity(score: Option<f64>) -> Option<Severity> {
-    let scaled = (score? * 10.0).round() as i8;
-    Some(match scaled {
-        0 => Severity::None,
-        1..=39 => Severity::Low,
-        40..=69 => Severity::Medium,
-        70..=89 => Severity::High,
-        90..=100 => Severity::Critical,
-        _ => return None,
-    })
-}
 
-/// Compares an actual severity against a calculated severity and adds a validation error if they
-/// differ.
-pub fn check_severity_mismatch(
-    actual: &Severity,
-    calculated: &Severity,
-    score_type: ScoreType,
+/// Deserializes and extracts the expected CVSS variant, and validates the consistency of the JSON vs.
+/// the CVSS vector.
+///
+/// The `expected_version` parameter determines which version-specific validation is
+/// applied. [Version::V3_0] is used as a placeholder to convey that a CVSS v3 validation should be done.
+pub(crate) fn validate_consistency(
+    cvss_map: &serde_json::Map<String, Value>,
     instance_path: &str,
     errors: &mut Option<Vec<TestFinding>>,
+    expected_version: Version,
 ) {
-    if actual != calculated {
-        errors.get_or_insert_default().push(create_severity_mismatch_error(
-            calculated,
-            actual,
-            score_type,
-            instance_path,
-        ));
-    }
+    validate_metric(
+        cvss_map,
+        instance_path,
+        errors,
+        expected_version,
+        |cvss, _, instance_path, errors| match cvss {
+            Cvss::V2(cvss2) => {
+                validation::validate_v2_consistency(&cvss2, instance_path, errors);
+            },
+            Cvss::V3_0(cvss3) | Cvss::V3_1(cvss3) => {
+                validation::validate_v3_consistency(&cvss3, instance_path, errors);
+            },
+            Cvss::V4(cvss4) => {
+                validation::validate_v4_consistency(&cvss4, instance_path, errors);
+            },
+        },
+    );
 }
 
 /// Compares an optional field from the deserialized JSON object against the value parsed from the

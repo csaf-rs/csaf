@@ -1,21 +1,6 @@
 use crate::validation::{TestFinding, TestFindingData};
-use cvss_rs::Severity;
 use crate::validations::utils::cvss::errors::ScoreType;
-
-pub fn create_severity_mismatch_error(
-    calculated: &Severity,
-    actual: &Severity,
-    score_type: ScoreType,
-    instance_path: &str,
-) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!(
-            "{score_type} severity does not match the expected value calculated from the vector. \
-             Expected: {calculated:?}, found: {actual:?}"
-        ),
-        instance_path: instance_path.to_string(),
-    })
-}
+use cvss_rs::Severity;
 
 pub fn create_field_value_mismatch_error<T: std::fmt::Display>(
     field_name: &str,

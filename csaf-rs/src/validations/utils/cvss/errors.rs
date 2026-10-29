@@ -1,5 +1,5 @@
 use crate::validation::{TestFinding, TestFindingData};
-use cvss_rs::Version;
+use cvss_rs::{Severity, Version};
 use strum::{AsRefStr, Display};
 
 /// The type of CVSS score being validated, use for error messages.
@@ -41,6 +41,36 @@ pub fn create_deserialized_cvss_expected_version_mismatch_finding_data(
 ) -> TestFindingData {
     TestFindingData {
         message: format!("Deserialized CVSS metric {found_version} does not match expected version {expected_version}"),
+        instance_path: instance_path.to_string(),
+    }
+}
+
+pub fn create_severity_mismatch_finding_data(
+    calculated: &Severity,
+    actual: &Severity,
+    score_type: ScoreType,
+    instance_path: &str,
+) -> TestFindingData {
+    TestFindingData {
+        message: format!(
+            "{score_type} severity does not match the expected value calculated from the vector. \
+             Expected: {calculated:?}, found: {actual:?}"
+        ),
+        instance_path: instance_path.to_string(),
+    }
+}
+
+pub fn create_score_mismatch_finding_data(
+    calculated: f64,
+    actual: f64,
+    score_type: ScoreType,
+    instance_path: &str,
+) -> TestFindingData {
+    TestFindingData {
+        message: format!(
+            "{score_type} score does not match the expected value calculated from the vector. \
+             Expected: {calculated}, found: {actual}"
+        ),
         instance_path: instance_path.to_string(),
     }
 }

@@ -1,4 +1,5 @@
 use crate::csaf::traits::util::generic_with::{WithDate, WithOptionalGroupIds, WithOptionalProductIds};
+use crate::csaf::traits::util::impl_into_any_getter;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::WithOptionalDate;
 
@@ -36,13 +37,9 @@ impl WithOptionalGroupIds for NotPresentInCsaf21 {
 }
 
 impl WithDate for NotPresentInCsaf21 {
-    fn get_date(&self) -> CsafDateTime {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_date, CsafDateTime);
 }
 
 impl WithOptionalDate for NotPresentInCsaf21 {
-    fn get_date(&self) -> Option<CsafDateTime> {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_date, Option<CsafDateTime>);
 }

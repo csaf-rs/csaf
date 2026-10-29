@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_into_any_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::schema::csaf2_1::schema::{Epss, Percentile, Probability};
@@ -18,17 +19,9 @@ pub trait EpssTrait {
 }
 
 impl EpssTrait for NotPresentInCsaf20 {
-    fn get_percentile(&self) -> &Percentile {
-        self.into_any()
-    }
-
-    fn get_probability(&self) -> &Probability {
-        self.into_any()
-    }
-
-    fn get_timestamp(&self) -> CsafDateTime {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_percentile, &Percentile);
+    impl_into_any_getter!(get_probability, &Probability);
+    impl_into_any_getter!(get_timestamp, CsafDateTime);
 }
 
 impl EpssTrait for Epss {

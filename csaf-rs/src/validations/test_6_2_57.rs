@@ -13,12 +13,7 @@ fn create_unused_document_local_vuln_id_warning(id: &str, path: &str) -> TestFin
 /// For each element of type `$['$defs'].dl_vuln_id_t` in vulnerabilities (`$.vulnerabilities[*].dl_vuln_id`)
 /// it SHALL be tested that the `dl_vuln_id` is referenced somewhere within the same document.
 pub fn test_6_2_57_unused_definition_of_document_local_vuln_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    // check if involvement is present, if not, skip the test
-    if doc.get_document().get_involvement().is_none() {
-        return Ok(());
-    }
-
-    // collect all document-local vulnerability IDs that are referenced in the document
+    // collect all document-local vulnerability IDs that are referenced in the document#
     let referenced_doc_local_vuln_ids = doc.get_all_document_local_vuln_id_references();
 
     let mut findings: Option<Vec<TestFinding>> = None;

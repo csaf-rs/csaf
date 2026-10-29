@@ -1,4 +1,4 @@
-use crate::csaf_traits::{CsafTrait, DocumentTrait};
+use crate::csaf_traits::{CsafTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
 fn create_unused_document_local_vuln_id_warning(id: &str, path: &str) -> TestFinding {

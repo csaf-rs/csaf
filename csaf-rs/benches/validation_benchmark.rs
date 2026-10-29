@@ -71,7 +71,10 @@ const SKIPPED_TESTS: &[&str] = &[];
 
 /// Benchmark each individual CSAF 2.0 test function across all fixtures.
 fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {
-    let fixtures_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
+    let fixtures_dir = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.0/test/validator/data"
+    );
     let files = collect_fixture_files(fixtures_dir);
     let contents = load_fixture_contents(&files);
 
@@ -107,7 +110,10 @@ fn bench_individual_tests_csaf_2_0(c: &mut Criterion) {
 
 /// Benchmark each individual CSAF 2.1 test function across all fixtures.
 fn bench_individual_tests_csaf_2_1(c: &mut Criterion) {
-    let fixtures_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.1/test/validator/data");
+    let fixtures_dir = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.1/test/validator/data"
+    );
     let files = collect_fixture_files(fixtures_dir);
     let contents = load_fixture_contents(&files);
 
@@ -143,8 +149,14 @@ fn bench_individual_tests_csaf_2_1(c: &mut Criterion) {
 
 /// Benchmark full preset validation (all tests combined) for overall throughput.
 fn bench_full_validation(c: &mut Criterion) {
-    let fixtures_dir_2_0 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
-    let fixtures_dir_2_1 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.1/test/validator/data");
+    let fixtures_dir_2_0 = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.0/test/validator/data"
+    );
+    let fixtures_dir_2_1 = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.1/test/validator/data"
+    );
 
     let contents_2_0 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_0));
     let contents_2_1 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_1));
@@ -202,8 +214,14 @@ fn bench_full_validation(c: &mut Criterion) {
 
 /// Benchmark parsing only (no validation).
 fn bench_parse_only(c: &mut Criterion) {
-    let fixtures_dir_2_0 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
-    let fixtures_dir_2_1 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.1/test/validator/data");
+    let fixtures_dir_2_0 = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.0/test/validator/data"
+    );
+    let fixtures_dir_2_1 = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.1/test/validator/data"
+    );
 
     let contents_2_0 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_0));
     let contents_2_1 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_1));
@@ -238,8 +256,14 @@ fn bench_parse_only(c: &mut Criterion) {
 /// `parse_only` stops at the JSON `Value`; the delta between the two groups isolates the
 /// cost of materializing the typed document that every validation run pays once per document.
 fn bench_typed_parse(c: &mut Criterion) {
-    let fixtures_dir_2_0 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.0/test/validator/data");
-    let fixtures_dir_2_1 = concat!(env!("CARGO_MANIFEST_DIR"), "/../csaf/csaf_2.1/test/validator/data");
+    let fixtures_dir_2_0 = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.0/test/validator/data"
+    );
+    let fixtures_dir_2_1 = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../oasis-csaf/csaf_2.1/test/validator/data"
+    );
 
     let contents_2_0 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_0));
     let contents_2_1 = load_fixture_contents(&collect_fixture_files(fixtures_dir_2_1));

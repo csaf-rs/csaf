@@ -17,7 +17,7 @@ const MAX_FIRST_MAJOR_VERSION: u64 = 1;
 /// Upper bound of individually reported missing revision history items.
 ///
 /// A single gap can span an arbitrary number of versions (e.g. `1.0.0` followed by `999999.0.0`),
-/// so all findings are summarized into a single error once this limit is exceeded.
+/// so the versions found beyond this limit are replaced by a single summarizing error.
 // TODO #923: Clarify with the upstream.
 const MAX_MISSING_ITEMS: usize = 100;
 
@@ -48,6 +48,14 @@ struct Gap<'a> {
     to: &'a CsafDateTime,
     /// decides whether the missing version is rendered as integer or semantic version
     template: ValidCsafVersionNumber<'a>,
+}
+
+/// Outcome of the gap search over a revision history, limited to `MAX_MISSING_ITEMS` findings.
+struct GapSearch<'a> {
+    /// the missing versions that were found, at most `MAX_MISSING_ITEMS` entries
+    gaps: BTreeMap<VersionCore, Gap<'a>>,
+    /// `true` if the search stopped at the limit, so further versions are missing but not listed
+    limit_reached: bool,
 }
 
 /// 6.1.21 Missing Item in Revision History
@@ -87,22 +95,24 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         errors.push(test_6_1_21_err_wrong_first_version(&first.number));
     }
 
-    let Some(gaps) = test_6_1_21_collect_gaps(&items) else {
-        errors.push(test_6_1_21_err_too_many_missing_versions());
-        return Err(errors);
-    };
+    let search = test_6_1_21_collect_gaps(&items);
 
     // Every version core documented somewhere. Versions published in front of their gap were already
     // filtered out, so a hit here means the version exists but only later in the sorted list.
     let documented = items.iter().map(|item| item.core).collect::<BTreeSet<_>>();
 
-    for (core, gap) in gaps {
+    for (core, gap) in search.gaps {
         let missing_version = test_6_1_21_missing_version_number(core, gap.template);
         errors.push(match (documented.contains(&core), gap.from) {
             (false, _) => test_6_1_21_err_missing_version_at_all(&missing_version),
             (true, Some(from)) => test_6_1_21_err_missing_version_between(&missing_version, from, gap.to),
             (true, None) => test_6_1_21_err_missing_version_before(&missing_version, gap.to),
         });
+    }
+
+    // the summary comes last so it reads as a continuation of the listed items
+    if search.limit_reached {
+        errors.push(test_6_1_21_err_too_many_missing_versions());
     }
 
     if errors.is_empty() { Ok(()) } else { Err(errors) }
@@ -118,8 +128,10 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_21, test_6_1_21_miss
 /// A version that was already published at an earlier position of the sorted list is not missing from a
 /// later gap either, it is merely out of order, so it is skipped as well.
 ///
-/// Returns `None` if more than `MAX_MISSING_ITEMS` versions are missing.
-fn test_6_1_21_collect_gaps<'a>(items: &[RevHistoryItem<'a>]) -> Option<BTreeMap<VersionCore, Gap<'a>>> {
+/// Stops as soon as `MAX_MISSING_ITEMS` missing versions have been collected. The result is then a prefix
+/// in walk order, rendered in version order, which is not necessarily the lowest missing versions overall,
+/// but is deterministic and keeps the walk bounded.
+fn test_6_1_21_collect_gaps<'a>(items: &[RevHistoryItem<'a>]) -> GapSearch<'a> {
     let mut gaps = BTreeMap::new();
     // the version cores of all items in front of the current one
     let mut published = BTreeSet::new();
@@ -136,18 +148,25 @@ fn test_6_1_21_collect_gaps<'a>(items: &[RevHistoryItem<'a>]) -> Option<BTreeMap
             if published.contains(&missing) {
                 continue;
             }
+            // a version that is already recorded does not grow the map, so it never reaches the limit
+            if gaps.len() >= MAX_MISSING_ITEMS && !gaps.contains_key(&missing) {
+                return GapSearch {
+                    gaps,
+                    limit_reached: true,
+                };
+            }
             gaps.entry(missing).or_insert(Gap {
                 from: predecessor.map(|predecessor| predecessor.date),
                 to: item.date,
                 template: predecessor.unwrap_or(item).number,
             });
-            if gaps.len() > MAX_MISSING_ITEMS {
-                return None;
-            }
         }
     }
 
-    Some(gaps)
+    GapSearch {
+        gaps,
+        limit_reached: false,
+    }
 }
 
 /// Returns the version cores that have to be documented between two items of the sorted revision history.
@@ -244,8 +263,8 @@ fn test_6_1_21_err_too_many_missing_versions() -> TestFinding {
     TestFinding::Error(TestFindingData {
         instance_path: REVISION_HISTORY_PATH.to_string(),
         message: format!(
-            "more than {MAX_MISSING_ITEMS} revision history items are missing, they are not listed individually \
-            to avoid flooding the report."
+            "more than {MAX_MISSING_ITEMS} revision history items are missing, only the first \
+            {MAX_MISSING_ITEMS} are listed individually to avoid flooding the report."
         ),
     })
 }
@@ -339,10 +358,10 @@ mod tests {
                 RevHistoryItem::new(&dates[1], numbers[1].as_valid().unwrap()),
                 RevHistoryItem::new(&dates[2], numbers[2].as_valid().unwrap()),
             ];
-            let gaps = test_6_1_21_collect_gaps(&items).unwrap();
+            let search = test_6_1_21_collect_gaps(&items);
             // no pair opens a gap here, so everything is missing in front of the first item
-            assert!(gaps.values().all(|gap| gap.from.is_none()));
-            gaps.into_keys().collect::<Vec<_>>()
+            assert!(search.gaps.values().all(|gap| gap.from.is_none()));
+            search.gaps.into_keys().collect::<Vec<_>>()
         };
 
         assert_eq!(
@@ -361,17 +380,35 @@ mod tests {
                 RevHistoryItem::new(&date, first.as_valid().unwrap()),
                 RevHistoryItem::new(&date, last.as_valid().unwrap()),
             ];
-            test_6_1_21_collect_gaps(&items).map(|gaps| gaps.len())
+            let search = test_6_1_21_collect_gaps(&items);
+            (search.gaps.len(), search.limit_reached)
         };
 
         // 2.0.0 up to 100.0.0 are missing
-        assert_eq!(collect_gaps(&CsafVersionNumber::from("101.0.0")), Some(99));
+        assert_eq!(collect_gaps(&CsafVersionNumber::from("101.0.0")), (99, false));
         assert_eq!(
             collect_gaps(&CsafVersionNumber::from("102.0.0")),
-            Some(MAX_MISSING_ITEMS)
+            (MAX_MISSING_ITEMS, false)
         );
-        assert_eq!(collect_gaps(&CsafVersionNumber::from("103.0.0")), None);
-        assert_eq!(collect_gaps(&CsafVersionNumber::from("999999.0.0")), None);
+        // the versions beyond the limit are left out, the ones found so far are still reported
+        assert_eq!(
+            collect_gaps(&CsafVersionNumber::from("103.0.0")),
+            (MAX_MISSING_ITEMS, true)
+        );
+        assert_eq!(
+            collect_gaps(&CsafVersionNumber::from("999999.0.0")),
+            (MAX_MISSING_ITEMS, true)
+        );
+
+        // the collected versions are the ones directly following the last documented item
+        let last = CsafVersionNumber::from("999999.0.0");
+        let items = [
+            RevHistoryItem::new(&date, first.as_valid().unwrap()),
+            RevHistoryItem::new(&date, last.as_valid().unwrap()),
+        ];
+        let gaps = test_6_1_21_collect_gaps(&items).gaps;
+        assert_eq!(gaps.keys().next(), Some(&(2, 0, 0)));
+        assert_eq!(gaps.keys().next_back(), Some(&(101, 0, 0)));
     }
 
     #[test]
@@ -391,10 +428,7 @@ mod tests {
                 RevHistoryItem::new(&dates[2], numbers[2].as_valid().unwrap()),
                 RevHistoryItem::new(&dates[3], numbers[3].as_valid().unwrap()),
             ];
-            test_6_1_21_collect_gaps(&items)
-                .unwrap()
-                .into_keys()
-                .collect::<Vec<_>>()
+            test_6_1_21_collect_gaps(&items).gaps.into_keys().collect::<Vec<_>>()
         };
 
         // 1.0.0 and 2.0.0 are missing in front of 3.0.0, and 3.0.0 is already published when 1.0.0 jumps to 5.0.0

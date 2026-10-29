@@ -85,7 +85,9 @@ mod tests {
     fn deserialize_and_version_match_rejects_mismatched_version() {
         let value = json!({
             "version": "4.0",
-            "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+            "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+            "baseScore": 9.3,
+            "baseSeverity": "CRITICAL"
         });
         let map = value.as_object().expect("CVSS metric is an object");
 

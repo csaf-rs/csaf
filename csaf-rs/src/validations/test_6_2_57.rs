@@ -48,6 +48,7 @@ mod tests {
     #[test]
     fn test_test_6_2_57() {
         TESTS_2_1.test_6_2_57.expect(ExpectedResults {
+            // TODO: Add testcase with no involvements present at all
             case_01: Err(vec![create_unused_document_local_vuln_id_warning(
                 "VULN-1",
                 "/vulnerabilities/0/dl_vuln_id",

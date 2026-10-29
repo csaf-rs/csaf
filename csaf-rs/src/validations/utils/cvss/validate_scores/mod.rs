@@ -21,9 +21,9 @@ pub(crate) fn validate_scores(
         instance_path,
         errors,
         expected_version,
-        |cvss, cvss_map, instance_path, errors| match cvss {
+        |cvss, instance_path, errors| match cvss {
             Cvss::V2(cvss2) => {
-                validation::validate_v2_scores(&cvss2, cvss_map, instance_path, errors);
+                validation::validate_v2_scores(&cvss2, instance_path, errors);
             },
             Cvss::V3_0(cvss3) | Cvss::V3_1(cvss3) => {
                 validation::validate_v3_scores(&cvss3, instance_path, errors);

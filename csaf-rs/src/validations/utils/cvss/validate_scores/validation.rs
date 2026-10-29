@@ -8,7 +8,6 @@ use cvss_rs::Version;
 use cvss_rs::v2_0::CvssV2;
 use cvss_rs::v3::CvssV3;
 use cvss_rs::v4_0::CvssV4;
-use serde_json::Value;
 
 /// Validates CVSS v2 scores.
 ///
@@ -16,12 +15,7 @@ use serde_json::Value;
 /// which are then compared against the values declared in the JSON.
 ///
 /// Checked fields: `baseScore`, `temporalScore`, `environmentalScore`
-pub fn validate_v2_scores(
-    cvss2: &CvssV2,
-    cvss_map: &serde_json::Map<String, Value>,
-    instance_path: &str,
-    errors: &mut Option<Vec<TestFinding>>,
-) {
+pub fn validate_v2_scores(cvss2: &CvssV2, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
     // Parse vector string to get a struct with populated metrics for calculation
     let parsed = match deserialize_vector::<CvssV2>(&cvss2.vector_string, Version::V2, instance_path) {
         Ok(parsed) => parsed,
@@ -31,24 +25,28 @@ pub fn validate_v2_scores(
         },
     };
 
-    let score_checks: &[(&str, ScoreType, Option<f64>)] = &[
-        ("baseScore", ScoreType::Base, parsed.calculated_base_score()),
-        ("temporalScore", ScoreType::Temporal, parsed.calculated_temporal_score()),
-        (
-            "environmentalScore",
-            ScoreType::Environmental,
-            parsed.calculated_environmental_score(),
-        ),
-    ];
+    let calculated_base = parsed.calculated_base_score();
+    let calculated_temporal = parsed.calculated_temporal_score();
+    let calculated_environmental = parsed.calculated_environmental_score();
 
-    for (json_key, score_type, calculated) in score_checks {
-        if let Some(actual) = cvss_map.get(*json_key).and_then(|v| v.as_f64())
-            && let Some(calculated) = calculated
-        {
-            if let Some(mismatch) = check_score_mismatch(actual, *calculated, *score_type, instance_path) {
-                errors.get_or_insert_default().push(TestFinding::Error(mismatch));
-            }
-        }
+    if let Some(calculated) = calculated_base
+        && let Some(mismatch) = check_score_mismatch(cvss2.base_score, calculated, ScoreType::Base, instance_path)
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
+    }
+
+    if let Some(actual) = cvss2.temporal_score
+        && let Some(calculated) = calculated_temporal
+        && let Some(mismatch) = check_score_mismatch(actual, calculated, ScoreType::Temporal, instance_path)
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
+    }
+
+    if let Some(actual) = cvss2.environmental_score
+        && let Some(calculated) = calculated_environmental
+        && let Some(mismatch) = check_score_mismatch(actual, calculated, ScoreType::Environmental, instance_path)
+    {
+        errors.get_or_insert_default().push(TestFinding::Error(mismatch));
     }
 }
 

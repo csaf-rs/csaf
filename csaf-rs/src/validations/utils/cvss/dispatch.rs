@@ -42,10 +42,10 @@ pub(crate) fn validate_metric(
     instance_path: &str,
     errors: &mut Option<Vec<TestFinding>>,
     expected_version: Version,
-    validate: impl FnOnce(Cvss, &serde_json::Map<String, Value>, &str, &mut Option<Vec<TestFinding>>),
+    validate: impl FnOnce(Cvss, &str, &mut Option<Vec<TestFinding>>),
 ) {
     match deserialize_and_version_match_cvss_map(cvss_map, instance_path, expected_version) {
-        Ok(VersionMatchedCvss(cvss)) => validate(cvss, cvss_map, instance_path, errors),
+        Ok(VersionMatchedCvss(cvss)) => validate(cvss, instance_path, errors),
         Err(error) => {
             errors.get_or_insert_default().push(TestFinding::Error(error));
         },

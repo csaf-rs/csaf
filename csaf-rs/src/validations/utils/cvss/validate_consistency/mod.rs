@@ -3,7 +3,7 @@ use crate::validations::utils::cvss::dispatch::validate_metric;
 use crate::validations::utils::cvss::validate_consistency::errors::{
     create_field_missing_in_object_error, create_field_missing_in_vector_error, create_field_value_mismatch_error,
 };
-use cvss_rs::{Cvss, Defined, Severity, Version};
+use cvss_rs::{Cvss, Defined, Version};
 use serde_json::Value;
 
 pub mod errors;
@@ -25,7 +25,7 @@ pub(crate) fn validate_consistency(
         instance_path,
         errors,
         expected_version,
-        |cvss, _, instance_path, errors| match cvss {
+        |cvss, instance_path, errors| match cvss {
             Cvss::V2(cvss2) => {
                 validation::validate_v2_consistency(&cvss2, instance_path, errors);
             },

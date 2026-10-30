@@ -28,17 +28,24 @@ pub enum VersionRangeError {
     InvalidVls(VlsError),
 }
 
+impl Display for VersionRangeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            VersionRangeError::InvalidVers(err) => write!(f, "Invalid vers version range: {}", err),
+            VersionRangeError::InvalidVls(err) => write!(f, "Invalid vls version range: {}", err),
+        }
+    }
+}
+
 impl VersionRange {
     pub fn parse(s: &str) -> Self {
         if s.starts_with("vers:") {
             // parse as vers
             match s.parse::<DynamicVersionRange>() {
                 // valid vers
-                Ok(vers_parsed) => return Self::DynamicVers(vers_parsed),
+                Ok(vers_parsed) => Self::DynamicVers(vers_parsed),
                 // invalid vers
-                Err(vers_error) => {
-                    return Self::Invalid(VersionRangeError::InvalidVers(vers_error));
-                },
+                Err(vers_error) => Self::Invalid(VersionRangeError::InvalidVers(vers_error)),
             }
         } else {
             // parse as vls

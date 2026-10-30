@@ -375,6 +375,13 @@ mod tests {
     fn test_6_1_21_collect_gaps_is_limited() {
         let date = CsafDateTime::from("2026-03-09T11:00:00.000Z");
         let first = CsafVersionNumber::from("1.0.0");
+        // `1.0.0` followed by `missing + 2` omits exactly `missing` Major versions in between
+        let gap_of = |missing: usize| {
+            let major = missing + 2;
+            CsafVersionNumber::from(format!("{major}.0.0").as_str())
+        };
+        // the highest Major version that is still listed individually
+        let last_listed = MAX_MISSING_ITEMS as u64 + 1;
         let collect_gaps = |last: &CsafVersionNumber| {
             let items = [
                 RevHistoryItem::new(&date, first.as_valid().unwrap()),
@@ -384,31 +391,26 @@ mod tests {
             (search.gaps.len(), search.limit_reached)
         };
 
-        // 2.0.0 up to 100.0.0 are missing
-        assert_eq!(collect_gaps(&CsafVersionNumber::from("101.0.0")), (99, false));
+        // every missing version is reported up to and including the limit
         assert_eq!(
-            collect_gaps(&CsafVersionNumber::from("102.0.0")),
-            (MAX_MISSING_ITEMS, false)
+            collect_gaps(&gap_of(MAX_MISSING_ITEMS - 1)),
+            (MAX_MISSING_ITEMS - 1, false)
         );
+        assert_eq!(collect_gaps(&gap_of(MAX_MISSING_ITEMS)), (MAX_MISSING_ITEMS, false));
         // the versions beyond the limit are left out, the ones found so far are still reported
-        assert_eq!(
-            collect_gaps(&CsafVersionNumber::from("103.0.0")),
-            (MAX_MISSING_ITEMS, true)
-        );
-        assert_eq!(
-            collect_gaps(&CsafVersionNumber::from("999999.0.0")),
-            (MAX_MISSING_ITEMS, true)
-        );
+        assert_eq!(collect_gaps(&gap_of(MAX_MISSING_ITEMS + 1)), (MAX_MISSING_ITEMS, true));
+        // an arbitrarily wide gap stays bounded by the limit
+        let widest = CsafVersionNumber::from(format!("{}.0.0", u64::MAX).as_str());
+        assert_eq!(collect_gaps(&widest), (MAX_MISSING_ITEMS, true));
 
         // the collected versions are the ones directly following the last documented item
-        let last = CsafVersionNumber::from("999999.0.0");
         let items = [
             RevHistoryItem::new(&date, first.as_valid().unwrap()),
-            RevHistoryItem::new(&date, last.as_valid().unwrap()),
+            RevHistoryItem::new(&date, widest.as_valid().unwrap()),
         ];
         let gaps = test_6_1_21_collect_gaps(&items).gaps;
         assert_eq!(gaps.keys().next(), Some(&(2, 0, 0)));
-        assert_eq!(gaps.keys().next_back(), Some(&(101, 0, 0)));
+        assert_eq!(gaps.keys().next_back(), Some(&(last_listed, 0, 0)));
     }
 
     #[test]
@@ -497,6 +499,12 @@ mod tests {
             case_s14: Ok(()),
         });
 
+        // 1, 999999 - only the first MAX_MISSING_ITEMS missing versions are listed individually,
+        // everything beyond is replaced by a single summarizing error
+        let gap_beyond_limit = (2..=MAX_MISSING_ITEMS + 1)
+            .map(|version| at_all(&version.to_string()))
+            .chain(std::iter::once(test_6_1_21_err_too_many_missing_versions()))
+            .collect::<Vec<_>>();
         TESTS_2_1.test_6_1_21.expect(ExpectedResults_2_1 {
             // 1, 3
             case_01: Err(vec![at_all("2")]),
@@ -530,6 +538,8 @@ mod tests {
             case_s01: Err(vec![wrong_first("2.0.0"), at_all("1.0.0")]),
             // 1, 3.0.0 on the same date
             case_s02: Err(vec![at_all("2")]),
+            // 1, 999999 - 2 to 101 are missing, everything beyond the limit is summarized
+            case_s03: Err(gap_beyond_limit),
 
             // Case 11: 1, 2
             // Case 12: 0, 1

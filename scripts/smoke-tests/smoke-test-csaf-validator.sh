@@ -27,8 +27,8 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 cd "$REPO_ROOT"
 
 # absolute paths to test files
-VALID_FILE="csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-01-11.json"
-INVALID_FILE="csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-01-01.json"
+VALID_FILE="oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-01-11.json"
+INVALID_FILE="oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-01-01.json"
 
 # valid file should pass
 "${VALIDATOR}" "${VALID_FILE}"

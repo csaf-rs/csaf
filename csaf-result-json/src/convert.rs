@@ -1,7 +1,7 @@
 use crate::result::{self, ResultJson, ResultT, ValidationMessageT};
 use anyhow::Result;
-use csaf::validation::TestResultStatus::{Failure, NotFound, Skipped, Success};
-use csaf::validation::{TestResult, ValidationError, ValidationResult};
+use csaf_rs::validation::TestResultStatus::{Failure, NotFound, Skipped, Success};
+use csaf_rs::validation::{TestResult, ValidationError, ValidationResult};
 
 /// Build a [`ResultJson`] from a [`ValidationResult`] with the given primary test ID.
 pub fn build_testresult_json(result: &ValidationResult, primary_test_id: &str) -> Result<ResultJson> {
@@ -81,7 +81,7 @@ fn convert_messages(errors: &[ValidationError]) -> Option<Vec<ValidationMessageT
 #[cfg(test)]
 mod tests {
     use super::*;
-    use csaf::validation::{TestResult, TestResultStatus, ValidationError, ValidationResult};
+    use csaf_rs::validation::{TestResult, TestResultStatus, ValidationError, ValidationResult};
 
     fn make_error(path: &str, msg: &str) -> ValidationError {
         ValidationError {

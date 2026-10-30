@@ -1,0 +1,163 @@
+use crate::validation::TestFinding;
+use crate::validations::utils::cvss::ScoreType;
+use crate::validations::utils::cvss::deserialize_vector::deserialize_vector;
+use crate::validations::utils::cvss::merge_vector_with_json::{merge_v2, merge_v3, merge_v4};
+use crate::validations::utils::cvss::validate_scores::utils::{
+    check_optional_score_mismatch, check_optional_severity_mismatch, map_score_to_severity, to_unified,
+};
+use cvss_rs::Version;
+use cvss_rs::v2_0::CvssV2;
+use cvss_rs::v3::CvssV3;
+use cvss_rs::v4_0::CvssV4;
+
+/// Validates CVSS v2 scores.
+///
+/// The `vectorString` is taken as authoritative. It is used to calculate the expected scores,
+/// which are then compared against the values declared in the JSON.
+///
+/// Checked fields: `baseScore`, `temporalScore`, `environmentalScore`
+pub fn validate_v2_scores(cvss2: &CvssV2, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
+    // Parse vector string to get a struct with populated metrics for calculation
+    let parsed = match deserialize_vector::<CvssV2>(&cvss2.vector_string, Version::V2, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
+            return;
+        },
+    };
+
+    let merged = merge_v2(parsed, cvss2.clone()).0;
+
+    let calculated_base = merged.calculated_base_score();
+    let calculated_temporal = merged.calculated_temporal_score();
+    let calculated_environmental = merged.calculated_environmental_score();
+
+    check_optional_score_mismatch(
+        Some(merged.base_score),
+        calculated_base,
+        ScoreType::Base,
+        instance_path,
+        errors,
+    );
+    check_optional_score_mismatch(
+        merged.temporal_score,
+        calculated_temporal,
+        ScoreType::Temporal,
+        instance_path,
+        errors,
+    );
+    check_optional_score_mismatch(
+        merged.environmental_score,
+        calculated_environmental,
+        ScoreType::Environmental,
+        instance_path,
+        errors,
+    );
+}
+
+/// Validates CVSS v3 scores and severities.
+///
+/// The `vectorString` is taken as authoritative. It is used to calculate the expected scores
+/// and severities, which are then compared against the values declared in the JSON.
+///
+/// Checked score fields: `baseScore`, `temporalScore`, `environmentalScore`
+/// Checked severity fields: `baseSeverity`, `temporalSeverity`, `environmentalSeverity`
+pub fn validate_v3_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
+    // Parse vector string to get a struct with populated metrics for calculation
+    let parsed = match deserialize_vector::<CvssV3>(&cvss3.vector_string, Version::V3_0, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
+            return;
+        },
+    };
+
+    let merged = merge_v3(parsed, cvss3.clone()).0;
+    let calculated_base = merged.calculated_base_score();
+    let calculated_temporal = merged.calculated_temporal_score();
+    let calculated_environmental = merged.calculated_environmental_score();
+
+    // if the score calculation did not fail
+    check_optional_score_mismatch(
+        Some(merged.base_score),
+        calculated_base,
+        ScoreType::Base,
+        instance_path,
+        errors,
+    );
+    check_optional_score_mismatch(
+        merged.temporal_score,
+        calculated_temporal,
+        ScoreType::Temporal,
+        instance_path,
+        errors,
+    );
+    check_optional_score_mismatch(
+        merged.environmental_score,
+        calculated_environmental,
+        ScoreType::Environmental,
+        instance_path,
+        errors,
+    );
+
+    // Validate severities
+    check_optional_severity_mismatch(
+        Some(to_unified(&merged.base_severity)),
+        map_score_to_severity(calculated_base),
+        ScoreType::Base,
+        instance_path,
+        errors,
+    );
+    check_optional_severity_mismatch(
+        merged.temporal_severity.as_ref().map(to_unified),
+        map_score_to_severity(calculated_temporal),
+        ScoreType::Temporal,
+        instance_path,
+        errors,
+    );
+    check_optional_severity_mismatch(
+        merged.environmental_severity.as_ref().map(to_unified),
+        map_score_to_severity(calculated_environmental),
+        ScoreType::Environmental,
+        instance_path,
+        errors,
+    );
+}
+
+/// Validates CVSS v4 base score and base severity.
+///
+/// The `vectorString` is taken as authoritative. It is used to calculate the expected score and severity,
+/// which are then compared against the values declared in the JSON.
+///
+/// Checked fields: `baseScore`, `baseSeverity`
+pub fn validate_v4_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Option<Vec<TestFinding>>) {
+    // Parse vector string to get a struct with populated metrics for calculation
+    let parsed = match deserialize_vector::<CvssV4>(&cvss4.vector_string, Version::V4, instance_path) {
+        Ok(parsed) => parsed,
+        Err(error) => {
+            errors.get_or_insert_default().push(TestFinding::Error(error));
+            return;
+        },
+    };
+
+    let merged = merge_v4(cvss4.clone(), parsed).0;
+    let calculated_full = merged.calculated_full_score();
+
+    // Validate base score (using full score which includes threat metric E if present)
+    check_optional_score_mismatch(
+        Some(merged.base_score),
+        calculated_full,
+        ScoreType::Base,
+        instance_path,
+        errors,
+    );
+
+    // Validate base severity using base_severity() which converts to unified Severity
+    check_optional_severity_mismatch(
+        merged.base_severity(),
+        map_score_to_severity(calculated_full),
+        ScoreType::Base,
+        instance_path,
+        errors,
+    );
+}

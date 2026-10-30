@@ -2,7 +2,7 @@ use std::{borrow::Cow, path::PathBuf};
 
 use anyhow::bail;
 use clap::Parser;
-use csaf::{
+use csaf_rs::{
     converter::{
         Diagnostics,
         Error::{self, ValidationError},
@@ -50,8 +50,8 @@ fn main() -> Result<(), anyhow::Error> {
     let raw: serde_json::Value = args.path.as_path().parse()?;
     let mut diag = VerboseDiagnostics { has_errors: false };
 
-    let validation_result = csaf::validation::validate_by_preset(
-        &RawDocument::<csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>::new(raw.clone()),
+    let validation_result = csaf_rs::validation::validate_by_preset(
+        &RawDocument::<csaf_rs::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>::new(raw.clone()),
         "2.0",
         "basic",
     )?;
@@ -90,7 +90,7 @@ fn main() -> Result<(), anyhow::Error> {
         );
     }
 
-    let result = csaf::converter::convert(raw, &csaf::converter::Settings::default(), &mut diag);
+    let result = csaf_rs::converter::convert(raw, &csaf_rs::converter::Settings::default(), &mut diag);
     if diag.has_errors {
         if args.allow_invalid {
             eprintln!("Conversion completed with errors, but allowed due to --allow-invalid.");

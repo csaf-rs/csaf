@@ -176,11 +176,11 @@ mod tests {
             case_15: Ok(()),
             case_16: Err(vec![
                 unsupported_vers_type_warning(
-                    "someweirdunknownversiontype".into(),
+                    "vers:someweirdunknownversiontype/<4.2.0|>3.91.1|!=3.2.0|<1.2".into(),
                     "/product_tree/branches/0/branches/0/branches/0",
                 ),
                 unsupported_vers_type_warning(
-                    "somecoolunknownversiontype".into(),
+                    "vers:somecoolunknownversiontype/>Jo_3,16|<=2.Ko_5,20".into(),
                     "/product_tree/branches/0/branches/0/branches/1",
                 ),
             ]),

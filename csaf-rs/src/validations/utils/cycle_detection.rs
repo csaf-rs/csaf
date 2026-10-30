@@ -93,6 +93,13 @@ impl RelationMap {
 mod tests {
     use super::*;
 
+    /// Graph:
+    ///
+    ///     A ──▶ B ◀── D
+    ///     │
+    ///     └──▶ C
+    ///
+    ///     E ──↺
     #[test]
     fn test_referenced_nodes() {
         let mut relation_map = RelationMap::new();
@@ -108,6 +115,18 @@ mod tests {
         assert_eq!(referenced_nodes, expected_nodes.iter().collect());
     }
 
+
+    /// Graph:
+    ///
+    ///
+    ///           ┌────────────────┐
+    ///           ▼                │
+    ///     A ──▶ B ──▶ C ──▶ D ───┘
+    ///           │     │
+    ///           ▼     └──▶ F ──▶ G
+    ///           E ───────▶ F
+    ///
+    ///
     #[test]
     fn test_find_cycle() {
         let mut relation_map = RelationMap::new();
@@ -143,6 +162,11 @@ mod tests {
         assert_eq!(relation_map.find_cycle("Z"), None);
     }
 
+
+
+    /// Graph:
+    ///
+    ///     A ──↺
     #[test]
     fn test_find_self_cycle() {
         let mut relation_map = RelationMap::new();

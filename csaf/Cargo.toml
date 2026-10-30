@@ -12,8 +12,8 @@ readme.workspace = true
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"], optional=true }
 anyhow = "1.0.93"
-csaf-validator = { path = "../csaf-validator", version = "0.5", features=["cli"], optional=true }
-csaf-converter = { path = "../csaf-converter", version = "0.5", features=["cli"], optional=true  }
+csaf-validator = { path = "../csaf-validator", version = "0.6", features=["cli"], optional=true }
+csaf-converter = { path = "../csaf-converter", version = "0.6", features=["cli"], optional=true  }
 
 [lints]
 workspace = true
@@ -28,7 +28,7 @@ path = "src/main.rs"
 required-features = ["cli"]
 
 [features]
-default = ["cli"]
+default = ["converter", "validator", "cli"]
 cli = ["dep:clap", "converter", "validator"]
 converter = ["dep:csaf-converter"]
 validator =["dep:csaf-validator"]

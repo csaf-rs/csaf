@@ -599,7 +599,7 @@ dependencies = [
 
 [[package]]
 name = "csaf"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -609,7 +609,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-converter"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -619,7 +619,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-ffi"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "csaf-rs",
  "serde_json",
@@ -629,7 +629,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-result-json"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "anstream",
  "anstyle",
@@ -642,7 +642,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-rs"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "bytemuck",
  "chrono",
@@ -693,7 +693,7 @@ dependencies = [
 
 [[package]]
 name = "csaf-validator"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "anstream",
  "anstyle",
@@ -3128,7 +3128,7 @@ dependencies = [
 
 [[package]]
 name = "type-generator"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "clap",
  "json_dotpath",

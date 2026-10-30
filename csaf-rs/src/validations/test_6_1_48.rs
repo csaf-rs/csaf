@@ -1,13 +1,6 @@
 use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_invalid_ssvc_error(error: impl std::fmt::Display, i_v: usize, i_m: usize) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("Invalid SSVC object: {error}"),
-        instance_path: format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2"),
-    })
-}
-
 /// Test function for invocation by users, does not permit usage of the "test" namespace.
 pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     test_6_1_48_ssvc_decision_points_internal(doc, false)
@@ -15,11 +8,19 @@ pub fn test_6_1_48_ssvc_decision_points(doc: &impl CsafTrait) -> Result<(), Vec<
 
 /// Internal, actual test function. Set `allow_test_namespaces` to `true` to permit the reserved
 /// "test" namespace, which is used in test fixtures but disallowed in production.
+///
+/// 6.1.48 SSVC Decision Points
+///
+/// For each SSVC decision point given under `selections` within a registered base `namespace`,
+/// it SHALL be tested that given decision point exists, is valid and the items in `values` are ordered correctly.
+/// The test SHALL pass, if an unregistered `namespace` is used.
+/// Namespaces reserved for special purpose SHALL be treated as per their definition.
 fn test_6_1_48_ssvc_decision_points_internal(
     doc: &impl CsafTrait,
     allow_test_namespaces: bool,
 ) -> Result<(), Vec<TestFinding>> {
     let vulnerabilities = doc.get_vulnerabilities();
+    let mut errors = Vec::new();
 
     for (i_v, v) in vulnerabilities.iter().enumerate() {
         if let Some(metrics) = v.get_metrics() {
@@ -30,24 +31,21 @@ fn test_6_1_48_ssvc_decision_points_internal(
                         Ok(ssvc) => {
                             let result = ssvc::validate_selection_list(&ssvc, allow_test_namespaces);
                             if !result.success {
-                                let validation_errors: Vec<TestFinding> = result
-                                    .errors
-                                    .into_iter()
-                                    .map(|ssvc_error| {
-                                        let path_suffix = ssvc_error.instance_path.join("/");
-                                        TestFinding::Error(TestFindingData {
-                                            message: ssvc_error.message,
-                                            instance_path: format!(
-                                                "/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/{path_suffix}"
-                                            ),
-                                        })
+                                errors.extend(result.errors.into_iter().map(|ssvc_error| {
+                                    let path_suffix = ssvc_error.instance_path.join("/");
+                                    TestFinding::Error(TestFindingData {
+                                        message: ssvc_error.message,
+                                        instance_path: format!(
+                                            "/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/{path_suffix}"
+                                        ),
                                     })
-                                    .collect();
-                                return Err(validation_errors);
+                                }));
                             }
                         },
-                        Err(err) => {
-                            return Err(vec![create_invalid_ssvc_error(err, i_v, i_m)]);
+                        Err(_) => {
+                            // TODO #409: Collect NonDeterminable once supported.
+                            //  Invalid SSVC structure is covered by 6.1.46.
+                            continue;
                         },
                     }
                 }
@@ -55,7 +53,7 @@ fn test_6_1_48_ssvc_decision_points_internal(
         }
     }
 
-    Ok(())
+    if errors.is_empty() { Ok(()) } else { Err(errors) }
 }
 
 impl crate::test_validation::TestValidator<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>

@@ -4,3 +4,4 @@ pub mod product_status;
 pub mod product_status_group;
 pub mod sharing_group_id;
 pub mod sharing_group_name;
+pub mod version_range;

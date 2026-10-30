@@ -20,7 +20,7 @@ pub fn map_score_to_severity(score: Option<f64>) -> Option<UnifiedSeverity> {
 }
 
 /// Converts a version-specific CVSS v3 [V3Severity] to the unified [Severity].
-/// The [CvssV3] implementation does not provide this only for base_score.
+/// The CVSS v3 implementation provides this only for base_score.
 pub fn to_unified(severity: &V3Severity) -> UnifiedSeverity {
     match severity {
         V3Severity::None => UnifiedSeverity::None,

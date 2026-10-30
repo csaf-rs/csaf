@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use anstream::println;
 use anyhow::bail;
 use clap::{CommandFactory, Parser};
 use csaf_rs::validation::{

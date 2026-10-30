@@ -49,8 +49,7 @@ impl Diagnostics for VerboseDiagnostics {
 pub fn run_converter(args: ConverterArgs) -> Result<(), anyhow::Error> {
     let path = args.path.as_path();
     if !path.exists() {
-        ConverterArgs::command().print_help()?;
-        return Ok(());
+        anyhow::bail!("Input file does not exist: {}", path.display());
     }
 
     let mut diag = VerboseDiagnostics { error_count: 0 };

@@ -15,9 +15,9 @@ pub enum VersionRange {
 impl Display for VersionRange {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            VersionRange::DynamicVers(vers) => write!(f, "{}", vers),
-            VersionRange::Vls(vls) => write!(f, "{}", vls),
-            VersionRange::Invalid(err) => write!(f, "Invalid version range: {:?}", err),
+            VersionRange::DynamicVers(vers) => write!(f, "{vers}"),
+            VersionRange::Vls(vls) => write!(f, "{vls}"),
+            VersionRange::Invalid(err) => write!(f, "{err}"),
         }
     }
 }
@@ -31,8 +31,8 @@ pub enum VersionRangeError {
 impl Display for VersionRangeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            VersionRangeError::InvalidVers(err) => write!(f, "Invalid vers version range: {}", err),
-            VersionRangeError::InvalidVls(err) => write!(f, "Invalid vls version range: {}", err),
+            VersionRangeError::InvalidVers(err) => write!(f, "Invalid vers version range: {err}"),
+            VersionRangeError::InvalidVls(err) => write!(f, "Invalid vls version range: {err}"),
         }
     }
 }

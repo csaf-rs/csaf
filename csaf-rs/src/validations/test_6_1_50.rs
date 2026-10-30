@@ -149,6 +149,7 @@ mod tests {
     #[test]
     fn test_6_1_50() {
         // TODO: Supplementary test case that exercises the "only vers:all / none may do the * comparator" rule.
+        // TODO: Supplementary test case for single version VLS
         TESTS_2_1.test_6_1_50.expect(ExpectedResults {
             // TODO: This error message could be more percise, the problem are the whitespaces outside the constraint
             case_01: Err(vec![invalid_product_version_range_error(

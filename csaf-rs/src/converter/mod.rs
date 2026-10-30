@@ -61,6 +61,8 @@ pub enum Warning {
     InvalidTlpLabel,
     TlpIsMissingLabel,
     LegacyBranchCategoryReplaced,
+    InvalidProductTree,
+    InvalidBranches,
 }
 
 impl fmt::Display for Warning {
@@ -78,6 +80,8 @@ impl fmt::Display for Warning {
                 Please review the converted document to ensure the \
                 conversion is correct and not misleading."
             },
+            Warning::InvalidProductTree => "Skipped branch traversal: product_tree is not a JSON object",
+            Warning::InvalidBranches => "Skipped branch traversal: branches is not a JSON array",
         };
         f.write_str(s)
     }

@@ -1,4 +1,4 @@
-use crate::converter::helpers::for_each_branch_mut;
+use crate::converter::helpers::{BranchTraversalWarning, for_each_branch_mut};
 use crate::schema::loose;
 use serde_json::Value;
 
@@ -8,7 +8,7 @@ pub struct ReplaceLegacyBranchCategory;
 
 impl Convert for ReplaceLegacyBranchCategory {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
-        for_each_branch_mut(doc, |branch, path| {
+        let result = for_each_branch_mut(doc, |branch, path| {
             if let Some(Value::String(category)) = branch.get_mut("category")
                 && category == "legacy"
             {
@@ -17,6 +17,15 @@ impl Convert for ReplaceLegacyBranchCategory {
                 diagnostics.warning(format!("{path}/category").into(), Warning::LegacyBranchCategoryReplaced);
             }
         });
+
+        if let Err(error) = result {
+            let (path, warning) = match error {
+                BranchTraversalWarning::InvalidProductTree => ("/product_tree", Warning::InvalidProductTree),
+                BranchTraversalWarning::InvalidBranches => ("/product_tree/branches", Warning::InvalidBranches),
+            };
+
+            diagnostics.warning(path.into(), warning);
+        }
     }
 }
 
@@ -28,7 +37,7 @@ mod tests {
 
     use super::*;
 
-    fn assert_conversion(input: Value, expected: Value, expected_paths: &[&str]) {
+    fn assert_conversion(input: Value, expected: Value, expected_warnings: &[(&str, Warning)]) {
         let mut doc = loose::Document::new(input);
         let mut diagnostics = OnlyWarnings::default();
 
@@ -37,11 +46,11 @@ mod tests {
         assert_eq!(expected, doc.into_raw());
 
         let warnings = diagnostics.warnings();
-        assert_eq!(expected_paths.len(), warnings.len());
+        assert_eq!(expected_warnings.len(), warnings.len());
 
-        for ((path, warning), expected_path) in warnings.iter().zip(expected_paths) {
+        for ((path, warning), (expected_path, expected_warning)) in warnings.iter().zip(expected_warnings) {
             assert_eq!(path.as_ref(), *expected_path);
-            assert_eq!(warning, &Warning::LegacyBranchCategoryReplaced);
+            assert_eq!(warning, expected_warning);
         }
     }
 
@@ -73,7 +82,14 @@ mod tests {
             }
         });
 
-        assert_conversion(input, expected, &["/product_tree/branches/0/category"]);
+        assert_conversion(
+            input,
+            expected,
+            &[(
+                "/product_tree/branches/0/category",
+                Warning::LegacyBranchCategoryReplaced,
+            )],
+        );
     }
 
     #[test]
@@ -116,8 +132,14 @@ mod tests {
             input,
             expected,
             &[
-                "/product_tree/branches/0/branches/0/category",
-                "/product_tree/branches/0/branches/0/branches/0/category",
+                (
+                    "/product_tree/branches/0/branches/0/category",
+                    Warning::LegacyBranchCategoryReplaced,
+                ),
+                (
+                    "/product_tree/branches/0/branches/0/branches/0/category",
+                    Warning::LegacyBranchCategoryReplaced,
+                ),
             ],
         );
     }
@@ -165,7 +187,16 @@ mod tests {
         assert_conversion(
             input,
             expected,
-            &["/product_tree/branches/0/category", "/product_tree/branches/2/category"],
+            &[
+                (
+                    "/product_tree/branches/0/category",
+                    Warning::LegacyBranchCategoryReplaced,
+                ),
+                (
+                    "/product_tree/branches/2/category",
+                    Warning::LegacyBranchCategoryReplaced,
+                ),
+            ],
         );
     }
 
@@ -227,5 +258,69 @@ mod tests {
         });
 
         assert_conversion(input.clone(), input, &[]);
+    }
+
+    #[test]
+    fn warns_when_product_tree_is_not_an_object() {
+        let input = json!({
+            "product_tree": ["category", "legacy"]
+        });
+
+        assert_conversion(input.clone(), input, &[("/product_tree", Warning::InvalidProductTree)]);
+    }
+
+    #[test]
+    fn warns_when_branches_is_not_an_array() {
+        // The `legacy` category must survive untouched: nothing is traversed at all
+        let input = json!({
+            "product_tree": {
+                "branches": {
+                    "category": "legacy",
+                    "name": "Old Product"
+                }
+            }
+        });
+
+        assert_conversion(
+            input.clone(),
+            input,
+            &[("/product_tree/branches", Warning::InvalidBranches)],
+        );
+    }
+
+    #[test]
+    fn skips_branch_items_that_are_not_objects() {
+        let input = json!({
+            "product_tree": {
+                "branches": [
+                    "not an object",
+                    {
+                        "category": "legacy",
+                        "name": "Product"
+                    }
+                ]
+            }
+        });
+
+        let expected = json!({
+            "product_tree": {
+                "branches": [
+                    "not an object",
+                    {
+                        "category": "product_name",
+                        "name": "Product"
+                    }
+                ]
+            }
+        });
+
+        assert_conversion(
+            input,
+            expected,
+            &[(
+                "/product_tree/branches/1/category",
+                Warning::LegacyBranchCategoryReplaced,
+            )],
+        );
     }
 }

@@ -48,6 +48,7 @@ vers-rs = "0.2"
 # TODO: Replace with properly maintained cpe-rs crate #1158
 cpe = { version = "0.2", package = "cpe-rs-fork" }
 purl = "0.1.6"
+itertools = "0.15.0"
 
 [build-dependencies]
 ssvc = "0.4.1"

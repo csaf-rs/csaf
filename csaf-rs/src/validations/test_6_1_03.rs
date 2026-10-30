@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use std::collections::{HashMap, HashSet};
+use crate::validations::utils::cycle_detection::{RelationCycle, RelationMap};
 
 fn generate_self_reference_product_error(version: CsafVersion, path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -35,52 +35,19 @@ fn generate_cycle_error(version: CsafVersion, cycle: &[String], path: String) ->
     })
 }
 
-/// Find the first cycle in the given `relation_map`, if any.
+/// 6.1.3 Circular Definition of Product ID
 ///
-/// # Returns
-/// - `Vec` of the product IDs forming the detected cycle
-/// - Path of the CSAF relation / product path containing the product ID where the cycle was first detected
-pub fn find_cycle<'a>(
-    relation_map: &'a HashMap<String, HashMap<String, String>>,
-    product_id: &'a str,
-    visited: &mut HashSet<&'a str>,
-) -> Option<(Vec<String>, String)> {
-    if !visited.insert(product_id) {
-        return Some((vec![product_id.to_string()], "".to_string()));
-    }
-    if let Some(next_vec) = relation_map.get(product_id) {
-        for (next, r_i) in next_vec {
-            match find_cycle(relation_map, next, visited) {
-                None => {},
-                Some((mut cycle, r_i_res)) => {
-                    let (Some(first), Some(last)) = (cycle.first(), cycle.last()) else {
-                        // an empty cycle is not a cycle, continue like in the `None` case
-                        continue;
-                    };
-                    if cycle.len() == 1 || first != last {
-                        if first == product_id {
-                            // Reverse the cycle when it is complete
-                            cycle.push(product_id.to_string());
-                            cycle.reverse();
-                            return Some((cycle, r_i.clone()));
-                        }
-                        // Back-trace the cycle to the first node
-                        cycle.push(product_id.to_string());
-                    }
-                    return Some((cycle, r_i_res));
-                },
-            }
-        }
-    }
-    visited.remove(product_id);
-    None
-}
-
+/// For each new defined Product ID (type `$['$defs'].product_id_t`) in items of product paths (`$.product_tree.product_paths`) it
+/// SHALL be tested that the `product_id` does not end up in a circle.
+///
+/// As this can be quite complex a program for large CSAF documents, a program could check first whether
+/// a Product ID defined in a product path item is used as `beginning_product_reference` or `next_product_reference`.
+/// Only for those which fulfill this condition it is necessary to run the full check following the references.
 pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let version = doc.get_document().get_csaf_version();
     let mut errors: Option<Vec<TestFinding>> = None;
     if let Some(tree) = doc.get_product_tree() {
-        let mut relation_map = HashMap::<String, HashMap<String, String>>::new();
+        let mut relation_map = RelationMap::new();
         for (pp_i, pp) in tree.get_product_paths().iter().enumerate() {
             let rel_prod_id = pp.get_full_product_name().get_product_id();
             if pp.get_beginning_product_reference() == rel_prod_id {
@@ -102,42 +69,20 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                         &pp.get_json_path_for_product_path_subpath_product_reference(pp_i, sp_i),
                     ));
             } else {
-                match relation_map.get_mut(rel_prod_id) {
-                    Some(v) => {
-                        v.insert(
-                            pp.get_beginning_product_reference().to_owned(),
-                            pp.get_json_path_for_product_path(pp_i),
-                        );
-                        pp.get_subpath_product_references().iter().for_each(|next| {
-                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
-                        });
-                    },
-                    None => {
-                        let mut v = HashMap::new();
-                        v.insert(
-                            pp.get_beginning_product_reference().to_owned(),
-                            pp.get_json_path_for_product_path(pp_i),
-                        );
-                        pp.get_subpath_product_references().iter().for_each(|next| {
-                            v.insert(next.to_string(), pp.get_json_path_for_product_path(pp_i));
-                        });
-                        relation_map.insert(rel_prod_id.to_owned(), v);
-                    },
-                }
+                let path = pp.get_json_path_for_product_path(pp_i);
+                relation_map.add_relation(rel_prod_id, pp.get_beginning_product_reference(), path.clone());
+                pp.get_subpath_product_references().iter().for_each(|next| {
+                    relation_map.add_relation(rel_prod_id, next, path.clone());
+                });
             }
         }
 
-        // Find all products that are part of any product path (either as beginning or next reference)
-        let products_in_product_path: HashSet<&String> =
-            relation_map.values().flat_map(|referenced| referenced.keys()).collect();
-
         // Perform cycle check
-        for product_id in products_in_product_path {
-            let mut visited = HashSet::new();
-            if let Some((cycle, relation_index)) = find_cycle(&relation_map, product_id, &mut visited) {
+        for product_id in relation_map.referenced_nodes() {
+            if let Some(RelationCycle { cycle, relation_path }) = relation_map.find_cycle(product_id) {
                 errors
                     .get_or_insert_default()
-                    .push(generate_cycle_error(version, &cycle, relation_index));
+                    .push(generate_cycle_error(version, &cycle, relation_path));
             }
         }
     }
@@ -236,52 +181,5 @@ mod tests {
             case_12: Ok(()),
             case_13: Ok(()),
         });
-    }
-
-    #[test]
-    fn test_find_cycle() {
-        // Create a relation map with a non-trivial cycle: B -> C -> D -> B
-        let mut relation_map = HashMap::new();
-
-        relation_map.insert("A".to_string(), HashMap::from([("B".to_string(), "0".to_string())]));
-        relation_map.insert(
-            "B".to_string(),
-            HashMap::from([("C".to_string(), "1".to_string()), ("E".to_string(), "2".to_string())]),
-        );
-        relation_map.insert(
-            "C".to_string(),
-            HashMap::from([("D".to_string(), "3".to_string()), ("F".to_string(), "4".to_string())]),
-        );
-        relation_map.insert("D".to_string(), HashMap::from([("B".to_string(), "5".to_string())]));
-
-        // Also add some nodes that aren't part of the cycle
-        relation_map.insert("E".to_string(), HashMap::from([("F".to_string(), "6".to_string())]));
-        relation_map.insert("F".to_string(), HashMap::from([("G".to_string(), "7".to_string())]));
-
-        // Test cycle detection starting from the first node
-        let mut visited = HashSet::new();
-        let result = super::find_cycle(&relation_map, "A", &mut visited);
-        assert!(result.is_some());
-        let (cycle, relation_index) = result.unwrap();
-        assert_eq!(cycle, vec!("B", "C", "D", "B"));
-        assert_eq!(relation_index, "1");
-
-        // Test starting from a node that's part of the cycle
-        let mut visited = HashSet::new();
-        let result = super::find_cycle(&relation_map, "C", &mut visited);
-        assert!(result.is_some());
-        let (cycle, relation_index) = result.unwrap();
-        assert_eq!(cycle, vec!("C", "D", "B", "C"));
-        assert_eq!(relation_index, "3");
-
-        // Test starting from a node that's not part of any cycle
-        let mut visited = HashSet::new();
-        let result = super::find_cycle(&relation_map, "E", &mut visited);
-        assert!(result.is_none());
-
-        // Test with empty visited Set and starting from a node not in the map
-        let mut visited = HashSet::new();
-        let result = super::find_cycle(&relation_map, "Z", &mut visited);
-        assert!(result.is_none());
     }
 }

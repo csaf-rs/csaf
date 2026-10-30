@@ -8,9 +8,13 @@ mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
+mod settings;
 mod sort_json_keys;
 mod update_csaf_version;
+mod update_publisher_category;
 mod update_tlp_label;
+
+pub use settings::{PublisherCategoryOtherSettings, Settings};
 
 pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
     let mut doc = loose::Document::new(raw);
@@ -28,6 +32,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
+    &update_publisher_category::UpdatePublisherCategory,
     // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
@@ -46,11 +51,6 @@ pub trait Diagnostics {
     fn warning(&mut self, path: Cow<'static, str>, warning: Warning);
 }
 
-#[derive(Default)]
-pub struct Settings {
-    // TODO
-}
-
 #[derive(Debug, PartialEq)]
 pub enum Warning {
     ValidationWarning(String),
@@ -58,6 +58,7 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    PublisherCategoryOther,
 }
 
 impl fmt::Display for Warning {
@@ -68,6 +69,12 @@ impl fmt::Display for Warning {
             Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
             Warning::InvalidTlpLabel => "TLP label contained an invalid value",
             Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
+            Warning::PublisherCategoryOther => {
+                "Some publishers previously categorized as 'other' \
+                have been regrouped into the new 'multiplier' category in CSAF 2.1. \
+                Please manually check whether the publisher category should be changed to 'multiplier'. \
+                The converter provides options to perform this change automatically or suppress this warning."
+            },
         };
         f.write_str(s)
     }

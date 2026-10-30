@@ -19,7 +19,7 @@ pub struct ConverterArgs {
     path: PathBuf,
 
     /// Path to the output file, stdout when omitted
-    #[arg(short = 'o')]
+    #[arg(long, short = 'o')]
     output: Option<PathBuf>,
 
     /// Allow (partial) processing and output of invalid CSAF documents

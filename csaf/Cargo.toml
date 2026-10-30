@@ -7,13 +7,12 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 keywords.workspace = true
-readme.workspace = true
 
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"], optional=true }
 anyhow = "1.0.93"
-csaf-validator = { path = "../csaf-validator", version = "0.6", features=["cli"], optional=true }
-csaf-converter = { path = "../csaf-converter", version = "0.6", features=["cli"], optional=true  }
+csaf-validator = { path = "../csaf-validator", version = "0.6", optional=true }
+csaf-converter = { path = "../csaf-converter", version = "0.6", optional=true }
 
 [lints]
 workspace = true
@@ -28,7 +27,7 @@ path = "src/main.rs"
 required-features = ["cli"]
 
 [features]
-default = ["converter", "validator", "cli"]
-cli = ["dep:clap", "converter", "validator"]
+default = ["converter", "validator"]
+cli = ["dep:clap", "csaf-converter/cli", "csaf-validator/cli"]
 converter = ["dep:csaf-converter"]
 validator =["dep:csaf-validator"]

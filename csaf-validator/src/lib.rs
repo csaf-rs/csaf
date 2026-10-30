@@ -7,7 +7,6 @@ use csaf_rs::{
     json::JsonSource,
     validation::{Validatable, ValidationResult, validate_by_tests},
 };
-use std::path::Path;
 
 #[cfg(feature = "cli")]
 pub mod cli;
@@ -15,7 +14,7 @@ pub mod cli;
 /// Validate a CSAF document of the specified version with the provided arguments.
 ///
 /// This prints the results of the tests on stdout.
-pub fn validate_document<T>(document: T, version: &str, tests: &[String]) -> ValidationResult
+pub fn validate_document<T>(document: T, csaf_version: &str, tests: &[String]) -> ValidationResult
 where
     T: Validatable,
 {
@@ -35,17 +34,18 @@ where
         })
         .collect();
 
-    validate_by_tests(&document, version, &test_ids)
+    validate_by_tests(&document, csaf_version, &test_ids)
 }
 
-/// Try to validate a file as a CSAF document based on the specified version.
-pub fn validate_file(path: &Path, csaf_version: &str, tests: &[String]) -> Result<ValidationResult> {
+/// Try to validate the content as a CSAF document based on the specified version.
+/// The content can be anything which resembles a `JsonSource`.
+pub fn validate<S: JsonSource>(content: S, csaf_version: &str, tests: &[String]) -> Result<ValidationResult> {
     match csaf_version {
         "auto" => {
-            let detected = detect_version_with(path)?;
+            let detected = detect_version_with(content)?;
             load_and_validate(detected.data, &detected.version, tests)
         },
-        other => load_and_validate(path, other, tests),
+        other => load_and_validate(content, other, tests),
     }
 }
 

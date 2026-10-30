@@ -1,24 +1,24 @@
 use std::path::Path;
 
-use anyhow::Error;
-use csaf_rs::{
-    converter::{Diagnostics, Error::ValidationError, Settings, Warning::ValidationWarning},
-    csaf::raw::RawDocument,
-    json::JsonSource,
-    validation::TestResultStatus,
-};
+pub use csaf_rs::converter::{Diagnostics, Error, Settings, Warning};
+use csaf_rs::{csaf::raw::RawDocument, json::JsonSource, validation::TestResultStatus};
 
 #[cfg(feature = "cli")]
 pub mod cli;
 
-pub fn convert(
-    document: serde_json::Value,
+pub fn convert<S: JsonSource>(
+    document: S,
     settings: &Settings,
     diagnostics: &mut dyn Diagnostics,
     allow_invalid: bool,
 ) -> Result<serde_json::Value, anyhow::Error> {
+    let json_value: serde_json::Value = match document.parse() {
+        Ok(json_value) => json_value,
+        Err(msg) => return Err(anyhow::Error::msg(msg)),
+    };
+
     let validation_result = csaf_rs::validation::validate_by_preset(
-        &RawDocument::<csaf_rs::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>::new(document.clone()),
+        &RawDocument::<csaf_rs::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>::new(json_value.clone()),
         "2.0",
         "basic",
     )?;
@@ -35,28 +35,28 @@ pub fn convert(
                 errors.iter().for_each(|error| {
                     diagnostics.error(
                         error.instance_path.clone().into(),
-                        ValidationError(error.message.clone()),
+                        Error::ValidationError(error.message.clone()),
                     );
                 });
             },
             TestResultStatus::NotFound => {
                 diagnostics.warning(
                     "".into(),
-                    ValidationWarning(format!("Test `{0}` not found.", result.test_id)),
+                    Warning::ValidationWarning(format!("Test `{0}` not found.", result.test_id)),
                 );
             },
             _ => {},
         });
 
     if diagnostics.has_errors() && !allow_invalid {
-        return Err(Error::msg(
+        return Err(anyhow::Error::msg(
             "Conversion aborted due to validation errors in input file. Run with --allow-invalid to convert the file anyway.",
         ));
     }
 
-    let result = csaf_rs::converter::convert(document, settings, diagnostics);
+    let result = csaf_rs::converter::convert(json_value, settings, diagnostics);
     if diagnostics.has_errors() && !allow_invalid {
-        return Err(Error::msg(
+        return Err(anyhow::Error::msg(
             "Conversion failed due to errors. Run with --allow-invalid to output the converted file anyway.",
         ));
     }
@@ -71,8 +71,7 @@ pub fn convert_file(
     diagnostics: &mut dyn Diagnostics,
     allow_invalid: bool,
 ) -> Result<(), anyhow::Error> {
-    let raw: serde_json::Value = path.parse()?;
-    let converted = convert(raw, settings, diagnostics, allow_invalid)?;
+    let converted = convert(path, settings, diagnostics, allow_invalid)?;
     let result = serde_json::to_string_pretty(&converted)?;
     std::fs::write(output, result)?;
     Ok(())

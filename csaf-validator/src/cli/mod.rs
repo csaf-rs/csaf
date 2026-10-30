@@ -55,7 +55,7 @@ pub fn run_validator(args: ValidatorArgs) -> Result<(), anyhow::Error> {
             let path = Path::new(&file);
             let file_color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Cyan.into()));
             println!("Validating file: {file_color}{}{file_color:#}", path.display());
-            super::validate_file(path, args.csaf_version.as_str(), &args.test)
+            super::validate(path, args.csaf_version.as_str(), &args.test)
         })
         .filter(|result| match result {
             Ok(result) => {

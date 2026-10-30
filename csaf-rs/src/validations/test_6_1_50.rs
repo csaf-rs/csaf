@@ -10,7 +10,7 @@ fn non_canonical_product_version_range_error(
 ) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
-            "The VERS version range given is not in canonical form: `{name}`, canonical would be vers={canonical}"
+            "The VERS version range given is not in canonical form: `{name}`, canonical would be {canonical}"
         ),
         instance_path: instance_path.into(),
     })

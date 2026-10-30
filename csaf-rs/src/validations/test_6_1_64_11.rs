@@ -24,11 +24,13 @@ pub fn test_6_1_64_11_circular_reference_of_action_id(doc: &impl CsafTrait) -> R
     };
 
     let mut relation_map = RelationMap::new();
+    let mut action_ids_to_check = Vec::new();
 
     for (action_index, action) in involvement.get_actions().enumerate() {
         let action_id = action.get_action_id().to_owned();
 
         if let Some(references) = action.get_referenced_action_ids() {
+            action_ids_to_check.push(action_id.clone());
             for (reference_index, referenced_action_id) in references.enumerate() {
                 relation_map.add_relation(
                     &action_id,
@@ -40,8 +42,8 @@ pub fn test_6_1_64_11_circular_reference_of_action_id(doc: &impl CsafTrait) -> R
     }
 
     let mut findings: Option<Vec<TestFinding>> = None;
-    for action_id in relation_map.referenced_nodes() {
-        if let Some(RelationCycle { cycle, relation_path }) = relation_map.find_cycle(action_id) {
+    for action_id in action_ids_to_check {
+        if let Some(RelationCycle { cycle, relation_path }) = relation_map.find_cycle(&action_id) {
             findings
                 .get_or_insert_default()
                 .push(create_circular_reference_error(&cycle, &relation_path));

@@ -76,15 +76,29 @@ pub fn test_6_1_21_missing_item_in_revision_history(doc: &impl CsafTrait) -> Res
         return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
     }
 
+    // CSAF 2.0 checks only Major version gaps, while CSAF 2.1 also checks Minor and Patch version gaps.
     // resolve the version cores once, ignoring invalid version numbers
-    let items = rev_history_tuples
-        .iter()
-        .filter_map(|item| {
-            item.number
-                .as_valid()
-                .map(|number| RevHistoryItem::new(&item.date, number))
-        })
-        .collect::<Vec<_>>();
+    let items = match doc.get_document().get_csaf_version() {
+        crate::csaf::enums::csaf_version::CsafVersion::X20 => rev_history_tuples
+            .iter()
+            .filter_map(|item| {
+                item.number.as_valid().map(|number| RevHistoryItem {
+                    date: &item.date,
+                    core: (number.get_version_core().0, 0, 0),
+                    number,
+                })
+            })
+            .collect::<Vec<_>>(),
+
+        _ => rev_history_tuples
+            .iter()
+            .filter_map(|item| {
+                item.number
+                    .as_valid()
+                    .map(|number| RevHistoryItem::new(&item.date, number))
+            })
+            .collect::<Vec<_>>(),
+    };
 
     let Some(first) = items.first() else {
         return Ok(()); // ToDo #409 this should be Skipped: Precondition failed

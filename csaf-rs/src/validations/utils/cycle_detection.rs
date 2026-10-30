@@ -38,7 +38,7 @@ impl RelationMap {
     ///
     /// The returned tuple contains the first cycle, with its starting node repeated at
     /// the end, and the path of the edge that starts / closes the cycle. If
-    /// `node` is not part of a reachable cycle, `None` is returned.
+    /// no cycle is reachable from `node`, `None` is returned.
     pub fn find_cycle(&self, node: &str) -> Option<RelationCycle> {
         self.find_cycle_inner(node, &mut HashSet::new())
     }

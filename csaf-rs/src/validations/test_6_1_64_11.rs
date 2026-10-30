@@ -29,11 +29,11 @@ pub fn test_6_1_64_11_circular_reference_of_action_id(doc: &impl CsafTrait) -> R
         let action_id = action.get_action_id().to_owned();
 
         if let Some(references) = action.get_referenced_action_ids() {
-            for referenced_action_id in references {
+            for (reference_index, referenced_action_id) in references.enumerate() {
                 relation_map.add_relation(
                     &action_id,
                     referenced_action_id,
-                    format!("/document/involvement/actions/{action_index}"),
+                    format!("/document/involvement/actions/{action_index}/referenced_action_ids/{reference_index}"),
                 );
             }
         }
@@ -68,7 +68,7 @@ mod tests {
         TESTS_2_1.test_6_1_64_11.expect(ExpectedResults {
             case_01: Err(vec![create_circular_reference_error(
                 &["ACN-1".to_string(), "ACN-1".to_string()],
-                "/document/involvement/actions/0",
+                "/document/involvement/actions/0/referenced_action_ids/0",
             )]),
             case_02: Err(vec![
                 create_circular_reference_error(
@@ -78,7 +78,7 @@ mod tests {
                         "ACN-2".to_string(),
                         "ACN-1".to_string(),
                     ],
-                    "/document/involvement/actions/0",
+                    "/document/involvement/actions/0/referenced_action_ids/0",
                 ),
                 create_circular_reference_error(
                     &[
@@ -87,7 +87,7 @@ mod tests {
                         "ACN-3".to_string(),
                         "ACN-2".to_string(),
                     ],
-                    "/document/involvement/actions/1",
+                    "/document/involvement/actions/1/referenced_action_ids/0",
                 ),
                 create_circular_reference_error(
                     &[
@@ -96,7 +96,7 @@ mod tests {
                         "ACN-1".to_string(),
                         "ACN-3".to_string(),
                     ],
-                    "/document/involvement/actions/2",
+                    "/document/involvement/actions/2/referenced_action_ids/0",
                 ),
             ]),
             case_11: Ok(()),

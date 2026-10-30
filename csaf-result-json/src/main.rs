@@ -8,11 +8,11 @@ use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use compare::compare_result_jsons;
 use convert::build_testresult_json;
-use csaf::csaf::loader::detect_version_with;
-use csaf::csaf2_0::loader::load_document as load_document_2_0;
-use csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf::json::JsonSource;
-use csaf::validation::{Validatable, ValidationResult, validate_by_tests};
+use csaf_rs::csaf::loader::detect_version_with;
+use csaf_rs::csaf2_0::loader::load_document as load_document_2_0;
+use csaf_rs::csaf2_1::loader::load_document as load_document_2_1;
+use csaf_rs::json::JsonSource;
+use csaf_rs::validation::{Validatable, ValidationResult, validate_by_tests};
 use result::ResultJson;
 
 /// A validator for CSAF documents

@@ -9,7 +9,7 @@
 //! ```rust
 //! # use std::fs;
 //! # use std::path::Path;
-//! # use csaf::json::JsonSource;
+//! # use csaf_rs::json::JsonSource;
 //! # use serde_json::json;
 //! #
 //! # #[derive(serde::Deserialize)] struct MyDoc;

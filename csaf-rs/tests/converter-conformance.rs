@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::{env, fs};
 
-use csaf::converter::{self, Diagnostics, Error, Settings, Warning};
+use csaf_rs::converter::{self, Diagnostics, Error, Settings, Warning};
 use jsonpath_rust::JsonPath as _;
 use serde::Deserialize;
 

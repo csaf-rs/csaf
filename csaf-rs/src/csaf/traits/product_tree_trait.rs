@@ -2,12 +2,12 @@ use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
 use crate::schema::csaf2_0::schema::{
-    Branch as Branch20, CategoryOfTheBranch as CategoryOfTheBranch20, FullProductNameT as FullProductNameT20,
-    ProductGroup as ProductGroup20, ProductTree as ProductTree20, Relationship as Relationship20,
+    Branch as Branch20, FullProductNameT as FullProductNameT20, ProductGroup as ProductGroup20,
+    ProductTree as ProductTree20, Relationship as Relationship20,
 };
 use crate::schema::csaf2_1::schema::{
-    Branch as Branch21, CategoryOfTheBranch as CategoryOfTheBranch21, FullProductNameT as FullProductNameT21,
-    ProductGroup as ProductGroup21, ProductPath as ProductPath21, ProductTree as ProductTree21,
+    Branch as Branch21, FullProductNameT as FullProductNameT21, ProductGroup as ProductGroup21,
+    ProductPath as ProductPath21, ProductTree as ProductTree21,
 };
 use std::collections::HashSet;
 use std::fmt::Write as _;
@@ -448,20 +448,7 @@ impl BranchTrait<FullProductNameT20> for Branch20 {
     }
 
     fn get_category(&self) -> CategoryOfTheBranch {
-        match &self.category {
-            CategoryOfTheBranch20::Architecture => CategoryOfTheBranch::Architecture,
-            CategoryOfTheBranch20::HostName => CategoryOfTheBranch::HostName,
-            CategoryOfTheBranch20::Language => CategoryOfTheBranch::Language,
-            CategoryOfTheBranch20::Legacy => CategoryOfTheBranch::Legacy,
-            CategoryOfTheBranch20::PatchLevel => CategoryOfTheBranch::PatchLevel,
-            CategoryOfTheBranch20::ProductFamily => CategoryOfTheBranch::ProductFamily,
-            CategoryOfTheBranch20::ProductName => CategoryOfTheBranch::ProductName,
-            CategoryOfTheBranch20::ProductVersion => CategoryOfTheBranch::ProductVersion,
-            CategoryOfTheBranch20::ProductVersionRange => CategoryOfTheBranch::ProductVersionRange,
-            CategoryOfTheBranch20::ServicePack => CategoryOfTheBranch::ServicePack,
-            CategoryOfTheBranch20::Specification => CategoryOfTheBranch::Specification,
-            CategoryOfTheBranch20::Vendor => CategoryOfTheBranch::Vendor,
-        }
+        self.category.into()
     }
 
     impl_str_field_getter!(get_name, name);
@@ -477,20 +464,7 @@ impl BranchTrait<FullProductNameT21> for Branch21 {
     }
 
     fn get_category(&self) -> CategoryOfTheBranch {
-        match &self.category {
-            CategoryOfTheBranch21::Architecture => CategoryOfTheBranch::Architecture,
-            CategoryOfTheBranch21::HostName => CategoryOfTheBranch::HostName,
-            CategoryOfTheBranch21::Language => CategoryOfTheBranch::Language,
-            CategoryOfTheBranch21::PatchLevel => CategoryOfTheBranch::PatchLevel,
-            CategoryOfTheBranch21::ProductFamily => CategoryOfTheBranch::ProductFamily,
-            CategoryOfTheBranch21::ProductName => CategoryOfTheBranch::ProductName,
-            CategoryOfTheBranch21::ProductVersion => CategoryOfTheBranch::ProductVersion,
-            CategoryOfTheBranch21::ProductVersionRange => CategoryOfTheBranch::ProductVersionRange,
-            CategoryOfTheBranch21::ServicePack => CategoryOfTheBranch::ServicePack,
-            CategoryOfTheBranch21::Specification => CategoryOfTheBranch::Specification,
-            CategoryOfTheBranch21::Vendor => CategoryOfTheBranch::Vendor,
-            CategoryOfTheBranch21::Platform => CategoryOfTheBranch::Platform,
-        }
+        self.category.into()
     }
 
     impl_str_field_getter!(get_name, name);

@@ -139,7 +139,7 @@ pub fn create_field_not_defined_in_vec_but_defined_in_json_error<T: std::fmt::Di
 ) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
-            "Property \"{field_name}\" is present in the object with value `{json_val}` but has the value `ND` in the vector string"
+            "Property \"{field_name}\" is present in the object with value `{json_val}` but has the value `ND` (CVSS v2) or `X` (CVSS v3/v4) in the vector string"
         ),
         instance_path: instance_path.to_string(),
     })

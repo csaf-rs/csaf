@@ -1,0 +1,25 @@
+[package]
+name = "csaf"
+description = "A validator and converter for the CSAF standard."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+readme.workspace = true
+
+[dependencies]
+clap = { version = "4.5.23", features = ["derive"] }
+anyhow = "1.0.93"
+
+[lints]
+workspace = true
+
+[lib]
+name = "csaf"
+path = "src/lib.rs"
+
+[[bin]]
+name = "csaf"
+path = "src/main.rs"

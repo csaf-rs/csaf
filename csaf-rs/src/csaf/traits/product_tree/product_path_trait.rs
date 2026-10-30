@@ -1,7 +1,8 @@
+use crate::csaf::enums::category_of_the_relationship::CategoryOfTheRelationship;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::ProductTrait;
-use crate::schema::csaf2_0::schema::Relationship;
-use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath};
+use crate::schema::csaf2_0::schema::{Relationship, RelationshipCategory as RelationshipCategory_2_0};
+use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath, RelationshipCategory as RelationshipCategory_2_1};
 
 /// Trait representing an abstract relationship or product path in a product tree.
 pub trait ProductPathTrait<FPN: ProductTrait> {
@@ -10,6 +11,9 @@ pub trait ProductPathTrait<FPN: ProductTrait> {
 
     /// Retrieves the identifier of the related product.
     fn get_subpath_product_references(&self) -> Vec<&str>;
+
+    /// Retrieves the identifier of the related product with the relationship kindd.
+    fn get_subpath_product_references_with_category(&self) -> Vec<(CategoryOfTheRelationship, &str)>;
 
     /// Retrieves the full product name associated with the relationship.
     fn get_full_product_name(&self) -> &FPN;
@@ -28,11 +32,27 @@ pub trait ProductPathTrait<FPN: ProductTrait> {
     ) -> String;
 }
 
+impl From<RelationshipCategory_2_0> for CategoryOfTheRelationship {
+    fn from(value: RelationshipCategory_2_0) -> Self {
+        match value {
+            RelationshipCategory_2_0::DefaultComponentOf => CategoryOfTheRelationship::DefaultComponentOf,
+            RelationshipCategory_2_0::ExternalComponentOf => CategoryOfTheRelationship::ExternalComponentOf,
+            RelationshipCategory_2_0::InstalledOn => CategoryOfTheRelationship::InstalledOn,
+            RelationshipCategory_2_0::InstalledWith => CategoryOfTheRelationship::InstalledWith,
+            RelationshipCategory_2_0::OptionalComponentOf => CategoryOfTheRelationship::OptionalComponentOf,
+        }
+    }
+}
+
 impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Relationship {
     impl_str_field_getter!(get_beginning_product_reference, product_reference);
 
     fn get_subpath_product_references(&self) -> Vec<&str> {
         vec![&self.relates_to_product_reference]
+    }
+
+    fn get_subpath_product_references_with_category(&self) -> Vec<(CategoryOfTheRelationship, &str)> {
+        vec![(self.category.into(), &self.relates_to_product_reference)]
     }
 
     fn get_full_product_name(&self) -> &crate::schema::csaf2_0::schema::FullProductNameT {
@@ -52,6 +72,18 @@ impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Rela
     }
 }
 
+impl From<RelationshipCategory_2_1> for CategoryOfTheRelationship {
+    fn from(value: RelationshipCategory_2_1) -> Self {
+        match value {
+            RelationshipCategory_2_1::DefaultComponentOf => CategoryOfTheRelationship::DefaultComponentOf,
+            RelationshipCategory_2_1::ExternalComponentOf => CategoryOfTheRelationship::ExternalComponentOf,
+            RelationshipCategory_2_1::InstalledOn => CategoryOfTheRelationship::InstalledOn,
+            RelationshipCategory_2_1::InstalledWith => CategoryOfTheRelationship::InstalledWith,
+            RelationshipCategory_2_1::OptionalComponentOf => CategoryOfTheRelationship::OptionalComponentOf,
+        }
+    }
+}
+
 impl ProductPathTrait<FullProductNameT> for ProductPath {
     impl_str_field_getter!(get_beginning_product_reference, beginning_product_reference);
 
@@ -59,6 +91,13 @@ impl ProductPathTrait<FullProductNameT> for ProductPath {
         self.subpaths
             .iter()
             .map(|subpath| subpath.next_product_reference.as_str())
+            .collect()
+    }
+
+    fn get_subpath_product_references_with_category(&self) -> Vec<(CategoryOfTheRelationship, &str)> {
+        self.subpaths
+            .iter()
+            .map(|subpath| (subpath.category.into(), subpath.next_product_reference.as_str()))
             .collect()
     }
 

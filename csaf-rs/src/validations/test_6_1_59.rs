@@ -10,8 +10,10 @@ fn product_version_range_only_one_version_error(instance_path: impl Into<String>
 }
 
 fn product_version_range_invalid_error(instance_path: impl Into<String>, version_range: &VersionRange) -> TestFinding {
-    TestFinding::Error(TestFindingData {
-        message: format!("The version range given is invalid: {version_range:?}"),
+    TestFinding::Information(TestFindingData {
+        message: format!(
+            "The version range given is invalid: {version_range}, we can't determine if it identifies a single version or not.",
+        ),
         instance_path: instance_path.into(),
     })
 }
@@ -30,7 +32,7 @@ pub fn test_6_1_59_product_version_range_identifies_single_version(
 
     product_tree.visit_all_branches(&mut |branch, path| {
         if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
-            let version_range = VersionRange::new(branch.get_name());
+            let version_range = VersionRange::parse(branch.get_name());
 
             match version_range {
                 VersionRange::DynamicVers(_) | VersionRange::Vls(_) => {
@@ -86,7 +88,7 @@ mod tests {
             case_13: Ok(()),
             case_s01: Err(vec![product_version_range_invalid_error(
                 "/product_tree/branches/0/branches/0/branches/0",
-                &VersionRange::Invalid("invalid version".to_string()),
+                &VersionRange::parse("invalid version"),
             )]),
         });
     }

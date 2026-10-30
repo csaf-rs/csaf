@@ -136,7 +136,7 @@ impl CategorizedStrings {
         // https://github.com/oasis-tcs/csaf/blob/master/csaf_2.1/prose/share/csaf-v2.1-draft.md#31332-branches-type---name-under-product-version-range
         // and #1337
         {
-            let version_range_parsed = VersionRange::new(version_range);
+            let version_range_parsed = VersionRange::parse(version_range);
             let version_range_constraints = match version_range_parsed {
                 VersionRange::DynamicVers(dynamic_version_range) => dynamic_version_range
                     .constraints()
@@ -145,7 +145,7 @@ impl CategorizedStrings {
                     .collect::<Vec<_>>()
                     .join("|"),
                 VersionRange::Vls(vls) => vls.to_string(),
-                VersionRange::Invalid(content) => content,
+                VersionRange::Invalid(_) => version_range.clone(),
             };
             if version_range_constraints != cpe.version().to_string() {
                 test_findings.push(create_inconsistent_product_identification_helper_warning(

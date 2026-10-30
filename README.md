@@ -295,7 +295,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.47 | ⭕ | ✅ |
 | 6.1.48 | ⭕ | ✅ |
 | 6.1.49 | ⭕ | ✅ |
-| 6.1.50 | ⭕ |   |
+| 6.1.50 | ⭕ | ✅ |
 | 6.1.51 | ⭕ |   |
 | 6.1.52 | ⭕ |   |
 | 6.1.53 | ⭕ | ✅ |

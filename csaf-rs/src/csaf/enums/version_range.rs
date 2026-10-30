@@ -1,23 +1,60 @@
-use vers_rs::{Comparator, VersionConstraint, VersionRange as VersRange};
+use std::fmt::{Debug, Display};
+use vers_like_specifier::{Vls, VlsError};
+use vers_rs::{Comparator, DynamicVersionRange, VersError, VersionConstraint, VersionRange as VersRange};
 
 #[derive(Debug)]
 pub enum VersionRange {
     /// A dynamic VERS version range
-    DynamicVers(vers_rs::DynamicVersionRange),
+    DynamicVers(DynamicVersionRange),
     /// A vers-like version range
-    Vls(vers_like_specifier::Vls),
-    /// An invalid version range
-    Invalid(String),
+    Vls(Vls),
+    /// An invalid version range, containing the error
+    Invalid(VersionRangeError),
+}
+
+impl Display for VersionRange {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            VersionRange::DynamicVers(vers) => write!(f, "{vers}"),
+            VersionRange::Vls(vls) => write!(f, "{vls}"),
+            VersionRange::Invalid(err) => write!(f, "{err}"),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum VersionRangeError {
+    InvalidVers(VersError),
+    InvalidVls(VlsError),
+}
+
+impl Display for VersionRangeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            VersionRangeError::InvalidVers(err) => write!(f, "Invalid vers version range: {err}"),
+            VersionRangeError::InvalidVls(err) => write!(f, "Invalid vls version range: {err}"),
+        }
+    }
 }
 
 impl VersionRange {
-    pub fn new(s: &str) -> Self {
-        if let Ok(vers) = s.parse() {
-            Self::DynamicVers(vers)
-        } else if let Ok(vers_like) = s.parse() {
-            Self::Vls(vers_like)
+    pub fn parse(s: &str) -> Self {
+        if s.starts_with("vers:") {
+            // parse as vers
+            match s.parse::<DynamicVersionRange>() {
+                // valid vers
+                Ok(vers_parsed) => Self::DynamicVers(vers_parsed),
+                // invalid vers
+                Err(vers_error) => Self::Invalid(VersionRangeError::InvalidVers(vers_error)),
+            }
         } else {
-            Self::Invalid(s.into())
+            // parse as vls
+            match s.parse::<Vls>() {
+                // valid vls
+                Ok(vls_parsed) => Self::Vls(vls_parsed),
+                // invalid vls
+                Err(vls_error) => Self::Invalid(VersionRangeError::InvalidVls(vls_error)),
+            }
         }
     }
 

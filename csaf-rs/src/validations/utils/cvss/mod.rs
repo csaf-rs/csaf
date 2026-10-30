@@ -1,6 +1,7 @@
 pub mod deserialize_json;
 pub mod deserialize_vector;
 pub mod dispatch;
+pub mod merge_vector_with_json;
 pub mod validate_consistency;
 pub mod validate_scores;
 

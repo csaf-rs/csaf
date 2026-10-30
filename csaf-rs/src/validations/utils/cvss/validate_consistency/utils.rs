@@ -2,9 +2,9 @@ use crate::validation::{TestFinding, TestFindingData};
 use cvss_rs::Defined;
 
 enum ComparisonValue<'a, T> {
-    MetricValueDefined(&'a T),
-    MetricValueNotDefined,
-    MetricNotPresent
+    Defined(&'a T),
+    NotDefined,
+    Absent,
 }
 
 /// Compares an optional field from the deserialized JSON object against the value parsed from the
@@ -20,22 +20,16 @@ pub fn check_field_mismatch_with_not_defined<T: PartialEq + std::fmt::Display + 
 ) {
     // Normalize: treat Some(NotDefined) as None
     let json = match json_value {
-        Some(value) if value.is_defined() => ComparisonValue::MetricValueDefined(value),
-        Some(_) => ComparisonValue::MetricValueNotDefined,
-        None => ComparisonValue::MetricNotPresent,
+        Some(value) if value.is_defined() => ComparisonValue::Defined(value),
+        Some(_) => ComparisonValue::NotDefined,
+        None => ComparisonValue::Absent,
     };
     let vector = match vector_value {
-        Some(value) if value.is_defined() => ComparisonValue::MetricValueDefined(value),
-        Some(_) => ComparisonValue::MetricValueNotDefined,
-        None => ComparisonValue::MetricNotPresent,
+        Some(value) if value.is_defined() => ComparisonValue::Defined(value),
+        Some(_) => ComparisonValue::NotDefined,
+        None => ComparisonValue::Absent,
     };
-    compare_fields(
-        field_name,
-        json,
-        vector,
-        instance_path,
-        errors,
-    );
+    compare_fields(field_name, json, vector, instance_path, errors);
 }
 
 /// Compares an optional field from the deserialized JSON object against the value parsed from the
@@ -50,20 +44,14 @@ pub fn check_required_field_mismatch<T: PartialEq + std::fmt::Display>(
     errors: &mut Option<Vec<TestFinding>>,
 ) {
     let json = match json_value {
-        Some(value) => ComparisonValue::MetricValueDefined(value),
-        None => ComparisonValue::MetricNotPresent,
+        Some(value) => ComparisonValue::Defined(value),
+        None => ComparisonValue::Absent,
     };
     let vector = match vector_value {
-        Some(value) => ComparisonValue::MetricValueDefined(value),
-        None => ComparisonValue::MetricNotPresent,
+        Some(value) => ComparisonValue::Defined(value),
+        None => ComparisonValue::Absent,
     };
-    compare_fields(
-        field_name,
-        json,
-        vector,
-        instance_path,
-        errors,
-    );
+    compare_fields(field_name, json, vector, instance_path, errors);
 }
 
 fn compare_fields<T: PartialEq + std::fmt::Display>(
@@ -75,7 +63,7 @@ fn compare_fields<T: PartialEq + std::fmt::Display>(
 ) {
     match (json_effective, vector_effective) {
         // both fields exist and are defined, but with different values
-        (ComparisonValue::MetricValueDefined(json_val), ComparisonValue::MetricValueDefined(vec_val)) => {
+        (ComparisonValue::Defined(json_val), ComparisonValue::Defined(vec_val)) => {
             if json_val != vec_val {
                 errors.get_or_insert_default().push(create_field_value_mismatch_error(
                     field_name,
@@ -86,30 +74,33 @@ fn compare_fields<T: PartialEq + std::fmt::Display>(
             }
         },
         // both fields exist, but one field has a Defined value, while the other has the value NotDefined
-        (ComparisonValue::MetricValueDefined(json_val), ComparisonValue::MetricValueNotDefined) => {
-            errors.get_or_insert_default().push(create_field_not_defined_in_vec_but_defined_in_json_error(
-                field_name,
-                json_val,
-                instance_path,
-            ));
-        }
-        (ComparisonValue::MetricValueNotDefined, ComparisonValue::MetricValueDefined(vec_val)) => {
-            errors.get_or_insert_default().push(create_field_defined_in_vec_not_defined_in_json_error(
-                field_name,
-                vec_val,
-                instance_path,
-            ));
-        }
+        (ComparisonValue::Defined(json_val), ComparisonValue::NotDefined) => {
+            errors
+                .get_or_insert_default()
+                .push(create_field_not_defined_in_vec_but_defined_in_json_error(
+                    field_name,
+                    json_val,
+                    instance_path,
+                ));
+        },
+        (ComparisonValue::NotDefined, ComparisonValue::Defined(vec_val)) => {
+            errors
+                .get_or_insert_default()
+                .push(create_field_defined_in_vec_not_defined_in_json_error(
+                    field_name,
+                    vec_val,
+                    instance_path,
+                ));
+        },
         // both sides agree the value is "not defined"
-        (ComparisonValue::MetricValueNotDefined, ComparisonValue::MetricValueNotDefined) => {}
+        (ComparisonValue::NotDefined, ComparisonValue::NotDefined) => {},
         // if either side is not present, and the other is not not present
-        (ComparisonValue::MetricNotPresent, ComparisonValue::MetricValueDefined(_)) |
-        (ComparisonValue::MetricNotPresent, ComparisonValue::MetricValueNotDefined) |
-        (ComparisonValue::MetricValueDefined(_), ComparisonValue::MetricNotPresent ) |
-        (ComparisonValue::MetricValueNotDefined, ComparisonValue::MetricNotPresent ) => {
-        }
+        (ComparisonValue::Absent, ComparisonValue::Defined(_))
+        | (ComparisonValue::Absent, ComparisonValue::NotDefined)
+        | (ComparisonValue::Defined(_), ComparisonValue::Absent)
+        | (ComparisonValue::NotDefined, ComparisonValue::Absent) => {},
         // if both sides are not present, it's just not present
-        (ComparisonValue::MetricNotPresent, ComparisonValue::MetricNotPresent) => {}
+        (ComparisonValue::Absent, ComparisonValue::Absent) => {},
     }
 }
 

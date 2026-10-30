@@ -15,7 +15,7 @@ macro_rules! merge_metric_fields {
     };
 }
 
-fn merge_v2(mut cvss_from_vector: CvssV2, original_from_json: CvssV2) -> ValuesMergedCvss<CvssV2> {
+pub fn merge_v2(mut cvss_from_vector: CvssV2, original_from_json: CvssV2) -> ValuesMergedCvss<CvssV2> {
     // we copy
     cvss_from_vector.severity = original_from_json.severity;
     cvss_from_vector.base_score = original_from_json.base_score;
@@ -42,7 +42,7 @@ fn merge_v2(mut cvss_from_vector: CvssV2, original_from_json: CvssV2) -> ValuesM
     ValuesMergedCvss(cvss_from_vector)
 }
 
-fn merge_v3(mut cvss_from_vector: CvssV3, original_from_json: CvssV3) -> ValuesMergedCvss<CvssV3> {
+pub fn merge_v3(mut cvss_from_vector: CvssV3, original_from_json: CvssV3) -> ValuesMergedCvss<CvssV3> {
     cvss_from_vector.base_score = original_from_json.base_score;
     cvss_from_vector.base_severity = original_from_json.base_severity;
     cvss_from_vector.temporal_score = original_from_json.temporal_score;
@@ -78,7 +78,7 @@ fn merge_v3(mut cvss_from_vector: CvssV3, original_from_json: CvssV3) -> ValuesM
     ValuesMergedCvss(cvss_from_vector)
 }
 
-fn merge_v4(original_from_json: CvssV4, mut cvss_from_vector: CvssV4) -> ValuesMergedCvss<CvssV4> {
+pub fn merge_v4(original_from_json: CvssV4, mut cvss_from_vector: CvssV4) -> ValuesMergedCvss<CvssV4> {
     cvss_from_vector.base_score = original_from_json.base_score;
     cvss_from_vector.base_severity = original_from_json.base_severity;
     merge_metric_fields!(

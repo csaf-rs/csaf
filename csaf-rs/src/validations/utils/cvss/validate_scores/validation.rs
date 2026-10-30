@@ -1,6 +1,7 @@
 use crate::validation::TestFinding;
 use crate::validations::utils::cvss::ScoreType;
 use crate::validations::utils::cvss::deserialize_vector::deserialize_vector;
+use crate::validations::utils::cvss::merge_vector_with_json::{merge_v2, merge_v3, merge_v4};
 use crate::validations::utils::cvss::validate_scores::utils::{
     check_optional_score_mismatch, check_optional_severity_mismatch, map_score_to_severity, to_unified,
 };
@@ -25,26 +26,28 @@ pub fn validate_v2_scores(cvss2: &CvssV2, instance_path: &str, errors: &mut Opti
         },
     };
 
-    let calculated_base = parsed.calculated_base_score();
-    let calculated_temporal = parsed.calculated_temporal_score();
-    let calculated_environmental = parsed.calculated_environmental_score();
+    let merged = merge_v2(parsed, cvss2.clone()).0;
+
+    let calculated_base = merged.calculated_base_score();
+    let calculated_temporal = merged.calculated_temporal_score();
+    let calculated_environmental = merged.calculated_environmental_score();
 
     check_optional_score_mismatch(
-        Some(cvss2.base_score),
+        Some(merged.base_score),
         calculated_base,
         ScoreType::Base,
         instance_path,
         errors,
     );
     check_optional_score_mismatch(
-        cvss2.temporal_score,
+        merged.temporal_score,
         calculated_temporal,
         ScoreType::Temporal,
         instance_path,
         errors,
     );
     check_optional_score_mismatch(
-        cvss2.environmental_score,
+        merged.environmental_score,
         calculated_environmental,
         ScoreType::Environmental,
         instance_path,
@@ -69,27 +72,28 @@ pub fn validate_v3_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Opti
         },
     };
 
-    let calculated_base = parsed.calculated_base_score();
-    let calculated_temporal = parsed.calculated_temporal_score();
-    let calculated_environmental = parsed.calculated_environmental_score();
+    let merged = merge_v3(parsed, cvss3.clone()).0;
+    let calculated_base = merged.calculated_base_score();
+    let calculated_temporal = merged.calculated_temporal_score();
+    let calculated_environmental = merged.calculated_environmental_score();
 
     // if the score calculation did not fail
     check_optional_score_mismatch(
-        Some(cvss3.base_score),
+        Some(merged.base_score),
         calculated_base,
         ScoreType::Base,
         instance_path,
         errors,
     );
     check_optional_score_mismatch(
-        cvss3.temporal_score,
+        merged.temporal_score,
         calculated_temporal,
         ScoreType::Temporal,
         instance_path,
         errors,
     );
     check_optional_score_mismatch(
-        cvss3.environmental_score,
+        merged.environmental_score,
         calculated_environmental,
         ScoreType::Environmental,
         instance_path,
@@ -98,21 +102,21 @@ pub fn validate_v3_scores(cvss3: &CvssV3, instance_path: &str, errors: &mut Opti
 
     // Validate severities
     check_optional_severity_mismatch(
-        Some(to_unified(&cvss3.base_severity)),
+        Some(to_unified(&merged.base_severity)),
         map_score_to_severity(calculated_base),
         ScoreType::Base,
         instance_path,
         errors,
     );
     check_optional_severity_mismatch(
-        cvss3.temporal_severity.as_ref().map(to_unified),
+        merged.temporal_severity.as_ref().map(to_unified),
         map_score_to_severity(calculated_temporal),
         ScoreType::Temporal,
         instance_path,
         errors,
     );
     check_optional_severity_mismatch(
-        cvss3.environmental_severity.as_ref().map(to_unified),
+        merged.environmental_severity.as_ref().map(to_unified),
         map_score_to_severity(calculated_environmental),
         ScoreType::Environmental,
         instance_path,
@@ -136,11 +140,12 @@ pub fn validate_v4_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Opti
         },
     };
 
-    let calculated_full = parsed.calculated_full_score();
+    let merged = merge_v4(cvss4.clone(), parsed).0;
+    let calculated_full = merged.calculated_full_score();
 
     // Validate base score (using full score which includes threat metric E if present)
     check_optional_score_mismatch(
-        Some(cvss4.base_score),
+        Some(merged.base_score),
         calculated_full,
         ScoreType::Base,
         instance_path,
@@ -149,7 +154,7 @@ pub fn validate_v4_scores(cvss4: &CvssV4, instance_path: &str, errors: &mut Opti
 
     // Validate base severity using base_severity() which converts to unified Severity
     check_optional_severity_mismatch(
-        cvss4.base_severity(),
+        merged.base_severity(),
         map_score_to_severity(calculated_full),
         ScoreType::Base,
         instance_path,

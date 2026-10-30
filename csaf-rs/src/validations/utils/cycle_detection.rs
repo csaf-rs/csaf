@@ -40,21 +40,30 @@ impl RelationMap {
     /// the end, and the path of the edge that starts / closes the cycle. If
     /// no cycle is reachable from `node`, `None` is returned.
     pub fn find_cycle(&self, node: &str) -> Option<RelationCycle> {
-        self.find_cycle_inner(node, &mut HashSet::new())
+        self.find_cycle_inner(node, &mut HashSet::new(), &mut HashSet::new())
     }
 
     /// Recursive helper function for `find_cycle`.
-    fn find_cycle_inner<'a>(&'a self, node: &'a str, visited: &mut HashSet<&'a str>) -> Option<RelationCycle> {
-        if !visited.insert(node) {
+    fn find_cycle_inner<'a>(
+        &'a self,
+        node: &'a str,
+        active: &mut HashSet<&'a str>,
+        explored: &mut HashSet<&'a str>,
+    ) -> Option<RelationCycle> {
+        if active.contains(node) {
             return Some(RelationCycle {
                 cycle: vec![node.to_string()],
                 relation_path: String::new(),
             });
         }
+        if explored.contains(node) {
+            return None;
+        }
+        active.insert(node);
 
         if let Some(next_nodes) = self.0.get(node) {
             for (next, path) in next_nodes {
-                match self.find_cycle_inner(next, visited) {
+                match self.find_cycle_inner(next, active, explored) {
                     None => {},
                     Some(RelationCycle {
                         mut cycle,
@@ -84,7 +93,8 @@ impl RelationMap {
             }
         }
 
-        visited.remove(node);
+        active.remove(node);
+        explored.insert(node);
         None
     }
 }
@@ -114,7 +124,6 @@ mod tests {
         assert_eq!(referenced_nodes.len(), 3);
         assert_eq!(referenced_nodes, expected_nodes.iter().collect());
     }
-
 
     /// Graph:
     ///
@@ -161,8 +170,6 @@ mod tests {
 
         assert_eq!(relation_map.find_cycle("Z"), None);
     }
-
-
 
     /// Graph:
     ///

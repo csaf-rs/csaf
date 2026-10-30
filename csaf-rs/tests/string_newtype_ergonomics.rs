@@ -1,8 +1,8 @@
 //! The generated constrained-string newtypes compare against `str`, `&str`, and `String` in
 //! both operand orders and borrow as `&str`, without dereferencing through the inner `String`.
 
-use csaf::schema::csaf2_0::schema::ProductIdT as ProductIdT20;
-use csaf::schema::csaf2_1::schema::ProductIdT as ProductIdT21;
+use csaf_rs::schema::csaf2_0::schema::ProductIdT as ProductIdT20;
+use csaf_rs::schema::csaf2_1::schema::ProductIdT as ProductIdT21;
 
 #[test]
 fn product_ids_compare_against_str() {

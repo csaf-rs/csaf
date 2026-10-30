@@ -14,7 +14,7 @@ build = "build/main.rs"
 workspace = true
 
 [lib]
-name = "csaf"
+name = "csaf_rs"
 crate-type = ["rlib"]
 
 [features]

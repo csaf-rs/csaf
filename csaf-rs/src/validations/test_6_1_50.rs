@@ -1,7 +1,7 @@
 use crate::csaf::enums::version_range::{VersionRange, VersionRangeError};
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use vers_rs::VersError;
+use vers_rs::{VersError, VersionRange as VersVersionRange};
 
 fn non_canonical_product_version_range_error(
     name: String,
@@ -11,6 +11,15 @@ fn non_canonical_product_version_range_error(
     TestFinding::Error(TestFindingData {
         message: format!(
             "The VERS version range given is not in canonical form: `{name}`, canonical would be vers={canonical}"
+        ),
+        instance_path: instance_path.into(),
+    })
+}
+
+fn any_outside_of_vers_all_error(vers: &str, instance_path: impl Into<String>) -> TestFinding {
+    TestFinding::Error(TestFindingData {
+        message: format!(
+            "The VERS version range `{vers}` uses the `*` comparator outside of the `vers:all` type, which is not allowed"
         ),
         instance_path: instance_path.into(),
     })
@@ -57,6 +66,17 @@ pub fn test_6_1_50_product_version_range_rules(doc: &impl CsafTrait) -> Result<(
         let version_range = VersionRange::parse(name);
         match version_range {
             VersionRange::DynamicVers(vers) => {
+                if vers.versioning_scheme() != "all"
+                    && vers.versioning_scheme() != "none"
+                    && vers.constraints().len() == 1
+                    && let Some(first_constraint) = vers.constraints().first()
+                    && matches!(first_constraint.comparator, vers_rs::Comparator::Any)
+                {
+                    findings
+                        .get_or_insert_default()
+                        .push(any_outside_of_vers_all_error(name, path));
+                }
+
                 // check if the version range was in canonical form already
                 if vers.to_string() != name {
                     findings
@@ -114,6 +134,7 @@ mod tests {
 
     #[test]
     fn test_6_1_50() {
+        // TODO: Supplementary test case that exercises the "only vers:all / none may do the * comparator" rule.
         TESTS_2_1.test_6_1_50.expect(ExpectedResults {
             // TODO: This error message could be more percise, the problem are the whitespaces outside the constraint
             case_01: Err(vec![invalid_product_version_range_error(

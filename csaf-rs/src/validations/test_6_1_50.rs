@@ -72,7 +72,10 @@ pub fn test_6_1_50_product_version_range_rules(doc: &impl CsafTrait) -> Result<(
                 // it was parsed as vls, there are no non-canonical forms for vls, so this is always fine
             },
             VersionRange::Invalid(VersionRangeError::InvalidVers(invalid_vers_error)) => {
-                if matches!(invalid_vers_error, VersError::UnsupportedVersioningScheme(_) | VersError::UnknownVersioningScheme(_)) {
+                if matches!(
+                    invalid_vers_error,
+                    VersError::UnsupportedVersioningScheme(_) | VersError::UnknownVersioningScheme(_)
+                ) {
                     findings
                         .get_or_insert_default()
                         .push(unsupported_vers_type_warning(name.to_string(), path));

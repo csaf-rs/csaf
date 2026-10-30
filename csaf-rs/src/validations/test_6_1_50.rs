@@ -25,6 +25,15 @@ fn any_outside_of_vers_all_error(vers: &str, instance_path: impl Into<String>) -
     })
 }
 
+fn vls_single_version_error(vls: &str, instance_path: impl Into<String>) -> TestFinding {
+    TestFinding::Error(TestFindingData {
+        message: format!(
+            "The VLS version range `{vls}` specifies a single version, which is not allowed for VLS in CSAF"
+        ),
+        instance_path: instance_path.into(),
+    })
+}
+
 fn invalid_product_version_range_error(vers: String, message: String, instance_path: impl Into<String>) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("The version range `{vers}` is invalid: {message}"),
@@ -66,6 +75,7 @@ pub fn test_6_1_50_product_version_range_rules(doc: &impl CsafTrait) -> Result<(
         let version_range = VersionRange::parse(name);
         match version_range {
             VersionRange::DynamicVers(vers) => {
+                // TODO: Opened an issue with vers to add this as a util function, will be removed later
                 if vers.versioning_scheme() != "all"
                     && vers.versioning_scheme() != "none"
                     && vers.constraints().len() == 1
@@ -88,8 +98,12 @@ pub fn test_6_1_50_product_version_range_rules(doc: &impl CsafTrait) -> Result<(
                         ));
                 }
             },
-            VersionRange::Vls(_) => {
-                // it was parsed as vls, there are no non-canonical forms for vls, so this is always fine
+            VersionRange::Vls(vls) => {
+                if vls.is_single_version() {
+                    findings
+                        .get_or_insert_default()
+                        .push(vls_single_version_error(name, path));
+                }
             },
             VersionRange::Invalid(VersionRangeError::InvalidVers(invalid_vers_error)) => {
                 if matches!(

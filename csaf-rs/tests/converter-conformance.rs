@@ -692,6 +692,10 @@ impl Diagnostics for DiagnosticsSpy {
         self.errors.push(error)
     }
 
+    fn has_errors(&self) -> bool {
+        !self.errors.is_empty()
+    }
+
     fn warning(&mut self, _path: Cow<'static, str>, warning: Warning) {
         self.warnings.push(warning)
     }

@@ -12,6 +12,8 @@ readme.workspace = true
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"] }
 anyhow = "1.0.93"
+csaf-validator = { path = "../csaf-validator", version = "0.5.2", features=["cli"] }
+csaf-converter = { path = "../csaf-converter", version = "0.5.2", features=["cli"]  }
 
 [lints]
 workspace = true

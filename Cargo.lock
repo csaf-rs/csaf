@@ -603,6 +603,8 @@ version = "0.5.2"
 dependencies = [
  "anyhow",
  "clap",
+ "csaf-converter",
+ "csaf-validator",
 ]
 
 [[package]]

@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
+use std::ops::Range;
 
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf::types::version_number::{CsafVersionNumber, ValidCsafVersionNumber};
@@ -20,6 +21,97 @@ const MAX_FIRST_MAJOR_VERSION: u64 = 1;
 /// so the versions found beyond this limit are replaced by a single summarizing error.
 // TODO #923: Clarify with the upstream.
 const MAX_MISSING_ITEMS: usize = 100;
+
+/// The component of a `VersionCore` a `VersionRange` varies in, plus the components in front of it.
+///
+/// The variant order is irrelevant, it only has to be total so `CoveredVersions` can key a map by it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum VersionDimension {
+    /// `(value, 0, 0)`
+    Major,
+    /// `(major, value, 0)`
+    Minor(u64),
+    /// `(major, minor, value)`
+    Patch(u64, u64),
+}
+
+impl VersionDimension {
+    /// Expands a value of this dimension back into a full version core.
+    fn core(self, value: u64) -> VersionCore {
+        match self {
+            Self::Major => (value, 0, 0),
+            Self::Minor(major) => (major, value, 0),
+            Self::Patch(major, minor) => (major, minor, value),
+        }
+    }
+}
+
+/// A contiguous, half-open range of versions that differ in exactly one component of the version core.
+struct VersionRange {
+    dimension: VersionDimension,
+    values: Range<u64>,
+}
+
+/// The versions that must not open a new gap, stored as merged runs of consecutive values.
+///
+/// Contains every version published in front of the current item as well as every gap that was already
+/// recorded. Keeping runs instead of single values lets `Self::next_uncovered` skip an arbitrarily long
+/// stretch of covered versions with a single lookup. Enumerating them instead would make the gap search
+/// quadratic in the number of revision history items, because covered versions never grow `gaps` and
+/// therefore never reach the `MAX_MISSING_ITEMS` limit.
+///
+/// The map is keyed by `(dimension, first value of the run)` and stores the last value of the run.
+#[derive(Default)]
+struct CoveredVersions(BTreeMap<(VersionDimension, u64), u64>);
+
+impl CoveredVersions {
+    /// Marks `core` as covered in every dimension it can be reached from.
+    fn insert(&mut self, (major, minor, patch): VersionCore) {
+        if (minor, patch) == (0, 0) {
+            self.insert_value(VersionDimension::Major, major);
+        }
+        if patch == 0 {
+            self.insert_value(VersionDimension::Minor(major), minor);
+        }
+        self.insert_value(VersionDimension::Patch(major, minor), patch);
+    }
+
+    /// The lowest value at or above `from` that is not covered yet, `None` if that would overflow `u64`.
+    fn next_uncovered(&self, dimension: VersionDimension, from: u64) -> Option<u64> {
+        match self.run_up_to(dimension, from) {
+            Some((_, end)) if end >= from => end.checked_add(1),
+            _ => Some(from),
+        }
+    }
+
+    fn insert_value(&mut self, dimension: VersionDimension, value: u64) {
+        let run = self.run_up_to(dimension, value);
+        if let Some((_, end)) = run
+            && end >= value
+        {
+            return;
+        }
+        // extend the directly preceding run instead of opening a new one, `end` is below `value` here
+        let start = match run {
+            Some((start, end)) if end + 1 == value => start,
+            _ => value,
+        };
+        // swallow the directly following run so that the stored runs stay merged and non-adjacent
+        let end = match value.checked_add(1) {
+            Some(next) => self.0.remove(&(dimension, next)).unwrap_or(value),
+            None => value,
+        };
+        self.0.insert((dimension, start), end);
+    }
+
+    /// The `(first, last)` value of the run with the highest start not above `value` within `dimension`.
+    fn run_up_to(&self, dimension: VersionDimension, value: u64) -> Option<(u64, u64)> {
+        self.0
+            .range((dimension, u64::MIN)..=(dimension, value))
+            .next_back()
+            .map(|(&(_, start), &end)| (start, end))
+    }
+}
 
 /// A revision history item with a valid version number, reduced to the data this test operates on.
 struct RevHistoryItem<'a> {
@@ -140,40 +232,54 @@ crate::test_validation::impl_validator!(ValidatorForTest6_1_21, test_6_1_21_miss
 /// predecessor do not open a gap themselves, their wrong placement is reported by 6.1.14 and 6.1.22.
 ///
 /// A version that was already published at an earlier position of the sorted list is not missing from a
-/// later gap either, it is merely out of order, so it is skipped as well.
+/// later gap either, it is merely out of order, so it is skipped as well. The same holds for a version that
+/// was already recorded as missing. Both are tracked in [`CoveredVersions`], which lets the walk jump over
+/// them instead of enumerating every single version of a range.
 ///
 /// Stops as soon as `MAX_MISSING_ITEMS` missing versions have been collected. The result is then a prefix
 /// in walk order, rendered in version order, which is not necessarily the lowest missing versions overall,
 /// but is deterministic and keeps the walk bounded.
 fn test_6_1_21_collect_gaps<'a>(items: &[RevHistoryItem<'a>]) -> GapSearch<'a> {
     let mut gaps = BTreeMap::new();
-    // the version cores of all items in front of the current one
-    let mut published = BTreeSet::new();
+    let mut covered = CoveredVersions::default();
     let predecessors = std::iter::once(None).chain(items.iter().map(Some));
 
     for (predecessor, item) in predecessors.zip(items) {
         if let Some(predecessor) = predecessor {
-            published.insert(predecessor.core);
+            covered.insert(predecessor.core);
             if predecessor.core >= item.core {
                 continue;
             }
         }
-        for missing in test_6_1_21_missing_versions(predecessor.map(|predecessor| predecessor.core), item.core) {
-            if published.contains(&missing) {
-                continue;
-            }
-            // a version that is already recorded does not grow the map, so it never reaches the limit
-            if gaps.len() >= MAX_MISSING_ITEMS && !gaps.contains_key(&missing) {
-                return GapSearch {
-                    gaps,
-                    limit_reached: true,
+        for range in test_6_1_21_missing_version_ranges(predecessor.map(|predecessor| predecessor.core), item.core) {
+            let mut value = range.values.start;
+            while let Some(missing) = covered.next_uncovered(range.dimension, value) {
+                // jump over the covered versions instead of enumerating them one by one
+                if missing >= range.values.end {
+                    break;
+                }
+                if gaps.len() >= MAX_MISSING_ITEMS {
+                    return GapSearch {
+                        gaps,
+                        limit_reached: true,
+                    };
+                }
+                // covered versions are skipped above, so this core cannot have been recorded before
+                let core = range.dimension.core(missing);
+                gaps.insert(
+                    core,
+                    Gap {
+                        from: predecessor.map(|predecessor| predecessor.date),
+                        to: item.date,
+                        template: predecessor.unwrap_or(item).number,
+                    },
+                );
+                covered.insert(core);
+                let Some(next) = missing.checked_add(1) else {
+                    break;
                 };
+                value = next;
             }
-            gaps.entry(missing).or_insert(Gap {
-                from: predecessor.map(|predecessor| predecessor.date),
-                to: item.date,
-                template: predecessor.unwrap_or(item).number,
-            });
         }
     }
 
@@ -183,14 +289,16 @@ fn test_6_1_21_collect_gaps<'a>(items: &[RevHistoryItem<'a>]) -> GapSearch<'a> {
     }
 }
 
-/// Returns the version cores that have to be documented between two items of the sorted revision history.
+/// Returns the version ranges that have to be documented between two items of the sorted revision history.
 ///
 /// `previous` is `None` for the gap in front of the first item. A revision history may start at any version
 /// with Major version 0 or 1, so nothing is omitted in that case. Any other entry point omits the whole
 /// chain from the initial release `1.0.0` up to the first item.
 ///
+/// The ranges are returned in ascending version order and may be empty.
+///
 /// The caller has to ensure that `next` is greater than `previous`.
-fn test_6_1_21_missing_versions(previous: Option<VersionCore>, next: VersionCore) -> impl Iterator<Item = VersionCore> {
+fn test_6_1_21_missing_version_ranges(previous: Option<VersionCore>, next: VersionCore) -> [VersionRange; 3] {
     let (major, minor, patch) = next;
     let (majors, minors, patches) = match previous {
         // a Patch release only omits the Patch versions in between
@@ -209,10 +317,20 @@ fn test_6_1_21_missing_versions(previous: Option<VersionCore>, next: VersionCore
         None => (1..major, 0..minor, 0..patch),
     };
 
-    majors
-        .map(|missing| (missing, 0, 0))
-        .chain(minors.map(move |missing| (major, missing, 0)))
-        .chain(patches.map(move |missing| (major, minor, missing)))
+    [
+        VersionRange {
+            dimension: VersionDimension::Major,
+            values: majors,
+        },
+        VersionRange {
+            dimension: VersionDimension::Minor(major),
+            values: minors,
+        },
+        VersionRange {
+            dimension: VersionDimension::Patch(major, minor),
+            values: patches,
+        },
+    ]
 }
 
 /// Renders a missing version core as integer version if the neighboring item uses integer versioning and the
@@ -312,10 +430,18 @@ mod tests {
         )
     }
 
+    fn missing(previous: Option<VersionCore>, next: VersionCore) -> Vec<VersionCore> {
+        test_6_1_21_missing_version_ranges(previous, next)
+            .into_iter()
+            .flat_map(|range| {
+                let dimension = range.dimension;
+                range.values.map(move |value| dimension.core(value))
+            })
+            .collect()
+    }
+
     #[test]
     fn test_6_1_21_missing_versions_entry_point() {
-        let missing = |previous, next| test_6_1_21_missing_versions(previous, next).collect::<Vec<_>>();
-
         // a revision history may start at any version with Major version 0 or 1
         assert!(missing(None, (0, 0, 0)).is_empty());
         assert!(missing(None, (0, 5, 0)).is_empty());
@@ -333,8 +459,6 @@ mod tests {
 
     #[test]
     fn test_6_1_21_missing_versions_chain() {
-        let missing = |previous, next| test_6_1_21_missing_versions(previous, next).collect::<Vec<_>>();
-
         // consecutive Major, Minor and Patch releases have no gap
         assert!(missing(Some((1, 0, 0)), (2, 0, 0)).is_empty());
         assert!(missing(Some((1, 0, 0)), (1, 1, 0)).is_empty());
@@ -428,7 +552,7 @@ mod tests {
     }
 
     #[test]
-    fn test_6_1_21_collect_gaps_skips_already_published_versions() {
+    fn test_6_1_21_collect_gaps_skips_covered_versions() {
         let dates = [
             "2026-03-09T11:00:00.000Z",
             "2026-03-09T12:00:00.000Z",

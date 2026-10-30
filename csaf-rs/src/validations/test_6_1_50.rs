@@ -19,7 +19,7 @@ fn non_canonical_product_version_range_error(
 fn any_outside_of_vers_all_error(vers: &str, instance_path: impl Into<String>) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
-            "The VERS version range `{vers}` uses the `*` comparator outside of the `vers:all` type, which is not allowed"
+            "The VERS version range `{vers}` uses the `*` comparator outside of the `vers:all` type, which is not allowed for CSAF"
         ),
         instance_path: instance_path.into(),
     })

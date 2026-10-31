@@ -1251,6 +1251,20 @@
           "valid": true
         }
       ]
+    },
+    {
+      "id": "6.1.65.2",
+      "group": "mandatory",
+      "valid": [
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-65-02-s11.json",
+          "valid": true
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_1-6-1-65-02-s12.json",
+          "valid": true
+        }
+      ]
     }
   ]
 }

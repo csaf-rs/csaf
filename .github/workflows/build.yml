@@ -139,7 +139,7 @@ jobs:
           run-doc: "false"
           clippy-extra-args: "--target=${{ matrix.target.arch }} ${{ env.exclude-ffi-args }}"
       - name: Build
-        run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose --workspace ${{ env.exclude-ffi-args }}
+        run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose --features="cli" --workspace ${{ env.exclude-ffi-args }}
       - name: Run tests
         run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}

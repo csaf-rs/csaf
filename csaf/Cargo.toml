@@ -1,0 +1,33 @@
+[package]
+name = "csaf"
+description = "A validator and converter for the CSAF standard."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+
+[dependencies]
+clap = { version = "4.5.23", features = ["derive"], optional=true }
+anyhow = "1.0.93"
+csaf-validator = { path = "../csaf-validator", version = "0.6", optional=true }
+csaf-converter = { path = "../csaf-converter", version = "0.6", optional=true }
+
+[lints]
+workspace = true
+
+[lib]
+name = "csaf"
+path = "src/lib.rs"
+
+[[bin]]
+name = "csaf"
+path = "src/main.rs"
+required-features = ["cli"]
+
+[features]
+default = ["converter", "validator"]
+cli = ["dep:clap", "csaf-converter/cli", "csaf-validator/cli"]
+converter = ["dep:csaf-converter"]
+validator =["dep:csaf-validator"]

@@ -15,6 +15,9 @@ fn generate_multiple_document_local_vuln_id_error(id: &str, path: &str) -> TestF
 /// For each element of type `$['$defs'].dl_vuln_id_t` in vulnerabilities
 /// (`$.vulnerabilities[*].dl_vuln_id`) it SHALL be tested that the `dl_vuln_id` was not
 /// already defined within the same document.
+///
+/// If a multiple definition of a document-local vulnerability ID is found, we generate
+/// an error for each occurrence of the duplicate ID.
 pub fn test_6_1_65_2_multiple_definition_of_document_local_vuln_id(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<TestFinding>> {

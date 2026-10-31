@@ -8,13 +8,25 @@ readme.workspace = true
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-publish = false
 
 [lints]
 workspace = true
 
+[lib]
+name= "csaf_converter"
+path= "src/lib.rs"
+
+[[bin]]
+name = "csaf-converter"
+path= "src/main.rs"
+required-features = ["cli"]
+
+[features]
+default=[]
+cli= ["dep:clap"]
+
 [dependencies]
-csaf-rs = { path = "../csaf-rs", version = "0.5", features = ["default", "converter"] }
+csaf-rs = { path = "../csaf-rs", version = "0.6", features = ["converter"] }
 anyhow = "1.0.93"
-clap = { version = "4.5.23", features = ["derive"] }
+clap = { version = "4.5.23", features = ["derive"], optional=true }
 serde_json = { version = "1.0.131", features = ["preserve_order"] }

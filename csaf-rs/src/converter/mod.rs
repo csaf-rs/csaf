@@ -43,6 +43,7 @@ pub trait Convert {
 
 pub trait Diagnostics {
     fn error(&mut self, path: Cow<'static, str>, error: Error);
+    fn has_errors(&self) -> bool;
     fn warning(&mut self, path: Cow<'static, str>, warning: Warning);
 }
 
@@ -102,6 +103,10 @@ mod tests {
             panic!("expected no diagnostics; got {error:?}")
         }
 
+        fn has_errors(&self) -> bool {
+            panic!("no errors")
+        }
+
         fn warning(&mut self, _path: Cow<'static, str>, warning: Warning) {
             panic!("expected no diagnostics; got {warning:?}")
         }
@@ -115,6 +120,10 @@ mod tests {
     impl Diagnostics for OnlyWarnings {
         fn error(&mut self, _path: Cow<'static, str>, error: Error) {
             panic!("expected no errors; got {error:?}")
+        }
+
+        fn has_errors(&self) -> bool {
+            false
         }
 
         fn warning(&mut self, path: Cow<'static, str>, warning: Warning) {

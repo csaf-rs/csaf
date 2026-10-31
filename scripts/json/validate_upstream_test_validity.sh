@@ -9,7 +9,7 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 cd "$REPO_ROOT"
 
 echo "Building csaf-validator with release flag..."
-cargo build -p csaf-validator --release
+cargo build -p csaf-validator --release --features="cli"
 
 # Paths
 VALIDATOR_PATH="$REPO_ROOT/target/release/csaf-validator"

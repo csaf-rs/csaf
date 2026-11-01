@@ -54,7 +54,6 @@ fn _5_resolve_stacked_product_tree() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _6_warn_on_other_publisher_category() -> TestResult<()> {
     run!()

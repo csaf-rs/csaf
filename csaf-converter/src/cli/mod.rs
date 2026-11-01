@@ -1,6 +1,9 @@
-use std::{borrow::Cow, path::PathBuf};
+mod args;
 
-use clap::CommandFactory;
+pub use args::ConverterArgs;
+
+use std::borrow::Cow;
+
 use csaf_rs::{
     converter::{
         Diagnostics,
@@ -9,23 +12,6 @@ use csaf_rs::{
     },
     json::JsonSource,
 };
-
-/// A converter for CSAF 2.0 to 2.1 documents
-#[derive(clap::Parser, Debug)]
-#[command(version, about, long_about = None)]
-pub struct ConverterArgs {
-    /// Path to CSAF document to convert
-    #[arg()]
-    path: PathBuf,
-
-    /// Path to the output file, stdout when omitted
-    #[arg(long, short = 'o')]
-    output: Option<PathBuf>,
-
-    /// Allow (partial) processing and output of invalid CSAF documents
-    #[arg(long)]
-    allow_invalid: bool,
-}
 
 pub struct VerboseDiagnostics {
     error_count: u32,
@@ -55,12 +41,14 @@ pub fn run_converter(args: ConverterArgs) -> Result<(), anyhow::Error> {
     let mut diag = VerboseDiagnostics { error_count: 0 };
 
     let raw: serde_json::Value = path.parse()?;
-    let converted = super::convert(
-        raw,
-        &csaf_rs::converter::Settings::default(),
-        &mut diag,
-        args.allow_invalid,
-    )?;
+
+    let settings = csaf_rs::converter::Settings {
+        publisher_category_other: csaf_rs::converter::PublisherCategoryOtherSettings {
+            suppress_warning: args.publisher_category_other.suppress_warning,
+            convert_to_multiplier: args.publisher_category_other.convert_to_multiplier,
+        },
+    };
+    let converted = super::convert(raw, &settings, &mut diag, args.allow_invalid)?;
     let result = serde_json::to_string_pretty(&converted)?;
 
     if let Some(output) = args.output {

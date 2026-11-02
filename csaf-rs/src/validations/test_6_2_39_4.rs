@@ -1,22 +1,14 @@
 use serde_json::Value;
 
-use crate::{
-    csaf::types::{
-        csaf_document_category::CsafDocumentCategory,
-        language::CsafLanguage::{self, Valid},
-    },
-    schema::csaf2_1::schema::CategoryOfReference,
-    validation::{TestFinding, TestFindingData},
-    validations::utils::{
-        document_references_with_summary_and_category::{
-            create_incorrect_category_data, create_missing_reference_data,
-        },
-        language_specific_translations::{
-            create_no_translation_known_info, get_translation_for_term_superseding_document,
-        },
-        raw_json_value_helper::{JsonValuePresence, get_json_presence, property_string_value_is},
-    },
+use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
+use crate::csaf::types::language::CsafLanguage::{self, Valid};
+use crate::schema::csaf2_1::schema::CategoryOfReference;
+use crate::validation::TestFinding;
+use crate::validations::utils::document_references_with_summary_and_category::check_references_with_summary_prefix_and_category;
+use crate::validations::utils::language_specific_translations::{
+    create_no_translation_known_info, get_translation_for_term_superseding_document,
 };
+use crate::validations::utils::raw_json_value_helper::property_string_value_is;
 
 const SUPERSEDING_DOCUMENT_EN: &str = "Superseding Document";
 
@@ -65,66 +57,16 @@ pub fn test_6_2_39_4_language_specific_superseding_document(json: &Value) -> Res
         )]);
     };
 
-    let Some(Value::Array(references)) = json.pointer("/document/references") else {
-        return Err(vec![TestFinding::Warning(create_missing_reference_data(
-            term,
-            &CategoryOfReference::External,
-            &CsafDocumentCategory::CsafSuperseded,
-        ))]);
-    };
-
-    let mut reference_iterator = references.iter().enumerate()
-        .filter(|(_, reference)| {
-            matches!(reference.pointer("/summary"), Some(Value::String(summary)) if summary.starts_with(term))
-        })
-        .peekable();
-    if reference_iterator.peek().is_none() {
-        return Err(vec![TestFinding::Warning(create_missing_reference_data(
-            term,
-            &CategoryOfReference::External,
-            &CsafDocumentCategory::CsafSuperseded,
-        ))]);
-    }
-    let findings: Vec<_> = reference_iterator
-        .filter(|(_, reference)| {
-            !property_string_value_is("/category", &CategoryOfReference::External.to_string(), reference)
-        })
-        .map(|(reference_idx, reference)| {
-            let present_and_set = get_json_presence("/category", reference);
-            if present_and_set != JsonValuePresence::Set {
-                create_external_category_missing_warning(reference_idx)
-            } else {
-                create_wrong_category_set_for_superseding_document_warning(
-                    term,
-                    &CategoryOfReference::Self_,
-                    reference_idx,
-                )
-            }
-        })
-        .collect();
-
-    if findings.is_empty() { Ok(()) } else { Err(findings) }
-}
-
-fn create_external_category_missing_warning(idx: usize) -> TestFinding {
-    TestFinding::Warning(TestFindingData {
-        message: String::from("Reference entry for a superseding document does not set the category `external`."),
-        instance_path: format!("/document/references/{idx}/category"),
-    })
-}
-
-fn create_wrong_category_set_for_superseding_document_warning(
-    term: &str,
-    wrong_category: &CategoryOfReference,
-    idx: usize,
-) -> TestFinding {
-    TestFinding::Warning(create_incorrect_category_data(
+    check_references_with_summary_prefix_and_category(
+        json.pointer("/document/references")
+            .and_then(Value::as_array)
+            .map(Vec::as_slice),
         term,
-        wrong_category,
         &CategoryOfReference::External,
         &CsafDocumentCategory::CsafSuperseded,
-        idx,
-    ))
+    )
+    .map(|findings| findings.into_iter().map(TestFinding::Warning).collect())
+    .map_or(Ok(()), Err)
 }
 
 crate::test_validation::impl_raw_json_validator!(
@@ -139,12 +81,14 @@ mod tests {
     use crate::csaf2_1::testcases::ExpectedResults_6_2_39_4 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
     use crate::validations::utils::document_references_with_summary_and_category::{
-        create_incorrect_category_data, create_missing_reference_data,
+        create_invalid_category_data, create_missing_reference_data,
     };
+    use serde_json::json;
 
     #[test]
     fn test_test_6_2_39_4() {
         let de_summary_prefix = get_translation_for_term_superseding_document("de").unwrap();
+        let self_category = json!("self");
 
         let no_reference_with_prefix = Err(vec![TestFinding::Warning(create_missing_reference_data(
             de_summary_prefix,
@@ -152,38 +96,39 @@ mod tests {
             &CsafDocumentCategory::CsafSuperseded,
         ))]);
 
-        let incorrect_category = Err(vec![TestFinding::Warning(create_incorrect_category_data(
+        let incorrect_category = Err(vec![TestFinding::Warning(create_invalid_category_data(
             de_summary_prefix,
-            &CategoryOfReference::Self_,
+            Some(&self_category),
             &CategoryOfReference::External,
-            &CsafDocumentCategory::CsafSuperseded,
             0,
         ))]);
 
         let reference_entry_to_superseding_doc_missing_external_category = Err(vec![
-            create_external_category_missing_warning(0),
-            TestFinding::Warning(create_incorrect_category_data(
+            TestFinding::Warning(create_invalid_category_data(
                 de_summary_prefix,
-                &CategoryOfReference::Self_,
+                None,
                 &CategoryOfReference::External,
-                &CsafDocumentCategory::CsafSuperseded,
+                0,
+            )),
+            TestFinding::Warning(create_invalid_category_data(
+                de_summary_prefix,
+                Some(&self_category),
+                &CategoryOfReference::External,
                 2,
             )),
         ]);
 
         let multiple_incorrect_category = Err(vec![
-            TestFinding::Warning(create_incorrect_category_data(
+            TestFinding::Warning(create_invalid_category_data(
                 de_summary_prefix,
-                &CategoryOfReference::Self_,
+                Some(&self_category),
                 &CategoryOfReference::External,
-                &CsafDocumentCategory::CsafSuperseded,
                 0,
             )),
-            TestFinding::Warning(create_incorrect_category_data(
+            TestFinding::Warning(create_invalid_category_data(
                 de_summary_prefix,
-                &CategoryOfReference::Self_,
+                Some(&self_category),
                 &CategoryOfReference::External,
-                &CsafDocumentCategory::CsafSuperseded,
                 1,
             )),
         ]);

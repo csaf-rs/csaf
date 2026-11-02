@@ -35,25 +35,31 @@ impl PartialEq for CsafLanguage {
 
 impl From<&LangT20> for CsafLanguage {
     fn from(lang_code: &LangT20) -> Self {
-        Self::from(&lang_code.to_string())
+        Self::from(lang_code.as_str())
     }
 }
 
 impl From<&LangT21> for CsafLanguage {
     fn from(lang_code: &LangT21) -> Self {
-        Self::from(&lang_code.to_string())
+        Self::from(lang_code.as_str())
     }
 }
 
 impl From<&String> for CsafLanguage {
-    fn from(input_lang_tag: &String) -> Self {
+    fn from(value: &String) -> Self {
+        CsafLanguage::from(value.as_str())
+    }
+}
+
+impl From<&str> for CsafLanguage {
+    fn from(input_lang_tag: &str) -> Self {
         // Try to parse the input with oxilangtag
-        let parsed_lang_tag: LanguageTag<String> = match LanguageTag::parse(input_lang_tag.clone()) {
+        let parsed_lang_tag: LanguageTag<String> = match LanguageTag::parse(input_lang_tag.to_string()) {
             Ok(lang_tag) => lang_tag,
             Err(err) => {
                 return Self::Invalid(
-                    input_lang_tag.clone(),
-                    CsafLanguageError::ParserError(input_lang_tag.clone(), err.to_string()),
+                    input_lang_tag.to_string(),
+                    CsafLanguageError::ParserError(input_lang_tag.to_string(), err.to_string()),
                 );
             },
         };
@@ -67,8 +73,8 @@ impl From<&String> for CsafLanguage {
         // Grandfathered tags deprecated before CSAF was specified are invalid per spec
         if is_grandfathered_deprecated_before_csaf_subtag(parsed_lang_tag.as_str()) {
             return Self::Invalid(
-                input_lang_tag.clone(),
-                CsafLanguageError::GrandfatheredTagDeprecatedBeforeCSAF(input_lang_tag.clone()),
+                input_lang_tag.to_string(),
+                CsafLanguageError::GrandfatheredTagDeprecatedBeforeCSAF(input_lang_tag.to_string()),
             );
         }
 
@@ -86,7 +92,7 @@ impl From<&String> for CsafLanguage {
             .check_region()
             .build()
         {
-            Self::Invalid(input_lang_tag.clone(), err)
+            Self::Invalid(input_lang_tag.to_string(), err)
         } else {
             Self::Valid(ValidCsafLanguage::new(parsed_lang_tag))
         }

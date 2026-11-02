@@ -31,10 +31,9 @@ pub fn test_6_1_64_12_confirmation_from_unmentioned_entity(doc: &impl CsafTrait)
 
     // Get the entity group ID to entity ID map.
     let entity_group_id_to_entity_id_map = involvement.get_entity_groups_map().unwrap_or_default();
-    let actions: Vec<_> = involvement.get_actions().collect();
 
     let mut findings: Option<Vec<TestFinding>> = None;
-    for (action_index, action) in actions.iter().enumerate() {
+    for (action_index, action) in involvement.get_actions().enumerate() {
         if action.get_category() != ActionCategory::Confirmation {
             continue;
         }
@@ -54,8 +53,8 @@ pub fn test_6_1_64_12_confirmation_from_unmentioned_entity(doc: &impl CsafTrait)
 
         // if there are, for every referenced action id, resolve the action
         for referenced_action_id in referenced_action_ids {
-            let Some(referenced_action) = actions
-                .iter()
+            let Some(referenced_action) = involvement
+                .get_actions()
                 .find(|referenced_action| referenced_action.get_action_id() == referenced_action_id)
             else {
                 continue;

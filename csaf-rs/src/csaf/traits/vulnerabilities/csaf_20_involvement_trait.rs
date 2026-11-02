@@ -1,5 +1,5 @@
-use crate::csaf::traits::util::impl_optional_str_field_getter;
 use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
+use crate::csaf::traits::util::{impl_into_any_getter, impl_optional_str_field_getter};
 use crate::csaf_traits::{WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_0::schema::{Involvement as Involvement20, PartyCategory as PartyCategory20};
 
@@ -23,11 +23,6 @@ crate::csaf::traits::impl_optional_ids!(Involvement20, WithOptionalGroupIds, Ret
 crate::csaf::traits::impl_optional_ids!(Involvement20, WithOptionalProductIds, ReturnsEmpty);
 
 impl Csaf20InvolvementTrait for NotPresentInCsaf21 {
-    fn get_party(&self) -> PartyCategory20 {
-        self.into_any()
-    }
-
-    fn get_summary(&self) -> Option<&str> {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_party, PartyCategory20);
+    impl_into_any_getter!(get_summary, Option<&str>);
 }

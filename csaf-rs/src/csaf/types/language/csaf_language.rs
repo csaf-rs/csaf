@@ -1,8 +1,7 @@
 use super::invalid_language::CsafLanguageError;
 use super::valid_language::ValidCsafLanguage;
 use crate::csaf::types::language::language_subtags::{
-    is_grandfathered_deprecated_before_csaf_subtag, is_grandfathered_subtag, is_language_subtag, is_region_subtag,
-    is_script_subtag,
+    is_grandfathered_deprecated_before_csaf_subtag, is_grandfathered_subtag,
 };
 use crate::schema::csaf2_0::schema::LangT as LangT20;
 use crate::schema::csaf2_1::schema::LangT as LangT21;
@@ -81,45 +80,23 @@ impl From<&String> for CsafLanguage {
             return Self::Valid(ValidCsafLanguage::new(parsed_lang_tag));
         }
 
-        // TODO: Also discuss if we want this precedence of primary -> script -> region,
-        // or if we want to expose everything "wrong" with the tag to the consumers.
-        // Validate primary language subtag
-        if !is_language_subtag(parsed_lang_tag.primary_language()) {
-            return Self::Invalid(
-                input_lang_tag.clone(),
-                CsafLanguageError::InvalidPrimaryLanguageSubtag(
-                    input_lang_tag.clone(),
-                    parsed_lang_tag.primary_language().to_string(),
-                ),
-            );
-        }
-
-        // Validate script subtag
-        if let Some(script) = parsed_lang_tag.script()
-            && !is_script_subtag(script)
+        if let Err(err) = CsafLanguageError::subtag_builder(parsed_lang_tag.clone())
+            .check_language()
+            .check_script()
+            .check_region()
+            .build()
         {
-            return Self::Invalid(
-                input_lang_tag.clone(),
-                CsafLanguageError::InvalidScriptSubtag(input_lang_tag.clone(), script.to_string()),
-            );
+            Self::Invalid(input_lang_tag.clone(), err)
+        } else {
+            Self::Valid(ValidCsafLanguage::new(parsed_lang_tag))
         }
-
-        // Validate region subtag
-        if let Some(region) = parsed_lang_tag.region()
-            && !is_region_subtag(region)
-        {
-            return Self::Invalid(
-                input_lang_tag.clone(),
-                CsafLanguageError::InvalidRegionSubtag(input_lang_tag.clone(), region.to_string()),
-            );
-        }
-
-        Self::Valid(ValidCsafLanguage::new(parsed_lang_tag))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::csaf::types::language::invalid_language::TagValidity;
+
     use super::*;
     use rstest::rstest;
 
@@ -154,21 +131,31 @@ mod tests {
 
     #[rstest]
     // invalid primary only
-    #[case("EZ", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    #[case("EZ", CsafLanguageError::InvalidSubtag { language_tag: String::from("EZ"), lang_subtag_err: TagValidity::InRegistryWrongPosition(String::from("EZ"), "region"), script_subtag_err: TagValidity::default(), region_subtag_err: TagValidity::default() })]
     // invalid script only
-    #[case("en-Wxyz", CsafLanguageError::InvalidScriptSubtag)]
+    #[case("en-Wxyz", CsafLanguageError::InvalidSubtag { language_tag: String::from("en-Wxyz"), lang_subtag_err: TagValidity::Valid, script_subtag_err: TagValidity::NotInRegistry(String::from("Wxyz")), region_subtag_err: TagValidity::default() })]
     // invalid region only
-    #[case("en-QK", CsafLanguageError::InvalidRegionSubtag)]
+    #[case("en-QK", CsafLanguageError::InvalidSubtag { language_tag: String::from("en-QK"), lang_subtag_err: TagValidity::Valid, script_subtag_err: TagValidity::default(), region_subtag_err: TagValidity::NotInRegistry(String::from("QK")) })]
     // invalid primary + valid region
-    #[case("EZ-US", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
-    // invalid primary + invalid script → primary takes precedence
-    #[case("EZ-Wxyz", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
-    // invalid primary + invalid region → primary takes precedence
-    #[case("EZ-QK", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
-    // valid primary + invalid script + invalid region → script takes precedence
-    #[case("en-Wxyz-QK", CsafLanguageError::InvalidScriptSubtag)]
-    // all three invalid → primary takes precedence
-    #[case("EZ-Wxyz-QK", CsafLanguageError::InvalidPrimaryLanguageSubtag)]
+    #[case("EZ-US", CsafLanguageError::InvalidSubtag { language_tag: String::from("EZ-US"), lang_subtag_err: TagValidity::InRegistryWrongPosition(String::from("EZ"), "region"), script_subtag_err: TagValidity::default(), region_subtag_err: TagValidity::Valid })]
+    // invalid primary + invalid script → report both
+    #[case("EZ-Wxyz", CsafLanguageError::InvalidSubtag { language_tag: String::from("EZ-Wxyz"), lang_subtag_err: TagValidity::InRegistryWrongPosition(String::from("EZ"), "region"), script_subtag_err: TagValidity::NotInRegistry(String::from("Wxyz")), region_subtag_err: TagValidity::default() })]
+    // invalid primary + invalid region → report both
+    #[case("EZ-QK", CsafLanguageError::InvalidSubtag { language_tag: String::from("EZ-QK"), lang_subtag_err: TagValidity::InRegistryWrongPosition(String::from("EZ"), "region"), script_subtag_err: TagValidity::default(), region_subtag_err: TagValidity::NotInRegistry(String::from("QK")) })]
+    // valid primary + invalid script + invalid region → report both
+    #[case("en-Wxyz-QK", CsafLanguageError::InvalidSubtag { language_tag: String::from("en-Wxyz-QK"), lang_subtag_err: TagValidity::Valid, script_subtag_err: TagValidity::NotInRegistry(String::from("Wxyz")), region_subtag_err: TagValidity::NotInRegistry(String::from("QK")) })]
+    // all three invalid → report all
+    #[case("EZ-Wxyz-QK", CsafLanguageError::InvalidSubtag { language_tag: String::from("EZ-Wxyz-QK"), lang_subtag_err: TagValidity::InRegistryWrongPosition(String::from("EZ"), "region"), script_subtag_err: TagValidity::NotInRegistry(String::from("Wxyz")), region_subtag_err: TagValidity::NotInRegistry(String::from("QK")) })]
+    fn test_invalid_language_sub_tag_throws_error(#[case] input: &str, #[case] expected_error: CsafLanguageError) {
+        let lang = CsafLanguage::from(&input.to_string());
+        assert!(
+            matches!(&lang, CsafLanguage::Invalid(_, e)
+                if e == &expected_error),
+            "Expected error variant {expected_error:?} for '{input}', got: {lang:?}"
+        );
+    }
+
+    #[rstest]
     // malformed standalone private-use tags
     // subtag exceeds 8-char limit
     #[case("x-abcdefghijkl", CsafLanguageError::ParserError)]
@@ -178,7 +165,7 @@ mod tests {
     #[case("x--foo", CsafLanguageError::ParserError)]
     // non-alphanumeric char in subtag
     #[case("x-foo_bar", CsafLanguageError::ParserError)]
-    fn test_invalid_language_tag_throws_error(
+    fn test_invalid_language_tag_throws_parse_error(
         #[case] input: &str,
         #[case] expected_error: fn(String, String) -> CsafLanguageError,
     ) {
@@ -190,6 +177,7 @@ mod tests {
             expected_error(String::new(), String::new())
         );
     }
+
     #[rstest]
 
     fn test_deprecated_grandfathered_tag_throws_error() {

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::{env, fs};
 
-use csaf::converter::{self, Diagnostics, Error, Settings, Warning};
+use csaf_rs::converter::{self, Diagnostics, Error, Settings, Warning};
 use jsonpath_rust::JsonPath as _;
 use serde::Deserialize;
 
@@ -54,7 +54,6 @@ fn _5_resolve_stacked_product_tree() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _6_warn_on_other_publisher_category() -> TestResult<()> {
     run!()
@@ -690,6 +689,10 @@ impl DiagnosticsSpy {
 impl Diagnostics for DiagnosticsSpy {
     fn error(&mut self, _path: Cow<'static, str>, error: Error) {
         self.errors.push(error)
+    }
+
+    fn has_errors(&self) -> bool {
+        !self.errors.is_empty()
     }
 
     fn warning(&mut self, _path: Cow<'static, str>, warning: Warning) {

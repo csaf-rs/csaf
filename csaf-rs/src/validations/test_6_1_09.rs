@@ -1,6 +1,6 @@
+use crate::validations::utils::cvss;
 use crate::{
     csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
-    cvss,
     validation::TestFinding,
 };
 
@@ -35,23 +35,40 @@ mod tests {
     use crate::csaf2_0::testcases::TESTS_2_0;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_9 as ExpectedResults_2_1;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::cvss::{ScoreType, create_score_mismatch_error, create_severity_mismatch_error};
+    use crate::validation::TestFinding;
+
+    use crate::validations::utils::cvss::ScoreType;
+    use crate::validations::utils::cvss::validate_scores::utils::{
+        create_score_mismatch_finding_data, create_severity_mismatch_finding_data,
+    };
     use cvss_rs::Severity;
 
     #[test]
     fn test_test_6_1_09() {
+        let finding_error = |finding_data| TestFinding::Error(finding_data);
         let path_2_0 = "/vulnerabilities/0/scores/0";
 
         let case01_3_1_base_score_and_severity_wrong_csaf_2_0: Result<(), _> = Err(vec![
-            create_score_mismatch_error(6.5, 10.0, ScoreType::Base, path_2_0),
-            create_severity_mismatch_error(&Severity::Medium, &Severity::Low, ScoreType::Base, path_2_0),
+            finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_0)),
+            finding_error(create_severity_mismatch_finding_data(
+                &Severity::Medium,
+                &Severity::Low,
+                ScoreType::Base,
+                path_2_0,
+            )),
         ]);
         let case02_3_0_base_score_and_severity_wrong_csaf_2_0: Result<(), _> = Err(vec![
-            create_score_mismatch_error(6.5, 10.0, ScoreType::Base, path_2_0),
-            create_severity_mismatch_error(&Severity::Medium, &Severity::High, ScoreType::Base, path_2_0),
+            finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_0)),
+            finding_error(create_severity_mismatch_finding_data(
+                &Severity::Medium,
+                &Severity::High,
+                ScoreType::Base,
+                path_2_0,
+            )),
         ]);
-        let case03_2_0_base_score_wrong_csaf_2_0: Result<(), _> =
-            Err(vec![create_score_mismatch_error(10.0, 6.5, ScoreType::Base, path_2_0)]);
+        let case03_2_0_base_score_wrong_csaf_2_0: Result<(), _> = Err(vec![finding_error(
+            create_score_mismatch_finding_data(10.0, 6.5, ScoreType::Base, path_2_0),
+        )]);
 
         // Case 11: v3.1 correct
         // Case 12: v3.0 correct
@@ -69,21 +86,38 @@ mod tests {
         let path_2_1 = "/vulnerabilities/0/metrics/0/content";
 
         let case01_3_1_base_score_and_severity_wrong_csaf_2_1: Result<(), _> = Err(vec![
-            create_score_mismatch_error(6.5, 10.0, ScoreType::Base, path_2_1),
-            create_severity_mismatch_error(&Severity::Medium, &Severity::Low, ScoreType::Base, path_2_1),
+            finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_1)),
+            finding_error(create_severity_mismatch_finding_data(
+                &Severity::Medium,
+                &Severity::Low,
+                ScoreType::Base,
+                path_2_1,
+            )),
         ]);
         let case02_3_0_base_score_and_severity_wrong_csaf_2_1: Result<(), _> = Err(vec![
-            create_score_mismatch_error(6.5, 10.0, ScoreType::Base, path_2_1),
-            create_severity_mismatch_error(&Severity::Medium, &Severity::High, ScoreType::Base, path_2_1),
+            finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_1)),
+            finding_error(create_severity_mismatch_finding_data(
+                &Severity::Medium,
+                &Severity::High,
+                ScoreType::Base,
+                path_2_1,
+            )),
         ]);
-        let case03_2_0_base_score_wrong_csaf_2_1: Result<(), _> =
-            Err(vec![create_score_mismatch_error(10.0, 6.5, ScoreType::Base, path_2_1)]);
+        let case03_2_0_base_score_wrong_csaf_2_1: Result<(), _> = Err(vec![finding_error(
+            create_score_mismatch_finding_data(10.0, 6.5, ScoreType::Base, path_2_1),
+        )]);
 
-        let case04_4_0_base_score_wrong_csaf_2_1: Result<(), _> =
-            Err(vec![create_score_mismatch_error(10.0, 9.3, ScoreType::Base, path_2_1)]);
+        let case04_4_0_base_score_wrong_csaf_2_1: Result<(), _> = Err(vec![finding_error(
+            create_score_mismatch_finding_data(10.0, 9.3, ScoreType::Base, path_2_1),
+        )]);
         let case05_4_0_base_score_and_severity_wrong_csaf_2_1: Result<(), _> = Err(vec![
-            create_score_mismatch_error(9.3, 10.0, ScoreType::Base, path_2_1),
-            create_severity_mismatch_error(&Severity::Critical, &Severity::High, ScoreType::Base, path_2_1),
+            finding_error(create_score_mismatch_finding_data(9.3, 10.0, ScoreType::Base, path_2_1)),
+            finding_error(create_severity_mismatch_finding_data(
+                &Severity::Critical,
+                &Severity::High,
+                ScoreType::Base,
+                path_2_1,
+            )),
         ]);
 
         // Case 11: v3.1 correct

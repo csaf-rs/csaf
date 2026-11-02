@@ -275,7 +275,7 @@ mod tests {
 
     fn valid_csaf_2_0() -> serde_json::Value {
         let bytes = include_bytes!(
-            "../../../../csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
+            "../../../../oasis-csaf/csaf_2.0/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_0-2021-6-1-01-11.json"
         );
         serde_json::from_slice(bytes).unwrap()
     }

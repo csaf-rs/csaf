@@ -3,6 +3,7 @@ use std::collections::{BTreeSet, HashMap, HashSet};
 use crate::csaf::traits::document::entity_group_trait::EntityGroupTrait;
 use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
+use crate::csaf::traits::util::{impl_into_any_iter_getter, impl_into_any_optional_iter_getter};
 use crate::csaf_traits::{ActionTrait, EntityTrait};
 use crate::schema::csaf2_1::schema::{
     Action as Action21, Entity as Entity21, EntityGroup as EntityGroup21, Involvement as Involvement21,
@@ -81,17 +82,12 @@ impl Csaf21InvolvementTrait for NotPresentInCsaf20 {
     type EntityType = NotPresentInCsaf20;
     type EntityGroupType = NotPresentInCsaf20;
 
-    fn get_actions(&self) -> impl Iterator<Item = &Self::ActionType> + '_ {
-        self.into_any_iter()
-    }
-
-    fn get_entities(&self) -> impl Iterator<Item = &Self::EntityType> + '_ {
-        self.into_any_iter()
-    }
-
-    fn get_entity_groups(&self) -> Option<impl Iterator<Item = &Self::EntityGroupType> + '_> {
-        self.into_any_optional_iter()
-    }
+    impl_into_any_iter_getter!(get_actions, impl Iterator<Item = &Self::ActionType> + '_);
+    impl_into_any_iter_getter!(get_entities, impl Iterator<Item = &Self::EntityType> + '_);
+    impl_into_any_optional_iter_getter!(
+        get_entity_groups,
+        Option<impl Iterator<Item = &Self::EntityGroupType> + '_>
+    );
 }
 
 impl Csaf21InvolvementTrait for Involvement21 {

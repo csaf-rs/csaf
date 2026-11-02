@@ -265,7 +265,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.27.10 | ✅ | ✅ |
 | 6.1.27.11 | ✅ | ✅ |
 | 6.1.27.12 | ⭕ | ✅ |
-| 6.1.27.13 | ⭕ |   |
+| 6.1.27.13 | ⭕ | ✅ |
 | 6.1.27.14 | ⭕ | ✅ |
 | 6.1.27.15 | ⭕ | ✅ |
 | 6.1.27.16 | ⭕ | ✅ |
@@ -293,9 +293,9 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.45 | ⭕ | ✅ |
 | 6.1.46 | ⭕ | ✅ |
 | 6.1.47 | ⭕ | ✅ |
-| 6.1.48 | ⭕ |   |
+| 6.1.48 | ⭕ | ✅ |
 | 6.1.49 | ⭕ | ✅ |
-| 6.1.50 | ⭕ |   |
+| 6.1.50 | ⭕ | ✅ |
 | 6.1.51 | ⭕ |   |
 | 6.1.52 | ⭕ |   |
 | 6.1.53 | ⭕ | ✅ |
@@ -311,7 +311,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.61 | ⭕ | ✅ |
 | 6.1.62 | ⭕ | ✅ |
 | 6.1.64.1 | ⭕ | ✅ |
-| 6.1.64.2 | ⭕ |  |
+| 6.1.64.2 | ⭕ | ✅ |
 | 6.1.64.3 | ⭕ | ✅ |
 | 6.1.64.4 | ⭕ | ✅ |
 | 6.1.64.5 | ⭕ | ✅ |
@@ -320,8 +320,9 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.64.8 | ⭕ | ✅ |
 | 6.1.64.9 | ⭕ | ✅ |
 | 6.1.64.10 | ⭕ | ✅ |
-| 6.1.64.11 | ⭕ |  |
-| 6.1.64.12 | ⭕ |  |
+| 6.1.64.10 | ⭕ | ✅ |
+| 6.1.64.11 | ⭕ | ✅ |
+| 6.1.64.12 | ⭕ | ✅ |
 | 6.1.64.13 | ⭕ | ✅ |
 | 6.1.65.1 | ⭕ | ✅ |
 | 6.1.65.2 | ⭕ | ✅ |
@@ -330,7 +331,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 ### Recommended Tests
 
 | Test specification | 2.0                | 2.1 (experimental) |
-|-------------|--------------------|--------------------|
+|-----------|--------------------|--------------------|
 | 6.2.1     | ✅ | ✅ |
 | 6.2.2     | ✅ | ✅ |
 | 6.2.3     | ✅ | ✅ |
@@ -405,11 +406,11 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.54.4   | ⭕ |  |
 | 6.2.55  | ⭕ |  |
 | 6.2.56.1  | ⭕ |  |
-| 6.2.56.2  | ⭕ |  |
+| 6.2.56.2  | ⭕ | ✅ |
 | 6.2.56.3  | ⭕ |  |
 | 6.2.56.4  | ⭕ |  |
 | 6.2.56.5  | ⭕ |  |
-| 6.2.57  | ⭕ |  |
+| 6.2.57  | ⭕ | ✅ |
 
 ### Informative Tests
 
@@ -444,7 +445,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.21.7 | ⭕ | ✅ |
 | 6.3.21.8 | ⭕ | ✅ |
 | 6.3.21.9 | ⭕ | ✅ |
-| 6.3.22   | ⭕ |  |
+| 6.3.22   | ⭕ | ✅ |
 | 6.3.23.1 | ⭕ | ✅ |
 | 6.3.23.2 | ⭕ | ✅ |
 | 6.3.24   | ⭕ |  |

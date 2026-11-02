@@ -79,7 +79,7 @@ fn build_cors_layer(cors: &CorsSettings) -> CorsLayer {
     ),
     info(
         title = "CSAF Validation API",
-        version = "0.5.2",
+        version = "0.6.0",
         description = "REST API for validating CSAF (Common Security Advisory Framework) documents against the OASIS CSAF standard.
         Uses csaf-rs under the hood. Currently conforms to the format defined by Secvisogram CSAF Validator Service (see https://github.com/secvisogram/csaf-validator-service)."
     )

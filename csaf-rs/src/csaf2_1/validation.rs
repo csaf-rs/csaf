@@ -311,8 +311,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.27.19" => {
                     // see below in RawValidatable
                     return TestResult {
-                    test_id: test_id.to_string(),
-                    status: TestResultStatus::Skipped,
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
                     };
                 },
                 "6.1.27.20" => Some(ValidatorForTest6_1_27_20.validate(self)),

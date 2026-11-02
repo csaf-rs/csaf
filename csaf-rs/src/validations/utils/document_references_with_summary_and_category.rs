@@ -20,11 +20,15 @@ pub(crate) fn create_missing_reference_data(
 
 pub(crate) fn create_invalid_category_data(
     required_summary_prefix: &str,
-    category: Option<&str>,
+    category: Option<&Value>,
     required_category: &CategoryOfReference,
     reference_index: usize,
 ) -> TestFindingData {
-    let actual_category = category.map_or("not present".to_string(), |category| format!("`{category}`"));
+    let actual_category = match category {
+        None => "not present".to_string(),
+        Some(Value::String(category)) => format!("`{category}`"),
+        Some(category) => format!("`{category}`"),
+    };
     TestFindingData {
         message: format!(
             "The category of the `{required_summary_prefix}` reference must be present and contain the value `{required_category}` (was: {actual_category})."
@@ -77,7 +81,7 @@ pub(crate) fn check_references_with_summary_prefix_and_category(
             if !property_string_value_is("/category", &required_category.to_string(), reference) {
                 findings.push(create_invalid_category_data(
                     required_summary_prefix,
-                    reference.pointer("/category").and_then(Value::as_str),
+                    reference.pointer("/category"),
                     required_category,
                     reference_index,
                 ));
@@ -100,5 +104,32 @@ pub(crate) fn check_references_with_summary_prefix_and_category(
     // all matching references have the required category
     else {
         None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::rstest;
+
+    #[rstest]
+    #[case(None, "not present")]
+    #[case(Some(Value::Null), "`null`")]
+    #[case(Some(Value::String("self".to_string())), "`self`")]
+    #[case(Some(Value::Bool(true)), "`true`")]
+    #[case(Some(Value::Number(42.into())), "`42`")]
+    #[case(Some(Value::Array(vec![])), "`[]`")]
+    #[case(Some(Value::Object(Default::default())), "`{}`")]
+    fn create_invalid_category_data_reports_actual_category(
+        #[case] category: Option<Value>,
+        #[case] expected_actual_category: &str,
+    ) {
+        let expected_category = CategoryOfReference::External;
+
+        assert!(
+            create_invalid_category_data("Superseding Document", category.as_ref(), &expected_category, 0,)
+                .message
+                .contains(&format!("was: {expected_actual_category}"))
+        );
     }
 }

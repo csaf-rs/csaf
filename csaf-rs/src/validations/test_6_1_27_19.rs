@@ -63,9 +63,11 @@ mod tests {
     use crate::validations::utils::document_references_with_summary_and_category::{
         create_invalid_category_data, create_missing_reference_data,
     };
+    use serde_json::json;
 
     #[test]
     fn test_test_6_1_27_19() {
+        let self_category = json!("self");
         let missing_reference = Err(vec![TestFinding::Error(create_missing_reference_data(
             "Superseding Document",
             &CategoryOfReference::External,
@@ -86,14 +88,14 @@ mod tests {
             )),
             TestFinding::Error(create_invalid_category_data(
                 "Superseding Document",
-                Some("self"),
+                Some(&self_category),
                 &CategoryOfReference::External,
                 3,
             )),
         ]);
         let undefined_lang_wrong_category = Err(vec![TestFinding::Error(create_invalid_category_data(
             "Superseding Document",
-            Some("self"),
+            Some(&self_category),
             &CategoryOfReference::External,
             0,
         ))]);

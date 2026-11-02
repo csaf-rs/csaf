@@ -83,10 +83,12 @@ mod tests {
     use crate::validations::utils::document_references_with_summary_and_category::{
         create_invalid_category_data, create_missing_reference_data,
     };
+    use serde_json::json;
 
     #[test]
     fn test_test_6_2_39_4() {
         let de_summary_prefix = get_translation_for_term_superseding_document("de").unwrap();
+        let self_category = json!("self");
 
         let no_reference_with_prefix = Err(vec![TestFinding::Warning(create_missing_reference_data(
             de_summary_prefix,
@@ -96,7 +98,7 @@ mod tests {
 
         let incorrect_category = Err(vec![TestFinding::Warning(create_invalid_category_data(
             de_summary_prefix,
-            Some("self"),
+            Some(&self_category),
             &CategoryOfReference::External,
             0,
         ))]);
@@ -110,7 +112,7 @@ mod tests {
             )),
             TestFinding::Warning(create_invalid_category_data(
                 de_summary_prefix,
-                Some("self"),
+                Some(&self_category),
                 &CategoryOfReference::External,
                 2,
             )),
@@ -119,13 +121,13 @@ mod tests {
         let multiple_incorrect_category = Err(vec![
             TestFinding::Warning(create_invalid_category_data(
                 de_summary_prefix,
-                Some("self"),
+                Some(&self_category),
                 &CategoryOfReference::External,
                 0,
             )),
             TestFinding::Warning(create_invalid_category_data(
                 de_summary_prefix,
-                Some("self"),
+                Some(&self_category),
                 &CategoryOfReference::External,
                 1,
             )),

@@ -154,10 +154,10 @@ mod tests {
             // TODO: This error message could be more percise, the problem are the whitespaces outside the constraint
             case_01: Err(vec![invalid_product_version_range_error(
                 "all versions < 4.2.0".into(),
-                "Invalid character(s) in VLS: ' '".to_string(),
+                "Invalid constraint(s): Invalid character(s) in version string: ' ', '<'".to_string(),
                 "/product_tree/branches/0/branches/0/branches/0",
             )]),
-            // TODO: This error message could be more percise, whitespace is the offending char, not a control char
+            // TODO: This error message could be more precise, whitespace is the offending char, not a control char
             case_02: Err(vec![invalid_product_version_range_error(
                 "vers:npm/ >= 2.2.0| <2.3.0".into(),
                 "Invalid characters in version range specifier: Control characters (tabs, newlines, carriage returns) are not permitted".to_string(),
@@ -168,27 +168,22 @@ mod tests {
                 "vers:all/<V3.1.2.2".into(),
                 "/product_tree/branches/0/branches/0/branches/0",
             )]),
-            case_04: Err(vec![
-                invalid_product_version_range_error(
-                    "<= 2024.04".into(),
-                    "Invalid character(s) in VLS: ' '".to_string(),
-                    "/product_tree/branches/0/branches/0/branches/0",
-                ),
-                invalid_product_version_range_error(
-                    "all versions".into(),
-                    "Invalid character(s) in VLS: ' '".to_string(),
-                    "/product_tree/branches/0/branches/1/branches/0",
-                ),
-            ]),
+            case_04: Err(vec![invalid_product_version_range_error(
+                "all versions".into(),
+                "Invalid constraint(s): Invalid character(s) in version string: ' '".to_string(),
+                "/product_tree/branches/0/branches/1/branches/0",
+            )]),
             case_05: Err(vec![
                 invalid_product_version_range_error(
                     "> abc and <= def".into(),
-                    "Invalid character(s) in VLS: ' '".to_string(),
+                    "Invalid constraint(s): Invalid character(s) in version string: ' ', '<', '='"
+                        .to_string(),
                     "/product_tree/branches/0/branches/0/branches/0",
                 ),
                 invalid_product_version_range_error(
                     "all versions < v0.8.15".into(),
-                    "Invalid character(s) in VLS: ' '".to_string(),
+                    "Invalid constraint(s): Invalid character(s) in version string: ' ', '<'"
+                        .to_string(),
                     "/product_tree/branches/0/branches/1/branches/0",
                 ),
             ]),
@@ -206,7 +201,7 @@ mod tests {
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
-            // TODO: Typo in test file
+            // TODO: Typo in test file (see #1442)
             case_14: Err(vec![invalid_product_version_range_error(
                 "vers:/all".into(),
                 "Missing versioning scheme".to_string(),

@@ -3477,9 +3477,9 @@ checksum = "ba73ea9cf16a25df0c8caa16c51acb937d5712a8429db78a3ee29d5dcacd3a65"
 
 [[package]]
 name = "vers-like-specifier"
-version = "0.1.2"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc5ad8d9f0998abafa2dd6dfc7f018de45c042131c4f4808bd78035afb5cae25"
+checksum = "e2830d2d53fca5be34e97503ae5f45b1646dc37b5046704c9b0c0173ccd797d3"
 dependencies = [
  "serde",
  "serde_json",

@@ -10,6 +10,9 @@ use crate::validations::utils::raw_json_value_helper::property_string_value_is;
 
 /// 6.1.27.19 Reference to superseding document
 ///
+/// This test only applies to documents with `/document/category` with value `csaf_superseded` and
+/// only if the document language is either unspecified or english.
+///
 /// If the document language is English or unspecified, it SHALL be tested that at least one item in document references exists
 /// that has a summary starting with `Superseding Document`.
 /// For each of these items, the `category` SHALL be present and have the value `external`.

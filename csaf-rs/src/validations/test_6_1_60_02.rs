@@ -34,7 +34,7 @@ crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_60_2, test_
 mod tests {
     use crate::{
         csaf2_1::testcases::{ExpectedResults_6_1_60_2 as ExpectedResults, TESTS_2_1},
-        validations::test_6_1_60_2::extension_schema_warning,
+        validations::test_6_1_60_02::extension_schema_warning,
     };
 
     #[test]

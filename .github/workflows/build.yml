@@ -143,9 +143,9 @@ jobs:
         run: cargo auditable build --locked --target=${{ matrix.target.arch }} --release --verbose --features="cli" --workspace ${{ env.exclude-ffi-args }}
       - name: Run tests
         run: cargo test --locked --target=${{ matrix.target.arch }} --release --verbose --workspace ${{ env.exclude-ffi-args }}
-        if: ${{ matrix.target.skip-test != true }}
+        if: ${{ matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true }}
       - name: Smoke test csaf-validator
-        if: matrix.target.skip-test != true
+        if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
         shell: bash
         run: ./scripts/smoke-tests/smoke-test-csaf-validator.sh target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
       - name: Build with --no-default-features

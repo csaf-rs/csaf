@@ -19,7 +19,7 @@ def find_ranges(value: object, system: VersionSystem):
             value.get("category") == "product_version_range"
             and isinstance(value.get("name"), str)
             and (
-                value["name"].startswith("vers")
+                value["name"].startswith("vers:")
                 == (system is VersionSystem.VERS)
             )
         ):

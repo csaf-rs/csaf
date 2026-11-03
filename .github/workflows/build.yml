@@ -11,9 +11,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-concurrency: # cancel in-progress runs of the same workflow for the same PR, but allow multiple runs for different PRs or for pushes to main
-  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+concurrency: # cancel in-progress runs of the same PR and superseded pushes to main; tags and merge-queue runs stay isolated
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
 
 env:
   CARGO_TERM_COLOR: always

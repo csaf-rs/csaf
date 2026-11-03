@@ -134,6 +134,7 @@ jobs:
         with:
           tool: cargo-auditable
       - name: Run shared clippy check
+        if: matrix.version == needs.prepare.outputs.stable-version || contains(matrix.target.arch, 'linux')
         uses: csaf-rs/shared-workflows/.github/actions/rust-checks@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
         with:
           run-format: "false"

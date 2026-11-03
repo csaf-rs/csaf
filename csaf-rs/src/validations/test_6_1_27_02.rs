@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
 use crate::csaf_traits::CsafVersion;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::raw_json_value_helper::property_string_value_is;
+use crate::validations::utils::raw_json_value_helper::{get_json_presence, property_string_value_is};
 use serde_json::Value;
 
 fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) -> TestFinding {
@@ -13,6 +13,11 @@ fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) 
     })
 }
 
+pub enum CheckReference {
+    ExternalWithDefault,
+    ExternalWithPresence,
+}
+
 /// 6.1.27.2 Document References
 ///
 /// It SHALL be tested that at least one item in `$.document.references` exists that contains a link to an `external` source.
@@ -20,7 +25,13 @@ fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) 
 ///
 /// The relevant values for `$.document.category` are: `csaf_informational_advisory`,
 /// `csaf_security_incident_response`, `csaf_superseded`.
-pub fn test_6_1_27_02_document_references(json: &Value) -> Result<(), Vec<TestFinding>> {
+///
+/// The specification diverges between CSAF 2.0 and 2.1 in that for CSAF 2.0, the `category` property can be missing,
+/// as the default is `external`, while for CSAF 2.1, the `category` property needs to be specifically present.
+pub fn test_6_1_27_02_document_references(
+    json: &Value,
+    check_reference: CheckReference,
+) -> Result<(), Vec<TestFinding>> {
     let Some(doc_category) = json.pointer("/document/category").and_then(Value::as_str) else {
         return Ok(()); // TODO: skip if there is no doc category
     };
@@ -43,9 +54,15 @@ pub fn test_6_1_27_02_document_references(json: &Value) -> Result<(), Vec<TestFi
         .pointer("/document/references")
         .and_then(Value::as_array)
         .is_some_and(|references| {
-            references
-                .iter()
-                .any(|reference| property_string_value_is("/category", "external", reference))
+            references.iter().any(|reference| match check_reference {
+                // for CSAF 2.0, the value can be missing, as the default is "external"
+                CheckReference::ExternalWithDefault => {
+                    get_json_presence("/category", reference).is_missing()
+                        || property_string_value_is("/category", "external", reference)
+                },
+                // for CSAF 2.1, the value needs to be specifically present
+                CheckReference::ExternalWithPresence => property_string_value_is("/category", "external", reference),
+            })
         });
 
     // if there isn't a reference with category 'external', return an error
@@ -56,7 +73,31 @@ pub fn test_6_1_27_02_document_references(json: &Value) -> Result<(), Vec<TestFi
     Ok(())
 }
 
-crate::test_validation::impl_raw_json_validator!(ValidatorForTest6_1_27_2, test_6_1_27_02_document_references);
+impl
+    crate::test_validation::TestValidator<
+        crate::csaf::raw::RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
+    > for crate::csaf2_0::testcases::ValidatorForTest6_1_27_2
+{
+    fn validate(
+        &self,
+        doc: &crate::csaf::raw::RawDocument<crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework>,
+    ) -> Result<(), Vec<TestFinding>> {
+        test_6_1_27_02_document_references(doc.get_json(), CheckReference::ExternalWithDefault)
+    }
+}
+
+impl
+    crate::test_validation::TestValidator<
+        crate::csaf::raw::RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
+    > for crate::csaf2_1::testcases::ValidatorForTest6_1_27_2
+{
+    fn validate(
+        &self,
+        doc: &crate::csaf::raw::RawDocument<crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework>,
+    ) -> Result<(), Vec<TestFinding>> {
+        test_6_1_27_02_document_references(doc.get_json(), CheckReference::ExternalWithPresence)
+    }
+}
 
 #[cfg(test)]
 mod tests {

@@ -117,8 +117,8 @@ fn create_cvss_validation_message(property_name: &str, error: &jsonschema::Valid
             .any(|property| property.to_ascii_lowercase().contains("severity"))
     {
         return format!(
-            "{} Please note: CVSS 2.0, as defined by FIRST, does not contain severity ratings.",
-            error
+            "{error}. Please note: CVSS 2.0, as defined by FIRST, does not contain severity ratings.",
+
         );
     }
 

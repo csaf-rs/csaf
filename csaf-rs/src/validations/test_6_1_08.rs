@@ -208,12 +208,12 @@ mod tests {
             )]),
             case_09: Err(vec![
                 create_validation_error_with_path(
-                    "Additional properties are not allowed ('baseSeverity' was unexpected) \
+                    "Additional properties are not allowed ('baseSeverity' was unexpected). \
                      Please note: CVSS 2.0, as defined by FIRST, does not contain severity ratings.",
                     "/vulnerabilities/0/metrics/0/content/cvss_v2",
                 ),
                 create_validation_error_with_path(
-                    "Additional properties are not allowed ('severity' was unexpected) \
+                    "Additional properties are not allowed ('severity' was unexpected). \
                      Please note: CVSS 2.0, as defined by FIRST, does not contain severity ratings.",
                     "/vulnerabilities/1/metrics/0/content/cvss_v2",
                 ),

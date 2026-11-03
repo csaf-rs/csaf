@@ -10,25 +10,60 @@
 //! # use std::fs;
 //! # use std::path::Path;
 //! # use csaf_rs::json::JsonSource;
+//! # use csaf_rs::validation::CsafError;
 //! # use serde_json::json;
 //! #
 //! # #[derive(serde::Deserialize)] struct MyDoc;
-//! fn load_doc(s: impl JsonSource) -> std::io::Result<MyDoc> {
+//! fn load_doc(s: impl JsonSource) -> Result<MyDoc, CsafError> {
 //!   s.parse()
 //! }
 //!
-//! fn examples() -> std::io::Result<()> {
+//! fn examples() -> Result<(), CsafError> {
 //!   let _ = load_doc(r#"{}"#)?; // load from JSON string
 //!   let _ = load_doc(Path::new("file.json"))?; // load from file
 //!   let _ = load_doc(json!({}))?; // load from serde_json::Value
-//!   let _ = load_doc(&fs::read("file.json")?)?; // load from byte array
+//!   let _ = load_doc(&fs::read("file.json").map_err(CsafError::from)?)?; // load from byte array
 //!
 //!   Ok(())
 //! }
 //! ```
+use crate::validation::CsafError;
 use serde::de::DeserializeOwned;
 use std::path::PathBuf;
 use std::{fs, io::BufReader, path::Path};
+
+/// Substring `serde_json` uses (as of this writing) to report that a string it was parsing
+/// contained a byte sequence that isn't valid UTF-8. There is no public, stable API to
+/// distinguish this specific failure from other syntax errors, so we match on the message
+/// text; see `ErrorCode::InvalidUnicodeCodePoint` in `serde_json`'s source.
+const INVALID_UNICODE_MARKER: &str = "invalid unicode code point";
+
+/// Deserializes `T` from `deserializer`, converting any failure into a [`CsafError`] that
+/// includes the JSON path (e.g. `document.tracking.id`) that was being deserialized when the
+/// error occurred. This makes diagnosing malformed CSAF documents (invalid JSON, invalid
+/// UTF-8, type mismatches, ...) far easier than the bare line/column serde_json otherwise
+/// provides, especially for large documents.
+///
+/// CSAF documents must be valid JSON encoded using UTF-8. Invalid UTF-8 content is reported
+/// distinctly as [`CsafError::WrongEncoding`], while all other parsing failures are reported
+/// as [`CsafError::InvalidJson`].
+fn deserialize_with_path<'de, D, T>(deserializer: D) -> Result<T, CsafError>
+where
+    D: serde::Deserializer<'de>,
+    T: DeserializeOwned,
+{
+    serde_path_to_error::deserialize(deserializer).map_err(|err| {
+        let path = err.path().to_string();
+        let message = err.inner().to_string();
+        if message.contains(INVALID_UNICODE_MARKER) {
+            CsafError::WrongEncoding { path, message }
+        } else {
+            CsafError::InvalidJson {
+                message: format!("{path}: {message}"),
+            }
+        }
+    })
+}
 
 /// A source of JSON based information.
 ///
@@ -36,67 +71,76 @@ use std::{fs, io::BufReader, path::Path};
 /// implementations for "parsing from file", "parsing from string", "parsing from Value", ...
 pub trait JsonSource {
     /// Parse the source
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error>;
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError>;
 }
 
 impl JsonSource for &Path {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_reader(BufReader::new(fs::File::open(self)?))?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_reader(BufReader::new(fs::File::open(self)?));
+        deserialize_with_path(&mut de)
     }
 }
 
 impl JsonSource for &PathBuf {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_reader(BufReader::new(fs::File::open(self)?))?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_reader(BufReader::new(fs::File::open(self)?));
+        deserialize_with_path(&mut de)
     }
 }
 
 impl JsonSource for fs::File {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_reader(BufReader::new(self))?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_reader(BufReader::new(self));
+        deserialize_with_path(&mut de)
     }
 }
 
 impl<R: std::io::Read> JsonSource for BufReader<R> {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_reader(self)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_reader(self);
+        deserialize_with_path(&mut de)
     }
 }
 
 impl JsonSource for &Vec<u8> {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_slice(self)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_slice(self);
+        deserialize_with_path(&mut de)
     }
 }
 
 impl JsonSource for &[u8] {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_slice(self)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_slice(self);
+        deserialize_with_path(&mut de)
     }
 }
 
 impl<const N: usize> JsonSource for &[u8; N] {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_slice(self)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_slice(self);
+        deserialize_with_path(&mut de)
     }
 }
 
 impl JsonSource for serde_json::Value {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_value(self)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        deserialize_with_path(self)
     }
 }
 
 impl JsonSource for &str {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_str(self)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_str(self);
+        deserialize_with_path(&mut de)
     }
 }
 
 /// Convenience implementation for directly referencing `String`.
 impl JsonSource for &String {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_str(self)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_str(self);
+        deserialize_with_path(&mut de)
     }
 }
 
@@ -104,20 +148,21 @@ impl JsonSource for &String {
 pub struct Reader<R: std::io::Read>(pub R);
 
 impl<R: std::io::Read> JsonSource for Reader<R> {
-    fn parse<T: DeserializeOwned>(self) -> Result<T, std::io::Error> {
-        Ok(serde_json::from_reader(self.0)?)
+    fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
+        let mut de = serde_json::Deserializer::from_reader(self.0);
+        deserialize_with_path(&mut de)
     }
 }
 
 #[cfg(test)]
-mod test {
+mod load_test {
     use super::*;
     use std::io::{Cursor, Seek, SeekFrom, Write};
 
     #[derive(Debug, serde::Deserialize)]
     struct TestDocument {}
 
-    fn load<T: JsonSource>(source: T) -> std::io::Result<TestDocument> {
+    fn load<T: JsonSource>(source: T) -> Result<TestDocument, CsafError> {
         source.parse()
     }
 

@@ -43,19 +43,8 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
         return Ok(());
     }
 
-    // Get sorted revision history and find the newest entry
-    let mut revision_history = tracking.aggregate_revision_history();
-    if revision_history.inplace_sort_by_date_then_number().is_err() {
-        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
-    }
-
-    // This checks if the revision history isn't empty
-    let newest_revision_date = match revision_history.last() {
-        Some(rev) => match &rev.date {
-            CsafDateTime::Valid(date) => date,
-            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
-        },
-        None => return Ok(()), // TODO this should be a #409 precondition failed #409
+    let Some(newest_revision_date) = tracking.get_newest_revision_date() else {
+        return Ok(());
     };
 
     // Check each vulnerability's disclosure date
@@ -64,14 +53,14 @@ pub fn test_6_1_45_inconsistent_disclosure_date(doc: &impl CsafTrait) -> Result<
         if let Some(disclosure_date) = vulnerability.get_disclosure_date() {
             match disclosure_date {
                 CsafDateTime::Valid(valid_date) => {
-                    if &valid_date > newest_revision_date {
+                    if valid_date > newest_revision_date {
                         errors
                             .get_or_insert_default()
                             .push(create_disclosure_date_too_late_error(
                                 &status,
                                 &valid_date,
                                 i_v,
-                                newest_revision_date,
+                                &newest_revision_date,
                             ));
                     }
                 },

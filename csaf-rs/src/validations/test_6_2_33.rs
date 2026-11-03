@@ -30,18 +30,8 @@ fn create_disclosure_date_newer_than_revision_warning(
 /// Unlike test 6.1.45, this test applies regardless of TLP/status, and additionally takes the datetime of test
 /// execution into consideration.
 pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    // Get sorted revision history and find the newest entry
-    let mut revision_history = doc.get_document().get_tracking().aggregate_revision_history();
-    if revision_history.inplace_sort_by_date_then_number().is_err() {
-        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
-    }
-
-    let newest_revision_date = match revision_history.last() {
-        Some(rev) => match &rev.date {
-            CsafDateTime::Valid(date) => date,
-            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
-        },
-        None => return Ok(()), // TODO this should be a #409 precondition failed #409
+    let Some(newest_revision_date) = doc.get_document().get_tracking().get_newest_revision_date() else {
+        return Ok(());
     };
 
     let now = Utc::now();
@@ -57,12 +47,12 @@ pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> 
                     // Check if the disclosure_date is in the past
                     // if so, check if the disclosure date is newer than the newest revision date
                     // if so, return an error
-                    if valid_disclosure_date.get_as_utc() < now && &valid_disclosure_date > newest_revision_date {
+                    if valid_disclosure_date.get_as_utc() < now && valid_disclosure_date > newest_revision_date {
                         errors
                             .get_or_insert_default()
                             .push(create_disclosure_date_newer_than_revision_warning(
                                 &valid_disclosure_date,
-                                newest_revision_date,
+                                &newest_revision_date,
                                 i_v,
                             ));
                     }

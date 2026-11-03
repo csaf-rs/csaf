@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use jsonschema::Validator;
+use jsonschema::{Validator, error::ValidationErrorKind};
 use serde_json::{Map, Value};
 
 use crate::{
@@ -99,12 +99,30 @@ fn evaluate_cvss_with_validator(
     let value = Value::Object(cvss_value.clone());
     for error in validator.iter_errors(&value) {
         errors.get_or_insert_default().push(create_validation_error(
-            error.to_string(),
+            create_cvss_validation_message(property_name, &error),
             base_path,
             property_name,
             error.instance_path().as_str(),
         ));
     }
+}
+
+fn create_cvss_validation_message(property_name: &str, error: &jsonschema::ValidationError<'_>) -> String {
+    // special handling for cvss_v2: we provide a more specific error if
+    if property_name == "cvss_v2"
+        && let ValidationErrorKind::AdditionalProperties { unexpected }
+        | ValidationErrorKind::UnevaluatedProperties { unexpected } = error.kind()
+        && unexpected
+            .iter()
+            .any(|property| property.to_ascii_lowercase().contains("severity"))
+    {
+        return format!(
+            "{} Please note: CVSS 2.0, as defined by FIRST, does not contain severity ratings.",
+            error
+        );
+    }
+
+    error.to_string()
 }
 
 fn create_validation_error(
@@ -193,11 +211,13 @@ mod tests {
             )]),
             case_09: Err(vec![
                 create_validation_error_with_path(
-                    "Additional properties are not allowed ('baseSeverity' was unexpected)",
+                    "Additional properties are not allowed ('baseSeverity' was unexpected) \
+                     Please note: CVSS 2.0, as defined by FIRST, does not contain severity ratings.",
                     "/vulnerabilities/0/metrics/0/content/cvss_v2",
                 ),
                 create_validation_error_with_path(
-                    "Additional properties are not allowed ('severity' was unexpected)",
+                    "Additional properties are not allowed ('severity' was unexpected) \
+                     Please note: CVSS 2.0, as defined by FIRST, does not contain severity ratings.",
                     "/vulnerabilities/1/metrics/0/content/cvss_v2",
                 ),
             ]),

@@ -21,19 +21,10 @@ pub fn test_6_2_05_older_init_release_than_rev_history(doc: &impl CsafTrait) -> 
     // TODO: Check for invalid dates here, will be done after revision history refactor, which will introduce
     // generic parsing error handling
 
-    let mut rev_history = doc.get_document().get_tracking().aggregate_revision_history();
-    if rev_history.inplace_sort_by_date_then_number().is_err() {
-        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
-    }
-    // We can safely unwrap here because empty revision histories would not parse schema validation
-    let earliest_rev_history_item_date = match rev_history.first() {
-        None => return Ok(()), // TODO #409 return a precondition failed here,
-        Some(x) => x,
+    let Some(earliest_rev_history_item_date) = doc.get_document().get_tracking().get_oldest_revision_date() else {
+        return Ok(());
     };
     let Valid(initial_release_date) = initial_release_date else {
-        return Ok(()); // TODO #409 return a precondition failed here,
-    };
-    let Valid(earliest_rev_history_item_date) = &earliest_rev_history_item_date.date else {
         return Ok(()); // TODO #409 return a precondition failed here,
     };
     if initial_release_date.get_as_utc() < earliest_rev_history_item_date.get_as_utc() {

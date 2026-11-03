@@ -18,23 +18,10 @@ pub fn test_6_1_62_inconsistent_discovery_date(doc: &impl CsafTrait) -> Result<(
     let tracking = document.get_tracking();
     let status = tracking.get_status();
 
-    // Get the revision history only if the document status is "final" or "interim"
-    let revision_history = match status {
-        DocumentStatus::Final | DocumentStatus::Interim => Some(tracking.aggregate_revision_history()),
+    let newest_revision_date = match status {
+        DocumentStatus::Final | DocumentStatus::Interim => tracking.get_newest_revision_date(),
         _ => None,
     };
-
-    // Calculate the newest revision date if the revision history is present
-    // For document statuses other than "final" or "interim", the newest revision date is not relevant and will be None
-    let newest_revision_date = revision_history.as_ref().and_then(|revision_history| {
-        revision_history
-            .iter()
-            .filter_map(|revision| match &revision.date {
-                CsafDateTime::Valid(date) => Some(date),
-                CsafDateTime::Invalid(_) => None, // TODO: This should result in a precondition finding (#409)
-            })
-            .max()
-    });
 
     let mut errors = Vec::new();
 
@@ -46,8 +33,8 @@ pub fn test_6_1_62_inconsistent_discovery_date(doc: &impl CsafTrait) -> Result<(
         };
 
         // If the newest revision date is present and the discovery date is later than it, push an error
-        if let Some(newest_revision_date) = newest_revision_date
-            && &discovery_date > newest_revision_date
+        if let Some(newest_revision_date) = &newest_revision_date
+            && discovery_date > *newest_revision_date
         {
             errors.push(create_discovery_date_too_late_for_revision_error(
                 &status,

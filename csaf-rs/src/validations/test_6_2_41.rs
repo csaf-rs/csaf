@@ -30,18 +30,8 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Te
 
     skip_if_document_status_is_not!(tracking.get_status(), Final, Interim);
 
-    // Get sorted revision history and find the newest entry
-    let mut revision_history = tracking.aggregate_revision_history();
-    if revision_history.inplace_sort_by_date_then_number().is_err() {
-        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
-    }
-
-    let newest_revision_date = match revision_history.last() {
-        Some(rev) => match &rev.date {
-            CsafDateTime::Valid(date) => date,
-            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
-        },
-        None => return Ok(()), // TODO this should be a #409 precondition failed #409
+    let Some(newest_revision_date) = tracking.get_newest_revision_date() else {
+        return Ok(());
     };
     let vulnerabilities = doc.get_vulnerabilities();
     if vulnerabilities.is_empty() {
@@ -84,7 +74,7 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Te
                 if diff > fifteen_days {
                     errors.get_or_insert_default().push(create_old_epss_timestamp_warning(
                         &newest_epss_timestamp,
-                        newest_revision_date,
+                        &newest_revision_date,
                         &metrics[path_metric_idx]
                             .get_content()
                             .get_content_json_path(i_v, path_metric_idx),

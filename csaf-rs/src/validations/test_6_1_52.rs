@@ -1,6 +1,6 @@
 use crate::csaf::macros::skip_if_document_status_is_not::skip_if_document_status_is_not;
 use crate::csaf::types::csaf_datetime::CsafDateTime::Valid;
-use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
+use crate::csaf::types::csaf_datetime::ValidCsafDateTime;
 use crate::csaf_traits::{
     CsafTrait, DocumentTrait, FirstKnownExploitationDatesTrait, TrackingTrait, VulnerabilityTrait, WithDate,
 };
@@ -45,18 +45,8 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(doc: &impl CsafTr
 
     skip_if_document_status_is_not!(status, Final, Interim);
 
-    // Get sorted revision history and find the newest entry
-    let mut revision_history = tracking.aggregate_revision_history();
-    if revision_history.inplace_sort_by_date_then_number().is_err() {
-        return Ok(()); // ToDo #409 precondition failed: invalid revision date, reported by 6.1.37 / schema
-    }
-
-    let newest_revision_date = match revision_history.last() {
-        Some(rev) => match &rev.date {
-            CsafDateTime::Valid(date) => date,
-            CsafDateTime::Invalid(_) => return Ok(()), // TODO: This will be a Precondition failed #409
-        },
-        None => return Ok(()), // TODO this should be a #409 precondition failed #409
+    let Some(newest_revision_date) = tracking.get_newest_revision_date() else {
+        return Ok(());
     };
 
     // Check each vulnerability's first known exploitation dates
@@ -66,11 +56,11 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(doc: &impl CsafTr
         if let Some(first_known_exploitation_dates) = vulnerability.get_first_known_exploitation_dates() {
             for (f_i, first_known_exploitation_date) in first_known_exploitation_dates.iter().enumerate() {
                 if let Valid(valid_first_known_explot_date) = first_known_exploitation_date.get_date() {
-                    if &valid_first_known_explot_date > newest_revision_date {
+                    if valid_first_known_explot_date > newest_revision_date {
                         errors.get_or_insert_default().push(create_date_too_new_error(
                             &status,
                             &valid_first_known_explot_date,
-                            newest_revision_date,
+                            &newest_revision_date,
                             v_i,
                             f_i,
                             DateProperty::Date,
@@ -81,11 +71,11 @@ pub fn test_6_1_52_inconsistent_first_known_exploitation_dates(doc: &impl CsafTr
                 }
 
                 if let Valid(valid_exploitation_date) = first_known_exploitation_date.get_exploitation_date() {
-                    if &valid_exploitation_date > newest_revision_date {
+                    if valid_exploitation_date > newest_revision_date {
                         errors.get_or_insert_default().push(create_date_too_new_error(
                             &status,
                             &valid_exploitation_date,
-                            newest_revision_date,
+                            &newest_revision_date,
                             v_i,
                             f_i,
                             DateProperty::ExploitationDate,

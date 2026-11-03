@@ -1,8 +1,8 @@
 use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
-use crate::csaf_traits::{CsafTrait, DocumentTrait, ReferenceTrait};
-use crate::schema::csaf2_1::schema::CategoryOfReference;
+use crate::csaf_traits::CsafVersion;
 use crate::validation::{TestFinding, TestFindingData};
-use crate::validations::utils::document_category_test_config::DocumentCategoryTestConfig;
+use crate::validations::utils::raw_json_value_helper::property_string_value_is;
+use serde_json::Value;
 
 fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) -> TestFinding {
     TestFinding::Error(TestFindingData {
@@ -13,36 +13,40 @@ fn create_missing_external_reference_error(doc_category: &CsafDocumentCategory) 
     })
 }
 
-const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig = DocumentCategoryTestConfig::new()
-    .shared(&[
-        CsafDocumentCategory::CsafInformationalAdvisory,
-        CsafDocumentCategory::CsafSecurityIncidentResponse,
-    ])
-    .csaf21(&[CsafDocumentCategory::CsafSuperseded]);
-
 /// 6.1.27.2 Document References
 ///
-/// This test only applies to documents with `/document/category` with value `csaf_informational_advisory`
-/// or `csaf_security_incident_response`.
+/// It SHALL be tested that at least one item in `$.document.references` exists that contains a link to an `external` source.
+/// The property `category` SHALL be present for this item.
 ///
-/// Documents with these categories must have at least one entry in `/document/references` with an external reference.
-pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
-    let doc_category = doc.get_document().get_category();
+/// The relevant values for `$.document.category` are: `csaf_informational_advisory`,
+/// `csaf_security_incident_response`, `csaf_superseded`.
+pub fn test_6_1_27_02_document_references(json: &Value) -> Result<(), Vec<TestFinding>> {
+    let Some(doc_category) = json.pointer("/document/category").and_then(Value::as_str) else {
+        return Ok(()); // TODO: skip if there is no doc category
+    };
+    let doc_category = CsafDocumentCategory::from(doc_category);
 
-    if !PROFILE_TEST_CONFIG.matches_category_with_csaf_version(doc.get_document().get_csaf_version(), &doc_category) {
+    let test_applies = matches!(
+        &doc_category,
+        CsafDocumentCategory::CsafInformationalAdvisory | CsafDocumentCategory::CsafSecurityIncidentResponse
+    ) || (doc_category == CsafDocumentCategory::CsafSuperseded
+        && json
+            .pointer("/document/csaf_version")
+            .and_then(Value::as_str)
+            .is_some_and(|version| version == CsafVersion::X21.to_string()));
+
+    if !test_applies {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409
     }
 
-    // check if there is a document reference with category 'external'
-    let mut found_external_reference = false;
-    if let Some(references) = doc.get_document().get_references() {
-        for reference in references {
-            if CategoryOfReference::External == reference.get_category() {
-                found_external_reference = true;
-                break;
-            };
-        }
-    }
+    let found_external_reference = json
+        .pointer("/document/references")
+        .and_then(Value::as_array)
+        .is_some_and(|references| {
+            references
+                .iter()
+                .any(|reference| property_string_value_is("/category", "external", reference))
+        });
 
     // if there isn't a reference with category 'external', return an error
     if !found_external_reference {
@@ -52,7 +56,7 @@ pub fn test_6_1_27_02_document_references(doc: &impl CsafTrait) -> Result<(), Ve
     Ok(())
 }
 
-crate::test_validation::impl_validator!(ValidatorForTest6_1_27_2, test_6_1_27_02_document_references);
+crate::test_validation::impl_raw_json_validator!(ValidatorForTest6_1_27_2, test_6_1_27_02_document_references);
 
 #[cfg(test)]
 mod tests {
@@ -64,25 +68,23 @@ mod tests {
 
     #[test]
     fn test_test_6_1_27_02() {
-        let case_informational_advisory = Err(vec![create_missing_external_reference_error(
+        let case_informational_advisory_category_self = Err(vec![create_missing_external_reference_error(
             &CsafDocumentCategory::CsafInformationalAdvisory,
         )]);
-        // TODO fix during #1011
-        // let case_security_incident_response = Err(vec![create_missing_external_reference_error(
-        //    &CsafDocumentCategory::CsafSecurityIncidentResponse,
-        // )]);
-        let case_superseded = Err(vec![create_missing_external_reference_error(
+        let case_security_incident_response_category_not_present = Err(vec![create_missing_external_reference_error(
+            &CsafDocumentCategory::CsafSecurityIncidentResponse,
+        )]);
+        let case_superseded_category_self = Err(vec![create_missing_external_reference_error(
             &CsafDocumentCategory::CsafSuperseded,
         )]);
 
         TESTS_2_0.test_6_1_27_2.expect(ExpectedResults_2_0 {
-            case_01: case_informational_advisory.clone(),
+            case_01: case_informational_advisory_category_self.clone(),
         });
         TESTS_2_1.test_6_1_27_2.expect(ExpectedResults_2_1 {
-            case_01: case_informational_advisory,
-            // TODO fix during #1011
-            case_02: Ok(()),
-            case_03: case_superseded,
+            case_01: case_informational_advisory_category_self,
+            case_02: case_security_incident_response_category_not_present,
+            case_03: case_superseded_category_self,
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),

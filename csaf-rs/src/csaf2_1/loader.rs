@@ -1,6 +1,9 @@
-use crate::{csaf::raw::RawDocument, json::JsonSource, schema::csaf2_1::schema::CommonSecurityAdvisoryFramework};
+use crate::csaf::raw::RawDocument;
+use crate::json::JsonSource;
+use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework;
+use crate::validation::CsafError;
 
-pub fn load_document<T: JsonSource>(source: T) -> std::io::Result<RawDocument<CommonSecurityAdvisoryFramework>> {
+pub fn load_document<T: JsonSource>(source: T) -> Result<RawDocument<CommonSecurityAdvisoryFramework>, CsafError> {
     Ok(RawDocument::new(source.parse()?))
 }
 

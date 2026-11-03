@@ -17,7 +17,7 @@ const SKIP_TEST_CONFIG: DocumentCategoryTestConfig =
 ///
 /// For each Product ID (type `$['$defs'].product_id_t`) in Full Product Name elements (type: `$['$defs'].full_product_name_t`)
 /// it SHALL be tested that the `product_id` is referenced somewhere within the same document.
-/// 
+///
 /// This test SHALL be skipped for CSAF documents conforming the profile "Informational Advisory".
 pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;

@@ -130,8 +130,9 @@ jobs:
           rustup default ${{ matrix.version }}
           rustup target add ${{ matrix.target.arch }}
       - name: Install cargo-auditable
-        shell: bash
-        run: command -v cargo-auditable || cargo install cargo-auditable --locked
+        uses: taiki-e/install-action@682ce6c3c696a4cd5168a05f98e51aa02b877941 # v2
+        with:
+          tool: cargo-auditable
       - name: Run shared clippy check
         uses: csaf-rs/shared-workflows/.github/actions/rust-checks@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
         with:

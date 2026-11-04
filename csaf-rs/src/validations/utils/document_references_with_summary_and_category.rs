@@ -12,7 +12,7 @@ pub(crate) fn create_missing_reference_data(
 ) -> TestFindingData {
     TestFindingData {
         message: format!(
-            "The document does not contain a reference with summary starting with `{required_summary_prefix}` and category `{required_category}` which is required for documents with category `{document_category}`"
+            "`{document_category}` must have at least one document reference with a summary starting with `{required_summary_prefix}` and category `{required_category}`"
         ),
         instance_path: "/document/references".to_string(),
     }
@@ -110,7 +110,35 @@ pub(crate) fn check_references_with_summary_prefix_and_category(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::csaf::types::csaf_document_category::CsafDocumentCategory;
     use rstest::rstest;
+
+    #[test]
+    fn create_missing_reference_data_uses_specification_wording() {
+        assert_eq!(
+            create_missing_reference_data(
+                "Superseding Document",
+                &CategoryOfReference::External,
+                &CsafDocumentCategory::CsafSuperseded,
+            )
+            .message,
+            "`csaf_superseded` must have at least one document reference with a summary starting with `Superseding Document` and category `external`"
+        );
+    }
+
+    #[test]
+    fn create_invalid_category_data_reports_self_category() {
+        assert_eq!(
+            create_invalid_category_data(
+                "Superseding Document",
+                Some(&Value::String("self".to_string())),
+                &CategoryOfReference::External,
+                0,
+            )
+            .message,
+            "The category of the `Superseding Document` reference must be present and contain the value `external` (was: `self`)."
+        );
+    }
 
     #[rstest]
     #[case(None, "not present")]
@@ -127,7 +155,7 @@ mod tests {
         let expected_category = CategoryOfReference::External;
 
         assert!(
-            create_invalid_category_data("Superseding Document", category.as_ref(), &expected_category, 0,)
+            create_invalid_category_data("Superseding Document", category.as_ref(), &expected_category, 0)
                 .message
                 .contains(&format!("was: {expected_actual_category}"))
         );

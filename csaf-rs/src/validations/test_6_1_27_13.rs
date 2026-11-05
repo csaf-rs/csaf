@@ -11,7 +11,7 @@ use crate::validations::utils::document_category_test_config::DocumentCategoryTe
 use itertools::Itertools;
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafSecurityAdvisory]);
+    DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafSecurityAdvisory]);
 
 fn create_missing_corresponding_affected_products_error(vulnerability_index: usize, product_id: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {

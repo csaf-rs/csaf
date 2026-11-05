@@ -477,8 +477,8 @@ jobs:
           pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
+          name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: csaf-ffi-wasm
-          pattern: csaf-ffi-wasm-*
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: go-csaf-ffi-lib
@@ -491,16 +491,12 @@ jobs:
         run: |
           ls csaf-validator | xargs -I {} zip {}.zip -rj csaf-validator/{}
           ls csaf-validator-*.zip
-          for dir in csaf-ffi-wasm/*/; do
-            name=$(basename "$dir")
-            zip "${name}.zip" -rj "$dir"
-          done
-          ls csaf-ffi-wasm-*.zip 2>/dev/null || true
+          zip "csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}.zip" -rj csaf-ffi-wasm/
           for dir in go-csaf-ffi-lib/*/; do
             name=$(basename "$dir")
             zip "${name}.zip" -rj "$dir"
           done
-          ls go-csaf-ffi-lib-*.zip 2>/dev/null || true
+          ls go-csaf-ffi-lib-*.zip
       - name: Create Release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:

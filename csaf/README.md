@@ -49,7 +49,7 @@ which downloads the artifact directly from the github releases, or install from 
 ```bash
 cargo install csaf --features="cli"
 ```
-If you target anything special, there might be no pre-compiled binary, so `cargo binstall` won't find anything and can't compile it, as the cli capabilites are behind a feature.
+If you target anything special, there might be no pre-compiled binary, so `cargo binstall` won't find anything and can't compile it, as the cli capabilities are behind a feature.
 
 After installing you can pass in the document to validate or convert along with the required parameters.
 ```bash

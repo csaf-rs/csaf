@@ -7,6 +7,7 @@ mod convert_release_date_to_disclosure_date;
 mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
+mod remove_tracking_id_from_title;
 mod set_csaf_21_schema;
 mod set_initial_release_date;
 mod settings;
@@ -35,6 +36,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &update_tlp_label::UpdateTlpLabel,
     &update_publisher_category::UpdatePublisherCategory,
     &set_initial_release_date::SetInitialReleaseDate,
+    &remove_tracking_id_from_title::RemoveTrackingIdFromTitle,
     // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,

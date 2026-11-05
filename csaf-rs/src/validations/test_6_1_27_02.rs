@@ -37,14 +37,15 @@ pub fn test_6_1_27_02_document_references(
     };
     let doc_category = CsafDocumentCategory::from(doc_category);
 
+    let csaf_version = match check_reference {
+        CheckReference::ExternalWithDefault => CsafVersion::X20,
+        CheckReference::ExternalWithPresence => CsafVersion::X21,
+    };
+
     let test_applies = matches!(
         &doc_category,
         CsafDocumentCategory::CsafInformationalAdvisory | CsafDocumentCategory::CsafSecurityIncidentResponse
-    ) || (doc_category == CsafDocumentCategory::CsafSuperseded
-        && json
-            .pointer("/document/csaf_version")
-            .and_then(Value::as_str)
-            .is_some_and(|version| version == CsafVersion::X21.to_string()));
+    ) || (doc_category == CsafDocumentCategory::CsafSuperseded && csaf_version == CsafVersion::X21);
 
     if !test_applies {
         return Ok(()); // ToDo generate skipped https://github.com/csaf-rs/csaf/issues/409

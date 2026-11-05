@@ -60,16 +60,13 @@ fn map_json_error(path: String, error: serde_json::Error) -> CsafError {
 /// CSAF documents must be valid JSON encoded using UTF-8. Invalid UTF-8 content is reported
 /// distinctly as [`CsafError::WrongEncoding`], while all other parsing failures are reported
 /// as [`CsafError::InvalidJson`].
-fn deserialize_with_path<'de, R, T>(
-    deserializer: &mut serde_json::Deserializer<R>,
-) -> Result<T, CsafError>
+fn deserialize_with_path<'de, R, T>(deserializer: &mut serde_json::Deserializer<R>) -> Result<T, CsafError>
 where
     R: serde_json::de::Read<'de>,
     T: DeserializeOwned,
 {
-    let value = serde_path_to_error::deserialize(&mut *deserializer).map_err(|err| {
-        map_json_error(err.path().to_string(), err.into_inner())
-    })?;
+    let value = serde_path_to_error::deserialize(&mut *deserializer)
+        .map_err(|err| map_json_error(err.path().to_string(), err.into_inner()))?;
     deserializer
         .end()
         .map_err(|error| map_json_error(String::new(), error))?;
@@ -80,9 +77,7 @@ fn deserialize_value_with_path<T>(value: serde_json::Value) -> Result<T, CsafErr
 where
     T: DeserializeOwned,
 {
-    serde_path_to_error::deserialize(value).map_err(|err| {
-        map_json_error(err.path().to_string(), err.into_inner())
-    })
+    serde_path_to_error::deserialize(value).map_err(|err| map_json_error(err.path().to_string(), err.into_inner()))
 }
 
 /// A source of JSON based information.

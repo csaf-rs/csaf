@@ -1,5 +1,5 @@
 use super::{Convert, Diagnostics, Settings};
-use crate::converter::helpers::for_each_product_identification_helper_via_as_object_mut;
+use crate::converter::helpers::{for_each_product_identification_helper_via_as_object_mut, retain_unique_field_values};
 use crate::schema::loose;
 
 pub struct DeduplicateSkus;
@@ -7,19 +7,7 @@ pub struct DeduplicateSkus;
 impl Convert for DeduplicateSkus {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, _diagnostics: &mut dyn Diagnostics) {
         for_each_product_identification_helper_via_as_object_mut(doc, |helper| {
-            let Some(serde_json::Value::Array(skus)) = helper.get_mut("skus") else {
-                return;
-            };
-
-            let mut seen = Vec::new();
-            skus.retain(|sku| {
-                if seen.contains(sku) {
-                    false
-                } else {
-                    seen.push(sku.clone());
-                    true
-                }
-            });
+            retain_unique_field_values(helper, "skus");
         });
     }
 }

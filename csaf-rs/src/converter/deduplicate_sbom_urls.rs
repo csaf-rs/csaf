@@ -1,5 +1,5 @@
 use super::{Convert, Diagnostics, Settings};
-use crate::converter::helpers::for_each_product_identification_helper_via_as_object_mut;
+use crate::converter::helpers::{for_each_product_identification_helper_via_as_object_mut, retain_unique_field_values};
 use crate::schema::loose;
 
 pub struct DeduplicateSbomUrls;
@@ -7,19 +7,7 @@ pub struct DeduplicateSbomUrls;
 impl Convert for DeduplicateSbomUrls {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, _diagnostics: &mut dyn Diagnostics) {
         for_each_product_identification_helper_via_as_object_mut(doc, |helper| {
-            let Some(serde_json::Value::Array(sbom_urls)) = helper.get_mut("sbom_urls") else {
-                return;
-            };
-
-            let mut seen = Vec::new();
-            sbom_urls.retain(|sbom_url| {
-                if seen.contains(sbom_url) {
-                    false
-                } else {
-                    seen.push(sbom_url.clone());
-                    true
-                }
-            });
+            retain_unique_field_values(helper, "sbom_urls");
         });
     }
 }

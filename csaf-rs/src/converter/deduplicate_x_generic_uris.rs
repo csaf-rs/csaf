@@ -1,5 +1,5 @@
 use super::{Convert, Diagnostics, Settings};
-use crate::converter::helpers::for_each_product_identification_helper_via_as_object_mut;
+use crate::converter::helpers::{for_each_product_identification_helper_via_as_object_mut, retain_unique_field_values};
 use crate::schema::loose;
 
 pub struct DeduplicateXGenericUris;
@@ -7,19 +7,7 @@ pub struct DeduplicateXGenericUris;
 impl Convert for DeduplicateXGenericUris {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, _diagnostics: &mut dyn Diagnostics) {
         for_each_product_identification_helper_via_as_object_mut(doc, |helper| {
-            let Some(serde_json::Value::Array(uris)) = helper.get_mut("x_generic_uris") else {
-                return;
-            };
-
-            let mut seen = Vec::new();
-            uris.retain(|uri| {
-                if seen.contains(uri) {
-                    false
-                } else {
-                    seen.push(uri.clone());
-                    true
-                }
-            });
+            retain_unique_field_values(helper, "x_generic_uris");
         });
     }
 }

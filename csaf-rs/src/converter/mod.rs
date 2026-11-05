@@ -8,6 +8,7 @@ mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
+mod set_initial_release_date;
 mod settings;
 mod sort_json_keys;
 mod update_csaf_version;
@@ -33,6 +34,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
     &update_publisher_category::UpdatePublisherCategory,
+    &set_initial_release_date::SetInitialReleaseDate,
     // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
@@ -60,24 +62,29 @@ pub enum Warning {
     InvalidTlpLabel,
     TlpIsMissingLabel,
     PublisherCategoryOther,
+    InconsistentInitialReleaseDate { old: String, new: String },
 }
 
 impl fmt::Display for Warning {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = match self {
-            Warning::ValidationWarning(message) => message,
-            Warning::CsafVersionIsMissing => "CSAF version node is missing",
-            Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
-            Warning::InvalidTlpLabel => "TLP label contained an invalid value",
-            Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
-            Warning::PublisherCategoryOther => {
+        match self {
+            Warning::ValidationWarning(message) => f.write_str(message),
+            Warning::InconsistentInitialReleaseDate { old, new } => write!(
+                f,
+                "An inconsistent initial release date `{old}` was detected and replaced with \
+                the date `{new}` from the revision history item with a number of 1 or 1.0.0"
+            ),
+            Warning::CsafVersionIsMissing => f.write_str("CSAF version node is missing"),
+            Warning::InvalidCsafVersion => f.write_str("CSAF version node contained an invalid value"),
+            Warning::InvalidTlpLabel => f.write_str("TLP label contained an invalid value"),
+            Warning::TlpIsMissingLabel => f.write_str("TLP node was present but did not contain the `label` property"),
+            Warning::PublisherCategoryOther => f.write_str(
                 "Some publishers previously categorized as 'other' \
                 have been regrouped into the new 'multiplier' category in CSAF 2.1. \
                 Please manually check whether the publisher category should be changed to 'multiplier'. \
-                The converter provides options to perform this change automatically or suppress this warning."
-            },
-        };
-        f.write_str(s)
+                The converter provides options to perform this change automatically or suppress this warning.",
+            ),
+        }
     }
 }
 

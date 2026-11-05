@@ -126,13 +126,7 @@ fn print_individual_test_result(test_result: &TestResult) {
             warnings,
             infos,
         } => {
-            if !errors.is_empty() {
-                println!("❌ {} error(s) found", errors.len());
-            } else if !warnings.is_empty() {
-                println!("⚠️  {} warning(s) found", warnings.len());
-            } else {
-                println!("💡  {} info(s) found", infos.len());
-            };
+            println!("{}", format_failure_summary(errors.len(), warnings.len(), infos.len()));
         },
         NotFound => {
             // Test not found
@@ -143,6 +137,25 @@ fn print_individual_test_result(test_result: &TestResult) {
             println!("⏭️  Test skipped");
         },
     }
+}
+
+fn format_failure_summary(errors: usize, warnings: usize, infos: usize) -> String {
+    let mut findings = Vec::new();
+
+    if errors > 0 {
+        let color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Red.into()));
+        findings.push(format!("{color}❌ {errors} error(s){color:#}"));
+    }
+    if warnings > 0 {
+        let color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Yellow.into()));
+        findings.push(format!("{color}⚠️ {warnings} warning(s){color:#}"));
+    }
+    if infos > 0 {
+        let color = anstyle::Style::new().fg_color(Some(anstyle::AnsiColor::Blue.into()));
+        findings.push(format!("{color}💡 {infos} info(s){color:#}"));
+    }
+
+    format!("{} found", findings.join(", "))
 }
 
 /// Print individual information about test failures, warnings, and infos.

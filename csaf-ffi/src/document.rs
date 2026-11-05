@@ -65,7 +65,7 @@ impl CsafDocument {
     /// Parse a CSAF 2.0 document from JSON.
     #[uniffi::constructor]
     pub fn from_json_2_0(json_str: String) -> Result<Arc<Self>, CsafError> {
-        let raw = load_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+        let raw = load_2_0(&json_str).map_err(CsafError::from)?;
         Ok(Arc::new(Self {
             inner: Mutex::new(DocumentInner::V20(raw)),
             version_string: "2.0".into(),
@@ -76,7 +76,7 @@ impl CsafDocument {
     /// Parse a CSAF 2.1 document from JSON.
     #[uniffi::constructor]
     pub fn from_json_2_1(json_str: String) -> Result<Arc<Self>, CsafError> {
-        let raw = load_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+        let raw = load_2_1(&json_str).map_err(CsafError::from)?;
         Ok(Arc::new(Self {
             inner: Mutex::new(DocumentInner::V21(raw)),
             version_string: "2.1".into(),
@@ -143,7 +143,7 @@ impl CsafDocument {
 impl CsafDocument {
     /// Build a 2.0 document from the already parsed JSON value, keeping the original string.
     fn from_value_2_0(value: serde_json::Value, json_str: String) -> Result<Arc<Self>, CsafError> {
-        let raw = load_2_0(value).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+        let raw = load_2_0(value).map_err(CsafError::from)?;
         Ok(Arc::new(Self {
             inner: Mutex::new(DocumentInner::V20(raw)),
             version_string: "2.0".into(),
@@ -153,7 +153,7 @@ impl CsafDocument {
 
     /// Build a 2.1 document from the already parsed JSON value, keeping the original string.
     fn from_value_2_1(value: serde_json::Value, json_str: String) -> Result<Arc<Self>, CsafError> {
-        let raw = load_2_1(value).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
+        let raw = load_2_1(value).map_err(CsafError::from)?;
         Ok(Arc::new(Self {
             inner: Mutex::new(DocumentInner::V21(raw)),
             version_string: "2.1".into(),

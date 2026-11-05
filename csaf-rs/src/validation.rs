@@ -8,6 +8,9 @@ pub enum CsafError {
     #[error("Invalid JSON: {message}")]
     InvalidJson { message: String },
 
+    #[error("Invalid encoding at '{path}': {message}")]
+    WrongEncoding { path: String, message: String },
+
     #[error("Missing CSAF version: {message}")]
     MissingVersion { message: String },
 
@@ -19,6 +22,16 @@ pub enum CsafError {
 
     #[error("Error loading document: {message}")]
     LoadError { message: String },
+}
+
+/// Any I/O failure while loading a document (file not found, permission denied, ...) is
+/// reported as a [`CsafError::LoadError`].
+impl From<std::io::Error> for CsafError {
+    fn from(err: std::io::Error) -> Self {
+        CsafError::LoadError {
+            message: err.to_string(),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]

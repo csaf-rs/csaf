@@ -44,6 +44,7 @@ mod tests {
                             "https://example.com/sbom-b.json",
                             "https://example.com/sbom-a.json",
                             "https://example.com/sbom-b.json",
+                            "https://example.com/boms/sbom-a.json",
                             "https://example.com/sbom-c.json",
                             "https://example.com/sbom-a.json"
                         ]
@@ -65,6 +66,7 @@ mod tests {
                             "sbom_urls": [
                                 "https://example.com/sbom-b.json",
                                 "https://example.com/sbom-a.json",
+                                "https://example.com/boms/sbom-a.json",
                                 "https://example.com/sbom-c.json"
                             ]
                         }

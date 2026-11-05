@@ -158,6 +158,20 @@ jobs:
         with:
           name: csaf-validator-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
           path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+      - name: Archive csaf-converter (${{ matrix.target.arch }})
+        if: matrix.version == needs.prepare.outputs.stable-version
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: csaf-converter-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
+          path: target/${{ matrix.target.arch }}/release/csaf-converter${{ matrix.target.ext }}
+      - name: Archive csaf (${{ matrix.target.arch }})
+        if: matrix.version == needs.prepare.outputs.stable-version
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          # family prefix must stay csaf-cli-*: the create-release download
+          # patterns select by csaf-<family>* and csaf- would collide
+          name: csaf-cli-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
+          path: target/${{ matrix.target.arch }}/release/csaf${{ matrix.target.ext }}
       - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -477,6 +491,14 @@ jobs:
           pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
+          path: csaf-converter
+          pattern: csaf-converter-*-${{ needs.prepare.outputs.git-version }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: csaf-cli
+          pattern: csaf-cli-*-${{ needs.prepare.outputs.git-version }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
           name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: csaf-ffi-wasm
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -491,6 +513,17 @@ jobs:
         run: |
           ls csaf-validator | xargs -I {} zip {}.zip -rj csaf-validator/{}
           ls csaf-validator-*.zip
+          ls csaf-converter | xargs -I {} zip {}.zip -rj csaf-converter/{}
+          ls csaf-converter-*.zip
+          # release assets named after cargo-binstall's default filename
+          # template ({name}-{target}-v{version}.zip) so `cargo binstall csaf`
+          # finds them without [package.metadata.binstall]
+          for dir in csaf-cli/*/; do
+            name=$(basename "$dir")
+            [ -d "$dir" ] || continue
+            zip "csaf-${name#csaf-cli-}.zip" -rj "$dir"
+          done
+          ls csaf-x86_64-*.zip csaf-aarch64-*.zip
           zip "csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}.zip" -rj csaf-ffi-wasm/
           for dir in go-csaf-ffi-lib/*/; do
             name=$(basename "$dir")
@@ -505,8 +538,13 @@ jobs:
           draft: false
           prerelease: false
           fail_on_unmatched_files: true
+          # csaf binary zips use cargo-binstall's default asset naming; the
+          # arch stems keep the globs disjoint from the other csaf-* zips
           files: |
             csaf-validator-*.zip
+            csaf-converter-*.zip
+            csaf-x86_64-*.zip
+            csaf-aarch64-*.zip
             csaf-ffi-wasm-*.zip
             go-csaf-ffi-lib-*.zip
             sboms/**/*.json

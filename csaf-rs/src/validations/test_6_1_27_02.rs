@@ -58,8 +58,9 @@ pub fn test_6_1_27_02_document_references(
             references.iter().any(|reference| match check_reference {
                 // for CSAF 2.0, the value can be missing, as the default is "external"
                 CheckReference::ExternalWithDefault => {
-                    get_json_presence("/category", reference).is_missing()
-                        || property_string_value_is("/category", "external", reference)
+                    reference.is_object()
+                        && (get_json_presence("/category", reference).is_missing()
+                            || property_string_value_is("/category", "external", reference))
                 },
                 // for CSAF 2.1, the value needs to be specifically present
                 CheckReference::ExternalWithPresence => property_string_value_is("/category", "external", reference),

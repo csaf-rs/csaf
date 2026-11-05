@@ -46,12 +46,13 @@ impl UnvalidatedCsafRevisionHistory {
         self.0.sort_unstable_by(|a, b| a.number.cmp(&b.number));
     }
 
-    pub(crate) fn len(&self) -> usize {
-        self.0.len()
+    /// Retains only revision history items with valid integer or semantic version numbers
+    pub(crate) fn retain_valid_version_numbers(&mut self) {
+        self.0.retain(|item| item.number.as_valid().is_some());
     }
 
-    pub(crate) fn is_empty(&self) -> bool {
-        self.0.is_empty()
+    pub(crate) fn len(&self) -> usize {
+        self.0.len()
     }
 
     pub(crate) fn get(&self, index: usize) -> Option<&CsafRevisionHistoryItem> {

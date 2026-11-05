@@ -1,6 +1,9 @@
+use std::collections::{BTreeSet, HashMap, HashSet};
+
 use crate::csaf::traits::document::entity_group_trait::EntityGroupTrait;
 use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
+use crate::csaf::traits::util::{impl_into_any_iter_getter, impl_into_any_optional_iter_getter};
 use crate::csaf_traits::{ActionTrait, EntityTrait};
 use crate::schema::csaf2_1::schema::{
     Action as Action21, Entity as Entity21, EntityGroup as EntityGroup21, Involvement as Involvement21,
@@ -15,9 +18,52 @@ pub trait Csaf21InvolvementTrait {
 
     fn get_actions(&self) -> impl Iterator<Item = &Self::ActionType> + '_;
 
+    /// Returns all defined action IDs as a `HashSet<String>`.
+    fn get_action_ids(&self) -> HashSet<String> {
+        self.get_actions()
+            .map(|action| action.get_action_id().to_owned())
+            .collect()
+    }
+
     fn get_entities(&self) -> impl Iterator<Item = &Self::EntityType> + '_;
 
+    /// Returns all defined entity IDs as a `HashSet<String>`.
+    fn get_entity_ids(&self) -> HashSet<String> {
+        self.get_entities()
+            .map(|entity| entity.get_entity_id().to_owned())
+            .collect()
+    }
+
     fn get_entity_groups(&self) -> Option<impl Iterator<Item = &Self::EntityGroupType> + '_>;
+
+    /// Returns the entity group IDs and their corresponding entity IDs as a map.
+    ///
+    /// If [`Self::get_entity_groups`] returns `None`, this method will also return `None`.
+    /// Otherwise, it will return a `HashMap` where the keys are entity group IDs and
+    /// the values are `BTreeSet`s of entity IDs.
+    ///
+    /// In case of multiple definitions of the same entity group ID, which violates 6.1.64.8,
+    /// the entity IDs from all definitions are merged.
+    fn get_entity_groups_map(&self) -> Option<HashMap<String, BTreeSet<String>>> {
+        self.get_entity_groups().map(|groups| {
+            let mut entity_groups = HashMap::new();
+            for group in groups {
+                entity_groups
+                    .entry(group.get_entity_group_id().to_owned())
+                    .or_insert_with(BTreeSet::new)
+                    .extend(group.get_entity_ids().map(str::to_owned));
+            }
+            entity_groups
+        })
+    }
+
+    /// Returns all defined entity group IDs as a `HashSet<String>`.
+    ///
+    /// If [`Self::get_entity_groups`] returns `None`, this method will also return `None`.
+    fn get_entity_group_ids(&self) -> Option<HashSet<String>> {
+        self.get_entity_groups()
+            .map(|groups| groups.map(|group| group.get_entity_group_id().to_owned()).collect())
+    }
 
     define_reference_accessors! {
         iter: [
@@ -36,17 +82,12 @@ impl Csaf21InvolvementTrait for NotPresentInCsaf20 {
     type EntityType = NotPresentInCsaf20;
     type EntityGroupType = NotPresentInCsaf20;
 
-    fn get_actions(&self) -> impl Iterator<Item = &Self::ActionType> + '_ {
-        self.into_any_iter()
-    }
-
-    fn get_entities(&self) -> impl Iterator<Item = &Self::EntityType> + '_ {
-        self.into_any_iter()
-    }
-
-    fn get_entity_groups(&self) -> Option<impl Iterator<Item = &Self::EntityGroupType> + '_> {
-        self.into_any_optional_iter()
-    }
+    impl_into_any_iter_getter!(get_actions, impl Iterator<Item = &Self::ActionType> + '_);
+    impl_into_any_iter_getter!(get_entities, impl Iterator<Item = &Self::EntityType> + '_);
+    impl_into_any_optional_iter_getter!(
+        get_entity_groups,
+        Option<impl Iterator<Item = &Self::EntityGroupType> + '_>
+    );
 }
 
 impl Csaf21InvolvementTrait for Involvement21 {

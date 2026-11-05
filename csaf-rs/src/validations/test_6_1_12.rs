@@ -55,11 +55,19 @@ mod tests {
             unreachable!()
         };
 
+        let Invalid(_, ez_wxyz_qk_error) = CsafLanguage::from(&"EZ-Wxyz-QK".to_string()) else {
+            unreachable!()
+        };
+
         let case_01_lang_invalid = Err(vec![ez_error.clone().into_test_finding_error("/document/lang")]);
         let case_s01_source_lang_invalid = Err(vec![ez_error.clone().into_test_finding_error("/document/source_lang")]);
         let case_s02_both_langs_invalid = Err(vec![
             ez_error.into_test_finding_error("/document/lang"),
             zzz_error.into_test_finding_error("/document/source_lang"),
+        ]);
+        let case_s03_all_subtags_invalid = Err(vec![
+            ez_wxyz_qk_error.clone().into_test_finding_error("/document/lang"),
+            ez_wxyz_qk_error.into_test_finding_error("/document/source_lang"),
         ]);
 
         // Case S11: Valid language code in both /document/lang and /document/source_lang
@@ -70,6 +78,7 @@ mod tests {
             case_01: case_01_lang_invalid.clone(),
             case_s01: case_s01_source_lang_invalid.clone(),
             case_s02: case_s02_both_langs_invalid.clone(),
+            case_s03: case_s03_all_subtags_invalid.clone(),
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),
@@ -79,6 +88,7 @@ mod tests {
             case_01: case_01_lang_invalid,
             case_s01: case_s01_source_lang_invalid,
             case_s02: case_s02_both_langs_invalid,
+            case_s03: case_s03_all_subtags_invalid,
             case_s11: Ok(()),
             case_s12: Ok(()),
             case_s13: Ok(()),

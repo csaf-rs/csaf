@@ -4,14 +4,14 @@
 
 use std::sync::{Arc, Mutex};
 
-use csaf::csaf::raw::RawDocument;
-use csaf::csaf2_0::loader::load_document as load_2_0;
-use csaf::csaf2_1::loader::load_document as load_2_1;
-use csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
-use csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
-use csaf::validation::{validate_by_preset, validate_by_test, validate_by_tests};
+use csaf_rs::csaf::raw::RawDocument;
+use csaf_rs::csaf2_0::loader::load_document as load_2_0;
+use csaf_rs::csaf2_1::loader::load_document as load_2_1;
+use csaf_rs::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
+use csaf_rs::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
+use csaf_rs::validation::{validate_by_preset, validate_by_test, validate_by_tests};
 
-// Explicitly resolve ambiguity with same-named types from csaf::csaf_traits::*
+// Explicitly resolve ambiguity with same-named types from csaf_rs::csaf_traits::*
 use crate::types::CsafVersion;
 use crate::{CsafError, ValidationResult};
 

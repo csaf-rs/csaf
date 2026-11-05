@@ -1,3 +1,4 @@
+use crate::csaf::traits::util::impl_into_any_getter;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf_traits::{SharingGroupId, SharingGroupName};
 use crate::schema::csaf2_1::schema::SharingGroup as SharingGroup21;
@@ -12,13 +13,8 @@ pub trait SharingGroupTrait {
 }
 
 impl SharingGroupTrait for NotPresentInCsaf20 {
-    fn get_id(&self) -> SharingGroupId {
-        self.into_any()
-    }
-
-    fn get_name(&self) -> Option<SharingGroupName> {
-        self.into_any()
-    }
+    impl_into_any_getter!(get_id, SharingGroupId);
+    impl_into_any_getter!(get_name, Option<SharingGroupName>);
 }
 
 impl SharingGroupTrait for SharingGroup21 {

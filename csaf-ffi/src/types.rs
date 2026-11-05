@@ -6,11 +6,11 @@ pub enum CsafVersion {
     V21,
 }
 
-impl From<&csaf::csaf::enums::csaf_version::CsafVersion> for CsafVersion {
-    fn from(v: &csaf::csaf::enums::csaf_version::CsafVersion) -> Self {
+impl From<&csaf_rs::csaf::enums::csaf_version::CsafVersion> for CsafVersion {
+    fn from(v: &csaf_rs::csaf::enums::csaf_version::CsafVersion) -> Self {
         match v {
-            csaf::csaf::enums::csaf_version::CsafVersion::X20 => Self::V20,
-            csaf::csaf::enums::csaf_version::CsafVersion::X21 => Self::V21,
+            csaf_rs::csaf::enums::csaf_version::CsafVersion::X20 => Self::V20,
+            csaf_rs::csaf::enums::csaf_version::CsafVersion::X21 => Self::V21,
         }
     }
 }
@@ -29,9 +29,9 @@ pub enum DocumentCategory {
     CsafBaseOther { value: String },
 }
 
-impl From<&csaf::csaf::types::csaf_document_category::CsafDocumentCategory> for DocumentCategory {
-    fn from(c: &csaf::csaf::types::csaf_document_category::CsafDocumentCategory) -> Self {
-        use csaf::csaf::types::csaf_document_category::CsafDocumentCategory as C;
+impl From<&csaf_rs::csaf::types::csaf_document_category::CsafDocumentCategory> for DocumentCategory {
+    fn from(c: &csaf_rs::csaf::types::csaf_document_category::CsafDocumentCategory) -> Self {
+        use csaf_rs::csaf::types::csaf_document_category::CsafDocumentCategory as C;
         match c {
             C::CsafBase => Self::CsafBase,
             C::CsafInformationalAdvisory => Self::CsafInformationalAdvisory,
@@ -57,9 +57,9 @@ pub enum ProductStatusGroup {
     Recommended,
 }
 
-impl From<&csaf::csaf::enums::product_status_group::ProductStatusGroup> for ProductStatusGroup {
-    fn from(g: &csaf::csaf::enums::product_status_group::ProductStatusGroup) -> Self {
-        use csaf::csaf::enums::product_status_group::ProductStatusGroup as G;
+impl From<&csaf_rs::csaf::enums::product_status_group::ProductStatusGroup> for ProductStatusGroup {
+    fn from(g: &csaf_rs::csaf::enums::product_status_group::ProductStatusGroup) -> Self {
+        use csaf_rs::csaf::enums::product_status_group::ProductStatusGroup as G;
         match g {
             G::Affected => Self::Affected,
             G::NotAffected => Self::NotAffected,
@@ -78,8 +78,8 @@ pub struct Cwe {
     pub version: Option<String>,
 }
 
-impl From<&csaf::csaf::types::csaf_cwe::Cwe> for Cwe {
-    fn from(c: &csaf::csaf::types::csaf_cwe::Cwe) -> Self {
+impl From<&csaf_rs::csaf::types::csaf_cwe::Cwe> for Cwe {
+    fn from(c: &csaf_rs::csaf::types::csaf_cwe::Cwe) -> Self {
         Self {
             id: c.id.clone(),
             name: c.name.clone(),
@@ -94,14 +94,14 @@ pub enum CsafDateTime {
     Invalid { raw_string: String },
 }
 
-impl From<&csaf::csaf::types::csaf_datetime::CsafDateTime> for CsafDateTime {
-    fn from(dt: &csaf::csaf::types::csaf_datetime::CsafDateTime) -> Self {
+impl From<&csaf_rs::csaf::types::csaf_datetime::CsafDateTime> for CsafDateTime {
+    fn from(dt: &csaf_rs::csaf::types::csaf_datetime::CsafDateTime) -> Self {
         match dt {
-            csaf::csaf::types::csaf_datetime::CsafDateTime::Valid(v) => Self::Valid {
+            csaf_rs::csaf::types::csaf_datetime::CsafDateTime::Valid(v) => Self::Valid {
                 raw_string: v.get_raw_string().to_string(),
                 utc_string: v.get_as_utc().to_rfc3339(),
             },
-            csaf::csaf::types::csaf_datetime::CsafDateTime::Invalid(e) => Self::Invalid {
+            csaf_rs::csaf::types::csaf_datetime::CsafDateTime::Invalid(e) => Self::Invalid {
                 raw_string: e.get_raw_string().to_string(),
             },
         }
@@ -114,9 +114,9 @@ pub enum CsafLanguage {
     Invalid { value: String },
 }
 
-impl From<&csaf::csaf::types::language::CsafLanguage> for CsafLanguage {
-    fn from(l: &csaf::csaf::types::language::CsafLanguage) -> Self {
-        use csaf::csaf::types::language::CsafLanguage as L;
+impl From<&csaf_rs::csaf::types::language::CsafLanguage> for CsafLanguage {
+    fn from(l: &csaf_rs::csaf::types::language::CsafLanguage) -> Self {
+        use csaf_rs::csaf::types::language::CsafLanguage as L;
         match l {
             L::Valid(v) => Self::Valid { value: v.to_string() },
             L::Invalid(s, _) => Self::Invalid { value: s.clone() },

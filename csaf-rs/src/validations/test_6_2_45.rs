@@ -117,6 +117,8 @@ mod tests {
         TESTS_2_1.test_6_2_45.expect(ExpectedResults {
             case_01: non_existing_spdx_license_identifier,
             case_02: non_existing_scancode_license_identifier,
+            // TODO: New test case, check out if this is correct during #331
+            case_03: Err(vec![create_non_existing_license_identifier_or_exception_warning("mit")]),
             case_11: Ok(()),
             case_12: Ok(()),
         });

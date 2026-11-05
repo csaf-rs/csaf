@@ -3,10 +3,10 @@
 //! This crate provides a foreign-function interface (FFI) layer on top of `csaf-rs`,
 //! enabling Go, WASM, and other language bindings via Mozilla UniFFI.
 
-use csaf::csaf_traits::CsafVersion;
-use csaf::csaf2_0::loader::load_document as load_document_2_0;
-use csaf::csaf2_1::loader::load_document as load_document_2_1;
-use csaf::validation::{Validatable, validate_by_preset};
+use csaf_rs::csaf_traits::CsafVersion;
+use csaf_rs::csaf2_0::loader::load_document as load_document_2_0;
+use csaf_rs::csaf2_1::loader::load_document as load_document_2_1;
+use csaf_rs::validation::{Validatable, validate_by_preset};
 
 pub mod document;
 pub mod types;
@@ -35,20 +35,20 @@ pub enum CsafError {
     InvalidPreset { message: String },
 }
 
-impl From<csaf::validation::CsafError> for CsafError {
-    fn from(r: csaf::validation::CsafError) -> Self {
+impl From<csaf_rs::validation::CsafError> for CsafError {
+    fn from(r: csaf_rs::validation::CsafError) -> Self {
         match r {
-            csaf::validation::CsafError::InvalidJson { message } => Self::InvalidJson { message },
-            csaf::validation::CsafError::InvalidPreset { preset } => Self::InvalidPreset { message: preset },
-            csaf::validation::CsafError::UnsupportedVersion { version } => Self::UnsupportedVersion { version },
-            csaf::validation::CsafError::LoadError { message } => Self::LoadError { message },
-            csaf::validation::CsafError::MissingVersion { message } => Self::MissingVersion { message },
+            csaf_rs::validation::CsafError::InvalidJson { message } => Self::InvalidJson { message },
+            csaf_rs::validation::CsafError::InvalidPreset { preset } => Self::InvalidPreset { message: preset },
+            csaf_rs::validation::CsafError::UnsupportedVersion { version } => Self::UnsupportedVersion { version },
+            csaf_rs::validation::CsafError::LoadError { message } => Self::LoadError { message },
+            csaf_rs::validation::CsafError::MissingVersion { message } => Self::MissingVersion { message },
         }
     }
 }
 
 // ---------------------------------------------------------------------------
-// FFI-friendly mirror types for csaf::validation
+// FFI-friendly mirror types for csaf_rs::validation
 // ---------------------------------------------------------------------------
 
 /// A single validation error with a message and the JSON path where it occurred.
@@ -108,8 +108,8 @@ pub struct TestInPreset {
 // Conversion helpers: csaf-rs types → FFI types
 // ---------------------------------------------------------------------------
 
-impl From<&csaf::validation::ValidationError> for ValidationError {
-    fn from(e: &csaf::validation::ValidationError) -> Self {
+impl From<&csaf_rs::validation::ValidationError> for ValidationError {
+    fn from(e: &csaf_rs::validation::ValidationError) -> Self {
         Self {
             message: e.message.clone(),
             instance_path: e.instance_path.clone(),
@@ -117,11 +117,11 @@ impl From<&csaf::validation::ValidationError> for ValidationError {
     }
 }
 
-impl From<&csaf::validation::TestResultStatus> for TestResultStatus {
-    fn from(s: &csaf::validation::TestResultStatus) -> Self {
+impl From<&csaf_rs::validation::TestResultStatus> for TestResultStatus {
+    fn from(s: &csaf_rs::validation::TestResultStatus) -> Self {
         match s {
-            csaf::validation::TestResultStatus::Success => Self::Success,
-            csaf::validation::TestResultStatus::Failure {
+            csaf_rs::validation::TestResultStatus::Success => Self::Success,
+            csaf_rs::validation::TestResultStatus::Failure {
                 errors,
                 warnings,
                 infos,
@@ -130,14 +130,14 @@ impl From<&csaf::validation::TestResultStatus> for TestResultStatus {
                 warnings: warnings.iter().map(Into::into).collect(),
                 infos: infos.iter().map(Into::into).collect(),
             },
-            csaf::validation::TestResultStatus::NotFound => Self::NotFound,
-            csaf::validation::TestResultStatus::Skipped => Self::Skipped,
+            csaf_rs::validation::TestResultStatus::NotFound => Self::NotFound,
+            csaf_rs::validation::TestResultStatus::Skipped => Self::Skipped,
         }
     }
 }
 
-impl From<&csaf::validation::TestResult> for TestResult {
-    fn from(r: &csaf::validation::TestResult) -> Self {
+impl From<&csaf_rs::validation::TestResult> for TestResult {
+    fn from(r: &csaf_rs::validation::TestResult) -> Self {
         Self {
             test_id: r.test_id.clone(),
             status: (&r.status).into(),
@@ -145,8 +145,8 @@ impl From<&csaf::validation::TestResult> for TestResult {
     }
 }
 
-impl From<csaf::validation::ValidationResult> for ValidationResult {
-    fn from(r: csaf::validation::ValidationResult) -> Self {
+impl From<csaf_rs::validation::ValidationResult> for ValidationResult {
+    fn from(r: csaf_rs::validation::ValidationResult) -> Self {
         Self {
             success: r.success,
             version: r.version,
@@ -240,7 +240,7 @@ pub fn validate_csaf_2_1(json_str: String, preset: String) -> Result<ValidationR
 pub fn get_tests(version: String) -> Result<Vec<TestInPreset>, CsafError> {
     match CsafVersion::try_from(version.clone()) {
         Ok(CsafVersion::X20) => Ok(
-            csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::get_tests()
+            csaf_rs::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::get_tests()
                 .iter()
                 .map(|(name, preset)| TestInPreset {
                     name: (*name).to_string(),
@@ -249,7 +249,7 @@ pub fn get_tests(version: String) -> Result<Vec<TestInPreset>, CsafError> {
                 .collect(),
         ),
         Ok(CsafVersion::X21) => Ok(
-            csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::get_tests()
+            csaf_rs::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::get_tests()
                 .iter()
                 .map(|(name, preset)| TestInPreset {
                     name: (*name).to_string(),
@@ -266,12 +266,12 @@ pub fn get_tests(version: String) -> Result<Vec<TestInPreset>, CsafError> {
 pub fn get_tests_in_preset(version: String, preset: String) -> Result<Vec<String>, CsafError> {
     match CsafVersion::try_from(version.clone()) {
         Ok(CsafVersion::X20) => {
-            csaf::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::tests_in_preset(&preset)
+            csaf_rs::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework::tests_in_preset(&preset)
                 .map(|tests| tests.into_iter().map(String::from).collect())
                 .map_err(CsafError::from)
         },
         Ok(CsafVersion::X21) => {
-            csaf::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::tests_in_preset(&preset)
+            csaf_rs::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::tests_in_preset(&preset)
                 .map(|tests| tests.into_iter().map(String::from).collect())
                 .map_err(CsafError::from)
         },

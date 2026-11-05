@@ -2426,28 +2426,6 @@ impl Node65 {
         )
     }
     /// Grants shared access to the stated node
-    pub fn ssvc_v1(&self) -> Option<&Node8> {
-        self.0.get("ssvc_v1").map(bytemuck::TransparentWrapper::wrap_ref)
-    }
-    /// Grants mutable access to the stated node
-    pub fn ssvc_v1_mut(&mut self) -> Option<&mut Node8> {
-        self.0.get_mut("ssvc_v1").map(bytemuck::TransparentWrapper::wrap_mut)
-    }
-    /// Accesses the stated node creating it if it does not exist
-    ///
-    /// NOTE: an empty object/vec will be used as a placeholder for object/vec nodes
-    /// and `Null` for all other node types
-    /// NOTE: if `self` is not an object then it will overwritten with an initially empty object
-    pub fn caution_get_or_insert_ssvc_v1(&mut self) -> &mut Node8 {
-        if !self.0.is_object() {
-            self.0 = serde_json::Value::Object(serde_json::Map::default());
-        }
-        let map = self.0.as_object_mut().unwrap_or_else(|| unreachable!());
-        bytemuck::TransparentWrapper::wrap_mut(
-            map.entry("ssvc_v1").or_insert(Node8::default_raw_value()),
-        )
-    }
-    /// Grants shared access to the stated node
     pub fn ssvc_v2(&self) -> Option<&Node8> {
         self.0.get("ssvc_v2").map(bytemuck::TransparentWrapper::wrap_ref)
     }

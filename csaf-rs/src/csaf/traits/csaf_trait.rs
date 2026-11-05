@@ -1,8 +1,10 @@
 use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::vulnerabilities_trait::collect_references;
+use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
-    ContentTrait, DocumentTrait, ExtensionsTrait, MetricTrait, ProductTrait, ProductTreeTrait, VulnerabilityTrait,
+    ActionTrait, ContentTrait, DocumentTrait, EpssTrait, ExtensionsTrait, FirstKnownExploitationDatesTrait,
+    MetricTrait, ProductTrait, ProductTreeTrait, TrackingTrait, VulnerabilityTrait, WithDate, WithOptionalDate,
 };
 use crate::schema::csaf2_0::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework20,
@@ -10,9 +12,10 @@ use crate::schema::csaf2_0::schema::{
 };
 use crate::schema::csaf2_1::schema::{
     CommonSecurityAdvisoryFramework as CommonSecurityAdvisoryFramework21,
-    DocumentLevelMetaData as DocumentLevelMetaData21, ExtensionsT as Extensions21, ProductTree as ProductTree21,
-    Vulnerability as Vulnerability21,
+    DocumentLevelMetaData as DocumentLevelMetaData21, EntityRefsTItem, ExtensionsT as Extensions21,
+    ProductTree as ProductTree21, Vulnerability as Vulnerability21,
 };
+use std::collections::{BTreeSet, HashSet};
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -75,7 +78,222 @@ pub trait CsafTrait {
             .collect()
     }
 
+    fn get_all_document_local_vuln_id_references(&self) -> HashSet<String> {
+        let Some(involvement) = self.get_document().get_involvement() else {
+            return HashSet::new();
+        };
+
+        involvement
+            .get_actions()
+            .flat_map(|action| {
+                action
+                    .get_document_local_vuln_ids()
+                    .into_iter()
+                    .flatten()
+                    .map(ToOwned::to_owned)
+            })
+            .collect()
+    }
+
+    /// Returns all document-local vulnerability IDs referenced by document involvement actions
+    /// along with their JSON paths.
+    fn get_all_document_local_vuln_id_references_with_path(&self) -> Vec<(String, String)> {
+        let Some(involvement) = self.get_document().get_involvement() else {
+            return Vec::new();
+        };
+
+        involvement
+            .get_actions()
+            .enumerate()
+            .flat_map(|(action_index, action)| {
+                action
+                    .get_document_local_vuln_ids()
+                    .into_iter()
+                    .flatten()
+                    .enumerate()
+                    .map(move |(id_index, id)| {
+                        (
+                            id.to_owned(),
+                            format!("/document/involvement/actions/{action_index}/dl_vuln_ids/{id_index}"),
+                        )
+                    })
+            })
+            .collect()
+    }
+
+    /// Returns all document-local vulnerability IDs defined by vulnerabilities in the document.
+    fn get_all_document_local_vuln_ids(&self) -> BTreeSet<String> {
+        self.get_vulnerabilities()
+            .iter()
+            .filter_map(VulnerabilityTrait::get_document_local_vuln_id)
+            .map(ToOwned::to_owned)
+            .collect()
+    }
+
+    fn all_vulnerabilities_have_document_local_vuln_ids(&self) -> bool {
+        self.get_vulnerabilities()
+            .iter()
+            .all(|v| v.get_document_local_vuln_id().is_some())
+    }
+
+    /// Returns all document-local vulnerability ID definitions along with their JSON paths.
+    fn get_all_document_local_vuln_ids_with_path(&self) -> Vec<(String, String)> {
+        self.get_vulnerabilities()
+            .iter()
+            .enumerate()
+            .filter_map(|(vulnerability_index, vulnerability)| {
+                vulnerability.get_document_local_vuln_id().map(|id| {
+                    (
+                        id.to_owned(),
+                        format!("/vulnerabilities/{vulnerability_index}/dl_vuln_id"),
+                    )
+                })
+            })
+            .collect()
+    }
+
+    fn get_all_entity_group_id_references(&self) -> HashSet<String> {
+        let mut referenced_entity_group_ids = HashSet::new();
+        if let Some(involvement) = self.get_document().get_involvement() {
+            for action in involvement.get_actions() {
+                for entity_ref in action.get_acting_entity_refs() {
+                    if let EntityRefsTItem::GroupIdT(group_id) = entity_ref {
+                        referenced_entity_group_ids.insert(group_id.to_string());
+                    }
+                }
+                if let Some(entity_refs) = action.get_receiving_entity_refs() {
+                    for entity_ref in entity_refs {
+                        if let EntityRefsTItem::GroupIdT(group_id) = entity_ref {
+                            referenced_entity_group_ids.insert(group_id.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        referenced_entity_group_ids
+    }
+
     fn get_extensions(&self) -> Option<&Self::ExtensionsType>;
+
+    fn get_all_dates(&self) -> Vec<(CsafDateTime, String)> {
+        let mut dates = Vec::new();
+        let document = self.get_document();
+
+        let tracking = document.get_tracking();
+        dates.push((
+            tracking.get_initial_release_date(),
+            "/document/tracking/initial_release_date".to_string(),
+        ));
+        dates.push((
+            tracking.get_current_release_date(),
+            "/document/tracking/current_release_date".to_string(),
+        ));
+        if let Some(generator) = tracking.get_generator()
+            && let Some(date) = generator.get_date()
+        {
+            dates.push((date, "/document/tracking/generator/date".to_string()));
+        }
+        for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
+            dates.push((
+                revision.get_date().clone(),
+                format!("/document/tracking/revision_history/{i_r}/date").to_string(),
+            ));
+        }
+        if let Some(involvement) = document.get_involvement() {
+            for (i_a, action) in involvement.get_actions().enumerate() {
+                dates.push((
+                    action.get_date().clone(),
+                    format!("/document/involvement/actions/{i_a}/date").to_string(),
+                ));
+            }
+        }
+
+        let vulnerabilities = self.get_vulnerabilities();
+        for (i_v, vuln) in vulnerabilities.iter().enumerate() {
+            if let Some(date) = vuln.get_disclosure_date() {
+                dates.push((
+                    date.clone(),
+                    format!("/vulnerabilities/{i_v}/{}", vuln.get_disclosure_date_property_name()).to_string(),
+                ));
+            }
+            if let Some(date) = vuln.get_discovery_date() {
+                dates.push((
+                    date.clone(),
+                    format!("/vulnerabilities/{i_v}/discovery_date").to_string(),
+                ));
+            }
+            if let Some(flags) = vuln.get_flags() {
+                for (i_f, flag) in flags.iter().enumerate() {
+                    if let Some(date) = flag.get_date() {
+                        dates.push((
+                            date.clone(),
+                            format!("/vulnerabilities/{i_v}/flags/{i_f}/date").to_string(),
+                        ));
+                    }
+                }
+            }
+            if let Some(involvements) = vuln.get_involvements() {
+                for (i_i, involvement) in involvements.iter().enumerate() {
+                    if let Some(date) = involvement.get_date() {
+                        dates.push((
+                            date.clone(),
+                            format!("/vulnerabilities/{i_v}/involvements/{i_i}/date").to_string(),
+                        ));
+                    }
+                }
+            }
+            for (i_r, remediation) in vuln.get_remediations().iter().enumerate() {
+                if let Some(date) = remediation.get_date() {
+                    dates.push((
+                        date.clone(),
+                        format!("/vulnerabilities/{i_v}/remediations/{i_r}/date").to_string(),
+                    ));
+                }
+            }
+            for (i_t, threat) in vuln.get_threats().iter().enumerate() {
+                if let Some(date) = threat.get_date() {
+                    dates.push((
+                        date.clone(),
+                        format!("/vulnerabilities/{i_v}/threats/{i_t}/date").to_string(),
+                    ));
+                }
+            }
+            if let Some(first_known_exploitation_dates) = vuln.get_first_known_exploitation_dates() {
+                for (i_d, date) in first_known_exploitation_dates.iter().enumerate() {
+                    dates.push((
+                        date.get_date().clone(),
+                        format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/date").to_string(),
+                    ));
+                    dates.push((
+                        date.get_exploitation_date().clone(),
+                        format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/exploitation_date")
+                            .to_string(),
+                    ));
+                }
+            }
+            if let Some(metrics) = vuln.get_metrics() {
+                for (i_m, metric) in metrics.iter().enumerate() {
+                    if let Some(epss) = metric.get_content().get_epss() {
+                        dates.push((
+                            epss.get_timestamp().clone(),
+                            format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/epss/timestamp").to_string(),
+                        ));
+                    }
+                    if let Some(ssvc_map) = metric.get_content().get_ssvc_v2_raw()
+                        && let Some(timestamp) = ssvc_map.get("timestamp").and_then(serde_json::Value::as_str)
+                    {
+                        dates.push((
+                            CsafDateTime::from(timestamp),
+                            format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp").to_string(),
+                        ))
+                    }
+                }
+            }
+        }
+
+        dates
+    }
 
     /// Visits all extension containers present in the document.
     ///

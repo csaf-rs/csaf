@@ -1,5 +1,8 @@
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
-use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_str_field_getter};
+use crate::csaf::traits::util::{
+    impl_into_any_getter, impl_into_any_iter_getter, impl_into_any_optional_iter_getter,
+    impl_optional_str_field_getter, impl_str_field_getter,
+};
 use crate::csaf_traits::{WithDate, WithOptionalGroupIds, WithOptionalProductIds};
 use crate::schema::csaf2_1::schema::{Action as Action21, ActionCategory, ActionStatus, EntityRefsTItem};
 
@@ -15,37 +18,17 @@ pub trait ActionTrait: WithDate + WithOptionalGroupIds + WithOptionalProductIds 
 }
 
 impl ActionTrait for NotPresentInCsaf20 {
-    fn get_acting_entity_refs(&self) -> impl Iterator<Item = &EntityRefsTItem> + '_ {
-        self.into_any_iter()
-    }
-
-    fn get_action_id(&self) -> &str {
-        self.into_any()
-    }
-
-    fn get_category(&self) -> ActionCategory {
-        self.into_any()
-    }
-
-    fn get_document_local_vuln_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
-        self.into_any_optional_iter()
-    }
-
-    fn get_receiving_entity_refs(&self) -> Option<impl Iterator<Item = &EntityRefsTItem> + '_> {
-        self.into_any_optional_iter()
-    }
-
-    fn get_referenced_action_ids(&self) -> Option<impl Iterator<Item = &str> + '_> {
-        self.into_any_optional_iter()
-    }
-
-    fn get_summary(&self) -> Option<&str> {
-        self.into_any()
-    }
-
-    fn get_status(&self) -> ActionStatus {
-        self.into_any()
-    }
+    impl_into_any_iter_getter!(get_acting_entity_refs, impl Iterator<Item = &EntityRefsTItem> + '_);
+    impl_into_any_getter!(get_action_id, &str);
+    impl_into_any_getter!(get_category, ActionCategory);
+    impl_into_any_optional_iter_getter!(get_document_local_vuln_ids, Option<impl Iterator<Item = &str> + '_>);
+    impl_into_any_optional_iter_getter!(
+        get_receiving_entity_refs,
+        Option<impl Iterator<Item = &EntityRefsTItem> + '_>
+    );
+    impl_into_any_optional_iter_getter!(get_referenced_action_ids, Option<impl Iterator<Item = &str> + '_>);
+    impl_into_any_getter!(get_summary, Option<&str>);
+    impl_into_any_getter!(get_status, ActionStatus);
 }
 
 impl ActionTrait for Action21 {

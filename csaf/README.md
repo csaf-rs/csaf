@@ -41,11 +41,17 @@ if let Ok(converted) = result {
 
 ### CLI / Binary
 
-To install as a cli tool
+To install as a cli tool either use 
+```bash
+cargo binstall csaf
+```
+which downloads the artifact directly from the github releases, or install from source with
 ```bash
 cargo install csaf --features="cli"
 ```
-Then pass in the document to validate or convert along with the required parameters.
+If you target anything special, there might be no pre-compiled binary, so `cargo binstall` won't find anything and can't compile it, as the cli capabilites are behind a feature.
+
+After installing you can pass in the document to validate or convert along with the required parameters.
 ```bash
 # validate a file with the basic preset
 csaf validate csaf-example.json

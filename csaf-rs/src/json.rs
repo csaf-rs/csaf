@@ -237,3 +237,124 @@ mod load_test {
         let _ = load(Reader(c)).expect("must load");
     }
 }
+
+#[cfg(test)]
+mod utf_8_tests {
+    use crate::json::{JsonSource, Reader};
+    use crate::validation::CsafError;
+    use std::io::{self, Cursor, Read};
+
+    #[derive(Debug, serde::Deserialize)]
+    struct TestDocumentWithField {
+        /// A field that is actually deserialized into an owned `String`, as opposed to an
+        /// unknown/ignored field. This matters for the UTF-8 tests below: `serde_json` only
+        /// validates UTF-8 for string content it actually decodes; content behind unknown
+        /// fields that get skipped is not necessarily validated. Real CSAF documents are made
+        /// up of typed string fields (title, category, ...), so this mirrors that behaviour.
+        #[serde(default)]
+        #[allow(dead_code)]
+        a: String,
+    }
+
+    fn load<T: JsonSource>(source: T) -> Result<TestDocumentWithField, CsafError> {
+        source.parse()
+    }
+
+    /// `0xFF` is not a valid UTF-8 byte anywhere. It is used here to construct deliberately invalid UTF-8 content.
+    const INVALID_UTF8_JSON_IN_FIELD: &[u8] = b"{\"a\": \"\xFF\"}";
+
+    fn assert_rejects_invalid_utf8(err: CsafError) {
+        match err {
+            CsafError::WrongEncoding { path, message } => {
+                assert_eq!(path, "a");
+                let msg = message.to_lowercase();
+                assert!(
+                    msg.contains("unicode") || msg.contains("utf-8"),
+                    "expected a UTF-8 related message, got: {message}"
+                );
+            },
+            other => panic!("expected CsafError::WrongEncoding, got: {other:?}"),
+        }
+    }
+
+    /// Covers `serde_json::from_slice`, used by `&[u8]`, `&Vec<u8>` and `&[u8; N]`.
+    #[test]
+    fn rejects_invalid_utf8_from_slice() {
+        let err = load(INVALID_UTF8_JSON_IN_FIELD).expect_err("must reject invalid UTF-8 content");
+        assert_rejects_invalid_utf8(err);
+    }
+
+    /// Covers `serde_json::from_reader`, used by `fs::File`, `BufReader<R>`, `Reader<R>` and
+    /// (transitively) `&Path`/`&PathBuf`.
+    #[test]
+    fn rejects_invalid_utf8_from_reader() {
+        let c = Cursor::new(INVALID_UTF8_JSON_IN_FIELD);
+        let err = load(Reader(c)).expect_err("must reject invalid UTF-8 content");
+        assert_rejects_invalid_utf8(err);
+    }
+
+    /// The error message should point at the JSON path of the offending value (here: field
+    /// `a`, nested inside `outer`), not just a line/column into the raw text. This is what
+    /// `deserialize_with_path` (backed by `serde_path_to_error`) provides.
+    #[test]
+    fn error_message_includes_json_path() {
+        #[derive(Debug, serde::Deserialize)]
+        struct Outer {
+            #[serde(default)]
+            #[allow(dead_code)]
+            outer: Inner,
+        }
+        #[derive(Debug, Default, serde::Deserialize)]
+        struct Inner {
+            #[serde(default)]
+            #[allow(dead_code)]
+            a: String,
+        }
+
+        let bytes: &[u8] = b"{\"outer\": {\"a\": \"\xFF\"}}";
+        let err: CsafError =
+            (|| -> Result<Outer, CsafError> { bytes.parse() })().expect_err("must reject invalid UTF-8 content");
+
+        match err {
+            CsafError::WrongEncoding { path, .. } => assert_eq!(path, "outer.a"),
+            other => panic!("expected CsafError::WrongEncoding, got: {other:?}"),
+        }
+    }
+
+    /// Non-encoding parse failures (e.g. malformed JSON syntax) must be reported as
+    /// [`CsafError::InvalidJson`], not [`CsafError::WrongEncoding`].
+    #[test]
+    fn malformed_json_is_invalid_json_not_wrong_encoding() {
+        let err = load(&b"{\"a\": "[..]).expect_err("must reject truncated JSON");
+        assert!(
+            matches!(err, CsafError::InvalidJson { .. }),
+            "expected CsafError::InvalidJson, got: {err:?}"
+        );
+    }
+
+    #[test]
+    fn rejects_trailing_json() {
+        let err = load(r#"{}{}"#).expect_err("must reject trailing JSON");
+        assert!(
+            matches!(err, CsafError::InvalidJson { .. }),
+            "expected CsafError::InvalidJson, got: {err:?}"
+        );
+    }
+
+    struct FailingReader;
+
+    impl Read for FailingReader {
+        fn read(&mut self, _buffer: &mut [u8]) -> io::Result<usize> {
+            Err(io::Error::new(io::ErrorKind::Other, "read failed"))
+        }
+    }
+
+    #[test]
+    fn reader_errors_are_load_errors() {
+        let err = load(Reader(FailingReader)).expect_err("must report reader failure");
+        assert!(
+            matches!(err, CsafError::LoadError { .. }),
+            "expected CsafError::LoadError, got: {err:?}"
+        );
+    }
+}

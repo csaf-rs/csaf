@@ -38,6 +38,19 @@ use std::{fs, io::BufReader, path::Path};
 /// text; see `ErrorCode::InvalidUnicodeCodePoint` in `serde_json`'s source.
 const INVALID_UNICODE_MARKER: &str = "invalid unicode code point";
 
+fn map_json_error(path: String, error: serde_json::Error) -> CsafError {
+    let message = error.to_string();
+    if error.is_io() {
+        CsafError::LoadError { message }
+    } else if message.contains(INVALID_UNICODE_MARKER) {
+        CsafError::WrongEncoding { path, message }
+    } else {
+        CsafError::InvalidJson {
+            message: format!("{path}: {message}"),
+        }
+    }
+}
+
 /// Deserializes `T` from `deserializer`, converting any failure into a [`CsafError`] that
 /// includes the JSON path (e.g. `document.tracking.id`) that was being deserialized when the
 /// error occurred. This makes diagnosing malformed CSAF documents (invalid JSON, invalid
@@ -47,21 +60,28 @@ const INVALID_UNICODE_MARKER: &str = "invalid unicode code point";
 /// CSAF documents must be valid JSON encoded using UTF-8. Invalid UTF-8 content is reported
 /// distinctly as [`CsafError::WrongEncoding`], while all other parsing failures are reported
 /// as [`CsafError::InvalidJson`].
-fn deserialize_with_path<'de, D, T>(deserializer: D) -> Result<T, CsafError>
+fn deserialize_with_path<'de, R, T>(
+    deserializer: &mut serde_json::Deserializer<R>,
+) -> Result<T, CsafError>
 where
-    D: serde::Deserializer<'de>,
+    R: serde_json::de::Read<'de>,
     T: DeserializeOwned,
 {
-    serde_path_to_error::deserialize(deserializer).map_err(|err| {
-        let path = err.path().to_string();
-        let message = err.inner().to_string();
-        if message.contains(INVALID_UNICODE_MARKER) {
-            CsafError::WrongEncoding { path, message }
-        } else {
-            CsafError::InvalidJson {
-                message: format!("{path}: {message}"),
-            }
-        }
+    let value = serde_path_to_error::deserialize(&mut *deserializer).map_err(|err| {
+        map_json_error(err.path().to_string(), err.into_inner())
+    })?;
+    deserializer
+        .end()
+        .map_err(|error| map_json_error(String::new(), error))?;
+    Ok(value)
+}
+
+fn deserialize_value_with_path<T>(value: serde_json::Value) -> Result<T, CsafError>
+where
+    T: DeserializeOwned,
+{
+    serde_path_to_error::deserialize(value).map_err(|err| {
+        map_json_error(err.path().to_string(), err.into_inner())
     })
 }
 
@@ -125,7 +145,7 @@ impl<const N: usize> JsonSource for &[u8; N] {
 
 impl JsonSource for serde_json::Value {
     fn parse<T: DeserializeOwned>(self) -> Result<T, CsafError> {
-        deserialize_with_path(self)
+        deserialize_value_with_path(self)
     }
 }
 

@@ -1,8 +1,8 @@
 use crate::validations::utils::cvss::CvssScoreNonZeroCheckResult;
 
-/// Returns true if a score is 0.0 after rounding to one decimal place (rounds via integer scaling)
+/// Returns true if a score is zero when truncated to CVSS's one-decimal precision.
 pub fn is_zero_score(actual: f64) -> bool {
-    (actual * 10.0).round() as i8 == 0
+    !actual.is_finite() || (actual * 10.0).trunc() as i64 == 0
 }
 
 /// Checks a CVSS score and merged vector/json for a non-zero score, returning a vector of check results.
@@ -42,4 +42,23 @@ pub fn check_cvss_score_non_zero(
     }
 
     results
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_zero_score;
+
+    #[test]
+    fn zero_score_uses_truncation_at_one_decimal_precision() {
+        assert!(is_zero_score(0.0));
+        assert!(is_zero_score(0.09));
+        assert!(!is_zero_score(0.1));
+    }
+
+    #[test]
+    fn non_finite_scores_are_zero() {
+        assert!(is_zero_score(f64::NAN));
+        assert!(is_zero_score(f64::INFINITY));
+        assert!(is_zero_score(f64::NEG_INFINITY));
+    }
 }

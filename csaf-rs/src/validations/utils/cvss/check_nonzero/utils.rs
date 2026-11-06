@@ -5,10 +5,11 @@ pub fn is_zero_score(actual: f64) -> bool {
     !actual.is_finite() || (actual * 10.0).trunc() as i64 == 0
 }
 
-/// Checks a CVSS score and merged vector/json for a non-zero score, returning a vector of check results.
+/// Checks a CVSS score and a score calculated from the merged vector/json for a non-zero score,
+/// returning a vector of check results.
 pub fn check_cvss_score_non_zero(
     property_score: Option<f64>,
-    parse_and_calculate: impl FnOnce() -> Result<Option<f64>, ()>,
+    calculated_score: Result<Option<f64>, ()>,
 ) -> Vec<CvssScoreNonZeroCheckResult> {
     let mut results = Vec::new();
 
@@ -21,8 +22,7 @@ pub fn check_cvss_score_non_zero(
         });
     }
 
-    // calculate the score, using the provided calculation function, which merges vector and JSON
-    let merge_and_calculate = match parse_and_calculate() {
+    let calculated_score = match calculated_score {
         Ok(score) => score,
         Err(_) => {
             results.push(CvssScoreNonZeroCheckResult::ParsingFailed);
@@ -30,8 +30,8 @@ pub fn check_cvss_score_non_zero(
         },
     };
 
-    // check if the score is zero, if it was calculated
-    match merge_and_calculate {
+    // check if the calculated score is zero, if it was calculated
+    match calculated_score {
         Some(score) if is_zero_score(score) => {
             results.push(CvssScoreNonZeroCheckResult::CalculatedCvssScoreIsZero);
         },

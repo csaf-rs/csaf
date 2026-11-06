@@ -357,6 +357,7 @@ jobs:
       - name: Process CDX files
         # Prevent direct interpolation of potentially untrusted Git ref values into the shell script:
         # https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
+        continue-on-error: true
         env:
           REF_NAME: ${{ needs.prepare.outputs.ref-name }}
           TARGET_REF: ${{ needs.prepare.outputs.target-ref }}

@@ -1,11 +1,11 @@
-use crate::schema::{csaf2_0, loose};
+use crate::schema::{csaf2_1, loose};
 
-use super::{Convert, Diagnostics, Settings};
+use super::{Convert, Diagnostics, Settings, Warning};
 
 pub struct RemoveTrackingIdFromTitle;
 
 impl Convert for RemoveTrackingIdFromTitle {
-    fn convert(&self, doc: &mut loose::Document, _settings: &Settings, _diagnostics: &mut dyn Diagnostics) {
+    fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
         let Some(id) = doc
             .v20_view()
             .document()
@@ -17,23 +17,36 @@ impl Convert for RemoveTrackingIdFromTitle {
             return;
         };
 
-        let Some(title_node) = doc
-            .v20_view_mut()
-            .document_mut()
-            .and_then(|document| document.title_mut())
+        let Some(title) = doc
+            .v20_view()
+            .document()
+            .and_then(|document| document.title())
+            .and_then(|title| title.get_str().ok())
+            .map(str::to_owned)
         else {
-            return;
-        };
-        let Ok(title) = title_node.get_str().map(str::to_owned) else {
             return;
         };
 
         let Some(new_title) = remove_tracking_id_from_title(&title, &id) else {
             return;
         };
-        // A title that becomes empty would be schema-invalid, therefore the
-        // original title is kept in that case
-        let Ok(new_title) = csaf2_0::schema::TitleOfThisDocument::try_from(new_title) else {
+        if new_title.is_empty() {
+            // An empty title would be schema-invalid, therefore the original
+            // title is kept
+            diagnostics.warning(
+                "/document/title".into(),
+                Warning::EmptyTitleAfterTrackingIdRemoval { id },
+            );
+            return;
+        }
+        let Some(title_node) = doc
+            .v21_view_mut()
+            .document_mut()
+            .and_then(|document| document.title_mut())
+        else {
+            return;
+        };
+        let Ok(new_title) = csaf2_1::schema::TitleOfThisDocument::try_from(new_title) else {
             return;
         };
         title_node.set_str(new_title);
@@ -138,9 +151,11 @@ fn is_bracket_like(c: char) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use serde_json::json;
 
-    use crate::converter::tests::NoDiagnostics;
+    use crate::converter::tests::{NoDiagnostics, OnlyWarnings};
 
     use super::*;
 
@@ -158,6 +173,22 @@ mod tests {
             .as_str()
             .expect("title must remain a string")
             .to_string()
+    }
+
+    fn converted_title_with_only_warnings(title: &str, id: &str) -> (String, OnlyWarnings) {
+        let mut doc = loose::Document::new(json!({
+            "document": {
+                "title": title,
+                "tracking": { "id": id }
+            }
+        }));
+        let mut diagnostics = OnlyWarnings::default();
+        RemoveTrackingIdFromTitle.convert(&mut doc, &Settings::default(), &mut diagnostics);
+        let title = doc.into_raw()["document"]["title"]
+            .as_str()
+            .expect("title must remain a string")
+            .to_string();
+        (title, diagnostics)
     }
 
     #[test]
@@ -241,8 +272,25 @@ mod tests {
     }
 
     #[test]
-    fn leaves_title_equal_to_id_unchanged() {
+    fn warns_when_title_would_become_empty() {
         // Removing the id would result in an empty, schema-invalid title
-        assert_eq!(ID, converted_title(ID, ID));
+        let (result, diagnostics) = converted_title_with_only_warnings(ID, ID);
+        assert_eq!(ID, result);
+        let expected: &[(Cow<'static, str>, Warning)] = &[(
+            Cow::Borrowed("/document/title"),
+            Warning::EmptyTitleAfterTrackingIdRemoval { id: ID.to_string() },
+        )];
+        assert_eq!(expected, diagnostics.warnings());
+    }
+
+    #[test]
+    fn warns_when_only_id_and_separators_remain() {
+        let (result, diagnostics) = converted_title_with_only_warnings("RHBA-2019:0024: ", ID);
+        assert_eq!("RHBA-2019:0024: ", result);
+        let expected: &[(Cow<'static, str>, Warning)] = &[(
+            Cow::Borrowed("/document/title"),
+            Warning::EmptyTitleAfterTrackingIdRemoval { id: ID.to_string() },
+        )];
+        assert_eq!(expected, diagnostics.warnings());
     }
 }

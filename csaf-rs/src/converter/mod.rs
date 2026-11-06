@@ -65,6 +65,7 @@ pub enum Warning {
     TlpIsMissingLabel,
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
+    EmptyTitleAfterTrackingIdRemoval { id: String },
 }
 
 impl fmt::Display for Warning {
@@ -85,6 +86,11 @@ impl fmt::Display for Warning {
                 have been regrouped into the new 'multiplier' category in CSAF 2.1. \
                 Please manually check whether the publisher category should be changed to 'multiplier'. \
                 The converter provides options to perform this change automatically or suppress this warning.",
+            ),
+            Warning::EmptyTitleAfterTrackingIdRemoval { id } => write!(
+                f,
+                "The title would become empty after removing the tracking id `{id}` and the \
+                separating characters, therefore the title was left unchanged"
             ),
         }
     }

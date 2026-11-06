@@ -203,7 +203,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 // TODO #1351 "6.2.56.5"
             ]),
             Ok(Preset::Ssvc) => Ok(vec![
-                "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
+                "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37",
+                // TODO "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
             Ok(Preset::ValidationTime) => Ok(vec![
@@ -479,6 +480,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.56.2" => Some(ValidatorForTest6_2_56_2.validate(self)),
                 "6.2.56.3" => Some(ValidatorForTest6_2_56_3.validate(self)),
                 "6.2.56.4" => None, //Some(ValidatorForTest6_2_56_4.validate(self)),
+                "6.2.56.5" => None, //Some(ValidatorForTest6_2_56_5.validate(self)),
                 "6.2.57" => Some(ValidatorForTest6_2_57.validate(self)),
                 // informative tests
                 "6.3.1" => Some(ValidatorForTest6_3_1.validate(self)),

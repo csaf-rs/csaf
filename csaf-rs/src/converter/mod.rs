@@ -3,6 +3,7 @@ use std::borrow::Cow;
 
 use crate::schema::loose;
 
+mod convert_contact_details;
 mod convert_release_date_to_disclosure_date;
 mod helpers;
 mod lowercase_hash_value;
@@ -15,7 +16,7 @@ mod update_csaf_version;
 mod update_publisher_category;
 mod update_tlp_label;
 
-pub use settings::{PublisherCategoryOtherSettings, Settings};
+pub use settings::{PublisherCategoryOtherSettings, PublisherContactSettings, Settings};
 
 pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
     let mut doc = loose::Document::new(raw);
@@ -38,7 +39,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
-    // conversions that move subtrees
+    &convert_contact_details::ConvertContactDetails,
     // sorting keys should be last
     &sort_json_keys::SortJsonKeys,
 ];
@@ -63,6 +64,7 @@ pub enum Warning {
     TlpIsMissingLabel,
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
+    PublisherContactOpenPgpKeyUrlRequiresEmail { url: String },
 }
 
 impl fmt::Display for Warning {
@@ -83,6 +85,14 @@ impl fmt::Display for Warning {
                 have been regrouped into the new 'multiplier' category in CSAF 2.1. \
                 Please manually check whether the publisher category should be changed to 'multiplier'. \
                 The converter provides options to perform this change automatically or suppress this warning.",
+            ),
+            Warning::PublisherContactOpenPgpKeyUrlRequiresEmail { url } => write!(
+                f,
+                "The URL `{url}` in the publisher contact details was recognized as a public OpenPGP key URL, \
+                but it was not adopted as `public_openpgp_key_url` because no email address could be \
+                associated with it. CSAF 2.1 requires the `email` property when `public_openpgp_key_url` \
+                is set. The URL remains part of the `details` property. \
+                The converter provides options to set `email` (and `public_openpgp_key_url`) explicitly.",
             ),
         }
     }

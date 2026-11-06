@@ -67,6 +67,7 @@ mod tests {
                 suppress_warning,
                 convert_to_multiplier,
             },
+            ..Default::default()
         };
 
         let mut doc = loose::Document::new(input);

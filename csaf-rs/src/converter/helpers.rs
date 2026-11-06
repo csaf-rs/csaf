@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde_json::{Map, Value};
 
 use crate::schema::loose;
@@ -22,6 +24,20 @@ pub(super) fn for_each_product_identification_helper_via_as_object_mut(
     for value in product_tree.values_mut() {
         visit_product_tree_value(value, &mut callback);
     }
+}
+
+/// Retains only the first occurrence of each value in the array stored under `field`,
+/// comparing by [`Value`] equality and preserving order. Does nothing if the field is
+/// missing or not an array.
+/// serde_json's `Hash` impls agree with `Eq` (floats normalize -0.0; maps hash key-sorted under
+/// `preserve_order`), so set-based deduplication matches equality semantics.
+pub(super) fn retain_unique_field_values(helper: &mut Map<String, Value>, field: &str) {
+    let Some(Value::Array(values)) = helper.get_mut(field) else {
+        return;
+    };
+
+    let mut seen = HashSet::new();
+    values.retain(|value| seen.insert(value.clone()));
 }
 
 fn visit_product_tree_value(value: &mut Value, callback: &mut impl FnMut(&mut Map<String, Value>)) {

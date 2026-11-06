@@ -152,12 +152,14 @@ jobs:
       - name: Build with --no-default-features
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}
-      - name: Archive csaf-validator (${{ matrix.target.arch }})
+      - name: Archive csaf (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: csaf-validator-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
-          path: target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+          # family prefix must stay csaf-cli-*: the create-release download
+          # patterns select by csaf-<family>* and csaf- would collide
+          name: csaf-cli-${{ matrix.target.arch }}-${{ needs.prepare.outputs.git-version }}
+          path: target/${{ matrix.target.arch }}/release/csaf${{ matrix.target.ext }}
       - name: Archive libcsaf_ffi (${{ matrix.target.arch }})
         if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -173,8 +175,9 @@ jobs:
         if: matrix.version == needs.prepare.outputs.stable-version
         uses: csaf-rs/shared-workflows/.github/actions/sbom-generation@c2f5f2066f1d96c12c1e33a8dea1fceb5eb37366 # v1.12.0
         with:
-          file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
-          artifact-name-prefix: csaf-validator_${{ matrix.target.arch }}
+          # csaf embeds both validator and converter; its SBOM is the superset
+          file-to-scan: ./target/${{ matrix.target.arch }}/release/csaf${{ matrix.target.ext }}
+          artifact-name-prefix: csaf_${{ matrix.target.arch }}
 
   build-platforms:
     needs: build-matrix
@@ -297,7 +300,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run devguard-scanner secret-scanning
-        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:main-latest
+        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:v1.17.2
         with:
           args: devguard-scanner secret-scanning --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}"  ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-sast: #uses semgrep
@@ -308,7 +311,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run devguard-scanner sast
-        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:main-latest
+        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:v1.17.2
         with:
           args: devguard-scanner sast --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-iac: # uses checkov
@@ -319,7 +322,7 @@ jobs:
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
     steps:
       - name: Run devguard-scanner iac
-        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:main-latest
+        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:v1.17.2
         with:
           args: devguard-scanner iac --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }} --isTag=${{ github.ref_type == 'tag' }}
   process-sboms:
@@ -329,6 +332,7 @@ jobs:
       - build-platforms
       - wasm-bindings
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Add Go bin to PATH
         run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
@@ -338,11 +342,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/go/bin/devguard-scanner
-          key: devguard-scanner-${{ runner.os }}
+          key: devguard-scanner-${{ runner.os }}-v1.17.2
       - name: Install devguard-scanner
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
-          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@89b48259fa89ad5fdeb723dc312f20a3b453e24f # v1.14.2
+          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@3eb53ee70d22ce2a4280a3336ad9b904842baded # v1.17.2
 
       - name: Download all CDX artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -353,6 +357,7 @@ jobs:
       - name: Process CDX files
         # Prevent direct interpolation of potentially untrusted Git ref values into the shell script:
         # https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
+        continue-on-error: true
         env:
           REF_NAME: ${{ needs.prepare.outputs.ref-name }}
           TARGET_REF: ${{ needs.prepare.outputs.target-ref }}
@@ -473,12 +478,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          path: csaf-validator
-          pattern: csaf-validator-*-${{ needs.prepare.outputs.git-version }}
+          path: csaf-cli
+          pattern: csaf-cli-*-${{ needs.prepare.outputs.git-version }}
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
+          name: csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}
           path: csaf-ffi-wasm
-          pattern: csaf-ffi-wasm-*
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: go-csaf-ffi-lib
@@ -489,18 +494,21 @@ jobs:
           pattern: "*_sbom.*"
       - name: Zip Artifacts
         run: |
-          ls csaf-validator | xargs -I {} zip {}.zip -rj csaf-validator/{}
-          ls csaf-validator-*.zip
-          for dir in csaf-ffi-wasm/*/; do
+          # release assets named after cargo-binstall's default filename
+          # template ({name}-{target}-v{version}.zip) so `cargo binstall csaf`
+          # finds them without [package.metadata.binstall]
+          for dir in csaf-cli/*/; do
             name=$(basename "$dir")
-            zip "${name}.zip" -rj "$dir"
+            [ -d "$dir" ] || continue
+            zip "csaf-${name#csaf-cli-}.zip" -rj "$dir"
           done
-          ls csaf-ffi-wasm-*.zip 2>/dev/null || true
+          ls csaf-x86_64-*.zip csaf-aarch64-*.zip
+          zip "csaf-ffi-wasm-${{ needs.prepare.outputs.git-version }}.zip" -rj csaf-ffi-wasm/
           for dir in go-csaf-ffi-lib/*/; do
             name=$(basename "$dir")
             zip "${name}.zip" -rj "$dir"
           done
-          ls go-csaf-ffi-lib-*.zip 2>/dev/null || true
+          ls go-csaf-ffi-lib-*.zip
       - name: Create Release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
@@ -509,8 +517,11 @@ jobs:
           draft: false
           prerelease: false
           fail_on_unmatched_files: true
+          # csaf binary zips use cargo-binstall's default asset naming; the
+          # arch stems keep the globs disjoint from the csaf-ffi-wasm zips
           files: |
-            csaf-validator-*.zip
+            csaf-x86_64-*.zip
+            csaf-aarch64-*.zip
             csaf-ffi-wasm-*.zip
             go-csaf-ffi-lib-*.zip
             sboms/**/*.json

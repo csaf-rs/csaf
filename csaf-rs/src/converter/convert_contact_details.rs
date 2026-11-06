@@ -617,6 +617,9 @@ mod tests {
             }),
             output["document"]["publisher"]["contact"]
         );
+        // The `contact_details` property has no equivalent in CSAF 2.1 and must be gone,
+        // even though only the extracted email address ended up in the document
+        assert!(output["document"]["publisher"].get("contact_details").is_none());
     }
 
     #[test]

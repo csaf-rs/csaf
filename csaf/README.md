@@ -15,7 +15,7 @@ cargo add csaf
 or reference directly in your Cargo.toml
 ```toml
 [dependencies]
-csaf = "0.6"
+csaf = "0.7"
 ```
 which has both `converter` and `validator` features active.
 

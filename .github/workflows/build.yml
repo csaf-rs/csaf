@@ -341,11 +341,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/go/bin/devguard-scanner
-          key: devguard-scanner-${{ runner.os }}-v1.17.2
+          key: devguard-scanner-${{ runner.os }}-v1.18.0
       - name: Install devguard-scanner
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
-          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@3eb53ee70d22ce2a4280a3336ad9b904842baded # v1.17.2
+          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@f3954e697ff735db3a8d6b9d8b45ad1834ff111a # v1.18.0
 
       - name: Download all CDX artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2

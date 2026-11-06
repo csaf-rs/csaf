@@ -50,44 +50,24 @@ impl Convert for ConvertContactDetails {
             publisher.remove("contact_details");
         }
 
-        // The `contact` property is not part of CSAF 2.0. If it is present anyway (e.g. in
-        // partially converted input or with `allow_invalid`) its values count as document values
-        // and additional values are merged into it.
-        let existing = ExistingContact::from_map(publisher.get("contact").and_then(Value::as_object));
-        let contact_present = publisher.get("contact").is_some_and(Value::is_object);
-
-        // A value already present under `contact` is a document value as well, and takes
-        // precedence over the same value extracted from `contact_details`.
-        let document = ContactValues {
-            details: prefer_existing(
-                existing.details,
-                extracted.as_ref().and_then(|extracted| extracted.details.as_deref()),
-            )
-            .map(str::to_string),
-            email: prefer_existing(
-                existing.email,
-                extracted.as_ref().and_then(|extracted| extracted.email.as_deref()),
-            )
-            .map(str::to_string),
-            public_openpgp_key_url: prefer_existing(
-                existing.public_openpgp_key_url,
-                extracted
-                    .as_ref()
-                    .and_then(|extracted| extracted.public_openpgp_key_url.as_deref()),
-            )
-            .map(str::to_string),
-        };
-
+        // A `contact` property is not defined in CSAF 2.0, so valid documents do not provide one.
+        // Any occurrence would be an additional property, which this conversion does not process.
         let details = resolve(
-            document.details.as_deref(),
+            extracted.as_ref().and_then(|extracted| extracted.details.as_deref()),
             configured.details.as_deref(),
             contact_settings,
         )
         .map(str::to_string);
-        let email =
-            resolve(document.email.as_deref(), configured.email.as_deref(), contact_settings).map(str::to_string);
+        let email = resolve(
+            extracted.as_ref().and_then(|extracted| extracted.email.as_deref()),
+            configured.email.as_deref(),
+            contact_settings,
+        )
+        .map(str::to_string);
         let mut public_openpgp_key_url = resolve(
-            document.public_openpgp_key_url.as_deref(),
+            extracted
+                .as_ref()
+                .and_then(|extracted| extracted.public_openpgp_key_url.as_deref()),
             configured.public_openpgp_key_url.as_deref(),
             contact_settings,
         )
@@ -106,18 +86,8 @@ impl Convert for ConvertContactDetails {
             public_openpgp_key_url = None;
         }
 
-        if contact_present || details.is_some() || email.is_some() || public_openpgp_key_url.is_some() {
-            let contact = publisher
-                .entry("contact".to_string())
-                .or_insert_with(|| Value::Object(Map::new()));
-            if !contact.is_object() {
-                // A non-object `contact` cannot be merged with, so it is replaced
-                *contact = Value::Object(Map::new());
-            }
-            // `unwrap_or_else` instead of `unwrap`: the value is turned into an object above
-            #[allow(clippy::unwrap_used)]
-            let contact = contact.as_object_mut().unwrap_or_else(|| unreachable!());
-
+        if details.is_some() || email.is_some() || public_openpgp_key_url.is_some() {
+            let mut contact = Map::new();
             if let Some(details) = details {
                 contact.insert("details".to_string(), Value::String(details));
             }
@@ -130,34 +100,17 @@ impl Convert for ConvertContactDetails {
                     Value::String(public_openpgp_key_url),
                 );
             }
+            publisher.insert("contact".to_string(), Value::Object(contact));
         }
     }
 }
 
-/// The values of the CSAF 2.1 `contact_t` type, gathered from the different sources
+/// The values of the CSAF 2.1 `contact_t` type, either extracted from `contact_details` or
+/// provided via the settings
 struct ContactValues {
     details: Option<String>,
     email: Option<String>,
     public_openpgp_key_url: Option<String>,
-}
-
-/// Values already present in the `contact` property of the document. The property is not part of
-/// CSAF 2.0, but documents with partially converted contact data must not lose their values.
-struct ExistingContact<'a> {
-    details: Option<&'a str>,
-    email: Option<&'a str>,
-    public_openpgp_key_url: Option<&'a str>,
-}
-
-impl<'a> ExistingContact<'a> {
-    fn from_map(contact: Option<&'a Map<String, Value>>) -> Self {
-        let property = |name: &str| contact.and_then(|contact| contact.get(name)).and_then(Value::as_str);
-        Self {
-            details: property("details"),
-            email: property("email"),
-            public_openpgp_key_url: property("public_openpgp_key_url"),
-        }
-    }
 }
 
 /// Decides between the document value and the configured value: document values win unless the
@@ -172,11 +125,6 @@ fn resolve<'a>(
     } else {
         document.or(configured)
     }
-}
-
-/// Keeps the value from the `contact` property if present, otherwise uses the extracted one
-fn prefer_existing<'a>(existing: Option<&'a str>, extracted: Option<&'a str>) -> Option<&'a str> {
-    existing.or(extracted)
 }
 
 /// Extracts the values that the CSAF 2.1 `contact_t` type provides dedicated properties for from
@@ -354,6 +302,8 @@ mod tests {
             }),
             output
         );
+        // the `contact_details` property has no equivalent in CSAF 2.1 and must be gone
+        assert!(output["document"]["publisher"].get("contact_details").is_none());
     }
 
     #[test]
@@ -537,37 +487,6 @@ mod tests {
                 contact
             );
         }
-    }
-
-    #[test]
-    fn merges_into_existing_contact() {
-        let input = json!({
-            "document": {
-                "publisher": {
-                    "category": "vendor",
-                    "contact": {
-                        "details": "Already present details"
-                    },
-                    "contact_details": "Contact security@document.example.",
-                    "name": "Example Publisher",
-                    "namespace": "https://example.com"
-                }
-            }
-        });
-
-        let output = convert(input);
-
-        // `details` is already present in the `contact` property, so only `email` is filled in
-        assert_eq!(
-            json!({
-                "details": "Already present details",
-                "email": "security@document.example"
-            }),
-            output["document"]["publisher"]["contact"]
-        );
-        // The `contact_details` property has no equivalent in CSAF 2.1 and must be gone,
-        // even though only the extracted email address ended up in the document
-        assert!(output["document"]["publisher"].get("contact_details").is_none());
     }
 
     #[test]

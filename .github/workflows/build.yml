@@ -300,7 +300,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run devguard-scanner secret-scanning
-        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:main-latest
+        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:v1.17.2
         with:
           args: devguard-scanner secret-scanning --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}"  ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-sast: #uses semgrep
@@ -311,7 +311,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run devguard-scanner sast
-        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:main-latest
+        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:v1.17.2
         with:
           args: devguard-scanner sast --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }}  --isTag=${{ github.ref_type == 'tag' }}
   devguard-iac: # uses checkov
@@ -322,7 +322,7 @@ jobs:
     if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
     steps:
       - name: Run devguard-scanner iac
-        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:main-latest
+        uses: docker://ghcr.io/l3montree-dev/devguard/scanner:v1.17.2
         with:
           args: devguard-scanner iac --assetName=${{ vars.DEVGUARD_ASSET }} --token="${{ secrets.DEVGUARD_TOKEN }}" ${{ needs.prepare.outputs.target-ref }} --isTag=${{ github.ref_type == 'tag' }}
   process-sboms:
@@ -341,11 +341,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/go/bin/devguard-scanner
-          key: devguard-scanner-${{ runner.os }}
+          key: devguard-scanner-${{ runner.os }}-v1.17.2
       - name: Install devguard-scanner
         if: steps.cache-scanner.outputs.cache-hit != 'true'
         run: |
-          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@89b48259fa89ad5fdeb723dc312f20a3b453e24f # v1.14.2
+          go install github.com/l3montree-dev/devguard/cmd/devguard-scanner@3eb53ee70d22ce2a4280a3336ad9b904842baded # v1.17.2
 
       - name: Download all CDX artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2

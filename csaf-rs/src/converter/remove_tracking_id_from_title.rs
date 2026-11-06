@@ -78,16 +78,16 @@ fn remove_tracking_id_from_title(title: &str, id: &str) -> Option<String> {
 /// window, it is joined with a single white space, otherwise the window is
 /// removed completely.
 ///
-/// Brackets are only removed as matched pairs that enclose the id, so brackets
-/// belonging to retained title content are kept and unmatched brackets are not
-/// introduced: the pair around `(EPMM)` in `RHBA-2019:0024: (EPMM) vulnerability`
-/// is left untouched.
+/// Brackets and quotes are only removed as matched pairs that enclose the id,
+/// so enclosing separators belonging to retained title content are kept and
+/// unmatched brackets are not introduced: the pair around `(EPMM)` in
+/// `RHBA-2019:0024: (EPMM) vulnerability` is left untouched.
 fn remove_occurrence(title: &str, pos: usize, len: usize) -> String {
     // The window covers the id occurrence plus any number of bracket pairs
     // enclosing it; freely removable separating characters are trimmed
     // afterwards
     let mut window = (pos, pos + len);
-    while let Some((open, close)) = enclosing_bracket_pair(title, window) {
+    while let Some((open, close)) = enclosing_pair(title, window) {
         window = (window.0 - open.len_utf8(), window.1 + close.len_utf8());
     }
     let left = separator_run_left(title, window.0);
@@ -101,10 +101,10 @@ fn remove_occurrence(title: &str, pos: usize, len: usize) -> String {
     result
 }
 
-/// Returns the bracket pair that directly encloses the window: an opener in
+/// Returns the enclosing pair that directly encloses the window: an opener in
 /// front of the separating characters left of the window whose matching closer
 /// follows those right of it.
-fn enclosing_bracket_pair(title: &str, window: (usize, usize)) -> Option<(char, char)> {
+fn enclosing_pair(title: &str, window: (usize, usize)) -> Option<(char, char)> {
     let left_edge = separator_run_left(title, window.0);
     let right_edge = separator_run_right(title, window.1);
     if left_edge == 0 || right_edge == title.len() {
@@ -113,7 +113,18 @@ fn enclosing_bracket_pair(title: &str, window: (usize, usize)) -> Option<(char, 
     let open = title[..left_edge].chars().next_back()?;
     let close = title[right_edge..].chars().next()?;
     let expected_close = matching_closer(open)?;
-    (close == expected_close).then_some((open, close))
+    if close != expected_close {
+        return None;
+    }
+    // Symmetric quotation marks alternate between opening and closing, so they
+    // may only open the window when no unpartnered instance precedes them
+    if open == close {
+        let pos = left_edge - open.len_utf8();
+        if title[..pos].chars().filter(|&c| c == open).count() % 2 != 0 {
+            return None;
+        }
+    }
+    Some((open, close))
 }
 
 /// Returns the byte offset where the run of freely removable separating
@@ -129,12 +140,12 @@ fn separator_run_right(title: &str, pos: usize) -> usize {
 }
 
 /// A separating character separates the tracking id from the rest of the
-/// title. White space, colon and dash with their common look-alikes can be
-/// removed as encountered. The specification asks for separating characters
-/// "including but not limited to" these, so common look-alikes are covered as
-/// well.
+/// title. White space, colon, dash and punctuation with their common
+/// look-alikes can be removed as encountered. The specification asks for
+/// separating characters "including but not limited to" these, so common
+/// look-alikes are covered as well.
 fn is_plain_separating_char(c: char) -> bool {
-    is_whitespace_like(c) || is_colon_like(c) || is_dash_like(c)
+    is_whitespace_like(c) || is_colon_like(c) || is_dash_like(c) || is_punctuation_like(c)
 }
 
 /// White space and invisible characters that do not carry the Unicode white
@@ -154,9 +165,17 @@ fn is_dash_like(c: char) -> bool {
     )
 }
 
-/// Bracket pairs that are treated as separating characters. They are only
-/// removed when they enclose the id, so they are kept as matching pairs.
-const BRACKET_PAIRS: &[(char, char)] = &[
+/// Period, comma and semicolon are popular separators after the tracking id,
+/// e.g. `RHBA-2019:0024. description`, with CJK and fullwidth look-alikes
+fn is_punctuation_like(c: char) -> bool {
+    matches!(c, '.' | ',' | ';' | '、' | '。' | '，' | '．' | '；')
+}
+
+/// Bracket and quote pairs that are treated as separating characters. They
+/// are only removed when they enclose the id, so they are kept as matching
+/// pairs. Symmetric pairs may open and close with the same character.
+const PAIRED_SEPARATORS: &[(char, char)] = &[
+    // brackets
     ('(', ')'),
     ('[', ']'),
     ('{', '}'),
@@ -172,11 +191,23 @@ const BRACKET_PAIRS: &[(char, char)] = &[
     ('［', '］'),
     ('｛', '｝'),
     ('｟', '｠'),
+    ('｢', '｣'),
+    // quotes
+    ('"', '"'),
+    ('\'', '\''),
+    ('＂', '＂'),
+    ('＇', '＇'),
+    ('«', '»'),
+    ('‹', '›'),
+    ('‘', '’'),
+    ('“', '”'),
+    ('„', '‘'),
+    ('„', '“'),
 ];
 
-/// Returns the matching closing bracket for an opening bracket, if any
+/// Returns the matching closing character for an opening separator, if any
 fn matching_closer(open: char) -> Option<char> {
-    BRACKET_PAIRS.iter().find(|(o, _)| *o == open).map(|(_, c)| *c)
+    PAIRED_SEPARATORS.iter().find(|(o, _)| *o == open).map(|(_, c)| *c)
 }
 
 #[cfg(test)]
@@ -300,6 +331,33 @@ mod tests {
             converted_title("RHBA-2019:0024: (EPMM) vulnerability", ID),
         );
         assert_eq!("Update (EPMM)", converted_title("Update (EPMM) (RHBA-2019:0024)", ID),);
+    }
+
+    #[test]
+    fn removes_quoted_id() {
+        assert_eq!("description", converted_title("“RHBA-2019:0024” description", ID),);
+        assert_eq!("description", converted_title("«RHBA-2019:0024» description", ID),);
+        assert_eq!("more", converted_title("\"RHBA-2019:0024\" more", ID),);
+    }
+
+    #[test]
+    fn keeps_independent_quoted_phrases() {
+        // The closing quote of `"quoted"` and the opening quote of `"rest"`
+        // must not be matched with each other across the id
+        assert_eq!(
+            "\"quoted\" \"rest\"",
+            converted_title("\"quoted\" (RHBA-2019:0024) \"rest\"", ID),
+        );
+    }
+
+    #[test]
+    fn removes_punctuation_separators() {
+        assert_eq!("description", converted_title("RHBA-2019:0024, description", ID),);
+        assert_eq!("description", converted_title("RHBA-2019:0024. description", ID),);
+        assert_eq!(
+            "描述 description",
+            converted_title("描述：RHBA-2019:0024；description", ID),
+        );
     }
 
     #[test]

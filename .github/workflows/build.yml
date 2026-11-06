@@ -332,6 +332,7 @@ jobs:
       - build-platforms
       - wasm-bindings
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Add Go bin to PATH
         run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH

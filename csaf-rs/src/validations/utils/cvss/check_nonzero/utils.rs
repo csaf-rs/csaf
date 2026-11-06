@@ -1,8 +1,9 @@
 use crate::validations::utils::cvss::CvssScoreNonZeroCheckResult;
 
-/// Returns true if a score is zero when truncated to CVSS's one-decimal precision.
+/// Returns true if a score is zero, i.e. it also rounds to `0.0` at CVSS's one-decimal
+/// published-score precision (all CVSS versions round non-zero scores up to at least `0.1`).
 pub fn is_zero_score(actual: f64) -> bool {
-    !actual.is_finite() || (actual * 10.0).trunc() as i64 == 0
+    !actual.is_finite() || actual == 0.0
 }
 
 /// Checks a CVSS score and a score calculated from the merged vector/json for a non-zero score,
@@ -49,9 +50,13 @@ mod tests {
     use super::is_zero_score;
 
     #[test]
-    fn zero_score_uses_truncation_at_one_decimal_precision() {
+    fn only_exact_zero_is_zero_score() {
         assert!(is_zero_score(0.0));
-        assert!(is_zero_score(0.09));
+        // sub-tenth property scores are invalid published scores and round up to 0.1 per the
+        // CVSS specs, so they must not count as zero
+        assert!(!is_zero_score(0.04));
+        assert!(!is_zero_score(0.07));
+        assert!(!is_zero_score(0.09));
         assert!(!is_zero_score(0.1));
     }
 

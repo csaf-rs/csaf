@@ -39,7 +39,6 @@ const CONVERSIONS: &[&dyn Convert] = &[
     // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
-    // conversions that move subtrees
     &convert_contact_details::ConvertContactDetails,
     // sorting keys should be last
     &sort_json_keys::SortJsonKeys,

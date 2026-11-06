@@ -64,18 +64,8 @@ pub enum Warning {
     InvalidTlpLabel,
     TlpIsMissingLabel,
     PublisherCategoryOther,
-    InconsistentInitialReleaseDate {
-        old: String,
-        new: String,
-    },
-    PublisherContactOpenPgpKeyUrlRequiresEmail {
-        url: String,
-    },
-    PublisherContactInvalidSetting {
-        property: &'static str,
-        value: String,
-        reason: String,
-    },
+    InconsistentInitialReleaseDate { old: String, new: String },
+    PublisherContactOpenPgpKeyUrlRequiresEmail { url: String },
 }
 
 impl fmt::Display for Warning {
@@ -104,15 +94,6 @@ impl fmt::Display for Warning {
                 associated with it. CSAF 2.1 requires the `email` property when `public_openpgp_key_url` \
                 is set. The URL remains part of the `details` property. \
                 The converter provides options to set `email` (and `public_openpgp_key_url`) explicitly.",
-            ),
-            Warning::PublisherContactInvalidSetting {
-                property,
-                value,
-                reason,
-            } => write!(
-                f,
-                "The configured value `{value}` for the publisher contact property `{property}` does not \
-                fulfill the requirements of the CSAF 2.1 property ({reason}) and was ignored.",
             ),
         }
     }

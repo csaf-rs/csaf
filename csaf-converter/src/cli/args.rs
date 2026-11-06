@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use csaf_rs::schema::csaf2_1::schema::{self as csaf2_1_schema};
+
 /// A converter for CSAF 2.0 to 2.1 documents
 #[derive(clap::Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -34,7 +36,8 @@ pub(super) struct PublisherCategoryOtherArgs {
     pub(super) convert_to_multiplier: bool,
 }
 
-/// Values for the publisher contact if the document does not provide them
+/// Values for the publisher contact if the document does not provide them. The CSAF 2.1 schema
+/// types validate the given values, so that invalid arguments are already rejected at parse time
 #[derive(clap::Args, Debug)]
 pub(super) struct PublisherContactArgs {
     /// Let these values take precedence over the ones extracted from the document
@@ -43,13 +46,63 @@ pub(super) struct PublisherContactArgs {
 
     /// Value for the contact details, e.g. web sites, phone numbers, and postal mail addresses
     #[arg(long = "publisher-contact-details")]
-    pub(super) details: Option<String>,
+    pub(super) details: Option<csaf2_1_schema::ContactDetails>,
 
     /// Email address to contact the publisher
     #[arg(long = "publisher-contact-email")]
-    pub(super) email: Option<String>,
+    pub(super) email: Option<csaf2_1_schema::Email>,
 
     /// URL pointing to a public OpenPGP key of the publisher (HTTPS, at least 11 characters)
     #[arg(long = "publisher-contact-public-openpgp-key-url")]
-    pub(super) public_openpgp_key_url: Option<String>,
+    pub(super) public_openpgp_key_url: Option<csaf2_1_schema::PublicOpenPgpKeyUrl>,
+}
+
+#[cfg(test)]
+mod tests {
+    use clap::Parser as _;
+
+    use super::ConverterArgs;
+
+    const INPUT: &str = "input.json";
+
+    #[test]
+    fn parses_valid_publisher_contact_args() {
+        let args = ConverterArgs::try_parse_from([
+            "csaf-converter",
+            INPUT,
+            "--publisher-contact-details",
+            "Call me, maybe",
+            "--publisher-contact-email",
+            "security@example.com",
+            "--publisher-contact-public-openpgp-key-url",
+            "https://example.com/key",
+            "--publisher-contact-overwrite-extracted",
+        ])
+        .unwrap();
+
+        let contact = args.publisher_contact;
+        assert!(contact.overwrite_extracted);
+        assert_eq!(&*contact.details.unwrap(), "Call me, maybe");
+        assert_eq!(&*contact.email.unwrap(), "security@example.com");
+        assert_eq!(&*contact.public_openpgp_key_url.unwrap(), "https://example.com/key");
+    }
+
+    #[test]
+    fn rejects_email_below_minimum_length_at_parse_time() {
+        let result = ConverterArgs::try_parse_from(["csaf-converter", INPUT, "--publisher-contact-email", "a@b.c"]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn rejects_non_https_openpgp_key_url_at_parse_time() {
+        let result = ConverterArgs::try_parse_from([
+            "csaf-converter",
+            INPUT,
+            "--publisher-contact-public-openpgp-key-url",
+            "http://example.com/key",
+        ]);
+
+        assert!(result.is_err());
+    }
 }

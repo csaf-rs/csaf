@@ -1,4 +1,3 @@
-use std::str::FromStr;
 use std::sync::LazyLock;
 
 use regex::Regex;
@@ -32,7 +31,13 @@ impl Convert for ConvertContactDetails {
         };
 
         let contact_settings = &settings.publisher_contact;
-        let configured = ConfiguredContact::new(contact_settings, diagnostics);
+        // The configured values are already validated by their CSAF 2.1 types, e.g. at command
+        // line parsing time when using them directly as argument values
+        let configured = ContactValues {
+            details: contact_settings.details.as_deref().cloned(),
+            email: contact_settings.email.as_deref().cloned(),
+            public_openpgp_key_url: contact_settings.public_openpgp_key_url.as_deref().cloned(),
+        };
 
         // `contact_details` has no equivalent in CSAF 2.1, so it MUST NOT be kept. Its content
         // becomes `details` and is the source for the extracted email and OpenPGP key URL.
@@ -152,63 +157,6 @@ impl<'a> ExistingContact<'a> {
             email: property("email"),
             public_openpgp_key_url: property("public_openpgp_key_url"),
         }
-    }
-}
-
-/// Values provided via the settings; invalid ones are skipped with a warning
-struct ConfiguredContact {
-    details: Option<String>,
-    email: Option<String>,
-    public_openpgp_key_url: Option<String>,
-}
-
-impl ConfiguredContact {
-    fn new(settings: &PublisherContactSettings, diagnostics: &mut dyn Diagnostics) -> Self {
-        Self {
-            details: configured(
-                "details",
-                &settings.details,
-                csaf2_1::schema::ContactDetails::from_str,
-                diagnostics,
-            ),
-            email: configured("email", &settings.email, csaf2_1::schema::Email::from_str, diagnostics),
-            public_openpgp_key_url: configured(
-                "public_openpgp_key_url",
-                &settings.public_openpgp_key_url,
-                csaf2_1::schema::PublicOpenPgpKeyUrl::from_str,
-                diagnostics,
-            ),
-        }
-    }
-}
-
-/// Validates a configured value against the requirements of its CSAF 2.1 schema type. Invalid
-/// values are announced via a warning and skipped instead of ending up in the converted document.
-fn configured<T, E>(
-    property: &'static str,
-    value: &Option<String>,
-    parse: impl Fn(&str) -> Result<T, E>,
-    diagnostics: &mut dyn Diagnostics,
-) -> Option<String>
-where
-    E: std::fmt::Display,
-{
-    let Some(value) = value else {
-        return None;
-    };
-    match parse(value) {
-        Ok(_) => Some(value.clone()),
-        Err(reason) => {
-            diagnostics.warning(
-                format!("/document/publisher/contact/{property}").into(),
-                Warning::PublisherContactInvalidSetting {
-                    property,
-                    value: value.clone(),
-                    reason: reason.to_string(),
-                },
-            );
-            None
-        },
     }
 }
 
@@ -524,9 +472,9 @@ mod tests {
         let (output, diagnostics) = convert_with_settings(
             input,
             PublisherContactSettings {
-                details: Some("security@example.com".to_string()),
-                email: Some("security@example.com".to_string()),
-                public_openpgp_key_url: Some("https://example.com/key".to_string()),
+                details: Some("security@example.com".parse().unwrap()),
+                email: Some("security@example.com".parse().unwrap()),
+                public_openpgp_key_url: Some("https://example.com/key".parse().unwrap()),
                 overwrite_extracted: false,
             },
         );
@@ -560,9 +508,9 @@ mod tests {
         let (output, diagnostics) = convert_with_settings(
             input,
             PublisherContactSettings {
-                details: Some("Configured details".to_string()),
-                email: Some("security@configured.example".to_string()),
-                public_openpgp_key_url: Some("https://configured.example/key".to_string()),
+                details: Some("Configured details".parse().unwrap()),
+                email: Some("security@configured.example".parse().unwrap()),
+                public_openpgp_key_url: Some("https://configured.example/key".parse().unwrap()),
                 overwrite_extracted,
             },
         );
@@ -639,8 +587,8 @@ mod tests {
             input,
             PublisherContactSettings {
                 details: None,
-                email: Some("security@example.com".to_string()),
-                public_openpgp_key_url: Some("https://example.com/key".to_string()),
+                email: Some("security@example.com".parse().unwrap()),
+                public_openpgp_key_url: Some("https://example.com/key".parse().unwrap()),
                 overwrite_extracted: false,
             },
         );
@@ -653,52 +601,6 @@ mod tests {
                 "public_openpgp_key_url": "https://example.com/key"
             }),
             output["document"]["publisher"]["contact"]
-        );
-    }
-
-    #[test]
-    fn skips_invalid_configured_values_with_warning() {
-        let input = json!({
-            "document": {
-                "publisher": {
-                    "category": "vendor",
-                    "name": "Example Publisher",
-                    "namespace": "https://example.com"
-                }
-            }
-        });
-
-        let (output, diagnostics) = convert_with_settings(
-            input,
-            PublisherContactSettings {
-                details: None,
-                email: Some("a@b.c".to_string()),
-                public_openpgp_key_url: Some("http://example.com/key".to_string()),
-                overwrite_extracted: false,
-            },
-        );
-
-        assert!(output["document"]["publisher"].get("contact").is_none());
-        assert_eq!(
-            vec![
-                (
-                    "/document/publisher/contact/email".into(),
-                    Warning::PublisherContactInvalidSetting {
-                        property: "email",
-                        value: "a@b.c".to_string(),
-                        reason: "shorter than 6 characters".to_string(),
-                    },
-                ),
-                (
-                    "/document/publisher/contact/public_openpgp_key_url".into(),
-                    Warning::PublisherContactInvalidSetting {
-                        property: "public_openpgp_key_url",
-                        value: "http://example.com/key".to_string(),
-                        reason: r#"doesn't match pattern "^https:\/\/""#.to_string(),
-                    },
-                ),
-            ],
-            diagnostics.warnings()
         );
     }
 
@@ -731,8 +633,8 @@ mod tests {
         let (output, diagnostics) = convert_with_settings(
             input.clone(),
             PublisherContactSettings {
-                details: Some("Configured details".to_string()),
-                email: Some("security@example.com".to_string()),
+                details: Some("Configured details".parse().unwrap()),
+                email: Some("security@example.com".parse().unwrap()),
                 public_openpgp_key_url: None,
                 overwrite_extracted: false,
             },

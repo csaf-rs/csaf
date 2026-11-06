@@ -1,3 +1,5 @@
+use crate::schema::csaf2_1;
+
 #[derive(Default)]
 pub struct Settings {
     pub publisher_category_other: PublisherCategoryOtherSettings,
@@ -10,14 +12,19 @@ pub struct PublisherCategoryOtherSettings {
     pub convert_to_multiplier: bool,
 }
 
+/// Values for the publisher contact if the document does not provide them.
+///
+/// The typed values already fulfill the requirements of their CSAF 2.1 schema types, so invalid
+/// values cannot reach the conversion. They can be constructed e.g. via `FromStr` (as clap does
+/// for command line arguments when using the types directly as argument values).
 #[derive(Default)]
 pub struct PublisherContactSettings {
     /// Value used for `$.document.publisher.contact.details` if the document does not provide one
-    pub details: Option<String>,
+    pub details: Option<csaf2_1::schema::ContactDetails>,
     /// Value used for `$.document.publisher.contact.email` if the document does not provide one
-    pub email: Option<String>,
+    pub email: Option<csaf2_1::schema::Email>,
     /// Value used for `$.document.publisher.contact.public_openpgp_key_url` if the document does not provide one
-    pub public_openpgp_key_url: Option<String>,
+    pub public_openpgp_key_url: Option<csaf2_1::schema::PublicOpenPgpKeyUrl>,
     /// Let the configured values take precedence over the values found in the document
     pub overwrite_extracted: bool,
 }

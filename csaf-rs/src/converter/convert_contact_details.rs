@@ -8,7 +8,7 @@ use crate::{
     schema::loose,
 };
 
-use super::checks::{EMAIL_PATTERN, is_valid_email, is_valid_public_openpgp_key_url};
+use super::checks::{email_search_pattern, is_valid_email, is_valid_public_openpgp_key_url};
 
 /// Transforms `$.document.publisher.contact_details` into `$.document.publisher.contact`
 /// as mandated by Conformance Clause 18 for CSAF 2.0 to CSAF 2.1 converters.
@@ -34,11 +34,18 @@ impl Convert for ConvertContactDetails {
 
         let contact_settings = &settings.publisher_contact;
         // The configured values are already validated by their CSAF 2.1 types, e.g. at command
-        // line parsing time when using them directly as argument values
+        // line parsing time when using them directly as argument values. Their `format`
+        // requirements are checked here as well: via the library API, values can be configured
+        // that only fulfill the generated type checks (e.g. `Email` accepts `not-an-email`).
         let configured = ContactValues {
             details: contact_settings.details.as_deref().cloned(),
-            email: contact_settings.email.as_deref().cloned(),
-            public_openpgp_key_url: contact_settings.public_openpgp_key_url.as_deref().cloned(),
+            email: format_checked("email", contact_settings.email.as_deref(), is_valid_email, diagnostics),
+            public_openpgp_key_url: format_checked(
+                "public_openpgp_key_url",
+                contact_settings.public_openpgp_key_url.as_deref(),
+                is_valid_public_openpgp_key_url,
+                diagnostics,
+            ),
         };
 
         // `contact_details` has no equivalent in CSAF 2.1, so it MUST NOT be kept. Its content
@@ -126,6 +133,30 @@ fn resolve<'a>(
         configured.or(document)
     } else {
         document.or(configured)
+    }
+}
+
+/// Validates a configured value against the `format` requirements of its CSAF 2.1 property. An
+/// invalid value is announced via a warning and skipped instead of ending up in the converted
+/// document.
+fn format_checked(
+    property: &'static str,
+    value: Option<&String>,
+    is_valid: impl Fn(&str) -> bool,
+    diagnostics: &mut dyn Diagnostics,
+) -> Option<String> {
+    let value: &str = value?;
+    if is_valid(value) {
+        Some(value.to_string())
+    } else {
+        diagnostics.warning(
+            format!("/document/publisher/contact/{property}").into(),
+            Warning::PublisherContactInvalidFormat {
+                property,
+                value: value.to_string(),
+            },
+        );
+        None
     }
 }
 
@@ -229,7 +260,7 @@ fn trim_url_tail(url: &str) -> &str {
 fn find_email(content: &str, openpgp_key_url: Option<&FoundUrl>) -> Option<String> {
     static EMAIL_RE: LazyLock<Regex> = LazyLock::new(|| {
         #[allow(clippy::unwrap_used)]
-        Regex::new(EMAIL_PATTERN).unwrap()
+        Regex::new(&email_search_pattern()).unwrap()
     });
 
     let url_range = openpgp_key_url.map(|found| &found.range);
@@ -405,6 +436,113 @@ mod tests {
         assert_eq!(
             "security@example.org",
             output["document"]["publisher"]["contact"]["email"]
+        );
+    }
+
+    #[test]
+    fn skips_email_addresses_violating_the_dot_atom_rules() {
+        for contact_details in [
+            "Contact security..alerts@example.org",
+            "Contact .security@example.org",
+            "Contact security.@example.org",
+        ] {
+            let input = json!({
+                "document": {
+                    "publisher": {
+                        "category": "vendor",
+                        "contact_details": contact_details,
+                        "name": "Example Publisher",
+                        "namespace": "https://example.com"
+                    }
+                }
+            });
+
+            let output = convert(input);
+
+            // the invalid address is rejected as a whole instead of partially extracted
+            let contact = &output["document"]["publisher"]["contact"];
+            assert!(contact.get("email").is_none(), "{contact_details}");
+            assert_eq!(contact_details, contact["details"]);
+        }
+    }
+
+    #[test]
+    fn warns_about_and_skips_configured_email_with_invalid_format() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let (output, diagnostics) = convert_with_settings(
+            input,
+            PublisherContactSettings {
+                details: None,
+                // the generated type accepts this value, its `format: email` does not
+                email: Some("not-an-email".parse().unwrap()),
+                public_openpgp_key_url: None,
+                overwrite_extracted: false,
+            },
+        );
+
+        assert!(output["document"]["publisher"].get("contact").is_none());
+        assert_eq!(
+            vec![(
+                "/document/publisher/contact/email".into(),
+                Warning::PublisherContactInvalidFormat {
+                    property: "email",
+                    value: "not-an-email".to_string(),
+                },
+            )],
+            diagnostics.warnings()
+        );
+    }
+
+    #[test]
+    fn does_not_adopt_configured_openpgp_key_url_when_configured_email_has_invalid_format() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let (output, diagnostics) = convert_with_settings(
+            input,
+            PublisherContactSettings {
+                details: None,
+                email: Some("not-an-email".parse().unwrap()),
+                public_openpgp_key_url: Some("https://example.com/key".parse().unwrap()),
+                overwrite_extracted: false,
+            },
+        );
+
+        // without a valid email, the key URL must not be adopted either
+        assert!(output["document"]["publisher"].get("contact").is_none());
+        assert_eq!(
+            vec![
+                (
+                    "/document/publisher/contact/email".into(),
+                    Warning::PublisherContactInvalidFormat {
+                        property: "email",
+                        value: "not-an-email".to_string(),
+                    },
+                ),
+                (
+                    "/document/publisher/contact".into(),
+                    Warning::PublisherContactOpenPgpKeyUrlRequiresEmail {
+                        url: "https://example.com/key".to_string(),
+                    },
+                ),
+            ],
+            diagnostics.warnings()
         );
     }
 

@@ -9,15 +9,30 @@ use regex::Regex;
 
 use crate::schema::csaf2_1;
 
-/// The `addr-spec` of a pragmatic `format: email` check for unquoted local parts
-pub(super) const EMAIL_PATTERN: &str = r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+";
+/// The characters allowed in an unquoted local part (RFC 5321 `atext`), without the dash — it is
+/// appended explicitly in the character classes to avoid forming an accidental range
+const ATEXT: &str = "A-Za-z0-9!#$%&'*+/=?^_`{|}~";
+
+/// The characters of a domain label, without the dash — see [`ATEXT`]
+const DOMAIN_LABEL: &str = "A-Za-z0-9";
+
+/// The `addr-spec` search pattern. It is deliberately loose about the dot-atom rules: the dot is
+/// part of the local-part character class, so that an address like `security..alerts@example.org`
+/// is found as a whole and rejected by [`is_valid_email`] instead of being partially extracted.
+pub(super) fn email_search_pattern() -> String {
+    format!("[{ATEXT}.-]+@[{DOMAIN_LABEL}-]+(\\.[{DOMAIN_LABEL}-]+)+")
+}
 
 /// Checks whether `value` fulfills the requirements of the CSAF 2.1 property `email`:
-/// `format: email`, `minLength: 6`
+/// `format: email` (including the dot-atom rules of the local part), `minLength: 6`
 pub fn is_valid_email(value: &str) -> bool {
     static EMAIL_RE: LazyLock<Regex> = LazyLock::new(|| {
         #[allow(clippy::unwrap_used)]
-        Regex::new(&format!("^{EMAIL_PATTERN}$")).unwrap()
+        // the local part follows the dot-atom rules: dots only separate `atext` runs
+        Regex::new(&format!(
+            "^[{ATEXT}-]+(\\.[{ATEXT}-]+)*@[{DOMAIN_LABEL}-]+(\\.[{DOMAIN_LABEL}-]+)+$"
+        ))
+        .unwrap()
     });
 
     EMAIL_RE.is_match(value) && csaf2_1::schema::Email::from_str(value).is_ok()
@@ -95,10 +110,14 @@ mod tests {
     #[rstest]
     #[case::plain_email("security@example.org", true)]
     #[case::atext_local_part("security=alerts@example.org", true)]
+    #[case::dotted_local_part("security.alerts@example.org", true)]
     #[case::too_short("a@b.c", false)]
     #[case::not_an_email("not-an-email", false)]
     #[case::missing_domain_part("security@", false)]
     #[case::missing_local_part("@example.org", false)]
+    #[case::double_dot_in_local_part("security..alerts@example.org", false)]
+    #[case::leading_dot_in_local_part(".security@example.org", false)]
+    #[case::trailing_dot_in_local_part("security.@example.org", false)]
     #[case::double_dot_in_domain("security@example..org", false)]
     fn email_is_validated_against_the_csaf_2_1_requirements(#[case] value: &str, #[case] is_valid: bool) {
         assert_eq!(is_valid, is_valid_email(value), "{value}");

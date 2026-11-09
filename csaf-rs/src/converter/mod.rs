@@ -68,6 +68,7 @@ pub enum Warning {
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
     PublisherContactOpenPgpKeyUrlRequiresEmail { url: String },
+    PublisherContactInvalidFormat { property: &'static str, value: String },
 }
 
 impl fmt::Display for Warning {
@@ -96,6 +97,11 @@ impl fmt::Display for Warning {
                 associated with it. CSAF 2.1 requires the `email` property when `public_openpgp_key_url` \
                 is set. The URL remains part of the `details` property. \
                 The converter provides options to set `email` (and `public_openpgp_key_url`) explicitly.",
+            ),
+            Warning::PublisherContactInvalidFormat { property, value } => write!(
+                f,
+                "The configured value `{value}` for the publisher contact property `{property}` does not \
+                fulfill the `format` requirements of the CSAF 2.1 schema and was ignored.",
             ),
         }
     }

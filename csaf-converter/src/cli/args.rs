@@ -140,6 +140,18 @@ mod tests {
     }
 
     #[test]
+    fn rejects_dot_atom_violating_email_at_parse_time() {
+        let result = ConverterArgs::try_parse_from([
+            "csaf-converter",
+            INPUT,
+            "--publisher-contact-email",
+            "security..alerts@example.org",
+        ]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
     fn rejects_non_uri_public_openpgp_key_url_at_parse_time() {
         for value in [
             "https://example.com/a b",

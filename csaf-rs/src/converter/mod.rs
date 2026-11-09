@@ -44,7 +44,6 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &deduplicate_sbom_urls::DeduplicateSbomUrls,
     &deduplicate_skus::DeduplicateSkus,
     &deduplicate_x_generic_uris::DeduplicateXGenericUris,
-    &update_tlp_label::UpdateTlpLabel,
     // conversions that move subtrees
     // sorting keys should be last
     &sort_json_keys::SortJsonKeys,

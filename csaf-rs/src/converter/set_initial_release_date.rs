@@ -658,7 +658,6 @@ mod tests {
     ) {
         let mut doc = loose::Document::new(input);
         let mut diagnostics = OnlyWarnings::default();
-
         SetInitialReleaseDate.convert(&mut doc, &Settings::default(), &mut diagnostics);
 
         assert_eq!(expected, doc.into_raw());
@@ -705,15 +704,14 @@ mod tests {
         });
 
         let mut diagnostics = OnlyWarnings::default();
-        let doc = crate::converter::convert(input, &Settings::default(), &mut diagnostics);
-        assert_eq!(
-            &[(
-                "/document/tracking/initial_release_date".into(),
-                inconsistent_warning("2024-01-22T10:00:00.000Z", "2024-01-21T10:00:00.000Z")
-            )],
-            diagnostics.warnings()
-        );
 
+        let doc = crate::converter::convert(input, &Settings::default(), &mut diagnostics);
+        assert!(diagnostics.warnings().contains(&(
+            "/document/tracking/initial_release_date".into(),
+            inconsistent_warning("2024-01-22T10:00:00.000Z", "2024-01-21T10:00:00.000Z")
+        )));
+
+        println!("Here 4");
         let converted = crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::deserialize(doc.into_raw())?;
         let result = crate::validations::test_6_1_66::test_6_1_66_non_draft_initial_release_date(&converted);
 

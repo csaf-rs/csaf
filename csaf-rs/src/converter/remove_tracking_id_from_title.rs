@@ -87,8 +87,8 @@ fn remove_occurrence(title: &str, pos: usize, len: usize) -> String {
     // enclosing it; freely removable separating characters are trimmed
     // afterwards
     let mut window = (pos, pos + len);
-    while let Some((open, close)) = enclosing_pair(title, window) {
-        window = (window.0 - open.len_utf8(), window.1 + close.len_utf8());
+    while let Some(extended) = enclosing_pair_window(title, window) {
+        window = extended;
     }
     let left = separator_run_left(title, window.0);
     let right = separator_run_right(title, window.1);
@@ -101,10 +101,12 @@ fn remove_occurrence(title: &str, pos: usize, len: usize) -> String {
     result
 }
 
-/// Returns the enclosing pair that directly encloses the window: an opener in
-/// front of the separating characters left of the window whose matching closer
-/// follows those right of it.
-fn enclosing_pair(title: &str, window: (usize, usize)) -> Option<(char, char)> {
+/// Returns the window extended over a directly enclosing opener/closer pair:
+/// an opener in front of the separating characters left of the window whose
+/// matching closer follows those right of it. The extension is computed from
+/// the trimmed separator edges so that the resulting offsets are valid char
+/// boundaries.
+fn enclosing_pair_window(title: &str, window: (usize, usize)) -> Option<(usize, usize)> {
     let left_edge = separator_run_left(title, window.0);
     let right_edge = separator_run_right(title, window.1);
     if left_edge == 0 || right_edge == title.len() {
@@ -112,8 +114,7 @@ fn enclosing_pair(title: &str, window: (usize, usize)) -> Option<(char, char)> {
     }
     let open = title[..left_edge].chars().next_back()?;
     let close = title[right_edge..].chars().next()?;
-    let expected_close = matching_closer(open)?;
-    if close != expected_close {
+    if !is_supported_pair(open, close) {
         return None;
     }
     // Symmetric quotation marks alternate between opening and closing, so they
@@ -124,7 +125,7 @@ fn enclosing_pair(title: &str, window: (usize, usize)) -> Option<(char, char)> {
             return None;
         }
     }
-    Some((open, close))
+    Some((left_edge - open.len_utf8(), right_edge + close.len_utf8()))
 }
 
 /// Returns the byte offset where the run of freely removable separating
@@ -201,13 +202,16 @@ const PAIRED_SEPARATORS: &[(char, char)] = &[
     ('‹', '›'),
     ('‘', '’'),
     ('“', '”'),
+    ('‚', '‘'),
     ('„', '‘'),
     ('„', '“'),
 ];
 
-/// Returns the matching closing character for an opening separator, if any
-fn matching_closer(open: char) -> Option<char> {
-    PAIRED_SEPARATORS.iter().find(|(o, _)| *o == open).map(|(_, c)| *c)
+/// Returns whether `open` and `close` form a supported enclosing pair. Openers
+/// with several possible closers (e.g. `„` with `‘` or `“`) require checking
+/// the actual combination.
+fn is_supported_pair(open: char, close: char) -> bool {
+    PAIRED_SEPARATORS.iter().any(|&(o, c)| o == open && c == close)
 }
 
 #[cfg(test)]
@@ -358,6 +362,27 @@ mod tests {
             "描述 description",
             converted_title("描述：RHBA-2019:0024；description", ID),
         );
+    }
+
+    #[test]
+    fn removes_enclosed_id_with_inner_whitespace() {
+        // Regression for copilot review of PR #1466: the window must expand
+        // from the trimmed separator edges, not from the id occurrence
+        assert_eq!("description", converted_title("(  RHBA-2019:0024) description", ID),);
+        // Multibyte whitespace between the opener and the id must neither
+        // panic nor leave an unmatched bracket
+        assert_eq!(
+            "description",
+            converted_title("( \u{2003}RHBA-2019:0024) description", ID),
+        );
+    }
+
+    #[test]
+    fn removes_german_low_quoted_id() {
+        // Regression for copilot review of PR #1466: `„` has two supported
+        // closers (`‘` and `“`), so the actual combination must be checked
+        assert_eq!("description", converted_title("„RHBA-2019:0024“ description", ID),);
+        assert_eq!("description", converted_title("‚RHBA-2019:0024‘ description", ID),);
     }
 
     #[test]

@@ -130,7 +130,7 @@ jobs:
           rustup default ${{ matrix.version }}
           rustup target add ${{ matrix.target.arch }}
       - name: Install cargo-auditable
-        uses: taiki-e/install-action@682ce6c3c696a4cd5168a05f98e51aa02b877941 # v2
+        uses: taiki-e/install-action@3a3daafd3b7f23b8f65d9f5ba2db203fb59b79e2 # v2
         with:
           tool: cargo-auditable
       - name: Run shared clippy check
@@ -510,7 +510,7 @@ jobs:
           done
           ls go-csaf-ffi-lib-*.zip
       - name: Create Release
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           name: ${{ github.ref_name }}
           generate_release_notes: false

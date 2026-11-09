@@ -14,9 +14,10 @@ pub struct PublisherCategoryOtherSettings {
 
 /// Values for the publisher contact if the document does not provide them.
 ///
-/// The typed values already fulfill the requirements of their CSAF 2.1 schema types, so invalid
-/// values cannot reach the conversion. They can be constructed e.g. via `FromStr` (as clap does
-/// for command line arguments when using the types directly as argument values).
+/// The typed values already fulfill the pattern and length requirements of their CSAF 2.1 schema
+/// types (e.g. via `FromStr`, as clap does for command line arguments when using the types
+/// directly as argument values). Their `format` requirements (e.g. `format: email`) are checked
+/// by the conversion itself, because the generated types do not assert them.
 #[derive(Default)]
 pub struct PublisherContactSettings {
     /// Value used for `$.document.publisher.contact.details` if the document does not provide one

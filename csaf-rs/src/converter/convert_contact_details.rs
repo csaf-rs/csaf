@@ -59,8 +59,9 @@ impl Convert for ConvertContactDetails {
             publisher.remove("contact_details");
         }
 
-        // A `contact` property is not defined in CSAF 2.0, so valid documents do not provide one.
-        // Any occurrence would be an additional property, which this conversion does not process.
+        // `contact` is not defined in CSAF 2.0; valid documents do not provide one, so a 2.0
+        // value is never merged with it here. Document values therefore only come from the
+        // (optional) extraction above; configured values fill the remaining gaps.
         let details = resolve(
             extracted.as_ref().and_then(|extracted| extracted.details.as_deref()),
             configured.details.as_deref(),

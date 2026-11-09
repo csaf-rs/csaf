@@ -49,12 +49,37 @@ pub(super) struct PublisherContactArgs {
     pub(super) details: Option<csaf2_1_schema::ContactDetails>,
 
     /// Email address to contact the publisher
-    #[arg(long = "publisher-contact-email")]
+    #[arg(long = "publisher-contact-email", value_parser = parse_email)]
     pub(super) email: Option<csaf2_1_schema::Email>,
 
     /// URL pointing to a public OpenPGP key of the publisher (HTTPS, at least 11 characters)
-    #[arg(long = "publisher-contact-public-openpgp-key-url")]
+    #[arg(
+        long = "publisher-contact-public-openpgp-key-url",
+        value_parser = parse_public_openpgp_key_url
+    )]
     pub(super) public_openpgp_key_url: Option<csaf2_1_schema::PublicOpenPgpKeyUrl>,
+}
+
+/// Validates the value against the requirements of the CSAF 2.1 property `email`, including its
+/// `format: email` requirement
+fn parse_email(value: &str) -> Result<csaf2_1_schema::Email, String> {
+    if csaf_rs::converter::is_valid_email(value) {
+        value.parse::<csaf2_1_schema::Email>().map_err(|err| err.to_string())
+    } else {
+        Err("does not fulfill the requirements of the CSAF 2.1 property `email`".to_string())
+    }
+}
+
+/// Validates the value against the requirements of the CSAF 2.1 property
+/// `public_openpgp_key_url`, including its `format: uri` requirement
+fn parse_public_openpgp_key_url(value: &str) -> Result<csaf2_1_schema::PublicOpenPgpKeyUrl, String> {
+    if csaf_rs::converter::is_valid_public_openpgp_key_url(value) {
+        value
+            .parse::<csaf2_1_schema::PublicOpenPgpKeyUrl>()
+            .map_err(|err| err.to_string())
+    } else {
+        Err("does not fulfill the requirements of the CSAF 2.1 property `public_openpgp_key_url`".to_string())
+    }
 }
 
 #[cfg(test)]
@@ -104,5 +129,31 @@ mod tests {
         ]);
 
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn rejects_non_format_email_at_parse_time() {
+        let result =
+            ConverterArgs::try_parse_from(["csaf-converter", INPUT, "--publisher-contact-email", "not-an-email"]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn rejects_non_uri_public_openpgp_key_url_at_parse_time() {
+        for value in [
+            "https://example.com/a b",
+            "https://example.org/key%ZZ.asc",
+            "https://example.de/schl\u{fc}ssel.asc",
+        ] {
+            let result = ConverterArgs::try_parse_from([
+                "csaf-converter",
+                INPUT,
+                "--publisher-contact-public-openpgp-key-url",
+                value,
+            ]);
+
+            assert!(result.is_err(), "{value}");
+        }
     }
 }

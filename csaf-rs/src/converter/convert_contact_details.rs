@@ -5,8 +5,10 @@ use serde_json::{Map, Value};
 
 use crate::{
     converter::{Convert, Diagnostics, PublisherContactSettings, Settings, Warning},
-    schema::{csaf2_1, loose},
+    schema::loose,
 };
+
+use super::checks::{EMAIL_PATTERN, is_valid_email, is_valid_public_openpgp_key_url};
 
 /// Transforms `$.document.publisher.contact_details` into `$.document.publisher.contact`
 /// as mandated by Conformance Clause 18 for CSAF 2.0 to CSAF 2.1 converters.
@@ -149,7 +151,8 @@ struct FoundUrl {
 /// - is recognizable as pointing to an OpenPGP key, either by the URL itself or by its context.
 ///
 /// URLs that look like key URLs but do not fulfill the requirements (e.g. because they are not
-/// HTTPS URLs) are intentionally not adopted; they stay part of the `details` text.
+/// HTTPS URLs or not valid URIs) are intentionally not adopted; they stay part of the `details`
+/// text.
 fn find_openpgp_key_url(content: &str) -> Option<FoundUrl> {
     static URL_RE: LazyLock<Regex> = LazyLock::new(|| {
         #[allow(clippy::unwrap_used)]
@@ -158,9 +161,7 @@ fn find_openpgp_key_url(content: &str) -> Option<FoundUrl> {
 
     for url in URL_RE.find_iter(content) {
         let value = trim_url_tail(url.as_str());
-        if csaf2_1::schema::PublicOpenPgpKeyUrl::try_from(value).is_ok()
-            && mentions_openpgp(&content[..url.start()], value)
-        {
+        if is_valid_public_openpgp_key_url(value) && mentions_openpgp(&content[..url.start()], value) {
             return Some(FoundUrl {
                 value: value.to_string(),
                 range: url.start()..url.start() + value.len(),
@@ -218,13 +219,17 @@ fn trim_url_tail(url: &str) -> &str {
 
 /// Extracts an email address from `content`.
 ///
+/// Only addresses that fulfill the CSAF 2.1 requirements for `email` are considered, so an
+/// invalid address neither ends up in the document nor blocks a valid one or a configured
+/// fallback.
+///
 /// If a public OpenPGP key URL was found, the email address closest to it is preferred, so that
 /// the key and the email address it is valid for stay associated ("the matching email address").
 /// Otherwise, the first email address in the content is used.
 fn find_email(content: &str, openpgp_key_url: Option<&FoundUrl>) -> Option<String> {
     static EMAIL_RE: LazyLock<Regex> = LazyLock::new(|| {
         #[allow(clippy::unwrap_used)]
-        Regex::new(r"[A-Za-z0-9._%+'-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+").unwrap()
+        Regex::new(EMAIL_PATTERN).unwrap()
     });
 
     let url_range = openpgp_key_url.map(|found| &found.range);
@@ -233,13 +238,24 @@ fn find_email(content: &str, openpgp_key_url: Option<&FoundUrl>) -> Option<Strin
     let mut candidates = EMAIL_RE
         .find_iter(content)
         .filter(|email| !within_key_url(email.start()))
-        .map(|email| (email.start(), email.as_str()));
+        .filter(|email| is_valid_email(email.as_str()))
+        .map(|email| (email.start(), email.end(), email.as_str()));
 
     match url_range {
         Some(range) => candidates
-            .min_by_key(|(start, _)| start.abs_diff(range.start))
-            .map(|(_, email)| email.to_string()),
-        None => candidates.next().map(|(_, email)| email.to_string()),
+            .min_by_key(|(start, end, _)| gap_to_key_url(*start, *end, range))
+            .map(|(_, _, email)| email.to_string()),
+        None => candidates.next().map(|(_, _, email)| email.to_string()),
+    }
+}
+
+/// The distance between the email address and the whole URL range: addresses before the URL are
+/// measured from their end, addresses after it from the URL's end
+fn gap_to_key_url(email_start: usize, email_end: usize, url_range: &std::ops::Range<usize>) -> usize {
+    if email_end <= url_range.start {
+        url_range.start - email_end
+    } else {
+        email_start.saturating_sub(url_range.end)
     }
 }
 
@@ -347,6 +363,153 @@ mod tests {
         let output = convert(input);
 
         assert_eq!("first@example.org", output["document"]["publisher"]["contact"]["email"]);
+    }
+
+    #[test]
+    fn preserves_legal_characters_in_the_email_local_part() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "contact_details": "Security contact: security=alerts@example.org",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let output = convert(input);
+
+        assert_eq!(
+            "security=alerts@example.org",
+            output["document"]["publisher"]["contact"]["email"]
+        );
+    }
+
+    #[test]
+    fn skips_email_addresses_below_the_csaf_minimum_length() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "contact_details": "Contact a@b.c or security@example.org.",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let output = convert(input);
+
+        // the too-short address is skipped, the later valid one is used
+        assert_eq!(
+            "security@example.org",
+            output["document"]["publisher"]["contact"]["email"]
+        );
+    }
+
+    #[test]
+    fn uses_configured_email_when_only_invalid_addresses_were_extracted() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "contact_details": "Contact a@b.c",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let (output, diagnostics) = convert_with_settings(
+            input,
+            PublisherContactSettings {
+                details: None,
+                email: Some("security@example.org".parse().unwrap()),
+                public_openpgp_key_url: None,
+                overwrite_extracted: false,
+            },
+        );
+
+        assert!(diagnostics.warnings().is_empty());
+        assert_eq!(
+            "security@example.org",
+            output["document"]["publisher"]["contact"]["email"]
+        );
+    }
+
+    #[test]
+    fn measures_email_proximity_against_the_whole_openpgp_key_url() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "contact_details": "Contact support@example.org or see our OpenPGP key: \
+                        https://keyserver.example.org/pks/lookup?op=get&search=0x0123456789abcdef0123456789abcdef01234567 \
+                        (security@example.org)",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let output = convert(input);
+
+        // the address right after the URL is closer to it than the one at the beginning
+        assert_eq!(
+            "security@example.org",
+            output["document"]["publisher"]["contact"]["email"]
+        );
+    }
+
+    #[test]
+    fn does_not_adopt_openpgp_key_url_with_invalid_percent_escape() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "contact_details": "Public OpenPGP key: https://example.org/key%ZZ.asc",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let output = convert(input);
+
+        let contact = &output["document"]["publisher"]["contact"];
+        assert!(contact.get("public_openpgp_key_url").is_none());
+        assert!(
+            contact["details"]
+                .as_str()
+                .unwrap()
+                .contains("https://example.org/key%ZZ.asc")
+        );
+    }
+
+    #[test]
+    fn does_not_adopt_non_ascii_openpgp_key_url() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "contact_details": "Public OpenPGP key: https://example.de/schl\u{fc}ssel.asc",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let output = convert(input);
+
+        let contact = &output["document"]["publisher"]["contact"];
+        assert!(contact.get("public_openpgp_key_url").is_none());
+        assert!(
+            contact["details"]
+                .as_str()
+                .unwrap()
+                .contains("https://example.de/schl\u{fc}ssel.asc")
+        );
     }
 
     #[test]

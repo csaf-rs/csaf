@@ -3,6 +3,7 @@ use std::borrow::Cow;
 
 use crate::schema::loose;
 
+mod checks;
 mod convert_contact_details;
 mod convert_release_date_to_disclosure_date;
 mod helpers;
@@ -16,6 +17,7 @@ mod update_csaf_version;
 mod update_publisher_category;
 mod update_tlp_label;
 
+pub use checks::{is_valid_email, is_valid_public_openpgp_key_url};
 pub use settings::{PublisherCategoryOtherSettings, PublisherContactSettings, Settings};
 
 pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
@@ -40,6 +42,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
     &convert_contact_details::ConvertContactDetails,
+    // conversions that move subtrees
     // sorting keys should be last
     &sort_json_keys::SortJsonKeys,
 ];

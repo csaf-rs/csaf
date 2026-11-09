@@ -8,7 +8,7 @@ use crate::{
     schema::loose,
 };
 
-use super::checks::{email_search_pattern, is_valid_email, is_valid_public_openpgp_key_url};
+use super::checks::{EMAIL_SEARCH_PATTERN, is_valid_email, is_valid_public_openpgp_key_url};
 
 /// Transforms `$.document.publisher.contact_details` into `$.document.publisher.contact`
 /// as mandated by Conformance Clause 18 for CSAF 2.0 to CSAF 2.1 converters.
@@ -261,7 +261,7 @@ fn trim_url_tail(url: &str) -> &str {
 fn find_email(content: &str, openpgp_key_url: Option<&FoundUrl>) -> Option<String> {
     static EMAIL_RE: LazyLock<Regex> = LazyLock::new(|| {
         #[allow(clippy::unwrap_used)]
-        Regex::new(&email_search_pattern()).unwrap()
+        Regex::new(EMAIL_SEARCH_PATTERN).unwrap()
     });
 
     let url_range = openpgp_key_url.map(|found| &found.range);

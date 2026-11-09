@@ -3,39 +3,24 @@
 //! that extracted and configured values cannot end up as format-invalid converted output.
 
 use std::str::FromStr;
-use std::sync::LazyLock;
 
-use regex::Regex;
+use email_address::EmailAddress;
 
 use crate::schema::csaf2_1;
-
-/// The characters allowed in an unquoted local part (RFC 5321 `atext`), without the dash — it is
-/// appended explicitly in the character classes to avoid forming an accidental range
-const ATEXT: &str = "A-Za-z0-9!#$%&'*+/=?^_`{|}~";
-
-/// The characters of a domain label, without the dash — see [`ATEXT`]
-const DOMAIN_LABEL: &str = "A-Za-z0-9";
 
 /// The `addr-spec` search pattern. It is deliberately loose about the dot-atom rules: the dot is
 /// part of the local-part character class, so that an address like `security..alerts@example.org`
 /// is found as a whole and rejected by [`is_valid_email`] instead of being partially extracted.
-pub(super) fn email_search_pattern() -> String {
-    format!("[{ATEXT}.-]+@[{DOMAIN_LABEL}-]+(\\.[{DOMAIN_LABEL}-]+)+")
-}
+pub(super) const EMAIL_SEARCH_PATTERN: &str = r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+";
 
 /// Checks whether `value` fulfills the requirements of the CSAF 2.1 property `email`:
-/// `format: email` (including the dot-atom rules of the local part), `minLength: 6`
+/// `format: email`, `minLength: 6`. The format is validated with the same `email_address`
+/// library the schema validator uses for `format: email`, so the accepted values mirror its
+/// semantics; non-ASCII local parts, which the CSAF `email` format does not allow, are
+/// rejected as well.
 pub fn is_valid_email(value: &str) -> bool {
-    static EMAIL_RE: LazyLock<Regex> = LazyLock::new(|| {
-        #[allow(clippy::unwrap_used)]
-        // the local part follows the dot-atom rules: dots only separate `atext` runs
-        Regex::new(&format!(
-            "^[{ATEXT}-]+(\\.[{ATEXT}-]+)*@[{DOMAIN_LABEL}-]+(\\.[{DOMAIN_LABEL}-]+)+$"
-        ))
-        .unwrap()
-    });
-
-    EMAIL_RE.is_match(value) && csaf2_1::schema::Email::from_str(value).is_ok()
+    EmailAddress::from_str(value).is_ok_and(|parsed| parsed.local_part().is_ascii())
+        && csaf2_1::schema::Email::from_str(value).is_ok()
 }
 
 /// Checks whether `value` fulfills the requirements of the CSAF 2.1 property

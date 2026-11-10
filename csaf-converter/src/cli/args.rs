@@ -155,6 +155,7 @@ mod tests {
     fn rejects_non_uri_public_openpgp_key_url_at_parse_time() {
         for value in [
             "https://example.com/a b",
+            "https://example.com/[key",
             "https://example.org/key%ZZ.asc",
             "https://example.de/schl\u{fc}ssel.asc",
         ] {

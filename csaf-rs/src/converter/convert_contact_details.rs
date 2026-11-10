@@ -504,6 +504,42 @@ mod tests {
     }
 
     #[test]
+    fn warns_about_and_skips_configured_openpgp_key_url_with_invalid_format() {
+        let input = json!({
+            "document": {
+                "publisher": {
+                    "category": "vendor",
+                    "name": "Example Publisher",
+                    "namespace": "https://example.com"
+                }
+            }
+        });
+
+        let (output, diagnostics) = convert_with_settings(
+            input,
+            PublisherContactSettings {
+                details: None,
+                email: None,
+                // the generated type accepts this value, its `format: uri` does not
+                public_openpgp_key_url: Some("https://example.com/[key".parse().unwrap()),
+                overwrite_extracted: false,
+            },
+        );
+
+        assert!(output["document"]["publisher"].get("contact").is_none());
+        assert_eq!(
+            vec![(
+                "/document/publisher/contact/public_openpgp_key_url".into(),
+                Warning::PublisherContactInvalidFormat {
+                    property: "public_openpgp_key_url",
+                    value: "https://example.com/[key".to_string(),
+                },
+            )],
+            diagnostics.warnings()
+        );
+    }
+
+    #[test]
     fn does_not_adopt_configured_openpgp_key_url_when_configured_email_has_invalid_format() {
         let input = json!({
             "document": {

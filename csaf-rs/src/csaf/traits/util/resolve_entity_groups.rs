@@ -6,6 +6,7 @@ pub struct ResolvedEntityGroupIds {
     pub unresolvable_group_ids: Option<BTreeSet<String>>,
 }
 
+/// TODO: Refactor to be more ergonomic and align this with the resolve_product_groups function (#1384)
 pub fn resolve_ref_groups_to_ref_ids<'a>(
     group_references: impl Iterator<Item = &'a EntityRefsTItem>,
     entity_groups: &HashMap<String, BTreeSet<String>>,
@@ -37,4 +38,15 @@ pub fn resolve_ref_groups_to_ref_ids<'a>(
         resolved_entity_ids,
         unresolvable_group_ids,
     }
+}
+
+/// Resolves entity and entity-group references to a canonical set for comparison.
+pub fn resolve_entity_refs<'a>(
+    refs: impl Iterator<Item = &'a EntityRefsTItem>,
+    all_document_entity_groups: &HashMap<String, BTreeSet<String>>,
+) -> BTreeSet<String> {
+    let resolved = resolve_ref_groups_to_ref_ids(refs, all_document_entity_groups);
+    let mut entity_ids = resolved.resolved_entity_ids.unwrap_or_default();
+    entity_ids.extend(resolved.unresolvable_group_ids.unwrap_or_default());
+    entity_ids
 }

@@ -1,4 +1,4 @@
-# csaf-rust [![build](https://github.com/csaf-rs/csaf/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/csaf-rs/csaf/actions/workflows/build.yml) [![CVSS](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)
+# csaf-rust [![build](https://github.com/csaf-rs/csaf/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/csaf-rs/csaf/actions/workflows/build.yml) 
 
 This repository is a reference implementation for the CSAF standard in Rust that relies on automatically generating CSAF document structs from the JSON schema.
 
@@ -265,7 +265,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.27.10 | ✅ | ✅ |
 | 6.1.27.11 | ✅ | ✅ |
 | 6.1.27.12 | ⭕ | ✅ |
-| 6.1.27.13 | ⭕ |   |
+| 6.1.27.13 | ⭕ | ✅ |
 | 6.1.27.14 | ⭕ | ✅ |
 | 6.1.27.15 | ⭕ | ✅ |
 | 6.1.27.16 | ⭕ | ✅ |
@@ -290,28 +290,28 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.42 | ⭕ | ✅ |
 | 6.1.43 | ⭕ | ✅ |
 | 6.1.44 | ⭕ | ✅ |
-| 6.1.45 | ⭕ |   |
+| 6.1.45 | ⭕ | ✅ |
 | 6.1.46 | ⭕ | ✅ |
 | 6.1.47 | ⭕ | ✅ |
-| 6.1.48 | ⭕ |   |
+| 6.1.48 | ⭕ | ✅ |
 | 6.1.49 | ⭕ | ✅ |
-| 6.1.50 | ⭕ |   |
-| 6.1.51 | ⭕ |   |
-| 6.1.52 | ⭕ |   |
+| 6.1.50 | ⭕ | ✅ |
+| 6.1.51 | ⭕ | ✅ |
+| 6.1.52 | ⭕ | ✅ |
 | 6.1.53 | ⭕ | ✅ |
 | 6.1.54 | ⭕ | ✅ |
 | 6.1.55 | ⭕ | ✅ |
 | 6.1.56 | ⭕ | ✅ |
 | 6.1.57 | ⭕ | ✅ |
 | 6.1.58 | ⭕ | ✅ |
-| 6.1.59 | ⭕ |   |
-| 6.1.60.1 | ⭕  |   |
+| 6.1.59 | ⭕ | ✅ |
+| 6.1.60.1 | ⭕  | ✅ |
 | 6.1.60.2 | ⭕  |   |
 | 6.1.60.3 | ⭕  |   |
 | 6.1.61 | ⭕ | ✅ |
 | 6.1.62 | ⭕ | ✅ |
 | 6.1.64.1 | ⭕ | ✅ |
-| 6.1.64.2 | ⭕ |  |
+| 6.1.64.2 | ⭕ | ✅ |
 | 6.1.64.3 | ⭕ | ✅ |
 | 6.1.64.4 | ⭕ | ✅ |
 | 6.1.64.5 | ⭕ | ✅ |
@@ -321,12 +321,12 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.1.64.9 | ⭕ | ✅ |
 | 6.1.64.10 | ⭕ | ✅ |
 | 6.1.64.10 | ⭕ | ✅ |
-| 6.1.64.11 | ⭕ |  |
-| 6.1.64.12 | ⭕ |  |
+| 6.1.64.11 | ⭕ | ✅ |
+| 6.1.64.12 | ⭕ | ✅ |
 | 6.1.64.13 | ⭕ | ✅ |
 | 6.1.65.1 | ⭕ | ✅ |
 | 6.1.65.2 | ⭕ | ✅ |
-| 6.1.66 | ⭕ |  |
+| 6.1.66 | ⭕ | ✅ |
 
 ### Recommended Tests
 
@@ -339,21 +339,38 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.5     | ✅ | ✅ |
 | 6.2.6     | ✅ | ✅ |
 | 6.2.7     | ✅ | ✅ |
+| 6.2.8     | ✅ | ✅ |
+| 6.2.9     | ✅ | ✅ |
+| 6.2.10    | ✅ | ⭕ |
 | 6.2.11    | ✅ | ✅ |
 | 6.2.12    | ✅ | ✅ |
 | 6.2.13    | ✅ | ✅ |
+| 6.2.14    | ✅ | ✅ |
+| 6.2.15    | ✅ | ✅ |
 | 6.2.16    | ✅ | ✅ |
 | 6.2.17    | ✅ | ✅ |
 | 6.2.18    | ✅ | ✅ |
+| 6.2.19    | ✅ | ✅ |
+| 6.2.20    | ✅ | ✅ |
+| 6.2.21    | ⭕ | ✅ |
+| 6.2.22    | ⭕ | ✅ |
 | 6.2.23    | ⭕ | ✅ |
 | 6.2.24    | ⭕ | ✅ |
 | 6.2.25    | ⭕ | ✅ |
 | 6.2.26    | ⭕ | ✅ |
 | 6.2.27    | ⭕ | ✅ |
+| 6.2.28    | ⭕ | ✅ |
+| 6.2.29    | ⭕ | ✅ |
+| 6.2.30    | ⭕ | ✅ |
+| 6.2.31    | ⭕ | ✅ |
+| 6.2.32    | ⭕ | ✅ |
+| 6.2.33    | ⭕ | ✅ |
 | 6.2.34    | ⭕ | ✅ |
 | 6.2.35    | ⭕ | ✅ |
 | 6.2.36    | ⭕ | ✅ |
 | 6.2.37    | ⭕ | ✅ |
+| 6.2.38    | ⭕ | ✅ |
+| 6.2.39.1  | ⭕ |  |
 | 6.2.39.2  | ⭕ | ✅ |
 | 6.2.39.3  | ⭕ | ✅ |
 | 6.2.39.4  | ⭕ | ✅ |
@@ -367,6 +384,8 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.39.12 | ⭕ | ✅ |
 | 6.2.39.13 | ⭕ | ✅ |
 | 6.2.40    | ⭕ | ✅ |
+| 6.2.41    | ⭕ | ✅ |
+| 6.2.42    | ⭕ | ✅ |
 | 6.2.43    | ⭕ | ✅ |
 | 6.2.44    | ⭕ | ✅ |
 | 6.2.45    | ⭕ | ✅ |
@@ -378,7 +397,6 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.50.2    | ⭕ |  |
 | 6.2.50.3    | ⭕ |  |
 | 6.2.51   | ⭕ |  |
-| 6.2.52   | ⭕ |  |
 | 6.2.52   | ⭕ | ✅ |
 | 6.2.53   | ⭕ | ✅ |
 | 6.2.54.1   | ⭕ |  |
@@ -387,25 +405,36 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.54.4   | ⭕ |  |
 | 6.2.55  | ⭕ |  |
 | 6.2.56.1  | ⭕ |  |
-| 6.2.56.2  | ⭕ |  |
-| 6.2.56.3  | ⭕ |  |
+| 6.2.56.2  | ⭕ | ✅ |
+| 6.2.56.3  | ⭕ | ✅ |
 | 6.2.56.4  | ⭕ |  |
 | 6.2.56.5  | ⭕ |  |
-| 6.2.57  | ⭕ |  |
+| 6.2.57  | ⭕ | ✅ |
 
 ### Informative Tests
 
 | Test specification | 2.0               | 2.1 (experimental) |
 |----------|-------------------|--------------------|
 | 6.3.1    | ✅ | ✅ |
+| 6.3.2    | ✅ | ✅ |
 | 6.3.3    | ✅ | ✅ |
 | 6.3.4    | ✅ | ✅ |
 | 6.3.5    | ✅ | ✅ |
+| 6.3.6    |  |  |
+| 6.3.7    |  |  |
+| 6.3.8    |  |  |
 | 6.3.9    | ✅ | ✅ |
 | 6.3.10   | ✅ | ✅ |
 | 6.3.11   | ✅ | ✅ |
+| 6.3.12   | ⭕ | ✅ |
+| 6.3.13   | ⭕ |  |
 | 6.3.14   | ⭕ | ✅ |
 | 6.3.15   | ⭕ | ✅ |
+| 6.3.16   | ⭕ |  |
+| 6.3.17   | ⭕ |  |
+| 6.3.18   | ⭕ | ✅ |
+| 6.3.19   | ⭕ |  |
+| 6.3.20   | ⭕ | ✅ |
 | 6.3.21.1 | ⭕ | ✅ |
 | 6.3.21.2 | ⭕ |  |
 | 6.3.21.3 | ⭕ | ✅ |
@@ -415,12 +444,12 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.21.7 | ⭕ | ✅ |
 | 6.3.21.8 | ⭕ | ✅ |
 | 6.3.21.9 | ⭕ | ✅ |
-| 6.3.22   | ⭕ |  |
+| 6.3.22   | ⭕ | ✅ |
 | 6.3.23.1 | ⭕ | ✅ |
 | 6.3.23.2 | ⭕ | ✅ |
 | 6.3.24   | ⭕ |  |
 | 6.3.25   | ⭕ |  |
-| 6.3.26.1   | ⭕ |  |
-| 6.3.26.2   | ⭕ |  |
+| 6.3.26.1   | ⭕ | ✅ |
+| 6.3.26.2   | ⭕ | ✅ |
 | 6.3.26.3   | ⭕ | ✅ |
 | 6.3.26.4   | ⭕ | ✅ |

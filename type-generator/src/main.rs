@@ -68,10 +68,13 @@ fn main() -> Result<(), BuildError> {
 
     if run_all || args.schema {
         let schemas = get_schemas();
+        let mut versioned_json_paths = vec![];
         for schema in &schemas {
             let type_space = build_schema(schema, &args.target_folder)?;
-            loose::generate(&type_space, schema.version, &args.target_folder)?;
+            let json_paths = loose::generate(&type_space, schema.version, &args.target_folder)?;
+            versioned_json_paths.push((schema.version, json_paths));
         }
+        loose::generate_cast_api(versioned_json_paths, &args.target_folder)?;
     }
 
     if run_all || args.test_schema {

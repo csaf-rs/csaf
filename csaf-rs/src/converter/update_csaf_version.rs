@@ -7,18 +7,21 @@ pub struct UpdateCsafVersion;
 
 impl Convert for UpdateCsafVersion {
     fn convert(&self, doc: &mut loose::Document, _settings: &Settings, diagnostics: &mut dyn Diagnostics) {
-        if let Some(csaf_version) = doc.v20_view().document().and_then(|doc| doc.csaf_version()) {
-            if csaf_version.get_enum().is_err() {
-                diagnostics.warning("/document/csaf_version".into(), Warning::InvalidCsafVersion);
-            }
-        } else {
-            diagnostics.warning("/document".into(), Warning::CsafVersionIsMissing);
-        }
+        let csaf_version =
+            if let Some(csaf_version) = doc.v20_view_mut().document_mut().and_then(|doc| doc.csaf_version_mut()) {
+                if csaf_version.get_enum().is_err() {
+                    diagnostics.warning("/document/csaf_version".into(), Warning::InvalidCsafVersion);
+                }
+                csaf_version.caution_as_v21_mut()
+            } else {
+                diagnostics.warning("/document".into(), Warning::CsafVersionIsMissing);
 
-        doc.v21_view_mut()
-            .caution_get_or_insert_document()
-            .caution_get_or_insert_csaf_version()
-            .set_enum(csaf2_1::schema::CsafVersion::X21);
+                doc.v21_view_mut()
+                    .caution_get_or_insert_document()
+                    .caution_get_or_insert_csaf_version()
+            };
+
+        csaf_version.set_enum(csaf2_1::schema::CsafVersion::X21);
     }
 }
 

@@ -9,12 +9,12 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 cd "$REPO_ROOT"
 
 echo "Building csaf-validator with release flag..."
-cargo build -p csaf-validator --release
+cargo build -p csaf-validator --release --features="cli"
 
 # Paths
 VALIDATOR_PATH="$REPO_ROOT/target/release/csaf-validator"
-CSAF_2_0_TESTCASES_JSON="$REPO_ROOT/csaf/csaf_2.0/test/validator/data/testcases.json"
-CSAF_2_1_TESTCASES_JSON="$REPO_ROOT/csaf/csaf_2.1/test/validator/data/testcases.json"
+CSAF_2_0_TESTCASES_JSON="$REPO_ROOT/oasis-csaf/csaf_2.0/test/validator/data/testcases.json"
+CSAF_2_1_TESTCASES_JSON="$REPO_ROOT/oasis-csaf/csaf_2.1/test/validator/data/testcases.json"
 
 ANY_ERRORS_FOUND=0
 

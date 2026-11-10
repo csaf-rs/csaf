@@ -45,7 +45,7 @@ pub fn test_6_1_27_12_affected_products(doc: &impl CsafTrait) -> Result<(), Vec<
 }
 
 const PROFILE_TEST_CONFIG: DocumentCategoryTestConfig =
-    DocumentCategoryTestConfig::new().shared(&[CsafDocumentCategory::CsafSecurityAdvisory]);
+    DocumentCategoryTestConfig::new().csaf21(&[CsafDocumentCategory::CsafSecurityAdvisory]);
 
 crate::test_validation::impl_validator!(csaf2_1, ValidatorForTest6_1_27_12, test_6_1_27_12_affected_products);
 

@@ -147,12 +147,16 @@ fn dangling_extension(title: &str, window: (usize, usize)) -> Option<(usize, usi
         if is_pair_separator(c) && !word_attached && !has_partner(c, title, right_edge, q, window, false) {
             return Some(q);
         }
-        // A word-attached quote directly after the id (e.g. the possessive in
-        // `RHBA-2019:0024's`) belongs to the id's word and is dropped with it,
-        // together with the word remainder it carries
+        // A word-attached apostrophe directly after the id is dropped with it
+        // only for a recognized possessive suffix (e.g. the `'s` in
+        // `RHBA-2019:0024's rest`). Any other word-attached quote opens a word
+        // that belongs to the retained title content and is kept.
         if is_pair_separator(c) && word_attached && right_edge == window.1 {
             let remainder = word_remainder(title, q);
-            return (remainder > 0).then(|| q + remainder);
+            if is_possessive(c, &title[q..q + remainder]) {
+                return Some(q + remainder);
+            }
+            return None;
         }
         None
     });
@@ -172,6 +176,12 @@ fn word_remainder(title: &str, pos: usize) -> usize {
         .take_while(|&(_, ch)| ch.is_alphanumeric())
         .last()
         .map_or(0, |(i, ch)| i + ch.len_utf8())
+}
+
+/// Returns whether the word-attached apostrophe `c` followed by `remainder`
+/// forms a possessive suffix, e.g. the `'s` in `RHBA-2019:0024's rest`
+fn is_possessive(c: char, remainder: &str) -> bool {
+    matches!(c, '\'' | '’' | '＇') && remainder.eq_ignore_ascii_case("s")
 }
 
 /// Returns the byte offset where the run of freely removable separating
@@ -561,6 +571,22 @@ mod tests {
         // word (the possessive) and is dropped together with the id
         assert_eq!("rest", converted_title("RHBA-2019:0024's rest", ID),);
         assert_eq!("rest", converted_title("RHBA-2019:0024’s rest", ID),);
+    }
+
+    #[test]
+    fn keeps_quoted_words_after_the_id() {
+        // Regression for copilot review of PR #1466: a non-possessive quote
+        // after the id opens a word belonging to the retained content and
+        // must be kept, both directly after the id and after an enclosing
+        // pair was absorbed
+        assert_eq!(
+            "\"EPMM\" vulnerability",
+            converted_title("RHBA-2019:0024\"EPMM\" vulnerability", ID),
+        );
+        assert_eq!(
+            "“EPMM” vulnerability",
+            converted_title("[RHBA-2019:0024]“EPMM” vulnerability", ID),
+        );
     }
 
     #[test]

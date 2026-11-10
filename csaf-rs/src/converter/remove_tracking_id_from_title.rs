@@ -248,7 +248,7 @@ fn is_punctuation_like(c: char) -> bool {
 /// to a word (e.g. the dot in `.NET`); it is only removed when it does not
 /// directly border a word character on its far side
 fn is_word_punctuation(c: char) -> bool {
-    matches!(c, '.' | ',' | ';')
+    matches!(c, '.')
 }
 
 /// Bracket and quote pairs that are treated as separating characters. They

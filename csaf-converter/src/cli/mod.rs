@@ -48,6 +48,12 @@ pub fn run_converter(args: ConverterArgs) -> Result<(), anyhow::Error> {
             convert_to_multiplier: args.publisher_category_other.convert_to_multiplier,
         },
         allow_tlp_from_distribution_text: args.allow_tlp_from_distribution_text,
+        publisher_contact: csaf_rs::converter::PublisherContactSettings {
+            details: args.publisher_contact.details,
+            email: args.publisher_contact.email,
+            public_openpgp_key_url: args.publisher_contact.public_openpgp_key_url,
+            overwrite_extracted: args.publisher_contact.overwrite_extracted,
+        },
     };
     let converted = super::convert(raw, &settings, &mut diag, args.allow_invalid)?;
     let result = serde_json::to_string_pretty(&converted)?;

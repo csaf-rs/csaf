@@ -78,16 +78,18 @@ fn remove_tracking_id_from_title(title: &str, id: &str) -> Option<String> {
 /// window, it is joined with a single white space, otherwise the window is
 /// removed completely.
 ///
-/// Brackets and quotes are only removed as matched pairs that enclose the id,
-/// so enclosing separators belonging to retained title content are kept and
-/// unmatched brackets are not introduced: the pair around `(EPMM)` in
+/// Enclosing separators (brackets and quotes) are removed with the id when
+/// they would be left dangling: a supported pair enclosing the id, a
+/// non-matching pair with nothing between them but the id, or a single
+/// separator without a partner anywhere in the title. Enclosing separators
+/// belonging to retained title content are kept: the pair around `(EPMM)` in
 /// `RHBA-2019:0024: (EPMM) vulnerability` is left untouched.
 fn remove_occurrence(title: &str, pos: usize, len: usize) -> String {
-    // The window covers the id occurrence plus any number of bracket pairs
-    // enclosing it; freely removable separating characters are trimmed
-    // afterwards
+    // The window covers the id occurrence plus any number of enclosing
+    // separators around it; freely removable separating characters are
+    // trimmed afterwards
     let mut window = (pos, pos + len);
-    while let Some(extended) = enclosing_pair_window(title, window) {
+    while let Some(extended) = dangling_extension(title, window) {
         window = extended;
     }
     let left = separator_run_left(title, window.0);
@@ -101,43 +103,113 @@ fn remove_occurrence(title: &str, pos: usize, len: usize) -> String {
     result
 }
 
-/// Returns the window extended over a directly enclosing opener/closer pair:
-/// an opener in front of the separating characters left of the window whose
-/// matching closer follows those right of it. The extension is computed from
-/// the trimmed separator edges so that the resulting offsets are valid char
-/// boundaries.
-fn enclosing_pair_window(title: &str, window: (usize, usize)) -> Option<(usize, usize)> {
+/// Returns the window extended by enclosing separators that would be left
+/// dangling after the removal. The extension is computed from the trimmed
+/// separator edges so that the resulting offsets are valid char boundaries.
+fn dangling_extension(title: &str, window: (usize, usize)) -> Option<(usize, usize)> {
     let left_edge = separator_run_left(title, window.0);
     let right_edge = separator_run_right(title, window.1);
-    if left_edge == 0 || right_edge == title.len() {
-        return None;
-    }
-    let open = title[..left_edge].chars().next_back()?;
-    let close = title[right_edge..].chars().next()?;
-    if !is_supported_pair(open, close) {
-        return None;
-    }
-    // Symmetric quotation marks alternate between opening and closing, so they
-    // may only open the window when no unpartnered instance precedes them
-    if open == close {
-        let pos = left_edge - open.len_utf8();
-        if title[..pos].chars().filter(|&c| c == open).count() % 2 != 0 {
-            return None;
+    let open = if left_edge > 0 {
+        title[..left_edge].chars().next_back()
+    } else {
+        None
+    };
+    let close = if right_edge < title.len() {
+        title[right_edge..].chars().next()
+    } else {
+        None
+    };
+
+    if let (Some(o), Some(c)) = (open, close) {
+        // A supported pair encloses the id and is removed with it. Symmetric
+        // quotation marks alternate between opening and closing, so they may
+        // only enclose the window when an even number of non-word-internal
+        // instances precedes them.
+        if is_supported_pair(o, c)
+            && (o != c || count_delimiter_instances(&title[..left_edge - o.len_utf8()], o).is_multiple_of(2))
+        {
+            return Some((left_edge - o.len_utf8(), right_edge + c.len_utf8()));
         }
     }
-    Some((left_edge - open.len_utf8(), right_edge + close.len_utf8()))
+    // Enclosing separators without a partner anywhere would be left dangling
+    // around the removed id, so they are removed as well. A word-attached
+    // quote directly at the window belongs to the id's word (e.g. the
+    // possessive in `RHBA-2019:0024's`) and is dropped with the id.
+    let open_dangling = open.filter(|&o| {
+        let p = left_edge - o.len_utf8();
+        is_pair_separator(o)
+            && !has_partner(o, title, p, left_edge, window, true)
+            && (!is_word_attached_quote(o, title, p, left_edge, true) || left_edge == window.0)
+    });
+    let close_extension = close.and_then(|c| {
+        let q = right_edge + c.len_utf8();
+        let word_attached = is_word_attached_quote(c, title, right_edge, q, false);
+        if is_pair_separator(c) && !word_attached && !has_partner(c, title, right_edge, q, window, false) {
+            return Some(q);
+        }
+        // A word-attached quote directly after the id (e.g. the possessive in
+        // `RHBA-2019:0024's`) belongs to the id's word and is dropped with it,
+        // together with the word remainder it carries
+        if is_pair_separator(c) && word_attached && right_edge == window.1 {
+            let remainder = word_remainder(title, q);
+            return (remainder > 0).then(|| q + remainder);
+        }
+        None
+    });
+    match (open_dangling, close_extension) {
+        (Some(o), Some(end)) => Some((left_edge - o.len_utf8(), end)),
+        (Some(o), None) => Some((left_edge - o.len_utf8(), window.1)),
+        (None, Some(end)) => Some((window.0, end)),
+        (None, None) => None,
+    }
+}
+
+/// Returns the length of the alphanumeric run directly at `pos`, e.g. the `s`
+/// of a possessive suffix
+fn word_remainder(title: &str, pos: usize) -> usize {
+    title[pos..]
+        .char_indices()
+        .take_while(|&(_, ch)| ch.is_alphanumeric())
+        .last()
+        .map_or(0, |(i, ch)| i + ch.len_utf8())
 }
 
 /// Returns the byte offset where the run of freely removable separating
-/// characters directly in front of `pos` starts
+/// characters directly in front of `pos` starts. Word punctuation (e.g. the
+/// dot in `.NET`) belongs to the word and is retained.
 fn separator_run_left(title: &str, pos: usize) -> usize {
-    title[..pos].trim_end_matches(is_plain_separating_char).len()
+    let mut start = pos;
+    let mut chars = title[..pos].char_indices().rev().peekable();
+    while let Some((i, c)) = chars.next() {
+        if !is_plain_separating_char(c) {
+            break;
+        }
+        // The far side is the character further away from the window
+        if is_word_punctuation(c) && chars.peek().is_some_and(|&(_, ch)| ch.is_alphanumeric()) {
+            break;
+        }
+        start = i;
+    }
+    start
 }
 
 /// Returns the byte offset where the run of freely removable separating
-/// characters directly after `pos` ends
+/// characters directly after `pos` ends. Word punctuation (e.g. the dot in
+/// `.NET`) belongs to the word and is retained.
 fn separator_run_right(title: &str, pos: usize) -> usize {
-    title.len() - title[pos..].trim_start_matches(is_plain_separating_char).len()
+    let mut end = pos;
+    let mut chars = title[pos..].char_indices().peekable();
+    while let Some((i, c)) = chars.next() {
+        if !is_plain_separating_char(c) {
+            break;
+        }
+        // The far side is the character further away from the window
+        if is_word_punctuation(c) && chars.peek().is_some_and(|&(_, ch)| ch.is_alphanumeric()) {
+            break;
+        }
+        end = pos + i + c.len_utf8();
+    }
+    end
 }
 
 /// A separating character separates the tracking id from the rest of the
@@ -172,9 +244,16 @@ fn is_punctuation_like(c: char) -> bool {
     matches!(c, '.' | ',' | ';' | '、' | '。' | '，' | '．' | '；')
 }
 
+/// ASCII word punctuation that is popular as a separator but may also belong
+/// to a word (e.g. the dot in `.NET`); it is only removed when it does not
+/// directly border a word character on its far side
+fn is_word_punctuation(c: char) -> bool {
+    matches!(c, '.' | ',' | ';')
+}
+
 /// Bracket and quote pairs that are treated as separating characters. They
-/// are only removed when they enclose the id, so they are kept as matching
-/// pairs. Symmetric pairs may open and close with the same character.
+/// are removed when they enclose the id or when they would be left dangling.
+/// Symmetric pairs may open and close with the same character.
 const PAIRED_SEPARATORS: &[(char, char)] = &[
     // brackets
     ('(', ')'),
@@ -207,11 +286,78 @@ const PAIRED_SEPARATORS: &[(char, char)] = &[
     ('„', '“'),
 ];
 
+/// Quote characters. When they belong to a word (e.g. the apostrophe in
+/// `Vendor's`) they neither count as partners nor are removed as dangling.
+/// Brackets are never part of a word.
+const QUOTE_CHARS: &[char] = &[
+    '"', '\'', '＂', '＇', '«', '»', '‹', '›', '‘', '’', '“', '”', '‚', '„', '｢', '｣', '「', '」', '『', '』',
+];
+
 /// Returns whether `open` and `close` form a supported enclosing pair. Openers
 /// with several possible closers (e.g. `„` with `‘` or `“`) require checking
 /// the actual combination.
 fn is_supported_pair(open: char, close: char) -> bool {
     PAIRED_SEPARATORS.iter().any(|&(o, c)| o == open && c == close)
+}
+
+/// Returns whether `c` is one half of a supported enclosing pair
+fn is_pair_separator(c: char) -> bool {
+    PAIRED_SEPARATORS.iter().any(|&(o, c2)| o == c || c2 == c)
+}
+
+/// Returns whether the quote character `c` at `[p, q)` belongs to a word,
+/// judged by the word character on its side away from the window
+fn is_word_attached_quote(c: char, title: &str, p: usize, q: usize, left_side: bool) -> bool {
+    if !QUOTE_CHARS.contains(&c) {
+        return false;
+    }
+    let away_side = if left_side {
+        title[..p].chars().next_back()
+    } else {
+        title[q..].chars().next()
+    };
+    away_side.is_some_and(|ch| ch.is_alphanumeric())
+}
+
+/// Returns whether a partner for `c` exists outside the removed window and
+/// outside the candidate itself (`[p, q)`). Word-internal instances (e.g. the
+/// apostrophe in `Vendor's`) do not count as partners.
+fn has_partner(c: char, title: &str, p: usize, q: usize, window: (usize, usize), left_side: bool) -> bool {
+    let (before, after): (&str, &str) = if left_side {
+        (&title[..p], &title[window.1..])
+    } else {
+        (&title[..window.0], &title[q..])
+    };
+    PAIRED_SEPARATORS.iter().any(|&(o, close)| {
+        let partner = if o == c {
+            close
+        } else if close == c {
+            o
+        } else {
+            return false;
+        };
+        count_delimiter_instances(before, partner) > 0 || count_delimiter_instances(after, partner) > 0
+    })
+}
+
+/// Counts instances of `c` in `text` that are not part of a word; the
+/// apostrophe in `Vendor's` e.g. belongs to the word and does not count
+fn count_delimiter_instances(text: &str, c: char) -> usize {
+    let mut count = 0;
+    let mut prev: Option<char> = None;
+    let mut chars = text.chars().peekable();
+    while let Some(ch) = chars.next() {
+        let next = chars.peek().copied();
+        if ch == c
+            && !(QUOTE_CHARS.contains(&c)
+                && prev.is_some_and(|p| p.is_alphanumeric())
+                && next.is_some_and(|n| n.is_alphanumeric()))
+        {
+            count += 1;
+        }
+        prev = Some(ch);
+    }
+    count
 }
 
 #[cfg(test)]
@@ -380,10 +526,41 @@ mod tests {
     }
 
     #[test]
-    fn keeps_unmatched_brackets() {
-        // A closing bracket without its matching opener might enclose retained
-        // content, therefore it is kept
-        assert_eq!("Hinweis ）mehr", converted_title("Hinweis：RHBA-2019:0024）mehr", ID),);
+    fn removes_unmatched_brackets() {
+        // A closing bracket without its matching opener anywhere would be
+        // left dangling around the removed id
+        assert_eq!("Hinweis mehr", converted_title("Hinweis：RHBA-2019:0024）mehr", ID),);
+    }
+
+    #[test]
+    fn removes_dangling_quotes_and_mismatched_pairs() {
+        // Dangling opener without closer anywhere
+        assert_eq!("description", converted_title("„RHBA-2019:0024 description", ID),);
+        // Dangling straight quote
+        assert_eq!("description", converted_title("RHBA-2019:0024\" description", ID),);
+        // A non-matching pair with nothing between them but the id
+        assert_eq!("description", converted_title("„RHBA-2019:0024) description", ID),);
+    }
+
+    #[test]
+    fn keeps_word_internal_punctuation() {
+        // The dot in `.NET` belongs to the word and is retained
+        assert_eq!(".NET 6 update", converted_title("RHBA-2019:0024.NET 6 update", ID),);
+        // The apostrophe in `Vendor's` belongs to the retained word: it
+        // neither counts as a partner nor is it removed as a dangling quote
+        assert_eq!(
+            "Vendor's 'quoted' 'rest'",
+            converted_title("Vendor's 'quoted' (RHBA-2019:0024) 'rest'", ID),
+        );
+        assert_eq!("Vendor's rest", converted_title("Vendor's RHBA-2019:0024 rest", ID),);
+    }
+
+    #[test]
+    fn drops_possessive_with_id() {
+        // The word-attached quote directly after the id belongs to the id's
+        // word (the possessive) and is dropped together with the id
+        assert_eq!("rest", converted_title("RHBA-2019:0024's rest", ID),);
+        assert_eq!("rest", converted_title("RHBA-2019:0024’s rest", ID),);
     }
 
     #[test]

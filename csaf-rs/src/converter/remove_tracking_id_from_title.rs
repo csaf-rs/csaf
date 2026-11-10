@@ -341,7 +341,9 @@ mod tests {
     fn removes_quoted_id() {
         assert_eq!("description", converted_title("“RHBA-2019:0024” description", ID),);
         assert_eq!("description", converted_title("«RHBA-2019:0024» description", ID),);
-        assert_eq!("more", converted_title("\"RHBA-2019:0024\" more", ID),);
+        assert_eq!("description", converted_title("\"RHBA-2019:0024\" description", ID),);
+        assert_eq!("description", converted_title("„RHBA-2019:0024“ description", ID),);
+        assert_eq!("description", converted_title("‚RHBA-2019:0024‘ description", ID),);
     }
 
     #[test]
@@ -375,14 +377,6 @@ mod tests {
             "description",
             converted_title("( \u{2003}RHBA-2019:0024) description", ID),
         );
-    }
-
-    #[test]
-    fn removes_german_low_quoted_id() {
-        // Regression for copilot review of PR #1466: `„` has two supported
-        // closers (`‘` and `“`), so the actual combination must be checked
-        assert_eq!("description", converted_title("„RHBA-2019:0024“ description", ID),);
-        assert_eq!("description", converted_title("‚RHBA-2019:0024‘ description", ID),);
     }
 
     #[test]

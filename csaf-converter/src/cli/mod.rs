@@ -47,6 +47,7 @@ pub fn run_converter(args: ConverterArgs) -> Result<(), anyhow::Error> {
             suppress_warning: args.publisher_category_other.suppress_warning,
             convert_to_multiplier: args.publisher_category_other.convert_to_multiplier,
         },
+        allow_tlp_from_distribution_text: args.allow_tlp_from_distribution_text,
     };
     let converted = super::convert(raw, &settings, &mut diag, args.allow_invalid)?;
     let result = serde_json::to_string_pretty(&converted)?;

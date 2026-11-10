@@ -465,6 +465,7 @@ mod tests {
 
         let settings = Settings {
             allow_tlp_from_distribution_text: allow_text,
+            ..Default::default()
         };
 
         UpdateTlpLabel.convert(&mut doc, &settings, &mut diagnostics);

@@ -54,13 +54,6 @@ pub trait Diagnostics {
     fn warning(&mut self, path: Cow<'static, str>, warning: Warning);
 }
 
-#[derive(Default)]
-pub struct Settings {
-    /// Prefer the first valid TLP v2.0 label found in
-    /// document.distribution.text over the standard conversion.
-    pub allow_tlp_from_distribution_text: bool,
-}
-
 #[derive(Debug, PartialEq)]
 pub enum Warning {
     ValidationWarning(String),
@@ -87,13 +80,13 @@ impl fmt::Display for Warning {
             Warning::InvalidCsafVersion => f.write_str("CSAF version node contained an invalid value"),
             Warning::InvalidTlpLabel => f.write_str("TLP label contained an invalid value"),
             Warning::TlpIsMissingLabel => f.write_str("TLP node was present but did not contain the `label` property"),
-            Warning::DefaultTlpLabelSet => "default TLP has been set to CLEAR",
+            Warning::DefaultTlpLabelSet => f.write_str("default TLP has been set to CLEAR"),
             Warning::TlpLabelFromDistributionText { converted, from_text } => {
-                return write!(
+                write!(
                     f,
                     "TLP label was taken from distribution text \
                      (converted value: {converted}, text value: {from_text})"
-                );
+                )
             },
             Warning::PublisherCategoryOther => f.write_str(
                 "Some publishers previously categorized as 'other' \

@@ -11,7 +11,7 @@ pub struct UpdateTlpLabel;
 
 enum TlpConversion {
     Converted(csaf2_1::schema::LabelOfTlp),
-    Invalid(String),
+    Invalid,
     Missing,
     FromDistributon(csaf2_1::schema::LabelOfTlp, csaf2_1::schema::LabelOfTlp),
 }
@@ -19,7 +19,7 @@ impl TlpConversion {
     fn get_target_value(&self) -> csaf2_1::schema::LabelOfTlp {
         match &self {
             TlpConversion::Converted(converted) => *converted,
-            TlpConversion::Missing | TlpConversion::Invalid(_) => LabelOfTlp::Clear,
+            TlpConversion::Missing | TlpConversion::Invalid => LabelOfTlp::Clear,
             TlpConversion::FromDistributon(text_label, _) => *text_label,
         }
     }
@@ -43,7 +43,7 @@ impl Convert for UpdateTlpLabel {
                         TlpConversion::Converted(csaf2_1::schema::LabelOfTlp::Amber)
                     },
                     Ok(csaf2_0::schema::LabelOfTlp::Red) => TlpConversion::Converted(csaf2_1::schema::LabelOfTlp::Red),
-                    Err(_) => TlpConversion::Invalid("Test".to_string()),
+                    Err(_) => TlpConversion::Invalid,
                 },
                 None => TlpConversion::Missing,
             },
@@ -74,14 +74,7 @@ impl Convert for UpdateTlpLabel {
                     },
                 );
             },
-            TlpConversion::Invalid(text) => {
-                diagnostics.warning(
-                    "/document/distribution/tlp/label".into(),
-                    Warning::InvalidTlpLabel(text.clone()),
-                );
-                diagnostics.warning("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet);
-            },
-            TlpConversion::Missing => {
+            TlpConversion::Invalid | TlpConversion::Missing => {
                 diagnostics.warning("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet);
             },
             _ => (),
@@ -194,16 +187,7 @@ mod tests {
                 }
             }
         });
-        conversion_with_warnings(
-            input,
-            &[
-                (
-                    "/document/distribution/tlp/label".into(),
-                    Warning::InvalidTlpLabel("Test".to_string()),
-                ),
-                tlp_default_message(),
-            ],
-        );
+        conversion_with_warnings(input, &[tlp_default_message()]);
     }
 
     #[test]

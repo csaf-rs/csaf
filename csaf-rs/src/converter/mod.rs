@@ -59,7 +59,6 @@ pub enum Warning {
     ValidationWarning(String),
     CsafVersionIsMissing,
     InvalidCsafVersion,
-    InvalidTlpLabel(String),
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
     DefaultTlpLabelSet,
@@ -77,10 +76,6 @@ impl fmt::Display for Warning {
             ),
             Warning::CsafVersionIsMissing => f.write_str("CSAF version node is missing"),
             Warning::InvalidCsafVersion => f.write_str("CSAF version node contained an invalid value"),
-            Warning::InvalidTlpLabel(label) => write!(
-                f,
-                "TLP label contained an invalid value `{label}`. Using CLEAR as default."
-            ),
             Warning::DefaultTlpLabelSet => f.write_str("default TLP has been set to CLEAR"),
             Warning::TlpLabelFromDistributionText { converted, from_text } => {
                 write!(

@@ -1,74 +1,97 @@
-use crate::schema::{csaf2_0, csaf2_1, loose};
+use crate::schema::{
+    csaf2_0,
+    csaf2_1::{self, schema::LabelOfTlp},
+    loose,
+};
 
 use super::{Convert, Diagnostics, Settings, Warning};
 
 // csaf-rs/csaf#1067
 pub struct UpdateTlpLabel;
 
+enum TlpConversion {
+    Converted(csaf2_1::schema::LabelOfTlp),
+    Invalid(String),
+    Missing,
+    FromDistributon(csaf2_1::schema::LabelOfTlp, csaf2_1::schema::LabelOfTlp),
+}
+impl TlpConversion {
+    fn get_target_value(&self) -> csaf2_1::schema::LabelOfTlp {
+        match &self {
+            TlpConversion::Converted(converted) => *converted,
+            TlpConversion::Missing | TlpConversion::Invalid(_) => LabelOfTlp::Clear,
+            TlpConversion::FromDistributon(text_label, _) => *text_label,
+        }
+    }
+}
+
 impl Convert for UpdateTlpLabel {
     fn convert(&self, doc: &mut loose::Document, settings: &Settings, diagnostics: &mut dyn Diagnostics) {
         let distribution = doc.v20_view().document().and_then(|doc| doc.distribution());
 
         // Convert the original CSAF 2.0 label using the standard TLP v1.0 -> v2.0 mapping.
-        let (converted_label, missing_label) = match distribution.and_then(|dist| dist.tlp()) {
+        let converted_label = match distribution.and_then(|dist| dist.tlp()) {
             Some(tlp) => match tlp.label() {
                 Some(label) => match label.get_enum() {
-                    Ok(csaf2_0::schema::LabelOfTlp::White) => (csaf2_1::schema::LabelOfTlp::Clear, false),
-                    Ok(csaf2_0::schema::LabelOfTlp::Green) => (csaf2_1::schema::LabelOfTlp::Green, false),
-                    Ok(csaf2_0::schema::LabelOfTlp::Amber) => (csaf2_1::schema::LabelOfTlp::Amber, false),
-                    Ok(csaf2_0::schema::LabelOfTlp::Red) => (csaf2_1::schema::LabelOfTlp::Red, false),
-                    Err(_) => {
-                        diagnostics.warning("/document/distribution/tlp/label".into(), Warning::InvalidTlpLabel);
-                        (csaf2_1::schema::LabelOfTlp::Clear, false)
+                    Ok(csaf2_0::schema::LabelOfTlp::White) => {
+                        TlpConversion::Converted(csaf2_1::schema::LabelOfTlp::Clear)
                     },
+                    Ok(csaf2_0::schema::LabelOfTlp::Green) => {
+                        TlpConversion::Converted(csaf2_1::schema::LabelOfTlp::Green)
+                    },
+                    Ok(csaf2_0::schema::LabelOfTlp::Amber) => {
+                        TlpConversion::Converted(csaf2_1::schema::LabelOfTlp::Amber)
+                    },
+                    Ok(csaf2_0::schema::LabelOfTlp::Red) => TlpConversion::Converted(csaf2_1::schema::LabelOfTlp::Red),
+                    Err(_) => TlpConversion::Invalid("Test".to_string()),
                 },
-                None => {
-                    diagnostics.warning("/document/distribution/tlp".into(), Warning::TlpIsMissingLabel);
-                    (csaf2_1::schema::LabelOfTlp::Clear, true)
-                },
+                None => TlpConversion::Missing,
             },
-            None => (csaf2_1::schema::LabelOfTlp::Clear, true),
+            None => TlpConversion::Missing,
         };
 
         // Only inspect distribution.text when explicitly enabled.
-        let text_label = if settings.allow_tlp_from_distribution_text {
-            distribution
+        let final_label = if settings.allow_tlp_from_distribution_text
+            && let Some(text_label) = distribution
                 .and_then(|dist| dist.text())
                 .and_then(|text| text.get_str().ok())
                 .and_then(first_valid_tlp_v2_label)
+            // and converted value doesn't match value from distribution text
+            && text_label != converted_label.get_target_value()
+        {
+            TlpConversion::FromDistributon(text_label, converted_label.get_target_value())
         } else {
-            None
+            converted_label
         };
 
-        // A valid label from distribution.text takes precedence.
-        // Otherwise use the standard conversion.
-        let final_label = text_label.unwrap_or(converted_label);
-
-        // If the input document has no TLP label, CLEAR is used as
-        // the standard fallback.
-        // Warn if the label from distribution.text differs from
-        // the standard conversion result.
-        if text_label.is_some() && final_label != converted_label {
-            diagnostics.warning(
-                "/document/distribution/text".into(),
-                Warning::TlpLabelFromDistributionText {
-                    converted: converted_label.to_string(),
-                    from_text: final_label.to_string(),
-                },
-            );
+        match &final_label {
+            TlpConversion::FromDistributon(text_label, converted_label) => {
+                diagnostics.warning(
+                    "/document/distribution/text".into(),
+                    Warning::TlpLabelFromDistributionText {
+                        converted: converted_label.to_string(),
+                        from_text: text_label.to_string(),
+                    },
+                );
+            },
+            TlpConversion::Invalid(text) => {
+                diagnostics.warning(
+                    "/document/distribution/tlp/label".into(),
+                    Warning::InvalidTlpLabel(text.clone()),
+                );
+                diagnostics.warning("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet);
+            },
+            TlpConversion::Missing => {
+                diagnostics.warning("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet);
+            },
+            _ => (),
         }
-
-        // Warn only if CLEAR was actually selected as the default.
-        if missing_label && text_label.is_none() {
-            diagnostics.warning("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet);
-        }
-
         doc.v21_view_mut()
             .caution_get_or_insert_document()
             .caution_get_or_insert_distribution()
             .caution_get_or_insert_tlp()
             .caution_get_or_insert_label()
-            .set_enum(final_label);
+            .set_enum(final_label.get_target_value());
     }
 }
 
@@ -116,6 +139,7 @@ fn first_valid_tlp_v2_label(text: &str) -> Option<csaf2_1::schema::LabelOfTlp> {
 mod tests {
     use std::borrow::Cow;
 
+    use rstest::rstest;
     use serde_json::{Value, json};
 
     use crate::converter::tests::{NoDiagnostics, OnlyWarnings};
@@ -136,26 +160,27 @@ mod tests {
         successful_conversion(input);
     }
 
-    #[test]
-    fn has_other_valid_tlp_label() {
-        for label in ["GREEN", "AMBER", "RED"] {
-            let input = json!({
-                "document": {
-                    "distribution": {
-                        "tlp": {
-                            "label": label
-                        }
+    #[rstest]
+    #[case("GREEN")]
+    #[case("AMBER")]
+    #[case("RED")]
+    fn has_other_valid_tlp_label(#[case] source: &str) {
+        let input = json!({
+            "document": {
+                "distribution": {
+                    "tlp": {
+                        "label": source
                     }
                 }
-            });
+            }
+        });
 
-            let output = input.clone();
-            let mut doc = loose::Document::new(input);
+        let output = input.clone();
+        let mut doc = loose::Document::new(input);
 
-            UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
+        UpdateTlpLabel.convert(&mut doc, &Settings::default(), &mut NoDiagnostics);
 
-            assert_eq!(output, doc.into_raw());
-        }
+        assert_eq!(output, doc.into_raw());
     }
 
     #[test]
@@ -171,7 +196,13 @@ mod tests {
         });
         conversion_with_warnings(
             input,
-            &[("/document/distribution/tlp/label".into(), Warning::InvalidTlpLabel)],
+            &[
+                (
+                    "/document/distribution/tlp/label".into(),
+                    Warning::InvalidTlpLabel("Test".to_string()),
+                ),
+                tlp_default_message(),
+            ],
         );
     }
 
@@ -184,13 +215,7 @@ mod tests {
                 }
             }
         });
-        conversion_with_warnings(
-            input,
-            &[
-                ("/document/distribution/tlp".into(), Warning::TlpIsMissingLabel),
-                ("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet),
-            ],
-        );
+        conversion_with_warnings(input, &[tlp_default_message()]);
     }
 
     #[test]
@@ -201,10 +226,7 @@ mod tests {
             }
         });
 
-        conversion_with_warnings(
-            input,
-            &[("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet)],
-        );
+        conversion_with_warnings(input, &[tlp_default_message()]);
     }
 
     #[test]
@@ -213,20 +235,14 @@ mod tests {
             "document": {}
         });
 
-        conversion_with_warnings(
-            input,
-            &[("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet)],
-        );
+        conversion_with_warnings(input, &[tlp_default_message()]);
     }
 
     #[test]
     fn no_document_node() {
         let input = json!({});
 
-        conversion_with_warnings(
-            input,
-            &[("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet)],
-        );
+        conversion_with_warnings(input, &[tlp_default_message()]);
     }
 
     // Tests for the optional TLP label from distribution.text
@@ -364,10 +380,7 @@ mod tests {
 
         assert_eq!(output["document"]["distribution"]["tlp"]["label"], "CLEAR");
 
-        assert_eq!(
-            diagnostics.warnings(),
-            &[("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet,)]
-        );
+        assert_eq!(diagnostics.warnings(), &[tlp_default_message(),]);
     }
 
     #[test]
@@ -384,10 +397,11 @@ mod tests {
 
         assert_eq!(output["document"]["distribution"]["tlp"]["label"], "CLEAR");
 
-        assert_eq!(
-            diagnostics.warnings(),
-            &[("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet,)]
-        );
+        assert_eq!(diagnostics.warnings(), &[tlp_default_message(),]);
+    }
+
+    fn tlp_default_message() -> (Cow<'static, str>, Warning) {
+        ("/document/distribution/tlp/label".into(), Warning::DefaultTlpLabelSet)
     }
 
     #[test]

@@ -711,7 +711,6 @@ mod tests {
             inconsistent_warning("2024-01-22T10:00:00.000Z", "2024-01-21T10:00:00.000Z")
         )));
 
-        println!("Here 4");
         let converted = crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework::deserialize(doc.into_raw())?;
         let result = crate::validations::test_6_1_66::test_6_1_66_non_draft_initial_release_date(&converted);
 

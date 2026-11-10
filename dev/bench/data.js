@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794299425957,
+  "lastUpdate": 1794301352092,
   "repoUrl": "https://github.com/csaf-rs/csaf",
   "entries": {
     "CSAF Validation Benchmark": [
@@ -593531,6 +593531,1818 @@ window.BENCHMARK_DATA = {
             "name": "typed_parse/csaf_2_1",
             "value": 7959015,
             "range": "± 180477",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "thomas.ziemek@xitaso.com",
+            "name": "Thomas Ziemek",
+            "username": "tziemek"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a361da5b82cbe0047b1504b750f1dcddd9b6356b",
+          "message": "chore: bump version to 0.7.1 (#1473)",
+          "timestamp": "2026-11-10T09:42:35+01:00",
+          "tree_id": "589919176efde5803afc1437118f4afc1aecf9a1",
+          "url": "https://github.com/csaf-rs/csaf/commit/a361da5b82cbe0047b1504b750f1dcddd9b6356b"
+        },
+        "date": 1794301343784,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "csaf_2_0_tests/6.1.1",
+            "value": 95209,
+            "range": "± 1271",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.2",
+            "value": 44991,
+            "range": "± 76",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.3",
+            "value": 16129,
+            "range": "± 33",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.4",
+            "value": 25317,
+            "range": "± 69",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.5",
+            "value": 14574,
+            "range": "± 157",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.6",
+            "value": 33349,
+            "range": "± 57",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.7",
+            "value": 30075,
+            "range": "± 50",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.8",
+            "value": 42747,
+            "range": "± 176",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.9",
+            "value": 49629,
+            "range": "± 541",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.10",
+            "value": 45520,
+            "range": "± 73",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.11",
+            "value": 14975,
+            "range": "± 34",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.12",
+            "value": 33594,
+            "range": "± 247",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.13",
+            "value": 29855,
+            "range": "± 183",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.14",
+            "value": 59478,
+            "range": "± 385",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.15",
+            "value": 82194,
+            "range": "± 134",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.16",
+            "value": 43219,
+            "range": "± 222",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.17",
+            "value": 14778,
+            "range": "± 98",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.18",
+            "value": 16522,
+            "range": "± 31",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.19",
+            "value": 16418,
+            "range": "± 338",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.20",
+            "value": 14657,
+            "range": "± 71",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.21",
+            "value": 86088,
+            "range": "± 349",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.22",
+            "value": 53709,
+            "range": "± 274",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.23",
+            "value": 17030,
+            "range": "± 719",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.24",
+            "value": 16554,
+            "range": "± 30",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.25",
+            "value": 32491,
+            "range": "± 57",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.26",
+            "value": 17534,
+            "range": "± 92",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.1",
+            "value": 14729,
+            "range": "± 586",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.2",
+            "value": 60070,
+            "range": "± 2233",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.3",
+            "value": 14253,
+            "range": "± 94",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.4",
+            "value": 14535,
+            "range": "± 39",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.5",
+            "value": 15428,
+            "range": "± 189",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.6",
+            "value": 14747,
+            "range": "± 27",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.7",
+            "value": 13757,
+            "range": "± 21",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.8",
+            "value": 14453,
+            "range": "± 34",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.9",
+            "value": 25236,
+            "range": "± 80",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.10",
+            "value": 15230,
+            "range": "± 43",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.27.11",
+            "value": 14462,
+            "range": "± 75",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.28",
+            "value": 27458,
+            "range": "± 37",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.29",
+            "value": 14336,
+            "range": "± 290",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.30",
+            "value": 39343,
+            "range": "± 212",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.31",
+            "value": 31710,
+            "range": "± 64",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.32",
+            "value": 14529,
+            "range": "± 76",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.1.33",
+            "value": 20536,
+            "range": "± 100",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.1",
+            "value": 116416,
+            "range": "± 623",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.2",
+            "value": 36272,
+            "range": "± 184",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.3",
+            "value": 17215,
+            "range": "± 66",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.4",
+            "value": 16401,
+            "range": "± 69",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.5",
+            "value": 48944,
+            "range": "± 166",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.6",
+            "value": 49381,
+            "range": "± 111",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.7",
+            "value": 14216,
+            "range": "± 63",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.8",
+            "value": 30768,
+            "range": "± 49",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.9",
+            "value": 31236,
+            "range": "± 60",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.10",
+            "value": 34609,
+            "range": "± 617",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.11",
+            "value": 39558,
+            "range": "± 383",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.12",
+            "value": 72306,
+            "range": "± 260",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.13",
+            "value": 673061,
+            "range": "± 3985",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.14",
+            "value": 43521,
+            "range": "± 111",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.15",
+            "value": 35258,
+            "range": "± 381",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.16",
+            "value": 43957,
+            "range": "± 716",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.17",
+            "value": 15641,
+            "range": "± 90",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.18",
+            "value": 24005,
+            "range": "± 206",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.19",
+            "value": 41815,
+            "range": "± 97",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.2.20",
+            "value": 187195,
+            "range": "± 1000",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.1",
+            "value": 32242,
+            "range": "± 1447",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.2",
+            "value": 18988,
+            "range": "± 434",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.3",
+            "value": 83524,
+            "range": "± 461",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.4",
+            "value": 29244,
+            "range": "± 41",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.5",
+            "value": 32251,
+            "range": "± 132",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.6",
+            "value": 13395,
+            "range": "± 131",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.7",
+            "value": 13492,
+            "range": "± 151",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.8",
+            "value": 13558,
+            "range": "± 42",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.9",
+            "value": 30695,
+            "range": "± 190",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.10",
+            "value": 24193,
+            "range": "± 1144",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_0_tests/6.3.11",
+            "value": 24218,
+            "range": "± 121",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.1",
+            "value": 562874,
+            "range": "± 1680",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.2",
+            "value": 250080,
+            "range": "± 839",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.3",
+            "value": 100807,
+            "range": "± 280",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.4",
+            "value": 139366,
+            "range": "± 328",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.5",
+            "value": 69427,
+            "range": "± 100",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.6",
+            "value": 132526,
+            "range": "± 914",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.7",
+            "value": 162491,
+            "range": "± 755",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.8",
+            "value": 333253,
+            "range": "± 2268",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.9",
+            "value": 384654,
+            "range": "± 5405",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.10",
+            "value": 248348,
+            "range": "± 986",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.11",
+            "value": 87578,
+            "range": "± 572",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.12",
+            "value": 116527,
+            "range": "± 481",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.13",
+            "value": 202694,
+            "range": "± 416",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.14",
+            "value": 238482,
+            "range": "± 2172",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.15",
+            "value": 473592,
+            "range": "± 1967",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.16",
+            "value": 178407,
+            "range": "± 220",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.17",
+            "value": 70952,
+            "range": "± 176",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.18",
+            "value": 79820,
+            "range": "± 641",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.19",
+            "value": 97710,
+            "range": "± 1714",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.20",
+            "value": 70779,
+            "range": "± 1051",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.21",
+            "value": 328429,
+            "range": "± 1809",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.22",
+            "value": 209003,
+            "range": "± 842",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.23",
+            "value": 80336,
+            "range": "± 1754",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.24",
+            "value": 195367,
+            "range": "± 1146",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.25",
+            "value": 195906,
+            "range": "± 1980",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.26",
+            "value": 90175,
+            "range": "± 320",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.1",
+            "value": 70542,
+            "range": "± 151",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.2",
+            "value": 353048,
+            "range": "± 650",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.3",
+            "value": 71233,
+            "range": "± 658",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.4",
+            "value": 72138,
+            "range": "± 688",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.5",
+            "value": 72872,
+            "range": "± 195",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.6",
+            "value": 72215,
+            "range": "± 265",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.7",
+            "value": 69813,
+            "range": "± 217",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.8",
+            "value": 79435,
+            "range": "± 391",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.9",
+            "value": 87183,
+            "range": "± 130",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.10",
+            "value": 71456,
+            "range": "± 512",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.11",
+            "value": 73185,
+            "range": "± 161",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.12",
+            "value": 91333,
+            "range": "± 3917",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.13",
+            "value": 94160,
+            "range": "± 206",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.14",
+            "value": 73812,
+            "range": "± 696",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.15",
+            "value": 73561,
+            "range": "± 115",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.16",
+            "value": 73800,
+            "range": "± 3333",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.17",
+            "value": 78382,
+            "range": "± 366",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.18",
+            "value": 81945,
+            "range": "± 250",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.19",
+            "value": 388623,
+            "range": "± 984",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.27.20",
+            "value": 78866,
+            "range": "± 346",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.28",
+            "value": 112088,
+            "range": "± 531",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.29",
+            "value": 70441,
+            "range": "± 162",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.30",
+            "value": 173870,
+            "range": "± 913",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.31",
+            "value": 185036,
+            "range": "± 1068",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.32",
+            "value": 70936,
+            "range": "± 545",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.33",
+            "value": 78091,
+            "range": "± 203",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.34",
+            "value": 78998,
+            "range": "± 507",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.35",
+            "value": 98291,
+            "range": "± 532",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.36",
+            "value": 145249,
+            "range": "± 1181",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.37",
+            "value": 706593,
+            "range": "± 3375",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.38",
+            "value": 70412,
+            "range": "± 122",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.39",
+            "value": 70479,
+            "range": "± 109",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.40",
+            "value": 71326,
+            "range": "± 107",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.41",
+            "value": 72673,
+            "range": "± 321",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.42",
+            "value": 212657,
+            "range": "± 768",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.43",
+            "value": 184076,
+            "range": "± 588",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.44",
+            "value": 185823,
+            "range": "± 8513",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.45",
+            "value": 179606,
+            "range": "± 1707",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.46",
+            "value": 195084,
+            "range": "± 779",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.47",
+            "value": 370575,
+            "range": "± 3431",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.48",
+            "value": 383476,
+            "range": "± 3745",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.49",
+            "value": 443151,
+            "range": "± 1336",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.50",
+            "value": 216937,
+            "range": "± 2126",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.51",
+            "value": 186970,
+            "range": "± 377",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.52",
+            "value": 191351,
+            "range": "± 457",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.53",
+            "value": 80191,
+            "range": "± 403",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.54",
+            "value": 108966,
+            "range": "± 121",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.55",
+            "value": 112542,
+            "range": "± 515",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.56",
+            "value": 115462,
+            "range": "± 513",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.57",
+            "value": 156276,
+            "range": "± 5646",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.58",
+            "value": 110558,
+            "range": "± 3166",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.59",
+            "value": 204652,
+            "range": "± 213",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.60.1",
+            "value": 357917,
+            "range": "± 1155",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.60.2",
+            "value": 187395,
+            "range": "± 308",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.60.3",
+            "value": 60719,
+            "range": "± 306",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.61",
+            "value": 190778,
+            "range": "± 432",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.62",
+            "value": 188356,
+            "range": "± 873",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.63",
+            "value": 205338,
+            "range": "± 1474",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.1",
+            "value": 66995,
+            "range": "± 394",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.2",
+            "value": 195360,
+            "range": "± 1513",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.3",
+            "value": 66584,
+            "range": "± 352",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.4",
+            "value": 104590,
+            "range": "± 504",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.5",
+            "value": 91517,
+            "range": "± 824",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.6",
+            "value": 77964,
+            "range": "± 193",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.7",
+            "value": 72625,
+            "range": "± 235",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.8",
+            "value": 69060,
+            "range": "± 419",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.9",
+            "value": 79551,
+            "range": "± 859",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.10",
+            "value": 78585,
+            "range": "± 434",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.11",
+            "value": 106024,
+            "range": "± 629",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.12",
+            "value": 86222,
+            "range": "± 155",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.64.13",
+            "value": 69708,
+            "range": "± 91",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.65.1",
+            "value": 84544,
+            "range": "± 488",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.65.2",
+            "value": 87717,
+            "range": "± 506",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.1.66",
+            "value": 244716,
+            "range": "± 3507",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.1",
+            "value": 679126,
+            "range": "± 1597",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.2",
+            "value": 165898,
+            "range": "± 848",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.3",
+            "value": 89627,
+            "range": "± 171",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.4",
+            "value": 78388,
+            "range": "± 602",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.5",
+            "value": 212245,
+            "range": "± 1162",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.6",
+            "value": 214366,
+            "range": "± 385",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.8",
+            "value": 182617,
+            "range": "± 5803",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.9",
+            "value": 183548,
+            "range": "± 8006",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.11",
+            "value": 203463,
+            "range": "± 557",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.12",
+            "value": 379205,
+            "range": "± 1214",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.13",
+            "value": 4192113,
+            "range": "± 25463",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.14",
+            "value": 148170,
+            "range": "± 383",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.15",
+            "value": 131097,
+            "range": "± 1174",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.16",
+            "value": 251952,
+            "range": "± 1756",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.17",
+            "value": 89182,
+            "range": "± 62",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.18",
+            "value": 164696,
+            "range": "± 516",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.19",
+            "value": 165912,
+            "range": "± 560",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.20",
+            "value": 1673125,
+            "range": "± 6691",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.21",
+            "value": 357937,
+            "range": "± 4828",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.22",
+            "value": 176767,
+            "range": "± 1058",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.23",
+            "value": 94531,
+            "range": "± 206",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.24",
+            "value": 247596,
+            "range": "± 1960",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.25",
+            "value": 97868,
+            "range": "± 180",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.26",
+            "value": 95806,
+            "range": "± 871",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.27",
+            "value": 159745,
+            "range": "± 478",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.28",
+            "value": 92923,
+            "range": "± 11744",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.29",
+            "value": 85407,
+            "range": "± 147",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.30",
+            "value": 85359,
+            "range": "± 109",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.31",
+            "value": 213500,
+            "range": "± 299",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.32",
+            "value": 354479,
+            "range": "± 839",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.33",
+            "value": 244832,
+            "range": "± 222",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.34",
+            "value": 434268,
+            "range": "± 1232",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.35",
+            "value": 393444,
+            "range": "± 5469",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.36",
+            "value": 397174,
+            "range": "± 1603",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.37",
+            "value": 431933,
+            "range": "± 3257",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.38",
+            "value": 113003,
+            "range": "± 251",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.1",
+            "value": 62098,
+            "range": "± 648",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.2",
+            "value": 75459,
+            "range": "± 211",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.3",
+            "value": 79111,
+            "range": "± 447",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.4",
+            "value": 376272,
+            "range": "± 2794",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.5",
+            "value": 74160,
+            "range": "± 345",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.6",
+            "value": 75191,
+            "range": "± 164",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.7",
+            "value": 74215,
+            "range": "± 263",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.8",
+            "value": 74056,
+            "range": "± 130",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.9",
+            "value": 73117,
+            "range": "± 355",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.10",
+            "value": 77445,
+            "range": "± 208",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.11",
+            "value": 77389,
+            "range": "± 509",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.12",
+            "value": 75990,
+            "range": "± 111",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.39.13",
+            "value": 75879,
+            "range": "± 523",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.40",
+            "value": 116216,
+            "range": "± 427",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.41",
+            "value": 197934,
+            "range": "± 470",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.42",
+            "value": 177212,
+            "range": "± 601",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.43",
+            "value": 403517,
+            "range": "± 4792",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.44",
+            "value": 102438,
+            "range": "± 462",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.45",
+            "value": 105249,
+            "range": "± 2337",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.46",
+            "value": 113998,
+            "range": "± 264",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.47",
+            "value": 314369,
+            "range": "± 1379",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.48",
+            "value": 182506,
+            "range": "± 1208",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.49",
+            "value": 85914,
+            "range": "± 171",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.50.1",
+            "value": 63374,
+            "range": "± 417",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.50.2",
+            "value": 64111,
+            "range": "± 206",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.50.3",
+            "value": 63937,
+            "range": "± 929",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.51",
+            "value": 87271,
+            "range": "± 178",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.52",
+            "value": 206806,
+            "range": "± 15684",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.53",
+            "value": 95120,
+            "range": "± 455",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.54.1",
+            "value": 63661,
+            "range": "± 176",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.54.2",
+            "value": 63819,
+            "range": "± 141",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.54.3",
+            "value": 64254,
+            "range": "± 362",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.54.4",
+            "value": 68600,
+            "range": "± 549",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.55",
+            "value": 87773,
+            "range": "± 440",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.56.1",
+            "value": 64236,
+            "range": "± 427",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.56.2",
+            "value": 74431,
+            "range": "± 860",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.56.3",
+            "value": 94080,
+            "range": "± 663",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.56.4",
+            "value": 65390,
+            "range": "± 1068",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.56.5",
+            "value": 64823,
+            "range": "± 357",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.2.57",
+            "value": 112316,
+            "range": "± 150",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.1",
+            "value": 195228,
+            "range": "± 374",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.2",
+            "value": 85716,
+            "range": "± 265",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.3",
+            "value": 424247,
+            "range": "± 669",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.4",
+            "value": 144007,
+            "range": "± 358",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.5",
+            "value": 191843,
+            "range": "± 813",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.6",
+            "value": 63758,
+            "range": "± 364",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.7",
+            "value": 63854,
+            "range": "± 200",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.8",
+            "value": 65523,
+            "range": "± 1002",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.9",
+            "value": 203637,
+            "range": "± 832",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.10",
+            "value": 166700,
+            "range": "± 669",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.11",
+            "value": 161231,
+            "range": "± 1178",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.12",
+            "value": 227245,
+            "range": "± 392",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.13",
+            "value": 90516,
+            "range": "± 161",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.14",
+            "value": 139976,
+            "range": "± 223",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.15",
+            "value": 139648,
+            "range": "± 108",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.16",
+            "value": 90239,
+            "range": "± 140",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.17",
+            "value": 90009,
+            "range": "± 114",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.18",
+            "value": 101191,
+            "range": "± 154",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.19.1",
+            "value": 66739,
+            "range": "± 181",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.19.2",
+            "value": 66794,
+            "range": "± 187",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.19.3",
+            "value": 66765,
+            "range": "± 190",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.19.4",
+            "value": 67931,
+            "range": "± 454",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.19.5",
+            "value": 66838,
+            "range": "± 187",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.20",
+            "value": 105191,
+            "range": "± 202",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.1",
+            "value": 187914,
+            "range": "± 911",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.2",
+            "value": 65863,
+            "range": "± 1564",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.3",
+            "value": 70817,
+            "range": "± 251",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.4",
+            "value": 136814,
+            "range": "± 475",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.5",
+            "value": 72790,
+            "range": "± 452",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.6",
+            "value": 71839,
+            "range": "± 615",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.7",
+            "value": 77851,
+            "range": "± 286",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.8",
+            "value": 74593,
+            "range": "± 317",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.21.9",
+            "value": 72356,
+            "range": "± 1768",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.22",
+            "value": 103720,
+            "range": "± 321",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.23.1",
+            "value": 83198,
+            "range": "± 492",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.23.2",
+            "value": 81575,
+            "range": "± 3959",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.24",
+            "value": 92226,
+            "range": "± 245",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.25",
+            "value": 92979,
+            "range": "± 139",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.26.1",
+            "value": 131201,
+            "range": "± 1264",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.26.2",
+            "value": 79973,
+            "range": "± 683",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.26.3",
+            "value": 71434,
+            "range": "± 255",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "csaf_2_1_tests/6.3.26.4",
+            "value": 78688,
+            "range": "± 306",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "full_validation/csaf_2_0_full_preset",
+            "value": 4695945,
+            "range": "± 46593",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "full_validation/csaf_2_1_full_preset",
+            "value": 60805327,
+            "range": "± 789400",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "parse_only/csaf_2_0",
+            "value": 929807,
+            "range": "± 6426",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "parse_only/csaf_2_1",
+            "value": 6401063,
+            "range": "± 8537",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "typed_parse/csaf_2_0",
+            "value": 1612763,
+            "range": "± 9116",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "typed_parse/csaf_2_1",
+            "value": 10854417,
+            "range": "± 1791320",
             "unit": "ns/iter"
           }
         ]

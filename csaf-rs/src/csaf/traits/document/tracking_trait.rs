@@ -1,4 +1,4 @@
-use crate::csaf::aggregation::revision_history::{CsafRevisionHistoryItem, UnvalidatedCsafRevisionHistory};
+use crate::csaf::aggregation::revision_history::UnvalidatedCsafRevisionHistory;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf::types::version_number::CsafVersionNumber;

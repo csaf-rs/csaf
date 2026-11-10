@@ -1,39 +1,53 @@
 //! Checks for CSAF 2.1 properties. The generated schema types only assert a subset of the
-//! property constraints (pattern, length); here the values are validated against the exact JSON
-//! Schema constraints of their property, using the same validator infrastructure and format
-//! checks that validate the converted output — so the checks cannot diverge from it.
+//! property constraints (pattern, length); the remaining constraints are validated here. The
+//! validators are derived at runtime from the same CSAF 2.1 schema asset that the document
+//! validation is built from — so the property checks cannot diverge from the output validation.
 
 use std::sync::LazyLock;
 
 use jsonschema::Validator;
-use serde_json::json;
+use serde_json::{Value, json};
 
-/// Validates the exact constraints of the CSAF 2.1 property `email`
-static EMAIL_VALIDATOR: LazyLock<Validator> = LazyLock::new(|| {
-    build_validator(&json!({
-        "type": "string",
-        "format": "email",
-        "minLength": 6
-    }))
+/// The CSAF 2.1 JSON Schema — the same asset the document validators are built from
+const CSAF_21_SCHEMA: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/csaf_2.1_json_schema.json"));
+
+/// The parsed CSAF 2.1 JSON Schema, shared by the property validators below
+static PARSED_CSAF_21_SCHEMA: LazyLock<Value> = LazyLock::new(|| {
+    #[allow(clippy::unwrap_used)]
+    serde_json::from_str(CSAF_21_SCHEMA).unwrap()
 });
 
-/// Validates the exact constraints of the CSAF 2.1 property `public_openpgp_key_url`
-static PUBLIC_OPENPGP_KEY_URL_VALIDATOR: LazyLock<Validator> = LazyLock::new(|| {
-    build_validator(&json!({
-        "type": "string",
-        "format": "uri",
-        "pattern": "^https:\\/\\/",
-        "minLength": 11
-    }))
-});
+/// Extracts a subschema of the `contact_t` type from the CSAF 2.1 schema asset. The property
+/// subschemas carry no references, so they compile standalone.
+// the pointer addresses are statically known parts of the embedded CSAF 2.1 schema asset
+#[allow(clippy::expect_used)]
+fn contact_property_subschema(pointer: &str) -> Value {
+    PARSED_CSAF_21_SCHEMA
+        .pointer(pointer)
+        .expect("CSAF 2.1 schema asset must contain the contact property constraints")
+        .clone()
+}
 
-fn build_validator(schema: &serde_json::Value) -> Validator {
+fn build_validator(schema: &Value) -> Validator {
+    // the extracted subschema carries no `$schema` key, so the draft is fixed explicitly
     #[allow(clippy::unwrap_used)]
     jsonschema::options()
+        .with_draft(jsonschema::Draft::Draft202012)
         .should_validate_formats(true)
         .build(schema)
         .unwrap()
 }
+
+/// Validates the exact constraints of the CSAF 2.1 property `email`
+static EMAIL_VALIDATOR: LazyLock<Validator> =
+    LazyLock::new(|| build_validator(&contact_property_subschema("/$defs/contact_t/properties/email")));
+
+/// Validates the exact constraints of the CSAF 2.1 property `public_openpgp_key_url`
+static PUBLIC_OPENPGP_KEY_URL_VALIDATOR: LazyLock<Validator> = LazyLock::new(|| {
+    build_validator(&contact_property_subschema(
+        "/$defs/contact_t/properties/public_openpgp_key_url",
+    ))
+});
 
 /// Checks whether `value` fulfills the exact constraints of the CSAF 2.1 property `email`,
 /// including its `format: email` and `minLength: 6` requirements

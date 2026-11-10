@@ -649,7 +649,6 @@ dependencies = [
  "cpe-rs-fork",
  "criterion",
  "cvss-rs",
- "email_address",
  "itertools 0.15.0",
  "jsonpath-rust",
  "jsonschema 0.60.2",

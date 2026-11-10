@@ -107,12 +107,11 @@ fn first_valid_tlp_v2_label(text: &str) -> Option<csaf2_1::schema::LabelOfTlp> {
             };
 
             // Reject partial matches such as REDXYZ or AMBER+STRICT_EXTRA.
-            let valid_boundary = after_label
+            if !after_label
                 .chars()
                 .next()
-                .is_none_or(|c| !c.is_alphanumeric() && c != '+' && c != '_' && c != '-');
-
-            if !valid_boundary {
+                .is_none_or(|c| !c.is_alphanumeric() && c != '+' && c != '_' && c != '-')
+            {
                 continue;
             }
 

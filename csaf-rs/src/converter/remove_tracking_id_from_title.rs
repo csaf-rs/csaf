@@ -298,10 +298,10 @@ const PAIRED_SEPARATORS: &[(char, char)] = &[
 
 /// Quote characters. When they belong to a word (e.g. the apostrophe in
 /// `Vendor's`) they neither count as partners nor are removed as dangling.
-/// Brackets are never part of a word.
-const QUOTE_CHARS: &[char] = &[
-    '"', '\'', '＂', '＇', '«', '»', '‹', '›', '‘', '’', '“', '”', '‚', '„', '｢', '｣', '「', '」', '『', '』',
-];
+/// CJK corner brackets (`「」『』｢｣`) are brackets in this sense: in Japanese
+/// text without spaces they would otherwise be considered word-internal and
+/// their pairs would never be found.
+const QUOTE_CHARS: &[char] = &['"', '\'', '＂', '＇', '«', '»', '‹', '›', '‘', '’', '“', '”', '‚', '„'];
 
 /// Returns whether `open` and `close` form a supported enclosing pair. Openers
 /// with several possible closers (e.g. `„` with `‘` or `“`) require checking
@@ -571,6 +571,23 @@ mod tests {
         // word (the possessive) and is dropped together with the id
         assert_eq!("rest", converted_title("RHBA-2019:0024's rest", ID),);
         assert_eq!("rest", converted_title("RHBA-2019:0024’s rest", ID),);
+    }
+
+    #[test]
+    fn keeps_cjk_corner_quoted_phrase() {
+        // Regression for the review of PR #1466: CJK corner brackets are
+        // treated as brackets, so their partner is found even in Japanese
+        // text without spaces (the word-internal exclusion must not hide it)
+        assert_eq!(
+            "日本語「説明」 詳細",
+            converted_title("日本語「説明」 (RHBA-2019:0024) 詳細", ID),
+        );
+    }
+
+    #[test]
+    fn removes_dangling_cjk_closer() {
+        // A closing corner bracket without its opener anywhere is dangling
+        assert_eq!("説明 詳細", converted_title("説明 RHBA-2019:0024」詳細", ID),);
     }
 
     #[test]

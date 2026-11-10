@@ -419,31 +419,26 @@ fn _68_move_multiple_license_expressions_to_notes() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _69_move_publisher_contact_details() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _70_preserve_publisher_openpgp_key() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _71_preserve_publisher_email() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _72_preserve_first_publisher_email() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _73_move_invalid_publisher_key_to_contact_details() -> TestResult<()> {
     run!()

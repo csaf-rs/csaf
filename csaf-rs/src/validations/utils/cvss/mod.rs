@@ -1,3 +1,4 @@
+pub mod check_nonzero;
 pub mod deserialize_json;
 pub mod deserialize_vector;
 pub mod dispatch;
@@ -10,6 +11,7 @@ use crate::validation::TestFinding;
 use crate::validations::utils::cvss::dispatch::validate_content_metrics;
 use crate::validations::utils::cvss::validate_consistency::validate_consistency;
 use crate::validations::utils::cvss::validate_scores::validate_scores;
+use cvss_rs::Version;
 use strum::{AsRefStr, Display};
 
 /// The type of CVSS score being validated, use for error messages.
@@ -55,4 +57,49 @@ pub fn validate_content_consistency(
     errors: &mut Option<Vec<TestFinding>>,
 ) {
     validate_content_metrics(content, instance_path, errors, validate_consistency);
+}
+
+pub enum CvssScoreNonZeroCheckResult {
+    PropertyCvssScoreIsZero,
+    PropertyCvssScoreNonZero(f64),
+    CalculatedCvssScoreIsZero,
+    CalculatedCvssScoreNonZero(f64),
+    ParsingFailed,
+    CalculationFailed,
+}
+
+pub fn get_content_nonzero(content: &impl ContentTrait) -> Vec<(Version, CvssScoreNonZeroCheckResult)> {
+    let mut failing_check_results = Vec::new();
+
+    for (metric_type, result) in [
+        (
+            Version::V2,
+            content
+                .get_cvss_v2_typed()
+                .map(|result| result.map(check_nonzero::validation::cvss_v2_has_env_score_zero)),
+        ),
+        (
+            Version::V3_0,
+            content
+                .get_cvss_v3_typed()
+                .map(|result| result.map(check_nonzero::validation::cvss_v3_has_env_score_zero)),
+        ),
+        (
+            Version::V4,
+            content
+                .get_cvss_v4_typed()
+                .map(|result| result.map(check_nonzero::validation::cvss_v4_has_score_zero)),
+        ),
+    ] {
+        let Some(result) = result else {
+            continue;
+        };
+        // This unwrap_or_else handles cvss_vX_typed returning an error
+        let results = result.unwrap_or_else(|_| vec![CvssScoreNonZeroCheckResult::ParsingFailed]);
+
+        // map in the version
+        failing_check_results.extend(results.into_iter().map(|result| (metric_type, result)));
+    }
+
+    failing_check_results
 }

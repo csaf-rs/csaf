@@ -1,4 +1,4 @@
-# csaf-rust [![build](https://github.com/csaf-rs/csaf/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/csaf-rs/csaf/actions/workflows/build.yml) [![CVSS](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)](https://api.devguard.org/api/v1/badges/cvss/06c84617-8925-4cfa-af31-f609ebce390c)
+# csaf-rust [![build](https://github.com/csaf-rs/csaf/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/csaf-rs/csaf/actions/workflows/build.yml) 
 
 This repository is a reference implementation for the CSAF standard in Rust that relies on automatically generating CSAF document structs from the JSON schema.
 
@@ -350,7 +350,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.16    | ✅ | ✅ |
 | 6.2.17    | ✅ | ✅ |
 | 6.2.18    | ✅ | ✅ |
-| 6.2.19    |  |  |
+| 6.2.19    | ✅ | ✅ |
 | 6.2.20    | ✅ | ✅ |
 | 6.2.21    | ⭕ | ✅ |
 | 6.2.22    | ⭕ | ✅ |
@@ -406,7 +406,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.2.55  | ⭕ |  |
 | 6.2.56.1  | ⭕ |  |
 | 6.2.56.2  | ⭕ | ✅ |
-| 6.2.56.3  | ⭕ |  |
+| 6.2.56.3  | ⭕ | ✅ |
 | 6.2.56.4  | ⭕ |  |
 | 6.2.56.5  | ⭕ |  |
 | 6.2.57  | ⭕ | ✅ |

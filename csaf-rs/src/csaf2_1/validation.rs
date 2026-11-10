@@ -203,7 +203,8 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 // TODO #1351 "6.2.56.5"
             ]),
             Ok(Preset::Ssvc) => Ok(vec![
-                "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37", "6.3.13",
+                "6.1.46", "6.1.47", "6.1.48", "6.1.49", "6.2.3", "6.2.34", "6.2.35", "6.2.36", "6.2.37",
+                // TODO "6.3.13",
                 "6.3.14", "6.3.15",
             ]),
             Ok(Preset::ValidationTime) => Ok(vec![
@@ -291,7 +292,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.25" => Some(ValidatorForTest6_1_25.validate(self)),
                 "6.1.26" => Some(ValidatorForTest6_1_26.validate(self)),
                 "6.1.27.1" => Some(ValidatorForTest6_1_27_1.validate(self)),
-                "6.1.27.2" => Some(ValidatorForTest6_1_27_2.validate(self)),
+                "6.1.27.2" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.1.27.3" => Some(ValidatorForTest6_1_27_3.validate(self)),
                 "6.1.27.4" => Some(ValidatorForTest6_1_27_4.validate(self)),
                 "6.1.27.5" => Some(ValidatorForTest6_1_27_5.validate(self)),
@@ -399,7 +406,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.16" => Some(ValidatorForTest6_2_16.validate(self)),
                 "6.2.17" => Some(ValidatorForTest6_2_17.validate(self)),
                 "6.2.18" => Some(ValidatorForTest6_2_18.validate(self)),
-                "6.2.19" => None, // Some(ValidatorForTest6_2_19.validate(self)),
+                "6.2.19" => Some(ValidatorForTest6_2_19.validate(self)),
                 "6.2.20" => {
                     // see below in RawValidatable
                     return TestResult {
@@ -471,8 +478,9 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.55" => None,   //Some(ValidatorForTest6_2_55.validate(self)),
                 "6.2.56.1" => None, //Some(ValidatorForTest6_2_56_1.validate(self)),
                 "6.2.56.2" => Some(ValidatorForTest6_2_56_2.validate(self)),
-                "6.2.56.3" => None, //Some(ValidatorForTest6_2_56_3.validate(self)),
+                "6.2.56.3" => Some(ValidatorForTest6_2_56_3.validate(self)),
                 "6.2.56.4" => None, //Some(ValidatorForTest6_2_56_4.validate(self)),
+                "6.2.56.5" => None, //Some(ValidatorForTest6_2_56_5.validate(self)),
                 "6.2.57" => Some(ValidatorForTest6_2_57.validate(self)),
                 // informative tests
                 "6.3.1" => Some(ValidatorForTest6_3_1.validate(self)),
@@ -532,6 +540,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             match test_id {
                 PRESET_NAME_SCHEMA => Some(validate_schema_csaf_2_1(self)),
                 "6.1.15" => Some(ValidatorForTest6_1_15.validate(self)),
+                "6.1.27.2" => Some(ValidatorForTest6_1_27_2.validate(self)),
                 "6.1.27.19" => Some(ValidatorForTest6_1_27_19.validate(self)),
                 "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),

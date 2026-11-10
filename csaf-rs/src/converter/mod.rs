@@ -8,8 +8,14 @@ mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
 mod set_csaf_21_schema;
+mod set_initial_release_date;
+mod settings;
+mod sort_json_keys;
 mod update_csaf_version;
+mod update_publisher_category;
 mod update_tlp_label;
+
+pub use settings::{PublisherCategoryOtherSettings, Settings};
 
 pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
     let mut doc = loose::Document::new(raw);
@@ -22,12 +28,19 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 }
 
 const CONVERSIONS: &[&dyn Convert] = &[
+    // conversions that work on leaf nodes
     &lowercase_hash_value::LowercaseHashValue,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
+    &update_tlp_label::UpdateTlpLabel,
+    &update_publisher_category::UpdatePublisherCategory,
+    &set_initial_release_date::SetInitialReleaseDate,
+    // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
-    &update_tlp_label::UpdateTlpLabel,
+    // conversions that move subtrees
+    // sorting keys should be last
+    &sort_json_keys::SortJsonKeys,
 ];
 
 /// Incremental v2.0 to v2.1 conversion
@@ -37,6 +50,7 @@ pub trait Convert {
 
 pub trait Diagnostics {
     fn error(&mut self, path: Cow<'static, str>, error: Error);
+    fn has_errors(&self) -> bool;
     fn warning(&mut self, path: Cow<'static, str>, warning: Warning);
 }
 
@@ -54,18 +68,25 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    PublisherCategoryOther,
+    InconsistentInitialReleaseDate { old: String, new: String },
     DefaultTlpLabelSet,
     TlpLabelFromDistributionText { converted: String, from_text: String },
 }
 
 impl fmt::Display for Warning {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = match self {
-            Warning::ValidationWarning(message) => message,
-            Warning::CsafVersionIsMissing => "CSAF version node is missing",
-            Warning::InvalidCsafVersion => "CSAF version node contained an invalid value",
-            Warning::InvalidTlpLabel => "TLP label contained an invalid value",
-            Warning::TlpIsMissingLabel => "TLP node was present but did not contain the `label` property",
+        match self {
+            Warning::ValidationWarning(message) => f.write_str(message),
+            Warning::InconsistentInitialReleaseDate { old, new } => write!(
+                f,
+                "An inconsistent initial release date `{old}` was detected and replaced with \
+                the date `{new}` from the revision history item with a number of 1 or 1.0.0"
+            ),
+            Warning::CsafVersionIsMissing => f.write_str("CSAF version node is missing"),
+            Warning::InvalidCsafVersion => f.write_str("CSAF version node contained an invalid value"),
+            Warning::InvalidTlpLabel => f.write_str("TLP label contained an invalid value"),
+            Warning::TlpIsMissingLabel => f.write_str("TLP node was present but did not contain the `label` property"),
             Warning::DefaultTlpLabelSet => "default TLP has been set to CLEAR",
             Warning::TlpLabelFromDistributionText { converted, from_text } => {
                 return write!(
@@ -74,8 +95,13 @@ impl fmt::Display for Warning {
                      (converted value: {converted}, text value: {from_text})"
                 );
             },
-        };
-        f.write_str(s)
+            Warning::PublisherCategoryOther => f.write_str(
+                "Some publishers previously categorized as 'other' \
+                have been regrouped into the new 'multiplier' category in CSAF 2.1. \
+                Please manually check whether the publisher category should be changed to 'multiplier'. \
+                The converter provides options to perform this change automatically or suppress this warning.",
+            ),
+        }
     }
 }
 
@@ -108,6 +134,10 @@ mod tests {
             panic!("expected no diagnostics; got {error:?}")
         }
 
+        fn has_errors(&self) -> bool {
+            panic!("no errors")
+        }
+
         fn warning(&mut self, _path: Cow<'static, str>, warning: Warning) {
             panic!("expected no diagnostics; got {warning:?}")
         }
@@ -121,6 +151,10 @@ mod tests {
     impl Diagnostics for OnlyWarnings {
         fn error(&mut self, _path: Cow<'static, str>, error: Error) {
             panic!("expected no errors; got {error:?}")
+        }
+
+        fn has_errors(&self) -> bool {
+            false
         }
 
         fn warning(&mut self, path: Cow<'static, str>, warning: Warning) {

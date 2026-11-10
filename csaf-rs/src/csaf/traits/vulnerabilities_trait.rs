@@ -125,7 +125,12 @@ pub trait VulnerabilityTrait {
     /// Retrieves a list of potential threats related to the vulnerability.
     fn get_threats(&self) -> &Vec<Self::ThreatType>;
 
+    fn get_disclosure_date_property_name(&self) -> &'static str;
+
     /// Returns the date when this vulnerability was initially disclosed.
+    ///
+    /// This property was renamed in CSAF 2.1 from `release_date` to `disclosure_date`.
+    /// This accessor will return the appropriate date based on the CSAF version being used.
     fn get_disclosure_date(&self) -> Option<CsafDateTime>;
 
     /// Returns the date when this vulnerability was initially discovered.
@@ -166,6 +171,9 @@ pub trait VulnerabilityTrait {
 
     /// Returns the vulnerability IDs associated with this vulnerability.
     fn get_ids(&self) -> Option<&Vec<Self::VulnerabilityIdType>>;
+
+    /// Returns the document-local vulnerability ID associated with this vulnerability.
+    fn get_document_local_vuln_id(&self) -> Option<&str>;
 
     /// Returns the notes associated with this vulnerability.
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>>;
@@ -275,6 +283,10 @@ impl VulnerabilityTrait for Vulnerability20 {
         self.ids.as_ref()
     }
 
+    fn get_document_local_vuln_id(&self) -> Option<&str> {
+        None
+    }
+
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
         self.notes.as_deref()
     }
@@ -289,6 +301,10 @@ impl VulnerabilityTrait for Vulnerability20 {
 
     fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         None
+    }
+
+    fn get_disclosure_date_property_name(&self) -> &'static str {
+        "release_date"
     }
 }
 
@@ -366,6 +382,10 @@ impl VulnerabilityTrait for Vulnerability21 {
         self.ids.as_ref()
     }
 
+    fn get_document_local_vuln_id(&self) -> Option<&str> {
+        self.dl_vuln_id.as_deref().map(|id| id.as_str())
+    }
+
     fn get_notes(&self) -> Option<&Vec<Self::NoteType>> {
         self.notes.as_deref()
     }
@@ -382,5 +402,9 @@ impl VulnerabilityTrait for Vulnerability21 {
 
     fn get_extensions(&self) -> Option<&Self::ExtensionsType> {
         self.x_extensions.as_ref()
+    }
+
+    fn get_disclosure_date_property_name(&self) -> &'static str {
+        "disclosure_date"
     }
 }

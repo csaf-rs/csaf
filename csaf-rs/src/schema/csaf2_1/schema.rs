@@ -98,6 +98,8 @@ impl Action {
     PartialOrd
 )]
 pub enum ActionCategory {
+    #[serde(rename = "assessment")]
+    Assessment,
     #[serde(rename = "confirmation")]
     Confirmation,
     #[serde(rename = "coordination")]
@@ -106,6 +108,8 @@ pub enum ActionCategory {
     Discovery,
     #[serde(rename = "dispute")]
     Dispute,
+    #[serde(rename = "embargo")]
+    Embargo,
     #[serde(rename = "exploitation")]
     Exploitation,
     #[serde(rename = "fix_deployment")]
@@ -114,21 +118,23 @@ pub enum ActionCategory {
     FixRelease,
     #[serde(rename = "notification")]
     Notification,
-    #[serde(rename = "triage")]
-    Triage,
+    #[serde(rename = "observation")]
+    Observation,
 }
 impl ::std::fmt::Display for ActionCategory {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match *self {
+            Self::Assessment => f.write_str("assessment"),
             Self::Confirmation => f.write_str("confirmation"),
             Self::Coordination => f.write_str("coordination"),
             Self::Discovery => f.write_str("discovery"),
             Self::Dispute => f.write_str("dispute"),
+            Self::Embargo => f.write_str("embargo"),
             Self::Exploitation => f.write_str("exploitation"),
             Self::FixDeployment => f.write_str("fix_deployment"),
             Self::FixRelease => f.write_str("fix_release"),
             Self::Notification => f.write_str("notification"),
-            Self::Triage => f.write_str("triage"),
+            Self::Observation => f.write_str("observation"),
         }
     }
 }
@@ -138,15 +144,17 @@ impl ::std::str::FromStr for ActionCategory {
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         match value {
+            "assessment" => Ok(Self::Assessment),
             "confirmation" => Ok(Self::Confirmation),
             "coordination" => Ok(Self::Coordination),
             "discovery" => Ok(Self::Discovery),
             "dispute" => Ok(Self::Dispute),
+            "embargo" => Ok(Self::Embargo),
             "exploitation" => Ok(Self::Exploitation),
             "fix_deployment" => Ok(Self::FixDeployment),
             "fix_release" => Ok(Self::FixRelease),
             "notification" => Ok(Self::Notification),
-            "triage" => Ok(Self::Triage),
+            "observation" => Ok(Self::Observation),
             _ => Err("invalid value".into()),
         }
     }
@@ -1271,8 +1279,6 @@ pub struct Content {
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub qualitative_severity_rating: ::std::option::Option<QualitativeSeverityRating>,
     #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
-    pub ssvc_v1: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
     pub ssvc_v2: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     ///Contains a list of extensions valid at the metrics-content-level of the CSAF document and associated with this metric element.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1496,11 +1502,14 @@ impl ::std::str::FromStr for CweVersion {
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
         static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
-            ::regress::Regex::new("^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$").unwrap()
+            ::regress::Regex::new(
+                    "^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.([0-9]|([1-9]\\d+)))?$",
+                )
+                .unwrap()
         });
         if PATTERN.find(value).is_none() {
             return Err(
-                "doesn't match pattern \"^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.\\d+)?$\""
+                "doesn't match pattern \"^[1-9]\\d*\\.([0-9]|([1-9]\\d+))(\\.([0-9]|([1-9]\\d+)))?$\""
                     .into(),
             );
         }
@@ -5649,7 +5658,7 @@ pub struct Vulnerability {
     ///Holds the date and time the vulnerability was originally discovered.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub discovery_date: ::std::option::Option<::std::string::String>,
-    ///Contains the local IDs referring to this vulnerability from another part of the same document.
+    ///Contains the local ID referring to this vulnerability from another part of the same document.
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub dl_vuln_id: ::std::option::Option<DlVulnIdT>,
     ///Contains a list of dates of first known exploitations.
@@ -6545,10 +6554,6 @@ pub mod builder {
             ::std::option::Option<super::QualitativeSeverityRating>,
             ::std::string::String,
         >,
-        ssvc_v1: ::std::result::Result<
-            ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            ::std::string::String,
-        >,
         ssvc_v2: ::std::result::Result<
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             ::std::string::String,
@@ -6566,7 +6571,6 @@ pub mod builder {
                 cvss_v4: Ok(Default::default()),
                 epss: Ok(Default::default()),
                 qualitative_severity_rating: Ok(Default::default()),
-                ssvc_v1: Ok(Default::default()),
                 ssvc_v2: Ok(Default::default()),
                 x_extensions: Ok(Default::default()),
             }
@@ -6641,20 +6645,6 @@ pub mod builder {
                 });
             self
         }
-        pub fn ssvc_v1<T>(mut self, value: T) -> Self
-        where
-            T: ::std::convert::TryInto<
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            >,
-            T::Error: ::std::fmt::Display,
-        {
-            self.ssvc_v1 = value
-                .try_into()
-                .map_err(|e| {
-                    format!("error converting supplied value for ssvc_v1: {e}")
-                });
-            self
-        }
         pub fn ssvc_v2<T>(mut self, value: T) -> Self
         where
             T: ::std::convert::TryInto<
@@ -6693,7 +6683,6 @@ pub mod builder {
                 cvss_v4: value.cvss_v4?,
                 epss: value.epss?,
                 qualitative_severity_rating: value.qualitative_severity_rating?,
-                ssvc_v1: value.ssvc_v1?,
                 ssvc_v2: value.ssvc_v2?,
                 x_extensions: value.x_extensions?,
             })
@@ -6707,7 +6696,6 @@ pub mod builder {
                 cvss_v4: Ok(value.cvss_v4),
                 epss: Ok(value.epss),
                 qualitative_severity_rating: Ok(value.qualitative_severity_rating),
-                ssvc_v1: Ok(value.ssvc_v1),
                 ssvc_v2: Ok(value.ssvc_v2),
                 x_extensions: Ok(value.x_extensions),
             }

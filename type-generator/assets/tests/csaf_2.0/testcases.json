@@ -99,6 +99,10 @@
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-12-s02.json",
           "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-12-s03.json",
+          "valid": false
         }
       ],
       "valid": [
@@ -286,6 +290,10 @@
         },
         {
           "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s13.json",
+          "valid": false
+        },
+        {
+          "name": "mandatory/csaf-rs_csaf-csaf_2_0-6-1-21-s14.json",
           "valid": false
         }
       ]
@@ -834,6 +842,58 @@
       "valid": [
         {
           "name": "informative/csaf-rs_csaf-csaf_2_0-6-3-04-s11.json",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "id": "6.2.19",
+      "group": "optional",
+      "failures": [
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s01.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s02.json",
+          "valid": true
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s03.json",
+          "valid": true
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s04.json",
+          "valid": true
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s05.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s06.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s07.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s08.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s09.json",
+          "valid": false
+        },
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s21.json",
+          "valid": false
+        }
+      ],
+      "valid": [
+        {
+          "name": "optional/csaf-rs_csaf-csaf_2_0-6-2-19-s11.json",
           "valid": true
         }
       ]

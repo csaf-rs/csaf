@@ -15,7 +15,7 @@
     },
     "title": "Mandatory test: Missing Item in Revision History (supplementary example 13: mixed versions)",
     "tracking": {
-      "current_release_date": "2026-03-09T13:00:00.000Z",
+      "current_release_date": "2026-03-09T14:00:00.000Z",
       "id": "CSAF-RS_CSAF-CSAF_2_1-6-1-21-S13",
       "initial_release_date": "2026-03-09T11:00:00.000Z",
       "revision_history": [
@@ -31,8 +31,13 @@
         },
         {
           "date": "2026-03-09T13:00:00.000Z",
-          "number": "3.4.5",
-          "summary": "3.4.5"
+          "number": "2.0.1",
+          "summary": "2.0.1"
+        },
+        {
+          "date": "2026-03-09T14:00:00.000Z",
+          "number": "3.0.0",
+          "summary": "3.0.0"
         }
       ],
       "status": "final",

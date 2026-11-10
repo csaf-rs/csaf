@@ -292,7 +292,13 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.1.25" => Some(ValidatorForTest6_1_25.validate(self)),
                 "6.1.26" => Some(ValidatorForTest6_1_26.validate(self)),
                 "6.1.27.1" => Some(ValidatorForTest6_1_27_1.validate(self)),
-                "6.1.27.2" => Some(ValidatorForTest6_1_27_2.validate(self)),
+                "6.1.27.2" => {
+                    // see below in RawValidatable
+                    return TestResult {
+                        test_id: test_id.to_string(),
+                        status: TestResultStatus::Skipped,
+                    };
+                },
                 "6.1.27.3" => Some(ValidatorForTest6_1_27_3.validate(self)),
                 "6.1.27.4" => Some(ValidatorForTest6_1_27_4.validate(self)),
                 "6.1.27.5" => Some(ValidatorForTest6_1_27_5.validate(self)),
@@ -400,7 +406,7 @@ impl Validatable for CommonSecurityAdvisoryFramework {
                 "6.2.16" => Some(ValidatorForTest6_2_16.validate(self)),
                 "6.2.17" => Some(ValidatorForTest6_2_17.validate(self)),
                 "6.2.18" => Some(ValidatorForTest6_2_18.validate(self)),
-                "6.2.19" => None, // Some(ValidatorForTest6_2_19.validate(self)),
+                "6.2.19" => Some(ValidatorForTest6_2_19.validate(self)),
                 "6.2.20" => {
                     // see below in RawValidatable
                     return TestResult {
@@ -534,6 +540,7 @@ impl RawValidatable for RawDocument<CommonSecurityAdvisoryFramework> {
             match test_id {
                 PRESET_NAME_SCHEMA => Some(validate_schema_csaf_2_1(self)),
                 "6.1.15" => Some(ValidatorForTest6_1_15.validate(self)),
+                "6.1.27.2" => Some(ValidatorForTest6_1_27_2.validate(self)),
                 "6.1.27.19" => Some(ValidatorForTest6_1_27_19.validate(self)),
                 "6.2.12" => Some(ValidatorForTest6_2_12.validate(self)),
                 "6.2.13" => Some(ValidatorForTest6_2_13.validate(self)),

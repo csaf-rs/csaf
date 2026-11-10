@@ -11,8 +11,8 @@ keywords.workspace = true
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"], optional=true }
 anyhow = "1.0.93"
-csaf-validator = { path = "../csaf-validator", version = "0.6", optional=true }
-csaf-converter = { path = "../csaf-converter", version = "0.6", optional=true }
+csaf-validator = { path = "../csaf-validator", version = "0.7", optional=true }
+csaf-converter = { path = "../csaf-converter", version = "0.7", optional=true }
 
 [lints]
 workspace = true

@@ -87,6 +87,12 @@ fn visit_product_tree_value_with_path(
             if let Some(Value::Object(helper)) = object.get_mut("product_identification_helper") {
                 callback(helper, format!("{path}/product_identification_helper"));
             }
+            if object
+                .get("product_identification_helper")
+                .is_some_and(|helper| helper.as_object().is_some_and(Map::is_empty))
+            {
+                object.remove("product_identification_helper");
+            }
             for (key, child) in object.iter_mut() {
                 visit_product_tree_value_with_path(
                     child,

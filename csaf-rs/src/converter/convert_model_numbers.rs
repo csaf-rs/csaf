@@ -92,6 +92,10 @@ fn convert_numbers(
             *value = converted.value;
             true
         });
+
+        if numbers.is_empty() {
+            helper.remove(field_name);
+        }
     });
 }
 
@@ -168,10 +172,7 @@ mod tests {
         }));
         let mut diagnostics = OnlyWarnings::default();
         ConvertModelNumbers.convert(&mut doc, &Settings::default(), &mut diagnostics);
-        assert_eq!(
-            doc.into_raw()["product_tree"]["full_product_names"][0]["product_identification_helper"]["model_numbers"],
-            json!([])
-        );
+        assert_eq!(doc.into_raw()["product_tree"]["full_product_names"][0], json!({}));
         assert!(matches!(
             diagnostics.warnings()[0].1,
             Warning::ModelNumberWithMultipleStars { .. }

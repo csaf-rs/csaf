@@ -1,6 +1,6 @@
 use serde_json::Value;
 
-use super::helpers::for_each_product_identification_helper_with_path;
+use super::helpers::{for_each_product_identification_helper_with_path, retain_unique_field_values};
 use super::{Convert, Diagnostics, ProductIdentificationNumberSettings, Settings, Warning};
 use crate::csaf::types::csaf_product_id_helper_number::ProductIdentificationHelperNumber;
 use crate::schema::loose;
@@ -66,34 +66,41 @@ fn convert_numbers(
             return;
         };
 
-        let mut index = 0;
-        numbers.retain_mut(|number| {
-            let current_index = index;
-            index += 1;
-            let Value::String(value) = number else {
-                return true;
-            };
-            let original = value.clone();
-            let converted = convert_number(
-                value,
-                settings.interpret_as_complete,
-                settings.question_mark_is_literal,
-                settings.asterisk_is_literal,
-            );
-            let path = format!("{helper_path}/{field_name}/{current_index}");
+        {
+            let mut index = 0;
+            numbers.retain_mut(|number| {
+                let current_index = index;
+                index += 1;
+                let Value::String(value) = number else {
+                    return true;
+                };
+                let original = value.clone();
+                let converted = convert_number(
+                    value,
+                    settings.interpret_as_complete,
+                    settings.question_mark_is_literal,
+                    settings.asterisk_is_literal,
+                );
+                let path = format!("{helper_path}/{field_name}/{current_index}");
 
-            if converted.unescaped_stars > 1 {
-                diagnostics.warning(path.into(), multiple_stars_warning(original));
-                return false;
-            }
-            if converted.added_star {
-                diagnostics.warning(path.into(), partial_warning(original));
-            }
-            *value = converted.value;
-            true
-        });
+                if converted.unescaped_stars > 1 {
+                    diagnostics.warning(path.into(), multiple_stars_warning(original));
+                    return false;
+                }
+                if converted.added_star {
+                    diagnostics.warning(path.into(), partial_warning(original));
+                }
+                *value = converted.value;
+                true
+            });
+        }
+        retain_unique_field_values(helper, field_name);
 
-        if numbers.is_empty() {
+        if helper
+            .get(field_name)
+            .and_then(Value::as_array)
+            .is_some_and(Vec::is_empty)
+        {
             helper.remove(field_name);
         }
     });
@@ -124,10 +131,7 @@ fn convert_number(
     // If a number is given that does not end on a star, the CSAF 2.0 to CSAF 2.1 Converter SHOULD add a * to the end and issue a warning that a partial stock keeping unit was detected and a star has been added.
     // A tool MAY provide a non-default option to interpret all stock keeping units as complete and therefore does not add any stars.
     // A tool MAY provide a non-default option to interpret the * in all stock keeping units as part of the stock keeping unit itself and therefore escape it.
-    if !interpret_as_complete
-        && !asterisk_is_literal
-        && !ProductIdentificationHelperNumber::ends_in_unescaped_star(&value)
-    {
+    if !interpret_as_complete && !ProductIdentificationHelperNumber::ends_in_unescaped_star(&value) {
         value.push('*');
         added_star = true;
     }
@@ -200,6 +204,46 @@ mod tests {
             diagnostics.warnings()[1].1,
             Warning::SerialNumberWithMultipleStars { .. }
         ));
+    }
+
+    #[test]
+    fn deduplicates_normalized_model_and_serial_numbers() {
+        let mut doc = loose::Document::new(json!({
+            "product_tree": {"full_product_names": [{
+                "product_identification_helper": {
+                    "model_numbers": ["ABC", "ABC*"],
+                    "serial_numbers": ["SN", "SN*"]
+                }
+            }]}
+        }));
+        let mut diagnostics = OnlyWarnings::default();
+
+        ConvertModelNumbers.convert(&mut doc, &Settings::default(), &mut diagnostics);
+        ConvertSerialNumbers.convert(&mut doc, &Settings::default(), &mut diagnostics);
+
+        assert_eq!(
+            doc.into_raw()["product_tree"]["full_product_names"][0]["product_identification_helper"],
+            json!({"model_numbers": ["ABC*"], "serial_numbers": ["SN*"]})
+        );
+    }
+
+    #[test]
+    fn literal_asterisk_setting_does_not_disable_partial_suffix() {
+        let mut doc = loose::Document::new(json!({
+            "product_tree": {"full_product_names": [{
+                "product_identification_helper": {"model_numbers": ["ABC"]}
+            }]}
+        }));
+        let mut settings = Settings::default();
+        settings.model_numbers.asterisk_is_literal = true;
+        let mut diagnostics = OnlyWarnings::default();
+
+        ConvertModelNumbers.convert(&mut doc, &settings, &mut diagnostics);
+
+        assert_eq!(
+            doc.into_raw()["product_tree"]["full_product_names"][0]["product_identification_helper"]["model_numbers"],
+            json!(["ABC*"])
+        );
     }
 
     #[test]

@@ -273,7 +273,7 @@ mod tests {
                             "sbom_urls": [
                                 "https://example.com/sbom-a.json",
                             ],
-                            "skus": ["AAA"],
+                            "skus": ["AAA*"],
                             "x_generic_uris": [
                                 {
                                     "namespace": "https://example.com",
@@ -290,7 +290,13 @@ mod tests {
                 }
             ],
         });
-        let doc = convert(input, &Settings::default(), &mut NoDiagnostics);
+        let mut diagnostics = OnlyWarnings::default();
+        let doc = convert(input, &Settings::default(), &mut diagnostics);
         assert_eq!(output, doc.into_raw());
+        assert_eq!(diagnostics.warnings().len(), 2);
+        assert!(diagnostics
+            .warnings()
+            .iter()
+            .all(|(_, warning)| matches!(warning, Warning::PartialStockKeepingUnit { value } if value == "AAA")));
     }
 }

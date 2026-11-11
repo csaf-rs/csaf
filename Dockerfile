@@ -20,10 +20,8 @@ RUN sed -i 's/, "csaf-ffi"//' Cargo.toml
 # Build the service in release mode (musl is the native target on Alpine)
 RUN cargo build --release -p csaf-service
 
-# Runtime stage
-FROM alpine:3.21
-
-RUN apk add --no-cache ca-certificates
+# Runtime stage — distroless static (no shell, no package manager; ships ca-certificates + tzdata)
+FROM gcr.io/distroless/static-debian12:nonroot
 
 COPY --from=builder /app/target/release/csaf-service /usr/local/bin/csaf-service
 
@@ -32,4 +30,4 @@ ENV CSAF_SERVICE__SERVER__PORT=8082
 ENV CSAF_SERVICE__SERVER__HOST=0.0.0.0
 EXPOSE 8082
 
-ENTRYPOINT ["csaf-service"]
+ENTRYPOINT ["/usr/local/bin/csaf-service"]

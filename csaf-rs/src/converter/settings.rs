@@ -4,7 +4,24 @@ use crate::schema::csaf2_1;
 pub struct Settings {
     pub publisher_category_other: PublisherCategoryOtherSettings,
     pub publisher_contact: PublisherContactSettings,
+    pub model_numbers: ModelNumberSettings,
+    pub serial_numbers: SerialNumberSettings,
+    pub skus: StockKeepingUnitSettings,
 }
+
+#[derive(Default)]
+pub struct ProductIdentificationNumberSettings {
+    /// Interpret model numbers as complete values instead of partial prefixes.
+    pub interpret_as_complete: bool,
+    /// Interpret question marks as literal characters.
+    pub question_mark_is_literal: bool,
+    /// Interpret asterisks as literal characters.
+    pub asterisk_is_literal: bool,
+}
+
+pub type ModelNumberSettings = ProductIdentificationNumberSettings;
+pub type SerialNumberSettings = ProductIdentificationNumberSettings;
+pub type StockKeepingUnitSettings = ProductIdentificationNumberSettings;
 
 #[derive(Default)]
 pub struct PublisherCategoryOtherSettings {

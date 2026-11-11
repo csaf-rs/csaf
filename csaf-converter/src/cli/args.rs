@@ -23,6 +23,15 @@ pub struct ConverterArgs {
 
     #[command(flatten, next_help_heading = "Publisher contact options")]
     pub(super) publisher_contact: PublisherContactArgs,
+
+    #[command(flatten, next_help_heading = "Model number options")]
+    pub(super) model_numbers: ModelNumberArgs,
+
+    #[command(flatten, next_help_heading = "Serial number options")]
+    pub(super) serial_numbers: SerialNumberArgs,
+
+    #[command(flatten, next_help_heading = "Stock keeping unit options")]
+    pub(super) skus: StockKeepingUnitArgs,
 }
 
 #[derive(clap::Args, Debug)]
@@ -58,6 +67,51 @@ pub(super) struct PublisherContactArgs {
         value_parser = parse_public_openpgp_key_url
     )]
     pub(super) public_openpgp_key_url: Option<csaf2_1_schema::PublicOpenPgpKeyUrl>,
+}
+
+#[derive(clap::Args, Debug)]
+pub(super) struct ModelNumberArgs {
+    /// Interpret all model numbers as complete values
+    #[arg(long = "model-numbers-as-complete")]
+    pub(super) interpret_as_complete: bool,
+
+    /// Interpret question marks in model numbers as literal characters
+    #[arg(long = "model-numbers-question-mark-literal")]
+    pub(super) question_mark_is_literal: bool,
+
+    /// Interpret asterisks in model numbers as literal characters
+    #[arg(long = "model-numbers-asterisk-literal")]
+    pub(super) asterisk_is_literal: bool,
+}
+
+#[derive(clap::Args, Debug)]
+pub(super) struct SerialNumberArgs {
+    /// Interpret all serial numbers as complete values
+    #[arg(long = "serial-numbers-as-complete")]
+    pub(super) interpret_as_complete: bool,
+
+    /// Interpret question marks in serial numbers as literal characters
+    #[arg(long = "serial-numbers-question-mark-literal")]
+    pub(super) question_mark_is_literal: bool,
+
+    /// Interpret asterisks in serial numbers as literal characters
+    #[arg(long = "serial-numbers-asterisk-literal")]
+    pub(super) asterisk_is_literal: bool,
+}
+
+#[derive(clap::Args, Debug)]
+pub(super) struct StockKeepingUnitArgs {
+    /// Interpret all stock keeping units as complete values
+    #[arg(long = "skus-as-complete")]
+    pub(super) interpret_as_complete: bool,
+
+    /// Interpret question marks in stock keeping units as literal characters
+    #[arg(long = "skus-question-mark-literal")]
+    pub(super) question_mark_is_literal: bool,
+
+    /// Interpret asterisks in stock keeping units as literal characters
+    #[arg(long = "skus-asterisk-literal")]
+    pub(super) asterisk_is_literal: bool,
 }
 
 /// Validates the value against the requirements of the CSAF 2.1 property `email`, including its

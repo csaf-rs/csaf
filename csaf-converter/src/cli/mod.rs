@@ -53,6 +53,21 @@ pub fn run_converter(args: ConverterArgs) -> Result<(), anyhow::Error> {
             public_openpgp_key_url: args.publisher_contact.public_openpgp_key_url,
             overwrite_extracted: args.publisher_contact.overwrite_extracted,
         },
+        model_numbers: csaf_rs::converter::ModelNumberSettings {
+            interpret_as_complete: args.model_numbers.interpret_as_complete,
+            question_mark_is_literal: args.model_numbers.question_mark_is_literal,
+            asterisk_is_literal: args.model_numbers.asterisk_is_literal,
+        },
+        serial_numbers: csaf_rs::converter::SerialNumberSettings {
+            interpret_as_complete: args.serial_numbers.interpret_as_complete,
+            question_mark_is_literal: args.serial_numbers.question_mark_is_literal,
+            asterisk_is_literal: args.serial_numbers.asterisk_is_literal,
+        },
+        skus: csaf_rs::converter::StockKeepingUnitSettings {
+            interpret_as_complete: args.skus.interpret_as_complete,
+            question_mark_is_literal: args.skus.question_mark_is_literal,
+            asterisk_is_literal: args.skus.asterisk_is_literal,
+        },
     };
     let converted = super::convert(raw, &settings, &mut diag, args.allow_invalid)?;
     let result = serde_json::to_string_pretty(&converted)?;

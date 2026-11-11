@@ -281,7 +281,14 @@ jobs:
           GOARCH=${{ matrix.target.go-arch }}
           LIB_DIR="go/csaf_ffi/lib/${GOOS}_${GOARCH}"
           mkdir -p "$LIB_DIR"
-          cp target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a "$LIB_DIR/"
+          # rustc archives LLVM metadata sections (.llvmbc bitcode, .llvmcmd, ...)
+          # into the staticlib, also for objects of the precompiled std rlibs that
+          # RUSTFLAGS cannot affect. go's cgo refuses to link archives containing
+          # them since go1.27.4 ("disallowed LTO section"), so strip them from the
+          # copy handed to CGo. Nothing here consumes cross-language LTO.
+          objcopy --remove-section='.llvm*' \
+            "target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a" \
+            "$LIB_DIR/libcsaf_ffi.a"
       - name: Run Go tests
         working-directory: go
         run: |

@@ -17,11 +17,11 @@
 # Submodules: reference schemas + test fixtures, not needed for the service build
 oasis-csaf/
 ssvc/
+csaf-2.0-to-csaf-2.1/
 
 # Workspace dirs not built by the Dockerfile
 # (csaf-ffi is dropped from workspace members in the Dockerfile)
 benchmark/
-csaf-2.0-to-csaf-2.1/
 csaf-ffi/
 go/
 wasm/

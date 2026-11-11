@@ -148,7 +148,7 @@ jobs:
       - name: Smoke test csaf-validator
         if: matrix.version == needs.prepare.outputs.stable-version && matrix.target.skip-test != true
         shell: bash
-        run: ./scripts/smoke-tests/smoke-test-csaf-validator.sh target/${{ matrix.target.arch }}/release/csaf-validator${{ matrix.target.ext }}
+        run: ./scripts/smoke-tests/smoke-test-csaf-validator.sh target/${{ matrix.target.arch }}/release/csaf${{ matrix.target.ext }}
       - name: Build with --no-default-features
         run: cargo build --locked --target=${{ matrix.target.arch }} --no-default-features --verbose --workspace ${{ env.exclude-ffi-args }}
         if: ${{ matrix.target.skip-test != true }}

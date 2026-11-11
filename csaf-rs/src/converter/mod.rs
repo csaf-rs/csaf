@@ -6,9 +6,13 @@ use crate::schema::loose;
 mod checks;
 mod convert_contact_details;
 mod convert_release_date_to_disclosure_date;
+mod deduplicate_sbom_urls;
+mod deduplicate_skus;
+mod deduplicate_x_generic_uris;
 mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
+mod replace_legacy_branch_category;
 mod set_csaf_21_schema;
 mod set_initial_release_date;
 mod settings;
@@ -33,6 +37,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 const CONVERSIONS: &[&dyn Convert] = &[
     // conversions that work on leaf nodes
     &lowercase_hash_value::LowercaseHashValue,
+    &replace_legacy_branch_category::ReplaceLegacyBranchCategory,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
@@ -41,6 +46,9 @@ const CONVERSIONS: &[&dyn Convert] = &[
     // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
+    &deduplicate_sbom_urls::DeduplicateSbomUrls,
+    &deduplicate_skus::DeduplicateSkus,
+    &deduplicate_x_generic_uris::DeduplicateXGenericUris,
     &convert_contact_details::ConvertContactDetails,
     // conversions that move subtrees
     // sorting keys should be last
@@ -63,6 +71,9 @@ pub enum Warning {
     ValidationWarning(String),
     CsafVersionIsMissing,
     InvalidCsafVersion,
+    LegacyBranchCategoryReplaced,
+    InvalidProductTree,
+    InvalidBranches,
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
     DefaultTlpLabelSet,
@@ -90,6 +101,15 @@ impl fmt::Display for Warning {
                      (converted value: {converted}, text value: {from_text})"
                 )
             },
+            Warning::LegacyBranchCategoryReplaced => f.write_str(
+                "Branch category 'legacy' does not exist in CSAF 2.1 \
+                and was replaced with 'product_name'. This replacement \
+                may be incorrect or another category may be a better fit. \
+                Please review the converted document to ensure the \
+                conversion is correct and not misleading.",
+            ),
+            Warning::InvalidProductTree => f.write_str("Skipped branch traversal: product_tree is not a JSON object"),
+            Warning::InvalidBranches => f.write_str("Skipped branch traversal: branches is not a JSON array"),
             Warning::PublisherCategoryOther => f.write_str(
                 "Some publishers previously categorized as 'other' \
                 have been regrouped into the new 'multiplier' category in CSAF 2.1. \
@@ -195,7 +215,22 @@ mod tests {
                         "name": "Product A",
                         "product_id": "CSAFPID-0001",
                         "product_identification_helper": {
-                            "purl": "pkg:maven/com.example/product-A"
+                            "purl": "pkg:maven/com.example/product-A",
+                            "sbom_urls": [
+                                "https://example.com/sbom-a.json",
+                                "https://example.com/sbom-a.json"
+                            ],
+                            "skus": ["AAA", "AAA"],
+                            "x_generic_uris": [
+                                {
+                                    "namespace": "https://example.com",
+                                    "uri": "https://example.com/uri-a"
+                                },
+                                {
+                                    "namespace": "https://example.com",
+                                    "uri": "https://example.com/uri-a"
+                                }
+                            ]
                         }
                     }
                 ],
@@ -222,7 +257,17 @@ mod tests {
                         "name": "Product A",
                         "product_id": "CSAFPID-0001",
                         "product_identification_helper": {
-                            "purls": ["pkg:maven/com.example/product-A"]
+                            "purls": ["pkg:maven/com.example/product-A"],
+                            "sbom_urls": [
+                                "https://example.com/sbom-a.json",
+                            ],
+                            "skus": ["AAA"],
+                            "x_generic_uris": [
+                                {
+                                    "namespace": "https://example.com",
+                                    "uri": "https://example.com/uri-a"
+                                }
+                            ]
                         }
                     }
                 ],

@@ -36,7 +36,6 @@ fn _2_identify_invalid_leap_second() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _3_replace_legacy_product_category() -> TestResult<()> {
     run!()
@@ -467,19 +466,16 @@ fn _77_preserve_multiple_file_hash_algorithms() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _78_preserve_sbom_urls() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _79_preserve_skus() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _80_preserve_generic_uris() -> TestResult<()> {
     run!()

@@ -21,6 +21,10 @@ pub struct ConverterArgs {
     #[command(flatten, next_help_heading = "Publisher category options")]
     pub(super) publisher_category_other: PublisherCategoryOtherArgs,
 
+    // Allow resolving the TLP label from the distribution text
+    #[arg(long)]
+    pub(super) allow_tlp_from_distribution_text: bool,
+
     #[command(flatten, next_help_heading = "Publisher contact options")]
     pub(super) publisher_contact: PublisherContactArgs,
 }

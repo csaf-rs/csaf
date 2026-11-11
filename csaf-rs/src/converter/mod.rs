@@ -5,6 +5,7 @@ use crate::schema::loose;
 
 mod checks;
 mod convert_contact_details;
+mod convert_model_numbers;
 mod convert_release_date_to_disclosure_date;
 mod deduplicate_sbom_urls;
 mod deduplicate_skus;
@@ -21,7 +22,10 @@ mod update_publisher_category;
 mod update_tlp_label;
 
 pub use checks::{is_valid_email, is_valid_public_openpgp_key_url};
-pub use settings::{PublisherCategoryOtherSettings, PublisherContactSettings, Settings};
+pub use settings::{
+    ModelNumberSettings, ProductIdentificationNumberSettings, PublisherCategoryOtherSettings, PublisherContactSettings,
+    SerialNumberSettings, Settings, StockKeepingUnitSettings,
+};
 
 pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dyn Diagnostics) -> loose::Document {
     let mut doc = loose::Document::new(raw);
@@ -45,9 +49,12 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
     &deduplicate_sbom_urls::DeduplicateSbomUrls,
+    &convert_model_numbers::ConvertStockKeepingUnits,
     &deduplicate_skus::DeduplicateSkus,
     &deduplicate_x_generic_uris::DeduplicateXGenericUris,
     &convert_contact_details::ConvertContactDetails,
+    &convert_model_numbers::ConvertModelNumbers,
+    &convert_model_numbers::ConvertSerialNumbers,
     // conversions that move subtrees
     // sorting keys should be last
     &sort_json_keys::SortJsonKeys,

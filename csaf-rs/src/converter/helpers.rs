@@ -26,6 +26,23 @@ pub(super) fn for_each_product_identification_helper_via_as_object_mut(
     }
 }
 
+pub(super) fn for_each_product_identification_helper_with_path(
+    doc: &mut loose::Document,
+    mut callback: impl FnMut(&mut Map<String, Value>, String),
+) {
+    let product_tree = match doc.v20_view_mut().product_tree_mut() {
+        Some(product_tree) => product_tree,
+        None => return,
+    };
+    let Ok(product_tree) = product_tree.caution_as_object_mut() else {
+        return;
+    };
+
+    for (key, value) in product_tree.iter_mut() {
+        visit_product_tree_value_with_path(value, format!("/product_tree/{key}"), &mut callback);
+    }
+}
+
 /// Retains only the first occurrence of each value in the array stored under `field`,
 /// comparing by [`Value`] equality and preserving order. Does nothing if the field is
 /// missing or not an array.
@@ -54,6 +71,33 @@ fn visit_product_tree_value(value: &mut Value, callback: &mut impl FnMut(&mut Ma
         Value::Array(array) => {
             for child in array {
                 visit_product_tree_value(child, callback);
+            }
+        },
+        _ => {},
+    }
+}
+
+fn visit_product_tree_value_with_path(
+    value: &mut Value,
+    path: String,
+    callback: &mut impl FnMut(&mut Map<String, Value>, String),
+) {
+    match value {
+        Value::Object(object) => {
+            if let Some(Value::Object(helper)) = object.get_mut("product_identification_helper") {
+                callback(helper, format!("{path}/product_identification_helper"));
+            }
+            for (key, child) in object.iter_mut() {
+                visit_product_tree_value_with_path(
+                    child,
+                    format!("{path}/{}", key.replace('~', "~0").replace('/', "~1")),
+                    callback,
+                );
+            }
+        },
+        Value::Array(array) => {
+            for (index, child) in array.iter_mut().enumerate() {
+                visit_product_tree_value_with_path(child, format!("{path}/{index}"), callback);
             }
         },
         _ => {},

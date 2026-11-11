@@ -117,54 +117,63 @@ fn _16_move_single_purl_to_purls_array() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _17_add_model_number_wildcard() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _18_add_serial_number_wildcard() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _19_add_sku_wildcard() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _20_remove_invalid_model_number_wildcards() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _21_escape_model_number_backslashes() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _22_remove_invalid_serial_number_wildcards() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _23_escape_serial_number_backslashes() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _24_remove_invalid_sku_wildcards() -> TestResult<()> {
     run!()
 }
 
+// TODO #1482
 #[ignore]
 #[test]
 fn _25_escape_sku_backslashes() -> TestResult<()> {

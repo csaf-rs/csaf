@@ -36,7 +36,6 @@ fn _2_identify_invalid_leap_second() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _3_replace_legacy_product_category() -> TestResult<()> {
     run!()

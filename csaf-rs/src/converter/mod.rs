@@ -12,6 +12,7 @@ mod deduplicate_x_generic_uris;
 mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
+mod replace_legacy_branch_category;
 mod set_csaf_21_schema;
 mod set_initial_release_date;
 mod settings;
@@ -36,6 +37,7 @@ pub fn convert(raw: serde_json::Value, settings: &Settings, diagnostics: &mut dy
 const CONVERSIONS: &[&dyn Convert] = &[
     // conversions that work on leaf nodes
     &lowercase_hash_value::LowercaseHashValue,
+    &replace_legacy_branch_category::ReplaceLegacyBranchCategory,
     &set_csaf_21_schema::SetCsaf21Schema,
     &update_csaf_version::UpdateCsafVersion,
     &update_tlp_label::UpdateTlpLabel,
@@ -71,6 +73,9 @@ pub enum Warning {
     InvalidCsafVersion,
     InvalidTlpLabel,
     TlpIsMissingLabel,
+    LegacyBranchCategoryReplaced,
+    InvalidProductTree,
+    InvalidBranches,
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
     PublisherContactOpenPgpKeyUrlRequiresEmail { url: String },
@@ -90,6 +95,15 @@ impl fmt::Display for Warning {
             Warning::InvalidCsafVersion => f.write_str("CSAF version node contained an invalid value"),
             Warning::InvalidTlpLabel => f.write_str("TLP label contained an invalid value"),
             Warning::TlpIsMissingLabel => f.write_str("TLP node was present but did not contain the `label` property"),
+            Warning::LegacyBranchCategoryReplaced => f.write_str(
+                "Branch category 'legacy' does not exist in CSAF 2.1 \
+                and was replaced with 'product_name'. This replacement \
+                may be incorrect or another category may be a better fit. \
+                Please review the converted document to ensure the \
+                conversion is correct and not misleading.",
+            ),
+            Warning::InvalidProductTree => f.write_str("Skipped branch traversal: product_tree is not a JSON object"),
+            Warning::InvalidBranches => f.write_str("Skipped branch traversal: branches is not a JSON array"),
             Warning::PublisherCategoryOther => f.write_str(
                 "Some publishers previously categorized as 'other' \
                 have been regrouped into the new 'multiplier' category in CSAF 2.1. \

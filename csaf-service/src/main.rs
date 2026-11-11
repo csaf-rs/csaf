@@ -160,9 +160,6 @@ mod shutdown_tests {
     /// Raising SIGTERM against our own process must resolve `shutdown_signal`.
     /// The handler is installed when the future is created, so it is safe to
     /// send the signal afterwards.
-    /// Raising SIGTERM against our own process must resolve `shutdown_signal`.
-    /// Safe for the whole test binary because the handlers are installed
-    /// eagerly when the future is created, before we send the signal.
     #[tokio::test]
     async fn sigterm_resolves_shutdown_signal() {
         let fut = shutdown_signal();

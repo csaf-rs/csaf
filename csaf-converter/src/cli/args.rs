@@ -72,45 +72,51 @@ pub(super) struct PublisherContactArgs {
 #[derive(clap::Args, Debug)]
 pub(super) struct ModelNumberArgs {
     /// Interpret all model numbers as complete values
-    #[arg(long = "model-numbers-as-complete")]
+    #[arg(id = "model-numbers-as-complete", long = "model-numbers-as-complete")]
     pub(super) interpret_as_complete: bool,
 
     /// Interpret question marks in model numbers as literal characters
-    #[arg(long = "model-numbers-question-mark-literal")]
+    #[arg(
+        id = "model-numbers-question-mark-literal",
+        long = "model-numbers-question-mark-literal"
+    )]
     pub(super) question_mark_is_literal: bool,
 
     /// Interpret asterisks in model numbers as literal characters
-    #[arg(long = "model-numbers-asterisk-literal")]
+    #[arg(id = "model-numbers-asterisk-literal", long = "model-numbers-asterisk-literal")]
     pub(super) asterisk_is_literal: bool,
 }
 
 #[derive(clap::Args, Debug)]
 pub(super) struct SerialNumberArgs {
     /// Interpret all serial numbers as complete values
-    #[arg(long = "serial-numbers-as-complete")]
+    #[arg(id = "serial-numbers-as-complete", long = "serial-numbers-as-complete")]
     pub(super) interpret_as_complete: bool,
 
     /// Interpret question marks in serial numbers as literal characters
-    #[arg(long = "serial-numbers-question-mark-literal")]
+    #[arg(
+        id = "serial-numbers-question-mark-literal",
+        long = "serial-numbers-question-mark-literal"
+    )]
     pub(super) question_mark_is_literal: bool,
 
     /// Interpret asterisks in serial numbers as literal characters
-    #[arg(long = "serial-numbers-asterisk-literal")]
+    #[arg(id = "serial-numbers-asterisk-literal", long = "serial-numbers-asterisk-literal")]
     pub(super) asterisk_is_literal: bool,
 }
 
 #[derive(clap::Args, Debug)]
 pub(super) struct StockKeepingUnitArgs {
     /// Interpret all stock keeping units as complete values
-    #[arg(long = "skus-as-complete")]
+    #[arg(id = "skus-as-complete", long = "skus-as-complete")]
     pub(super) interpret_as_complete: bool,
 
     /// Interpret question marks in stock keeping units as literal characters
-    #[arg(long = "skus-question-mark-literal")]
+    #[arg(id = "skus-question-mark-literal", long = "skus-question-mark-literal")]
     pub(super) question_mark_is_literal: bool,
 
     /// Interpret asterisks in stock keeping units as literal characters
-    #[arg(long = "skus-asterisk-literal")]
+    #[arg(id = "skus-asterisk-literal", long = "skus-asterisk-literal")]
     pub(super) asterisk_is_literal: bool,
 }
 

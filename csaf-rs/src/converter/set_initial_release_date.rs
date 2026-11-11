@@ -681,6 +681,11 @@ mod tests {
                     "name": "Example Publisher",
                     "namespace": "https://example.com"
                 },
+                "distribution": {
+                    "tlp": {
+                        "label": "WHITE"
+                    },
+                },
                 "title": "Example Advisory",
                 "tracking": {
                     "current_release_date": "2024-02-01T10:00:00.000Z",

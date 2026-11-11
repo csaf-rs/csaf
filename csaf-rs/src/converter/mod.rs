@@ -119,27 +119,27 @@ impl fmt::Display for Warning {
             ),
             Warning::PartialModelNumber { value } => write!(
                 f,
-                "The partial model number `{value}` was detected and a trailing `*` was added.",
+                "The partial model number `{value}` was detected and a trailing star (`*`) was added.",
             ),
             Warning::ModelNumberWithMultipleStars { value } => write!(
                 f,
-                "The model number `{value}` contains multiple unescaped stars and was removed.",
+                "The model number `{value}` contains multiple stars (unescaped) and was removed.",
             ),
             Warning::PartialSerialNumber { value } => write!(
                 f,
-                "The partial serial number `{value}` was detected and a trailing `*` was added.",
+                "The partial serial number `{value}` was detected and a trailing star (`*`) was added.",
             ),
             Warning::SerialNumberWithMultipleStars { value } => write!(
                 f,
-                "The serial number `{value}` contains multiple unescaped stars and was removed.",
+                "The serial number `{value}` contains multiple stars (unescaped) and was removed.",
             ),
             Warning::PartialStockKeepingUnit { value } => write!(
                 f,
-                "The partial stock keeping unit `{value}` was detected and a trailing `*` was added.",
+                "The partial stock keeping unit `{value}` was detected and a trailing star (`*`) was added.",
             ),
             Warning::StockKeepingUnitWithMultipleStars { value } => write!(
                 f,
-                "The stock keeping unit `{value}` contains multiple unescaped stars and was removed.",
+                "The stock keeping unit `{value}` contains multiple stars (unescaped) and was removed.",
             ),
             Warning::PublisherContactInvalidFormat { property, value } => write!(
                 f,

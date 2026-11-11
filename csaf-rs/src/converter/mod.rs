@@ -71,13 +71,13 @@ pub enum Warning {
     ValidationWarning(String),
     CsafVersionIsMissing,
     InvalidCsafVersion,
-    InvalidTlpLabel,
-    TlpIsMissingLabel,
     LegacyBranchCategoryReplaced,
     InvalidProductTree,
     InvalidBranches,
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
+    DefaultTlpLabelSet,
+    TlpLabelFromDistributionText { converted: String, from_text: String },
     PublisherContactOpenPgpKeyUrlRequiresEmail { url: String },
     PublisherContactInvalidFormat { property: &'static str, value: String },
 }
@@ -93,8 +93,14 @@ impl fmt::Display for Warning {
             ),
             Warning::CsafVersionIsMissing => f.write_str("CSAF version node is missing"),
             Warning::InvalidCsafVersion => f.write_str("CSAF version node contained an invalid value"),
-            Warning::InvalidTlpLabel => f.write_str("TLP label contained an invalid value"),
-            Warning::TlpIsMissingLabel => f.write_str("TLP node was present but did not contain the `label` property"),
+            Warning::DefaultTlpLabelSet => f.write_str("default TLP has been set to CLEAR"),
+            Warning::TlpLabelFromDistributionText { converted, from_text } => {
+                write!(
+                    f,
+                    "TLP label was taken from distribution text \
+                     (converted value: {converted}, text value: {from_text})"
+                )
+            },
             Warning::LegacyBranchCategoryReplaced => f.write_str(
                 "Branch category 'legacy' does not exist in CSAF 2.1 \
                 and was replaced with 'product_name'. This replacement \
@@ -196,7 +202,12 @@ mod tests {
     fn end_to_end() {
         let input = json!({
             "document": {
-                "csaf_version": "2.0"
+                "csaf_version": "2.0",
+                "distribution": {
+                    "tlp": {
+                        "label": "WHITE"
+                    }
+                }
             },
             "product_tree": {
                 "full_product_names": [

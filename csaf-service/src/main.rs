@@ -7,6 +7,7 @@ use axum::Router;
 use axum::extract::DefaultBodyLimit;
 use axum::http::{HeaderValue, Method};
 use axum::routing::{get, post};
+use std::future::Future;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use utoipa::OpenApi;
@@ -118,5 +119,59 @@ async fn main() {
     tracing::info!("Swagger UI available at http://{addr}/openapi/");
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .unwrap();
+}
+
+/// Returns a future that resolves when the process is asked to terminate
+/// (Ctrl+C/SIGINT or SIGTERM). Signal handlers are installed eagerly, before
+/// the future is first polled: as PID 1 in a container the kernel drops
+/// signals with a default-terminate disposition, so a SIGTERM arriving before
+/// the first poll would otherwise be lost (or kill us, if unhandled) and
+/// `docker stop` would end in SIGKILL.
+fn shutdown_signal() -> impl Future<Output = ()> + Send {
+    #[cfg(unix)]
+    let mut sigint = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())
+        .expect("failed to install SIGINT handler");
+    #[cfg(unix)]
+    let mut sigterm = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+        .expect("failed to install SIGTERM handler");
+
+    async move {
+        #[cfg(unix)]
+        tokio::select! {
+            _ = sigint.recv() => {},
+            _ = sigterm.recv() => {},
+        }
+        #[cfg(not(unix))]
+        tokio::signal::ctrl_c().await.expect("failed to install SIGINT handler");
+
+        tracing::info!("Shutdown signal received, stopping");
+    }
+}
+
+#[cfg(all(test, unix))]
+mod shutdown_tests {
+    use super::shutdown_signal;
+    use std::time::Duration;
+
+    /// Raising SIGTERM against our own process must resolve `shutdown_signal`.
+    /// The handler is installed when the future is created, so it is safe to
+    /// send the signal afterwards.
+    /// Raising SIGTERM against our own process must resolve `shutdown_signal`.
+    /// Safe for the whole test binary because the handlers are installed
+    /// eagerly when the future is created, before we send the signal.
+    #[tokio::test]
+    async fn sigterm_resolves_shutdown_signal() {
+        let fut = shutdown_signal();
+        std::process::Command::new("kill")
+            .args(["-TERM", &std::process::id().to_string()])
+            .status()
+            .expect("`kill` must be available on unix");
+        tokio::time::timeout(Duration::from_secs(5), fut)
+            .await
+            .expect("shutdown_signal did not resolve on SIGTERM");
+    }
 }

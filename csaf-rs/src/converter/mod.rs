@@ -75,6 +75,12 @@ pub enum Warning {
     InconsistentInitialReleaseDate { old: String, new: String },
     PublisherContactOpenPgpKeyUrlRequiresEmail { url: String },
     PublisherContactInvalidFormat { property: &'static str, value: String },
+    PartialModelNumber { value: String },
+    ModelNumberWithMultipleStars { value: String },
+    PartialSerialNumber { value: String },
+    SerialNumberWithMultipleStars { value: String },
+    PartialStockKeepingUnit { value: String },
+    StockKeepingUnitWithMultipleStars { value: String },
 }
 
 impl fmt::Display for Warning {
@@ -103,6 +109,30 @@ impl fmt::Display for Warning {
                 associated with it. CSAF 2.1 requires the `email` property when `public_openpgp_key_url` \
                 is set. The URL remains part of the `details` property. \
                 The converter provides options to set `email` (and `public_openpgp_key_url`) explicitly.",
+            ),
+            Warning::PartialModelNumber { value } => write!(
+                f,
+                "The partial model number `{value}` was detected and a trailing `*` was added.",
+            ),
+            Warning::ModelNumberWithMultipleStars { value } => write!(
+                f,
+                "The model number `{value}` contains multiple unescaped stars and was removed.",
+            ),
+            Warning::PartialSerialNumber { value } => write!(
+                f,
+                "The partial serial number `{value}` was detected and a trailing `*` was added.",
+            ),
+            Warning::SerialNumberWithMultipleStars { value } => write!(
+                f,
+                "The serial number `{value}` contains multiple unescaped stars and was removed.",
+            ),
+            Warning::PartialStockKeepingUnit { value } => write!(
+                f,
+                "The partial stock keeping unit `{value}` was detected and a trailing `*` was added.",
+            ),
+            Warning::StockKeepingUnitWithMultipleStars { value } => write!(
+                f,
+                "The stock keeping unit `{value}` contains multiple unescaped stars and was removed.",
             ),
             Warning::PublisherContactInvalidFormat { property, value } => write!(
                 f,

@@ -31,10 +31,10 @@ VALID_FILE="oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf
 INVALID_FILE="oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-01-01.json"
 
 # valid file should pass
-"${VALIDATOR}" "${VALID_FILE}"
+"${VALIDATOR}" validate -C 2.1 "${VALID_FILE}"
 
 # invalid file should fail
-if "${VALIDATOR}" "${INVALID_FILE}"; then
+if "${VALIDATOR}" validate -C 2.1 "${INVALID_FILE}"; then
     echo "csaf-validator accepted an invalid CSAF document!"
     exit 1
 else

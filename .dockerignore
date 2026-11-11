@@ -1,0 +1,37 @@
+# Build artifacts (biggest context win — must never ship)
+**/target/
+**/node_modules/
+
+# Git
+.git/
+.gitignore
+.gitmodules
+
+# CI / editors
+.github/
+.vscode/
+.zed/
+.idea/
+*.iml
+
+# Submodules: reference schemas + test fixtures, not needed for the service build
+oasis-csaf/
+ssvc/
+csaf-2.0-to-csaf-2.1/
+
+# Workspace dirs not built by the Dockerfile
+# (csaf-ffi is dropped from workspace members in the Dockerfile)
+benchmark/
+csaf-ffi/
+go/
+wasm/
+scripts/
+
+# Docs and repo tooling
+*.md
+LICENSE
+architecture-decisions/
+deny.toml
+.rustfmt.toml
+uniffi_patch_wasm.py
+create-new-testfile.sh

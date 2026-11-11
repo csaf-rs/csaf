@@ -283,12 +283,22 @@ jobs:
           mkdir -p "$LIB_DIR"
           # rustc archives LLVM metadata sections (.llvmbc bitcode, .llvmcmd, ...)
           # into the staticlib, also for objects of the precompiled std rlibs that
-          # RUSTFLAGS cannot affect. go's cgo refuses to link archives containing
-          # them since go1.27.4 ("disallowed LTO section"), so strip them from the
-          # copy handed to CGo. Nothing here consumes cross-language LTO.
-          objcopy --remove-section='.llvm*' \
-            "target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a" \
-            "$LIB_DIR/libcsaf_ffi.a"
+          # RUSTFLAGS cannot affect. go's cgo refuses to link ELF archives
+          # containing them since go1.27.4 ("disallowed LTO section"), so strip
+          # them from the copy handed to CGo. Nothing consumes cross-language
+          # LTO. Only ELF (Linux) objects carry those sections - macos embeds
+          # them as __LLVM,* which ld64 ignores, and objcopy does not exist on
+          # macOS runners, so keep the plain copy there.
+          case "${{ matrix.target.target-arch }}" in
+            *linux*)
+              objcopy --remove-section='.llvm*' \
+                "target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a" \
+                "$LIB_DIR/libcsaf_ffi.a"
+              ;;
+            *)
+              cp "target/${{ matrix.target.target-arch }}/release/libcsaf_ffi.a" "$LIB_DIR/"
+              ;;
+          esac
       - name: Run Go tests
         working-directory: go
         run: |

@@ -1698,6 +1698,12 @@ type DocumentCategoryCsafDeprecatedSecurityAdvisory struct {
 func (e DocumentCategoryCsafDeprecatedSecurityAdvisory) Destroy() {
 }
 
+type DocumentCategoryCsafVulnerabilityReport struct {
+}
+
+func (e DocumentCategoryCsafVulnerabilityReport) Destroy() {
+}
+
 type DocumentCategoryCsafBaseOther struct {
 	Value string
 }
@@ -1741,6 +1747,8 @@ func (FfiConverterDocumentCategory) Read(reader io.Reader) DocumentCategory {
 	case 8:
 		return DocumentCategoryCsafDeprecatedSecurityAdvisory{}
 	case 9:
+		return DocumentCategoryCsafVulnerabilityReport{}
+	case 10:
 		return DocumentCategoryCsafBaseOther{
 			FfiConverterStringINSTANCE.Read(reader),
 		}
@@ -1767,8 +1775,10 @@ func (FfiConverterDocumentCategory) Write(writer io.Writer, value DocumentCatego
 		writeInt32(writer, 7)
 	case DocumentCategoryCsafDeprecatedSecurityAdvisory:
 		writeInt32(writer, 8)
-	case DocumentCategoryCsafBaseOther:
+	case DocumentCategoryCsafVulnerabilityReport:
 		writeInt32(writer, 9)
+	case DocumentCategoryCsafBaseOther:
+		writeInt32(writer, 10)
 		FfiConverterStringINSTANCE.Write(writer, variant_value.Value)
 	default:
 		_ = variant_value

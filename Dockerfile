@@ -11,6 +11,8 @@ COPY csaf-service/ csaf-service/
 COPY csaf-validator/ csaf-validator/
 COPY csaf-converter/ csaf-converter/
 COPY type-generator/ type-generator/
+COPY csaf-result-json/ csaf-result-json/
+COPY csaf/ csaf/
 
 # Drop csaf-ffi from workspace members (not needed for the service)
 RUN sed -i 's/, "csaf-ffi"//' Cargo.toml

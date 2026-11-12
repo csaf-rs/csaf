@@ -7,7 +7,6 @@ use axum::Router;
 use axum::extract::DefaultBodyLimit;
 use axum::http::{HeaderValue, Method};
 use axum::routing::{get, post};
-use std::future::Future;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use utoipa::OpenApi;
@@ -131,7 +130,7 @@ async fn main() {
 /// signals with a default-terminate disposition, so a SIGTERM arriving before
 /// the first poll would otherwise be lost (or kill us, if unhandled) and
 /// `docker stop` would end in SIGKILL.
-fn shutdown_signal() -> impl Future<Output = ()> + Send {
+async fn shutdown_signal() {
     #[cfg(unix)]
     let mut sigint = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())
         .expect("failed to install SIGINT handler");
@@ -139,17 +138,15 @@ fn shutdown_signal() -> impl Future<Output = ()> + Send {
     let mut sigterm = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
         .expect("failed to install SIGTERM handler");
 
-    async move {
-        #[cfg(unix)]
-        tokio::select! {
-            _ = sigint.recv() => {},
-            _ = sigterm.recv() => {},
-        }
-        #[cfg(not(unix))]
-        tokio::signal::ctrl_c().await.expect("failed to install SIGINT handler");
-
-        tracing::info!("Shutdown signal received, stopping");
+    #[cfg(unix)]
+    tokio::select! {
+        _ = sigint.recv() => {},
+        _ = sigterm.recv() => {},
     }
+    #[cfg(not(unix))]
+    tokio::signal::ctrl_c().await.expect("failed to install SIGINT handler");
+
+    tracing::info!("Shutdown signal received, stopping");
 }
 
 #[cfg(all(test, unix))]

@@ -22,7 +22,7 @@ pub fn test_6_1_22_multiple_definition_in_revision_history(doc: &impl CsafTrait)
     let mut number_revision_index_map: HashMap<CsafVersionNumber, Vec<usize>> = HashMap::new();
     for (i_r, revision) in revision_history.iter().enumerate() {
         let number = revision.get_number();
-        let path = number_revision_index_map.entry(number.clone()).or_default();
+        let path = number_revision_index_map.entry(number).or_default();
         path.push(i_r);
     }
 

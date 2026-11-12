@@ -40,7 +40,7 @@ pub fn test_6_2_02_missing_remediations(doc: &impl CsafTrait) -> Result<(), Vec<
             for remediation in vuln.get_remediations() {
                 if let Some(product_ids) = remediation.get_all_product_ids(doc) {
                     for product_id in product_ids {
-                        remediation_product_ids.insert(product_id.clone());
+                        remediation_product_ids.insert(product_id);
                     }
                 }
             }

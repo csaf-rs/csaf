@@ -219,8 +219,7 @@ fn generate_loose_type(
                 let child_index = type_id_to_index.get_or_insert(&prop_id);
                 let child_ident = node_ident(child_index);
 
-                for path in base_paths.clone() {
-                    let mut path = path.clone();
+                for mut path in base_paths.clone() {
                     path.push(JsonPathComponent::Field(prop_name.to_string()));
                     json_paths.insert(child_index, path);
                 }

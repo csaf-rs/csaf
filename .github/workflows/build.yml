@@ -222,19 +222,15 @@ jobs:
         run: cargo install uniffi-bindgen-js --version 0.2.1 --locked
       - name: Build UniFFI WASM bindings
         run: bash scripts/publish/generate_wasm_bindings.sh
-      - name: Setup Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: "24"
       - name: Run WASM regression tests
         working-directory: ./wasm
         run: |
           npm ci
           npm run typecheck
           npm test
-      - name: NPM publish dry-run
+      - name: NPM pack dry-run
         working-directory: ./wasm
-        run: npm publish --dry-run
+        run: npm pack --dry-run
       - name: Remove node_modules before archiving
         run: rm -rf wasm/node_modules
       - name: Archive UniFFI WASM bindings

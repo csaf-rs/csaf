@@ -116,13 +116,13 @@ mod tests {
         TESTS_2_1.test_6_1_66.expect(ExpectedResults {
             case_01: status_final_mismatching_initial_release_date_with_integer_version,
             case_02: status_final_mismatching_initial_release_date_with_semantic_version,
-            case_03: status_interim_mismatching_initial_release_date_with_integer_version.clone(),
-            case_04: status_interim_mismatching_initial_release_date_with_semantic_version.clone(),
+            case_03: status_interim_mismatching_initial_release_date_with_integer_version,
+            case_04: status_interim_mismatching_initial_release_date_with_semantic_version,
             case_05: missing_initial_revision,
             case_11: Ok(()),
             case_12: Ok(()),
-            case_13: status_interim_mismatching_initial_release_date_with_integer_version, // TODO: Discuss with OASIS. OASIS marks these cases as valid despite mismatching dates
-            case_14: status_interim_mismatching_initial_release_date_with_semantic_version, // TODO: Discuss with OASIS. OASIS marks these cases as valid despite mismatching dates
+            case_13: Ok(()),
+            case_14: Ok(()),
             case_15: Ok(()),
         });
     }

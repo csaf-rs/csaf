@@ -9,6 +9,9 @@ repository.workspace = true
 keywords.workspace = true
 readme.workspace = true
 
+[lints]
+workspace = true
+
 [[bin]]
 name = "csaf-service"
 path = "src/main.rs"

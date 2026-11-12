@@ -196,16 +196,13 @@ pub trait CsafTrait {
         }
         for (i_r, revision) in tracking.get_revision_history().iter().enumerate() {
             dates.push((
-                revision.get_date().clone(),
-                format!("/document/tracking/revision_history/{i_r}/date").to_string(),
+                revision.get_date(),
+                format!("/document/tracking/revision_history/{i_r}/date"),
             ));
         }
         if let Some(involvement) = document.get_involvement() {
             for (i_a, action) in involvement.get_actions().enumerate() {
-                dates.push((
-                    action.get_date().clone(),
-                    format!("/document/involvement/actions/{i_a}/date").to_string(),
-                ));
+                dates.push((action.get_date(), format!("/document/involvement/actions/{i_a}/date")));
             }
         }
 
@@ -213,62 +210,46 @@ pub trait CsafTrait {
         for (i_v, vuln) in vulnerabilities.iter().enumerate() {
             if let Some(date) = vuln.get_disclosure_date() {
                 dates.push((
-                    date.clone(),
-                    format!("/vulnerabilities/{i_v}/{}", vuln.get_disclosure_date_property_name()).to_string(),
+                    date,
+                    format!("/vulnerabilities/{i_v}/{}", vuln.get_disclosure_date_property_name()),
                 ));
             }
             if let Some(date) = vuln.get_discovery_date() {
-                dates.push((
-                    date.clone(),
-                    format!("/vulnerabilities/{i_v}/discovery_date").to_string(),
-                ));
+                dates.push((date, format!("/vulnerabilities/{i_v}/discovery_date")));
             }
             if let Some(flags) = vuln.get_flags() {
                 for (i_f, flag) in flags.iter().enumerate() {
                     if let Some(date) = flag.get_date() {
-                        dates.push((
-                            date.clone(),
-                            format!("/vulnerabilities/{i_v}/flags/{i_f}/date").to_string(),
-                        ));
+                        dates.push((date, format!("/vulnerabilities/{i_v}/flags/{i_f}/date")));
                     }
                 }
             }
             if let Some(involvements) = vuln.get_involvements() {
                 for (i_i, involvement) in involvements.iter().enumerate() {
                     if let Some(date) = involvement.get_date() {
-                        dates.push((
-                            date.clone(),
-                            format!("/vulnerabilities/{i_v}/involvements/{i_i}/date").to_string(),
-                        ));
+                        dates.push((date, format!("/vulnerabilities/{i_v}/involvements/{i_i}/date")));
                     }
                 }
             }
             for (i_r, remediation) in vuln.get_remediations().iter().enumerate() {
                 if let Some(date) = remediation.get_date() {
-                    dates.push((
-                        date.clone(),
-                        format!("/vulnerabilities/{i_v}/remediations/{i_r}/date").to_string(),
-                    ));
+                    dates.push((date, format!("/vulnerabilities/{i_v}/remediations/{i_r}/date")));
                 }
             }
             for (i_t, threat) in vuln.get_threats().iter().enumerate() {
                 if let Some(date) = threat.get_date() {
-                    dates.push((
-                        date.clone(),
-                        format!("/vulnerabilities/{i_v}/threats/{i_t}/date").to_string(),
-                    ));
+                    dates.push((date, format!("/vulnerabilities/{i_v}/threats/{i_t}/date")));
                 }
             }
             if let Some(first_known_exploitation_dates) = vuln.get_first_known_exploitation_dates() {
                 for (i_d, date) in first_known_exploitation_dates.iter().enumerate() {
                     dates.push((
-                        date.get_date().clone(),
-                        format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/date").to_string(),
+                        date.get_date(),
+                        format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/date"),
                     ));
                     dates.push((
-                        date.get_exploitation_date().clone(),
-                        format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/exploitation_date")
-                            .to_string(),
+                        date.get_exploitation_date(),
+                        format!("/vulnerabilities/{i_v}/first_known_exploitation_dates/{i_d}/exploitation_date"),
                     ));
                 }
             }
@@ -276,8 +257,8 @@ pub trait CsafTrait {
                 for (i_m, metric) in metrics.iter().enumerate() {
                     if let Some(epss) = metric.get_content().get_epss() {
                         dates.push((
-                            epss.get_timestamp().clone(),
-                            format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/epss/timestamp").to_string(),
+                            epss.get_timestamp(),
+                            format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/epss/timestamp"),
                         ));
                     }
                     if let Some(ssvc_map) = metric.get_content().get_ssvc_v2_raw()
@@ -285,7 +266,7 @@ pub trait CsafTrait {
                     {
                         dates.push((
                             CsafDateTime::from(timestamp),
-                            format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp").to_string(),
+                            format!("/vulnerabilities/{i_v}/metrics/{i_m}/content/ssvc_v2/timestamp"),
                         ))
                     }
                 }

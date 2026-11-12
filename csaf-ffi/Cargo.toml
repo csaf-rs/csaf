@@ -10,6 +10,9 @@ readme.workspace = true
 keywords.workspace = true
 publish = false
 
+[lints]
+workspace = true
+
 [lib]
 name = "csaf_ffi"
 crate-type = ["cdylib", "staticlib", "lib"]
@@ -22,6 +25,3 @@ thiserror = "2"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uniffi = { version = "0.31.0", features = ["scaffolding-ffi-buffer-fns", "wasm-unstable-single-threaded"] }
-
-[build-dependencies]
-uniffi = { version = "0.31.0", features = ["build"] }

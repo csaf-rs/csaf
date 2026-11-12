@@ -21,7 +21,7 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
 
     let mut valid_path_references: HashSet<String> = HashSet::new();
     for (id, _) in product_tree.get_relationships_product_references() {
-        valid_path_references.insert(id.clone());
+        valid_path_references.insert(id);
     }
 
     product_tree.visit_all_products(&mut |product, instance_path| {

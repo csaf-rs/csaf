@@ -361,12 +361,6 @@ mod tests {
                 "CSAFPID-9080705",
             )]);
 
-        // Should not be failing, TODO: #1409
-        let failing_test_due_to_duplicate_product_id = Err(vec![create_missing_corresponding_affected_products_error(
-            0,
-            "CSAFPID-9080702",
-        )]);
-
         TESTS_2_1.test_6_1_27_13.expect(ExpectedResults {
             case_01: vulnerability_without_affected_products,
             case_02: two_vulnerabilities_one_without_fixed_products_one_with_fixed_products_but_no_affected_products
@@ -380,7 +374,7 @@ mod tests {
             case_13: Ok(()),
             case_14: Ok(()),
             case_15: Ok(()),
-            case_16: failing_test_due_to_duplicate_product_id,
+            case_16: Ok(()),
         });
     }
 }

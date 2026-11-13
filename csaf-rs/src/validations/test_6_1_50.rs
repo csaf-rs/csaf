@@ -202,11 +202,8 @@ mod tests {
             case_12: Ok(()),
             case_13: Ok(()),
             // TODO: Typo in test file (see #1442)
-            case_14: Err(vec![invalid_product_version_range_error(
-                "vers:/all".into(),
-                "Missing versioning scheme".to_string(),
-                "/product_tree/branches/0/branches/1/branches/0",
-            )]),
+            case_14: Err(vec![unsupported_vers_type_warning("vers:all/*".into(), "/product_tree/branches/0/branches/1/branches/0")
+            ]),
             case_15: Ok(()),
             case_16: Err(vec![
                 unsupported_vers_type_warning(

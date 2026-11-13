@@ -175,7 +175,6 @@ fn _26_default_missing_tlp_to_clear() -> TestResult<()> {
     run!()
 }
 
-#[ignore]
 #[test]
 fn _27_remove_tracking_id_from_title() -> TestResult<()> {
     run!()

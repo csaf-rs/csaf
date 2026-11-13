@@ -12,6 +12,7 @@ mod deduplicate_x_generic_uris;
 mod helpers;
 mod lowercase_hash_value;
 mod move_purl_into_purls_array;
+mod remove_tracking_id_from_title;
 mod replace_legacy_branch_category;
 mod set_csaf_21_schema;
 mod set_initial_release_date;
@@ -43,6 +44,7 @@ const CONVERSIONS: &[&dyn Convert] = &[
     &update_tlp_label::UpdateTlpLabel,
     &update_publisher_category::UpdatePublisherCategory,
     &set_initial_release_date::SetInitialReleaseDate,
+    &remove_tracking_id_from_title::RemoveTrackingIdFromTitle,
     // conversions that move leaf nodes
     &move_purl_into_purls_array::MoveSinglePurlIntoPurlsArray,
     &convert_release_date_to_disclosure_date::ConvertReleaseDateToDisclosureDate,
@@ -76,6 +78,7 @@ pub enum Warning {
     InvalidBranches,
     PublisherCategoryOther,
     InconsistentInitialReleaseDate { old: String, new: String },
+    EmptyTitleAfterTrackingIdRemoval { id: String },
     DefaultTlpLabelSet,
     TlpLabelFromDistributionText { converted: String, from_text: String },
     PublisherContactOpenPgpKeyUrlRequiresEmail { url: String },
@@ -115,6 +118,11 @@ impl fmt::Display for Warning {
                 have been regrouped into the new 'multiplier' category in CSAF 2.1. \
                 Please manually check whether the publisher category should be changed to 'multiplier'. \
                 The converter provides options to perform this change automatically or suppress this warning.",
+            ),
+            Warning::EmptyTitleAfterTrackingIdRemoval { id } => write!(
+                f,
+                "The title would become empty after removing the tracking id `{id}` and the \
+                separating characters, therefore the title was left unchanged"
             ),
             Warning::PublisherContactOpenPgpKeyUrlRequiresEmail { url } => write!(
                 f,

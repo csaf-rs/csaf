@@ -14,9 +14,17 @@ import { readFileSync } from 'node:fs';
 import { CsafFfi } from '../csaf_ffi.ts';
 
 const FIXTURE_BASE_URL = new URL('../../oasis-csaf/csaf_2.0/test/validator/data/mandatory/', import.meta.url);
+const FIXTURE_2_1_RECOMMENDED_URL = new URL(
+  '../../oasis-csaf/csaf_2.1/test/validator/data/recommended/',
+  import.meta.url,
+);
 
 function readFixture(name: string): string {
   return readFileSync(new URL(name, FIXTURE_BASE_URL), 'utf-8');
+}
+
+function readFixture21Recommended(name: string): string {
+  return readFileSync(new URL(name, FIXTURE_2_1_RECOMMENDED_URL), 'utf-8');
 }
 
 test('package initializes and exposes the documented API', () => {
@@ -47,6 +55,17 @@ test('invalid CSAF 2.0 document fails validation with errors', () => {
   const result = CsafFfi.validateCsaf(json, 'basic');
   assert.equal(result.success, false);
   assert.ok(result.numErrors > 0n, 'expected at least one validation error');
+});
+
+// Test 6.2.33 calls chrono's Utc::now(), which goes through the wasm-bindgen
+// Date shims (`new Date()` + `getTime()`).
+test('validation-time preset exercises the Date shims (6.2.33)', () => {
+  const valid = CsafFfi.validateCsaf(readFixture21Recommended('oasis_csaf_tc-csaf_2_1-2024-6-2-33-11.json'), 'validation-time');
+  assert.equal(valid.version, '2.1');
+  assert.equal(valid.numErrors, 0n);
+
+  const invalid = CsafFfi.validateCsaf(readFixture21Recommended('oasis_csaf_tc-csaf_2_1-2024-6-2-33-01.json'), 'validation-time');
+  assert.ok(invalid.numWarnings + invalid.numInfos + invalid.numErrors > 0n, 'expected 6.2.33 to report a finding');
 });
 
 test('invalid JSON is rejected with a structured error', () => {

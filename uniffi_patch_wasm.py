@@ -93,8 +93,11 @@ end = src.index('\n}\n', start) + len('\n}\n')
 
 SHIMS = r'''
 // >>> wasm-bindgen shim patch (uniffi_patch_wasm.py)
-function instantiateWithShims(module: WebAssembly.Module): WebAssembly.WebAssemblyInstantiatedSource {
-  const shims = new WasmBindgenShims();
+function instantiateWithShims(
+  module: WebAssembly.Module,
+  crypto: Pick<Crypto, 'getRandomValues'>,
+): WebAssembly.WebAssemblyInstantiatedSource {
+  const shims = new WasmBindgenShims(crypto);
   const instance = new WebAssembly.Instance(module, shims.buildImports(module));
   // The shims need the module exports (memory, allocator, externref free
   // list) which only exist after instantiation. No Rust code runs until the
@@ -111,7 +114,10 @@ async function loadWasm(wasmUrl: URL | string): Promise<WebAssembly.WebAssemblyI
     const path = typeof wasmUrl === 'string' ? wasmUrl : fileURLToPath(wasmUrl);
     const bytes = await readFile(path);
     const module = await WebAssembly.compile(bytes);
-    return instantiateWithShims(module);
+    // Node 18 only exposes globalThis.crypto behind a flag; fall back to the
+    // equivalent Web Crypto implementation from node:crypto.
+    const crypto = globalThis.crypto ?? (await import('node:crypto')).webcrypto;
+    return instantiateWithShims(module, crypto);
   } else {
     // Browser: prefer streaming compilation (compiles while downloading)
     const url = typeof wasmUrl === 'string' ? wasmUrl : wasmUrl.href;
@@ -119,12 +125,12 @@ async function loadWasm(wasmUrl: URL | string): Promise<WebAssembly.WebAssemblyI
     if (typeof WebAssembly.compileStreaming === 'function') {
       try {
         // clone() so the original Response body remains available for the fallback
-        return await instantiateWithShims(await WebAssembly.compileStreaming(resp.clone()));
+        return await instantiateWithShims(await WebAssembly.compileStreaming(resp.clone()), globalThis.crypto);
       } catch (_) {
         // Fallback if streaming fails (e.g., wrong MIME type)
       }
     }
-    return instantiateWithShims(await WebAssembly.compile(await resp.arrayBuffer()));
+    return instantiateWithShims(await WebAssembly.compile(await resp.arrayBuffer()), globalThis.crypto);
   }
 }
 
@@ -148,7 +154,7 @@ class WasmBindgenShims {
   private u8Buffer: ArrayBuffer | null = null;
   private wasmVectorLen = 0;
 
-  constructor() {
+  constructor(private readonly crypto: Pick<Crypto, 'getRandomValues'>) {
     // undefined, null, true, false at JSIDX_OFFSET..JSIDX_OFFSET + 3
     this.table.push(undefined, null, true, false);
   }
@@ -202,7 +208,7 @@ class WasmBindgenShims {
       case '__wbg_getRandomValues':
         return (ptr: number, len: number) => {
           this.guardExceptions(() => {
-            globalThis.crypto.getRandomValues(this.uint8View().subarray(ptr, ptr + len));
+            this.crypto.getRandomValues(this.uint8View().subarray(ptr, ptr + len));
           });
         };
       // --- Date (chrono on wasm32) ------------------------------------------
@@ -257,15 +263,13 @@ class WasmBindgenShims {
       case '__wbg___wbindgen_string_get': {
         return (ptr: number, idx: number) => {
           const obj = this.getObject(idx);
+          // passString may grow linear memory and detach earlier views, so
+          // take the DataView only after the allocation.
+          const dataPtr = typeof obj === 'string' ? this.passString(obj) : 0;
+          const len = typeof obj === 'string' ? this.wasmVectorLen : 0;
           const dv = this.dataView();
-          if (typeof obj === 'string') {
-            const dataPtr = this.passString(obj);
-            dv.setInt32(ptr, dataPtr, true);
-            dv.setInt32(ptr + 4, this.wasmVectorLen, true);
-          } else {
-            dv.setInt32(ptr, 0, true);
-            dv.setInt32(ptr + 4, 0, true);
-          }
+          dv.setInt32(ptr, dataPtr, true);
+          dv.setInt32(ptr + 4, len, true);
         };
       }
       case '__wbg___wbindgen_boolean_get':

@@ -91,6 +91,31 @@ pub trait TrackingTrait {
         UnvalidatedCsafRevisionHistory::from(self.get_revision_history())
     }
 
+    /// Returns the newest valid revision date, ignoring invalid revision dates and
+    /// revision numbers.
+    fn get_newest_revision_date(&self) -> Option<ValidCsafDateTime> {
+        self.aggregate_revision_history()
+            .iter()
+            .filter_map(|revision| match &revision.date {
+                CsafDateTime::Valid(date) => Some(date),
+                CsafDateTime::Invalid(_) => None,
+            })
+            .max()
+            .cloned()
+    }
+
+    /// Returns the oldest valid revision date, ignoring invalid revision dates.
+    fn get_oldest_revision_date(&self) -> Option<ValidCsafDateTime> {
+        self.aggregate_revision_history()
+            .iter()
+            .filter_map(|revision| match &revision.date {
+                CsafDateTime::Valid(date) => Some(date),
+                CsafDateTime::Invalid(_) => None,
+            })
+            .min()
+            .cloned()
+    }
+
     /// Returns the status of this document
     fn get_status(&self) -> DocumentStatus21;
 

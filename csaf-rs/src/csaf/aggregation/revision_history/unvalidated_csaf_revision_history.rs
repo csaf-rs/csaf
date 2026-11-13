@@ -59,10 +59,6 @@ impl UnvalidatedCsafRevisionHistory {
         self.0.get(index)
     }
 
-    pub(crate) fn first(&self) -> Option<&CsafRevisionHistoryItem> {
-        self.0.first()
-    }
-
     pub(crate) fn last(&self) -> Option<&CsafRevisionHistoryItem> {
         self.0.last()
     }

@@ -13,10 +13,12 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "useDefineForClassFields": true
   },
   "include": [
-    "*.ts"
+    "*.ts",
+    "test/*.ts"
   ]
 }

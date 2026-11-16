@@ -2,7 +2,7 @@
 //!
 //! Provides version-agnostic access to the full document model via trait dispatch.
 
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use csaf_rs::csaf::raw::RawDocument;
 use csaf_rs::csaf2_0::loader::load_document as load_2_0;
@@ -31,7 +31,7 @@ enum DocumentInner {
 /// [`CsafDocument::from_json_2_0`] / [`CsafDocument::from_json_2_1`].
 #[derive(uniffi::Object)]
 pub struct CsafDocument {
-    inner: Mutex<DocumentInner>,
+    inner: DocumentInner,
     version_string: String,
     raw_json: String,
 }
@@ -67,7 +67,7 @@ impl CsafDocument {
     pub fn from_json_2_0(json_str: String) -> Result<Arc<Self>, CsafError> {
         let raw = load_2_0(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
         Ok(Arc::new(Self {
-            inner: Mutex::new(DocumentInner::V20(raw)),
+            inner: DocumentInner::V20(raw),
             version_string: "2.0".into(),
             raw_json: json_str,
         }))
@@ -78,7 +78,7 @@ impl CsafDocument {
     pub fn from_json_2_1(json_str: String) -> Result<Arc<Self>, CsafError> {
         let raw = load_2_1(&json_str).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
         Ok(Arc::new(Self {
-            inner: Mutex::new(DocumentInner::V21(raw)),
+            inner: DocumentInner::V21(raw),
             version_string: "2.1".into(),
             raw_json: json_str,
         }))
@@ -86,10 +86,7 @@ impl CsafDocument {
 
     /// Run validation with the given preset ("basic", "extended", "full").
     pub fn validate(&self, preset: String) -> Result<ValidationResult, CsafError> {
-        let guard = self.inner.lock().map_err(|_| CsafError::LoadError {
-            message: "lock poisoned".into(),
-        })?;
-        let result = match &*guard {
+        let result = match &self.inner {
             DocumentInner::V20(raw) => validate_by_preset(raw, &self.version_string, &preset),
             DocumentInner::V21(raw) => validate_by_preset(raw, &self.version_string, &preset),
         };
@@ -98,10 +95,7 @@ impl CsafDocument {
 
     /// Run a single validation test by ID.
     pub fn run_test(&self, test_id: String) -> Result<crate::TestResult, CsafError> {
-        let guard = self.inner.lock().map_err(|_| CsafError::LoadError {
-            message: "lock poisoned".into(),
-        })?;
-        let result = match &*guard {
+        let result = match &self.inner {
             DocumentInner::V20(raw) => validate_by_test(raw, &test_id),
             DocumentInner::V21(raw) => validate_by_test(raw, &test_id),
         };
@@ -111,10 +105,7 @@ impl CsafDocument {
     /// Run specific validation tests by their IDs.
     pub fn run_tests(&self, test_ids: Vec<String>) -> Result<ValidationResult, CsafError> {
         let refs: Vec<&str> = test_ids.iter().map(|s| s.as_str()).collect();
-        let guard = self.inner.lock().map_err(|_| CsafError::LoadError {
-            message: "lock poisoned".into(),
-        })?;
-        let result = match &*guard {
+        let result = match &self.inner {
             DocumentInner::V20(raw) => validate_by_tests(raw, &self.version_string, &refs),
             DocumentInner::V21(raw) => validate_by_tests(raw, &self.version_string, &refs),
         };
@@ -145,7 +136,7 @@ impl CsafDocument {
     fn from_value_2_0(value: serde_json::Value, json_str: String) -> Result<Arc<Self>, CsafError> {
         let raw = load_2_0(value).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
         Ok(Arc::new(Self {
-            inner: Mutex::new(DocumentInner::V20(raw)),
+            inner: DocumentInner::V20(raw),
             version_string: "2.0".into(),
             raw_json: json_str,
         }))
@@ -155,7 +146,7 @@ impl CsafDocument {
     fn from_value_2_1(value: serde_json::Value, json_str: String) -> Result<Arc<Self>, CsafError> {
         let raw = load_2_1(value).map_err(|e| CsafError::LoadError { message: e.to_string() })?;
         Ok(Arc::new(Self {
-            inner: Mutex::new(DocumentInner::V21(raw)),
+            inner: DocumentInner::V21(raw),
             version_string: "2.1".into(),
             raw_json: json_str,
         }))

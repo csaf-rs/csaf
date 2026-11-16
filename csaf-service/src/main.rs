@@ -131,7 +131,7 @@ async fn main() {
 /// signals with a default-terminate disposition, so a SIGTERM arriving before
 /// the first poll would otherwise be lost (or kill us, if unhandled) and
 /// `docker stop` would end in SIGKILL.
-/// #[allow(clippy::manual_async_fn)]
+#[allow(clippy::manual_async_fn)]
 fn shutdown_signal() -> impl Future<Output = ()> + Send {
     #[cfg(unix)]
     let mut sigint = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())

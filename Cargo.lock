@@ -657,7 +657,7 @@ dependencies = [
  "cvss-rs",
  "itertools 0.15.0",
  "jsonpath-rust",
- "jsonschema 0.60.2",
+ "jsonschema 0.61.2",
  "oxilangtag",
  "packageurl",
  "purl",
@@ -951,6 +951,17 @@ name = "fancy-regex"
 version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "476de73bddf2ef8490aa4ee8f1cf40b430bf1d56c48c22080e5186952cd580e6"
+dependencies = [
+ "bit-set",
+ "regex-automata",
+ "regex-syntax",
+]
+
+[[package]]
+name = "fancy-regex"
+version = "0.20.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0a2e16b9a584b602f1e0e5e22c30ca0906786088c27500653e432d086def8b53"
 dependencies = [
  "bit-set",
  "regex-automata",
@@ -1495,7 +1506,7 @@ dependencies = [
  "bytecount",
  "data-encoding",
  "email_address",
- "fancy-regex",
+ "fancy-regex 0.19.0",
  "fraction",
  "getrandom 0.3.4",
  "itoa",
@@ -1515,25 +1526,25 @@ dependencies = [
 
 [[package]]
 name = "jsonschema"
-version = "0.60.2"
+version = "0.61.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a42a11b47492e6a2cc76e9c7bcc8077776cb31dac444e0795d7f61bcc6441c08"
+checksum = "0e37f27df77c7887edbc5f5a59ecd8e5ec4a669319266ec1b61068667a603183"
 dependencies = [
  "ahash",
  "bytecount",
  "data-encoding",
  "email_address",
- "fancy-regex",
+ "fancy-regex 0.20.2",
  "fraction",
  "getrandom 0.3.4",
  "itoa",
  "jsonschema-macros",
- "jsonschema-regex 0.60.2",
- "jsonschema-value 0.60.2",
+ "jsonschema-regex 0.61.2",
+ "jsonschema-value 0.61.2",
  "num-cmp",
  "num-traits",
  "percent-encoding",
- "referencing 0.60.2",
+ "referencing 0.61.2",
  "regex",
  "serde",
  "serde_json",
@@ -1544,9 +1555,9 @@ dependencies = [
 
 [[package]]
 name = "jsonschema-macros"
-version = "0.60.2"
+version = "0.61.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b70c94dc0ea54d4a8f4b42becc5356a33dc203a421f99fdc551f72b6b8b8457"
+checksum = "e3467cc02f0e5de53d77834726a4744c61bdd239336ae49902ff0cbf1842d930"
 dependencies = [
  "jsonschema-macros-core",
  "proc-macro2",
@@ -1554,18 +1565,18 @@ dependencies = [
 
 [[package]]
 name = "jsonschema-macros-core"
-version = "0.60.2"
+version = "0.61.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20fd89a50cb8da14c3a7be6bb6ba6b79e439723381008dece905b72412176b52"
+checksum = "75afa4b5e6986cc221f5339d7d6149360f0bf8e65bcb23617dc0f92900b576d2"
 dependencies = [
- "fancy-regex",
+ "fancy-regex 0.20.2",
  "indexmap",
- "jsonschema-regex 0.60.2",
+ "jsonschema-regex 0.61.2",
  "percent-encoding",
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "referencing 0.60.2",
+ "referencing 0.61.2",
  "regex",
  "serde_json",
  "syn 2.0.117",
@@ -1582,9 +1593,9 @@ dependencies = [
 
 [[package]]
 name = "jsonschema-regex"
-version = "0.60.2"
+version = "0.61.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "107aeb6ff14b8deb5610096a8ce5c554ec89806b521147eaeb3cae05b07edb7a"
+checksum = "7e41151614b6c927e21982be8bef5a26741ae5a0ae6a781eedee2aa930a980e6"
 dependencies = [
  "regex-syntax",
 ]
@@ -1607,9 +1618,9 @@ dependencies = [
 
 [[package]]
 name = "jsonschema-value"
-version = "0.60.2"
+version = "0.61.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e281d6b177bb4834f2ffd6f92aa0443cffe29c996b251c8d94eb6f456186feba"
+checksum = "1515b9a91134ef67d7bac95c2d76fbc7e383c4c55ee544204ceec8088f881fef"
 dependencies = [
  "ahash",
  "bytecount",
@@ -2274,9 +2285,9 @@ dependencies = [
 
 [[package]]
 name = "referencing"
-version = "0.60.2"
+version = "0.61.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f42818036d3b37cda6bd4c494543158a36e431cb717015ef7c93acc6ba214d3b"
+checksum = "a028057ef852c58a42d75e09da87b5e733f4030f4c7411728955e4f87203a577"
 dependencies = [
  "ahash",
  "fluent-uri",

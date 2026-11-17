@@ -1,4 +1,4 @@
-use std::cell::OnceCell;
+use std::sync::OnceLock;
 
 use serde::de::DeserializeOwned;
 
@@ -7,7 +7,7 @@ use crate::validation::{CsafError, TestFinding, TestResult, TestResultStatus, Va
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawDocument<T> {
     raw: serde_json::Value,
-    parsed: OnceCell<Result<T, String>>,
+    parsed: OnceLock<Result<T, String>>,
 }
 
 impl<T> RawDocument<T> {
@@ -23,7 +23,7 @@ where
     pub fn new(raw: serde_json::Value) -> Self {
         Self {
             raw,
-            parsed: OnceCell::new(),
+            parsed: OnceLock::new(),
         }
     }
 }
@@ -104,5 +104,20 @@ where
             Ok(parsed_doc) => self.validate(parsed_doc),
             Err(_) => Ok(()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::RawDocument;
+    use crate::schema::csaf2_0::schema::CommonSecurityAdvisoryFramework as Csaf20;
+    use crate::schema::csaf2_1::schema::CommonSecurityAdvisoryFramework as Csaf21;
+
+    fn assert_send_sync<T: Send + Sync>() {}
+
+    #[test]
+    fn raw_document_is_send_and_sync() {
+        assert_send_sync::<RawDocument<Csaf20>>();
+        assert_send_sync::<RawDocument<Csaf21>>();
     }
 }

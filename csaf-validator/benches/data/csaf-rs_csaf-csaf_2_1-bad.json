@@ -1,0 +1,919 @@
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_security_advisory",
+    "csaf_version": "2.1",
+    "distribution": {
+      "sharing_group": {
+        "id": "ffffffff-ffff-ffff-ffff-ffffffffffff"
+      },
+      "tlp": {
+        "label": "RED"
+      }
+    },
+    "involvement": {
+      "entities": [
+        {
+          "category": "vendor",
+          "entity_id": "EID-0001"
+        },
+        {
+          "category": "vendor",
+          "entity_id": "EID-0003"
+        },
+        {
+          "category": "discoverer",
+          "entity_id": "EID-9999",
+          "name": "Jane Researcher"
+        },
+        {
+          "category": "discoverer",
+          "entity_id": "EID-9999",
+          "name": "Joe Researcher"
+        }
+      ],
+      "actions": [
+        {
+          "action_id": "ACN-1",
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "date": "2024-01-10T09:00:00Z",
+          "category": "notification",
+          "receiving_entity_refs": [
+            "EID-0002"
+          ],
+          "status": "completed",
+          "summary": "Reported vulnerability to vendor."
+        },
+        {
+          "action_id": "ACN-2",
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "date": "2024-01-10T09:00:00Z",
+          "category": "notification",
+          "receiving_entity_refs": [
+            "EID-0002"
+          ],
+          "status": "completed",
+          "summary": "Reported vulnerability to vendor."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "action_id": "ACN-3",
+          "category": "notification",
+          "date": "2024-01-10T09:00:00Z",
+          "status": "completed",
+          "summary": "Reported vulnerability to vendor."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "action_id": "ACN-4",
+          "category": "notification",
+          "date": "2024-01-10T09:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0002"
+          ],
+          "status": "discontinued",
+          "summary": "Did not report vulnerability to vendor."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "action_id": "ACN-5",
+          "category": "notification",
+          "date": "2024-01-10T09:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0002"
+          ],
+          "status": "completed",
+          "summary": "Reported vulnerability to vendor."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "action_id": "ACN-6",
+          "category": "notification",
+          "date": "2024-01-10T09:00:00Z",
+          "status": "attempted",
+          "summary": "Tried to report vulnerability to vendor."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "action_id": "ACN-7",
+          "category": "notification",
+          "date": "2024-01-10T09:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0001"
+          ],
+          "status": "completed",
+          "summary": "Reported vulnerability to vendor."
+        },
+        {
+          "acting_entity_refs": [
+            "EGID-9011"
+          ],
+          "action_id": "ACN-1",
+          "category": "notification",
+          "date": "2024-01-10T09:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0002"
+          ],
+          "status": "completed",
+          "summary": "Reported vulnerability to vendor."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0002"
+          ],
+          "action_id": "ACN-8",
+          "category": "confirmation",
+          "date": "2024-01-10T15:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0001"
+          ],
+          "referenced_action_ids": [
+            "ACN-9999"
+          ],
+          "status": "completed",
+          "summary": "Confirmed receipt of the report."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "action_id": "ACN-9",
+          "category": "confirmation",
+          "date": "2024-01-10T15:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0001"
+          ],
+          "referenced_action_ids": [
+            "ACN-9"
+          ],
+          "status": "completed",
+          "summary": "Confirmed receipt of the report."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "action_id": "ACN-10",
+          "category": "confirmation",
+          "date": "2024-01-10T15:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0003"
+          ],
+          "status": "completed",
+          "summary": "Confirmed receipt of the report."
+        },
+        {
+          "acting_entity_refs": [
+            "EID-0002"
+          ],
+          "action_id": "ACN-11",
+          "category": "confirmation",
+          "date": "2024-01-10T15:00:00Z",
+          "receiving_entity_refs": [
+            "EID-0001"
+          ],
+          "referenced_action_ids": [
+            "ACN-10"
+          ],
+          "status": "completed",
+          "summary": "Confirmed receipt of the report."
+        },
+        {
+          "action_id": "ACN-12",
+          "acting_entity_refs": [
+            "EID-0001"
+          ],
+          "date": "2024-01-10T09:00:00Z",
+          "dl_vuln_ids": [
+            "VULN-1"
+          ],
+          "category": "notification",
+          "receiving_entity_refs": [
+            "EID-0003"
+          ],
+          "status": "completed",
+          "summary": "Reported vulnerability to vendor."
+        }
+      ],
+      "entity_groups": [
+        {
+          "entity_group_id": "EGID-9001",
+          "entity_ids": [
+            "EID-0001",
+            "EID-0003"
+          ],
+          "name": "JJ Research"
+        },
+        {
+          "entity_group_id": "EGID-9002",
+          "entity_ids": [
+            "EID-0001",
+            "EID-0003"
+          ],
+          "name": "JJ Research"
+        },
+        {
+          "entity_group_id": "EGID-9002",
+          "entity_ids": [
+            "EID-0004",
+            "EID-0005"
+          ],
+          "name": "J+J Research"
+        }
+      ]
+    },
+    "lang": "EZ",
+    "license_expression": "This is a license text that should not be here.",
+    "publisher": {
+      "category": "other",
+      "name": "CSAF-RS Test Files",
+      "namespace": "https://github.com/csaf-rs/csaf/tree/main/csaf-validator/benches/data"
+    },
+    "notes": [
+      {
+        "category": "other",
+        "text": "This is not a work and therefore it can't be licensed. Use it as public domain.",
+        "title": "License"
+      }
+    ],
+    "source_lang": "EZ",
+    "title": "Benchmark file that fails as many mandatory tests as possible",
+    "tracking": {
+      "current_release_date": "2024-01-24T10:00:00.000Z",
+      "id": "CSAF-RS_CSAF-CSAF_2_1-bad",
+      "initial_release_date": "2024-01-24T10:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2023-08-22T10:00:00.000Z",
+          "number": "1.0.0-rc",
+          "summary": "Release Candidate for initial version."
+        },
+        {
+          "date": "2024-01-22T10:00:00.000Z",
+          "number": "2",
+          "summary": "Second version."
+        },
+        {
+          "date": "2024-01-23T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        },
+        {
+          "date": "2024-01-23T10:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        },
+        {
+          "date": "2024-01-22T10:00:00.000Z",
+          "number": "10",
+          "summary": "Tenth version."
+        }
+      ],
+      "status": "final",
+      "version": "0.1.0"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "product_version",
+        "name": "prior to 4.2",
+        "product": {
+          "product_id": "CSAFPID-9080707",
+          "name": "Product G"
+        }
+      },
+      {
+        "category": "product_version_range",
+        "name": "all versions < 4.2.0",
+        "product": {
+          "product_id": "CSAFPID-9080712",
+          "name": "Product J"
+        }
+      },
+      {
+        "branches": [
+          {
+            "category": "vendor",
+            "name": "ISDuBA",
+            "product": {
+              "product_id": "CSAFPID-9080713",
+              "name": "Product K"
+            }
+          }
+        ],
+        "category": "vendor",
+        "name": "Open Source"
+      },
+      {
+        "branches": [
+          {
+            "category": "product_version_range",
+            "name": "vers:intdot/<1.1.1",
+            "product": {
+              "product_id": "CSAFPID-9080714",
+              "name": "Product L"
+            }
+          }
+        ],
+        "category": "product_version",
+        "name": "1.1"
+      },
+      {
+        "category": "product_version_range",
+        "name": "vers:intdot/4.2.0",
+        "product": {
+          "product_id": "CSAFPID-9080715",
+          "name": "Product M"
+        }
+      },
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "branches": [
+                  {
+                    "branches": [
+                      {
+                        "branches": [
+                          {
+                            "branches": [
+                              {
+                                "branches": [
+                                  {
+                                    "branches": [
+                                      {
+                                        "branches": [
+                                          {
+                                            "branches": [
+                                              {
+                                                "branches": [
+                                                  {
+                                                    "branches": [
+                                                      {
+                                                        "branches": [
+                                                          {
+                                                            "branches": [
+                                                              {
+                                                                "branches": [
+                                                                  {
+                                                                    "branches": [
+                                                                      {
+                                                                        "branches": [
+                                                                          {
+                                                                            "branches": [
+                                                                              {
+                                                                                "branches": [
+                                                                                  {
+                                                                                    "branches": [
+                                                                                      {
+                                                                                        "branches": [
+                                                                                          {
+                                                                                            "branches": [
+                                                                                              {
+                                                                                                "branches": [
+                                                                                                  {
+                                                                                                    "branches": [
+                                                                                                      {
+                                                                                                        "branches": [
+                                                                                                          {
+                                                                                                            "branches": [
+                                                                                                              {
+                                                                                                                "branches": [
+                                                                                                                  {
+                                                                                                                    "branches": [
+                                                                                                                      {
+                                                                                                                        "branches": [
+                                                                                                                          {
+                                                                                                                            "branches": [
+                                                                                                                              {
+                                                                                                                                "category": "product_name",
+                                                                                                                                "name": "branches",
+                                                                                                                                "product": {
+                                                                                                                                  "name": "<<generate Product name>>",
+                                                                                                                                  "product_id": "CSAFPID-9080700"
+                                                                                                                                }
+                                                                                                                              }
+                                                                                                                            ],
+                                                                                                                            "category": "product_family",
+                                                                                                                            "name": "31"
+                                                                                                                          }
+                                                                                                                        ],
+                                                                                                                        "category": "product_family",
+                                                                                                                        "name": "with"
+                                                                                                                      }
+                                                                                                                    ],
+                                                                                                                    "category": "product_family",
+                                                                                                                    "name": "test"
+                                                                                                                  }
+                                                                                                                ],
+                                                                                                                "category": "product_family",
+                                                                                                                "name": "the"
+                                                                                                              }
+                                                                                                            ],
+                                                                                                            "category": "product_family",
+                                                                                                            "name": "fail"
+                                                                                                          }
+                                                                                                        ],
+                                                                                                        "category": "product_family",
+                                                                                                        "name": "and"
+                                                                                                      }
+                                                                                                    ],
+                                                                                                    "category": "product_family",
+                                                                                                    "name": "limits"
+                                                                                                  }
+                                                                                                ],
+                                                                                                "category": "product_family",
+                                                                                                "name": "the"
+                                                                                              }
+                                                                                            ],
+                                                                                            "category": "product_family",
+                                                                                            "name": "testing"
+                                                                                          }
+                                                                                        ],
+                                                                                        "category": "product_family",
+                                                                                        "name": "are"
+                                                                                      }
+                                                                                    ],
+                                                                                    "category": "product_family",
+                                                                                    "name": "they"
+                                                                                  }
+                                                                                ],
+                                                                                "category": "product_family",
+                                                                                "name": "but"
+                                                                              }
+                                                                            ],
+                                                                            "category": "product_family",
+                                                                            "name": "unrealistic"
+                                                                          }
+                                                                        ],
+                                                                        "category": "product_family",
+                                                                        "name": "less"
+                                                                      }
+                                                                    ],
+                                                                    "category": "product_family",
+                                                                    "name": "or"
+                                                                  }
+                                                                ],
+                                                                "category": "product_family",
+                                                                "name": "more"
+                                                              }
+                                                            ],
+                                                            "category": "product_family",
+                                                            "name": "and"
+                                                          }
+                                                        ],
+                                                        "category": "product_family",
+                                                        "name": "unnecessary"
+                                                      }
+                                                    ],
+                                                    "category": "product_family",
+                                                    "name": "seem"
+                                                  }
+                                                ],
+                                                "category": "product_family",
+                                                "name": "which"
+                                              }
+                                            ],
+                                            "category": "product_family",
+                                            "name": "product"
+                                          }
+                                        ],
+                                        "category": "product_family",
+                                        "name": "hypothetical"
+                                      }
+                                    ],
+                                    "category": "product_family",
+                                    "name": "this"
+                                  }
+                                ],
+                                "category": "product_family",
+                                "name": "for"
+                              }
+                            ],
+                            "category": "product_family",
+                            "name": "structure"
+                          }
+                        ],
+                        "category": "product_family",
+                        "name": "nested"
+                      }
+                    ],
+                    "category": "product_family",
+                    "name": "deeply"
+                  }
+                ],
+                "category": "product_family",
+                "name": "a"
+              }
+            ],
+            "category": "product_family",
+            "name": "uses"
+          }
+        ],
+        "category": "vendor",
+        "name": "Example Company"
+      }
+    ],
+    "full_product_names": [
+      {
+        "product_id": "CSAFPID-9080700",
+        "name": "Product A"
+      },
+      {
+        "product_id": "CSAFPID-9080700",
+        "name": "Product B"
+      },
+      {
+        "name": "Product C",
+        "product_id": "CSAFPID-9080701"
+      },
+      {
+        "name": "Product D",
+        "product_id": "CSAFPID-9080702"
+      },
+      {
+        "name": "Product E",
+        "product_id": "CSAFPID-9080703",
+        "product_identification_helper": {
+          "purls": [
+            "pkg:maven/@1.3.4"
+          ]
+        }
+      },
+      {
+        "name": "Product F",
+        "product_id": "CSAFPID-9080706",
+        "product_identification_helper": {
+          "hashes": [
+            {
+              "file_hashes": [
+                {
+                  "algorithm": "sha256",
+                  "value": "026a37919b182ef7c63791e82c9645e2f897a3f0b73c7a6028c7febf62e93838"
+                },
+                {
+                  "algorithm": "sha256",
+                  "value": "0a853ce2337f0608489ac596a308dc5b7b19d35a52b10bf31261586ac368b175"
+                },
+                {
+                  "algorithm": "md4",
+                  "value": "026a37919b182ef7c63791e82c9645e2f897a3f0b73c7a6028c7febf62e93838d0143"
+                }
+              ],
+              "filename": "product_a.so"
+            }
+          ],
+          "model_numbers": [
+            "P*A*"
+          ],
+          "serial_numbers": [
+            "P*A*"
+          ],
+          "skus": [
+            "NL*12*"
+          ]
+        }
+      },
+      {
+        "product_id": "CSAFPID-9080708",
+        "name": "Product H"
+      },
+      {
+        "product_id": "CSAFPID-9080709",
+        "name": "Product I"
+      },
+      {
+        "name": "Product A",
+        "product_id": "CSAFPID-9080710",
+        "product_identification_helper": {
+          "purls": [
+            "pkg:maven/com.example/logging@1.3.4",
+            "pkg:maven/com.example/audit@1.3.4"
+          ]
+        }
+      }
+    ],
+    "product_groups": [
+      {
+        "group_id": "CSAFGID-1020300",
+        "product_ids": [
+          "CSAFPID-9080711",
+          "CSAFPID-9080705"
+        ]
+      },
+      {
+        "group_id": "CSAFGID-1020300",
+        "product_ids": [
+          "CSAFPID-9080700",
+          "CSAFPID-9080701"
+        ]
+      },
+      {
+        "group_id": "CSAFGID-1020300",
+        "product_ids": [
+          "CSAFPID-9080700",
+          "CSAFPID-9080702"
+        ]
+      },
+      {
+        "group_id": "CSAFGID-0001",
+        "product_ids": [
+          "CSAFPID-9080708",
+          "CSAFPID-9080709"
+        ]
+      }
+    ],
+    "product_paths": [
+      {
+        "beginning_product_reference": "CSAFPID-9080701",
+        "full_product_name": {
+          "name": "Product B",
+          "product_id": "CSAFPID-9080704"
+        },
+        "subpaths": [
+          {
+            "category": "installed_on",
+            "next_product_reference": "CSAFPID-9080704"
+          }
+        ]
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "threats": [
+        {
+          "category": "exploit_status",
+          "details": "Reliable exploits integrated in Metasploit.",
+          "group_ids": [
+            "CSAFGID-1020301"
+          ]
+        }
+      ]
+    },
+    {
+      "product_status": {
+        "known_affected": [
+          "CSAFPID-9080700"
+        ],
+        "known_not_affected": [
+          "CSAFPID-9080700"
+        ]
+      }
+    },
+    {
+      "metrics": [
+        {
+          "content": {
+            "cvss_v3": {
+              "version": "3.1",
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+              "baseScore": 10,
+              "baseSeverity": "CRITICAL"
+            }
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        },
+        {
+          "content": {
+            "cvss_v3": {
+              "version": "3.1",
+              "vectorString": "CVSS:3.1/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
+              "baseScore": 6.5,
+              "baseSeverity": "MEDIUM"
+            }
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        },
+        {
+          "products": [
+            "CSAFPID-9080700"
+          ],
+          "content": {
+            "cvss_v3": {
+              "version": "3.1",
+              "vectorString": "CVSS:3.1/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:H",
+              "baseScore": 10.0,
+              "baseSeverity": "LOW"
+            }
+          }
+        },
+        {
+          "products": [
+            "CSAFPID-9080700"
+          ],
+          "content": {
+            "cvss_v3": {
+              "version": "3.1",
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "baseScore": 9.8,
+              "baseSeverity": "CRITICAL",
+              "attackVector": "LOCAL",
+              "attackComplexity": "LOW",
+              "privilegesRequired": "NONE",
+              "userInteraction": "NONE",
+              "scope": "CHANGED",
+              "confidentialityImpact": "HIGH",
+              "integrityImpact": "HIGH",
+              "availabilityImpact": "LOW"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cwes": [
+        {
+          "id": "CWE-79",
+          "name": "Improper Input Validation",
+          "version": "4.13"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2017-0145"
+    },
+    {
+      "cve": "CVE-2017-0145"
+    },
+    {
+      "flags": [
+        {
+          "label": "component_not_present"
+        }
+      ]
+    },
+    {
+      "flags": [
+        {
+          "label": "component_not_present",
+          "group_ids": [
+            "CSAFGID-0001"
+          ]
+        },
+        {
+          "label": "vulnerable_code_cannot_be_controlled_by_adversary",
+          "product_ids": [
+            "CSAFPID-9080708"
+          ]
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "CSAFPID-9080708",
+          "CSAFPID-9080709"
+        ]
+      }
+    },
+    {
+      "remediations": [
+        {
+          "category": "no_fix_planned",
+          "details": "The product is end-of-life. Therefore, no fix will be provided.",
+          "product_ids": [
+            "CSAFPID-9080700"
+          ]
+        },
+        {
+          "category": "vendor_fix",
+          "details": "Update to version >=14.3 to fix the vulnerability.",
+          "product_ids": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "product_status": {
+        "known_not_affected": [
+          "CSAFPID-9080700"
+        ]
+      },
+      "remediations": [
+        {
+          "category": "vendor_fix",
+          "details": "Update to version >=14.3 to fix the vulnerability.",
+          "product_ids": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "disclosure_date": "2029-01-22T10:00:00.000Z"
+    },
+    {
+      "cve": "CVE-1900-0001",
+      "metrics": [
+        {
+          "content": {
+            "ssvc_v2": {
+              "schemaVersion": "2.0.0",
+              "selections": [
+                {
+                  "key": "E",
+                  "namespace": "ssvc",
+                  "values": [
+                    {
+                      "key": "N"
+                    }
+                  ],
+                  "version": "1.1.0"
+                }
+              ],
+              "target_ids": [
+                "CVE-1900-0002"
+              ],
+              "timestamp": "2024-01-24T10:00:00.000Z"
+            }
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "cve": "CVE-1900-0001",
+      "metrics": [
+        {
+          "content": {
+            "epss": {
+              "percentile": "0.999990000",
+              "probability": "0.975570000",
+              "timestamp": "2029-07-13T10:00:00.000Z"
+            }
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "first_known_exploitation_dates": [
+        {
+          "date": "2024-01-24T10:00:00.000Z",
+          "exploitation_date": "2024-02-25T11:00:22.987Z",
+          "product_ids": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "metrics": [
+        {
+          "content": {
+            "cvss_v3": {
+              "baseSeverity": "NONE",
+              "baseScore": 0.0,
+              "vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N",
+              "version": "3.0"
+            }
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        },
+        {
+          "content": {
+            "qualitative_severity_rating": "critical"
+          },
+          "products": [
+            "CSAFPID-9080700"
+          ]
+        }
+      ]
+    },
+    {
+      "discovery_date": "2029-02-24T10:00:00.000Z"
+    },
+    {
+      "dl_vuln_id": "VULN-9999"
+    },
+    {
+      "dl_vuln_id": "VULN-9999"
+    }
+  ]
+}

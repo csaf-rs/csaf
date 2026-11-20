@@ -25,6 +25,12 @@ required-features = ["cli"]
 name = "validator_benches"
 harness = false
 
+[[example]]
+name = "bad_validator_flamegraph"
+
+[[example]]
+name = "rhsa_validator_flamegraph"
+
 [features]
 default = []
 cli=["dep:clap", "dep:anstyle", "dep:anstream"]

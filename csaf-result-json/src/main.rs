@@ -187,7 +187,7 @@ fn load_and_validate<S: JsonSource>(source: S, version: &str, tests: &[&str]) ->
 /// This prints the results of the tests on stdout.
 fn validate_document<T>(document: T, version: &str, tests: &[&str]) -> ValidationResult
 where
-    T: Validatable,
+    T: Validatable + std::marker::Sync,
 {
     let mut test_ids: Vec<&str> = tests
         .iter()

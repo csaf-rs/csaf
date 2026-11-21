@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use TestResultStatus::*;
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, thiserror::Error)]
@@ -195,35 +196,27 @@ pub fn validate_by_test<V: Validatable>(target: &V, test_id: &str) -> TestResult
 }
 
 /// Validate document with specific tests and return detailed results.
-pub fn validate_by_tests(target: &impl Validatable, version: &str, test_ids: &[&str]) -> ValidationResult {
-    let mut test_results = Vec::new();
-    let mut num_errors: usize = 0;
-    let mut num_warnings: usize = 0;
-    let mut num_infos: usize = 0;
-    let mut num_not_found: usize = 0;
+pub fn validate_by_tests<D: Validatable + std::marker::Sync>(
+    target: &D,
+    version: &str,
+    test_ids: &[&str],
+) -> ValidationResult {
+    let test_results: Vec<TestResult> = test_ids.par_iter().map(|test_id| target.run_test(test_id)).collect();
 
-    // Loop through tests and gather all results and errors.
-    // Call run_test directly — test IDs here are already validated, so the
-    // has_test guard in validate_by_test would be redundant overhead.
-    for test_id in test_ids {
-        let test_result = target.run_test(test_id);
-        match &test_result.status {
-            Failure {
-                errors,
-                warnings,
-                infos,
-            } => {
-                num_errors += errors.len();
-                num_warnings += warnings.len();
-                num_infos += infos.len();
-            },
-            NotFound => {
-                num_not_found += 1;
-            },
-            _ => {},
-        }
-        test_results.push(test_result);
-    }
+    let (num_errors, num_warnings, num_infos, num_not_found) =
+        test_results
+            .iter()
+            .fold((0, 0, 0, 0), |(ne, nw, ni, nnf), test_result| {
+                match &test_result.status {
+                    Failure {
+                        errors,
+                        warnings,
+                        infos,
+                    } => (ne + errors.len(), nw + warnings.len(), ni + infos.len(), nnf),
+                    NotFound => (ne, nw, ni, nnf + 1),
+                    _ => (ne, nw, ni, nnf),
+                }
+            });
 
     ValidationResult {
         success: num_errors == 0,
@@ -237,7 +230,7 @@ pub fn validate_by_tests(target: &impl Validatable, version: &str, test_ids: &[&
 }
 
 /// Validate document with a preset and return detailed results.
-pub fn validate_by_preset<V: Validatable>(
+pub fn validate_by_preset<V: Validatable + std::marker::Sync>(
     target: &V,
     version: &str,
     preset: &str,

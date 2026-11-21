@@ -1,8 +1,14 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
-use crate::helpers::CWE_ENTRIES;
+use crate::cwe::{CWE_RELEASES, CweUsage};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn create_disallowed_cwe_usage_warning(cwe: &str, usage: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
+fn create_disallowed_cwe_usage_warning(
+    cwe: &str,
+    usage: CweUsage,
+    version: &str,
+    i_r: usize,
+    i_cwe: usize,
+) -> TestFinding {
     TestFinding::Warning(TestFindingData {
         message: format!(
             "Weakness '{cwe}' has usage '{usage}' in version '{version}', which is not allowed for vulnerability mapping."
@@ -37,22 +43,22 @@ pub fn test_6_2_25_usage_of_cwe_not_allowed_for_vulnerability_mapping(
 
                 // Skip this entry if the CWE version or CWE ID are unknown, this will be reported
                 // by 6.1.11.
-                let Some(entry) = CWE_ENTRIES.get(version).and_then(|v| v.entries.get(&cwe_item.id)) else {
+                let Some(entry) = CWE_RELEASES.get(version).and_then(|v| v.entries.get(&cwe_item.id)) else {
                     // Revisit after #407
                     continue;
                 };
 
                 // `None` means the CWE version predates the Usage field, so we can skip.
-                let Some(usage) = entry.usage.as_deref() else {
+                if entry.usage == CweUsage::NotProvided {
                     // Revisit after #407
                     continue;
                 };
 
                 // Generate an error if the usage field is not one of the two specified values.
-                if usage != "Allowed" && usage != "Allowed-with-Review" {
+                if entry.usage != CweUsage::Allowed && entry.usage != CweUsage::AllowedWithReview {
                     errors.get_or_insert_default().push(create_disallowed_cwe_usage_warning(
                         &cwe_item.id,
-                        usage,
+                        entry.usage,
                         version,
                         i_r,
                         i_cwe,
@@ -81,7 +87,7 @@ mod tests {
     fn test_test_6_2_25() {
         let case_01_discouraged = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-20",
-            "Discouraged",
+            CweUsage::Discouraged,
             "4.13",
             0,
             0,
@@ -89,7 +95,7 @@ mod tests {
 
         let case_02_prohibited = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-1187",
-            "Prohibited",
+            CweUsage::Prohibited,
             "4.13",
             0,
             0,
@@ -97,7 +103,7 @@ mod tests {
 
         let case_03_multiple_cwes_with_discouraged = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-20",
-            "Discouraged",
+            CweUsage::Discouraged,
             "4.13",
             0,
             1,
@@ -105,7 +111,7 @@ mod tests {
 
         let case_04_multiple_vulns_cwe_with_discouraged = Err(vec![create_disallowed_cwe_usage_warning(
             "CWE-74",
-            "Discouraged",
+            CweUsage::Discouraged,
             "4.13",
             2,
             1,

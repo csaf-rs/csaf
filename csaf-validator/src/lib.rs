@@ -16,7 +16,7 @@ pub mod cli;
 /// This prints the results of the tests on stdout.
 pub fn validate_document<T>(document: T, csaf_version: &str, tests: &[String]) -> ValidationResult
 where
-    T: Validatable,
+    T: Validatable + std::marker::Sync,
 {
     let test_ids: Vec<_> = tests
         .iter()

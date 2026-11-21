@@ -2,17 +2,20 @@ use crate::csaf::enums::version_range::VersionRange;
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 
-fn product_version_range_only_one_version_error(instance_path: impl Into<String>) -> TestFinding {
+fn product_version_range_only_one_version_error(version_range: &str, instance_path: impl Into<String>) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: "The version range given identifies just a single version.".to_string(),
+        message: format!("The product version range `{version_range}` given identifies just a single version."),
         instance_path: instance_path.into(),
     })
 }
 
-fn product_version_range_invalid_error(instance_path: impl Into<String>, version_range: &VersionRange) -> TestFinding {
+fn product_version_range_invalid_single_version_undetermined_info(
+    version_range: &str,
+    instance_path: impl Into<String>,
+) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: format!(
-            "The version range given is invalid: {version_range}, we can't determine if it identifies a single version or not.",
+            "The product version range `{version_range}` is invalid. We can't determine if it identifies a single version or not.",
         ),
         instance_path: instance_path.into(),
     })
@@ -32,21 +35,23 @@ pub fn test_6_1_59_product_version_range_identifies_single_version(
 
     product_tree.visit_all_branches(&mut |branch, path| {
         if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
-            let version_range = VersionRange::parse(branch.get_name());
+            let branch_name = branch.get_name();
+            let version_range = VersionRange::parse(branch_name);
 
-            match version_range {
-                VersionRange::DynamicVers(_) | VersionRange::Vls(_) => {
-                    // error if the version_range does not identify more than one version
-                    if version_range.is_single_version() == Some(true) {
-                        errors
-                            .get_or_insert_default()
-                            .push(product_version_range_only_one_version_error(path));
-                    }
-                },
-                VersionRange::Invalid(_) => {
+            match version_range.is_single_version() {
+                // not a single version
+                Some(false) => {},
+                // a single version
+                Some(true) => {
                     errors
                         .get_or_insert_default()
-                        .push(product_version_range_invalid_error(path, &version_range));
+                        .push(product_version_range_only_one_version_error(branch_name, path));
+                },
+                // we don't know
+                None => {
+                    errors.get_or_insert_default().push(
+                        product_version_range_invalid_single_version_undetermined_info(branch_name, path),
+                    );
                 },
             }
         }
@@ -64,20 +69,48 @@ crate::test_validation::impl_validator!(
 #[cfg(test)]
 mod tests {
     use super::product_version_range_only_one_version_error;
-    use crate::csaf::enums::version_range::VersionRange;
     use crate::csaf2_1::testcases::ExpectedResults_6_1_59 as ExpectedResults;
     use crate::csaf2_1::testcases::TESTS_2_1;
-    use crate::validations::test_6_1_59::product_version_range_invalid_error;
+    use crate::validation::{TestFinding, TestFindingData};
+    use crate::validations::test_6_1_59::product_version_range_invalid_single_version_undetermined_info;
+
+    #[test]
+    fn product_version_range_only_one_version_error_generates_error_finding() {
+        assert_eq!(
+            product_version_range_only_one_version_error("4.2.0", "/product_tree/branches/0"),
+            TestFinding::Error(TestFindingData {
+                message: "The product version range `4.2.0` given identifies just a single version.".to_string(),
+                instance_path: "/product_tree/branches/0".to_string(),
+            })
+        );
+    }
+
+    #[test]
+    fn product_version_range_invalid_single_version_undetermined_info_generates_info_finding() {
+        assert_eq!(
+            product_version_range_invalid_single_version_undetermined_info(
+                "invalid version",
+                "/product_tree/branches/0",
+            ),
+            TestFinding::Information(TestFindingData {
+                message: "The product version range `invalid version` is invalid. We can't determine if it identifies a single version or not."
+                    .to_string(),
+                instance_path: "/product_tree/branches/0".to_string(),
+            })
+        );
+    }
 
     #[test]
     fn test_6_1_59() {
         TESTS_2_1.test_6_1_59.expect(ExpectedResults {
             // Case 01: invalid vers (`vers:intdot/4.2.0`)
             case_01: Err(vec![product_version_range_only_one_version_error(
+                "vers:intdot/4.2.0",
                 "/product_tree/branches/0/branches/0/branches/0",
             )]),
             // Case 02: invalid vls (`4.2.0`)
             case_02: Err(vec![product_version_range_only_one_version_error(
+                "4.2.0",
                 "/product_tree/branches/0/branches/0/branches/0",
             )]),
             // Case 11: No product_version_range, only product_version
@@ -86,9 +119,9 @@ mod tests {
             case_12: Ok(()),
             // Case 13: valid vls (`<4.2.0`)
             case_13: Ok(()),
-            case_s01: Err(vec![product_version_range_invalid_error(
+            case_s01: Err(vec![product_version_range_invalid_single_version_undetermined_info(
+                "invalid version",
                 "/product_tree/branches/0/branches/0/branches/0",
-                &VersionRange::parse("invalid version"),
             )]),
         });
     }

@@ -61,8 +61,13 @@ impl VersionRange {
     /// Returns `Some(true)` if the given version range only matches to a single version.
     pub fn is_single_version(&self) -> Option<bool> {
         match self {
+            // for vers, use the helper function
             VersionRange::DynamicVers(vers) => Some(is_single_version_constraint(vers.constraints())),
-            VersionRange::Vls(vls) => Some(vls.is_single_version()),
+            // single vls versions are invalid vls, so valid vers is never a single version
+            VersionRange::Vls(_) => Some(false),
+            // vls parsing failed because its a single version
+            VersionRange::Invalid(VersionRangeError::InvalidVls(VlsError::SingleVersionNotAllowed(_))) => Some(true),
+            // version parsing failed for some other reason
             VersionRange::Invalid(_) => None,
         }
     }

@@ -18,28 +18,28 @@ impl Document {
     /// Immutably views the document as if it were a 2.0 document
     ///
     /// This can be thought of as a zero-cost cast
-    pub fn v20_view(&self) -> &v20::Node0 {
+    pub fn v20_view(&self) -> &v20::NonStrictRoot {
         bytemuck::TransparentWrapper::wrap_ref(&self.inner)
     }
 
     /// Mutably views the document as if it were a 2.0 document
     ///
     /// This can be thought of as a zero-cost cast
-    pub fn v20_view_mut(&mut self) -> &mut v20::Node0 {
+    pub fn v20_view_mut(&mut self) -> &mut v20::NonStrictRoot {
         bytemuck::TransparentWrapper::wrap_mut(&mut self.inner)
     }
 
     /// Immutably views the document as if it were a 2.1 document
     ///
     /// This can be thought of as a zero-cost cast
-    pub fn v21_view(&self) -> &v21::Node0 {
+    pub fn v21_view(&self) -> &v21::NonStrictRoot {
         bytemuck::TransparentWrapper::wrap_ref(&self.inner)
     }
 
     /// Mutably views the document as if it were a 2.1 document
     ///
     /// This can be thought of as a zero-cost cast
-    pub fn v21_view_mut(&mut self) -> &mut v21::Node0 {
+    pub fn v21_view_mut(&mut self) -> &mut v21::NonStrictRoot {
         bytemuck::TransparentWrapper::wrap_mut(&mut self.inner)
     }
 

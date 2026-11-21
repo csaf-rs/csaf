@@ -1,4 +1,4 @@
-File-Date: 2026-09-17
+File-Date: 2026-11-18
 %%
 Type: language
 Subtag: aa
@@ -47723,10 +47723,28 @@ Prefix: sl-rozaj-solba
 Comments: For standardized Resian an orthography was published in 1994.
 %%
 Type: variant
+Subtag: 1995
+Description: Uzbek Latin orthography of 1995
+Added: 2026-11-18
+Prefix: uz
+Prefix: uz-Latn
+Comments: Uzbek Latin orthography with the digraphs sh and ch and the
+  letters oʻ and gʻ
+%%
+Type: variant
 Subtag: 1996
 Description: German orthography of 1996
 Added: 2005-10-16
 Prefix: de
+%%
+Type: variant
+Subtag: 2026
+Description: Uzbek Latin orthography of 2026
+Added: 2026-11-18
+Prefix: uz
+Prefix: uz-Latn
+Comments: Uzbek Latin orthography with the letters ö, ğ, ş and ç in
+  place of oʻ, gʻ, sh and ch
 %%
 Type: variant
 Subtag: abl1943

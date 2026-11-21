@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
-use crate::helpers::get_latest_cwe_version_for_date;
+use crate::cwe::get_latest_cwe_version_for_date;
 use crate::validation::{TestFinding, TestFindingData};
 use semver::Version;
 use std::sync::LazyLock;

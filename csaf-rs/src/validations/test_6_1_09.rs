@@ -51,8 +51,8 @@ mod tests {
         let case01_3_1_base_score_and_severity_wrong_csaf_2_0: Result<(), _> = Err(vec![
             finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_0)),
             finding_error(create_severity_mismatch_finding_data(
-                &Severity::Medium,
-                &Severity::Low,
+                Severity::Medium,
+                Severity::Low,
                 ScoreType::Base,
                 path_2_0,
             )),
@@ -60,8 +60,8 @@ mod tests {
         let case02_3_0_base_score_and_severity_wrong_csaf_2_0: Result<(), _> = Err(vec![
             finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_0)),
             finding_error(create_severity_mismatch_finding_data(
-                &Severity::Medium,
-                &Severity::High,
+                Severity::Medium,
+                Severity::High,
                 ScoreType::Base,
                 path_2_0,
             )),
@@ -88,8 +88,8 @@ mod tests {
         let case01_3_1_base_score_and_severity_wrong_csaf_2_1: Result<(), _> = Err(vec![
             finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_1)),
             finding_error(create_severity_mismatch_finding_data(
-                &Severity::Medium,
-                &Severity::Low,
+                Severity::Medium,
+                Severity::Low,
                 ScoreType::Base,
                 path_2_1,
             )),
@@ -97,8 +97,8 @@ mod tests {
         let case02_3_0_base_score_and_severity_wrong_csaf_2_1: Result<(), _> = Err(vec![
             finding_error(create_score_mismatch_finding_data(6.5, 10.0, ScoreType::Base, path_2_1)),
             finding_error(create_severity_mismatch_finding_data(
-                &Severity::Medium,
-                &Severity::High,
+                Severity::Medium,
+                Severity::High,
                 ScoreType::Base,
                 path_2_1,
             )),
@@ -113,8 +113,8 @@ mod tests {
         let case05_4_0_base_score_and_severity_wrong_csaf_2_1: Result<(), _> = Err(vec![
             finding_error(create_score_mismatch_finding_data(9.3, 10.0, ScoreType::Base, path_2_1)),
             finding_error(create_severity_mismatch_finding_data(
-                &Severity::Critical,
-                &Severity::High,
+                Severity::Critical,
+                Severity::High,
                 ScoreType::Base,
                 path_2_1,
             )),

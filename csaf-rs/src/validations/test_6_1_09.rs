@@ -1,8 +1,6 @@
+use crate::csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait};
+use crate::validation::TestFinding;
 use crate::validations::utils::cvss;
-use crate::{
-    csaf_traits::{ContentTrait, CsafTrait, MetricTrait, VulnerabilityTrait},
-    validation::TestFinding,
-};
 
 /// 6.1.9 Invalid CVSS computation
 ///

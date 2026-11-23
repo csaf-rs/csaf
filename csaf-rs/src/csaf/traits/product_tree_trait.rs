@@ -1,5 +1,6 @@
 use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 use crate::csaf::traits::util::impl_str_field_getter;
+use crate::csaf::traits::util::reference::{IdReference, ReferenceLocation};
 use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
 use crate::schema::csaf2_0::schema::{
     Branch as Branch20, FullProductNameT as FullProductNameT20, ProductGroup as ProductGroup20,
@@ -65,47 +66,43 @@ pub trait ProductTreeTrait {
             .collect()
     }
 
-    /// Utility function to get all product references in product groups along with their JSON paths
-    fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        for (pg_i, pg) in self.get_product_groups().iter().enumerate() {
-            for (p_i, p) in pg.get_product_ids().enumerate() {
-                ids.push((
-                    p.to_owned(),
-                    format!("/product_tree/product_groups/{pg_i}/product_ids/{p_i}"),
-                ));
-            }
-        }
-
-        ids
+    /// Iterates over all product IDs referenced by product groups.
+    fn get_product_groups_product_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        self.get_product_groups().iter().enumerate().flat_map(|(pg_i, pg)| {
+            pg.get_product_ids().enumerate().map(move |(p_i, p)| {
+                IdReference::new(
+                    p,
+                    ReferenceLocation::ProductGroup {
+                        group: pg_i,
+                        index: p_i,
+                    },
+                )
+            })
+        })
     }
 
-    /// Utility function to get all product references in relationships along with their JSON paths
-    fn get_relationships_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        for (rel_i, rel) in self.get_product_paths().iter().enumerate() {
-            ids.push((
-                rel.get_beginning_product_reference().to_owned(),
-                rel.get_json_path_for_product_path_beginning_product_reference(rel_i),
-            ));
-            for (sub_i, sub_ref) in rel.get_subpath_product_references().into_iter().enumerate() {
-                ids.push((
-                    sub_ref.to_owned(),
-                    rel.get_json_path_for_product_path_subpath_product_reference(rel_i, sub_i),
-                ));
-            }
-        }
-
-        ids
+    /// Iterates over all product IDs referenced by relationships (CSAF 2.0) or product paths (CSAF 2.1).
+    fn get_relationships_product_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        self.get_product_paths().iter().enumerate().flat_map(|(rel_i, rel)| {
+            let beginning = IdReference::new(
+                rel.get_beginning_product_reference(),
+                rel.get_beginning_product_reference_location(rel_i),
+            );
+            let subpaths = rel
+                .get_subpath_product_references()
+                .into_iter()
+                .enumerate()
+                .map(move |(sub_i, sub_ref)| {
+                    IdReference::new(sub_ref, rel.get_subpath_product_reference_location(rel_i, sub_i))
+                });
+            std::iter::once(beginning).chain(subpaths)
+        })
     }
 
-    /// Returns all product references from the product tree (groups + relationships).
-    fn get_all_product_references(&self) -> Vec<(String, String)> {
-        let mut ids = self.get_product_groups_product_references();
-        ids.extend(self.get_relationships_product_references());
-        ids
+    /// Iterates over all product IDs referenced in the product tree (groups + relationships).
+    fn get_all_product_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        self.get_product_groups_product_references()
+            .chain(self.get_relationships_product_references())
     }
 
     // Lookup functions

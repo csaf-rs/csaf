@@ -4,7 +4,7 @@ use strum::{AsRefStr, Display};
 ///
 /// This enum is shared between CSAF 2.0 and 2.1.
 /// CSAF 2.0 and 2.1 have divergent definitions, with 2.1 adding `Unknown`, which does not exist in 2.0.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd, Display, AsRefStr)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Ord, PartialOrd, Display, AsRefStr)]
 pub enum ProductStatus {
     #[strum(serialize = "first_affected")]
     FirstAffected,

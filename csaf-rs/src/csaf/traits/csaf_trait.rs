@@ -1,6 +1,6 @@
 use crate::csaf::traits::document::csaf_21_involvement_trait::Csaf21InvolvementTrait;
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
-use crate::csaf::traits::vulnerabilities_trait::collect_references;
+use crate::csaf::traits::util::reference::IdReference;
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{
     ActionTrait, ContentTrait, DocumentTrait, EpssTrait, ExtensionsTrait, FirstKnownExploitationDatesTrait,
@@ -16,6 +16,14 @@ use crate::schema::csaf2_1::schema::{
     ProductTree as ProductTree21, Vulnerability as Vulnerability21,
 };
 use std::collections::{BTreeSet, HashSet};
+
+/// Places references obtained from a vulnerability into the vulnerability with the given index.
+fn in_vulnerability<'a>(
+    references: impl Iterator<Item = IdReference<'a>> + 'a,
+    index: usize,
+) -> impl Iterator<Item = IdReference<'a>> + 'a {
+    references.map(move |reference| reference.in_vulnerability(index))
+}
 
 /// Trait representing an abstract Common Security Advisory Framework (CSAF) document.
 ///
@@ -43,39 +51,49 @@ pub trait CsafTrait {
     /// Retrieves the document meta present in the CSAF document.
     fn get_document(&self) -> &Self::DocumentType;
 
-    /// Returns all group IDs referenced in the document along with their JSON paths.
-    fn get_all_group_references(&self) -> Vec<(String, String)> {
-        let mut ids = self.get_document().get_all_group_references();
-        if let Some(involvement) = self.get_document().get_involvement() {
-            ids.extend(involvement.get_all_group_references());
-        }
-        ids.extend(collect_references(self.get_vulnerabilities(), |v| {
-            v.get_all_group_references()
-        }));
-        ids
+    /// Iterates over all group IDs referenced in the document, borrowing them from the document.
+    fn get_all_group_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        let document = self.get_document();
+        document
+            .get_all_group_references()
+            .chain(
+                document
+                    .get_involvement()
+                    .into_iter()
+                    .flat_map(|involvement| involvement.get_all_group_references()),
+            )
+            .chain(
+                self.get_vulnerabilities()
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(i, v)| in_vulnerability(v.get_all_group_references(), i)),
+            )
     }
 
-    /// Returns all product IDs referenced in the document along with their JSON paths.
-    fn get_all_product_references(&self) -> Vec<(String, String)> {
-        let mut ids = self.get_document().get_all_product_references();
-        if let Some(involvement) = self.get_document().get_involvement() {
-            ids.extend(involvement.get_all_product_references());
-        }
-        ids.extend(collect_references(self.get_vulnerabilities(), |v| {
-            v.get_all_product_references()
-        }));
-        if let Some(pt) = self.get_product_tree() {
-            ids.extend(pt.get_all_product_references());
-        }
-        ids
-    }
-
-    /// Utility function to get all product IDs referenced (expect those explicitly defined) in the document.
-    fn get_all_product_references_ids(&self) -> Vec<String> {
-        self.get_all_product_references()
-            .iter()
-            .map(|(id, _)| id.to_owned())
-            .collect()
+    /// Iterates over all product IDs referenced in the document, borrowing them from the document.
+    ///
+    /// Product IDs defined by full product names are not included.
+    fn get_all_product_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        let document = self.get_document();
+        document
+            .get_all_product_references()
+            .chain(
+                document
+                    .get_involvement()
+                    .into_iter()
+                    .flat_map(|involvement| involvement.get_all_product_references()),
+            )
+            .chain(
+                self.get_vulnerabilities()
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(i, v)| in_vulnerability(v.get_all_product_references(), i)),
+            )
+            .chain(
+                self.get_product_tree()
+                    .into_iter()
+                    .flat_map(|product_tree| product_tree.get_all_product_references()),
+            )
     }
 
     fn get_all_document_local_vuln_id_references(&self) -> HashSet<String> {

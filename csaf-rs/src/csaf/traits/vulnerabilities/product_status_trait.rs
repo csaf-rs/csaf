@@ -1,5 +1,6 @@
 use crate::csaf::enums::product_status::ProductStatus;
 use crate::csaf::traits::util::impl_optional_str_iter_field_getter;
+use crate::csaf::traits::util::reference::{IdReference, ReferenceLocation};
 use crate::schema::csaf2_1::schema::ProductStatus as ProductStatus2_1;
 
 /// Trait representing an abstract product status in a CSAF document.
@@ -56,32 +57,36 @@ pub trait ProductStatusTrait {
         ]
     }
 
-    /// Helper method to add product references with a given label to the result vector.
-    fn extract_product_references(
-        &self,
-        ids: &mut Vec<(String, String)>,
-        products: Option<impl Iterator<Item = impl AsRef<str>>>,
-        label: &str,
-    ) {
-        if let Some(iter) = products {
-            for (x_i, x) in iter.enumerate() {
-                ids.push((x.as_ref().to_owned(), format!("product_status/{label}/{x_i}")));
-            }
+    /// Iterates over all referenced product IDs, located at `/product_status/{status}/{index}`.
+    fn get_all_product_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        fn status<'a>(
+            products: Option<impl Iterator<Item = &'a str> + 'a>,
+            status: ProductStatus,
+        ) -> impl Iterator<Item = IdReference<'a>> + 'a {
+            products.into_iter().flatten().enumerate().map(move |(x_i, x)| {
+                IdReference::new(
+                    x,
+                    ReferenceLocation::ProductStatus {
+                        vulnerability: None,
+                        status,
+                        index: x_i,
+                    },
+                )
+            })
         }
-    }
 
-    fn get_all_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-        self.extract_product_references(&mut ids, self.get_first_affected(), "first_affected");
-        self.extract_product_references(&mut ids, self.get_first_fixed(), "first_fixed");
-        self.extract_product_references(&mut ids, self.get_fixed(), "fixed");
-        self.extract_product_references(&mut ids, self.get_known_affected(), "known_affected");
-        self.extract_product_references(&mut ids, self.get_known_not_affected(), "known_not_affected");
-        self.extract_product_references(&mut ids, self.get_last_affected(), "last_affected");
-        self.extract_product_references(&mut ids, self.get_recommended(), "recommended");
-        self.extract_product_references(&mut ids, self.get_under_investigation(), "under_investigation");
-        self.extract_product_references(&mut ids, self.get_unknown(), "unknown");
-        ids
+        status(self.get_first_affected(), ProductStatus::FirstAffected)
+            .chain(status(self.get_first_fixed(), ProductStatus::FirstFixed))
+            .chain(status(self.get_fixed(), ProductStatus::Fixed))
+            .chain(status(self.get_known_affected(), ProductStatus::KnownAffected))
+            .chain(status(self.get_known_not_affected(), ProductStatus::KnownNotAffected))
+            .chain(status(self.get_last_affected(), ProductStatus::LastAffected))
+            .chain(status(self.get_recommended(), ProductStatus::Recommended))
+            .chain(status(
+                self.get_under_investigation(),
+                ProductStatus::UnderInvestigation,
+            ))
+            .chain(status(self.get_unknown(), ProductStatus::Unknown))
     }
 }
 

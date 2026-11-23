@@ -1,11 +1,12 @@
 use crate::csaf_traits::{CsafTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use std::collections::BTreeSet;
+use std::fmt::Display;
 
-fn create_nested_product_path_info(instance_path: String) -> TestFinding {
+fn create_nested_product_path_info(instance_path: impl Display) -> TestFinding {
     TestFinding::Information(TestFindingData {
         message: "Product path references a product defined by another product path.".to_string(),
-        instance_path,
+        instance_path: instance_path.to_string(),
     })
 }
 
@@ -32,7 +33,7 @@ pub fn test_6_3_22_nested_product_path(doc: &impl CsafTrait) -> Result<(), Vec<T
         // check if ifs beginning product reference product id is defined by a product path, if so, add an error
         if product_ids_defined_by_product_path.contains(product_path.get_beginning_product_reference()) {
             findings.get_or_insert_default().push(create_nested_product_path_info(
-                product_path.get_json_path_for_product_path_beginning_product_reference(product_path_index),
+                product_path.get_beginning_product_reference_location(product_path_index),
             ));
         }
 
@@ -40,8 +41,7 @@ pub fn test_6_3_22_nested_product_path(doc: &impl CsafTrait) -> Result<(), Vec<T
         for (subpath_index, product_reference) in product_path.get_subpath_product_references().iter().enumerate() {
             if product_ids_defined_by_product_path.contains(product_reference) {
                 findings.get_or_insert_default().push(create_nested_product_path_info(
-                    product_path
-                        .get_json_path_for_product_path_subpath_product_reference(product_path_index, subpath_index),
+                    product_path.get_subpath_product_reference_location(product_path_index, subpath_index),
                 ));
             }
         }

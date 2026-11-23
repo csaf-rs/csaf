@@ -1,5 +1,6 @@
 use crate::csaf::traits::util::extract_references::define_reference_accessors;
 use crate::csaf::traits::util::impl_optional_str_field_getter;
+use crate::csaf::traits::util::reference::{IdReference, ReferenceLocation};
 
 use crate::csaf::traits::util::not_present_20::NotPresentInCsaf20;
 use crate::csaf::traits::util::not_present_21::NotPresentInCsaf21;
@@ -20,23 +21,6 @@ use crate::schema::csaf2_1::schema::{
     Note as Note21, ProductStatus as ProductStatus21, Reference as Reference21, Remediation as Remediation21,
     Threat as Threat21, Vulnerability as Vulnerability21,
 };
-
-/// Collects references from all vulnerabilities using the given extractor, prepending
-/// each path with `/vulnerabilities/{index}/`.
-pub(crate) fn collect_references<V: VulnerabilityTrait>(
-    vulnerabilities: &[V],
-    extractor: impl Fn(&V) -> Vec<(String, String)>,
-) -> Vec<(String, String)> {
-    vulnerabilities
-        .iter()
-        .enumerate()
-        .flat_map(|(i, v)| {
-            extractor(v)
-                .into_iter()
-                .map(move |(id, path)| (id, format!("/vulnerabilities/{i}/{path}")))
-        })
-        .collect()
-}
 
 /// Trait representing an abstract vulnerability in a CSAF document.
 ///
@@ -88,12 +72,11 @@ pub trait VulnerabilityTrait {
     /// Retrieves the status of products affected by the vulnerability, if available.
     fn get_product_status(&self) -> Option<&Self::ProductStatusType>;
 
-    fn get_product_status_product_references(&self) -> Vec<(String, String)> {
-        if let Some(product_status) = self.get_product_status() {
-            product_status.get_all_product_references()
-        } else {
-            Vec::new()
-        }
+    /// Iterates over all product IDs referenced in the product status, relative to this vulnerability.
+    fn get_product_status_product_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        self.get_product_status()
+            .into_iter()
+            .flat_map(|product_status| product_status.get_all_product_references())
     }
 
     /// Returns an optional vector of metrics related to the vulnerability.
@@ -104,22 +87,26 @@ pub trait VulnerabilityTrait {
     /// CSAF 2.0 called this `scores`, CSAF 2.1 renamed it to `metrics`.
     fn get_metrics_prop_name(&self) -> &str;
 
-    /// Utility function to get all product IDs referenced in metrics along with their JSON subpaths
-    fn get_metrics_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        if let Some(metrics) = self.get_metrics() {
-            for (metric_i, metric) in metrics.iter().enumerate() {
-                for (x_i, x) in metric.get_products().enumerate() {
-                    ids.push((
-                        x.to_owned(),
-                        format!("{}/{metric_i}/products/{x_i}", self.get_metrics_prop_name()),
-                    ));
-                }
-            }
-        }
-
-        ids
+    /// Iterates over all product IDs referenced in metrics, relative to this vulnerability.
+    fn get_metrics_product_references(&self) -> impl Iterator<Item = IdReference<'_>> + '_ {
+        let prop_name = self.get_metrics_prop_name();
+        self.get_metrics()
+            .into_iter()
+            .flatten()
+            .enumerate()
+            .flat_map(move |(metric_i, metric)| {
+                metric.get_products().enumerate().map(move |(x_i, x)| {
+                    IdReference::new(
+                        x,
+                        ReferenceLocation::Metric {
+                            vulnerability: None,
+                            property: prop_name,
+                            metric: metric_i,
+                            index: x_i,
+                        },
+                    )
+                })
+            })
     }
 
     /// Retrieves a list of potential threats related to the vulnerability.

@@ -1,102 +1,68 @@
+use crate::csaf::traits::util::reference::{IdList, IdReference, ReferenceLocation};
 use crate::csaf_traits::{WithOptionalGroupIds, WithOptionalProductIds};
 
-/// Central helper function for extracting group references.
+/// Iterates over the group IDs referenced by `items`, which are located at `key`.
 ///
-/// This function implements the core logic for extracting group IDs and their JSON paths
-/// from an iterator of items that implement `WithOptionalGroupIds`. This avoids code duplication
-/// across multiple trait implementations.
-///
-/// # Arguments
-///
-/// * `items` - An iterator over items that implement `WithOptionalGroupIds`
-/// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
-///
-/// # Returns
-///
-/// A vector of tuples containing (group_id, json_path) for each group reference found.
-fn extract_group_id_impl<'a, T: WithOptionalGroupIds + 'a>(
-    items: impl Iterator<Item = &'a T>,
-    path_prefix: &str,
-) -> Vec<(String, String)> {
-    let mut ids: Vec<(String, String)> = Vec::new();
-    for (index, item) in items.enumerate() {
-        if let Some(group_ids) = item.get_group_ids() {
-            for (group_index, group_id) in group_ids.enumerate() {
-                ids.push((
-                    group_id.to_owned(),
-                    format!("{path_prefix}/{index}/group_ids/{group_index}"),
-                ))
-            }
-        }
-    }
-    ids
+/// Each reference borrows its ID from the document and is located at
+/// `/{key}/{index}/group_ids/{group_index}`.
+pub(crate) fn group_references<'a, T: WithOptionalGroupIds + 'a>(
+    items: impl Iterator<Item = &'a T> + 'a,
+    key: &'static str,
+) -> impl Iterator<Item = IdReference<'a>> + 'a {
+    items.enumerate().flat_map(move |(index, item)| {
+        item.get_group_ids()
+            .into_iter()
+            .flatten()
+            .enumerate()
+            .map(move |(group_index, group_id)| {
+                IdReference::new(
+                    group_id,
+                    ReferenceLocation::Field {
+                        vulnerability: None,
+                        field: key,
+                        item: index,
+                        list: IdList::GroupIds,
+                        index: group_index,
+                    },
+                )
+            })
+    })
 }
 
-/// Central helper function for extracting group references.
+/// Iterates over the product IDs referenced by `items`, which are located at `key`.
 ///
-/// This function implements the core logic for extracting group IDs and their JSON paths
-/// from an iterator of items that implement `WithOptionalProductIds`. This avoids code duplication
-/// across multiple trait implementations.
-///
-/// # Arguments
-///
-/// * `items` - An iterator over items that implement `WithOptionalProductIds`
-/// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
-///
-/// # Returns
-///
-/// A vector of tuples containing (product_id, json_path) for each product reference found.
-fn extract_product_id_impl<'a, T: WithOptionalProductIds + 'a>(
-    items: impl Iterator<Item = &'a T>,
-    path_prefix: &str,
-) -> Vec<(String, String)> {
-    let mut ids: Vec<(String, String)> = Vec::new();
-    for (index, item) in items.enumerate() {
-        if let Some(product_ids) = item.get_product_ids() {
-            for (product_index, product_id) in product_ids.enumerate() {
-                ids.push((
-                    product_id.to_owned(),
-                    format!("{path_prefix}/{index}/product_ids/{product_index}"),
-                ))
-            }
-        }
-    }
-    ids
+/// Each reference borrows its ID from the document and is located at
+/// `/{key}/{index}/product_ids/{product_index}`.
+pub(crate) fn product_references<'a, T: WithOptionalProductIds + 'a>(
+    items: impl Iterator<Item = &'a T> + 'a,
+    key: &'static str,
+) -> impl Iterator<Item = IdReference<'a>> + 'a {
+    items.enumerate().flat_map(move |(index, item)| {
+        item.get_product_ids()
+            .into_iter()
+            .flatten()
+            .enumerate()
+            .map(move |(product_index, product_id)| {
+                IdReference::new(
+                    product_id,
+                    ReferenceLocation::Field {
+                        vulnerability: None,
+                        field: key,
+                        item: index,
+                        list: IdList::ProductIds,
+                        index: product_index,
+                    },
+                )
+            })
+    })
 }
 
-/// Extension trait for extracting group references from iterators where T implements WithOptionalGroupIds.
-///
-/// This trait provides a generic method to extract group IDs from iterators over objects
-/// that implement the `WithOptionalGroupIds` trait, returning them as tuples of (group_id, json_path).
-///
-pub trait ExtractGroupReferences<T: WithOptionalGroupIds> {
-    fn extract_group_references(self, path_prefix: &str) -> Vec<(String, String)>;
-}
-
-impl<'a, T: WithOptionalGroupIds + 'a, I: Iterator<Item = &'a T>> ExtractGroupReferences<T> for I {
-    fn extract_group_references(self, path_prefix: &str) -> Vec<(String, String)> {
-        extract_group_id_impl(self, path_prefix)
-    }
-}
-
-/// Extension trait for extracting product references from iterators where T implements WithOptionalProductIds.
-///
-/// This trait provides a generic method to extract product IDs from iterators over objects
-/// that implement the `WithOptionalProductIds` trait, returning them as tuples of (product_id, json_path).
-///
-pub trait ExtractProductReferences<T: WithOptionalProductIds> {
-    fn extract_product_references(self, path_prefix: &str) -> Vec<(String, String)>;
-}
-
-impl<'a, T: WithOptionalProductIds + 'a, I: Iterator<Item = &'a T>> ExtractProductReferences<T> for I {
-    fn extract_product_references(self, path_prefix: &str) -> Vec<(String, String)> {
-        extract_product_id_impl(self, path_prefix)
-    }
-}
-
-/// Generates individual group/product reference extraction methods and aggregated
-/// `get_all_group_references` / `get_all_product_references` methods from a single
+/// Generates individual group/product reference iterators and aggregated
+/// `get_all_group_references` / `get_all_product_references` iterators from a single
 /// field declaration.
+///
+/// All generated methods return iterators of [`IdReference`]s borrowing from `self`, so no IDs
+/// are cloned and paths are only rendered when needed. Locations are relative to `self`.
 ///
 /// # Parameters
 ///
@@ -106,10 +72,10 @@ impl<'a, T: WithOptionalProductIds + 'a, I: Iterator<Item = &'a T>> ExtractProdu
 /// - `iter`: List of tuples for `Iterator` getters.
 /// - `optional_iter`: List of tuples for getters returning `Option<Iterator>`.
 /// - `custom_group_extraction` (optional): List of already-implemented method names that return
-///   group-only references with special handling. These are included in
+///   iterators of group-only references with special handling. These are included in
 ///   `get_all_group_references` but **not** auto-generated.
 /// - `custom_product_extraction` (optional): List of already-implemented method names that return
-///   product-only references with special handling (e.g., metrics, product_status).
+///   iterators of product-only references with special handling (e.g., metrics, product_status).
 ///   These are included in `get_all_product_references` but **not** auto-generated.
 ///
 /// # Example
@@ -178,16 +144,16 @@ macro_rules! define_reference_accessors {
         $(
             $(
                 /// Get all group references from this element
-                fn $vec_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
+                fn $vec_group_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::group_references(
                         self.$getter().iter(),
                         $path,
                     )
                 }
 
                 /// Get all product references from this element
-                fn $vec_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
+                fn $vec_product_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::product_references(
                         self.$getter().iter(),
                         $path,
                     )
@@ -197,15 +163,15 @@ macro_rules! define_reference_accessors {
 
         $(
             $(
-                fn $optional_vec_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
+                fn $optional_vec_group_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::group_references(
                         self.$optional_vec_getter().map(|items| items.iter()).into_iter().flatten(),
                         $optional_vec_path,
                     )
                 }
 
-                fn $optional_vec_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
+                fn $optional_vec_product_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::product_references(
                         self.$optional_vec_getter().map(|items| items.iter()).into_iter().flatten(),
                         $optional_vec_path,
                     )
@@ -215,15 +181,15 @@ macro_rules! define_reference_accessors {
 
         $(
             $(
-                fn $iter_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
+                fn $iter_group_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::group_references(
                         self.$iter_getter(),
                         $iter_path,
                     )
                 }
 
-                fn $iter_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
+                fn $iter_product_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::product_references(
                         self.$iter_getter(),
                         $iter_path,
                     )
@@ -233,15 +199,15 @@ macro_rules! define_reference_accessors {
 
         $(
             $(
-                fn $optional_iter_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
+                fn $optional_iter_group_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::group_references(
                         self.$optional_iter_getter().into_iter().flatten(),
                         $optional_iter_path,
                     )
                 }
 
-                fn $optional_iter_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
+                fn $optional_iter_product_method(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+                    $crate::csaf::traits::util::extract_references::product_references(
                         self.$optional_iter_getter().into_iter().flatten(),
                         $optional_iter_path,
                     )
@@ -250,24 +216,24 @@ macro_rules! define_reference_accessors {
         )?
 
         /// Returns all group references across all elements
-        fn get_all_group_references(&self) -> Vec<(String, String)> {
-            let mut refs = Vec::new();
-            $( $( refs.extend(self.$vec_group_method()); )* )?
-            $( $( refs.extend(self.$optional_vec_group_method()); )* )?
-            $( $( refs.extend(self.$iter_group_method()); )* )?
-            $( $( refs.extend(self.$optional_iter_group_method()); )* )?
-            $( $( refs.extend(self.$custom_group_extraction_method()); )* )?
+        fn get_all_group_references(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+            let refs = ::std::iter::empty();
+            $( $( let refs = refs.chain(self.$vec_group_method()); )* )?
+            $( $( let refs = refs.chain(self.$optional_vec_group_method()); )* )?
+            $( $( let refs = refs.chain(self.$iter_group_method()); )* )?
+            $( $( let refs = refs.chain(self.$optional_iter_group_method()); )* )?
+            $( $( let refs = refs.chain(self.$custom_group_extraction_method()); )* )?
             refs
         }
 
         /// Returns all product references across all elements
-        fn get_all_product_references(&self) -> Vec<(String, String)> {
-            let mut refs = Vec::new();
-            $( $( refs.extend(self.$vec_product_method()); )* )?
-            $( $( refs.extend(self.$optional_vec_product_method()); )* )?
-            $( $( refs.extend(self.$iter_product_method()); )* )?
-            $( $( refs.extend(self.$optional_iter_product_method()); )* )?
-            $( $( refs.extend(self.$custom_product_extraction_method()); )* )?
+        fn get_all_product_references(&self) -> impl Iterator<Item = $crate::csaf::traits::util::reference::IdReference<'_>> + '_ {
+            let refs = ::std::iter::empty();
+            $( $( let refs = refs.chain(self.$vec_product_method()); )* )?
+            $( $( let refs = refs.chain(self.$optional_vec_product_method()); )* )?
+            $( $( let refs = refs.chain(self.$iter_product_method()); )* )?
+            $( $( let refs = refs.chain(self.$optional_iter_product_method()); )* )?
+            $( $( let refs = refs.chain(self.$custom_product_extraction_method()); )* )?
             refs
         }
     };

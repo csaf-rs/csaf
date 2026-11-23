@@ -4,6 +4,7 @@ pub mod generic_with;
 pub mod impl_macros;
 pub mod not_present_20;
 pub mod not_present_21;
+pub mod reference;
 pub mod resolve_entity_groups;
 pub mod resolve_product_groups;
 

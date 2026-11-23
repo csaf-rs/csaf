@@ -23,10 +23,7 @@ impl<T: ProductStatusTrait> From<&T> for ProductGroupsByIdMap {
                     .or_default()
                     .entry(group.clone())
                     .or_default()
-                    .push(ProductStatusAndPath {
-                        status: status.clone(),
-                        index,
-                    });
+                    .push(ProductStatusAndPath { status, index });
             }
         }
 

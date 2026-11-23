@@ -22,10 +22,10 @@ impl<T: ProductStatusTrait> From<&T> for ProductStatusGroupMap {
             let group = ProductStatusGroup::from(&status);
             let entry = result.0.entry(group).or_default();
             for (index, product_id) in products.into_iter().enumerate() {
-                entry.entry(product_id).or_default().push(ProductStatusAndPath {
-                    status: status.clone(),
-                    index,
-                });
+                entry
+                    .entry(product_id)
+                    .or_default()
+                    .push(ProductStatusAndPath { status, index });
             }
         }
 

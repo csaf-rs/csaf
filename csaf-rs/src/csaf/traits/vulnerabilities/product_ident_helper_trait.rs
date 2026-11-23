@@ -1,4 +1,4 @@
-use crate::csaf::traits::util::impl_optional_str_field_getter;
+use crate::csaf::traits::util::{impl_optional_str_field_getter, impl_optional_str_iter_field_getter};
 use crate::csaf::traits::vulnerabilities::generic_uri_trait::GenericUriTrait;
 use crate::csaf::types::csaf_product_id_helper_number::{CsafModelNumber, CsafSerialNumber, CsafStockKeepingUnit};
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
@@ -49,7 +49,7 @@ pub trait ProductIdentificationHelperTrait {
     fn get_cpe(&self) -> Option<&str>;
 
     /// Returns the SBOM URLs.
-    fn get_sbom_urls(&self) -> Option<Vec<String>>;
+    fn get_sbom_urls(&self) -> Option<impl Iterator<Item = &str> + '_>;
 
     /// Returns the X-Generic URIs.
     fn get_x_generic_uris(&self) -> Option<Vec<Self::GenericUriType>>;
@@ -97,12 +97,10 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct20 {
 
     impl_optional_str_field_getter!(get_cpe, cpe);
 
-    fn get_sbom_urls(&self) -> Option<Vec<String>> {
-        if self.sbom_urls.is_empty() {
-            None
-        } else {
-            Some(self.sbom_urls.clone())
-        }
+    // TODO: We should consider adding some patches to typify here, the all PIH are optional,
+    // yet some are generated not as Option<>
+    fn get_sbom_urls(&self) -> Option<impl Iterator<Item = &str> + '_> {
+        (!self.sbom_urls.is_empty()).then(|| self.sbom_urls.iter().map(|url| url.as_str()))
     }
 
     fn get_x_generic_uris(&self) -> Option<Vec<Self::GenericUriType>> {
@@ -150,9 +148,7 @@ impl ProductIdentificationHelperTrait for HelperToIdentifyTheProduct21 {
 
     impl_optional_str_field_getter!(get_cpe, cpe);
 
-    fn get_sbom_urls(&self) -> Option<Vec<String>> {
-        self.sbom_urls.clone()
-    }
+    impl_optional_str_iter_field_getter!(get_sbom_urls, sbom_urls);
 
     fn get_x_generic_uris(&self) -> Option<Vec<Self::GenericUriType>> {
         self.x_generic_uris.clone()

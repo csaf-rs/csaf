@@ -132,11 +132,13 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             }
 
             // Collect SBOMs
-            for sbom in helper.get_sbom_urls().unwrap_or_default() {
-                sbom_groups
-                    .entry(sbom)
-                    .or_default()
-                    .push((product_id.clone(), path_str.clone()));
+            if let Some(sboms) = helper.get_sbom_urls() {
+                for sbom in sboms {
+                    sbom_groups
+                        .entry(sbom.to_owned())
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
+                }
             }
 
             // Collect X-Generic URIs

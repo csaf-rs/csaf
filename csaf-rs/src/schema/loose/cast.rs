@@ -62,147 +62,679 @@ impl super::v21::Node1 {
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node127 {
+impl super::v20::Node161 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node147 {
+    pub fn as_v21(&self) -> &super::v21::Node196 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node147 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node196 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node147 {
+impl super::v21::Node196 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node127 {
+    pub fn as_v20(&self) -> &super::v20::Node161 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node127 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node161 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node166 {
+impl super::v20::Node211 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node230 {
+    pub fn as_v21(&self) -> &super::v21::Node295 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node230 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node295 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node230 {
+impl super::v21::Node295 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node166 {
+    pub fn as_v20(&self) -> &super::v20::Node211 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node166 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node211 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node128 {
+impl super::v20::Node162 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node148 {
+    pub fn as_v21(&self) -> &super::v21::Node197 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node148 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node197 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node148 {
+impl super::v21::Node197 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node128 {
+    pub fn as_v20(&self) -> &super::v20::Node162 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node128 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node162 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node129 {
+impl super::v20::Node163 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node149 {
+    pub fn as_v21(&self) -> &super::v21::Node198 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node149 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node198 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node149 {
+impl super::v21::Node198 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node129 {
+    pub fn as_v20(&self) -> &super::v20::Node163 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node129 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node163 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node130 {
+impl super::v20::Node164 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node150 {
+    pub fn as_v21(&self) -> &super::v21::Node199 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node150 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node199 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node150 {
+impl super::v21::Node199 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node130 {
+    pub fn as_v20(&self) -> &super::v20::Node164 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node130 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node164 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node160 {
+impl super::v20::Node203 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node284 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node284 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node284 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node203 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node203 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node204 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node285 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node285 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node285 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node204 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node204 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node206 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node286 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node286 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node286 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node206 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node206 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node165 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node201 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node201 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node201 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node165 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node165 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node167 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node204 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node204 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node204 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node167 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node167 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node195 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node233 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node233 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node233 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node195 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node195 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node197 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node235 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node235 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node235 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node197 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node197 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node198 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node236 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node236 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node236 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node198 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node198 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node170 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node207 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node207 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node207 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node170 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node170 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node171 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node208 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node208 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node208 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node171 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node171 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node193 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node231 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node231 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node231 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node193 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node193 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node174 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node212 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node212 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node212 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node174 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node174 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node187 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node225 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node225 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node225 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node187 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node187 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node188 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node226 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node226 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node226 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node188 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node188 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node189 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node227 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node227 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node227 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node189 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node189 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node175 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node213 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node213 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node213 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node175 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node175 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node180 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node218 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node218 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node218 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node180 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node180 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node182 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node220 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node220 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node220 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node182 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node182 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node179 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node217 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node217 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node217 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node179 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node179 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node183 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
@@ -220,572 +752,40 @@ impl super::v21::Node221 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node160 {
+    pub fn as_v20(&self) -> &super::v20::Node183 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node160 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node183 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node161 {
+impl super::v20::Node178 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node222 {
+    pub fn as_v21(&self) -> &super::v21::Node216 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node222 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node216 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node222 {
+impl super::v21::Node216 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node161 {
+    pub fn as_v20(&self) -> &super::v20::Node178 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node161 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node163 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node223 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node223 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node223 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node163 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node163 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node131 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node152 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node152 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node152 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node131 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node131 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node132 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node154 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node154 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node154 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node132 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node132 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node153 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node175 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node175 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node175 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node153 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node153 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node155 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node177 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node177 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node177 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node155 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node155 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node156 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node178 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node178 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node178 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node156 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node156 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node133 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node155 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node155 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node155 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node133 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node133 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node134 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node156 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node156 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node156 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node134 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node134 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node151 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node173 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node173 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node173 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node151 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node151 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node136 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node158 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node158 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node158 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node136 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node136 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node146 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node168 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node168 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node168 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node146 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node146 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node147 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node169 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node169 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node169 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node147 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node147 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node148 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node170 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node170 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node170 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node148 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node148 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node137 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node159 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node159 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node159 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node137 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node137 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node141 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node163 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node163 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node163 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node141 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node141 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node142 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node164 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node164 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node164 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node142 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node142 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node140 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node162 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node162 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node162 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node140 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node140 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node143 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node165 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node165 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node165 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node143 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node143 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node139 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node161 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node161 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node161 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node139 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node139 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node178 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
@@ -818,147 +818,175 @@ impl super::v21::Node2 {
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node123 {
+impl super::v20::Node155 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node143 {
+    pub fn as_v21(&self) -> &super::v21::Node190 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node143 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node190 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node143 {
+impl super::v21::Node190 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node123 {
+    pub fn as_v20(&self) -> &super::v20::Node155 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node123 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node155 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node124 {
+impl super::v20::Node157 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node144 {
+    pub fn as_v21(&self) -> &super::v21::Node192 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node144 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node192 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node144 {
+impl super::v21::Node192 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node124 {
+    pub fn as_v20(&self) -> &super::v20::Node157 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node124 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node157 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node125 {
+impl super::v20::Node158 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node145 {
+    pub fn as_v21(&self) -> &super::v21::Node193 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node145 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node193 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node145 {
+impl super::v21::Node193 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node125 {
+    pub fn as_v20(&self) -> &super::v20::Node158 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node125 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node158 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node93 {
+impl super::v20::Node120 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node104 {
+    pub fn as_v21(&self) -> &super::v21::Node146 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node104 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node146 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node104 {
+impl super::v21::Node146 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node93 {
+    pub fn as_v20(&self) -> &super::v20::Node120 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node93 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node120 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node118 {
+impl super::v20::Node149 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node138 {
+    pub fn as_v21(&self) -> &super::v21::Node184 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node138 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node184 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node138 {
+impl super::v21::Node184 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node118 {
+    pub fn as_v20(&self) -> &super::v20::Node149 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node118 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node149 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node30 {
+impl super::v20::Node32 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node39 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node39 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node39 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node32 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node32 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node29 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
@@ -976,40 +1004,40 @@ impl super::v21::Node36 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node30 {
+    pub fn as_v20(&self) -> &super::v20::Node29 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node30 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node29 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node119 {
+impl super::v20::Node151 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node139 {
+    pub fn as_v21(&self) -> &super::v21::Node186 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node139 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node186 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node139 {
+impl super::v21::Node186 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node119 {
+    pub fn as_v20(&self) -> &super::v20::Node151 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node119 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node151 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
@@ -1042,114 +1070,114 @@ impl super::v21::Node9 {
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node78 {
+impl super::v20::Node104 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node90 {
+    pub fn as_v21(&self) -> &super::v21::Node131 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node90 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node131 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node90 {
+impl super::v21::Node131 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node78 {
+    pub fn as_v20(&self) -> &super::v20::Node104 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node78 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node104 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node85 {
+impl super::v20::Node112 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node97 {
+    pub fn as_v21(&self) -> &super::v21::Node139 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node97 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node139 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node97 {
+impl super::v21::Node139 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node85 {
+    pub fn as_v20(&self) -> &super::v20::Node112 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node85 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node112 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node80 {
+impl super::v20::Node106 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node92 {
+    pub fn as_v21(&self) -> &super::v21::Node133 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node92 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node133 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node92 {
+impl super::v21::Node133 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node80 {
+    pub fn as_v20(&self) -> &super::v20::Node106 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node80 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node106 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node81 {
+impl super::v20::Node107 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node93 {
+    pub fn as_v21(&self) -> &super::v21::Node134 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node93 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node134 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node93 {
+impl super::v21::Node134 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node81 {
+    pub fn as_v20(&self) -> &super::v20::Node107 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node81 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node107 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
@@ -1182,119 +1210,147 @@ impl super::v21::Node11 {
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node70 {
+impl super::v20::Node91 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node77 {
+    pub fn as_v21(&self) -> &super::v21::Node108 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node77 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node108 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node77 {
+impl super::v21::Node108 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node70 {
+    pub fn as_v20(&self) -> &super::v20::Node91 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node70 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node91 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node94 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node111 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node111 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node111 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node94 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node94 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node87 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node102 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node102 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node102 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node87 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node87 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node88 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node105 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node105 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node105 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node88 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node88 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node89 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node106 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node106 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node106 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node89 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node89 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
 impl super::v20::Node71 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node78 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node78 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node78 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node71 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node71 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node66 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node73 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node73 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node73 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node66 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node66 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node67 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node74 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node74 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node74 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node67 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node67 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node68 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
@@ -1312,101 +1368,157 @@ impl super::v21::Node75 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node68 {
+    pub fn as_v20(&self) -> &super::v20::Node71 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node68 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node71 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node52 {
+impl super::v20::Node72 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node56 {
+    pub fn as_v21(&self) -> &super::v21::Node76 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node56 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node76 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node56 {
+impl super::v21::Node76 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node52 {
+    pub fn as_v20(&self) -> &super::v20::Node72 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node52 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node72 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node53 {
+impl super::v20::Node73 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node57 {
+    pub fn as_v21(&self) -> &super::v21::Node77 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node57 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node77 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node57 {
+impl super::v21::Node77 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node53 {
+    pub fn as_v20(&self) -> &super::v20::Node73 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node53 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node73 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node54 {
+impl super::v20::Node74 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node58 {
+    pub fn as_v21(&self) -> &super::v21::Node80 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node58 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node80 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node58 {
+impl super::v21::Node80 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node54 {
+    pub fn as_v20(&self) -> &super::v20::Node74 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node54 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node74 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node55 {
+impl super::v20::Node75 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node81 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node81 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node81 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node75 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node75 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node13 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node21 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node21 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node21 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node13 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node13 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node56 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
@@ -1424,17 +1536,17 @@ impl super::v21::Node59 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node55 {
+    pub fn as_v20(&self) -> &super::v20::Node56 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node55 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node56 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node56 {
+impl super::v20::Node57 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
@@ -1452,236 +1564,68 @@ impl super::v21::Node60 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node56 {
+    pub fn as_v20(&self) -> &super::v20::Node57 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node56 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node57 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node13 {
+impl super::v20::Node58 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node20 {
+    pub fn as_v21(&self) -> &super::v21::Node61 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node20 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node61 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node20 {
+impl super::v21::Node61 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node13 {
+    pub fn as_v20(&self) -> &super::v20::Node58 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node13 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node58 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node46 {
+impl super::v20::Node37 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node50 {
+    pub fn as_v21(&self) -> &super::v21::Node41 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node50 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node41 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node50 {
+impl super::v21::Node41 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node46 {
+    pub fn as_v20(&self) -> &super::v20::Node37 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node46 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node47 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node51 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node51 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node51 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node47 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node47 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node48 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node52 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node52 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node52 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node48 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node48 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node34 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node38 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node38 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node38 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node34 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node34 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node35 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node39 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node39 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node39 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node35 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node35 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node36 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node40 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node40 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node40 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node36 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node36 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node43 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node47 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node47 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node47 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node43 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node43 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node37 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
@@ -1742,91 +1686,119 @@ impl super::v21::Node44 {
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node41 {
+impl super::v20::Node51 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node45 {
+    pub fn as_v21(&self) -> &super::v21::Node55 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node45 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node55 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node45 {
+impl super::v21::Node55 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node41 {
+    pub fn as_v20(&self) -> &super::v20::Node51 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node41 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node51 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node20 {
+impl super::v20::Node44 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node26 {
+    pub fn as_v21(&self) -> &super::v21::Node48 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node26 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node48 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node26 {
+impl super::v21::Node48 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node20 {
+    pub fn as_v20(&self) -> &super::v20::Node44 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node20 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node44 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node48 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node52 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node52 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node52 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node48 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node48 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node49 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node53 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node53 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node53 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node49 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node49 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
 impl super::v20::Node21 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node27 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node27 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v21::Node27 {
-    /// Views this node as if it were in the other version of the schema
-    ///
-    /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node21 {
-        let val = bytemuck::TransparentWrapper::peel_ref(self);
-        bytemuck::TransparentWrapper::wrap_ref(val)
-    }
-    /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node21 {
-        let val = bytemuck::TransparentWrapper::peel_mut(self);
-        bytemuck::TransparentWrapper::wrap_mut(val)
-    }
-}
-impl super::v20::Node22 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
@@ -1844,6 +1816,34 @@ impl super::v21::Node28 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
+    pub fn as_v20(&self) -> &super::v20::Node21 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node21 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v20::Node22 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
+    pub fn as_v21(&self) -> &super::v21::Node29 {
+        let val = bytemuck::TransparentWrapper::peel_ref(self);
+        bytemuck::TransparentWrapper::wrap_ref(val)
+    }
+    /// Mutable version of the other `as_v*` method
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node29 {
+        let val = bytemuck::TransparentWrapper::peel_mut(self);
+        bytemuck::TransparentWrapper::wrap_mut(val)
+    }
+}
+impl super::v21::Node29 {
+    /// Views this node as if it were in the other version of the schema
+    ///
+    /// This implies that the position of this node is the same on both schemas
     pub fn as_v20(&self) -> &super::v20::Node22 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
@@ -1854,58 +1854,58 @@ impl super::v21::Node28 {
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node27 {
+impl super::v20::Node24 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node33 {
+    pub fn as_v21(&self) -> &super::v21::Node31 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node33 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node31 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node33 {
+impl super::v21::Node31 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node27 {
+    pub fn as_v20(&self) -> &super::v20::Node24 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node27 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node24 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v20::Node18 {
+impl super::v20::Node19 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v21(&self) -> &super::v21::Node24 {
+    pub fn as_v21(&self) -> &super::v21::Node25 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node24 {
+    pub fn caution_as_v21_mut(&mut self) -> &mut super::v21::Node25 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }
 }
-impl super::v21::Node24 {
+impl super::v21::Node25 {
     /// Views this node as if it were in the other version of the schema
     ///
     /// This implies that the position of this node is the same on both schemas
-    pub fn as_v20(&self) -> &super::v20::Node18 {
+    pub fn as_v20(&self) -> &super::v20::Node19 {
         let val = bytemuck::TransparentWrapper::peel_ref(self);
         bytemuck::TransparentWrapper::wrap_ref(val)
     }
     /// Mutable version of the other `as_v*` method
-    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node18 {
+    pub fn caution_as_v20_mut(&mut self) -> &mut super::v20::Node19 {
         let val = bytemuck::TransparentWrapper::peel_mut(self);
         bytemuck::TransparentWrapper::wrap_mut(val)
     }

@@ -34,20 +34,14 @@ pub fn test_6_1_59_product_version_range_identifies_single_version(
         if branch.get_category() == CategoryOfTheBranch::ProductVersionRange {
             let version_range = VersionRange::parse(branch.get_name());
 
-            match version_range {
-                VersionRange::DynamicVers(_) | VersionRange::Vls(_) => {
-                    // error if the version_range does not identify more than one version
-                    if version_range.is_single_version() == Some(true) {
-                        errors
-                            .get_or_insert_default()
-                            .push(product_version_range_only_one_version_error(path));
-                    }
-                },
-                VersionRange::Invalid(_) => {
-                    errors
-                        .get_or_insert_default()
-                        .push(product_version_range_invalid_error(path, &version_range));
-                },
+            if version_range.is_single_version() == Some(true) {
+                errors
+                    .get_or_insert_default()
+                    .push(product_version_range_only_one_version_error(path));
+            } else if matches!(version_range, VersionRange::Invalid(_)) {
+                errors
+                    .get_or_insert_default()
+                    .push(product_version_range_invalid_error(path, &version_range));
             }
         }
     });

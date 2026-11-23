@@ -1,6 +1,7 @@
 use crate::csaf::enums::version_range::{VersionRange, VersionRangeError};
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
+use vers_like_specifier::VlsError;
 use vers_rs::{VersError, VersionRange as VersVersionRange};
 
 fn non_canonical_product_version_range_error(
@@ -98,13 +99,12 @@ pub fn test_6_1_50_product_version_range_rules(doc: &impl CsafTrait) -> Result<(
                         ));
                 }
             },
-            VersionRange::Vls(vls) => {
-                if vls.is_single_version() {
+            VersionRange::Vls(_) => (),
+            VersionRange::Invalid(VersionRangeError::InvalidVls(VlsError::SingleVersionNotAllowed(_))) => {
                     findings
                         .get_or_insert_default()
                         .push(vls_single_version_error(name, path));
-                }
-            },
+            }
             VersionRange::Invalid(VersionRangeError::InvalidVers(invalid_vers_error)) => {
                 if matches!(
                     invalid_vers_error,

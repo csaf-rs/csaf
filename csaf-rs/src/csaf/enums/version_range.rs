@@ -62,7 +62,8 @@ impl VersionRange {
     pub fn is_single_version(&self) -> Option<bool> {
         match self {
             VersionRange::DynamicVers(vers) => Some(is_single_version_constraint(vers.constraints())),
-            VersionRange::Vls(vls) => Some(vls.is_single_version()),
+            VersionRange::Vls(_) => Some(false),
+            VersionRange::Invalid(VersionRangeError::InvalidVls(VlsError::SingleVersionNotAllowed(_))) => Some(true),
             VersionRange::Invalid(_) => None,
         }
     }

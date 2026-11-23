@@ -86,7 +86,7 @@ pub(crate) fn test_6_3_8_spell_check_impl(
     // Check all text fields listed in the spec
     if let Some(acknowledgments) = document.get_acknowledgments() {
         for (a_i, ack) in acknowledgments.iter().enumerate() {
-            for (n_i, name) in ack.get_names().into_iter().enumerate() {
+            for (n_i, name) in ack.get_names().enumerate() {
                 check(name, format!("/document/acknowledgments/{a_i}/names/{n_i}"));
             }
             if let Some(organization) = ack.get_organization() {
@@ -197,7 +197,7 @@ pub(crate) fn test_6_3_8_spell_check_impl(
 
         if let Some(acknowledgments) = vuln.get_acknowledgments() {
             for (a_i, ack) in acknowledgments.iter().enumerate() {
-                for (n_i, name) in ack.get_names().into_iter().enumerate() {
+                for (n_i, name) in ack.get_names().enumerate() {
                     check(name, format!("{vuln_prefix}/acknowledgments/{a_i}/names/{n_i}"));
                 }
                 if let Some(organization) = ack.get_organization() {
@@ -244,7 +244,7 @@ pub(crate) fn test_6_3_8_spell_check_impl(
                 remediation.get_details(),
                 format!("{vuln_prefix}/remediations/{r_i}/details"),
             );
-            for (e_i, entitlement) in remediation.get_entitlements().into_iter().enumerate() {
+            for (e_i, entitlement) in remediation.get_entitlements().enumerate() {
                 check(
                     entitlement,
                     format!("{vuln_prefix}/remediations/{r_i}/entitlements/{e_i}"),

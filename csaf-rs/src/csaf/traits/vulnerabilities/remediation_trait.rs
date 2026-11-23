@@ -1,4 +1,4 @@
-use crate::csaf::traits::util::impl_str_field_getter;
+use crate::csaf::traits::util::{impl_str_field_getter, impl_str_iter_field_getter};
 use crate::csaf::traits::vulnerabilities::restart_required_trait::RestartRequiredTrait;
 use crate::csaf_traits::{
     CsafTrait, WithOptionalDate, WithOptionalGroupIds, WithOptionalProductIds, resolve_product_groups,
@@ -42,7 +42,7 @@ pub trait RemediationTrait: WithOptionalGroupIds + WithOptionalProductIds + With
         }
     }
     fn get_details(&self) -> &str;
-    fn get_entitlements(&self) -> Vec<&str>;
+    fn get_entitlements(&self) -> impl Iterator<Item = &str> + '_;
     fn get_restart_required(&self) -> Option<&Self::RestartRequiredType>;
 }
 
@@ -69,9 +69,7 @@ impl RemediationTrait for Remediation20 {
 
     impl_str_field_getter!(get_details, details);
 
-    fn get_entitlements(&self) -> Vec<&str> {
-        self.entitlements.iter().map(|x| x.as_str()).collect()
-    }
+    impl_str_iter_field_getter!(get_entitlements, entitlements);
 
     fn get_restart_required(&self) -> Option<&Self::RestartRequiredType> {
         self.restart_required.as_ref()
@@ -87,9 +85,7 @@ impl RemediationTrait for Remediation21 {
 
     impl_str_field_getter!(get_details, details);
 
-    fn get_entitlements(&self) -> Vec<&str> {
-        self.entitlements.iter().map(|x| x.as_str()).collect()
-    }
+    impl_str_iter_field_getter!(get_entitlements, entitlements);
 
     fn get_restart_required(&self) -> Option<&Self::RestartRequiredType> {
         self.restart_required.as_ref()

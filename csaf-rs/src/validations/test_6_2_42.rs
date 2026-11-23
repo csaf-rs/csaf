@@ -3,10 +3,7 @@ use purl::GenericPurl;
 use vers_rs::VersionRange as _;
 
 use crate::{
-    csaf::{
-        enums::version_range::VersionRange, traits::vulnerabilities::cpe_trait::CpeTrait,
-        types::purl::csaf_purl::CsafPurl,
-    },
+    csaf::{enums::version_range::VersionRange, types::purl::csaf_purl::CsafPurl},
     csaf_traits::{
         BranchTrait, CsafTrait, ProductIdentificationHelperTrait, ProductTrait, ProductTreeTrait,
         build_leaf_instance_path,
@@ -284,15 +281,15 @@ pub fn test_6_2_42_inconsistent_product_identification_helper(doc: &impl CsafTra
             let mut inner_test_findings = Vec::new();
             if let Some(cpe) = pih.get_cpe() {
                 // CPE 2.3 WFN is not supported by CSAF
-                if cpe.as_str().starts_with("cpe:2.3:") {
-                    if let Ok(fsb) = Fsb::parse(cpe.as_str()) {
+                if cpe.starts_with("cpe:2.3:") {
+                    if let Ok(fsb) = Fsb::parse(cpe) {
                         inner_test_findings.extend(categorized_strings.check_cpe(&fsb, &leaf_path));
                     } else {
                         inner_test_findings
                             .push(create_invalid_product_identification_helper_warning("CPE", &leaf_path));
                     };
                 } else {
-                    let cpe = normalize_uri_cpe(cpe.as_str());
+                    let cpe = normalize_uri_cpe(cpe);
                     if let Ok(uri) = Uri::parse(&cpe) {
                         inner_test_findings.extend(categorized_strings.check_cpe(&uri, &leaf_path));
                     } else {

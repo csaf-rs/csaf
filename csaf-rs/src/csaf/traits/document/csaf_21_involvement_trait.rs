@@ -71,7 +71,7 @@ pub trait Csaf21InvolvementTrait {
                 get_actions_group_references,
                 get_actions_product_references,
                 get_actions,
-                "/document/involvement/actions"
+                "document/involvement/actions"
             ),
         ],
     }

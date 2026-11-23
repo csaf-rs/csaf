@@ -47,14 +47,12 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<T
         found_group_ids.extend(
             vulnerability
                 .get_flags_group_references()
-                .iter()
-                .map(|(group_id, _)| group_id.to_owned()),
+                .map(|reference| reference.id.to_owned()),
         );
         found_product_ids.extend(
             vulnerability
                 .get_flags_product_references()
-                .iter()
-                .map(|(product_id, _)| product_id.to_owned()),
+                .map(|reference| reference.id.to_owned()),
         );
 
         // gather from threats with category impact

@@ -28,7 +28,8 @@ pub fn test_6_2_01_unused_definition_of_product_id(doc: &impl CsafTrait) -> Resu
     }
 
     // Get all references to product IDs in the document
-    let references: std::collections::HashSet<String> = doc.get_all_product_references_ids().into_iter().collect();
+    let references: std::collections::HashSet<&str> =
+        doc.get_all_product_references().map(|reference| reference.id).collect();
 
     // Visit all product id definitions and check if they are referenced
     if let Some(tree) = doc.get_product_tree() {

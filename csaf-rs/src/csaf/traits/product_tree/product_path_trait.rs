@@ -1,5 +1,6 @@
 use crate::csaf::enums::category_of_the_relationship::CategoryOfTheRelationship;
 use crate::csaf::traits::util::impl_str_field_getter;
+use crate::csaf::traits::util::reference::ReferenceLocation;
 use crate::csaf_traits::ProductTrait;
 use crate::schema::csaf2_0::schema::{Relationship, RelationshipCategory as RelationshipCategory_2_0};
 use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath, RelationshipCategory as RelationshipCategory_2_1};
@@ -21,15 +22,15 @@ pub trait ProductPathTrait<FPN: ProductTrait> {
     /// Retrieves the JSON path for a product path / relationship
     fn get_json_path_for_product_path(&self, product_path_index: usize) -> String;
 
-    /// Retrieves the JSON path for the product reference at the beginning of a product path / relationship.
-    fn get_json_path_for_product_path_beginning_product_reference(&self, product_path_index: usize) -> String;
+    /// Retrieves the location of the product reference at the beginning of a product path / relationship.
+    fn get_beginning_product_reference_location(&self, product_path_index: usize) -> ReferenceLocation<'static>;
 
-    /// Retrieves the JSON path for the product reference at a subpath of a product path / relationship
-    fn get_json_path_for_product_path_subpath_product_reference(
+    /// Retrieves the location of the product reference at a subpath of a product path / relationship.
+    fn get_subpath_product_reference_location(
         &self,
         product_path_index: usize,
         subpath_index: usize,
-    ) -> String;
+    ) -> ReferenceLocation<'static>;
 }
 
 impl From<RelationshipCategory_2_0> for CategoryOfTheRelationship {
@@ -63,12 +64,18 @@ impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Rela
         format!("/product_tree/relationships/{rel_i}")
     }
 
-    fn get_json_path_for_product_path_beginning_product_reference(&self, rel_i: usize) -> String {
-        format!("/product_tree/relationships/{rel_i}/product_reference")
+    fn get_beginning_product_reference_location(&self, rel_i: usize) -> ReferenceLocation<'static> {
+        ReferenceLocation::Relationship {
+            relationship: rel_i,
+            relates_to: false,
+        }
     }
 
-    fn get_json_path_for_product_path_subpath_product_reference(&self, rel_i: usize, _: usize) -> String {
-        format!("/product_tree/relationships/{rel_i}/relates_to_product_reference")
+    fn get_subpath_product_reference_location(&self, rel_i: usize, _: usize) -> ReferenceLocation<'static> {
+        ReferenceLocation::Relationship {
+            relationship: rel_i,
+            relates_to: true,
+        }
     }
 }
 
@@ -109,11 +116,17 @@ impl ProductPathTrait<FullProductNameT> for ProductPath {
         format!("/product_tree/product_paths/{pp_i}")
     }
 
-    fn get_json_path_for_product_path_beginning_product_reference(&self, pp_i: usize) -> String {
-        format!("/product_tree/product_paths/{pp_i}/beginning_product_reference")
+    fn get_beginning_product_reference_location(&self, pp_i: usize) -> ReferenceLocation<'static> {
+        ReferenceLocation::ProductPath {
+            product_path: pp_i,
+            subpath: None,
+        }
     }
 
-    fn get_json_path_for_product_path_subpath_product_reference(&self, pp_i: usize, sp_i: usize) -> String {
-        format!("/product_tree/product_paths/{pp_i}/subpaths/{sp_i}/next_product_reference")
+    fn get_subpath_product_reference_location(&self, pp_i: usize, sp_i: usize) -> ReferenceLocation<'static> {
+        ReferenceLocation::ProductPath {
+            product_path: pp_i,
+            subpath: Some(sp_i),
+        }
     }
 }

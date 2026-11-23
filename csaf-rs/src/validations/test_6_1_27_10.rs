@@ -41,14 +41,12 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<T
         found_product_ids.extend(
             vulnerability
                 .get_remediations_product_references()
-                .iter()
-                .map(|(product_id, _)| product_id.to_owned()),
+                .map(|reference| reference.id.to_owned()),
         );
         found_group_ids.extend(
             vulnerability
                 .get_remediations_group_references()
-                .iter()
-                .map(|(group_id, _)| group_id.to_owned()),
+                .map(|reference| reference.id.to_owned()),
         );
 
         // merge the resolved product ids from group ids into the directly found product ids

@@ -1,10 +1,14 @@
 use crate::csaf_traits::{CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
+use std::fmt::Display;
 
-fn generate_undefined_product_group_id_error(undefined_product_group_id: &str, instance_path: &str) -> TestFinding {
+fn generate_undefined_product_group_id_error(
+    undefined_product_group_id: &str,
+    instance_path: impl Display,
+) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("Missing definition of product_group_id: {undefined_product_group_id}"),
-        instance_path: instance_path.to_owned(),
+        instance_path: instance_path.to_string(),
     })
 }
 
@@ -36,15 +40,14 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
 
     let mut errors: Option<Vec<TestFinding>> = None;
     // iterate over all product group references
-    let product_group_references = doc.get_all_group_references();
-    for (referenced_product_group_id, referenced_product_group_path) in &product_group_references {
+    for reference in doc.get_all_group_references() {
         // if a reference is not defined, generate an error
-        if !defined_product_group_ids.contains(referenced_product_group_id) {
+        if !defined_product_group_ids.contains(reference.id) {
             errors
                 .get_or_insert_default()
                 .push(generate_undefined_product_group_id_error(
-                    referenced_product_group_id,
-                    referenced_product_group_path,
+                    reference.id,
+                    reference.location,
                 ));
         }
     }

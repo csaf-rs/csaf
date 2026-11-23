@@ -1,6 +1,7 @@
 use crate::csaf_traits::{CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
-fn generate_undefined_product_id_error(undefined_product_id: &str, instance_path: &str) -> TestFinding {
+use std::fmt::Display;
+fn generate_undefined_product_id_error(undefined_product_id: &str, instance_path: impl Display) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!("Missing definition of product_id: {undefined_product_id}"),
         instance_path: instance_path.to_string(),
@@ -34,13 +35,12 @@ fn test_6_1_1_missing_definition_of_product_id(doc: &impl CsafTrait) -> Result<(
 
     let mut errors: Option<Vec<TestFinding>> = None;
     // iterate over all product references
-    for (referenced_product_id, referenced_product_id_path) in &doc.get_all_product_references() {
+    for reference in doc.get_all_product_references() {
         // if a reference is not defined, generate an error
-        if !defined_product_ids.contains(referenced_product_id) {
-            errors.get_or_insert_default().push(generate_undefined_product_id_error(
-                referenced_product_id,
-                referenced_product_id_path,
-            ));
+        if !defined_product_ids.contains(reference.id) {
+            errors
+                .get_or_insert_default()
+                .push(generate_undefined_product_id_error(reference.id, reference.location));
         }
     }
     errors.map_or(Ok(()), Err)

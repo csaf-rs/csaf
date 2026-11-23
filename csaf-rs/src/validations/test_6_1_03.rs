@@ -1,8 +1,9 @@
 use crate::csaf_traits::{CsafTrait, CsafVersion, DocumentTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
 use crate::validations::utils::cycle_detection::{RelationCycle, RelationMap};
+use std::fmt::Display;
 
-fn generate_self_reference_product_error(version: CsafVersion, path: &str) -> TestFinding {
+fn generate_self_reference_product_error(version: CsafVersion, path: impl Display) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: if version == CsafVersion::X21 {
             "Product path references itself via 'beginning product reference'".to_string()
@@ -13,7 +14,7 @@ fn generate_self_reference_product_error(version: CsafVersion, path: &str) -> Te
     })
 }
 
-fn generate_self_reference_relates_to_error(version: CsafVersion, path: &str) -> TestFinding {
+fn generate_self_reference_relates_to_error(version: CsafVersion, path: impl Display) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: if version == CsafVersion::X21 {
             "Product path references itself via 'next product reference'".to_string()
@@ -55,7 +56,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                     .get_or_insert_default()
                     .push(generate_self_reference_product_error(
                         version,
-                        &pp.get_json_path_for_product_path_beginning_product_reference(pp_i),
+                        pp.get_beginning_product_reference_location(pp_i),
                     ));
             } else if let Some(sp_i) = pp
                 .get_subpath_product_references()
@@ -66,7 +67,7 @@ pub fn test_6_1_03_circular_definition_of_product_id(doc: &impl CsafTrait) -> Re
                     .get_or_insert_default()
                     .push(generate_self_reference_relates_to_error(
                         version,
-                        &pp.get_json_path_for_product_path_subpath_product_reference(pp_i, sp_i),
+                        pp.get_subpath_product_reference_location(pp_i, sp_i),
                     ));
             } else {
                 let path = pp.get_json_path_for_product_path(pp_i);

@@ -433,6 +433,19 @@ jobs:
       - build-platforms
     uses: csaf-rs/shared-workflows/.github/workflows/cargo-publish.yml@fa264d0e39f0427b66a04fd587c664adad909334 # v1.13.0
 
+  # Only runs when build/tests (build-platforms) passed. The image does not
+  # contain the WASM or Go bindings, so those jobs are deliberately not awaited.
+  publish-docker:
+    needs:
+      - build-platforms
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/docker.yml
+
   publish-npm:
     runs-on: ubuntu-latest
     permissions:

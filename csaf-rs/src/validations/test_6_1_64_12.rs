@@ -101,12 +101,16 @@ mod tests {
             case_02: Err(vec![create_unmentioned_entity_error(1, "EID-0003", "ACN-1")]),
             case_11: Ok(()),
             case_12: Ok(()),
-            // TODO: Typo, ACN-3 is defined multiple times, which throws our impl off
+            // The OASIS test data is invalid itself (see oasis-tcs/csaf#1757): ACN-3 is defined twice (and the confirmation
+            // references itself), and EID-0003 is no receiving entity of ACN-1 and ACN-2, so the errors are correct.
+            // Case s11 is the corrected version of this case.
             case_13: Err(vec![
                 create_unmentioned_entity_error(3, "EID-0003", "ACN-1"),
                 create_unmentioned_entity_error(3, "EID-0003", "ACN-2"),
                 create_unmentioned_entity_error(3, "EID-0003", "ACN-3"),
             ]),
+            // Corrected case 13: the confirmation is ACN-4 and acted by EID-0004, who is receiving entity of ACN-1 to ACN-3
+            case_s11: Ok(()),
         });
     }
 }

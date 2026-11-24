@@ -171,6 +171,11 @@ impl<'de> ::serde::Deserialize<'de> for AlgorithmOfTheCryptographicHash {
             })
     }
 }
+impl ::std::default::Default for AlgorithmOfTheCryptographicHash {
+    fn default() -> Self {
+        AlgorithmOfTheCryptographicHash("sha256".to_string())
+    }
+}
 ///Specifies a non-empty string that represents a distinct optional alternative ID used to refer to the document.
 #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[serde(transparent)]

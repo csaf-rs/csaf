@@ -3202,15 +3202,17 @@ checksum = "40ce102ab67701b8526c123c1bab5cbe42d7040ccfd0f64af1a385808d2f43de"
 
 [[package]]
 name = "typespace"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f85ea45c92b262c35a6e8e563e27951b86275e8c3e3aa03ba4cf9addeaf5ef7"
+checksum = "1514ee4a121cdb4190bacd30981e032a4b861299c1abefd547a52f757e253d46"
 dependencies = [
  "codespace",
  "heck",
+ "jsonschema 0.61.2",
  "log",
  "proc-macro2",
  "quote",
+ "regress",
  "schemars",
  "serde",
  "serde_json",

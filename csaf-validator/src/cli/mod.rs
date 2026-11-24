@@ -41,12 +41,26 @@ pub struct ValidatorArgs {
     /// Provide information about the validator invocation as well as individual test results
     #[arg(short = 'v', long)]
     pub verbose: bool,
+
+    /// Directory with the schemas and the metadata of the CSAF extensions to support (JSON files, searched
+    /// recursively). Extensions are never fetched from the network. Can also be set with the environment variable
+    /// `CSAF_EXTENSION_DIR`. Extensions that are not found there result in a warning in tests 6.1.60.2 and 6.1.60.3.
+    #[arg(long)]
+    pub extension_dir: Option<std::path::PathBuf>,
 }
 
 pub fn run_validator(args: ValidatorArgs) -> Result<(), anyhow::Error> {
     if args.path.is_empty() {
         ValidatorArgs::command().print_help()?;
         return Ok(());
+    }
+
+    if let Some(dir) = args
+        .extension_dir
+        .clone()
+        .or_else(|| std::env::var_os("CSAF_EXTENSION_DIR").map(std::path::PathBuf::from))
+    {
+        csaf_rs::csaf::extension_registry::register_extensions_from_dir(&dir)?;
     }
 
     if args

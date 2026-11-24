@@ -5,3 +5,4 @@
 **/node_modules
 go/csaf_ffi/lib/
 csaf-service/config/local.toml
+.opencode

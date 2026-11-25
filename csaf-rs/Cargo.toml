@@ -49,6 +49,7 @@ vers-rs = "0.2"
 cpe = { version = "0.2", package = "cpe-rs-fork" }
 purl = { version = "0.1.6", default-features = false, features = ["package-type"] }
 itertools = "0.15.0"
+rayon = "1.12.0"
 
 [build-dependencies]
 ssvc = "0.4.1"

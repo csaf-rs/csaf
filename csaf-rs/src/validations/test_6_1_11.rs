@@ -4,7 +4,7 @@ use chrono::NaiveDate;
 
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{CsafTrait, Cwe, DocumentTrait, TrackingTrait, VulnerabilityTrait};
-use crate::helpers::CWE_ENTRIES;
+use crate::cwe::CWE_RELEASES;
 use crate::validation::{TestFinding, TestFindingData};
 
 fn generate_incorrect_cwe_name_error(cwe: &str, name: &str, version: &str, path: &str) -> TestFinding {
@@ -29,15 +29,15 @@ fn generate_incorrect_cwe_version_error(version: &str, path: &str) -> TestFindin
 }
 
 fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Option<Vec<TestFinding>>) {
-    if !CWE_ENTRIES.contains_key(version) {
+    if !CWE_RELEASES.contains_key(version) {
         errors
             .get_or_insert_default()
             .push(generate_incorrect_cwe_version_error(version, path));
-    } else if let Some(entry) = CWE_ENTRIES[version].entries.get(&cwe.id) {
+    } else if let Some(entry) = CWE_RELEASES[version].entries.get(&cwe.id) {
         if entry.name != cwe.name {
             errors
                 .get_or_insert_default()
-                .push(generate_incorrect_cwe_name_error(&cwe.id, &entry.name, version, path));
+                .push(generate_incorrect_cwe_name_error(&cwe.id, entry.name, version, path));
         }
     } else {
         errors
@@ -46,14 +46,19 @@ fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Option<Vec<TestF
     }
 }
 
-fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static String> {
-    let mut latest: Option<(&'static String, &NaiveDate)> = None;
+#[allow(clippy::expect_used)]
+fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static str> {
+    let mut latest: Option<(&'static str, NaiveDate)> = None;
 
-    for (version, version_data) in CWE_ENTRIES.iter() {
-        if date.is_none_or(|date| version_data.release_date <= date)
-            && latest.is_none_or(|latest| version_data.release_date > *latest.1)
-        {
-            latest = Some((version, &version_data.release_date));
+    for (version, version_data) in CWE_RELEASES.entries() {
+        let cwe_release_date = NaiveDate::from_ymd_opt(
+            version_data.release_date.0,
+            version_data.release_date.1,
+            version_data.release_date.2,
+        )
+        .unwrap_or(NaiveDate::from_ymd_opt(1990, 1, 1).expect("Guaranteed to be a naive date"));
+        if date.is_none_or(|date| cwe_release_date <= date) && latest.is_none_or(|latest| cwe_release_date > latest.1) {
+            latest = Some((version, cwe_release_date));
         }
     }
 
@@ -62,7 +67,7 @@ fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static String> {
 
 /// The latest available CWE version, used as fallback when no version can be determined
 #[allow(clippy::expect_used)]
-static LATEST_CWE_VERSION: LazyLock<&'static String> = LazyLock::new(|| {
+static LATEST_CWE_VERSION: LazyLock<&'static str> = LazyLock::new(|| {
     get_latest_cwe_version(None).expect("At least one CWE version should be available in the data source.")
 });
 
@@ -74,7 +79,7 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     for (i_r, vulnerability) in vulnerabilities.iter().enumerate() {
         if let Some(cwe) = vulnerability.get_cwes() {
             for (i_cwe, cwe_item) in cwe.iter().enumerate() {
-                let cwe_version = cwe_item.version.as_ref().unwrap_or_else(|| {
+                let cwe_version = cwe_item.version.as_deref().unwrap_or_else(|| {
                     (match doc.get_document().get_tracking().get_current_release_date() {
                         // CSAF 2.0 does not require a CWE version, so we need to determine the CWE version
                         // based on the document's tracking current release date

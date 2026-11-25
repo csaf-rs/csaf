@@ -1,3 +1,4 @@
+mod cwe_generator;
 mod ssvc_validation;
 
 fn main() {
@@ -5,4 +6,5 @@ fn main() {
     println!("cargo:rerun-if-changed=build/ssvc_validation.rs");
 
     ssvc_validation::validate_ssvc_lib_json();
+    cwe_generator::generate_cwe_phf();
 }

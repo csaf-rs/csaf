@@ -1,5 +1,5 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
-use crate::helpers::CWE_ENTRIES;
+use crate::cwe::{CWE_RELEASES, CweUsage};
 use crate::validation::{TestFinding, TestFindingData};
 
 fn create_allowed_with_review_warning(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
@@ -37,18 +37,18 @@ pub fn test_6_2_26_usage_of_cwe_allowed_with_review_for_vulnerability_mapping(
 
                 // Skip this entry if the CWE version or CWE ID are unknown, this will be reported
                 // by 6.1.11.
-                let Some(entry) = CWE_ENTRIES.get(version).and_then(|v| v.entries.get(&cwe_item.id)) else {
+                let Some(entry) = CWE_RELEASES.get(version).and_then(|v| v.entries.get(&cwe_item.id)) else {
                     continue;
                 };
 
                 // `None` means the CWE version predates the Usage field, so we can skip.
-                let Some(usage) = entry.usage.as_deref() else {
+                if entry.usage == CweUsage::NotProvided {
                     // Revisit after #407
                     continue;
                 };
 
                 // Generate an error if the usage field is "Allowed-with-Review"
-                if usage == "Allowed-with-Review" {
+                if entry.usage == CweUsage::AllowedWithReview {
                     errors.get_or_insert_default().push(create_allowed_with_review_warning(
                         &cwe_item.id,
                         version,

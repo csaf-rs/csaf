@@ -1,3 +1,4 @@
+use crate::json::JsonPointer;
 use crate::validation::{TestFinding, TestFindingData};
 use serde_json::Value;
 
@@ -6,11 +7,12 @@ use serde_json::Value;
 /// All keys in a CSAF document must be sorted alphabetically.
 pub fn test_6_2_13_sorting(json: &Value) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
-    check_sorted_recursive(json, "", &mut errors);
+    let mut buf = String::with_capacity(512);
+    check_sorted_recursive(json, &mut JsonPointer::new(&mut buf), &mut errors);
     errors.map_or(Ok(()), Err)
 }
 
-fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<TestFinding>>) {
+fn check_sorted_recursive(value: &Value, path: &mut JsonPointer, errors: &mut Option<Vec<TestFinding>>) {
     match value {
         Value::Object(map) => {
             // object -> check if keys are sorted
@@ -18,19 +20,19 @@ fn check_sorted_recursive(value: &Value, path: &str, errors: &mut Option<Vec<Tes
                 if a > b {
                     errors
                         .get_or_insert_default()
-                        .push(create_unsorted_keys_warning(format!("{path}/{a}").as_str()));
+                        .push(create_unsorted_keys_warning(path.push(a.as_str()).as_str()));
                 }
             }
 
             // check all children recursively
             for (key, value) in map {
-                check_sorted_recursive(value, format!("{path}/{key}").as_str(), errors);
+                check_sorted_recursive(value, &mut path.push(key.as_str()), errors);
             }
         },
         Value::Array(arr) => {
             // array -> check for each item
-            for (key, value) in arr.iter().enumerate() {
-                check_sorted_recursive(value, format!("{path}/{key}").as_str(), errors);
+            for (index, value) in arr.iter().enumerate() {
+                check_sorted_recursive(value, &mut path.push(index), errors);
             }
         },
         // primitive types are always sorted

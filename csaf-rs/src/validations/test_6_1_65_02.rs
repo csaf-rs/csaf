@@ -23,9 +23,9 @@ pub fn test_6_1_65_2_multiple_definition_of_document_local_vuln_id(
 ) -> Result<(), Vec<TestFinding>> {
     // generate a map of document-local vulnerability ids to the paths where they are defined
     let mut definitions: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    for (id, path) in doc.get_all_document_local_vuln_ids_with_path() {
-        definitions.entry(id).or_default().push(path);
-    }
+    doc.visit_all_document_local_vuln_ids(&mut |id, path| {
+        definitions.entry(id.to_owned()).or_default().push(path.to_owned());
+    });
 
     // generate an error for every document-local vulnerability id that is defined more than once
     let mut errors: Option<Vec<TestFinding>> = None;

@@ -1,6 +1,7 @@
 use crate::csaf::traits::product_tree::product_path_trait::ProductPathTrait;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::{CategoryOfTheBranch, ProductGroupTrait, ProductTrait};
+use crate::json::JsonPointer;
 use crate::schema::csaf2_0::schema::{
     Branch as Branch20, FullProductNameT as FullProductNameT20, ProductGroup as ProductGroup20,
     ProductTree as ProductTree20, Relationship as Relationship20,
@@ -9,7 +10,6 @@ use crate::schema::csaf2_1::schema::{
     Branch as Branch21, FullProductNameT as FullProductNameT21, ProductGroup as ProductGroup21,
     ProductPath as ProductPath21, ProductTree as ProductTree21,
 };
-use std::collections::HashSet;
 use std::fmt::Write as _;
 
 /// Trait representing an abstract product tree in a CSAF document.
@@ -48,64 +48,67 @@ pub trait ProductTreeTrait {
     /// Retrieves a reference to the list of full product names in the product tree.
     fn get_full_product_names(&self) -> &Vec<Self::FullProductNameType>;
 
-    /// Utility function to get all product IDs in the product tree.
-    fn get_all_product_ids(&self) -> HashSet<String> {
-        let mut definitions_set = HashSet::new();
-        self.visit_all_products(&mut |fpn, _path| {
-            definitions_set.insert(fpn.get_product_id().to_owned());
-        });
-        definitions_set
-    }
-
-    /// Utility function to get all product group IDs in the product tree.
-    fn get_all_product_group_ids(&self) -> HashSet<String> {
-        self.get_product_groups()
-            .iter()
-            .map(|product_group| product_group.get_group_id().to_owned())
-            .collect()
-    }
-
-    /// Utility function to get all product references in product groups along with their JSON paths
-    fn get_product_groups_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        for (pg_i, pg) in self.get_product_groups().iter().enumerate() {
-            for (p_i, p) in pg.get_product_ids().enumerate() {
-                ids.push((
-                    p.to_owned(),
-                    format!("/product_tree/product_groups/{pg_i}/product_ids/{p_i}"),
-                ));
+    /// Visits every product ID definition, including duplicate IDs.
+    fn visit_all_product_ids(&self, visitor: &mut impl FnMut(&str, &str)) {
+        let mut buffer = String::from("/product_tree");
+        let mut path = JsonPointer::new(&mut buffer);
+        if let Some(branches) = self.get_branches() {
+            let mut branches_path = path.push("branches");
+            for (index, branch) in branches.iter().enumerate() {
+                branch.visit_product_ids_rec(&mut branches_path.push(index), visitor);
             }
         }
-
-        ids
-    }
-
-    /// Utility function to get all product references in relationships along with their JSON paths
-    fn get_relationships_product_references(&self) -> Vec<(String, String)> {
-        let mut ids: Vec<(String, String)> = Vec::new();
-
-        for (rel_i, rel) in self.get_product_paths().iter().enumerate() {
-            ids.push((
-                rel.get_beginning_product_reference().to_owned(),
-                rel.get_json_path_for_product_path_beginning_product_reference(rel_i),
-            ));
-            for (sub_i, sub_ref) in rel.get_subpath_product_references().into_iter().enumerate() {
-                ids.push((
-                    sub_ref.to_owned(),
-                    rel.get_json_path_for_product_path_subpath_product_reference(rel_i, sub_i),
-                ));
+        {
+            let mut names_path = path.push("full_product_names");
+            for (index, product) in self.get_full_product_names().iter().enumerate() {
+                let mut product_path = names_path.push(index);
+                visitor(product.get_product_id(), product_path.push("product_id").as_str());
             }
         }
-
-        ids
+        let field = self.get_product_path_prefix().rsplit('/').next().unwrap_or_default();
+        let mut paths_path = path.push(field);
+        for (index, product_path) in self.get_product_paths().iter().enumerate() {
+            let mut entry_path = paths_path.push(index);
+            let mut name_path = entry_path.push("full_product_name");
+            visitor(
+                product_path.get_full_product_name().get_product_id(),
+                name_path.push("product_id").as_str(),
+            );
+        }
     }
 
-    /// Returns all product references from the product tree (groups + relationships).
-    fn get_all_product_references(&self) -> Vec<(String, String)> {
-        let mut ids = self.get_product_groups_product_references();
-        ids.extend(self.get_relationships_product_references());
-        ids
+    /// Visits every product group ID definition, including duplicate IDs.
+    fn visit_all_product_group_ids(&self, visitor: &mut impl FnMut(&str, &str)) {
+        let mut buffer = String::from("/product_tree/product_groups");
+        let mut path = JsonPointer::new(&mut buffer);
+        for (index, group) in self.get_product_groups().iter().enumerate() {
+            let mut group_path = path.push(index);
+            visitor(group.get_group_id(), group_path.push("group_id").as_str());
+        }
+    }
+
+    /// Visits product references from groups and relationships relative to the product tree.
+    fn visit_all_product_references(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+        {
+            let mut groups_path = path.push("product_groups");
+            for (group_index, group) in self.get_product_groups().iter().enumerate() {
+                let mut group_path = groups_path.push(group_index);
+                let mut ids_path = group_path.push("product_ids");
+                for (id_index, id) in group.get_product_ids().enumerate() {
+                    visitor(id, ids_path.push(id_index).as_str());
+                }
+            }
+        }
+        self.visit_relationships_product_references(path, visitor);
+    }
+
+    /// Visits only references in relationships or product paths.
+    fn visit_relationships_product_references(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+        let field = self.get_product_path_prefix().rsplit('/').next().unwrap_or_default();
+        let mut paths_path = path.push(field);
+        for (index, product_path) in self.get_product_paths().iter().enumerate() {
+            product_path.visit_all_product_references(&mut paths_path.push(index), visitor);
+        }
     }
 
     // Lookup functions
@@ -264,6 +267,20 @@ pub fn build_leaf_instance_path(indices: &[usize]) -> String {
 
 /// Trait representing an abstract branch in a product tree.
 pub trait BranchTrait<FPN: ProductTrait>: Sized {
+    /// Visits product ID definitions in this branch and its descendants.
+    fn visit_product_ids_rec(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+        if let Some(product) = self.get_product() {
+            let mut product_path = path.push("product");
+            visitor(product.get_product_id(), product_path.push("product_id").as_str());
+        }
+        if let Some(branches) = self.get_branches() {
+            let mut branches_path = path.push("branches");
+            for (index, branch) in branches.iter().enumerate() {
+                branch.visit_product_ids_rec(&mut branches_path.push(index), visitor);
+            }
+        }
+    }
+
     /// Returns an optional reference to the child branches of this branch.
     fn get_branches(&self) -> Option<&Vec<Self>>;
 
@@ -506,6 +523,16 @@ mod tests {
         assert_eq!(names("CSAFPID-0002"), ["Top-level product"]);
         assert_eq!(names("CSAFPID-0003"), ["Product on top-level"]);
         assert!(names("CSAFPID-9999").is_empty());
+        let mut paths = Vec::new();
+        tree.visit_all_product_ids(&mut |_, path| paths.push(path.to_owned()));
+        assert_eq!(
+            paths,
+            [
+                "/product_tree/branches/0/branches/0/product/product_id",
+                "/product_tree/full_product_names/0/product_id",
+                "/product_tree/relationships/0/full_product_name/product_id",
+            ]
+        );
     }
 
     #[test]
@@ -554,6 +581,16 @@ mod tests {
         assert_eq!(names("CSAFPID-0002"), ["Top-level product"]);
         assert_eq!(names("CSAFPID-0003"), ["Product on top-level"]);
         assert!(names("CSAFPID-9999").is_empty());
+        let mut paths = Vec::new();
+        tree.visit_all_product_ids(&mut |_, path| paths.push(path.to_owned()));
+        assert_eq!(
+            paths,
+            [
+                "/product_tree/branches/0/branches/0/product/product_id",
+                "/product_tree/full_product_names/0/product_id",
+                "/product_tree/product_paths/0/full_product_name/product_id",
+            ]
+        );
     }
 
     #[test]

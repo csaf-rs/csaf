@@ -23,7 +23,7 @@ fn generate_undefined_product_group_id_error(undefined_product_group_id: &str, i
 /// and compares the two sets.
 ///
 /// Due to the syntax changes between the two versions, the way these sets are derived differs, though.
-/// This is abstracted through the [`ProductTreeTrait::get_all_product_group_ids`] and [`CsafTrait::get_all_group_references`]
+/// This is abstracted through the product group ID and reference visitors
 /// functions, which allows the same implementation to work for both CSAF versions.
 pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // check if there is a product tree
@@ -32,12 +32,14 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
     };
 
     // get all defined product group IDs from the product tree
-    let defined_product_group_ids = tree.get_all_product_group_ids();
+    let mut defined_product_group_ids = std::collections::HashSet::new();
+    tree.visit_all_product_group_ids(&mut |id, _| {
+        defined_product_group_ids.insert(id.to_owned());
+    });
 
     let mut errors: Option<Vec<TestFinding>> = None;
     // iterate over all product group references
-    let product_group_references = doc.get_all_group_references();
-    for (referenced_product_group_id, referenced_product_group_path) in &product_group_references {
+    doc.visit_all_group_references(&mut |referenced_product_group_id, referenced_product_group_path| {
         // if a reference is not defined, generate an error
         if !defined_product_group_ids.contains(referenced_product_group_id) {
             errors
@@ -47,7 +49,7 @@ pub fn test_6_1_04_missing_definition_of_product_group_id(doc: &impl CsafTrait) 
                     referenced_product_group_path,
                 ));
         }
-    }
+    });
 
     errors.map_or(Ok(()), Err)
 }

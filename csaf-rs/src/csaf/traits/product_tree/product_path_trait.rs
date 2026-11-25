@@ -1,6 +1,7 @@
 use crate::csaf::enums::category_of_the_relationship::CategoryOfTheRelationship;
 use crate::csaf::traits::util::impl_str_field_getter;
 use crate::csaf_traits::ProductTrait;
+use crate::json::JsonPointer;
 use crate::schema::csaf2_0::schema::{Relationship, RelationshipCategory as RelationshipCategory_2_0};
 use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath, RelationshipCategory as RelationshipCategory_2_1};
 
@@ -8,6 +9,9 @@ use crate::schema::csaf2_1::schema::{FullProductNameT, ProductPath, Relationship
 pub trait ProductPathTrait<FPN: ProductTrait> {
     /// Retrieves the product reference identifier.
     fn get_beginning_product_reference(&self) -> &str;
+
+    /// Visits product references relative to this relationship or product path.
+    fn visit_all_product_references(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str));
 
     /// Retrieves the identifier of the related product.
     fn get_subpath_product_references(&self) -> Vec<&str>;
@@ -46,6 +50,14 @@ impl From<RelationshipCategory_2_0> for CategoryOfTheRelationship {
 
 impl ProductPathTrait<crate::schema::csaf2_0::schema::FullProductNameT> for Relationship {
     impl_str_field_getter!(get_beginning_product_reference, product_reference);
+
+    fn visit_all_product_references(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+        visitor(&self.product_reference, path.push("product_reference").as_str());
+        visitor(
+            &self.relates_to_product_reference,
+            path.push("relates_to_product_reference").as_str(),
+        );
+    }
 
     fn get_subpath_product_references(&self) -> Vec<&str> {
         vec![&self.relates_to_product_reference]
@@ -86,6 +98,21 @@ impl From<RelationshipCategory_2_1> for CategoryOfTheRelationship {
 
 impl ProductPathTrait<FullProductNameT> for ProductPath {
     impl_str_field_getter!(get_beginning_product_reference, beginning_product_reference);
+
+    fn visit_all_product_references(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+        visitor(
+            &self.beginning_product_reference,
+            path.push("beginning_product_reference").as_str(),
+        );
+        let mut subpaths_path = path.push("subpaths");
+        for (index, subpath) in self.subpaths.iter().enumerate() {
+            let mut subpath_path = subpaths_path.push(index);
+            visitor(
+                &subpath.next_product_reference,
+                subpath_path.push("next_product_reference").as_str(),
+            );
+        }
+    }
 
     fn get_subpath_product_references(&self) -> Vec<&str> {
         self.subpaths

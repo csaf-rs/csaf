@@ -35,22 +35,22 @@ static CSAF_RFC3339_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     let mut errors: Option<Vec<TestFinding>> = None;
 
-    for (date_parsed, instance_path) in doc.get_all_dates() {
+    doc.visit_all_dates(&mut |date_parsed, instance_path| {
         let date_raw = date_parsed.get_raw_string();
         // regex that ensures the additional section 2.3 requirements
         if !CSAF_RFC3339_REGEX.is_match(date_raw) {
             errors
                 .get_or_insert_default()
-                .push(create_invalid_format_error(date_raw, &instance_path));
-            continue;
+                .push(create_invalid_format_error(date_raw, instance_path));
+            return;
         }
         // Add jiff-based check for RFC 3339 requirements not covered by regex
-        if let Invalid(err) = &date_parsed {
+        if let Invalid(err) = date_parsed {
             errors
                 .get_or_insert_default()
-                .push(create_invalid_rfc3339_error(date_raw, err, &instance_path));
+                .push(create_invalid_rfc3339_error(date_raw, err, instance_path));
         }
-    }
+    });
 
     errors.map_or(Ok(()), Err)
 }

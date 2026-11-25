@@ -139,9 +139,13 @@ pub fn test_6_1_64_2_contradicting_definition_in_actions(doc: &impl CsafTrait) -
     };
 
     // get all document defined local vuln ids, if all vulnerabilities have a document local vuln id
-    let all_document_local_vuln_ids = doc
-        .all_vulnerabilities_have_document_local_vuln_ids()
-        .then(|| doc.get_all_document_local_vuln_ids());
+    let all_document_local_vuln_ids = doc.all_vulnerabilities_have_document_local_vuln_ids().then(|| {
+        let mut ids = BTreeSet::new();
+        doc.visit_all_document_local_vuln_ids(&mut |id, _| {
+            ids.insert(id.to_owned());
+        });
+        ids
+    });
 
     // get all document defined entity groups
     let all_document_entity_groups = involvement.get_entity_groups_map().unwrap_or_default();

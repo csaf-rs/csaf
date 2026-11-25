@@ -163,7 +163,11 @@ pub fn test_6_1_24_multiple_definition_in_actions(doc: &impl CsafTrait) -> Resul
 
     // get all document defined local vuln ids, if all vulnerabilities have a document local vuln id
     let all_document_local_vuln_ids = if doc.all_vulnerabilities_have_document_local_vuln_ids() {
-        Some(doc.get_all_document_local_vuln_ids())
+        let mut ids = BTreeSet::new();
+        doc.visit_all_document_local_vuln_ids(&mut |id, _| {
+            ids.insert(id.to_owned());
+        });
+        Some(ids)
     } else {
         None
     };

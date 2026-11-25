@@ -14,21 +14,24 @@ fn create_unused_document_local_vuln_id_warning(id: &str, path: &str) -> TestFin
 /// it SHALL be tested that the `dl_vuln_id` is referenced somewhere within the same document.
 pub fn test_6_2_57_unused_definition_of_document_local_vuln_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // collect all document-local vulnerability IDs that are referenced in the document#
-    let referenced_doc_local_vuln_ids = doc.get_all_document_local_vuln_id_references();
+    let mut referenced_doc_local_vuln_ids = std::collections::HashSet::new();
+    doc.visit_all_document_local_vuln_id_references(&mut |id, _| {
+        referenced_doc_local_vuln_ids.insert(id.to_owned());
+    });
 
     let mut findings: Option<Vec<TestFinding>> = None;
     // for each document-local vulnerability ID defined
-    for (defined_doc_local_vuln_id, defined_doc_local_vuln_id_path) in doc.get_all_document_local_vuln_ids_with_path() {
+    doc.visit_all_document_local_vuln_ids(&mut |defined_doc_local_vuln_id, defined_doc_local_vuln_id_path| {
         // check if it is referenced in the document, if not, add a warning
-        if !referenced_doc_local_vuln_ids.contains(&defined_doc_local_vuln_id) {
+        if !referenced_doc_local_vuln_ids.contains(defined_doc_local_vuln_id) {
             findings
                 .get_or_insert_default()
                 .push(create_unused_document_local_vuln_id_warning(
-                    &defined_doc_local_vuln_id,
-                    &defined_doc_local_vuln_id_path,
+                    defined_doc_local_vuln_id,
+                    defined_doc_local_vuln_id_path,
                 ));
         }
-    }
+    });
 
     findings.map_or(Ok(()), Err)
 }

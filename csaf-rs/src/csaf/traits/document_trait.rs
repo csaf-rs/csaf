@@ -75,7 +75,7 @@ pub trait DocumentTrait {
 
     define_reference_accessors! {
         optional_vec: [
-            (get_notes_group_references, get_notes_product_references, get_notes, "/document/notes"),
+            (visit_notes_group_references, visit_notes_product_references, get_notes, "notes"),
         ],
     }
 

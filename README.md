@@ -431,7 +431,7 @@ For further configuration options, please refer to the [csaf-service README](csa
 | 6.3.14   | ⭕ | ✅ |
 | 6.3.15   | ⭕ | ✅ |
 | 6.3.16   | ⭕ |  |
-| 6.3.17   | ⭕ |  |
+| 6.3.17   | ⭕ | ✅|
 | 6.3.18   | ⭕ | ✅ |
 | 6.3.19   | ⭕ |  |
 | 6.3.20   | ⭕ | ✅ |

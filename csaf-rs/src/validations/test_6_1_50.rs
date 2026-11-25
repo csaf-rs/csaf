@@ -16,7 +16,7 @@ fn non_canonical_product_version_range_error(
     })
 }
 
-fn any_outside_of_vers_all_error(vers: &str, instance_path: impl Into<String>) -> TestFinding {
+fn any_outside_of_vers_all_none_error(vers: &str, instance_path: impl Into<String>) -> TestFinding {
     TestFinding::Error(TestFindingData {
         message: format!(
             "The VERS version range `{vers}` uses the `*` comparator outside of the `vers:all` and `vers:none` types, which is not allowed for CSAF"
@@ -84,7 +84,7 @@ pub fn test_6_1_50_product_version_range_rules(doc: &impl CsafTrait) -> Result<(
                 {
                     findings
                         .get_or_insert_default()
-                        .push(any_outside_of_vers_all_error(name, path));
+                        .push(any_outside_of_vers_all_none_error(name, path));
                 }
 
                 // check if the version range was in canonical form already

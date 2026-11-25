@@ -1,6 +1,7 @@
 use crate::csaf_traits::{CsafTrait, VulnerabilityTrait};
-use crate::helpers::CWE_ENTRIES;
 use crate::validation::{TestFinding, TestFindingData};
+
+use crate::cwe::{CWE_RELEASES, CweStatus};
 
 fn create_deprecated_cwe_warning(cwe: &str, version: &str, i_r: usize, i_cwe: usize) -> TestFinding {
     TestFinding::Warning(TestFindingData {
@@ -26,13 +27,13 @@ pub fn test_6_2_23_usage_of_deprecated_cwe(doc: &impl CsafTrait) -> Result<(), V
                     continue;
                 };
 
-                if !CWE_ENTRIES.contains_key(version) {
+                if !CWE_RELEASES.contains_key(version) {
                     continue;
                 }
 
                 // We can also just run this part, and only look into the cwe file
-                if let Some(entry) = CWE_ENTRIES[version].entries.get(&cwe_item.id)
-                    && entry.status == "Deprecated"
+                if let Some(entry) = CWE_RELEASES[version].entries.get(&cwe_item.id)
+                    && entry.status == CweStatus::Deprecated
                 {
                     errors.get_or_insert_default().push(create_deprecated_cwe_warning(
                         &cwe_item.id,

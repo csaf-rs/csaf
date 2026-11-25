@@ -1,5 +1,5 @@
 use crate::csaf::traits::vulnerabilities::{
-    cpe_trait::CpeTrait, file_hash_trait::FileHashTrait, generic_uri_trait::GenericUriTrait, hash_trait::HashTrait,
+    file_hash_trait::FileHashTrait, generic_uri_trait::GenericUriTrait, hash_trait::HashTrait,
     product_ident_helper_trait::ProductIdentificationHelperTrait,
 };
 use crate::csaf::types::purl::csaf_purl::CsafPurl;
@@ -126,17 +126,19 @@ pub fn test_6_2_32_duplicate_product_identification_helpers(doc: &impl CsafTrait
             // Collect CPE
             if let Some(cpe) = helper.get_cpe() {
                 cpe_groups
-                    .entry(cpe.as_str().to_string())
+                    .entry(cpe.to_owned())
                     .or_default()
                     .push((product_id.clone(), path_str.clone()));
             }
 
             // Collect SBOMs
-            for sbom in helper.get_sbom_urls().unwrap_or_default() {
-                sbom_groups
-                    .entry(sbom)
-                    .or_default()
-                    .push((product_id.clone(), path_str.clone()));
+            if let Some(sboms) = helper.get_sbom_urls() {
+                for sbom in sboms {
+                    sbom_groups
+                        .entry(sbom.to_owned())
+                        .or_default()
+                        .push((product_id.clone(), path_str.clone()));
+                }
             }
 
             // Collect X-Generic URIs

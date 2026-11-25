@@ -80,8 +80,8 @@ pub fn check_optional_severity_mismatch(
         errors
             .get_or_insert_default()
             .push(TestFinding::Error(create_severity_mismatch_finding_data(
-                &calculated,
-                &actual,
+                calculated,
+                actual,
                 score_type,
                 instance_path,
             )));
@@ -89,8 +89,8 @@ pub fn check_optional_severity_mismatch(
 }
 
 pub fn create_severity_mismatch_finding_data(
-    calculated: &Severity,
-    actual: &Severity,
+    calculated: Severity,
+    actual: Severity,
     score_type: ScoreType,
     instance_path: &str,
 ) -> TestFindingData {

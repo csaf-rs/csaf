@@ -706,6 +706,7 @@ dependencies = [
  "anstyle",
  "anyhow",
  "clap",
+ "criterion",
  "csaf-rs",
 ]
 

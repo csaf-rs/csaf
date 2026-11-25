@@ -21,6 +21,16 @@ name= "csaf-validator"
 path = "src/main.rs"
 required-features = ["cli"]
 
+[[bench]]
+name = "validator_benches"
+harness = false
+
+[[example]]
+name = "bad_validator_flamegraph"
+
+[[example]]
+name = "rhsa_validator_flamegraph"
+
 [features]
 default = []
 cli=["dep:clap", "dep:anstyle", "dep:anstream"]
@@ -31,3 +41,6 @@ anstyle = {version="1.0.8", optional=true}
 anyhow = "1.0.93"
 clap = { version = "4.5.23", features = ["derive"], optional=true }
 csaf-rs = { path = "../csaf-rs", version = "0.7" }
+
+[dev-dependencies]
+criterion = { version = "0.8.2", features = ["html_reports"] }

@@ -42,7 +42,7 @@ symspell = "0.5.2"
 thiserror = { version = "2" }
 utoipa = { version = "6", optional = true }
 bytemuck = { version = "1.25.2", features = ["derive"] }
-vers-like-specifier = "0.1"
+vers-like-specifier = "0.2.0"
 vers-rs = "0.2"
 # TODO: Replace with properly maintained cpe-rs crate #1158
 cpe = { version = "0.2", package = "cpe-rs-fork" }

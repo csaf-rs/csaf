@@ -1,8 +1,7 @@
 use strum::Display;
 
-use chrono::NaiveDate;
-
 use crate::csaf::types::csaf_datetime::CsafDateTime;
+use jiff::civil::Date;
 
 include!(concat!(env!("OUT_DIR"), "/cwe_generated.rs"));
 
@@ -53,20 +52,20 @@ pub struct CweRelease {
 
 #[allow(clippy::expect_used)]
 pub fn get_latest_cwe_version_for_date(date: &CsafDateTime) -> Option<&'static str> {
-    let doc_date: NaiveDate = match date {
-        CsafDateTime::Valid(v) => v.get_as_utc().date_naive(),
+    let doc_date: Date = match date {
+        CsafDateTime::Valid(v) => v.get_as_utc().date(),
         _ => return None,
     };
 
-    let mut latest: Option<(&'static str, NaiveDate)> = None;
+    let mut latest: Option<(&'static str, Date)> = None;
 
     for (version, version_data) in CWE_RELEASES.entries() {
-        let cwe_release_date = NaiveDate::from_ymd_opt(
-            version_data.release_date.0,
-            version_data.release_date.1,
-            version_data.release_date.2,
+        let cwe_release_date = Date::new(
+            version_data.release_date.0 as i16,
+            version_data.release_date.1 as i8,
+            version_data.release_date.2 as i8,
         )
-        .unwrap_or(NaiveDate::from_ymd_opt(1990, 1, 1).expect("Guaranteed to be a naive date"));
+        .unwrap_or(Date::new(1990, 1, 1).expect("Guaranteed to be a valid date"));
         if cwe_release_date <= doc_date && latest.is_none_or(|l| cwe_release_date > l.1) {
             latest = Some((version, cwe_release_date));
         }

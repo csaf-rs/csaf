@@ -10,16 +10,15 @@ pub fn generate_from_schema(
     output: &str,
     target_folder: &str,
 ) -> Result<TypeSpace, BuildError> {
-    let mut type_space = TypeSpace::new(
-        TypeSpaceSettings::default()
-            .with_struct_builder(true)
-            .with_derive("PartialEq".into())
-            .with_derive("Eq".into()),
-    );
+    let mut type_space = TypeSpace::new(TypeSpaceSettings::default().map_typespace_settings(|s| {
+        s.with_struct_builder(true)
+            .with_required_trait(typify::typespace::TypespaceTrait::PartialEq)
+            .with_required_trait(typify::typespace::TypespaceTrait::Eq)
+    }));
     type_space.add_root_schema(schema)?;
 
     // Convert the TypeSpace token stream into a syn::File so we can inject a file-level doc attribute
-    let mut file = syn::parse2::<syn::File>(type_space.to_stream())?;
+    let mut file = syn::parse2::<syn::File>(type_space.to_stream()?)?;
 
     add_string_newtype_impls(&mut file);
     add_ignore_rustdoc(&mut file);

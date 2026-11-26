@@ -3,7 +3,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use syn::{Ident, TypePath};
-use typify::{Type, TypeDetails, TypeId, TypeSpace};
+use typify::typespace::Typespace;
+use typify::typespace::view::{Type, TypeDetails};
+use typify::{TypeId, TypeSpace};
 
 use json_path::{JsonPath, JsonPathComponent, JsonPathMapper};
 
@@ -23,10 +25,11 @@ pub fn generate(
 ) -> Result<JsonPathMapper, BuildError> {
     const ROOT: &str = "CommonSecurityAdvisoryFramework";
 
+    let built_typespace = type_space.to_typespace()?;
     let mut mod_items = vec![quote!(
         use super::{Object, SchemaError};
     )];
-    let Some(root) = type_space.iter_types().find(|ty| ty.name() == ROOT) else {
+    let Some(root) = built_typespace.iter_types().find(|ty| ty.name() == ROOT) else {
         panic!("type {ROOT} was not found")
     };
 
@@ -43,15 +46,16 @@ pub fn generate(
         &mut mod_items,
         &mut todo,
         &mut type_id_to_name,
-        type_space,
+        &built_typespace,
         &mut json_paths,
     );
     while let Some(type_id) = todo.pop() {
-        let ty = type_space.get_type(&type_id).unwrap();
-        let name = type_id_to_name.get_or_insert(&type_id, type_space);
+        let ty = built_typespace.get_type(&type_id);
+        let name = type_id_to_name.get_or_insert(&type_id, &built_typespace);
         if done.contains(&name) {
             continue;
         }
+
         generate_loose_type(
             &name,
             version,
@@ -59,7 +63,7 @@ pub fn generate(
             &mut mod_items,
             &mut todo,
             &mut type_id_to_name,
-            type_space,
+            &built_typespace,
             &mut json_paths,
         );
         done.insert(name);
@@ -162,11 +166,11 @@ pub fn generate_cast_api(
 fn generate_loose_type(
     name: &NodeName,
     schema_version: SchemaVersion,
-    ty: &Type,
+    ty: &Type<'_, TypeId>,
     mod_items: &mut Vec<TokenStream>,
     todo: &mut Vec<TypeId>,
     type_id_to_name: &mut TypeIdToName,
-    type_space: &TypeSpace,
+    type_space: &Typespace<TypeId>,
     json_paths: &mut JsonPathMapper,
 ) {
     match ty.details() {
@@ -287,7 +291,7 @@ fn generate_loose_type(
 
         TypeDetails::Newtype(type_newtype) => {
             let inner_id = type_newtype.inner();
-            let inner_ty = type_space.get_type(&inner_id).unwrap();
+            let inner_ty = type_space.get_type(&inner_id);
             if let TypeDetails::String = inner_ty.details() {
                 let ident = node_ident(name);
                 let schema_ident = new_ident(&ty.name());
@@ -407,13 +411,13 @@ fn generate_loose_type(
         },
 
         TypeDetails::Map(type_id, type_id1) => {
-            let key = type_space.get_type(&type_id).unwrap();
+            let key = type_space.get_type(&type_id);
             assert_eq!(
                 "::std::string::String",
                 key.name().replace(" ", ""),
                 "expected a JSON object"
             );
-            let value = type_space.get_type(&type_id1).unwrap();
+            let value = type_space.get_type(&type_id1);
             assert_eq!(
                 "::serde_json::Value",
                 value.name().replace(" ", ""),
@@ -487,7 +491,7 @@ fn generate_loose_type(
             // skip the cast API on leaf nodes that are strings
             json_paths.trivial(name.clone());
 
-            let path: TypePath = syn::parse_str(path).unwrap();
+            let path: TypePath = syn::parse_str(path.as_ref()).unwrap();
             let ident = node_ident(name);
 
             mod_items.push(quote!(
@@ -517,6 +521,7 @@ fn generate_loose_type(
         TypeDetails::Tuple(_iterator) => unreachable!(),
         TypeDetails::Array(_type_id, _) => unreachable!(),
         TypeDetails::Unit => unreachable!(),
+        _ => unreachable!(),
     }
 }
 
@@ -526,14 +531,13 @@ struct TypeIdToName {
 }
 
 impl TypeIdToName {
-    fn get_or_insert(&mut self, type_id: &TypeId, type_space: &TypeSpace) -> NodeName {
+    fn get_or_insert(&mut self, type_id: &TypeId, type_space: &Typespace<TypeId>) -> NodeName {
         if let Some(name) = self.inner.get(type_id) {
             return name.clone();
         }
 
         let name = type_space
             .get_type(type_id)
-            .expect("Type not found in type space")
             .name()
             .replace(" ", "")
             .replace("::std::option::", "")

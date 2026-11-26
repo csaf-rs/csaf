@@ -104,12 +104,7 @@ impl ::std::str::FromStr for NameOfTheResultFile {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
-        { ::regress::Regex::new("^.+\\.result\\.json$").unwrap() });
-        if PATTERN.find(value).is_none() {
-            return Err("doesn't match pattern \"^.+\\.result\\.json$\"".into());
-        }
-        Ok(Self(value.to_string()))
+        ::std::convert::TryFrom::try_from(value)
     }
 }
 impl ::std::convert::TryFrom<&str> for NameOfTheResultFile {
@@ -117,7 +112,12 @@ impl ::std::convert::TryFrom<&str> for NameOfTheResultFile {
     fn try_from(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::with_flags("^.+\\.result\\.json$", "u").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err("doesn't match pattern \"^.+\\.result\\.json$\"".into());
+        }
+        Ok(Self(value.to_string()))
     }
 }
 impl ::std::convert::TryFrom<::std::string::String> for NameOfTheResultFile {
@@ -125,7 +125,7 @@ impl ::std::convert::TryFrom<::std::string::String> for NameOfTheResultFile {
     fn try_from(
         value: ::std::string::String,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
+        ::std::convert::TryFrom::try_from(value.as_str())
     }
 }
 impl<'de> ::serde::Deserialize<'de> for NameOfTheResultFile {
@@ -133,8 +133,9 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheResultFile {
     where
         D: ::serde::Deserializer<'de>,
     {
-        ::std::string::String::deserialize(deserializer)?
-            .parse()
+        ::std::convert::TryFrom::try_from(
+                ::std::string::String::deserialize(deserializer)?,
+            )
             .map_err(|e: self::error::ConversionError| {
                 <D::Error as ::serde::de::Error>::custom(e.to_string())
             })
@@ -160,12 +161,7 @@ impl ::std::str::FromStr for NameOfTheTestFile {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
-        { ::regress::Regex::new("^.+\\.json$").unwrap() });
-        if PATTERN.find(value).is_none() {
-            return Err("doesn't match pattern \"^.+\\.json$\"".into());
-        }
-        Ok(Self(value.to_string()))
+        ::std::convert::TryFrom::try_from(value)
     }
 }
 impl ::std::convert::TryFrom<&str> for NameOfTheTestFile {
@@ -173,7 +169,12 @@ impl ::std::convert::TryFrom<&str> for NameOfTheTestFile {
     fn try_from(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
+        static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
+        { ::regress::Regex::with_flags("^.+\\.json$", "u").unwrap() });
+        if PATTERN.find(value).is_none() {
+            return Err("doesn't match pattern \"^.+\\.json$\"".into());
+        }
+        Ok(Self(value.to_string()))
     }
 }
 impl ::std::convert::TryFrom<::std::string::String> for NameOfTheTestFile {
@@ -181,7 +182,7 @@ impl ::std::convert::TryFrom<::std::string::String> for NameOfTheTestFile {
     fn try_from(
         value: ::std::string::String,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
+        ::std::convert::TryFrom::try_from(value.as_str())
     }
 }
 impl<'de> ::serde::Deserialize<'de> for NameOfTheTestFile {
@@ -189,8 +190,9 @@ impl<'de> ::serde::Deserialize<'de> for NameOfTheTestFile {
     where
         D: ::serde::Deserializer<'de>,
     {
-        ::std::string::String::deserialize(deserializer)?
-            .parse()
+        ::std::convert::TryFrom::try_from(
+                ::std::string::String::deserialize(deserializer)?,
+            )
             .map_err(|e: self::error::ConversionError| {
                 <D::Error as ::serde::de::Error>::custom(e.to_string())
             })
@@ -216,10 +218,19 @@ impl ::std::str::FromStr for NumberOfTheTest {
     fn from_str(
         value: &str,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
+        ::std::convert::TryFrom::try_from(value)
+    }
+}
+impl ::std::convert::TryFrom<&str> for NumberOfTheTest {
+    type Error = self::error::ConversionError;
+    fn try_from(
+        value: &str,
+    ) -> ::std::result::Result<Self, self::error::ConversionError> {
         static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(||
         {
-            ::regress::Regex::new(
+            ::regress::Regex::with_flags(
                     "^6\\.(([13]\\.[1-9])|(2\\.[1-689])|(1\\.10)|([12]\\.1[1-9])|(3\\.1[0-8])|(3\\.19\\.[1-5])|([12]\\.2[0-6])|(2\\.27)|([12]\\.2[8-9])|(1\\.27\\.([1-9]|1[0-9]|20))|(3\\.20)|(3\\.21\\.[1-9])|(3\\.22)|(3\\.23\\.[12])|(3\\.2[45])|(3\\.26\\.[1-4])|([12]\\.3[0-8])|(1\\.39)|(2\\.39\\.([1-9]|1[0-3]))|([12]\\.4[0-9])|(1\\.5[0-9])|(2\\.50\\.[1-3])|(2\\.5[1-3])|(2\\.54\\.[1-4])|(2\\.55)|(2\\.56\\.[1-5])|(2\\.57)|(1\\.60\\.[1-3])|(1\\.6[1-3])|(1\\.64\\.([1-9]|1[0-3]))|(1\\.65\\.[12])|(1\\.66))$",
+                    "u",
                 )
                 .unwrap()
         });
@@ -232,20 +243,12 @@ impl ::std::str::FromStr for NumberOfTheTest {
         Ok(Self(value.to_string()))
     }
 }
-impl ::std::convert::TryFrom<&str> for NumberOfTheTest {
-    type Error = self::error::ConversionError;
-    fn try_from(
-        value: &str,
-    ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
-    }
-}
 impl ::std::convert::TryFrom<::std::string::String> for NumberOfTheTest {
     type Error = self::error::ConversionError;
     fn try_from(
         value: ::std::string::String,
     ) -> ::std::result::Result<Self, self::error::ConversionError> {
-        value.parse()
+        ::std::convert::TryFrom::try_from(value.as_str())
     }
 }
 impl<'de> ::serde::Deserialize<'de> for NumberOfTheTest {
@@ -253,8 +256,9 @@ impl<'de> ::serde::Deserialize<'de> for NumberOfTheTest {
     where
         D: ::serde::Deserializer<'de>,
     {
-        ::std::string::String::deserialize(deserializer)?
-            .parse()
+        ::std::convert::TryFrom::try_from(
+                ::std::string::String::deserialize(deserializer)?,
+            )
             .map_err(|e: self::error::ConversionError| {
                 <D::Error as ::serde::de::Error>::custom(e.to_string())
             })

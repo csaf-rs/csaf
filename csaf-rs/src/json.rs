@@ -26,15 +26,15 @@
 //!   Ok(())
 //! }
 //! ```
-//! 
+//!
 //! ## JsonPointer
-//! 
-//! A JSON pointer that is built in-place on a shared [`String`] buffer for efficient generation of 
+//!
+//! A JSON pointer that is built in-place on a shared [`String`] buffer for efficient generation of
 //! JSON pointers while traversing a document.
-//! 
+//!
 //! Appending a segment via [`JsonPointer::push`] returns a child pointer that borrows the parent.
 //! When the child is dropped, the buffer is truncated back to the parent's content.
-//! 
+//!
 use serde::de::DeserializeOwned;
 use std::path::PathBuf;
 use std::{fs, io::BufReader, path::Path};
@@ -144,7 +144,7 @@ impl JsonPointerSegment for usize {
 /// Appending a segment via [`JsonPointer::push`] returns a child pointer that borrows the parent.
 /// When the child is dropped, the buffer is truncated back to the parent's content.
 pub struct JsonPointer<'a> {
-    buf: &'a mut String,
+    buf: Option<&'a mut String>,
     start: usize,
 }
 
@@ -152,25 +152,36 @@ impl<'a> JsonPointer<'a> {
     /// Creates a root pointer whose content is the current content of `buf`.
     pub fn new(buf: &'a mut String) -> Self {
         let start = buf.len();
-        Self { buf, start }
+        Self { buf: Some(buf), start }
+    }
+
+    /// Creates a new pointer that does not track any JSON path, but just returns an empty string slice.
+    pub fn ignored() -> Self {
+        Self { buf: None, start: 0 }
     }
 
     /// Returns the current pointer as string slice.
     pub fn as_str(&self) -> &str {
-        self.buf.as_str()
+        if let Some(buf) = &self.buf { buf.as_str() } else { "" }
     }
 
     /// Appends a segment and returns a child pointer for it.
     pub fn push(&mut self, segment: impl JsonPointerSegment) -> JsonPointer<'_> {
-        let start = self.buf.len();
-        segment.append_to(self.buf);
-        JsonPointer { buf: self.buf, start }
+        if let Some(ref mut buf) = self.buf {
+            let start = buf.len();
+            segment.append_to(buf);
+            JsonPointer { buf: Some(*buf), start }
+        } else {
+            JsonPointer::ignored()
+        }
     }
 }
 
 impl Drop for JsonPointer<'_> {
     fn drop(&mut self) {
-        self.buf.truncate(self.start);
+        if let Some(ref mut buf) = self.buf {
+            (*buf).truncate(self.start);
+        }
     }
 }
 

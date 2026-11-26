@@ -55,7 +55,7 @@ pub trait ProductTreeTrait {
         if let Some(branches) = self.get_branches() {
             let mut branches_path = path.push("branches");
             for (index, branch) in branches.iter().enumerate() {
-                branch.visit_product_ids_rec(&mut branches_path.push(index), visitor);
+                branch.visit_all_product_ids(&mut branches_path.push(index), visitor);
             }
         }
         {
@@ -211,7 +211,7 @@ pub trait ProductTreeTrait {
     fn visit_all_branches(&self, callback: &mut impl FnMut(&Self::BranchType, &str)) {
         if let Some(branches) = self.get_branches().as_ref() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("/product_tree/branches/{i}"), callback);
+                branch.visit_all_branches(&format!("/product_tree/branches/{i}"), callback);
             }
         }
     }
@@ -237,7 +237,7 @@ pub trait ProductTreeTrait {
                 let mut current_path: Vec<&Self::BranchType> = Vec::new();
                 let mut indices: Vec<usize> = vec![i];
                 // start recursion and collect all paths to leaf nodes into the result
-                branch.collect_leaf_paths_rec(&mut current_path, &mut indices, &mut result);
+                branch.collect_leaf_paths(&mut current_path, &mut indices, &mut result);
             }
         }
 
@@ -268,7 +268,7 @@ pub fn build_leaf_instance_path(indices: &[usize]) -> String {
 /// Trait representing an abstract branch in a product tree.
 pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// Visits product ID definitions in this branch and its descendants.
-    fn visit_product_ids_rec(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+    fn visit_all_product_ids(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
         if let Some(product) = self.get_product() {
             let mut product_path = path.push("product");
             visitor(product.get_product_id(), product_path.push("product_id").as_str());
@@ -276,7 +276,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
         if let Some(branches) = self.get_branches() {
             let mut branches_path = path.push("branches");
             for (index, branch) in branches.iter().enumerate() {
-                branch.visit_product_ids_rec(&mut branches_path.push(index), visitor);
+                branch.visit_all_product_ids(&mut branches_path.push(index), visitor);
             }
         }
     }
@@ -321,11 +321,11 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// # Returns
     /// * `Ok(())` if the traversal completes successfully
     /// * `Err(Vec<ValidationError>)` if the callback returns an error for any branch
-    fn visit_branches_rec(&self, path: &str, callback: &mut impl FnMut(&Self, &str)) {
+    fn visit_all_branches(&self, path: &str, callback: &mut impl FnMut(&Self, &str)) {
         callback(self, path);
         if let Some(branches) = self.get_branches() {
             for (i, branch) in branches.iter().enumerate() {
-                branch.visit_branches_rec(&format!("{path}/branches/{i}"), callback);
+                branch.visit_all_branches(&format!("{path}/branches/{i}"), callback);
             }
         }
     }
@@ -367,7 +367,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
     /// * `branches_on_path` - A mutable vector for the branches along the current path
     /// * `indices_on_path` - A mutable vector of branch indices along the current path
     /// * `result` - A mutable vector to collect (branches, indices) tuples for each leaf node
-    fn collect_leaf_paths_rec<'a>(
+    fn collect_leaf_paths<'a>(
         &'a self,
         branches_on_path: &mut Vec<&'a Self>,
         indices_on_path: &mut Vec<usize>,
@@ -382,7 +382,7 @@ pub trait BranchTrait<FPN: ProductTrait>: Sized {
                 // there are still nodes to visit, recurse for each branch
                 for (i, child) in branches.iter().enumerate() {
                     indices_on_path.push(i);
-                    child.collect_leaf_paths_rec(branches_on_path, indices_on_path, result);
+                    child.collect_leaf_paths(branches_on_path, indices_on_path, result);
                     indices_on_path.pop();
                 }
             },

@@ -58,7 +58,7 @@ pub trait ProductStatusTrait {
     }
 
     /// Visits references for one product status.
-    fn extract_product_references(
+    fn visit_product_references(
         &self,
         path: &mut JsonPointer<'_>,
         visitor: &mut impl FnMut(&str, &str),
@@ -74,15 +74,15 @@ pub trait ProductStatusTrait {
     }
 
     fn visit_all_product_references(&self, path: &mut JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
-        self.extract_product_references(path, visitor, self.get_first_affected(), "first_affected");
-        self.extract_product_references(path, visitor, self.get_first_fixed(), "first_fixed");
-        self.extract_product_references(path, visitor, self.get_fixed(), "fixed");
-        self.extract_product_references(path, visitor, self.get_known_affected(), "known_affected");
-        self.extract_product_references(path, visitor, self.get_known_not_affected(), "known_not_affected");
-        self.extract_product_references(path, visitor, self.get_last_affected(), "last_affected");
-        self.extract_product_references(path, visitor, self.get_recommended(), "recommended");
-        self.extract_product_references(path, visitor, self.get_under_investigation(), "under_investigation");
-        self.extract_product_references(path, visitor, self.get_unknown(), "unknown");
+        self.visit_product_references(path, visitor, self.get_first_affected(), "first_affected");
+        self.visit_product_references(path, visitor, self.get_first_fixed(), "first_fixed");
+        self.visit_product_references(path, visitor, self.get_fixed(), "fixed");
+        self.visit_product_references(path, visitor, self.get_known_affected(), "known_affected");
+        self.visit_product_references(path, visitor, self.get_known_not_affected(), "known_not_affected");
+        self.visit_product_references(path, visitor, self.get_last_affected(), "last_affected");
+        self.visit_product_references(path, visitor, self.get_recommended(), "recommended");
+        self.visit_product_references(path, visitor, self.get_under_investigation(), "under_investigation");
+        self.visit_product_references(path, visitor, self.get_unknown(), "unknown");
     }
 }
 

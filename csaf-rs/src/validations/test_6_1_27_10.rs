@@ -38,12 +38,10 @@ pub fn test_6_1_27_10_action_statement(doc: &impl CsafTrait) -> Result<(), Vec<T
         // generate all unique product ids and group ids found in remediations
         let mut found_product_ids: HashSet<String> = HashSet::new();
         let mut found_group_ids: HashSet<String> = HashSet::new();
-        let mut buffer = String::new();
-        let mut path = crate::json::JsonPointer::new(&mut buffer);
-        vulnerability.visit_remediations_product_references(&mut path, &mut |id, _| {
+        vulnerability.visit_remediations_product_references(&mut crate::json::JsonPointer::ignored(), &mut |id, _| {
             found_product_ids.insert(id.to_owned());
         });
-        vulnerability.visit_remediations_group_references(&mut path, &mut |id, _| {
+        vulnerability.visit_remediations_group_references(&mut crate::json::JsonPointer::ignored(), &mut |id, _| {
             found_group_ids.insert(id.to_owned());
         });
 

@@ -4,7 +4,10 @@ use crate::schema::csaf2_1::schema::EngineOfDocumentGeneration as Engine21;
 
 /// Trait for accessing document generation engine information
 pub trait EngineTrait {
+    /// Returns the name of the engine used to generate the document
     fn get_name(&self) -> &str;
+
+    /// Returns the version of the engine used to generate the document
     fn get_version(&self) -> Option<&str>;
 }
 

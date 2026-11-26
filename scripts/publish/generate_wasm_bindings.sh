@@ -7,7 +7,7 @@
 #   1. Builds csaf-ffi for wasm32-unknown-unknown (release)
 #   2. Generates TypeScript + WASM bindings via uniffi-bindgen-js
 #   3. Patches the runtime to provide wasm-bindgen polyfill imports
-#      (required by transitive deps: chrono, getrandom, uuid)
+#      (required by deps including jiff, getrandom, serde-wasm-bindgen)
 set -euo pipefail
 
 # Always run from the repository root so paths are deterministic

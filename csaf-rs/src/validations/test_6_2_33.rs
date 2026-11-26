@@ -1,7 +1,7 @@
 use crate::csaf::types::csaf_datetime::{CsafDateTime, ValidCsafDateTime};
 use crate::csaf_traits::{CsafTrait, DocumentTrait, TrackingTrait, VulnerabilityTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use chrono::Utc;
+use jiff::ZonedDateTime;
 
 fn create_disclosure_date_newer_than_revision_warning(
     disclosure_date: &ValidCsafDateTime,
@@ -44,7 +44,7 @@ pub fn test_6_2_33_disclosure_date_newer_than_revision(doc: &impl CsafTrait) -> 
         None => return Ok(()), // TODO this should be a #409 precondition failed #409
     };
 
-    let now = Utc::now();
+    let now = ZonedDateTime::now();
 
     // Check each vulnerability's disclosure date
     let mut errors: Option<Vec<TestFinding>> = None;

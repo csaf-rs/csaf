@@ -1,6 +1,99 @@
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
+use crate::csaf::types::csaf_datetime::CsafDateTime;
+use jiff::ZonedDateTime;
+use jiff::civil::{Date, date};
+use rust_embed::RustEmbed;
+use std::collections::HashMap;
+use std::sync::LazyLock;
+
+#[derive(RustEmbed)]
+#[folder = "assets/cwe/"]
+#[include = "*.csv"]
+struct CweCsvFiles;
+
+/// Per-CWE entry data loaded from the CWE CSV assets.
+pub struct CweData {
+    pub status: String,
+    pub name: String,
+    /// Vulnerability-mapping usage from MappingNotes/Usage (CWE schema 7.0+).
+    /// `None` for CWE versions that predate the Usage field
+    pub usage: Option<String>,
+}
+
+/// A single CWE version's release date and its entries.
+pub struct CweVersionData {
+    pub release_date: ZonedDateTime,
+    pub entries: HashMap<String, CweData>,
+}
+
+/// Maps CWE version (e.g. "4.20") to its release date and its entries
+pub type CweVersionLookup = HashMap<String, CweVersionData>;
+
+#[allow(clippy::expect_used)]
+pub static CWE_ENTRIES: LazyLock<CweVersionLookup> = LazyLock::new(|| {
+    let mut versions = HashMap::new();
+
+    for filename in CweCsvFiles::iter() {
+        if let Some(file) = CweCsvFiles::get(&filename) {
+            let version_and_date = &filename
+                .strip_prefix("cwe_")
+                .expect("Filenames in assets/cwe should start with 'cwe_'.")
+                .strip_suffix(".csv")
+                .expect("Filenames in assets/cwe should end with '.csv'.");
+            let version_parts = version_and_date.split("_").collect::<Vec<&str>>();
+            let version = version_parts[0];
+            let release_date = match version_parts[1] {
+                "" => date(1970, 1, 1).in_tz("UTC").expect("Date should always be valid"),
+                date_str => Date::strptime("%Y-%m-%d", date_str)
+                    .expect("Date part of filenames in assets/cwe should be in 'YYYY-MM-DD' format.")
+                    .in_tz("UTC")
+                    .expect("Date should always be valid"),
+            };
+            let mut entries: HashMap<String, CweData> = HashMap::new();
+            let content =
+                std::str::from_utf8(&file.data).expect("Files in assets/cwe should be valid UTF-8 encoded text files.");
+            for line in content.lines() {
+                let parts: Vec<&str> = line.split('\t').collect();
+                if parts.len() >= 3 {
+                    let id = format!("CWE-{}", parts[0].trim());
+                    let status = parts[1].trim().to_string();
+                    let name = parts[2].trim().to_string();
+                    // Column 3 is a flag: "1" means the usage string in column 4 is present.
+                    let usage = if parts.get(3).map(|f| f.trim()) == Some("1") {
+                        parts.get(4).map(|u| u.trim().to_string())
+                    } else {
+                        None
+                    };
+                    entries.insert(id, CweData { status, name, usage });
+                }
+            }
+            versions.insert(version.to_string(), CweVersionData { release_date, entries });
+        }
+    }
+
+    versions
+});
+
+pub fn get_latest_cwe_version_for_date(date: &CsafDateTime) -> Option<&'static String> {
+    // Convert to a date (UTC) and compare against the release dates stored in the CWE assets.
+    let doc_date = match date {
+        CsafDateTime::Valid(v) => v.get_as_utc(),
+        _ => return None,
+    };
+
+    let mut latest: Option<(&'static String, &ZonedDateTime)> = None;
+
+    for (version, version_data) in CWE_ENTRIES.iter() {
+        if version_data.release_date <= doc_date && latest.as_ref().is_none_or(|l| version_data.release_date > *l.1) {
+            latest = Some((version, &version_data.release_date));
+        }
+    }
+
+    latest.map(|(version, _)| version)
+}
+
 #[derive(::serde::Deserialize)]
 pub struct ScancodeLicense {
     pub license_key: String,

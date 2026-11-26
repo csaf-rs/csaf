@@ -1,5 +1,8 @@
 use crate::validation::{IntoTestFindingError, TestFinding, TestFindingData};
-use chrono::{DateTime, FixedOffset, ParseError, Utc};
+use jiff::civil::Time;
+use jiff::fmt::temporal::Pieces;
+use jiff::tz::{self, OffsetConflict, TimeZone};
+use jiff::{Error as ParseError, ZonedDateTime};
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::hash::Hash;
@@ -130,12 +133,12 @@ impl std::error::Error for CsafDateTimeParseError {}
 #[derive(Debug, Clone)]
 pub struct ValidCsafDateTime {
     raw_string: String,
-    parsed: DateTime<FixedOffset>,
+    parsed: ZonedDateTime,
 }
 
 impl ValidCsafDateTime {
-    /// Creates a new ValidCsafDateTime from a parsed DateTime.
-    fn new(raw_string: &str, parsed: DateTime<FixedOffset>) -> Self {
+    /// Creates a new ValidCsafDateTime from a parsed ZonedDateTime,
+    fn new(raw_string: &str, parsed: ZonedDateTime) -> Self {
         Self {
             raw_string: raw_string.to_owned(),
             parsed,
@@ -147,13 +150,13 @@ impl ValidCsafDateTime {
     }
 
     /// Returns the parsed DateTime with the original timezone preserved, if valid.
-    pub fn get_as_fixed_offset(&self) -> &DateTime<FixedOffset> {
+    pub fn get_as_fixed_offset(&self) -> &ZonedDateTime {
         &self.parsed
     }
 
     /// Converts the parsed DateTime to UTC, if valid.
-    pub fn get_as_utc(&self) -> DateTime<Utc> {
-        self.parsed.with_timezone(&Utc)
+    pub fn get_as_utc(&self) -> ZonedDateTime {
+        self.parsed.with_time_zone(TimeZone::UTC)
     }
 }
 
@@ -161,8 +164,44 @@ impl FromStr for ValidCsafDateTime {
     type Err = CsafDateTimeParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parsed = DateTime::parse_from_rfc3339(s).map_err(|e| CsafDateTimeParseError::new(s, e))?;
-        Ok(Self::new(s, parsed))
+        let pieces = Pieces::parse(s).map_err(|e| CsafDateTimeParseError::new(s, e))?;
+        let time = pieces.time().unwrap_or_else(Time::midnight);
+        let dt = pieces.date().to_datetime(time);
+        #[allow(clippy::expect_used)]
+        if let Some(offset) = pieces.to_numeric_offset()
+            && (offset >= tz::Offset::from_hours(24).expect("Offset of 24 hours is always valid.")
+                || offset <= tz::Offset::from_hours(-24).expect("Offset of -24 hours is always valid."))
+        {
+            return Err(CsafDateTimeParseError {
+                raw_string: s.to_string(),
+                source: ParseError::from_args(format_args!(
+                    "Timestamp has an offset greater or equal to 24:00 hours or lesser or equal to -24:00s."
+                )),
+            });
+        }
+        let ambiguous_zdt = match pieces.to_time_zone().map_err(|e| CsafDateTimeParseError::new(s, e))? {
+            Some(tz) => match pieces.to_numeric_offset() {
+                Some(offset) => OffsetConflict::AlwaysOffset
+                    .resolve(dt, offset, tz)
+                    .map_err(|e| CsafDateTimeParseError::new(s, e))?,
+                None => tz.into_ambiguous_zoned_datetime(dt),
+            },
+            None => {
+                let Some(offset) = pieces.to_numeric_offset() else {
+                    return Err(CsafDateTimeParseError::new(
+                        s,
+                        ParseError::from_args(format_args!(
+                            "Timestamp has no time zone or offset, and thus cannot be parsed into an instant."
+                        )),
+                    ));
+                };
+                TimeZone::fixed(offset).into_ambiguous_zoned_datetime(dt)
+            },
+        };
+        let parsed = ambiguous_zdt
+            .compatible()
+            .map_err(|e| CsafDateTimeParseError::new(s, e))?;
+        Ok(ValidCsafDateTime::new(s, parsed))
     }
 }
 
@@ -205,8 +244,6 @@ impl PartialOrd for ValidCsafDateTime {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::Timelike;
-    use chrono::format::ParseErrorKind;
 
     // From<> Stuff
 
@@ -229,7 +266,6 @@ mod tests {
         match &dt {
             CsafDateTime::Invalid(err) => {
                 assert_eq!(err.get_raw_string(), "not-a-date");
-                matches!(err.source.kind(), ParseErrorKind::Invalid);
             },
             CsafDateTime::Valid(valid) => {
                 panic!("DateTime should have been invalid, but returned valid with: {valid}")

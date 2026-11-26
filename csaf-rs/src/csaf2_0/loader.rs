@@ -6,12 +6,14 @@ pub fn load_document<T: JsonSource>(source: T) -> std::io::Result<RawDocument<Co
 
 #[cfg(test)]
 mod tests {
+    use jiff::Timestamp;
+
     use crate::schema::csaf2_0::schema::{
         CategoryOfPublisher, CommonSecurityAdvisoryFramework, DocumentLevelMetaData, Publisher, Revision, Tracking,
     };
 
     fn mock_document() -> CommonSecurityAdvisoryFramework {
-        let now = chrono::Utc::now().to_string();
+        let now = Timestamp::now().to_string();
         let metadata: DocumentLevelMetaData = DocumentLevelMetaData::builder()
             .title("Test")
             .category("csaf_base")

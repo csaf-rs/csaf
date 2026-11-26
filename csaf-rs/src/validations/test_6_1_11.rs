@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use chrono::NaiveDate;
+use jiff::ZonedDateTime;
 
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{CsafTrait, Cwe, DocumentTrait, TrackingTrait, VulnerabilityTrait};
@@ -83,11 +83,11 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
                     (match doc.get_document().get_tracking().get_current_release_date() {
                         // CSAF 2.0 does not require a CWE version, so we need to determine the CWE version
                         // based on the document's tracking current release date
-                        CsafDateTime::Valid(date) => Some(date.get_as_utc().date_naive()),
+                        CsafDateTime::Valid(date) => Some(date.get_as_utc()),
                         // if date is invalid, use latest available CWE version as fallback
                         _ => None,
                     })
-                    .and_then(|date| get_latest_cwe_version(Some(date)))
+                    .and_then(|date| get_latest_cwe_version(Some(&date)))
                     // if no CWE version is available for the given date, use the latest available CWE version as fallback
                     .unwrap_or(*LATEST_CWE_VERSION)
                 });

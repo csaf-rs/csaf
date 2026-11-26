@@ -61,11 +61,11 @@ pub fn test_6_1_49_inconsistent_ssvc_timestamp(doc: &impl CsafTrait) -> Result<(
                 if let Some(ssvc_result) = content.get_ssvc_v2_typed() {
                     match ssvc_result {
                         Ok(ssvc) => {
-                            if ssvc.timestamp.fixed_offset() > newest_revision_date {
+                            if ssvc.timestamp > newest_revision_date.timestamp() {
                                 findings.push(create_ssvc_timestamp_too_late_error(
-                                    &ssvc.timestamp.to_rfc3339(),
+                                    &ssvc.timestamp.strftime("%FT%T%.f%:z").to_string(),
                                     i_v,
-                                    &newest_revision_date.to_rfc3339(),
+                                    &newest_revision_date.strftime("%FT%T%.f%:z").to_string(),
                                     i_m,
                                 ));
                             }

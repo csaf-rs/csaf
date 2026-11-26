@@ -5,6 +5,7 @@ mod test_helpers;
 
 use axum::Router;
 use axum::extract::DefaultBodyLimit;
+use axum::http::header::CONTENT_TYPE;
 use axum::http::{HeaderValue, Method};
 use axum::routing::{get, post};
 use std::future::Future;
@@ -47,7 +48,7 @@ fn build_cors_layer(cors: &CorsSettings) -> CorsLayer {
         })
         .collect();
 
-    let mut layer = CorsLayer::new();
+    let mut layer = CorsLayer::new().allow_headers([CONTENT_TYPE]);
     if !origins.is_empty() {
         layer = layer.allow_origin(origins);
     }
@@ -171,5 +172,73 @@ mod shutdown_tests {
         tokio::time::timeout(Duration::from_secs(5), fut)
             .await
             .expect("shutdown_signal did not resolve on SIGTERM");
+    }
+}
+
+#[cfg(test)]
+mod cors_tests {
+    use super::build_cors_layer;
+    use crate::routes;
+    use crate::settings::CorsSettings;
+    use crate::test_helpers::app;
+    use axum::body::Body;
+    use axum::http::{Request, header};
+    use axum::response::Response;
+    use tower::ServiceExt;
+
+    fn cors_settings() -> CorsSettings {
+        CorsSettings {
+            permissive: false,
+            allowed_origins: vec!["http://localhost:5173".to_string()],
+            allowed_methods: vec!["GET".to_string(), "POST".to_string()],
+        }
+    }
+
+    async fn preflight(origin: &str, requested_headers: &str) -> Response {
+        app()
+            .layer(build_cors_layer(&cors_settings()))
+            .oneshot(
+                Request::builder()
+                    .method("OPTIONS")
+                    .uri(routes::V1_VALIDATE)
+                    .header(header::ORIGIN, origin)
+                    .header(header::ACCESS_CONTROL_REQUEST_METHOD, "POST")
+                    .header(header::ACCESS_CONTROL_REQUEST_HEADERS, requested_headers)
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap()
+    }
+
+    #[tokio::test]
+    async fn preflight_allows_content_type_for_allowed_origin() {
+        let response = preflight("http://localhost:5173", "content-type").await;
+
+        assert_eq!(
+            response.headers()[header::ACCESS_CONTROL_ALLOW_ORIGIN],
+            "http://localhost:5173"
+        );
+        assert!(
+            response.headers()[header::ACCESS_CONTROL_ALLOW_METHODS]
+                .to_str()
+                .unwrap()
+                .contains("POST")
+        );
+        assert_eq!(response.headers()[header::ACCESS_CONTROL_ALLOW_HEADERS], "content-type");
+    }
+
+    #[tokio::test]
+    async fn preflight_omits_allow_origin_for_disallowed_origin() {
+        let response = preflight("http://evil.example", "content-type").await;
+
+        assert!(response.headers().get(header::ACCESS_CONTROL_ALLOW_ORIGIN).is_none());
+    }
+
+    #[tokio::test]
+    async fn preflight_does_not_echo_unapproved_request_headers() {
+        let response = preflight("http://localhost:5173", "content-type, authorization").await;
+
+        assert_eq!(response.headers()[header::ACCESS_CONTROL_ALLOW_HEADERS], "content-type");
     }
 }

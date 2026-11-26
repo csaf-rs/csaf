@@ -57,7 +57,8 @@ fn get_latest_cwe_version(date: Option<&Date>) -> Option<&'static str> {
             version_data.release_date.2 as i8,
         )
         .unwrap_or(Date::new(1990, 1, 1).expect("Guaranteed to be a valid date"));
-        if date.is_none_or(|date| cwe_release_date <= *date) && latest.is_none_or(|latest| cwe_release_date > latest.1) {
+        if date.is_none_or(|date| cwe_release_date <= *date) && latest.is_none_or(|latest| cwe_release_date > latest.1)
+        {
             latest = Some((version, cwe_release_date));
         }
     }

@@ -27,7 +27,6 @@ cvss-rs = "0.5.0"
 regress = "0.12"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1.0.131", features = ["preserve_order"] }
-chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
 packageurl = "0.7"
 semver = { version = "1" }
@@ -36,7 +35,7 @@ jsonschema = { version = "0.61.2", default-features = false, features = [
 ] }
 spdx = "0.13.4"
 oxilangtag = "0.1.5"
-ssvc = "0.4.1"
+ssvc = "0.5.0"
 strum = { version = "0.28", features = ["derive"] }
 symspell = "0.5.2"
 thiserror = { version = "2" }
@@ -49,9 +48,10 @@ cpe = { version = "0.2", package = "cpe-rs-fork" }
 purl = { version = "0.1.6", default-features = false, features = ["package-type"] }
 itertools = "0.15.0"
 phf = "0.14.0"
+jiff = { version = "1.0.2", features = ["serde"] }
 
 [build-dependencies]
-ssvc = "0.4.1"
+ssvc = "0.5.0"
 serde_json = { version = "1", features = ["preserve_order"] }
 phf_codegen = "0.14.0"
 csv = "1.4.0"

@@ -4,7 +4,7 @@ use crate::csaf_traits::{
     ContentTrait, CsafTrait, DocumentTrait, EpssTrait, MetricTrait, TrackingTrait, VulnerabilityTrait,
 };
 use crate::validation::{TestFinding, TestFindingData};
-use chrono::TimeDelta;
+use jiff::ToSpan;
 
 fn create_old_epss_timestamp_warning(
     epss_timestamp: &ValidCsafDateTime,
@@ -49,7 +49,9 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Te
     }
 
     let mut errors: Option<Vec<TestFinding>> = None;
-    let fifteen_days = TimeDelta::days(15);
+    // Use hours instead of days to avoid non-24h-day-hazzle in jiff
+    // https://docs.rs/jiff/latest/jiff/struct.Span.html#days-are-not-always-24-hours
+    let fifteen_days = (15 * 24).hours();
 
     for (i_v, vulnerability) in vulnerabilities.iter().enumerate() {
         // Find the newest EPSS timestamp across all metrics
@@ -81,7 +83,8 @@ pub fn test_6_2_41_old_epss_timestamp(doc: &impl CsafTrait) -> Result<(), Vec<Te
             if let Some((newest_epss_timestamp, path_metric_idx)) = newest_epss {
                 // if it is 15 days older than the newest revision date, add an error
                 let diff = newest_revision_date.get_as_utc() - newest_epss_timestamp.get_as_utc();
-                if diff > fifteen_days {
+                #[allow(clippy::expect_used)]
+                if diff.compare(fifteen_days).expect("Span comparision failed due to no relative base being established, which should not happen with UTC and hours.").is_gt() {
                     errors.get_or_insert_default().push(create_old_epss_timestamp_warning(
                         &newest_epss_timestamp,
                         newest_revision_date,

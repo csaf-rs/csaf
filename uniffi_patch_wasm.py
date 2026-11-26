@@ -70,7 +70,7 @@ end = src.index('\n}\n', start) + len('\n}\n')
 # wasm-bindgen shim layer.
 #
 # uniffi-bindgen-js only provides the UniFFI FFI glue; transitive Rust
-# dependencies (chrono, getrandom, serde-wasm-bindgen, ...) additionally link
+# dependencies (jiff, getrandom, serde-wasm-bindgen, ...) additionally link
 # wasm-bindgen bindings whose JS side must be supplied at instantiation time.
 #
 # ABI notes (raw cargo-emitted module, i.e. *before* wasm-bindgen CLI
@@ -86,8 +86,9 @@ end = src.index('\n}\n', start) + len('\n}\n')
 #     __externref_table_dealloc export.
 #   - wasm-bindgen import names carry a signature hash suffix that changes
 #     with dependency versions (e.g. __wbg_getRandomValues_<hash>), so shims
-#     are matched by their stable base name and the module's actual import
-#     list is verified at load time. The base-name switch below must cover
+#     are matched by their stable base name (except ambiguous constructors)
+#     and the module's actual import list is verified at load time.
+#     The base-name switch below must cover
 #     every wasm-bindgen import the compiled module may require.
 # ---------------------------------------------------------------------------
 
@@ -138,8 +139,9 @@ async function loadWasm(wasmUrl: URL | string): Promise<WebAssembly.WebAssemblyI
  * JS side of the wasm-bindgen imports required by the compiled module.
  *
  * Import names are matched by their hash-free base name, so dependency
- * updates that only change the signature hash keep working. Any import the
- * table does not cover aborts with an explicit error instead of the cryptic
+ * updates that only change the signature hash keep working, except for
+ * same-arity constructor overloads which need their full signature names.
+ * Any import the table does not cover aborts with an explicit error instead of the cryptic
  * "function import requires a callable" LinkError.
  */
 class WasmBindgenShims {
@@ -153,6 +155,7 @@ class WasmBindgenShims {
   private u8: Uint8Array | null = null;
   private u8Buffer: ArrayBuffer | null = null;
   private wasmVectorLen = 0;
+  private castDescription: number[] = [];
 
   constructor(private readonly crypto: Pick<Crypto, 'getRandomValues'>) {
     // undefined, null, true, false at JSIDX_OFFSET..JSIDX_OFFSET + 3
@@ -198,12 +201,36 @@ class WasmBindgenShims {
         return (idx: number) => { this.takeObject(idx); };
       case '__wbindgen_object_clone_ref':
         return (idx: number) => this.addObject(this.getObject(idx));
-      // --- reflection stubs (only used by wasm-bindgen tooling) -------------
+      // --- raw cast descriptors (normally rewritten by wasm-bindgen CLI) ---
       case '__wbindgen_describe':
-        return () => undefined;
+        return (value: number) => { this.castDescription.push(value); };
       case '__wbindgen_describe_cast':
-        // Never executed at runtime; the CLI rewrites its call sites.
-        return (arg0: number) => arg0;
+        return (_func: number, args: number) => {
+          // wasm-bindgen 0.2.121's breaks_if_inlined describes the cast,
+          // then passes a pointer to its input tuple. It reads the result
+          // from the pointer we return. Reuse the tuple's first word for
+          // the output JsValue handle, after decoding the input.
+          const description = this.castDescription.join(',');
+          this.castDescription = [];
+          let value: unknown;
+          switch (description) {
+            // FUNCTION, 0, 1, REF, STRING, EXTERNREF, EXTERNREF
+            case '15,0,1,19,18,24,24': {
+              const dv = this.dataView();
+              value = this.getString(dv.getUint32(args, true), dv.getUint32(args + 4, true));
+              break;
+            }
+            // FUNCTION, 0, 1, F64, EXTERNREF, EXTERNREF
+            case '15,0,1,13,24,24':
+              value = this.dataView().getFloat64(args, true);
+              break;
+            default:
+              throw new Error(`unsupported wasm-bindgen cast descriptor '${description}'`);
+          }
+          const idx = this.addObject(value);
+          this.dataView().setUint32(args, idx, true);
+          return args;
+        };
       // --- crypto (getrandom via ahash) -------------------------------------
       case '__wbg_getRandomValues':
         return (ptr: number, len: number) => {
@@ -211,7 +238,7 @@ class WasmBindgenShims {
             this.crypto.getRandomValues(this.uint8View().subarray(ptr, ptr + len));
           });
         };
-      // --- Date (chrono on wasm32) ------------------------------------------
+      // --- Date (jiff's clock and transitive chrono on wasm32) ---------------
       case '__wbg_getTime':
         return (idx: number) => (this.getObject(idx) as Date).getTime();
       case '__wbg_new_0':
@@ -219,12 +246,32 @@ class WasmBindgenShims {
       // --- object construction (overloaded base: dispatch by arity) ---------
       case '__wbg_new':
         return (...args: unknown[]) => {
-          if (args.length === 0) return this.addObject({}); // new Object()
+          if (args.length === 0) {
+            // Object and Array have the same base name AND arity. These
+            // signatures are verified against wasm-bindgen 0.2.121 glue;
+            // fail explicitly if an update introduces an unknown overload.
+            if (name === '__wbg_new_02d162bc6cf02f60') return this.addObject({});
+            if (name === '__wbg_new_310879b66b6e95e1') return this.addObject([]);
+            throw new Error(`unsupported zero-argument constructor '${name}'`);
+          }
           if (args.length === 1) {
             return this.addObject(new Uint8Array(this.getObject(args[0] as number) as ArrayLike<number>));
           }
+          if (args.length === 2) {
+            return this.addObject(new Intl.DateTimeFormat(
+              this.getObject(args[0] as number) as string[],
+              this.getObject(args[1] as number) as Intl.DateTimeFormatOptions,
+            ));
+          }
           throw new Error(`unsupported arity ${args.length} for wasm-bindgen import '${name}'`);
         };
+      // --- system timezone discovery (jiff on wasm32) -----------------------
+      case '__wbg_resolvedOptions':
+        return (idx: number) =>
+          this.addObject((this.getObject(idx) as Intl.DateTimeFormat).resolvedOptions());
+      case '__wbg_get':
+        return (obj: number, key: number) => this.guardExceptions(() =>
+          this.addObject(Reflect.get(this.getObject(obj) as object, this.getObject(key) as PropertyKey)));
       // --- property access (serde-wasm-bindgen) ------------------------------
       case '__wbg_get_with_ref_key':
         return (obj: number, key: number) =>
@@ -390,10 +437,10 @@ class WasmBindgenShims {
     return ptr;
   }
 
-  /** Route exceptions to the module, which converts them into a Rust panic. */
-  private guardExceptions(fn: () => void): void {
+  /** Route caught JS exceptions to wasm-bindgen's Rust-side exception store. */
+  private guardExceptions<T>(fn: () => T): T | undefined {
     try {
-      fn();
+      return fn();
     } catch (err) {
       const exnStore = this.exports().__wbindgen_exn_store as (idx: number) => void;
       exnStore(this.addObject(err));

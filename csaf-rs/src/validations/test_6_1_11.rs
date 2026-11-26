@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use chrono::NaiveDate;
+use jiff::civil::Date;
 
 use crate::csaf::types::csaf_datetime::CsafDateTime;
 use crate::csaf_traits::{CsafTrait, Cwe, DocumentTrait, TrackingTrait, VulnerabilityTrait};
@@ -47,17 +47,18 @@ fn check_cwe(cwe: &Cwe, version: &str, path: &str, errors: &mut Option<Vec<TestF
 }
 
 #[allow(clippy::expect_used)]
-fn get_latest_cwe_version(date: Option<NaiveDate>) -> Option<&'static str> {
-    let mut latest: Option<(&'static str, NaiveDate)> = None;
+fn get_latest_cwe_version(date: Option<&Date>) -> Option<&'static str> {
+    let mut latest: Option<(&'static str, Date)> = None;
 
     for (version, version_data) in CWE_RELEASES.entries() {
-        let cwe_release_date = NaiveDate::from_ymd_opt(
-            version_data.release_date.0,
-            version_data.release_date.1,
-            version_data.release_date.2,
+        let cwe_release_date = Date::new(
+            version_data.release_date.0 as i16,
+            version_data.release_date.1 as i8,
+            version_data.release_date.2 as i8,
         )
-        .unwrap_or(NaiveDate::from_ymd_opt(1990, 1, 1).expect("Guaranteed to be a naive date"));
-        if date.is_none_or(|date| cwe_release_date <= date) && latest.is_none_or(|latest| cwe_release_date > latest.1) {
+        .unwrap_or(Date::new(1990, 1, 1).expect("Guaranteed to be a valid date"));
+        if date.is_none_or(|date| cwe_release_date <= *date) && latest.is_none_or(|latest| cwe_release_date > latest.1)
+        {
             latest = Some((version, cwe_release_date));
         }
     }
@@ -83,11 +84,11 @@ pub fn test_6_1_11_cwe(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
                     (match doc.get_document().get_tracking().get_current_release_date() {
                         // CSAF 2.0 does not require a CWE version, so we need to determine the CWE version
                         // based on the document's tracking current release date
-                        CsafDateTime::Valid(date) => Some(date.get_as_utc().date_naive()),
+                        CsafDateTime::Valid(date) => Some(date.get_as_utc().date()),
                         // if date is invalid, use latest available CWE version as fallback
                         _ => None,
                     })
-                    .and_then(|date| get_latest_cwe_version(Some(date)))
+                    .and_then(|date| get_latest_cwe_version(Some(&date)))
                     // if no CWE version is available for the given date, use the latest available CWE version as fallback
                     .unwrap_or(*LATEST_CWE_VERSION)
                 });

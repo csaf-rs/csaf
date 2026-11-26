@@ -99,7 +99,7 @@ impl From<&csaf_rs::csaf::types::csaf_datetime::CsafDateTime> for CsafDateTime {
         match dt {
             csaf_rs::csaf::types::csaf_datetime::CsafDateTime::Valid(v) => Self::Valid {
                 raw_string: v.get_raw_string().to_string(),
-                utc_string: v.get_as_utc().to_rfc3339(),
+                utc_string: v.get_as_utc().strftime("%FT%T%.f%:z").to_string(),
             },
             csaf_rs::csaf::types::csaf_datetime::CsafDateTime::Invalid(e) => Self::Invalid {
                 raw_string: e.get_raw_string().to_string(),

@@ -77,64 +77,59 @@ mod tests {
     #[test]
     fn test_test_6_1_48() {
         let case_01 = Err(vec![TestFinding::Error(TestFindingData {
-            message: "The SSVC decision point 'ssvc::Mission Impact' (version 1.0.0) doesn't have a value with key 'D'"
+            message: "The SSVC decision point `Mission Impact (ssvc:MI:1.0.0)` doesn't have a value with key `D`"
                 .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
         })]);
         let case_02 = Err(vec![TestFinding::Error(TestFindingData {
-            message: "Unknown SSVC decision point 'ssvc::SIs' with version '2.0.0'".to_string(),
+            message: "Unknown SSVC decision point `ssvc:SIs:2.0.0`".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
         })]);
         let case_03 = Err(vec![
             TestFinding::Error(TestFindingData {
-                message:
-                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
-                        .to_string(),
+                message: "The values for SSVC decision point `Safety Impact (ssvc:SI:2.0.0)` are not in correct order"
+                    .to_string(),
                 instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
             }),
             TestFinding::Error(TestFindingData {
-                message:
-                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
-                        .to_string(),
+                message: "The values for SSVC decision point `Safety Impact (ssvc:SI:2.0.0)` are not in correct order"
+                    .to_string(),
                 instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
             }),
             TestFinding::Error(TestFindingData {
-                message:
-                    "The values for SSVC decision point 'ssvc::Safety Impact' (version 2.0.0) are not in correct order"
-                        .to_string(),
+                message: "The values for SSVC decision point `Safety Impact (ssvc:SI:2.0.0)` are not in correct order"
+                    .to_string(),
                 instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/3".to_string(),
             }),
         ]);
         let case_04 = Err(vec![TestFinding::Error(TestFindingData {
-            message: "Unknown SSVC decision point 'ssvc::SI' with version '1.9.7'".to_string(),
+            message: "Unknown SSVC decision point `ssvc:SI:1.9.7`".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0".to_string(),
         })]);
         let case_05 = Err(vec![TestFinding::Error(TestFindingData {
-            message:
-                "The SSVC decision point 'cvss::Attack Complexity' (version 3.0.1) doesn't have a value with key 'E'"
-                    .to_string(),
+            message: "The SSVC decision point `Attack Complexity (cvss:AC:3.0.1)` doesn't have a value with key `E`"
+                .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
         })]);
         let case_06 = Err(vec![TestFinding::Error(TestFindingData {
-            message:
-                "The values for SSVC decision point 'cvss::Exploit Maturity' (version 2.0.0) are not in correct order"
-                    .to_string(),
+            message: "The values for SSVC decision point `Exploit Maturity (cvss:E:2.0.0)` are not in correct order"
+                .to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/1".to_string(),
         })]);
         let case_07 = Err(vec![TestFinding::Error ( TestFindingData {
-            message: "The SSVC decision point 'ssvc//.example.test#some-private-decision-point-collection::Safety Impact' (version 2.0.0) doesn't have a value with key 'S'".to_string(),
+            message: "The SSVC decision point `Safety Impact (ssvc//.example.test#some-private-decision-point-collection:SI:2.0.0)` doesn't have a value with key `S`".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/0".to_string(),
         })]);
         let case_08 = Err(vec![TestFinding::Error ( TestFindingData {
-            message: "The values for SSVC decision point 'ssvc//.example.test$en-GB::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
+            message: "The values for SSVC decision point `Safety Impact (ssvc//.example.test$en-GB:SI:2.0.0)` are not in correct order".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
         })]);
         let case_09 = Err(vec![TestFinding::Error ( TestFindingData {
-            message: "The values for SSVC decision point 'ssvc//.example.test$en-CA::Safety Impact' (version 2.0.0) are not in correct order".to_string(),
+            message: "The values for SSVC decision point `Safety Impact (ssvc//.example.test$en-CA:SI:2.0.0)` are not in correct order".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/values/2".to_string(),
         })]);
         let case_21 = Err(vec![TestFinding::Error(TestFindingData {
-            message: "Invalid SSVC namespace: Reserved forbidden namespace 'invalid' must not be used".to_string(),
+            message: "Invalid SSVC namespace: `Reserved forbidden namespace 'invalid' must not be used`".to_string(),
             instance_path: "/vulnerabilities/0/metrics/0/content/ssvc_v2/selections/0/namespace".to_string(),
         })]);
 

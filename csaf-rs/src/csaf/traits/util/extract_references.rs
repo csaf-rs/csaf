@@ -34,6 +34,52 @@ pub(crate) fn visit_product_references<'a, T: WithOptionalProductIds + 'a>(
 }
 
 /// Generates visitors for reference-bearing collections relative to a supplied pointer.
+///
+/// Generates individual group/product reference extraction methods and aggregated
+/// visitor methods from a single field declaration.
+///
+/// # Parameters
+///
+/// - `vec`: List of `(group_method, product_method, getter, "json_path")` tuples for
+///   `&Vec<T>` getters.
+/// - `optional_vec`: List of tuples for `Option<&Vec<T>>` getters.
+/// - `iter`: List of tuples for `Iterator` getters.
+/// - `optional_iter`: List of tuples for getters returning `Option<Iterator>`.
+/// - `custom_group_extraction` (optional): List of already-implemented method names that return
+///   group-only references with special handling. These are included in
+///   `get_all_group_references` but **not** auto-generated.
+/// - `custom_product_extraction` (optional): List of already-implemented method names that return
+///   product-only references with special handling (e.g., metrics, product_status).
+///   These are included in `visit_all_product_references` but **not** auto-generated.
+///
+/// # Example
+///
+/// ```ignore
+/// define_reference_accessors! {
+///     vec: [
+///         (visit_flags_group_references, visit_flags_product_references,
+///          get_flags, "flags"),
+///     ],
+///     optional_vec: [
+///         (visit_threats_group_references, visit_threats_product_references,
+///          get_threats, "threats"),
+///     ],
+///     iter: [],
+///     optional_iter: [],
+///     custom_group_extraction: [],
+///     custom_product_extraction: [
+///         visit_metrics_product_references,
+///     ],
+/// }
+/// ```
+///
+/// This generates:
+/// - `visit_flags_group_references()`, `visit_flags_product_references()`
+/// - `visit_threats_group_references()`, `visit_threats_product_references()`
+/// - `visit_all_group_references()` aggregating flags + threats group refs
+/// - `visit_all_product_references()` aggregating flags + threats product refs + metrics
+///
+///
 macro_rules! define_reference_accessors {
     (
         $(vec: [$(($vg:ident, $vp:ident, $vg_get:ident, $vg_path:literal)),* $(,)?],)?

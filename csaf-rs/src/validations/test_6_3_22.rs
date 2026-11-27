@@ -1,6 +1,6 @@
 use crate::csaf_traits::{CsafTrait, ProductPathTrait, ProductTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
 fn create_nested_product_path_info(instance_path: String) -> TestFinding {
     TestFinding::Information(TestFindingData {
@@ -16,12 +16,18 @@ fn create_nested_product_path_info(instance_path: String) -> TestFinding {
 pub fn test_6_3_22_nested_product_path(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // if there isn't a product tree, there is nothing to check
     let Some(product_tree) = doc.get_product_tree() else {
-        return Ok(());
+        return Ok(()); // TODO #407: wasSkipped
     };
 
     let product_paths = product_tree.get_product_paths();
+
+    // if there are no product paths, there is nothing to check
+    if product_paths.is_empty() {
+        return Ok(()); // TODO #407: wasSkipped
+    }
+
     // get all product IDs defined by product paths
-    let product_ids_defined_by_product_path: BTreeSet<&str> = product_paths
+    let product_ids_defined_by_product_path: HashSet<&str> = product_paths
         .iter()
         .map(|product_path| product_path.get_full_product_name().get_product_id())
         .collect();

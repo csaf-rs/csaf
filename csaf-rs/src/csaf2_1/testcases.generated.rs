@@ -1457,7 +1457,9 @@ crate::macros::define_csaf_test!(
     "../oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-05.json",
     "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-05.json"), (case_06, "06",
     "../oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-06.json",
-    "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-06.json"), (case_11, "11",
+    "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-06.json"), (case_s01, "s01",
+    "../type-generator/assets/tests/csaf_2.1/mandatory/csaf-rs_csaf-csaf_2_1-6-1-50-s01.json",
+    "mandatory/csaf-rs_csaf-csaf_2_1-6-1-50-s01.json"), (case_11, "11",
     "../oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-11.json",
     "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-11.json"), (case_12, "12",
     "../oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-12.json",
@@ -1469,7 +1471,9 @@ crate::macros::define_csaf_test!(
     "../oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-15.json",
     "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-15.json"), (case_16, "16",
     "../oasis-csaf/csaf_2.1/test/validator/data/mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-16.json",
-    "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-16.json")]
+    "mandatory/oasis_csaf_tc-csaf_2_1-2024-6-1-50-16.json"), (case_s11, "s11",
+    "../type-generator/assets/tests/csaf_2.1/mandatory/csaf-rs_csaf-csaf_2_1-6-1-50-s11.json",
+    "mandatory/csaf-rs_csaf-csaf_2_1-6-1-50-s11.json")]
 );
 crate::macros::define_csaf_test!(
     Test6_1_51, ValidatorForTest6_1_51, ExpectedResults_6_1_51, id : "6.1.51", doc_type :

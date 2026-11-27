@@ -1,6 +1,7 @@
 use crate::csaf::enums::version_range::{VersionRange, VersionRangeError};
 use crate::csaf_traits::{BranchTrait, CategoryOfTheBranch, CsafTrait, ProductTreeTrait};
 use crate::validation::{TestFinding, TestFindingData};
+use vers_like_specifier::Vls;
 use vers_rs::{VersError, VersionRange as VersVersionRange};
 
 fn non_canonical_product_version_range_error(
@@ -41,11 +42,64 @@ fn invalid_product_version_range_error(vers: String, message: String, instance_p
     })
 }
 
-fn unsupported_vers_type_warning(vers: String, instance_path: impl Into<String>) -> TestFinding {
+fn unsupported_vers_type_warning(vers: &str, vers_type: &str, instance_path: impl Into<String>) -> TestFinding {
     TestFinding::Warning(TestFindingData {
-        message: format!("The version range `{vers}` uses a VERS type not supported by this implementation"),
+        message: format!(
+            "The version range `{vers}` uses the VERS type `{vers_type}`, which is not supported by this implementation"
+        ),
         instance_path: instance_path.into(),
     })
+}
+
+fn vers_all_with_constraints_error(vers: &str, instance_path: impl Into<String>) -> TestFinding {
+    TestFinding::Error(TestFindingData {
+        message: format!(
+            "The VERS version range `{vers}` is invalid: the VERS type `all` is only valid with the constraint `*` (`vers:all/*`) in CSAF"
+        ),
+        instance_path: instance_path.into(),
+    })
+}
+
+/// Checks a VERS version range whose VERS type is not supported by `vers-rs`.
+///
+/// - `vers:all` is not a VERS type in the sense of the VERS specification, but CSAF defines `vers:all/*` as the
+///   special string to convey "all versions". It is therefore fully checkable here, and no warning is issued.
+/// - For all other types, the canonical form and the comparison semantics can't be checked. Therefore a warning
+///   including the VERS type is emitted, and the constraints are checked on a best-effort basis, i.e. whether they are
+///   a syntactically valid list of `<comparator><version>` pairs (see [`Vls`]), and whether the `*` comparator is used
+///   outside of `vers:all`.
+fn check_unsupported_vers_type(name: &str, instance_path: &str, findings: &mut Option<Vec<TestFinding>>) {
+    let Some((vers_type, constraints)) = name.strip_prefix("vers:").and_then(|rest| rest.split_once('/')) else {
+        // not splittable into type and constraints, nothing more can be checked
+        return;
+    };
+
+    if vers_type == "all" {
+        if constraints != "*" {
+            findings
+                .get_or_insert_default()
+                .push(vers_all_with_constraints_error(name, instance_path));
+        }
+        return;
+    }
+
+    findings
+        .get_or_insert_default()
+        .push(unsupported_vers_type_warning(name, vers_type, instance_path));
+
+    if constraints == "*" {
+        findings
+            .get_or_insert_default()
+            .push(any_outside_of_vers_all_error(name, instance_path));
+    } else if let Err(vls_error) = constraints.parse::<Vls>() {
+        findings
+            .get_or_insert_default()
+            .push(invalid_product_version_range_error(
+                name.to_string(),
+                vls_error.to_string(),
+                instance_path,
+            ));
+    }
 }
 
 /// 6.1.50 Product Version Range Rules
@@ -110,9 +164,7 @@ pub fn test_6_1_50_product_version_range_rules(doc: &impl CsafTrait) -> Result<(
                     invalid_vers_error,
                     VersError::UnsupportedVersioningScheme(_) | VersError::UnknownVersioningScheme(_)
                 ) {
-                    findings
-                        .get_or_insert_default()
-                        .push(unsupported_vers_type_warning(name.to_string(), path));
+                    check_unsupported_vers_type(name, path, &mut findings);
                 } else {
                     findings
                         .get_or_insert_default()
@@ -163,9 +215,9 @@ mod tests {
                 "Invalid characters in version range specifier: Control characters (tabs, newlines, carriage returns) are not permitted".to_string(),
                 "/product_tree/branches/0/branches/0/branches/0",
             )]),
-            // TODO: vers all needs to be supported
-            case_03: Err(vec![unsupported_vers_type_warning(
-                "vers:all/<V3.1.2.2".into(),
+            // vers:all only allows the `*` constraint
+            case_03: Err(vec![vers_all_with_constraints_error(
+                "vers:all/<V3.1.2.2",
                 "/product_tree/branches/0/branches/0/branches/0",
             )]),
             case_04: Err(vec![invalid_product_version_range_error(
@@ -187,31 +239,74 @@ mod tests {
                     "/product_tree/branches/0/branches/1/branches/0",
                 ),
             ]),
-            // TODO: We should report the broken comparator / empty constraint instead of the unsupported schema
+            // unsupported VERS types are checked on a best-effort basis: the broken comparator / empty
+            // constraints are reported as errors, the unsupported type additionally as a warning
             case_06: Err(vec![
-                unsupported_vers_type_warning(
+                invalid_product_version_range_error(
                     "vers:someweirdunknownversiontype/<4.2.0|>3.91.1|<>3.2.0|<1.2".to_string(),
+                    "Invalid constraint(s): Invalid character(s) in version string: '>'".to_string(),
                     "/product_tree/branches/0/branches/0/branches/0",
                 ),
                 unsupported_vers_type_warning(
+                    "vers:someweirdunknownversiontype/<4.2.0|>3.91.1|<>3.2.0|<1.2",
+                    "someweirdunknownversiontype",
+                    "/product_tree/branches/0/branches/0/branches/0",
+                ),
+                invalid_product_version_range_error(
                     "vers:somecoolunknownversiontype/||>Jo_3,16|<=2.Ko_5,20".to_string(),
+                    "Invalid constraint(s): Empty constraint, Empty constraint".to_string(),
+                    "/product_tree/branches/0/branches/0/branches/1",
+                ),
+                unsupported_vers_type_warning(
+                    "vers:somecoolunknownversiontype/||>Jo_3,16|<=2.Ko_5,20",
+                    "somecoolunknownversiontype",
+                    "/product_tree/branches/0/branches/0/branches/1",
+                ),
+            ]),
+            // Supplementary case: `*` outside of `vers:all` for an unsupported type, and `vers:all` with constraints
+            case_s01: Err(vec![
+                unsupported_vers_type_warning(
+                    "vers:someweirdunknownversiontype/*",
+                    "someweirdunknownversiontype",
+                    "/product_tree/branches/0/branches/0/branches/0",
+                ),
+                any_outside_of_vers_all_error(
+                    "vers:someweirdunknownversiontype/*",
+                    "/product_tree/branches/0/branches/0/branches/0",
+                ),
+                vers_all_with_constraints_error(
+                    "vers:all/>=1.0.0|<2.0.0",
                     "/product_tree/branches/0/branches/0/branches/1",
                 ),
             ]),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
-            // TODO: Typo in test file (see #1442)
-            case_14: Err(vec![unsupported_vers_type_warning("vers:all/*".into(), "/product_tree/branches/0/branches/1/branches/0")
-            ]),
+            // `vers:all/*` is the special string for "all versions" and valid
+            case_14: Ok(()),
             case_15: Ok(()),
-            case_16: Err(vec![
+            // Supplementary case: a single version is a valid constraint for VERS (unlike for vls), also for unsupported types
+            case_s11: Err(vec![
                 unsupported_vers_type_warning(
-                    "vers:someweirdunknownversiontype/<4.2.0|>3.91.1|!=3.2.0|<1.2".into(),
+                    "vers:someweirdunknownversiontype/1.2.3",
+                    "someweirdunknownversiontype",
                     "/product_tree/branches/0/branches/0/branches/0",
                 ),
                 unsupported_vers_type_warning(
-                    "vers:somecoolunknownversiontype/>Jo_3,16|<=2.Ko_5,20".into(),
+                    "vers:somecoolunknownversiontype/>=1.0|<2.0",
+                    "somecoolunknownversiontype",
+                    "/product_tree/branches/0/branches/0/branches/1",
+                ),
+            ]),
+            case_16: Err(vec![
+                unsupported_vers_type_warning(
+                    "vers:someweirdunknownversiontype/<4.2.0|>3.91.1|!=3.2.0|<1.2",
+                    "someweirdunknownversiontype",
+                    "/product_tree/branches/0/branches/0/branches/0",
+                ),
+                unsupported_vers_type_warning(
+                    "vers:somecoolunknownversiontype/>Jo_3,16|<=2.Ko_5,20",
+                    "somecoolunknownversiontype",
                     "/product_tree/branches/0/branches/0/branches/1",
                 ),
             ]),

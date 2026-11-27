@@ -44,18 +44,12 @@ pub fn test_6_1_27_09_impact_statement(doc: &impl CsafTrait) -> Result<(), Vec<T
         let mut found_group_ids: HashSet<String> = HashSet::new();
 
         // gather from flags
-        found_group_ids.extend(
-            vulnerability
-                .get_flags_group_references()
-                .iter()
-                .map(|(group_id, _)| group_id.to_owned()),
-        );
-        found_product_ids.extend(
-            vulnerability
-                .get_flags_product_references()
-                .iter()
-                .map(|(product_id, _)| product_id.to_owned()),
-        );
+        vulnerability.visit_flags_group_references(&mut crate::json::JsonPointer::ignored(), &mut |id, _| {
+            found_group_ids.insert(id.to_owned());
+        });
+        vulnerability.visit_flags_product_references(&mut crate::json::JsonPointer::ignored(), &mut |id, _| {
+            found_product_ids.insert(id.to_owned());
+        });
 
         // gather from threats with category impact
         for threat in vulnerability.get_threats() {

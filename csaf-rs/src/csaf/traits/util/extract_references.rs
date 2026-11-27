@@ -1,102 +1,42 @@
 use crate::csaf_traits::{WithOptionalGroupIds, WithOptionalProductIds};
+use crate::json::JsonPointer;
 
-/// Central helper function for extracting group references.
-///
-/// This function implements the core logic for extracting group IDs and their JSON paths
-/// from an iterator of items that implement `WithOptionalGroupIds`. This avoids code duplication
-/// across multiple trait implementations.
-///
-/// # Arguments
-///
-/// * `items` - An iterator over items that implement `WithOptionalGroupIds`
-/// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
-///
-/// # Returns
-///
-/// A vector of tuples containing (group_id, json_path) for each group reference found.
-fn extract_group_id_impl<'a, T: WithOptionalGroupIds + 'a>(
+pub(crate) fn visit_group_references<'a, T: WithOptionalGroupIds + 'a>(
     items: impl Iterator<Item = &'a T>,
-    path_prefix: &str,
-) -> Vec<(String, String)> {
-    let mut ids: Vec<(String, String)> = Vec::new();
+    path: &mut JsonPointer<'_>,
+    visitor: &mut impl FnMut(&str, &str),
+) {
     for (index, item) in items.enumerate() {
-        if let Some(group_ids) = item.get_group_ids() {
-            for (group_index, group_id) in group_ids.enumerate() {
-                ids.push((
-                    group_id.to_owned(),
-                    format!("{path_prefix}/{index}/group_ids/{group_index}"),
-                ))
+        if let Some(ids) = item.get_group_ids() {
+            let mut item_path = path.push(index);
+            let mut ids_path = item_path.push("group_ids");
+            for (id_index, id) in ids.enumerate() {
+                visitor(id, ids_path.push(id_index).as_str());
             }
         }
     }
-    ids
 }
 
-/// Central helper function for extracting group references.
-///
-/// This function implements the core logic for extracting group IDs and their JSON paths
-/// from an iterator of items that implement `WithOptionalProductIds`. This avoids code duplication
-/// across multiple trait implementations.
-///
-/// # Arguments
-///
-/// * `items` - An iterator over items that implement `WithOptionalProductIds`
-/// * `path_prefix` - A string representing the prefix for the JSON path (e.g., "flags", "notes")
-///
-/// # Returns
-///
-/// A vector of tuples containing (product_id, json_path) for each product reference found.
-fn extract_product_id_impl<'a, T: WithOptionalProductIds + 'a>(
+pub(crate) fn visit_product_references<'a, T: WithOptionalProductIds + 'a>(
     items: impl Iterator<Item = &'a T>,
-    path_prefix: &str,
-) -> Vec<(String, String)> {
-    let mut ids: Vec<(String, String)> = Vec::new();
+    path: &mut JsonPointer<'_>,
+    visitor: &mut impl FnMut(&str, &str),
+) {
     for (index, item) in items.enumerate() {
-        if let Some(product_ids) = item.get_product_ids() {
-            for (product_index, product_id) in product_ids.enumerate() {
-                ids.push((
-                    product_id.to_owned(),
-                    format!("{path_prefix}/{index}/product_ids/{product_index}"),
-                ))
+        if let Some(ids) = item.get_product_ids() {
+            let mut item_path = path.push(index);
+            let mut ids_path = item_path.push("product_ids");
+            for (id_index, id) in ids.enumerate() {
+                visitor(id, ids_path.push(id_index).as_str());
             }
         }
     }
-    ids
 }
 
-/// Extension trait for extracting group references from iterators where T implements WithOptionalGroupIds.
+/// Generates visitors for reference-bearing collections relative to a supplied pointer.
 ///
-/// This trait provides a generic method to extract group IDs from iterators over objects
-/// that implement the `WithOptionalGroupIds` trait, returning them as tuples of (group_id, json_path).
-///
-pub trait ExtractGroupReferences<T: WithOptionalGroupIds> {
-    fn extract_group_references(self, path_prefix: &str) -> Vec<(String, String)>;
-}
-
-impl<'a, T: WithOptionalGroupIds + 'a, I: Iterator<Item = &'a T>> ExtractGroupReferences<T> for I {
-    fn extract_group_references(self, path_prefix: &str) -> Vec<(String, String)> {
-        extract_group_id_impl(self, path_prefix)
-    }
-}
-
-/// Extension trait for extracting product references from iterators where T implements WithOptionalProductIds.
-///
-/// This trait provides a generic method to extract product IDs from iterators over objects
-/// that implement the `WithOptionalProductIds` trait, returning them as tuples of (product_id, json_path).
-///
-pub trait ExtractProductReferences<T: WithOptionalProductIds> {
-    fn extract_product_references(self, path_prefix: &str) -> Vec<(String, String)>;
-}
-
-impl<'a, T: WithOptionalProductIds + 'a, I: Iterator<Item = &'a T>> ExtractProductReferences<T> for I {
-    fn extract_product_references(self, path_prefix: &str) -> Vec<(String, String)> {
-        extract_product_id_impl(self, path_prefix)
-    }
-}
-
 /// Generates individual group/product reference extraction methods and aggregated
-/// `get_all_group_references` / `get_all_product_references` methods from a single
-/// field declaration.
+/// visitor methods from a single field declaration.
 ///
 /// # Parameters
 ///
@@ -110,167 +50,150 @@ impl<'a, T: WithOptionalProductIds + 'a, I: Iterator<Item = &'a T>> ExtractProdu
 ///   `get_all_group_references` but **not** auto-generated.
 /// - `custom_product_extraction` (optional): List of already-implemented method names that return
 ///   product-only references with special handling (e.g., metrics, product_status).
-///   These are included in `get_all_product_references` but **not** auto-generated.
+///   These are included in `visit_all_product_references` but **not** auto-generated.
 ///
 /// # Example
 ///
 /// ```ignore
 /// define_reference_accessors! {
 ///     vec: [
-///         (get_flags_group_references, get_flags_product_references,
+///         (visit_flags_group_references, visit_flags_product_references,
 ///          get_flags, "flags"),
 ///     ],
 ///     optional_vec: [
-///         (get_threats_group_references, get_threats_product_references,
+///         (visit_threats_group_references, visit_threats_product_references,
 ///          get_threats, "threats"),
 ///     ],
 ///     iter: [],
 ///     optional_iter: [],
 ///     custom_group_extraction: [],
 ///     custom_product_extraction: [
-///         get_metrics_product_references,
+///         visit_metrics_product_references,
 ///     ],
 /// }
 /// ```
 ///
 /// This generates:
-/// - `get_flags_group_references()`, `get_flags_product_references()`
-/// - `get_threats_group_references()`, `get_threats_product_references()`
-/// - `get_all_group_references()` aggregating flags + threats group refs
-/// - `get_all_product_references()` aggregating flags + threats product refs + metrics
+/// - `visit_flags_group_references()`, `visit_flags_product_references()`
+/// - `visit_threats_group_references()`, `visit_threats_product_references()`
+/// - `visit_all_group_references()` aggregating flags + threats group refs
+/// - `visit_all_product_references()` aggregating flags + threats product refs + metrics
+///
+///
 macro_rules! define_reference_accessors {
     (
-        $(
-            vec: [
-                $(
-                    ($vec_group_method:ident, $vec_product_method:ident, $getter:ident, $path:literal)
-                ),* $(,)?
-            ],
-        )?
-        $(
-            optional_vec: [
-                $(
-                    ($optional_vec_group_method:ident, $optional_vec_product_method:ident, $optional_vec_getter:ident, $optional_vec_path:literal)
-                ),* $(,)?
-            ],
-        )?
-        $(
-            iter: [
-                $(
-                    ($iter_group_method:ident, $iter_product_method:ident, $iter_getter:ident, $iter_path:literal)
-                ),* $(,)?
-            ],
-        )?
-        $(
-            optional_iter: [
-                $(
-                    ($optional_iter_group_method:ident, $optional_iter_product_method:ident, $optional_iter_getter:ident, $optional_iter_path:literal)
-                ),* $(,)?
-            ],
-        )?
-        $(
-            custom_group_extraction: [ $( $custom_group_extraction_method:ident ),* $(,)? ],
-        )?
-        $(
-            custom_product_extraction: [ $( $custom_product_extraction_method:ident ),* $(,)? ] $(,)?
-        )?
+        $(vec: [$(($vg:ident, $vp:ident, $vg_get:ident, $vg_path:literal)),* $(,)?],)?
+        $(optional_vec: [$(($og:ident, $op:ident, $og_get:ident, $og_path:literal)),* $(,)?],)?
+        $(iter: [$(($ig:ident, $ip:ident, $ig_get:ident, $ig_path:literal)),* $(,)?],)?
+        $(optional_iter: [$(($oig:ident, $oip:ident, $oig_get:ident, $oig_path:literal)),* $(,)?],)?
+        $(custom_group_extraction: [$($cg:ident),* $(,)?],)?
+        $(custom_product_extraction: [$($cp:ident),* $(,)?] $(,)?)?
     ) => {
-        $(
-            $(
-                /// Get all group references from this element
-                fn $vec_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
-                        self.$getter().iter(),
-                        $path,
-                    )
-                }
-
-                /// Get all product references from this element
-                fn $vec_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
-                        self.$getter().iter(),
-                        $path,
-                    )
-                }
-            )*
-        )?
-
-        $(
-            $(
-                fn $optional_vec_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
-                        self.$optional_vec_getter().map(|items| items.iter()).into_iter().flatten(),
-                        $optional_vec_path,
-                    )
-                }
-
-                fn $optional_vec_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
-                        self.$optional_vec_getter().map(|items| items.iter()).into_iter().flatten(),
-                        $optional_vec_path,
-                    )
-                }
-            )*
-        )?
-
-        $(
-            $(
-                fn $iter_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
-                        self.$iter_getter(),
-                        $iter_path,
-                    )
-                }
-
-                fn $iter_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
-                        self.$iter_getter(),
-                        $iter_path,
-                    )
-                }
-            )*
-        )?
-
-        $(
-            $(
-                fn $optional_iter_group_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractGroupReferences::extract_group_references(
-                        self.$optional_iter_getter().into_iter().flatten(),
-                        $optional_iter_path,
-                    )
-                }
-
-                fn $optional_iter_product_method(&self) -> Vec<(String, String)> {
-                    $crate::csaf::traits::util::extract_references::ExtractProductReferences::extract_product_references(
-                        self.$optional_iter_getter().into_iter().flatten(),
-                        $optional_iter_path,
-                    )
-                }
-            )*
-        )?
-
-        /// Returns all group references across all elements
-        fn get_all_group_references(&self) -> Vec<(String, String)> {
-            let mut refs = Vec::new();
-            $( $( refs.extend(self.$vec_group_method()); )* )?
-            $( $( refs.extend(self.$optional_vec_group_method()); )* )?
-            $( $( refs.extend(self.$iter_group_method()); )* )?
-            $( $( refs.extend(self.$optional_iter_group_method()); )* )?
-            $( $( refs.extend(self.$custom_group_extraction_method()); )* )?
-            refs
+        $($(
+            define_reference_accessors!(@methods $vg, $vp, $vg_get, $vg_path, iter);
+        )*)?
+        $($(
+            define_reference_accessors!(@methods $og, $op, $og_get, $og_path, optional);
+        )*)?
+        $($(
+            define_reference_accessors!(@methods $ig, $ip, $ig_get, $ig_path, direct);
+        )*)?
+        $($(
+            define_reference_accessors!(@methods $oig, $oip, $oig_get, $oig_path, optional);
+        )*)?
+        /// Visits every group reference, preserving field and array order.
+        fn visit_all_group_references(&self, path: &mut $crate::json::JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+            $($(self.$vg(path, visitor);)*)?
+            $($(self.$og(path, visitor);)*)?
+            $($(self.$ig(path, visitor);)*)?
+            $($(self.$oig(path, visitor);)*)?
+            $($(self.$cg(path, visitor);)*)?
         }
-
-        /// Returns all product references across all elements
-        fn get_all_product_references(&self) -> Vec<(String, String)> {
-            let mut refs = Vec::new();
-            $( $( refs.extend(self.$vec_product_method()); )* )?
-            $( $( refs.extend(self.$optional_vec_product_method()); )* )?
-            $( $( refs.extend(self.$iter_product_method()); )* )?
-            $( $( refs.extend(self.$optional_iter_product_method()); )* )?
-            $( $( refs.extend(self.$custom_product_extraction_method()); )* )?
-            refs
+        /// Visits every product reference, preserving field and array order.
+        fn visit_all_product_references(&self, path: &mut $crate::json::JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+            $($(self.$vp(path, visitor);)*)?
+            $($(self.$op(path, visitor);)*)?
+            $($(self.$ip(path, visitor);)*)?
+            $($(self.$oip(path, visitor);)*)?
+            $($(self.$cp(path, visitor);)*)?
+        }
+    };
+    (@items $self:ident, $getter:ident, iter) => { $self.$getter().iter() };
+    (@items $self:ident, $getter:ident, optional) => { $self.$getter().into_iter().flatten() };
+    (@items $self:ident, $getter:ident, direct) => { $self.$getter() };
+    (@methods $group:ident, $product:ident, $getter:ident, $field:literal, $kind:ident) => {
+        fn $group(&self, path: &mut $crate::json::JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+            $crate::csaf::traits::util::extract_references::visit_group_references(
+                define_reference_accessors!(@items self, $getter, $kind), &mut path.push($field), visitor);
+        }
+        fn $product(&self, path: &mut $crate::json::JsonPointer<'_>, visitor: &mut impl FnMut(&str, &str)) {
+            $crate::csaf::traits::util::extract_references::visit_product_references(
+                define_reference_accessors!(@items self, $getter, $kind), &mut path.push($field), visitor);
         }
     };
 }
 
 pub(crate) use define_reference_accessors;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::csaf_traits::VulnerabilityTrait;
+    use crate::schema::csaf2_1::schema::Vulnerability;
+    use serde_json::json;
+
+    #[test]
+    fn visitors_restore_prefix_and_preserve_reference_order() {
+        let vulnerability: Vulnerability = serde_json::from_value(json!({
+            "notes": [{
+                "category": "description", "text": "Note",
+                "group_ids": ["CSAFGID-0001", "CSAFGID-0001"],
+                "product_ids": ["CSAFPID-0001", "CSAFPID-0002"]
+            }],
+            "metrics": [{"products": ["CSAFPID-0003"], "content": {}}]
+        }))
+        .expect("vulnerability deserializes");
+        let mut buffer = String::from("/vulnerabilities/12");
+        let mut path = JsonPointer::new(&mut buffer);
+        let mut references = Vec::new();
+        vulnerability.visit_all_group_references(&mut path, &mut |id, path| {
+            references.push((id.to_owned(), path.to_owned()));
+        });
+        assert_eq!(path.as_str(), "/vulnerabilities/12");
+        assert_eq!(
+            references,
+            [
+                (
+                    "CSAFGID-0001".to_owned(),
+                    "/vulnerabilities/12/notes/0/group_ids/0".to_owned()
+                ),
+                (
+                    "CSAFGID-0001".to_owned(),
+                    "/vulnerabilities/12/notes/0/group_ids/1".to_owned()
+                ),
+            ]
+        );
+        references.clear();
+        vulnerability.visit_all_product_references(&mut path, &mut |id, path| {
+            references.push((id.to_owned(), path.to_owned()));
+        });
+        assert_eq!(path.as_str(), "/vulnerabilities/12");
+        assert_eq!(
+            references,
+            [
+                (
+                    "CSAFPID-0001".to_owned(),
+                    "/vulnerabilities/12/notes/0/product_ids/0".to_owned()
+                ),
+                (
+                    "CSAFPID-0002".to_owned(),
+                    "/vulnerabilities/12/notes/0/product_ids/1".to_owned()
+                ),
+                (
+                    "CSAFPID-0003".to_owned(),
+                    "/vulnerabilities/12/metrics/0/products/0".to_owned()
+                ),
+            ]
+        );
+    }
+}

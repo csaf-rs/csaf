@@ -22,7 +22,7 @@ fn generate_undefined_product_id_error(undefined_product_id: &str, instance_path
 /// and compares the two sets.
 ///
 /// Due to the syntax changes between the two versions, the way these sets are derived differs, though.
-/// This is abstracted through the [`ProductTreeTrait::get_all_product_ids`] and [`CsafTrait::get_all_product_references`]
+/// This is abstracted through the product ID and reference visitors
 /// functions, which allows the same implementation to work for both CSAF versions.
 fn test_6_1_1_missing_definition_of_product_id(doc: &impl CsafTrait) -> Result<(), Vec<TestFinding>> {
     // check if there is a product tree
@@ -30,11 +30,14 @@ fn test_6_1_1_missing_definition_of_product_id(doc: &impl CsafTrait) -> Result<(
         return Ok(()); // TODO #409: There isn't a product tree, skip
     };
     // get all defined product ids from the product tree
-    let defined_product_ids = tree.get_all_product_ids();
+    let mut defined_product_ids = std::collections::HashSet::new();
+    tree.visit_all_product_ids(&mut |id, _| {
+        defined_product_ids.insert(id.to_owned());
+    });
 
     let mut errors: Option<Vec<TestFinding>> = None;
     // iterate over all product references
-    for (referenced_product_id, referenced_product_id_path) in &doc.get_all_product_references() {
+    doc.visit_all_product_references(&mut |referenced_product_id, referenced_product_id_path| {
         // if a reference is not defined, generate an error
         if !defined_product_ids.contains(referenced_product_id) {
             errors.get_or_insert_default().push(generate_undefined_product_id_error(
@@ -42,7 +45,7 @@ fn test_6_1_1_missing_definition_of_product_id(doc: &impl CsafTrait) -> Result<(
                 referenced_product_id_path,
             ));
         }
-    }
+    });
     errors.map_or(Ok(()), Err)
 }
 

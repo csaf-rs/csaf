@@ -68,10 +68,10 @@ pub trait Csaf21InvolvementTrait {
     define_reference_accessors! {
         iter: [
             (
-                get_actions_group_references,
-                get_actions_product_references,
+                visit_actions_group_references,
+                visit_actions_product_references,
                 get_actions,
-                "/document/involvement/actions"
+                "actions"
             ),
         ],
     }

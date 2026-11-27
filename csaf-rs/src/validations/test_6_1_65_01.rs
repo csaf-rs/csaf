@@ -16,19 +16,22 @@ fn generate_undefined_document_local_vuln_id_error(id: &str, path: &str) -> Test
 pub fn test_6_1_65_1_missing_definition_of_document_local_vuln_id(
     doc: &impl CsafTrait,
 ) -> Result<(), Vec<TestFinding>> {
-    let defined_doc_local_vuln_ids = doc.get_all_document_local_vuln_ids();
+    let mut defined_doc_local_vuln_ids = std::collections::HashSet::new();
+    doc.visit_all_document_local_vuln_ids(&mut |id, _| {
+        defined_doc_local_vuln_ids.insert(id.to_owned());
+    });
 
     let mut errors: Option<Vec<TestFinding>> = None;
-    for (doc_local_vuln_id, doc_local_vuln_id_path) in doc.get_all_document_local_vuln_id_references_with_path() {
-        if !defined_doc_local_vuln_ids.contains(&doc_local_vuln_id) {
+    doc.visit_all_document_local_vuln_id_references(&mut |doc_local_vuln_id, doc_local_vuln_id_path| {
+        if !defined_doc_local_vuln_ids.contains(doc_local_vuln_id) {
             errors
                 .get_or_insert_default()
                 .push(generate_undefined_document_local_vuln_id_error(
-                    &doc_local_vuln_id,
-                    &doc_local_vuln_id_path,
+                    doc_local_vuln_id,
+                    doc_local_vuln_id_path,
                 ));
         }
-    }
+    });
 
     errors.map_or(Ok(()), Err)
 }

@@ -20,9 +20,9 @@ pub fn test_6_2_31_hardware_software_mix(doc: &impl CsafTrait) -> Result<(), Vec
     let mut errors: Vec<TestFinding> = vec![];
 
     let mut valid_path_references: HashSet<String> = HashSet::new();
-    for (id, _) in product_tree.get_relationships_product_references() {
-        valid_path_references.insert(id);
-    }
+    product_tree.visit_relationships_product_references(&mut crate::json::JsonPointer::ignored(), &mut |id, _| {
+        valid_path_references.insert(id.to_owned());
+    });
 
     product_tree.visit_all_products(&mut |product, instance_path| {
         if let Some(helper) = product.get_product_identification_helper() {

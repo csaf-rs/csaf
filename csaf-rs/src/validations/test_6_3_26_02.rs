@@ -25,7 +25,10 @@ pub fn test_6_3_26_2_unused_definition_of_entity_group_id(doc: &impl CsafTrait) 
     };
 
     // collect all referenced entity group IDs from the document
-    let referenced_entity_group_ids = doc.get_all_entity_group_id_references();
+    let mut referenced_entity_group_ids = std::collections::HashSet::new();
+    doc.visit_all_entity_group_id_references(&mut |id, _| {
+        referenced_entity_group_ids.insert(id.to_owned());
+    });
 
     let mut findings: Option<Vec<TestFinding>> = None;
 

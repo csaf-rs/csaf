@@ -44,11 +44,11 @@ pub fn test_6_1_37_date_and_time(doc: &impl CsafTrait) -> Result<(), Vec<TestFin
                 .push(create_invalid_format_error(date_raw, &instance_path));
             continue;
         }
-        // Add chrono-based check for RFC 3339 requirements not covered by regex
+        // Add jiff-based check for RFC 3339 requirements not covered by regex
         if let Invalid(err) = &date_parsed {
             errors
                 .get_or_insert_default()
-                .push(create_parsing_error(date_raw, err, &instance_path));
+                .push(create_invalid_rfc3339_error(date_raw, err, &instance_path));
         }
     }
 
@@ -64,9 +64,11 @@ fn create_invalid_format_error(date_time: &str, instance_path: &str) -> TestFind
     })
 }
 
-fn create_parsing_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> TestFinding {
+fn create_invalid_rfc3339_error(date_time: &str, error: impl std::fmt::Display, instance_path: &str) -> TestFinding {
     TestFinding::Error(TestFindingData {
-        message: format!("Date-time string {date_time} matched RFC3339 regex but failed chrono parsing: {error}"),
+        message: format!(
+            "Date-time string {date_time} matched RFC3339 regex but does not comply with RFC3339: {error}"
+        ),
         instance_path: instance_path.to_string(),
     })
 }
@@ -97,33 +99,33 @@ mod tests {
             ]),
             case_03: Err(vec![
                 create_invalid_format_error("2017-01-01T02:59:60+04:00", "/vulnerabilities/0/disclosure_date"),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2014-13-31T00:00:00+01:00",
-                    "Failed to parse '2014-13-31T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2014-13-31T00:00:00+01:00' as RFC3339 with reason 'failed to parse two digit integer as month: parameter 'month' is not in the required range of 1..=12'",
                     "/vulnerabilities/0/discovery_date",
                 ),
             ]),
             case_04: Err(vec![
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2023-04-31T00:00:00+01:00",
-                    "Failed to parse '2023-04-31T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2023-04-31T00:00:00+01:00' as RFC3339 with reason 'parsed date is not valid: parameter 'day' for `2023-04` is invalid, must be in range `1..=30`'",
                     "/vulnerabilities/0/disclosure_date",
                 ),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2023-02-30T00:00:00+01:00",
-                    "Failed to parse '2023-02-30T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2023-02-30T00:00:00+01:00' as RFC3339 with reason 'parsed date is not valid: parameter 'day' for `2023-02` is invalid, must be in range `1..=28`'",
                     "/vulnerabilities/0/discovery_date",
                 ),
             ]),
             case_05: Err(vec![
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2023-02-29T00:00:00+01:00",
-                    "Failed to parse '2023-02-29T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2023-02-29T00:00:00+01:00' as RFC3339 with reason 'parsed date is not valid: parameter 'day' for `2023-02` is invalid, must be in range `1..=28`'",
                     "/vulnerabilities/0/disclosure_date",
                 ),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "1900-02-29T00:00:00+01:00",
-                    "Failed to parse '1900-02-29T00:00:00+01:00' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '1900-02-29T00:00:00+01:00' as RFC3339 with reason 'parsed date is not valid: parameter 'day' for `1900-02` is invalid, must be in range `1..=28`'",
                     "/vulnerabilities/0/discovery_date",
                 ),
             ]),
@@ -154,53 +156,61 @@ mod tests {
                 ),
             ]),
             case_22: Err(vec![
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2024-01-24T10:00:00.000+25:59",
-                    "Failed to parse '2024-01-24T10:00:00.000+25:59' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2024-01-24T10:00:00.000+25:59' as RFC3339 with reason 'Timestamp has an offset greater or equal to 24:00 hours or lesser or equal to -24:00s.'",
                     "/document/tracking/initial_release_date",
                 ),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2024-01-24T10:80:00.000Z",
-                    "Failed to parse '2024-01-24T10:80:00.000Z' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2024-01-24T10:80:00.000Z' as RFC3339 with reason 'failed to parse two digit integer as minute: parameter 'minute' is not in the required range of 0..=59'",
                     "/document/tracking/current_release_date",
                 ),
                 create_invalid_format_error("2024-01-24T10:00:80.000Z", "/document/tracking/generator/date"),
                 create_invalid_format_error("2024-01-24T10:00:00", "/document/tracking/revision_history/0/date"),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2023-02-30T09:00:00Z",
-                    "Failed to parse '2023-02-30T09:00:00Z' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2023-02-30T09:00:00Z' as RFC3339 with reason 'parsed date is not valid: parameter 'day' for `2023-02` is invalid, must be in range `1..=28`'",
                     "/document/involvement/actions/0/date",
                 ),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2023-03-00T15:00:00Z",
-                    "Failed to parse '2023-03-00T15:00:00Z' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2023-03-00T15:00:00Z' as RFC3339 with reason 'failed to parse two digit integer as day: parameter 'day' is not in the required range of 1..=31'",
                     "/document/involvement/actions/1/date",
                 ),
                 create_invalid_format_error("2024-01-24T10:00:00.000z", "/vulnerabilities/0/flags/0/date"),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2024-01-24T10:00:00.000-24:00",
-                    "Failed to parse '2024-01-24T10:00:00.000-24:00' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2024-01-24T10:00:00.000-24:00' as RFC3339 with reason 'Timestamp has an offset greater or equal to 24:00 hours or lesser or equal to -24:00s.'",
                     "/vulnerabilities/0/remediations/0/date",
                 ),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2024-01-24T10:00:00.000+24:00",
-                    "Failed to parse '2024-01-24T10:00:00.000+24:00' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2024-01-24T10:00:00.000+24:00' as RFC3339 with reason 'Timestamp has an offset greater or equal to 24:00 hours or lesser or equal to -24:00s.'",
                     "/vulnerabilities/0/threats/0/date",
                 ),
                 create_invalid_format_error(
                     "2024-01-24t10:00:00.000Z",
                     "/vulnerabilities/0/first_known_exploitation_dates/0/date",
                 ),
-                create_parsing_error(
+                create_invalid_rfc3339_error(
                     "2023-12-32T12:34:56.789Z",
-                    "Failed to parse '2023-12-32T12:34:56.789Z' as RFC3339 with reason 'input is out of range'",
+                    "Failed to parse '2023-12-32T12:34:56.789Z' as RFC3339 with reason 'failed to parse two digit integer as day: parameter 'day' is not in the required range of 1..=31'",
                     "/vulnerabilities/0/first_known_exploitation_dates/0/exploitation_date",
                 ),
             ]),
             case_11: Ok(()),
             case_12: Ok(()),
             case_13: Ok(()),
-            case_14: Ok(()),
+            // Jiff only allows 9 digits for `time-secfrac` whereas the RFC3339 standard allows an
+            // arbitrary number of digits
+            case_14: Err(vec![
+                create_invalid_rfc3339_error(
+                    "2016-12-31T23:59:59.9999999999+00:00",
+                    "Failed to parse '2016-12-31T23:59:59.9999999999+00:00' as RFC3339 with reason 'parsed value '2016-12-31T23:59:59.999999999', but unparsed input \"9+00:00\" remains (expected no unparsed input)'",
+                    "/vulnerabilities/0/disclosure_date",
+                ),
+            ]),
             case_15: Ok(()),
             case_16: Ok(()),
             case_17: Ok(()),

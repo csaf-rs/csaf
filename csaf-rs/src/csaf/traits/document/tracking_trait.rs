@@ -11,7 +11,7 @@ use crate::schema::csaf2_1::schema::{
     DocumentGenerator as DocumentGenerator21, DocumentStatus as DocumentStatus21, Revision as Revision21,
     Tracking as Tracking21,
 };
-use chrono::{DateTime, Utc};
+use jiff::Timestamp;
 use regex::Regex;
 use std::sync::LazyLock;
 
@@ -36,7 +36,7 @@ fn canonical_filename_from_id(tracking_id: &str) -> String {
 pub struct RevisionHistoryItem {
     pub path_index: usize,
     pub date_string: String,
-    pub date: DateTime<Utc>,
+    pub date: Timestamp,
     pub number: CsafVersionNumber,
     pub valid_date: ValidCsafDateTime,
 }

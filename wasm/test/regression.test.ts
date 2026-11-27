@@ -57,9 +57,9 @@ test('invalid CSAF 2.0 document fails validation with errors', () => {
   assert.ok(result.numErrors > 0n, 'expected at least one validation error');
 });
 
-// Test 6.2.33 calls chrono's Utc::now(), which goes through the wasm-bindgen
-// Date shims (`new Date()` + `getTime()`).
-test('validation-time preset exercises the Date shims (6.2.33)', () => {
+// Test 6.2.33 calls jiff's ZonedDateTime::now(), which needs both the Date
+// clock shims and Intl.DateTimeFormat system-timezone shims.
+test('validation-time preset exercises the clock and timezone shims (6.2.33)', () => {
   const valid = CsafFfi.validateCsaf(readFixture21Recommended('oasis_csaf_tc-csaf_2_1-2024-6-2-33-11.json'), 'validation-time');
   assert.equal(valid.version, '2.1');
   assert.equal(valid.numErrors, 0n);
